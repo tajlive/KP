@@ -1,5 +1,7 @@
 "use client";
 
+import { formatNOK } from "@/lib/format/currency";
+
 /**
  * StrategyDetailPage — Full-screen strategy detail view
  * App Store-style with performance chart, reviews, and action button.
@@ -68,13 +70,6 @@ const RISK_COLORS = {
   },
 };
 
-function formatNOK(n: number) {
-  return new Intl.NumberFormat("no-NO", {
-    style: "currency",
-    currency: "NOK",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 export default function StrategyDetailPage({
   strategy,

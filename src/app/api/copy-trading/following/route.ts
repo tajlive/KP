@@ -9,6 +9,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type FollowRow = Database["public"]["Tables"]["copy_trading_follows"]["Row"];
+type ExternalFollowRow = Database["public"]["Tables"]["copy_trading_external_follows"]["Row"];
 
 export type FollowingTraderDto = {
   id: string;
@@ -137,7 +138,29 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
       };
     });
 
-    return NextResponse.json({ following, source: "api" as const });
+    // Also fetch external (Binance) follows
+    const { data: externalRows } = await db
+      .from("copy_trading_external_follows")
+      .select("id, external_leader_id, scale_factor, allocation_percent, max_trade_amount, is_active, created_at")
+      .eq("follower_id", user.id)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    const externalFollows = (externalRows || []).map((row) => ({
+      id: row.id,
+      external_leader_id: row.external_leader_id,
+      scale_factor: row.scale_factor,
+      allocation_percent: row.allocation_percent,
+      max_trade_amount: row.max_trade_amount,
+      is_active: row.is_active,
+      created_at: row.created_at,
+    }));
+
+    return NextResponse.json({
+      following,
+      external: externalFollows,
+      source: "api" as const,
+    });
   } catch (e) {
     console.error("[copy-trading/following]", e);
     return NextResponse.json(

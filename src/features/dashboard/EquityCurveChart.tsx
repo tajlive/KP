@@ -13,7 +13,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { TrendingUp, TrendingDown, Info } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface CumulativePnlPoint {
   t: string;
@@ -32,13 +32,11 @@ function Skeleton() {
   );
 }
 
-function EmptyState() {
-  const locale = useLocale();
-  const isNo = locale === "no";
+function EmptyState({ noDataText }: { noDataText: string }) {
   return (
     <div className="h-[280px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
       <p className="text-slate-400 dark:text-slate-500 text-sm">
-        {isNo ? "Ikke nok data for equity curve" : "Not enough data for equity curve"}
+        {noDataText}
       </p>
     </div>
   );
@@ -46,11 +44,11 @@ function EmptyState() {
 
 export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.equityCurve");
   const [showInfo, setShowInfo] = useState(false);
 
   if (loading) return <Skeleton />;
-  if (!data || data.length < 2) return <EmptyState />;
+  if (!data || data.length < 2) return <EmptyState noDataText={t("noData")} />;
 
   const firstValue = data[0]?.cumulative ?? 0;
   const lastValue = data[data.length - 1]?.cumulative ?? 0;
@@ -59,7 +57,7 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
   const minPnl = Math.min(...data.map((d) => d.cumulative));
 
   const formatCurrency = (value: number) =>
-    new Intl.NumberFormat(isNo ? "nb-NO" : "en-US", {
+    new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
       style: "currency",
       currency: "NOK",
       maximumFractionDigits: 0,
@@ -101,12 +99,12 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              {isNo ? "Egenkapitalkurve" : "Equity Curve"}
+              {t("title")}
             </h3>
             <button
               onClick={() => setShowInfo(!showInfo)}
               className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-300 transition-colors"
-              aria-label={isNo ? "Hva er equity curve?" : "What is equity curve?"}
+              aria-label={t("ariaLabel")}
             >
               <Info className="w-3.5 h-3.5" />
             </button>
@@ -134,11 +132,11 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
         </div>
         <div className="text-right">
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            {isNo ? "Max" : "Max"}:{" "}
+            {t("max")}:{" "}
             <span className="text-emerald-400">{formatCurrency(maxPnl)}</span>
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            {isNo ? "Min" : "Min"}:{" "}
+            {t("min")}:{" "}
             <span className="text-red-400">{formatCurrency(minPnl)}</span>
           </p>
         </div>
@@ -150,9 +148,7 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
           animate={{ opacity: 1, height: "auto" }}
           className="mb-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs text-blue-200"
         >
-          {isNo
-            ? "Equity curve viser din kumulative P&L over tid. En stigende kurve indikerer profitabel trading. Se etter dyppe (drawdowns) for å vurdere risk management."
-            : "Equity curve shows your cumulative P&L over time. A rising curve indicates profitable trading. Watch for dips (drawdowns) to assess risk management."}
+          {t("infoTooltip")}
         </motion.div>
       )}
 

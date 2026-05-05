@@ -22,7 +22,7 @@ interface MobilePositionListProps {
   positions: Position[];
   priceForSymbol: (sym: string) => number;
   gradientForSymbol: (sym: string) => string;
-  formatNOK: (locale: string, n: number) => string;
+  formatNOK: (n: number | null | undefined, locale?: string) => string;
   onRefresh: () => Promise<void>;
 }
 
@@ -217,7 +217,7 @@ export function DesktopPositionList({
                 className="text-sm font-medium text-slate-100 tabular-nums"
                 style={{ fontVariantNumeric: "tabular-nums" }}
               >
-                {formatNOK(locale, pos.qty * price)}
+                {formatNOK(pos.qty * price, locale)}
               </p>
               <p
                 className={`text-xs font-semibold tabular-nums ${pnlPct >= 0 ? "text-emerald-400" : "text-red-400"}`}

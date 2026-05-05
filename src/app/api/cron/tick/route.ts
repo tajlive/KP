@@ -26,6 +26,7 @@ import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/reg
 import { getFlagsAsync } from "@/lib/flags";
 import { shouldUseChallenger, type TradeVersion } from "@/lib/trading/rollout/tick-rollout";
 import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from "@/lib/trading/beta/tick-guardrails";
+import { queueEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -226,6 +227,7 @@ async function processSession(
     // === PATH B: Eksisterende V2 strategies (uendret) ===
     const strategy = engineKey ? resolveStrategy(engineKey) : undefined;
     if (!strategy) {
+      console.error(`[Tick] Unknown strategy for session ${session.id}: "${session.strategy_id}" — skipping`);
       return {
         session_id: session.id,
         action: "error",
@@ -737,12 +739,13 @@ export async function GET(req: NextRequest) {
 
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)
+    // Increased from 50 → 500 to avoid starving sessions when many users are active
     const { data: sessions, error } = await db
       .from("trading_sessions")
       .select("*")
       .eq("status", "active")
       .order("last_tick_at", { ascending: true, nullsFirst: true })
-      .limit(50);
+      .limit(500);
 
     if (error) {
       console.error("Failed to fetch sessions:", error);
@@ -757,7 +760,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Portfolio-level circuit breaker: stop ALL trading if user's paper balance
-    // has dropped 5% or more from initial across all sessions
+    // has dropped 15% or more from initial across all sessions (was 5%, too aggressive)
     const userPortfolioMap = new Map<string, { initial: number; current: number }>();
     for (const s of sessions) {
       const existing = userPortfolioMap.get(s.user_id) || { initial: 0, current: 0 };
@@ -768,18 +771,62 @@ export async function GET(req: NextRequest) {
 
     for (const [userId, portfolio] of userPortfolioMap) {
       const drawdown = ((portfolio.initial - portfolio.current) / portfolio.initial) * 100;
-      if (drawdown >= 5) {
-        console.warn(`[PORTFOLIO STOP] User ${userId}: drawdown ${drawdown.toFixed(2)}% ≥ 5%. Stopping ALL sessions.`);
+      if (drawdown >= 15) {
+        console.warn(`[PORTFOLIO STOP] User ${userId}: drawdown ${drawdown.toFixed(2)}% ≥ 15%. Stopping ALL sessions.`);
         await db.from("trading_logs").insert({
           user_id: userId,
           action: "portfolio_stop",
-          details: { drawdown, initial: portfolio.initial, current: portfolio.current, reason: "Portfolio drawdown ≥ 5%" } as never,
+          details: { drawdown, initial: portfolio.initial, current: portfolio.current, reason: "Portfolio drawdown ≥ 15%" } as never,
         } as never);
-        // Stop all sessions for this user
-        await db.from("trading_sessions")
-          .update({ status: "stopped" })
+        // Stop all sessions for this user with reason
+        const { data: stoppedSessions } = await db.from("trading_sessions")
+          .update({ status: "stopped", last_status_message: `Circuit breaker: portfolio drawdown ${drawdown.toFixed(1)}%` })
           .eq("user_id", userId)
-          .eq("status", "active");
+          .eq("status", "active")
+          .select("id");
+
+        // Notify user via email
+        try {
+          const sessionsStopped = stoppedSessions?.length ?? 0;
+          await queueEmail({
+            userId,
+            type: "circuit_breaker",
+            data: {
+              name: "",
+              drawdown: `${drawdown.toFixed(1)}%`,
+              sessionsStopped,
+              portfolioValue: `${portfolio.current.toLocaleString("no-NO")} NOK`,
+              restartUrl: `https://www.klarpakke.no/no/dashboard/portfolio`,
+            },
+          });
+        } catch (notifyErr) {
+          console.error(`[PORTFOLIO STOP] Failed to email user ${userId}:`, notifyErr);
+        }
+
+        // Notify user via push notification
+        try {
+          const cronSecret = process.env.CRON_SECRET;
+          if (cronSecret) {
+            await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "https://www.klarpakke.no"}/api/notifications/send`, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${cronSecret}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userIds: [userId],
+                notification: {
+                  title: "⚠️ Trading stoppet",
+                  body: `Portfolio drawdown ${drawdown.toFixed(1)}%. ${stoppedSessions?.length ?? 0} session(s) stoppet.`,
+                  url: "/no/dashboard/portfolio",
+                  requireInteraction: true,
+                },
+              }),
+            });
+          }
+        } catch (pushErr) {
+          console.error(`[PORTFOLIO STOP] Failed to push notify user ${userId}:`, pushErr);
+        }
       }
     }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, BarChart3 } from "lucide-react";
 import { EquityCurveChart } from "./EquityCurveChart";
 import { WinLossHeatmap } from "./WinLossHeatmap";
@@ -32,7 +32,7 @@ interface AdvancedAnalyticsSectionProps {
 
 export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpanded = false }: AdvancedAnalyticsSectionProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.advancedAnalytics");
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [analytics, setAnalytics] = useState<TradingAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,11 +53,11 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
         if (data.ok) {
           setAnalytics(data as TradingAnalytics);
         } else {
-          setFetchError(isNo ? "Kunne ikke laste analyse-data." : "Could not load analytics data.");
+          setFetchError(t("loadError"));
         }
       })
       .catch(() => {
-        setFetchError(isNo ? "Kunne ikke laste analyse-data. Prøv igjen." : "Could not load analytics data. Please try again.");
+        setFetchError(t("loadErrorRetry"));
       })
       .finally(() => {
         setLoading(false);
@@ -75,7 +75,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
       >
         <BarChart3 className="w-4 h-4" />
         <span className="font-medium text-sm">
-          {isNo ? "Avansert analyse" : "Advanced Analytics"}
+          {t("title")}
         </span>
         <motion.div
           animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -104,7 +104,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
                 }}
                 className="mt-2 text-xs text-blue-400 hover:text-blue-300 underline"
               >
-                {isNo ? "Prøv igjen" : "Try again"}
+                {t("tryAgain")}
               </button>
             </div>
           )}
@@ -133,7 +133,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
             {analytics?.riskMetrics && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">
-                  {isNo ? "Risk Metrics" : "Risk Metrics"}
+                  {t("riskMetricsTitle")}
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                   {[
@@ -156,7 +156,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
                       type: "drawdown" as const,
                     },
                     {
-                      label: isNo ? "Max tap streak" : "Max loss streak",
+                      label: t("maxLossStreakLabel"),
                       value: analytics.riskMetrics.maxConsecutiveLosses.toString(),
                       good: analytics.riskMetrics.maxConsecutiveLosses <= 3,
                       type: "drawdown" as const,

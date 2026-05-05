@@ -27,14 +27,7 @@ interface PnlBreakdownProps {
   tradeCount: number;
 }
 
-function formatNOK(value: number): string {
-  return new Intl.NumberFormat("no-NO", {
-    style: "currency",
-    currency: "NOK",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+import { formatNOK } from "@/lib/format/currency";
 
 export default function PnlBreakdown({
   startingCapital,

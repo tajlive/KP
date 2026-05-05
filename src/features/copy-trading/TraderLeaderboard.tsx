@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, TrendingDown, Users, Shield, AlertTriangle, Loader2 } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { ExternalFollowSheet } from "./ExternalFollowSheet";
 
 interface Trader {
   encryptedUid: string;
@@ -49,6 +50,8 @@ export function TraderLeaderboard({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [followingUid, setFollowingUid] = useState<string | null>(null);
+  const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const isNorwegian = locale === "no";
 
@@ -59,34 +62,109 @@ export function TraderLeaderboard({
   const fetchTraders = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/binance-leaders");
-      
-      if (!response.ok) {
+      const [leadersRes, followsRes] = await Promise.all([
+        fetch("/api/binance-leaders"),
+        fetch("/api/copy-trading/following"),
+      ]);
+
+      if (!leadersRes.ok) {
         throw new Error("Kunne ikke hente leaderbord");
       }
 
-      const data = await response.json();
-      setTraders(data.leaders);
+      const leadersData = (await leadersRes.json()) as { leaders: Trader[] };
+      let followingUids: string[] = [];
+
+      if (followsRes.ok) {
+        const followsData = (await followsRes.json()) as {
+          internal?: { leader_id: string }[];
+          external?: { external_leader_id: string }[];
+        };
+        followingUids = [
+          ...(followsData.internal?.map((f) => f.leader_id) || []),
+          ...(followsData.external?.map((f) => f.external_leader_id) || []),
+        ];
+      }
+
+      const leadersWithFollowing = leadersData.leaders.map((trader) => ({
+        ...trader,
+        isFollowing: followingUids.includes(trader.encryptedUid),
+      }));
+
+      setTraders(leadersWithFollowing);
     } catch (err) {
-      setError(isNorwegian 
-        ? "Kunne ikke hente leaderbord. Prøv igjen senere."
-        : "Could not fetch leaderboard. Please try again later."
+      setError(
+        isNorwegian
+          ? "Kunne ikke hente leaderbord. Prøv igjen senere."
+          : "Could not fetch leaderboard. Please try again later.",
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFollow = async (trader: Trader) => {
+  const handleFollowClick = (trader: Trader) => {
+    if (trader.isFollowing) {
+      // Unfollow directly
+      handleUnfollow(trader);
+    } else {
+      // Open config sheet
+      setSelectedTrader(trader);
+      setSheetOpen(true);
+    }
+  };
+
+  const handleUnfollow = async (trader: Trader) => {
     setFollowingUid(trader.encryptedUid);
     try {
-      if (trader.isFollowing) {
-        await onUnfollow?.(trader.encryptedUid);
-      } else {
-        await onFollow?.(trader.encryptedUid);
+      const res = await fetch("/api/copy-trading/external-follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          encrypted_uid: trader.encryptedUid,
+          action: "unfollow",
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Unfollow failed: ${res.status}`);
       }
-      // Refresh
+
       await fetchTraders();
+      onUnfollow?.(trader.encryptedUid);
+    } catch (err) {
+      console.error("Unfollow error:", err);
+    } finally {
+      setFollowingUid(null);
+    }
+  };
+
+  const handleConfiguredFollow = async (config: {
+    scale_factor: number;
+    allocation_percent: number;
+    max_trade_amount: number | null;
+  }) => {
+    if (!selectedTrader) return;
+    setFollowingUid(selectedTrader.encryptedUid);
+    try {
+      const res = await fetch("/api/copy-trading/external-follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          encrypted_uid: selectedTrader.encryptedUid,
+          action: "follow",
+          ...config,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Follow failed: ${res.status}`);
+      }
+
+      await fetchTraders();
+      onFollow?.(selectedTrader.encryptedUid);
+    } catch (err) {
+      console.error("Follow error:", err);
+      throw err;
     } finally {
       setFollowingUid(null);
     }
@@ -98,20 +176,28 @@ export function TraderLeaderboard({
 
   const getRiskColor = (level: string) => {
     switch (level) {
-      case "low": return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-      case "medium": return "bg-amber-500/20 text-amber-400 border-amber-500/30";
-      case "high": return "bg-red-500/20 text-red-400 border-red-500/30";
-      default: return "bg-slate-500/20 text-slate-400";
+      case "low":
+        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+      case "medium":
+        return "bg-amber-500/20 text-amber-400 border-amber-500/30";
+      case "high":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      default:
+        return "bg-slate-500/20 text-slate-400";
     }
   };
 
   const getRiskLabel = (level: string) => {
     if (!isNorwegian) return level.charAt(0).toUpperCase() + level.slice(1);
     switch (level) {
-      case "low": return "Lav risiko";
-      case "medium": return "Middels risiko";
-      case "high": return "Høy risiko";
-      default: return level;
+      case "low":
+        return "Lav risiko";
+      case "medium":
+        return "Middels risiko";
+      case "high":
+        return "Høy risiko";
+      default:
+        return level;
     }
   };
 
@@ -144,7 +230,7 @@ export function TraderLeaderboard({
             {isNorwegian ? "Topp tradere på Binance" : "Top Binance traders"}
           </h2>
           <p className="text-sm text-slate-400">
-            {isNorwegian 
+            {isNorwegian
               ? "Live data fra Binance Futures. Oppdatert hvert 5. minutt."
               : "Live data from Binance Futures. Updated every 5 minutes."}
           </p>
@@ -160,12 +246,12 @@ export function TraderLeaderboard({
           <span className="text-2xl">🎮</span>
           <div>
             <p className="text-sm font-medium text-blue-300">
-              {isNorwegian 
+              {isNorwegian
                 ? "Gratis paper-kopiering"
                 : "Free paper copy-trading"}
             </p>
             <p className="text-xs text-blue-400 mt-1">
-              {isNorwegian 
+              {isNorwegian
                 ? "Øv med lekepenger først. Bytt til live for 49 kr/mnd når du er klar."
                 : "Practice with play money first. Switch to live for 49 kr/month when ready."}
             </p>
@@ -185,17 +271,19 @@ export function TraderLeaderboard({
               className={cn(
                 "bg-slate-900/50 border border-slate-800 rounded-xl p-4",
                 "hover:border-slate-700 transition-colors cursor-pointer",
-                trader.isFollowing && "border-blue-500/30 bg-blue-500/5"
+                trader.isFollowing && "border-blue-500/30 bg-blue-500/5",
               )}
               onClick={() => onSelectTrader?.(trader)}
             >
               <div className="flex items-start gap-4">
                 {/* Rank */}
                 <div className="flex-shrink-0 w-8 text-center">
-                  <span className={cn(
-                    "text-lg font-bold",
-                    trader.rank <= 3 ? "text-yellow-400" : "text-slate-400"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-lg font-bold",
+                      trader.rank <= 3 ? "text-yellow-400" : "text-slate-400",
+                    )}
+                  >
                     #{trader.rank}
                   </span>
                 </div>
@@ -230,10 +318,12 @@ export function TraderLeaderboard({
                       <p className="text-slate-500 text-xs">
                         {isNorwegian ? "Total" : "Total"}
                       </p>
-                      <p className={cn(
-                        "font-medium",
-                        trader.totalReturn >= 0 ? "text-emerald-400" : "text-red-400"
-                      )}>
+                      <p
+                        className={cn(
+                          "font-medium",
+                          trader.totalReturn >= 0 ? "text-emerald-400" : "text-red-400",
+                        )}
+                      >
                         {formatPercent(trader.totalReturn)}
                       </p>
                     </div>
@@ -241,10 +331,12 @@ export function TraderLeaderboard({
                       <p className="text-slate-500 text-xs">
                         {isNorwegian ? "30d" : "30d"}
                       </p>
-                      <p className={cn(
-                        "font-medium",
-                        trader.monthlyReturn >= 0 ? "text-emerald-400" : "text-red-400"
-                      )}>
+                      <p
+                        className={cn(
+                          "font-medium",
+                          trader.monthlyReturn >= 0 ? "text-emerald-400" : "text-red-400",
+                        )}
+                      >
                         {formatPercent(trader.monthlyReturn)}
                       </p>
                     </div>
@@ -268,7 +360,10 @@ export function TraderLeaderboard({
                   {trader.riskWarnings.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1">
                       {trader.riskWarnings.slice(0, 2).map((warning, i) => (
-                        <span key={i} className="text-xs text-amber-400/80 flex items-center gap-1">
+                        <span
+                          key={i}
+                          className="text-xs text-amber-400/80 flex items-center gap-1"
+                        >
                           <AlertTriangle className="w-3 h-3" />
                           {warning}
                         </span>
@@ -284,13 +379,13 @@ export function TraderLeaderboard({
                     variant={trader.isFollowing ? "outline" : "default"}
                     className={cn(
                       "min-w-[100px]",
-                      trader.isFollowing 
-                        ? "border-slate-600 text-slate-300" 
-                        : "bg-blue-600 hover:bg-blue-700"
+                      trader.isFollowing
+                        ? "border-slate-600 text-slate-300"
+                        : "bg-blue-600 hover:bg-blue-700",
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleFollow(trader);
+                      handleFollowClick(trader);
                     }}
                     disabled={followingUid === trader.encryptedUid}
                   >
@@ -311,10 +406,22 @@ export function TraderLeaderboard({
 
       {/* Footer info */}
       <p className="text-xs text-slate-500 text-center">
-        {isNorwegian 
+        {isNorwegian
           ? "Historisk avkastning er ingen garanti for fremtidig resultat. Kopiering innebærer risiko."
           : "Historical returns are no guarantee of future results. Copying involves risk."}
       </p>
+
+      {/* Follow config sheet */}
+      <ExternalFollowSheet
+        traderName={selectedTrader?.nickName ?? ""}
+        isOpen={sheetOpen}
+        onClose={() => {
+          setSheetOpen(false);
+          setSelectedTrader(null);
+        }}
+        onFollow={handleConfiguredFollow}
+        isLoading={followingUid === selectedTrader?.encryptedUid}
+      />
     </div>
   );
 }

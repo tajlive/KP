@@ -1,3 +1,4 @@
+import { formatNOK, formatPercent } from "@/lib/format/currency";
 /**
  * Trader Explanations - Forklarer trades på enkel norsk
  * 
@@ -337,17 +338,7 @@ function formatNumber(value: number | undefined | null, locale: Locale, decimals
   });
 }
 
-function formatPercent(value: number | undefined | null, locale: Locale): string {
-  if (value === undefined || value === null) return "-";
-  return `${value.toLocaleString(locale === "no" ? "nb-NO" : "en-US", { maximumFractionDigits: 1 })} %`;
-}
 
-function formatNOK(value: number | undefined | null, locale: Locale): string {
-  if (value === undefined || value === null) return "-";
-  const abs = Math.abs(value);
-  const prefix = value < 0 ? "−" : "+";
-  return `${prefix}${abs.toLocaleString(locale === "no" ? "nb-NO" : "en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} kr`;
-}
 
 /**
  * Erstatt placeholders i tekst med faktiske verdier fra indikatorer og params

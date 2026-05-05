@@ -1,5 +1,7 @@
 "use client";
 
+import { formatNOK } from "@/lib/format/currency";
+
 import { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { Calculator as CalcIcon, TrendingUp, AlertTriangle, Download, Info, Coins, PiggyBank } from "lucide-react";
@@ -9,13 +11,6 @@ import { useLocale, useTranslations } from "next-intl";
 
 // ─── Formatering ────────────────────────────────────────────
 
-function formatNOK(n: number, locale: string): string {
-  return new Intl.NumberFormat(locale === "no" ? "no-NO" : "en-US", {
-    style: "decimal",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 function formatPercent(n: number): string {
   return n.toFixed(2).replace(".", ",");
@@ -143,12 +138,12 @@ export default function CalculatorPage() {
       const text = `
 Kalkuleringsresultat - Klarpakke
 ================================
-Startbeløp: ${formatNOK(startSum, locale)} kr
+Startbeløp: ${formatNOK(startSum, { locale, style: "decimal" })} kr
 Daglig avkastning: ${formatPercent(dailyPercent)}%
 Tid: 1 år
 
-Resultat etter 1 år: ${formatNOK(Math.round(finalBalance), locale)} kr
-Total avkastning: +${formatNOK(Math.round(totalProfit), locale)} kr (+${formatPercent(totalReturn)}%)
+Resultat etter 1 år: ${formatNOK(Math.round(finalBalance), { locale, style: "decimal" })} kr
+Total avkastning: +${formatNOK(Math.round(totalProfit), { locale, style: "decimal" })} kr (+${formatPercent(totalReturn)}%)
 
 VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele investeringen.
       `.trim();
@@ -169,7 +164,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
     const cleaned = raw.replace(/[^\d]/g, "");
     const num = parseInt(cleaned) || 0;
     setStartSum(num);
-    setStartSumInput(num > 0 ? formatNOK(num, locale) : "");
+    setStartSumInput(num > 0 ? formatNOK(num, { locale, style: "decimal" }) : "");
   };
 
   return (
@@ -257,7 +252,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
                 value={startSumInput}
                 onChange={(e) => handleStartSumChange(e.target.value)}
                 onFocus={() => setStartSumInput(startSum > 0 ? String(startSum) : "")}
-                onBlur={() => setStartSumInput(startSum > 0 ? formatNOK(startSum, locale) : "")}
+                onBlur={() => setStartSumInput(startSum > 0 ? formatNOK(startSum, { locale, style: "decimal" }) : "")}
                 className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-semibold text-[#0A0B0D] placeholder:text-gray-400 focus:outline-none focus:border-[#0052FF] focus:bg-white transition-colors tabular-nums"
                 placeholder="10 000"
               />
@@ -265,12 +260,12 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
                 {[1000, 5000, 10000, 50000, 100000].map((v) => (
                   <button
                     key={v}
-                    onClick={() => { setStartSum(v); setStartSumInput(formatNOK(v, locale)); }}
+                    onClick={() => { setStartSum(v); setStartSumInput(formatNOK(v, { locale, style: "decimal" })); }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       startSum === v ? BRAND.primary : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
-                    {formatNOK(v, locale)} kr
+                    {formatNOK(v, { locale, style: "decimal" })} kr
                   </button>
                 ))}
               </div>
@@ -335,14 +330,14 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
                     <span className="w-2 h-2 rounded-full bg-rose-500" />
                     {isNorwegian ? "Lotto (tapt)" : "Lottery (lost)"}
                   </p>
-                  <p className="text-rose-700 font-bold mt-1">{formatNOK(lottoLoss, locale)} kr</p>
+                  <p className="text-rose-700 font-bold mt-1">{formatNOK(lottoLoss, { locale, style: "decimal" })} kr</p>
                 </div>
                 <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
                   <p className="text-emerald-600 font-medium flex items-center gap-1">
                     <PiggyBank className="w-4 h-4" />
                     {isNorwegian ? "Høyrente (3%)" : "High interest (3%)"}
                   </p>
-                  <p className="text-emerald-700 font-bold mt-1">{formatNOK(Math.round(bankBalance), locale)} kr</p>
+                  <p className="text-emerald-700 font-bold mt-1">{formatNOK(Math.round(bankBalance), { locale, style: "decimal" })} kr</p>
                 </div>
               </div>
               <p className="text-xs text-slate-500 mt-2">

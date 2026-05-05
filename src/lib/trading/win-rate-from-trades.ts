@@ -1,5 +1,5 @@
 /**
- * Win rate from closed paper trades with non-null realized PnL.
+ * Win rate from closed trades with non-null realized PnL.
  * Used when `trading_sessions.winning_trades` is missing or stale.
  */
 export type TradeWithPnl = {
@@ -9,10 +9,12 @@ export type TradeWithPnl = {
 
 export function winRateFromRealizedTrades(
   trades: TradeWithPnl[],
+  mode?: "paper" | "live" | "all",
 ): number | null {
+  const modeFilter = mode ?? "all";
   const closed = trades.filter(
     (t) =>
-      String(t.mode ?? "paper").toLowerCase() === "paper" &&
+      (modeFilter === "all" || String(t.mode ?? "paper").toLowerCase() === modeFilter) &&
       t.realized_pnl != null &&
       Number.isFinite(Number(t.realized_pnl)),
   );

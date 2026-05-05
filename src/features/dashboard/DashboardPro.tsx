@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react";
 
@@ -67,21 +67,15 @@ function StatSkeleton() {
   );
 }
 
-function ErrorCard({ message, onRetry }: { message?: string; onRetry?: () => void }) {
-  const locale = useLocale();
-  const isNo = locale === "no";
-
+function ErrorCard({ message, onRetry, t }: { message?: string; onRetry?: () => void; t: (key: string) => string }) {
   return (
     <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
       <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
       <h3 className="text-lg font-semibold text-red-200 mb-2">
-        {isNo ? "Kunne ikke laste dashboard-tall" : "Could not load dashboard metrics"}
+        {t("errorTitle")}
       </h3>
       <p className="text-red-300/80 text-sm mb-4 max-w-md mx-auto">
-        {message ||
-          (isNo
-            ? "Prøv igjen, eller kontakt support hvis problemet vedvarer."
-            : "Please try again or contact support if the issue persists.")}
+        {message || t("errorFallback")}
       </p>
       {onRetry && (
         <button
@@ -89,23 +83,18 @@ function ErrorCard({ message, onRetry }: { message?: string; onRetry?: () => voi
           className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded-lg transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
-          {isNo ? "Prøv igjen" : "Try again"}
+          {t("retry")}
         </button>
       )}
     </div>
   );
 }
 
-function EmptyState() {
-  const locale = useLocale();
-  const isNo = locale === "no";
-
+function EmptyState({ emptyText }: { emptyText: string }) {
   return (
     <div className="bg-gray-100 dark:bg-slate-800/50 rounded-xl p-6 text-center border border-gray-200 dark:border-slate-700/50">
       <p className="text-gray-500 dark:text-slate-400 text-sm">
-        {isNo
-          ? "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk."
-          : "No trades yet for the selected mode. Start a new session to see statistics."}
+        {emptyText}
       </p>
     </div>
   );
@@ -124,7 +113,7 @@ export function DashboardPro({
   cmsData,
 }: DashboardProProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.dashboardPro");
   const isPaperMode = preferredTradingMode === "paper";
 
   const effectiveStats = stats || {
@@ -153,26 +142,24 @@ export function DashboardPro({
 
   const statItems = [
     {
-      label: isNo ? "Total avkastning" : "Total Return",
+      label: t("stats.totalReturn"),
       value: `${effectiveStats.totalPnl > 0 ? "+" : ""}${effectiveStats.totalPnl.toLocaleString()} kr`,
-      subtext: isNo ? "Akkumulert profitt" : "Accumulated profit",
+      subtext: t("stats.totalReturnSub"),
       trend: effectiveStats.totalPnl >= 0 ? ("up" as const) : ("down" as const),
       icon: TrendingUp,
       highlight: true,
     },
     {
-      label: isNo ? "Vinnrate" : "Win rate",
+      label: t("stats.winRate"),
       value: `${effectiveStats.winRate}%`,
-      subtext: isNo
-        ? `${effectiveStats.totalTrades} handler totalt`
-        : `${effectiveStats.totalTrades} trades total`,
+      subtext: t("stats.winRateSub", { totalTrades: effectiveStats.totalTrades }),
       trend: effectiveStats.winRate >= 50 ? ("up" as const) : ("down" as const),
       icon: Target,
     },
     {
-      label: isNo ? "Kontobalanse" : "Account Balance",
+      label: t("stats.balance"),
       value: `${Math.round(effectiveStats.currentCapital).toLocaleString()} kr`,
-      subtext: isNo ? "Tilgjengelig kapital" : "Available capital",
+      subtext: t("stats.balanceSub"),
       trend: "neutral" as const,
       icon: Wallet,
     },
@@ -239,7 +226,7 @@ export function DashboardPro({
             {userState !== "NyBruker" && (
               <>
                 {isError ? (
-                  <ErrorCard message={errorMessage} onRetry={onRetry} />
+                  <ErrorCard message={errorMessage} onRetry={onRetry} t={t} />
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <StatSkeleton />
@@ -247,7 +234,7 @@ export function DashboardPro({
                     <StatSkeleton />
                   </div>
                 ) : effectiveStats.totalTrades === 0 ? (
-                  <EmptyState />
+                  <EmptyState emptyText={t("emptyState")} />
                 ) : (
                   <div className="space-y-2">
                     <StatsGrid stats={statItems} />
@@ -264,9 +251,7 @@ export function DashboardPro({
             {/* Scope label */}
             {!isLoading && !isError && (
               <p className="text-xs text-slate-500 text-center">
-                {isNo
-                  ? `Basert på aktive og fullførte ${isPaperMode ? "paper" : "live"}-sessions`
-                  : `Based on active and completed ${isPaperMode ? "paper" : "live"} sessions`}
+                {t("scopeLabel", { mode: isPaperMode ? "paper" : "live" })}
               </p>
             )}
 

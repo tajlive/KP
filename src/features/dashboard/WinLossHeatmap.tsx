@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Info, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -21,13 +21,11 @@ function Skeleton() {
   );
 }
 
-function EmptyState() {
-  const locale = useLocale();
-  const isNo = locale === "no";
+function EmptyState({ noDataText }: { noDataText: string }) {
   return (
     <div className="h-[320px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
       <p className="text-slate-400 dark:text-slate-500 text-sm">
-        {isNo ? "Ikke nok data for heatmap" : "Not enough data for heatmap"}
+        {noDataText}
       </p>
     </div>
   );
@@ -95,17 +93,16 @@ function getColorClass(pnl: number | null, maxPnl: number): string {
   return "bg-red-800/70";
 }
 
-const DAY_LABELS_NO = ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"];
-const DAY_LABELS_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 
 export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.winLossHeatmap");
   const [showInfo, setShowInfo] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
 
   if (loading) return <Skeleton />;
-  if (!data || data.length === 0) return <EmptyState />;
+  if (!data || data.length === 0) return <EmptyState noDataText={t("noData")} />;
 
   const weeks = groupByWeeks(data);
   const maxPnl = Math.max(...data.map((d) => Math.abs(d.pnl)), 1);
@@ -123,7 +120,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
     (currentPage + 1) * WEEKS_PER_PAGE
   );
 
-  const dayLabels = isNo ? DAY_LABELS_NO : DAY_LABELS_EN;
+  const dayLabels = t.raw("dayLabels") as string[];
 
   return (
     <motion.div
@@ -136,7 +133,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              {isNo ? "Daglig P&L Heatmap" : "Daily P&L Heatmap"}
+              {t("title")}
             </h3>
             <button
               onClick={() => setShowInfo(!showInfo)}
@@ -146,9 +143,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
             </button>
           </div>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-            {isNo
-              ? `${winningDays} grønne · ${losingDays} røde · ${winRate.toFixed(0)}% vinnrate`
-              : `${winningDays} green · ${losingDays} red · ${winRate.toFixed(0)}% vinnrate`}
+            {t("subtitle", { winningDays, losingDays, winRate: winRate.toFixed(0) })}
           </p>
         </div>
 
@@ -181,9 +176,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
           animate={{ opacity: 1, height: "auto" }}
           className="mb-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs text-blue-200"
         >
-          {isNo
-            ? "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
-            : "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."}
+          {t("infoTooltip")}
         </motion.div>
       )}
 
@@ -230,7 +223,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
 
       {/* Legend */}
       <div className="flex items-center justify-center gap-3 mt-4">
-        <span className="text-[10px] text-slate-400 dark:text-slate-500">{isNo ? "Tap" : "Loss"}</span>
+        <span className="text-[10px] text-slate-400 dark:text-slate-500">{t("loss")}</span>
         <div className="flex gap-0.5">
           {["bg-red-800/70", "bg-red-700", "bg-red-600", "bg-red-500"].map((c) => (
             <div key={c} className={`w-4 h-3 rounded-sm ${c}`} />
@@ -240,7 +233,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
             <div key={c} className={`w-4 h-3 rounded-sm ${c}`} />
           ))}
         </div>
-        <span className="text-[10px] text-slate-400 dark:text-slate-500">{isNo ? "Gevinst" : "Win"}</span>
+        <span className="text-[10px] text-slate-400 dark:text-slate-500">{t("win")}</span>
       </div>
     </motion.div>
   );

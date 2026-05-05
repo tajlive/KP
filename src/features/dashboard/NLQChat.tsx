@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, X, Send, TrendingUp, BarChart3, Shield, Wallet, Activity } from "lucide-react";
 
 interface ChatMessage {
@@ -12,23 +12,11 @@ interface ChatMessage {
   type?: "summary" | "metric" | "comparison" | "unknown";
 }
 
-const QUICK_QUESTIONS_NO = [
-  { label: "Win rate?", icon: TrendingUp, query: "Hva er min win rate?" },
-  { label: "P&L siste uke", icon: BarChart3, query: "Hvordan gikk det forrige uke?" },
-  { label: "Risk", icon: Shield, query: "Hva er min max drawdown?" },
-  { label: "Balance", icon: Wallet, query: "Hva er min kontobalanse?" },
-];
-
-const QUICK_QUESTIONS_EN = [
-  { label: "Win rate?", icon: TrendingUp, query: "What's my win rate?" },
-  { label: "P&L last week", icon: BarChart3, query: "How did I do last week?" },
-  { label: "Risk", icon: Shield, query: "What's my max drawdown?" },
-  { label: "Balance", icon: Wallet, query: "What's my account balance?" },
-];
+const QUICK_QUESTION_ICONS = [TrendingUp, BarChart3, Shield, Wallet];
 
 export function NLQChat() {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.nlqChat");
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -67,7 +55,10 @@ export function NLQChat() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const quickQuestions = isNo ? QUICK_QUESTIONS_NO : QUICK_QUESTIONS_EN;
+  const quickQuestions = (t.raw("quickQuestions") as Array<{ label: string; query: string }>).map((q, i) => ({
+    ...q,
+    icon: QUICK_QUESTION_ICONS[i],
+  }));
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -96,7 +87,7 @@ export function NLQChat() {
       const assistantMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        text: data.answer || (isNo ? "Beklager, jeg forstod ikke det." : "Sorry, I didn't understand that."),
+        text: data.answer || t("notUnderstood"),
         type: data.type,
       };
       setMessages((prev) => [...prev, assistantMsg]);
@@ -104,9 +95,7 @@ export function NLQChat() {
       const assistantMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        text: isNo
-          ? "Beklager, noe gikk galt. Prøv igjen senere."
-          : "Sorry, something went wrong. Please try again later.",
+        text: t("error"),
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } finally {
@@ -133,7 +122,7 @@ export function NLQChat() {
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
             className="fixed bottom-24 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-500 text-white shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors sm:bottom-8 sm:right-8"
-            aria-label={isNo ? "Åpne chat" : "Open chat"}
+            aria-label={t("openChat")}
           >
             <MessageCircle className="h-6 w-6" />
           </motion.button>
@@ -147,7 +136,7 @@ export function NLQChat() {
             ref={panelRef}
             role="dialog"
             aria-modal="true"
-            aria-label={isNo ? "Trading Assistent" : "Trading Assistant"}
+            aria-label={t("title")}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -162,17 +151,17 @@ export function NLQChat() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {isNo ? "Trading Assistent" : "Trading Assistant"}
+                    {t("title")}
                   </h3>
                   <p className="text-[10px] text-slate-500">
-                    {isNo ? "Spør om dine tall" : "Ask about your numbers"}
+                    {t("subtitle")}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
                 className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                aria-label={isNo ? "Lukk" : "Close"}
+                aria-label={t("close")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -183,9 +172,7 @@ export function NLQChat() {
               {messages.length === 0 && (
                 <div className="space-y-3">
                   <p className="text-xs text-slate-500 text-center">
-                    {isNo
-                      ? "Hei! Jeg kan hjelpe deg å forstå trading-dataen din."
-                      : "Hi! I can help you understand your trading data."}
+                    {t("welcome")}
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {quickQuestions.map((q) => (
@@ -225,7 +212,7 @@ export function NLQChat() {
                     <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]" />
                     <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]" />
                     <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400" />
-                    <span className="sr-only">{isNo ? "Venter på svar..." : "Waiting for response..."}</span>
+                    <span className="sr-only">{t("waiting")}</span>
                   </div>
                 </div>
               )}
@@ -241,14 +228,14 @@ export function NLQChat() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={isNo ? "Spør om dine tall..." : "Ask about your numbers..."}
+                placeholder={t("placeholder")}
                 className="flex-1 rounded-xl bg-gray-100 px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || loading}
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:opacity-40"
-                aria-label={isNo ? "Send" : "Send"}
+                aria-label={t("send")}
               >
                 <Send className="h-4 w-4" />
               </button>
