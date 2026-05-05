@@ -496,5 +496,19 @@
     "colAge": "Age",
     "colPnl": "P&L",
     "remaining": "remaining"
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "day": "Good afternoon",
+    "evening": "Good evening",
+    "night": "Good night",
+    "performance": {
+      "strong": "Strong performance!",
+      "tough": "Tough period — keep going!",
+      "steady": "Steady performance",
+      "uneven": "Uneven but positive performance"
+    },
+    "pnlLabel": "P&L",
+    "winRateLabel": "Win Rate"
   }
 }
