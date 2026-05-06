@@ -103,9 +103,7 @@ jobs:
         continue-on-error: true
 
   build:
-    # Kjører kun på PR for å spare GitHub Actions-minutter.
-    # På push til main bygger deploy.yml i stedet.
-    if: github.event_name == 'pull_request'
+    # Kjører på både PR og push til main for å sikre at main alltid bygger
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: validate
