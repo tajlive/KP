@@ -1465,6 +1465,56 @@
       "predicate": "capital-source",
       "object": "get_dashboard_metrics-RPC",
       "validFrom": "2026-04-29T15:20:33.693Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "4-critical-bugs-2026-05-05",
+      "validFrom": "2026-05-05T00:45:00Z"
+    },
+    {
+      "predicate": "deleted_old_data",
+      "object": "104-trades-113-sessions-cleared",
+      "validFrom": "2026-05-05T00:45:00Z"
+    },
+    {
+      "predicate": "fix_1",
+      "object": "winRateFromRealizedTrades-accepts-all-modes",
+      "validFrom": "2026-05-05T00:45:00Z"
+    },
+    {
+      "predicate": "fix_2",
+      "object": "getUserDashboardMetrics-default-scope-active_and_completed",
+      "validFrom": "2026-05-05T00:45:00Z"
+    },
+    {
+      "predicate": "fix_3",
+      "object": "PortfolioDashboard-uses-realized_pnl-not-cash-flow",
+      "validFrom": "2026-05-05T00:45:00Z"
+    },
+    {
+      "predicate": "fix_4",
+      "object": "RPC-get_dashboard_metrics-includes-all-user-trades",
+      "validFrom": "2026-05-05T00:45:00Z"
+    },
+    {
+      "predicate": "cleanup_completed",
+      "object": "full-audit-cleanup-2026-05-05",
+      "validFrom": "2026-05-05T01:10:00Z"
+    },
+    {
+      "predicate": "deleted_routes",
+      "object": "15-orphaned-api-routes-v1-trading-sentry-test-konto",
+      "validFrom": "2026-05-05T01:10:00Z"
+    },
+    {
+      "predicate": "deleted_data",
+      "object": "104-trades-118-sessions-cleared",
+      "validFrom": "2026-05-05T01:10:00Z"
+    },
+    {
+      "predicate": "remaining_issues",
+      "object": "10-duplikat-formatNOK-hardcoded-i18n-pattern",
+      "validFrom": "2026-05-05T01:10:00Z"
     }
   ],
   "kimi-cli": [
@@ -2216,6 +2266,91 @@
       "predicate": "tests-passing",
       "object": "89-tests-total-including-16-new",
       "validFrom": "2026-05-05T01:33:00Z"
+    },
+    {
+      "predicate": "deployed_to",
+      "object": "production-vercel-2026-05-05",
+      "validFrom": "2026-05-05T00:04:00Z"
+    },
+    {
+      "predicate": "production_url",
+      "object": "https://www.klarpakke.no",
+      "validFrom": "2026-05-05T00:04:00Z"
+    },
+    {
+      "predicate": "deploy_status",
+      "object": "live-build-48cacf9",
+      "validFrom": "2026-05-05T00:04:00Z"
+    },
+    {
+      "predicate": "env_flag",
+      "object": "ENABLE_DARK_FLEET=not_set_yet-OFF_by_default",
+      "validFrom": "2026-05-05T00:04:00Z"
+    },
+    {
+      "predicate": "health_check",
+      "object": "healthy-all-systems-ok",
+      "validFrom": "2026-05-05T00:04:00Z"
+    },
+    {
+      "predicate": "unit_tests",
+      "object": "315_passed_30_files",
+      "validFrom": "2026-05-05T00:04:00Z"
+    },
+    {
+      "predicate": "activated",
+      "object": "production-2026-05-05",
+      "validFrom": "2026-05-05T00:08:00Z"
+    },
+    {
+      "predicate": "env",
+      "object": "ENABLE_DARK_FLEET=true",
+      "validFrom": "2026-05-05T00:08:00Z"
+    },
+    {
+      "predicate": "env",
+      "object": "DARK_FLEET_CHALLENGER_PERCENT=10",
+      "validFrom": "2026-05-05T00:08:00Z"
+    },
+    {
+      "predicate": "deploy_build",
+      "object": "48cacf9-with-dark-fleet",
+      "validFrom": "2026-05-05T00:08:00Z"
+    },
+    {
+      "predicate": "test_traders_created",
+      "object": "10-strategies-8-sessions-for-tomarnejensen",
+      "validFrom": "2026-05-05T00:15:00Z"
+    },
+    {
+      "predicate": "test_user_id",
+      "object": "6408d389-2021-4a2f-92b6-bebf0459a398",
+      "validFrom": "2026-05-05T00:15:00Z"
+    },
+    {
+      "predicate": "verification_status",
+      "object": "GO-all-checks-passed",
+      "validFrom": "2026-05-05T00:25:00Z"
+    },
+    {
+      "predicate": "user_bucket",
+      "object": "champion-15.67-percent",
+      "validFrom": "2026-05-05T00:25:00Z"
+    },
+    {
+      "predicate": "active_sessions",
+      "object": "8-paper-sessions-heartbeat-ok",
+      "validFrom": "2026-05-05T00:25:00Z"
+    },
+    {
+      "predicate": "portfolio_page",
+      "object": "HTTP-200-loads-correctly",
+      "validFrom": "2026-05-05T00:25:00Z"
+    },
+    {
+      "predicate": "tick_route_path_c",
+      "object": "implemented-with-fallback",
+      "validFrom": "2026-05-05T00:25:00Z"
     }
   ],
   "tick-rollout": [
@@ -2235,6 +2370,99 @@
       "predicate": "pauses-user-sessions",
       "object": "on-guardrail-trigger",
       "validFrom": "2026-05-05T01:33:00Z"
+    }
+  ],
+  "dark-fleet-test": [
+    {
+      "predicate": "champion_strategy_id",
+      "object": "39cae21a-7449-43aa-b202-727227d30168",
+      "validFrom": "2026-05-05T00:15:00Z"
+    },
+    {
+      "predicate": "challenger_strategy_id",
+      "object": "c49a9302-65bd-48ec-b5d6-51dff32e4b0e",
+      "validFrom": "2026-05-05T00:15:00Z"
+    },
+    {
+      "predicate": "guardrail_test_strategy_id",
+      "object": "d238229f-b837-4816-a846-9655b3f77e28",
+      "validFrom": "2026-05-05T00:15:00Z"
+    }
+  ],
+  "formatNOK": [
+    {
+      "predicate": "centralized",
+      "object": "src-lib-format-currency-ts-10-to-1",
+      "validFrom": "2026-05-05T01:30:00Z"
+    },
+    {
+      "predicate": "options",
+      "object": "showSign-style-decimal-locale",
+      "validFrom": "2026-05-05T01:30:00Z"
+    }
+  ],
+  "api-health-metrics": [
+    {
+      "predicate": "created",
+      "object": "route-returns-activeUsers-dbLatency-trades-sessions",
+      "validFrom": "2026-05-05T01:30:00Z"
+    }
+  ],
+  "dashboard-cleanup": [
+    {
+      "predicate": "deployed",
+      "object": "production-2026-05-05-01-29",
+      "validFrom": "2026-05-05T01:30:00Z"
+    }
+  ],
+  "landing-page": [
+    {
+      "predicate": "has",
+      "object": "zero-fake-data-claims-2026-05-05",
+      "validFrom": "2026-05-05"
+    },
+    {
+      "predicate": "i18n-parity",
+      "object": "369-identical-keys-no-en",
+      "validFrom": "2026-05-05"
+    },
+    {
+      "predicate": "audit-status",
+      "object": "100-percent-2026-optimized",
+      "validFrom": "2026-05-05"
+    }
+  ],
+  "ROISimulator": [
+    {
+      "predicate": "i18n-ifisert",
+      "object": "landing.roiSimulator-6-keys",
+      "validFrom": "2026-05-05"
+    }
+  ],
+  "LandingBacktestTeaser": [
+    {
+      "predicate": "i18n-ifisert",
+      "object": "landing.backtestTeaser-all-hardcoded-removed",
+      "validFrom": "2026-05-05"
+    }
+  ],
+  "landing.json": [
+    {
+      "predicate": "key-count",
+      "object": "369-parity-verified",
+      "validFrom": "2026-05-05"
+    }
+  ],
+  "fake-data": [
+    {
+      "predicate": "removed-from",
+      "object": "ComparisonSection-SocialProofSection-AutoTradeDemo-DashboardPreview-Features-KLTTeaser",
+      "validFrom": "2026-05-05"
+    },
+    {
+      "predicate": "removed-claims",
+      "object": "97-percent-cheaper-Binance-TradingView-partnership-50K-KLT-25-plus-hours",
+      "validFrom": "2026-05-05"
     }
   ]
 }

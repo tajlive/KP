@@ -52,7 +52,7 @@ export async function createPaperTradingSession(
   // NOTE: user_auto_trading_configs.strategy_id is a risk PROFILE
   // (e.g. "offensive"), NOT a trading engine strategy.  We map it to
   // the default engine strategy "dca".  The real strategy choice
-  // happens via BotWizard which POSTs to /api/auto-trading/paper.
+  // happens via BotWizard which calls the startPaperTrading Server Action.
   const strategyId = 'dca';
   let startingCapital = 100000;
   try {

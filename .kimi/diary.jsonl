@@ -184,3 +184,7 @@
 {"ts":"2026-05-05T01:09:57.557Z","type":"FIX","task":"Full dashboard audit + cleanup — numbers, routing, duplicates, dead code","agent":"kimi","status":"GO","rating":5,"files":20,"tags":["dashboard","audit","cleanup","routing","production"]}
 {"ts":"2026-05-05T01:29:28.415Z","type":"FIX","task":"Centralize formatNOK + create /api/health/metrics + full cleanup","agent":"kimi","status":"GO","rating":5,"files":12,"tags":["formatNOK","currency","health-metrics","cleanup","production"]}
 {"ts":"2026-05-05T09:45:52Z","type":"FEAT","task":"Copy-trading enterprise standard: @ts-nocheck fjernet, ExternalFollowSheet UI polish, dashboard widget for Binance mirror trades","files":7,"status":"GO","rating":5,"agent":"unknown","ttl":null}
+{"ts":"2026-05-05T23:12:41Z","type":"FIX","task":"P0 fake data removal + P1 i18n for all landing components","files":28,"status":"GO","rating":4,"agent":"kimi","ttl":null}
+{"ts":"2026-05-05T23:12:41Z","type":"FIX","task":"ROISimulator + LandingBacktestTeaser i18n — eliminate hardcoded Norwegian","files":4,"status":"GO","rating":4,"agent":"kimi","ttl":null}
+{"ts":"2026-05-05T23:52:45Z","type":"FIX","task":"Trading Safety First: 34 new tests + TODO cleanup + type fixes","files":12,"status":"GO","rating":4,"agent":"kimi","ttl":null}
+{"ts":"2026-05-05T23:59:46Z","type":"REF","task":"Extract slippage-estimator + regime-multipliers + 17 new tests","files":7,"status":"GO","rating":4,"agent":"kimi","ttl":null}
