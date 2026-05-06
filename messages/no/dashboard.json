@@ -76,6 +76,29 @@
     "switchedToPaper": "Byttet til lekepenger",
     "switchedToLive": "Byttet til live-handel"
   },
+  "sessionCards": {
+    "title": "Aktive Sesjoner",
+    "all": "Alle",
+    "active": "Aktiv",
+    "paused": "Pauset",
+    "stopped": "Stoppet",
+    "crashed": "Kræsjet",
+    "activeLC": "aktiv",
+    "pausedLC": "pauset",
+    "stoppedLC": "stoppet",
+    "trades": "trades",
+    "winRate": "win rate",
+    "seeDetails": "Se detaljer",
+    "live": "LIVE",
+    "noFiltered": "Ingen {status} sesjoner"
+  },
+  "portfolioStats": {
+    "totalEquity": "Total Egenkapital",
+    "available": "Tilgjengelig",
+    "marginUsed": "Margin Brukt",
+    "totalPnl": "Total P&L",
+    "percentUsed": "% brukt"
+  },
   "welcomeBack": "Velkommen tilbake 👋",
   "homeOverview": {
     "title": "Hjem — porteføljeoversikt",
@@ -464,6 +487,7 @@
     "pause": "Pause",
     "resume": "Fortsett",
     "viewDetails": "Se detaljer",
+    "updateError": "Kunne ikke oppdatere status",
     "noBot": "Ingen bot aktiv",
     "noBotDescription": "Start din første trading-bot for å se status her.",
     "startPaperTrading": "Start øvingshandel",

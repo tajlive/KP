@@ -74,13 +74,18 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
   // Beregn P&L prosent
   const getPnLPercent = () => {
     if (!session) return 0;
-    const starting = session.starting_capital_nok || 100000;
+    const starting = session.starting_capital_nok || 0;
+    if (starting <= 0) return 0;
     const current = session.current_capital_nok || starting;
     return ((current - starting) / starting) * 100;
   };
 
   const getPnLAmount = () => {
-    return session?.total_pnl || 0;
+    if (!session) return 0;
+    // Beregn fra current/starting for å unngå stale total_pnl
+    const starting = session.starting_capital_nok || 0;
+    const current = session.current_capital_nok || starting;
+    return current - starting;
   };
 
   // Format relativ tid
@@ -117,7 +122,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
         },
       );
 
-      if (!response.ok) throw new Error("Kunne ikke oppdatere status");
+      if (!response.ok) throw new Error(t("dashboard.botStatus.updateError"));
 
       const data = await response.json();
       setSession(data.session);
@@ -156,7 +161,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
 
             <div>
               {/* Header */}
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h3 className="font-semibold text-slate-900 dark:text-white">
                   {t("dashboard.botStatus.title")}
                 </h3>
@@ -168,9 +173,17 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
                   }
                   className={notResponding ? "bg-amber-500" : ""}
                 >
-                  {notResponding
-                    ? t("dashboard.botStatus.notResponding")
-                    : t(`dashboard.botStatus.${session.status}`)}
+                  <span className="flex items-center gap-1.5">
+                    {session.status === "active" && !notResponding && (
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                      </span>
+                    )}
+                    {notResponding
+                      ? t("dashboard.botStatus.notResponding")
+                      : t(`dashboard.botStatus.${session.status}`)}
+                  </span>
                 </Badge>
               </div>
 
@@ -201,7 +214,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
           </div>
 
           {/* Right side - P&L and actions */}
-          <div className="text-right">
+          <div className="text-right w-full sm:w-auto">
             {/* P&L */}
             <div className="mb-3">
               <p
@@ -219,7 +232,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end sm:justify-start gap-2">
               <Button
                 variant="outline"
                 size="sm"

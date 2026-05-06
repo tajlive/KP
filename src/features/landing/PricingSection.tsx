@@ -79,7 +79,7 @@ export default function PricingSection({ title, subtitle }: PricingSectionProps)
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6 items-start">
           {plans.map((plan) => {
             const Icon = plan.icon;
             const iconColor = tierIconColors[plan.id] ?? "text-slate-400";
