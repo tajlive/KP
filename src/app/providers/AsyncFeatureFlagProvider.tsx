@@ -1,5 +1,3 @@
-"use client";
-
 import { getFlagsAsync } from "@/lib/flags";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import type { ReactNode } from "react";

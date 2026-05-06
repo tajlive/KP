@@ -1,5 +1,3 @@
-'use client';
-
 import { Award, Shield, Users, TrendingUp, CheckCircle, Star } from 'lucide-react';
 
 interface Highlight {

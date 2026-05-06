@@ -1,0 +1,13 @@
+version: 1
+agent:
+  extend: default
+  name: klarpakke-super-auditor
+  system_prompt_path: ./super-auditor-agent.md
+  description: |
+    Systematisk kvalitetsinspektør for Klarpakke. Går gjennom HELE nettsiden
+    med automatisk kode-audit (site-audit.mjs) + visuell screenshot-gjennomgang
+    (page-inspector.mjs). Finner routing-feil, broken links, TODOs, i18n-gaps,
+    mock-UI, og kommer med forbedringsforslag. Bruker MemPalace + swarm.
+
+    VIL DU AUDITERE ALT? Si: "Kjør full site audit" eller bruk:
+    kimi --agent-file .kimi/agents/super-auditor-agent.yaml

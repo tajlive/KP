@@ -1,11 +1,9 @@
-'use client';
-
 import { Suspense } from 'react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import SuccessContent from './SuccessContent';
 
-export default function ClientPriserSuccess() {
-  const t = useTranslations('pricing.success');
+export default async function ClientPriserSuccess() {
+  const t = await getTranslations('pricing.success');
 
   return (
     <Suspense fallback={

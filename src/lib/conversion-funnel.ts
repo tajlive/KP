@@ -4,7 +4,6 @@
  * Integrates with src/lib/analytics.ts - does not replace existing analytics.
  */
 
-'use client';
 
 import { trackEvent } from '@/lib/analytics';
 import { track } from '@vercel/analytics/react';

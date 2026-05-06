@@ -1,5 +1,3 @@
-'use client';
-
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { Sparkles, Zap, Crown, ArrowRight } from 'lucide-react';

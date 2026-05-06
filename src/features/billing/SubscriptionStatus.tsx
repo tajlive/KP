@@ -183,7 +183,7 @@ export function SubscriptionStatus({
 
           {(subscription.status === 'past_due' || subscription.status === 'unpaid') && (
             <Link
-              href="/profile/settings"
+              href="/profile?tab=settings"
               className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-[#2563eb] text-white text-sm font-medium hover:bg-[#2563eb]/90 transition-colors"
             >
               <RefreshCw size={14} />

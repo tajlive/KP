@@ -1,5 +1,3 @@
-"use client";
-
 import { SURFACE, RADIUS } from "@/lib/design/tokens";
 
 export function DashboardLoadingSkeleton() {

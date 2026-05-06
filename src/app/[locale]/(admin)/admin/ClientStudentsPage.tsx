@@ -47,7 +47,7 @@ export default function ClientStudentsPage() {
       setUsers((data as unknown as User[]) || []);
     } catch (err) {
       console.error("Error fetching users:", getErrorMessage(err));
-      toast.error("Kunne ikke laste brukere");
+      toast.error(t("loadUsersError"));
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export default function ClientStudentsPage() {
       }
     } catch (err) {
       console.error("Grant founder error:", getErrorMessage(err));
-      toast.error("Feil ved tildeling av Founder status");
+      toast.error(t("grantFounderError"));
     } finally {
       setShowConfirmModal(false);
       setConfirmAction(null);
@@ -114,7 +114,7 @@ export default function ClientStudentsPage() {
       }
     } catch (err) {
       console.error("Ban user error:", getErrorMessage(err));
-      toast.error("Feil ved banning av bruker");
+      toast.error(t("banUserError"));
     } finally {
       setShowConfirmModal(false);
       setConfirmAction(null);
@@ -138,11 +138,11 @@ export default function ClientStudentsPage() {
 
       if (error) throw error;
 
-      toast.success("Rolle oppdatert");
+      toast.success(t("roleUpdated"));
       await fetchUsers();
     } catch (err) {
       console.error("Error updating role:", getErrorMessage(err));
-      toast.error("Kunne ikke oppdatere rolle");
+      toast.error(t("updateRoleError"));
     } finally {
       setShowConfirmModal(false);
       setConfirmAction(null);
@@ -181,13 +181,14 @@ export default function ClientStudentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Studenter</h1>
-          <p className="text-slate-400">Administrer brukere og tilganger</p>
+          <h1 className="text-2xl font-bold text-white mb-1">{t("students")}</h1>
+          <p className="text-slate-400">{t("manageUsers")}</p>
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => {}}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            disabled
+            title="Inviter bruker — kommer snart"
+            className="px-4 py-2 bg-blue-600/50 text-white/70 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             + Inviter bruker
           </button>
@@ -253,7 +254,7 @@ export default function ClientStudentsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium text-white">
-                          {user.full_name || "Ukjent navn"}
+                          {user.full_name || t("unknownName")}
                         </p>
                         {user.role === "founder" && (
                           <Crown className="w-3 h-3 text-amber-500" />
@@ -280,7 +281,7 @@ export default function ClientStudentsPage() {
                           : "bg-green-500/20 text-green-400"
                       }`}
                     >
-                      {user.status || "Active"}
+                      {user.status || t("active")}
                     </span>
                     {user.beta_approved && (
                       <span className="ml-2 px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">
@@ -316,15 +317,15 @@ export default function ClientStudentsPage() {
                           <Ban className="w-4 h-4" />
                         </button>
                       ) : (
-                        <span className="p-2 text-red-500 text-xs">Banned</span>
+                        <span className="p-2 text-red-500 text-xs">{t("banned")}</span>
                       )}
 
                       <button
                         type="button"
                         onClick={() => handleRoleChange(user.id, "admin")}
-                        aria-label="Endre til Admin"
+                        aria-label={t("changeToAdmin")}
                         className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
-                        title="Endre til Admin"
+                        title={t("changeToAdmin")}
                       >
                         <Shield className="w-4 h-4" />
                       </button>
@@ -344,19 +345,16 @@ export default function ClientStudentsPage() {
             <div className="flex items-center gap-3 mb-4">
               <AlertTriangle className="w-6 h-6 text-amber-500" />
               <h3 className="text-lg font-semibold text-white">
-                {confirmAction.type === "founder" && "Bekreft Founder Status"}
-                {confirmAction.type === "ban" && "Bekreft Ban"}
-                {confirmAction.type === "role" && "Bekreft rolleendring"}
+                {confirmAction.type === "founder" && t("confirmFounder")}
+                {confirmAction.type === "ban" && t("confirmBan")}
+                {confirmAction.type === "role" && t("confirmRoleChange")}
               </h3>
             </div>
 
             <p className="text-slate-400 mb-6">
-              {confirmAction.type === "founder" &&
-                'Dette vil gi brukeren "founder"-rollen og tildele 10,000 KLT tokens. Er du sikker?'}
-              {confirmAction.type === "ban" &&
-                "Dette vil sperre brukeren fra plattformen. Er du sikker?"}
-              {confirmAction.type === "role" &&
-                `Er du sikker på at du vil endre rollen til "${confirmAction.newRole}"?`}
+              {confirmAction.type === "founder" && t("founderConfirmDesc")}
+              {confirmAction.type === "ban" && t("banConfirmDesc")}
+              {confirmAction.type === "role" && confirmAction.newRole && t("roleConfirmDesc", { role: confirmAction.newRole })}
             </p>
 
             <div className="flex gap-3 justify-end">
@@ -364,7 +362,7 @@ export default function ClientStudentsPage() {
                 onClick={() => setShowConfirmModal(false)}
                 className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
               >
-                Avbryt
+                {t("cancel")}
               </button>
               <button
                 onClick={() => {

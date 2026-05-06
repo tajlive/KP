@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { StrategyType } from '@/lib/backtest/engine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Play, Loader2, TrendingUp, TrendingDown, Activity, BarChart3 } from 'lucide-react';
@@ -36,30 +37,23 @@ const PERIODS = [
 
 export function BacktestPanel() {
   const [symbol, setSymbol] = useState('BTCUSDT');
-  const [strategy, setStrategy] = useState('SMA_CROSSOVER');
+  const [strategy, setStrategy] = useState<StrategyType>('SMA_CROSSOVER');
   const [capital, setCapital] = useState(50000);
   const [period, setPeriod] = useState(365);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<BacktestResult | null>(null);
 
-  const runBacktest = async () => {
+  const runBacktestAction = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/backtest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symbol,
-          interval: '1d',
-          strategy,
-          initialCapital: capital,
-          period,
-        }),
+      const { executeBacktest } = await import('@/lib/actions/backtest');
+      const data = await executeBacktest({
+        symbol,
+        interval: '1d',
+        strategy,
+        initialCapital: capital,
+        period,
       });
-      
-      if (!response.ok) throw new Error('Backtest failed');
-      
-      const data = await response.json();
       setResult(data);
     } catch (error) {
       console.error(error);
@@ -109,7 +103,7 @@ export function BacktestPanel() {
               <label className="text-xs text-kp-text-secondary mb-1 block">Strategi</label>
               <select
                 value={strategy}
-                onChange={(e) => setStrategy(e.target.value)}
+                onChange={(e) => setStrategy(e.target.value as StrategyType)}
                 className="w-full bg-kp-surface border border-kp-border rounded-lg px-3 py-2 text-sm"
               >
                 {STRATEGIES.map((s) => (
@@ -151,7 +145,7 @@ export function BacktestPanel() {
             ))}
             <ButtonPremium
               size="sm"
-              onClick={runBacktest}
+              onClick={runBacktestAction}
               disabled={loading}
               icon={loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
               className="ml-auto"

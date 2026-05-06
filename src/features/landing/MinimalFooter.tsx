@@ -1,11 +1,9 @@
-"use client";
-
-import { useLocale } from "next-intl";
+import { getLocale } from "next-intl/server";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
-export function MinimalFooter() {
-  const locale = useLocale();
+export async function MinimalFooter() {
+  const locale = await getLocale();
   const currentYear = new Date().getFullYear();
 
   return (

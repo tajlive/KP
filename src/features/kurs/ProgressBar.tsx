@@ -1,23 +1,19 @@
-"use client";
-
 import { Progress } from "@/shared/ui/progress";
 import { CheckCircle2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 interface ProgressBarProps {
   current: number;
   total: number;
   moduleTitle: string;
-  locale: string;
 }
 
-export function ProgressBar({
+export async function ProgressBar({
   current,
   total,
   moduleTitle,
-  locale,
 }: ProgressBarProps) {
-  const t = useTranslations("ProgressBar");
+  const t = await getTranslations("ProgressBar");
   const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
 
   const completedText = t("completedText", { current, total });

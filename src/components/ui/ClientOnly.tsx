@@ -1,5 +1,3 @@
-"use client";
-
 import { useClientOnly } from "@/lib/hooks/useClientOnly";
 
 interface ClientOnlyProps {

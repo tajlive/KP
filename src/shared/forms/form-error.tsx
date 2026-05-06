@@ -3,7 +3,6 @@
  * Display validation and form errors
  */
 
-'use client';
 
 import { AlertCircle, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 import { cva, type VariantProps } from 'class-variance-authority';

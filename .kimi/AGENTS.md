@@ -204,7 +204,7 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-05-01 | v2.6-minimal for KIMI CLI v1.40.0 + k2.6 | Aktiv config synkronisert
+> Oppdatert: 2026-05-06 | v2.8-medium/full for KIMI CLI v1.40.0 + k2.6 | Auto-Maintenance & Quality Gates
 
 ### KIMI CLI v1.40.0 + k2.6 endringer (påvirker oss)
 - **`max_steps_per_turn` økt til 750** — KIMI kan kjøre lengre oppgaver uten avbrudd
@@ -223,18 +223,24 @@ Tre MCP-configurasjoner for ulike arbeidsmodus:
 | Profil | Servere | Bruk |
 |---|---|---|
 | **minimal** | 7 | Daglig koding + MemPalace + Perplexity |
-| **medium** | 10 | Deploy, research, testing + MemPalace |
-| **full** | 18 | Alle integrasjoner + MemPalace v3 |
+| **medium** | 14 | Deploy, research, testing + Monitor + Cron + Search + MemPalace |
+| **full** | 25 | Alle integrasjoner + Monitor + Cron + Feature Flags + Search + Cost + MemPalace v3 |
 
 Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
 
-### Kritiske fikser (2026-04-19)
+### Kritiske fikser (2026-04-19 → 2026-05-06)
 1. **npx → lokale installasjoner**: `playwright`, `chrome-devtools`, `resend` installert i `node_modules`. Sparer 7+ sekunder oppstart.
 2. **SyntaxError i 12 wrapper-scripts**: `gracefulExit(...); return;` på modulnivå er ugyldig JS. Fikset til `gracefulExit(...);` (uten `return`).
 3. **Broken initialize-respons**: `cloudflare`, `openai`, `binance`, `sanity` returnerte ugyldig MCP-protokoll (manglet `protocolVersion` + `capabilities`). Fikset.
-4. **Sanity MCP protocol compliance** (2026-05-03): `run-sanity-mcp-v2.mjs` returnerte `name`/`version` på feil nivå i `InitializeResult` — manglet nøstet `serverInfo`-felt. Fikset. Alle 7 MCP-servere passerer `kimi mcp test`.
-4. **klarpakke MCP fjernet**: Remote Edge Function var treg/ustabil. Bruk `supabase-db` istedenfor.
-5. **Perplexity lagt til minimal**: Research-flyt mellom KIMI og Perplexity Desktop krever `perplexity` MCP i aktiv config.
+4. **Sanity MCP protocol compliance** (2026-05-03): `run-sanity-mcp-v2.mjs` returnerte `name`/`version` på feil nivå i `InitializeResult` — manglet nøstet `serverInfo`-felt. Fikset.
+5. **klarpakke MCP fjernet**: Remote Edge Function var treg/ustabil. Bruk `supabase-db` istedenfor.
+6. **Perplexity lagt til minimal**: Research-flyt mellom KIMI og Perplexity Desktop krever `perplexity` MCP i aktiv config.
+7. **5 nye MCP-servere** (2026-05-06):
+   - `monitor` — System health, uptime, memory, alerts (wrapper for npm verify + vm_stat)
+   - `cron` — pg_cron job management (list, toggle, logs via Supabase SQL)
+   - `featureflag` — DB-driven feature toggles (list, toggle, create)
+   - `search` — Advanced search in trades/users via Supabase FTS
+   - `cost` — Vercel/Supabase cost monitoring (estimates + usage)
 
 ### MemPalace v3.2.0 — KIMI CLI v1.40.0-kompatibel
 - **Ping/heartbeat-støtte**: Svarer på MCP `ping`-forespørsler
@@ -356,6 +362,85 @@ kimi --agent-file .kimi/agents/verify-agent.yaml
 # eller: kimi verify  (hvis alias konfigurert)
 ```
 
+---
+
+## 🔍 Site Audit — Systematisk Kvalitetsgjennomgang
+
+> **Oppdatert:** 2026-05-06 | `scripts/site-audit.mjs` v1.0 + `scripts/page-inspector.mjs` v1.0 | 91 ruter scannet
+
+**Mandat:** Gå gjennom HELE nettsiden automatisk og finn feil før brukerne gjør det.
+
+### Verktøy
+```bash
+# Full audit — routes, links, content, i18n, mocks
+node scripts/site-audit.mjs
+
+# Kun kritiske feil
+node scripts/site-audit.mjs --fail-only
+
+# Kun ruter
+node scripts/site-audit.mjs --routes
+
+# Kun lenker
+node scripts/site-audit.mjs --links
+
+# Kun innhold/TODOs
+node scripts/site-audit.mjs --content --fail-only
+
+# Kun i18n-gaps
+node scripts/site-audit.mjs --i18n
+
+# Visuelt galleri av alle sider
+node scripts/page-inspector.mjs --open
+
+# Liste alle ruter (ingen screenshots)
+node scripts/page-inspector.mjs --routes-only
+```
+
+### Audit-faser (rekkefølge)
+1. **KODE-AUDIT** — `site-audit.mjs` scanner routing, lenker, TODOs, i18n, mocks
+2. **VISUELL AUDIT** — `page-inspector.mjs` tar screenshots av alle 91 sider
+3. **RUTE-LOGIKK** — Sjekk auth-flyt, dashboard-tilgang, error-sider
+4. **LENKE-AUDIT** — Klikk-gjennom av kritiske brukerflyter (landing → reg → dashboard)
+5. **INNHOLDS-AUDIT** — Sanity drafts, hardkodede tekster, placeholder-bilder
+6. **FORBEDRINGER** — Minst 5 forslag til hva som kan gjøres BEDRE
+
+### Kategorisering av funn
+| Nivå | Definisjon | Eksempel |
+|---|---|---|
+| **P0** | Kritisk — prod-feil, må fikses NÅ | Broken redirect, 404 på landing |
+| **P1** | Brukeropplevelse — forvirrende/ugjennomførbart | Hardkodede tekster, broken intern lenke |
+| **P2** | Teknisk gjeld — påvirker ikke brukere direkte | TODOs, console.log, ubrukt import |
+
+### MemPalace-protokoll for audit
+**FØR:**
+```bash
+search("site audit findings")
+search("routing issues")
+kg_query(entity="site-health", depth=2)
+recent_context(hours=168)
+```
+
+**ETTER:**
+```bash
+kg_batch()   # Alle funn som facts
+write_diary() # type ANALYSIS
+auto_tag()   # På audit-rapporten
+```
+
+### Swarm-delegering ved store funn
+Hvis >20 filer berøres:
+- **klarpakke-ux-ui-agent** → UI/UX fixes
+- **klarpakke-auth-agent** → Auth-rute fixes
+- **klarpakke-sanity-agent** → CMS-innhold fixes
+- **verify-agent** → Post-fix verifisering
+
+**Aktivering:**
+```bash
+kimi --agent-file .kimi/agents/super-auditor-agent.yaml
+# eller: kimi audit  (hvis alias konfigurert)
+```
+
 ### Rom-struktur
 | Rom | Path | Innhold |
 |---|---|---|
@@ -381,18 +466,22 @@ Alle agenter er oppdatert til å bruke MemPalace MCP v3.2-verktøy med korrekte 
 | **mobile** | `.kimi/agents/mobile-check-agent.yaml` | Mobil, PWA, Lighthouse | `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse` |
 | **super-editor** | `.kimi/agents/super-editor-agent.yaml` | CMS + kode-redigering, screenshots | `sanity-cms`, `design-tokens`, `studio`, `frontend`, `tailwind` |
 | **verify** | `.kimi/agents/verify-agent.yaml` | Post-change verification, redirect auditing, orphaned file detection | `routing`, `redirects`, `file-deletion` |
+| **super-auditor** | `.kimi/agents/super-auditor-agent.yaml` | Full site audit: routes, links, content, i18n, visuals, improvements | `site-health`, `routing`, `i18n-system`, `frontend`, `sanity-cms` |
+| **page-editor** | `.kimi/agents/page-editor-agent.yaml` | Visual editing with full page inspector gallery before/after | `frontend`, `design-tokens`, `sanity-cms` |
 
 **Aktivering:**
 ```bash
 kimi --agent-file .kimi/agents/<agent>-agent.yaml
 # eller via alias (commands.json):
-kimi architect   # Lead architect
-kimi auth        # Auth-ekspert
-kimi sanity      # Sanity-ekspert
-kimi mempalace   # Memory-arkitekt
-kimi mobile      # Mobil-sjekk
-kimi editor       # Super-redaktør (CMS + kode)
-kimi verify      # Post-change verifisering
+kimi architect     # Lead architect
+kimi auth          # Auth-ekspert
+kimi sanity        # Sanity-ekspert
+kimi mempalace     # Memory-arkitekt
+kimi mobile        # Mobil-sjekk
+kimi editor        # Super-redaktør (CMS + kode)
+kimi verify        # Post-change verifisering
+kimi audit         # Full site audit (routes, links, content, i18n)
+kimi inspect       # Visuelt galleri av alle sider
 ```
 
 **Felles MemPalace-protokoll for alle agenter:**
@@ -440,3 +529,60 @@ kimi verify      # Post-change verifisering
 | REST exec_sql 404 | Funksjonen heter `exec_sql`, ikke `execute_sql` | 2026-04-18 |
 | ALTER DATABASE postgres | Permission denied i Supabase — bruk Vault i stedet | 2026-04-18 |
 | Vercel Crons følger ikke redirects | Pek crons direkte til `/api/v1/cron/*`, ikke redirect-paths | 2026-04-18 |
+
+---
+
+## Auto-Maintenance & Quality Gates (v2.8)
+
+> **Oppdatert:** 2026-05-06 | Automatisert vedlikehold — dependency-check, coverage, client-components
+
+### Dependency Check
+```bash
+# Manuell sjekk
+node scripts/dependency-report.mjs
+
+# Auto-PR for minor/patch (kjøres ukentlig av GitHub Actions)
+# Se .github/workflows/dependency-check.yml
+```
+- **Schedule:** Mandag 07:00 CET
+- **Auto-PR:** Minor/patch oppdateringer som passerer `type-check + test:unit`
+- **Issue:** Ved major-oppdateringer eller kritiske sårbarheter
+
+### Coverage Report
+```bash
+# Kjør tester + generer rapport
+npm run test:unit -- --coverage
+node scripts/coverage-report.mjs
+```
+- **Per-modul breakdown:** Trading, dashboard, auth, api, etc.
+- **Top 10 uncovered:** Prioriteringsliste for testing-agent
+- **Trend:** Append-only `.kimi/coverage-history.jsonl`
+- **CI:** PR Check laster opp coverage-artifact
+
+### Client Component Refactor
+```bash
+# Dry-run (default)
+node scripts/client-component-refactor.mjs
+
+# Faktisk fjern unødvendige "use client"
+node scripts/client-component-refactor.mjs --fix
+```
+- **Safe to remove:** Ingen hooks, APIs, libs, eller event handlers
+- **Needs refactor:** 1 hook, potensielt flyttbar
+- **Must keep:** Bruker klient-spesifikk kode
+- **Mål:** Redusere antall client components for bedre SSR/TTFB
+
+### AI Health Report v1.1
+Inkluderer nå:
+- Utdaterte pakker (antall + major-count)
+- Client component stats
+- Coverage (statements %)
+- npm audit, type-check, GO-rate, MemPalace metrics
+
+```bash
+# Generer manuelt
+node scripts/ai-health-report.mjs
+
+# CI — kjøres mandag 09:00
+# Se .github/workflows/ai-health-report.yml
+```

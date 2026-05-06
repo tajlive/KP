@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 

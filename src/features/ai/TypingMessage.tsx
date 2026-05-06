@@ -1,5 +1,3 @@
-'use client';
-
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { useTypingEffect, cleanCitations } from "@/hooks/useTypingEffect";
 import { Bot } from "lucide-react";

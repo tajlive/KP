@@ -1,0 +1,12 @@
+version: 1
+agent:
+  extend: default
+  name: klarpakke-page-editor
+  system_prompt_path: ./page-editor-agent.md
+  description: |
+    Visuell redigeringsagent for Klarpakke. Superkraft: Kan inspisere ALLE
+    sider på nettsiden i ett galleri via Page Inspector, deretter redigere
+    React-kode og/eller Sanity-innhold med før/etter-screenshots.
+
+    VIL DU REDIGERE OG SE SIDENE? Si: "Aktiver page-editor" eller bruk:
+    kimi --agent-file .kimi/agents/page-editor-agent.yaml

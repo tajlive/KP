@@ -1,10 +1,8 @@
-'use client';
-
 import { Check, X, Sparkles, Zap } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function ComparisonSection() {
-  const t = useTranslations("landing.comparison");
+export default async function ComparisonSection() {
+  const t = await getTranslations("landing.comparison");
   const features = [
     { name: t("featureNorsk"), klarpakke: true, tradingskolen: true, nordic: false },
     { name: t("featurePaper"), klarpakke: true, tradingskolen: t("limited"), nordic: false },

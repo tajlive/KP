@@ -34,10 +34,10 @@ export default function ClientResetPassword() {
         if (user) {
           setSessionValid(true);
         } else {
-          setError('Ugyldig eller utløpt lenke. Be om en ny tilbakestillingslenke.')
+          setError(t('invalidResetLink'))
         }
       } catch {
-        setError('Kunne ikke verifisere lenken')
+        setError(t('verifyLinkError'))
       } finally {
         setVerifying(false)
       }
@@ -50,12 +50,12 @@ export default function ClientResetPassword() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setError('Passordene matcher ikke');
+      setError(t('passwordsMismatch'));
       return;
     }
 
     if (password.length < 8) {
-      setError('Passordet må være minst 8 tegn');
+      setError(t('passwordTooShort'));
       return;
     }
 
@@ -75,7 +75,7 @@ export default function ClientResetPassword() {
 
       setSuccess(true);
     } catch (_err) {
-      setError('En feil oppstod. Prøv igjen.');
+      setError(t('resetError'));
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export default function ClientResetPassword() {
         <Card className="w-full max-w-md border-slate-700 bg-slate-800/50">
           <CardContent className="p-8 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
-            <p className="text-slate-400">Verifiserer lenken...</p>
+            <p className="text-slate-400">{t('verifyingLink')}</p>
           </CardContent>
         </Card>
       </div>
@@ -102,9 +102,9 @@ export default function ClientResetPassword() {
             <div className="mx-auto w-12 h-12 bg-green-600/20 rounded-xl flex items-center justify-center mb-4">
               <CheckCircle className="w-6 h-6 text-green-500" />
             </div>
-            <CardTitle className="text-white text-2xl">Passord oppdatert!</CardTitle>
+            <CardTitle className="text-white text-2xl">{t('passwordUpdated')}</CardTitle>
             <CardDescription className="text-slate-400">
-              Ditt nye passord er nå aktivt. Du kan logge inn med en gang.
+              {t('passwordUpdatedDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -113,7 +113,7 @@ export default function ClientResetPassword() {
               asChild
             >
               <a href={`/${locale}/admin/login`}>
-                Logg inn nå
+                {t('loginNow')}
               </a>
             </Button>
           </CardContent>
@@ -130,7 +130,7 @@ export default function ClientResetPassword() {
             <div className="mx-auto w-12 h-12 bg-red-600/20 rounded-xl flex items-center justify-center mb-4">
               <AlertCircle className="w-6 h-6 text-red-500" />
             </div>
-            <CardTitle className="text-white text-2xl">Ugyldig lenke</CardTitle>
+            <CardTitle className="text-white text-2xl">{t('invalidLink')}</CardTitle>
             <CardDescription className="text-slate-400">
               {error}
             </CardDescription>
@@ -142,7 +142,7 @@ export default function ClientResetPassword() {
               asChild
             >
               <a href={`/${locale}/admin/forgot-password`}>
-                Be om ny lenke
+                {t('requestNewLink')}
               </a>
             </Button>
             <div className="text-center">
@@ -151,7 +151,7 @@ export default function ClientResetPassword() {
                 className="text-sm text-blue-400 hover:text-blue-300 flex items-center justify-center gap-1"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Tilbake til login
+                {t('backToLogin')}
               </a>
             </div>
           </CardContent>
@@ -176,7 +176,7 @@ export default function ClientResetPassword() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="admin-reset-password" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Nytt passord
+                {t('newPassword')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -195,7 +195,7 @@ export default function ClientResetPassword() {
 
             <div>
               <label htmlFor="admin-reset-confirm" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Gjenta nytt passord
+                {t('confirmNewPassword')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -226,10 +226,10 @@ export default function ClientResetPassword() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Oppdaterer...
+                  {t('updating')}
                 </>
               ) : (
-                'Lagre nytt passord'
+                t('saveNewPassword')
               )}
             </Button>
           </form>

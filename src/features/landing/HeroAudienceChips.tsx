@@ -1,16 +1,14 @@
-"use client";
-
 import { BookOpen, LineChart } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 /**
  * Basic / experienced entry — scrolls to course preview or live demo (competitor pattern).
  */
-export function HeroAudienceChips() {
-  const t = useTranslations("landing.modernHero");
-  const locale = useLocale();
+export async function HeroAudienceChips() {
+  const t = await getTranslations("landing.modernHero");
+  const locale = await getLocale();
   const home = hrefWithLocale(locale, "/");
 
   return (

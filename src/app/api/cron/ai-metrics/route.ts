@@ -62,12 +62,7 @@ export async function GET(req: NextRequest) {
 
     const outcomeInserts: {
       signal_id: string;
-      symbol: string;
-      outcome: 'win' | 'loss' | 'neutral';
-      pnl_pct: number;
-      evaluated_at: string;
-      price_at_signal?: number;
-      price_at_eval?: number;
+      pnl: number;
     }[] = [];
 
     for (const row of unresolvedRows) {
@@ -85,12 +80,7 @@ export async function GET(req: NextRequest) {
 
       outcomeInserts.push({
         signal_id: row.id,
-        symbol: row.symbol,
-        outcome,
-        pnl_pct: pnlPct,
-        evaluated_at: new Date().toISOString(),
-        price_at_signal: signalPrice ?? undefined,
-        price_at_eval: evalPrice,
+        pnl: pnlPct,
       });
     }
 

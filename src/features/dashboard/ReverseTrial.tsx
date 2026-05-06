@@ -1,5 +1,3 @@
-'use client';
-
 import { Sparkles, Clock } from 'lucide-react';
 import { BRAND } from '@/lib/design/tokens';
 

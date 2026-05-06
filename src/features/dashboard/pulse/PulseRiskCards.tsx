@@ -1,18 +1,16 @@
-"use client";
-
 import {
   PRESET_PROFILES,
   PresetProfileId,
 } from "@/lib/auto-trading/preset-profiles";
 import { Info, Shield, Target, Zap } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 interface PulseRiskCardsProps {
   profileId: PresetProfileId;
 }
 
-export function PulseRiskCards({ profileId }: PulseRiskCardsProps) {
-  const t = useTranslations("dashboard.pulse");
+export async function PulseRiskCards({ profileId }: PulseRiskCardsProps) {
+  const t = await getTranslations("dashboard.pulse");
   const profile = PRESET_PROFILES[profileId];
 
   const cards = [

@@ -1,0 +1,5 @@
+version: 1
+agent:
+  extend: default
+  name: testing
+  system_prompt_path: ./testing-agent.md
