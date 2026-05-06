@@ -34,6 +34,7 @@ vi.mock("next-intl", () => ({
       "whatIsCopyingDesc": "Beskrivelse",
       "weeklyPrize": "Ukentlig premie",
       "monthlyPrize": "Månedlig premie",
+      "noActive": "Ingen aktive tradere",
     };
     return messages[key] || key;
   },
@@ -99,16 +100,14 @@ describe("CompetitionClient", () => {
     expect(screen.getByText("Laster...")).toBeInTheDocument();
   });
 
-  it("shows mock leaderboard data when empty", async () => {
+  it("shows empty state when no leaderboard data", async () => {
     vi.mocked(getLeaderboard).mockResolvedValue([]);
     vi.mocked(getUserRank).mockResolvedValue(null);
 
     render(<CompetitionClient params={{ locale: "no" }} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Erik T.")).toBeInTheDocument();
-      expect(screen.getByText("Sara K.")).toBeInTheDocument();
-      expect(screen.getByText("Jonas B.")).toBeInTheDocument();
+      expect(screen.getByText("Ingen aktive tradere")).toBeInTheDocument();
     });
   });
 
@@ -153,7 +152,9 @@ describe("CompetitionClient", () => {
   });
 
   it("switches timeframe on button click", async () => {
-    vi.mocked(getLeaderboard).mockResolvedValue([]);
+    vi.mocked(getLeaderboard).mockResolvedValue([
+      { id: "1", rank: 1, user_display_name: "Erik T.", return_pct: 15.5, win_rate: 70, total_trades: 20, risk_level: "high", sharpe_ratio: 1.2, period: "weekly", user_id: "u1", simulation_id: "s1", created_at: new Date().toISOString(), is_public: true, avatar_url: null, previous_rank: 2 },
+    ]);
     vi.mocked(getUserRank).mockResolvedValue(null);
 
     render(<CompetitionClient params={{ locale: "no" }} />);
@@ -174,7 +175,9 @@ describe("CompetitionClient", () => {
   });
 
   it("calls startAutoTrade when copying a strategy", async () => {
-    vi.mocked(getLeaderboard).mockResolvedValue([]);
+    vi.mocked(getLeaderboard).mockResolvedValue([
+      { id: "1", rank: 1, user_display_name: "Erik T.", return_pct: 15.5, win_rate: 70, total_trades: 20, risk_level: "high", sharpe_ratio: 1.2, period: "weekly", user_id: "u1", simulation_id: "s1", created_at: new Date().toISOString(), is_public: true, avatar_url: null, previous_rank: 2 },
+    ]);
     vi.mocked(getUserRank).mockResolvedValue(null);
     window.confirm = vi.fn(() => true);
     mockStartAutoTrade.mockResolvedValue(undefined);
@@ -195,7 +198,9 @@ describe("CompetitionClient", () => {
   });
 
   it("shows error toast when copy fails", async () => {
-    vi.mocked(getLeaderboard).mockResolvedValue([]);
+    vi.mocked(getLeaderboard).mockResolvedValue([
+      { id: "1", rank: 1, user_display_name: "Erik T.", return_pct: 15.5, win_rate: 70, total_trades: 20, risk_level: "high", sharpe_ratio: 1.2, period: "weekly", user_id: "u1", simulation_id: "s1", created_at: new Date().toISOString(), is_public: true, avatar_url: null, previous_rank: 2 },
+    ]);
     vi.mocked(getUserRank).mockResolvedValue(null);
     window.confirm = vi.fn(() => true);
     mockStartAutoTrade.mockRejectedValue(new Error("Failed"));
