@@ -214,7 +214,6 @@ export default async function LessonPage({ params }: PageProps) {
         current={completedCount}
         total={allLessons.length}
         moduleTitle={moduleTitle}
-        locale={locale}
       />
 
       {/* Lesson header */}

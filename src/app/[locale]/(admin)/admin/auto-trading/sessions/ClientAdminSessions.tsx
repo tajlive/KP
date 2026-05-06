@@ -8,6 +8,7 @@ import {
   StopCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 interface AdminSession {
@@ -36,6 +37,7 @@ export default function ClientAdminSessions() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("active");
+  const t = useTranslations("AdminSessions");
 
   useEffect(() => {
     fetchSessions();
@@ -55,7 +57,7 @@ export default function ClientAdminSessions() {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("An unknown error occurred");
+        toast.error(t("unknownError"));
       }
     } finally {
       setLoading(false);
@@ -68,7 +70,7 @@ export default function ClientAdminSessions() {
   ) => {
     if (
       action === "stop" &&
-      !window.confirm("Er du sikker på at du vil stoppe denne roboten?")
+      !window.confirm(t("confirmStopBot"))
     )
       return;
 
@@ -88,7 +90,7 @@ export default function ClientAdminSessions() {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("An unknown error occurred");
+        toast.error(t("unknownError"));
       }
     }
   };
@@ -142,7 +144,7 @@ export default function ClientAdminSessions() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <input
             type="text"
-            placeholder="Søk på session ID, bruker eller pair..."
+            placeholder={t("searchSessions")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
@@ -153,11 +155,11 @@ export default function ClientAdminSessions() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
         >
-          <option value="all">Alle Statuser</option>
-          <option value="active">Active</option>
-          <option value="stopped">Stopped</option>
-          <option value="crashed">Crashed</option>
-          <option value="paused">Paused</option>
+          <option value="all">{t("allStatuses")}</option>
+          <option value="active">{t("statusActive")}</option>
+          <option value="stopped">{t("statusStopped")}</option>
+          <option value="crashed">{t("statusCrashed")}</option>
+          <option value="paused">{t("statusPaused")}</option>
         </select>
       </div>
 
@@ -199,7 +201,7 @@ export default function ClientAdminSessions() {
                   </td>
                   <td className="px-4 py-4">
                     <div className="text-sm font-medium text-white">
-                      {session.user_profiles?.display_name || "Ukjent"}
+                      {session.user_profiles?.display_name || t("unknown")}
                     </div>
                     <div className="text-xs text-slate-500 capitalize">
                       {session.user_profiles?.tier || "student"}
@@ -232,7 +234,7 @@ export default function ClientAdminSessions() {
                     )}
                     {session.status === "stopped" && (
                       <span className="inline-flex items-center gap-1 text-slate-400 text-xs bg-slate-400/10 px-2 py-1 rounded">
-                        <StopCircle className="w-3 h-3" /> Stopped
+                        <StopCircle className="w-3 h-3" /> {t("stop")}ed
                       </span>
                     )}
                     {session.status === "crashed" && (

@@ -22,9 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LessonPage({ params }: PageProps) {
   const { lessonId, locale } = await params;
-  const _t = await getTranslations({ locale, namespace: "courses" });
-
-  const isEnglish = locale === "en";
+  const t = await getTranslations({ locale, namespace: "courses" });
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -34,7 +32,7 @@ export default async function LessonPage({ params }: PageProps) {
             href={`/${locale}/kurs`}
             className="text-slate-400 hover:text-white transition-colors text-sm"
           >
-            ← {isEnglish ? "Back to courses" : "Tilbake til kurs"}
+            ← {t("backToCourses")}
           </Link>
         </div>
 
@@ -45,19 +43,17 @@ export default async function LessonPage({ params }: PageProps) {
 
           <div className="prose prose-invert max-w-none">
             <p className="text-slate-300 text-lg">
-              {isEnglish
-                ? "This lesson is under development. Check back soon for full content!"
-                : "Denne leksjonen er under utvikling. Sjekk tilbake snart for fullt innhold!"}
+              {t("underDevelopment")}
             </p>
 
             <div className="mt-8 p-6 bg-slate-800 rounded-xl">
               <h2 className="text-xl font-semibold text-white mb-3">
-                {isEnglish ? "What you will learn:" : "Hva du vil lære:"}
+                {t("whatYouWillLearn")}:
               </h2>
               <ul className="space-y-2 text-slate-300">
-                <li>• {isEnglish ? "Basic concepts" : "Grunnleggende konsepter"}</li>
-                <li>• {isEnglish ? "Practical examples" : "Praktiske eksempler"}</li>
-                <li>• {isEnglish ? "Quiz to test knowledge" : "Quiz for å teste kunnskap"}</li>
+                <li>• {t("learningItem1")}</li>
+                <li>• {t("learningItem2")}</li>
+                <li>• {t("learningItem3")}</li>
               </ul>
             </div>
           </div>
@@ -67,7 +63,7 @@ export default async function LessonPage({ params }: PageProps) {
               href={`/${locale}/kurs`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors"
             >
-              {isEnglish ? "See all courses" : "Se alle kurs"}
+              {t("allCourses")}
             </Link>
           </div>
         </div>

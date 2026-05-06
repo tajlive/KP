@@ -1,6 +1,4 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Shield, Scale, Zap, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,13 +39,13 @@ const LEVEL_CONFIG: Record<
   },
 };
 
-export function RiskExplanation({
+export async function RiskExplanation({
   level,
   userBalance = 100000,
   className = "",
 }: RiskExplanationProps) {
-  const t = useTranslations("trading.riskExplanation");
-  const tLevel = useTranslations(`trading.riskExplanation.levels.${level}`);
+  const t = await getTranslations("trading.riskExplanation");
+  const tLevel = await getTranslations(`trading.riskExplanation.levels.${level}`);
   const config = LEVEL_CONFIG[level];
   const Icon = config.icon;
 
@@ -151,7 +149,7 @@ export function RiskExplanation({
           {t("moreLikely")}
         </h4>
         <ul className="space-y-2">
-          {tLevel.raw("moreLikely").map((item: string, i: number) => (
+          {(tLevel.raw("moreLikely") as string[]).map((item: string, i: number) => (
             <li key={i} className="text-sm text-kp-success flex items-start gap-2">
               <span className="text-kp-success/70 mt-0.5">✓</span>
               {item}
@@ -167,7 +165,7 @@ export function RiskExplanation({
           {t("lessLikely")}
         </h4>
         <ul className="space-y-2">
-          {tLevel.raw("lessLikely").map((item: string, i: number) => (
+          {(tLevel.raw("lessLikely") as string[]).map((item: string, i: number) => (
             <li
               key={i}
               className="text-sm text-kp-text-secondary flex items-start gap-2"
@@ -186,7 +184,7 @@ export function RiskExplanation({
           {t("systemBlocks")}
         </h4>
         <ul className="space-y-2">
-          {tLevel.raw("systemBlocks").map((item: string, i: number) => (
+          {(tLevel.raw("systemBlocks") as string[]).map((item: string, i: number) => (
             <li key={i} className="text-sm text-kp-danger flex items-start gap-2">
               <span className="text-kp-danger/70 mt-0.5">🚫</span>
               {formatSystemBlock(item)}

@@ -5,7 +5,7 @@
 
 
 import { useState } from 'react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
@@ -16,6 +16,7 @@ import { getAppUrl } from '@/lib/auth/config'
 
 export default function ForgotPasswordPage() {
   const locale = useLocale()
+  const t = useTranslations('admin')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -39,7 +40,7 @@ export default function ForgotPasswordPage() {
 
       setSubmitted(true)
     } catch (_err) {
-      setError('En feil oppstod. Prøv igjen.')
+      setError(t('forgotPasswordError'))
     } finally {
       setLoading(false)
     }
@@ -53,14 +54,14 @@ export default function ForgotPasswordPage() {
             <div className="mx-auto w-12 h-12 bg-green-600/20 rounded-xl flex items-center justify-center mb-4">
               <CheckCircle className="w-6 h-6 text-green-500" />
             </div>
-            <CardTitle className="text-white text-2xl">E-post sendt</CardTitle>
+            <CardTitle className="text-white text-2xl">{t('emailSent')}</CardTitle>
             <CardDescription className="text-slate-400">
-              Hvis e-posten finnes i vårt system, har vi sendt en lenke for å lage nytt passord.
+              {t('emailSentDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-slate-400 text-center">
-              Sjekk innboksen din (og søppelpost). Lenken er gyldig i 1 time.
+              {t('checkInbox')}
             </p>
             <Button 
               variant="outline" 
@@ -69,7 +70,7 @@ export default function ForgotPasswordPage() {
             >
               <a href={`/${locale}/admin/login`}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Tilbake til login
+                {t('backToLogin')}
               </a>
             </Button>
           </CardContent>
@@ -85,16 +86,16 @@ export default function ForgotPasswordPage() {
           <div className="mx-auto w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center mb-4">
             <Mail className="w-6 h-6 text-blue-500" />
           </div>
-          <CardTitle className="text-white text-2xl">Glemt passord?</CardTitle>
+          <CardTitle className="text-white text-2xl">{t('forgotPassword')}</CardTitle>
           <CardDescription className="text-slate-400">
-            Skriv inn e-posten din, så sender vi en lenke for å lage nytt passord.
+            {t('forgotPasswordDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="admin-forgot-email" className="block text-sm font-medium text-slate-300 mb-1.5">
-                E-post
+                {t('email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -125,10 +126,10 @@ export default function ForgotPasswordPage() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Sender...
+                  {t('sending')}
                 </>
               ) : (
-                'Send lenke'
+                t('sendLink')
               )}
             </Button>
 

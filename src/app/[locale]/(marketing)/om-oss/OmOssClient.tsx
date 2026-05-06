@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/shared/ui/button";
 import {
   Award,
@@ -13,7 +11,7 @@ import {
   Flag,
   Landmark,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 const values = [
@@ -43,8 +41,8 @@ const values = [
   },
 ];
 
-export default function OmOssClient() {
-  const t = useTranslations("about");
+export default async function OmOssClient() {
+  const t = await getTranslations("about");
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">

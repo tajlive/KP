@@ -1,19 +1,17 @@
-"use client";
-
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
-import { useTranslations } from "next-intl";
-import { useDashboardNumberLocale } from "@/i18n/use-dashboard-number-locale";
+import { getTranslations } from "next-intl/server";
+import { getDashboardNumberLocale } from "@/i18n/get-dashboard-number-locale";
 
-export function PortfolioBalance({
+export async function PortfolioBalance({
   totalNok,
   deltaPercent,
 }: {
   totalNok: number;
   deltaPercent: number;
 }) {
-  const t = useTranslations("dashboard.coinbase");
-  const numberLocale = useDashboardNumberLocale();
+  const t = await getTranslations("dashboard.coinbase");
+  const numberLocale = await getDashboardNumberLocale();
   const positive = deltaPercent >= 0;
 
   return (

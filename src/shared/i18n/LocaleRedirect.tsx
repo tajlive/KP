@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Tidligere forsøk på Accept-Language → /en/ redirect er fjernet.
  *

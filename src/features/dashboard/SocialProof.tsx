@@ -1,5 +1,3 @@
-'use client';
-
 interface SocialProofProps {
   locale: string;
 }

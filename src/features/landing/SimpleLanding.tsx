@@ -1,14 +1,11 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
 import { ArrowRight, TrendingUp, Shield, Zap } from 'lucide-react';
 
-export default function SimpleLanding() {
-  const t = useTranslations('landing');
-  const baseT = useTranslations('base');
-  const locale = useLocale();
+export default async function SimpleLanding() {
+  const t = await getTranslations('landing');
+  const baseT = await getTranslations('base');
+  const locale = await getLocale();
 
   return (
     <main>

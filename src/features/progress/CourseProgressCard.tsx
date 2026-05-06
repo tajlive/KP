@@ -1,5 +1,3 @@
-'use client';
-
 import { GlassCard } from '@/shared/ui/GlassCard';
 import { BadgePremium } from '@/shared/ui/BadgePremium';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';

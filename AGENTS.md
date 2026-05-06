@@ -46,6 +46,11 @@ kimi monitor         # Sjekk prod helse
 kimi prod            # Full pipeline: ci → db → monitor → deploy → monitor
 kimi architect       # Aktiver lead architect agent
 kimi prod:preview    # Full pipeline til preview
+
+# Auto-Maintenance v2.8 (NYTT)
+kimi depcheck        # node scripts/dependency-report.mjs
+kimi coverage        # node scripts/coverage-report.mjs
+kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 ```
 
 ### Lead Architect Agent (Anbefalt for alle større oppgaver)
@@ -325,6 +330,9 @@ Se `.agent/KLARPAKKE-AGENT-ROSTER.md` for full oversikt.
 - `klarpakke-live-trading-trades-agent` – Trading, bevis
 - `klarpakke-research-agent` – Systematisk Perplexity Pro research før beslutninger
 - `klarpakke-auto-trade-strategy-research-agent` – Strategi-forskning
+- `performance-agent` – Lighthouse, bundle, TTFB, Server Components
+- `testing-agent` – Testdekning, Vitest, Playwright, mutation testing
+- `security-agent` – RLS, npm audit, auth-hardening, secrets
 
 ### Skills Auto-Aktivering
 Konfigurasjon: `.kimi/skills-activation.yaml`
@@ -335,6 +343,8 @@ Konfigurasjon: `.kimi/skills-activation.yaml`
 | `src/components/**/*.tsx` | frontend-design, nextjs-react-expert |
 | `supabase/migrations/*.sql` | database-design |
 | `e2e/**/*.spec.ts` | webapp-testing, testing-patterns |
+| `src/app/**/page.tsx` | performance-profiling, seo-fundamentals |
+| `**/*.test.ts` | testing-patterns, tdd-workflow |
 
 ---
 
@@ -403,6 +413,16 @@ Database: DECLARE på toppnivå
 | `perplexity_ask` | Web-research (quick) |
 | `query_database` | Supabase SQL |
 | `search_docs` | Context7 docs |
+| `checkSystemHealth` | System health (npm verify + memory) |
+| `getUptimeStatus` | Sjekk klarpakke.no oppetid |
+| `listAlerts` | GitHub bugs/issues |
+| `listCronJobs` | pg_cron job management |
+| `toggleCronJob` | Slå av/på cron jobs |
+| `listFlags` | Feature flags |
+| `searchTrades` | Søk i trades |
+| `searchUsers` | Søk i brukere |
+| `getVercelCost` | Vercel usage/estimat |
+| `ai_health_report` | Ukentlig AI-helserapport |
 
 ---
 
@@ -453,8 +473,8 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-**Sist oppdatert:** 2026-05-04  
-**Versjon:** 2.5 (+KIMI Smart Orchestrator v2.0 med Master System Prompt + KIMI CLI v1.40.0 + MemPalace v3.3.0 SUPERKIMI)
+**Sist oppdatert:** 2026-05-06  
+**Versjon:** 2.8 (+Auto-Maintenance & Quality Gates: dependency-check.yml, coverage-report, client-component refactor, ai-health-report v1.1)
 
 ---
 

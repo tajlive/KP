@@ -1,5 +1,3 @@
-'use client';
-
 import { Coins } from 'lucide-react';
 import Link from 'next/link';
 import { BRAND } from '@/lib/design/tokens';

@@ -1,0 +1,50 @@
+name: 🤖 AI Health Report
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Hver mandag 09:00 CET
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate AI Health Report
+        run: node scripts/ai-health-report.mjs
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-health-report-${{ github.run_id }}
+          path: .kimi/ai-health-reports/
+
+      - name: Create Issue if Critical
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = `.kimi/ai-health-reports/report-${new Date().toISOString().slice(0,10)}.md`;
+            if (!fs.existsSync(path)) return;
+            const report = fs.readFileSync(path, 'utf8');
+            if (report.includes('🔴') || report.includes('🚨')) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🤖 AI Health Report — ${new Date().toISOString().slice(0,10)}`,
+                body: report,
+                labels: ['ai-health', 'automated']
+              });
+            }

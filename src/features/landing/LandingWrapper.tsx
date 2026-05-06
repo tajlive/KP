@@ -1,5 +1,3 @@
-'use client';
-
 import { Suspense } from 'react';
 import SimpleLanding from './SimpleLanding';
 import LandingFAQ from './LandingFAQ';

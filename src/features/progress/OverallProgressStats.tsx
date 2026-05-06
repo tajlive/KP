@@ -1,5 +1,3 @@
-'use client';
-
 import { GlassCard, StatCard } from '@/shared/ui/GlassCard';
 import { SectionHeading } from '@/shared/ui/SectionHeading';
 import { BadgePremium } from '@/shared/ui/BadgePremium';

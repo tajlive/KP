@@ -251,7 +251,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     if (toDelete.length > 0) {
       console.warn('[Klarpakke] Rensede', toDelete.length, 'korrupte tokens');
     }
-  } catch(e) {}
+  } catch(e) { console.warn('[Klarpakke] Token cleanup error:', e); }
 })();`,
           }}
         />

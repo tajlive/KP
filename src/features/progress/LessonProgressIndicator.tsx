@@ -1,5 +1,3 @@
-'use client';
-
 import { CheckCircle2, Circle, PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

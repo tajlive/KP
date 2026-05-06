@@ -1,0 +1,5 @@
+version: 1
+agent:
+  extend: default
+  name: security
+  system_prompt_path: ./security-agent.md

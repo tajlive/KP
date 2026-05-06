@@ -32,7 +32,7 @@ export default function ClientAdminLogin() {
       })
 
       if (signInError) {
-        setError('Ugyldig e-post eller passord')
+        setError(t('invalidCredentials'))
         return
       }
 
@@ -45,7 +45,7 @@ export default function ClientAdminLogin() {
 
       if (profileError || profile?.role !== 'admin') {
         await supabase.auth.signOut()
-        setError('Du har ikke tilgang til admin-panelet')
+        setError(t('noAdminAccess'))
         return
       }
 
@@ -53,7 +53,7 @@ export default function ClientAdminLogin() {
       router.refresh()
     } catch (err) {
       console.error('Login error:', err);
-      setError('En feil oppstod. Prøv igjen.')
+      setError(t('loginError'))
     } finally {
       setLoading(false)
     }
@@ -66,16 +66,16 @@ export default function ClientAdminLogin() {
           <div className="mx-auto w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center mb-4">
             <Lock className="w-6 h-6 text-blue-500" />
           </div>
-          <CardTitle className="text-white text-2xl">Admin Login</CardTitle>
+          <CardTitle className="text-white text-2xl">{t('adminLogin')}</CardTitle>
           <CardDescription className="text-slate-400">
-            Klarpakke Universitet - Admin Portal
+            {t('adminPortal')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="admin-login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
-                E-post
+                {t('email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />

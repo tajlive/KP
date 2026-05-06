@@ -1,5 +1,3 @@
-'use client';
-
 import Calculator from './Calculator';
 
 interface CompoundCalculatorProps {

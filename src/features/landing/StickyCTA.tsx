@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * StickyCTA — Fixed CTA button at bottom on mobile
  * Design: 100% width, thumb-friendly height (48px)
@@ -7,11 +5,11 @@
  */
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { ArrowRight } from 'lucide-react';
 
-export function StickyCTA() {
-  const t = useTranslations('landing.stickyCTA');
+export async function StickyCTA() {
+  const t = await getTranslations('landing.stickyCTA');
 
   return (
     <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-slate-200 shadow-2xl shadow-black/5 z-40">

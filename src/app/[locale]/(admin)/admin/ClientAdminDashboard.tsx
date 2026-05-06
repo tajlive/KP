@@ -190,9 +190,7 @@ export default function ClientAdminDashboard() {
         <div>
           <h2 className="text-3xl font-bold text-white">{t("adminPanel")}</h2>
           <p className="text-slate-400 mt-2">
-            {locale === "no"
-              ? "Avansert kontrollpanel koblet til Supabase & Resend."
-              : "Advanced control panel connected to Supabase & Resend."}
+            {t("subtitle")}
           </p>
         </div>
         <button
@@ -244,16 +242,12 @@ export default function ClientAdminDashboard() {
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Bell className="w-5 h-5 text-blue-400" />
-            {locale === "no"
-              ? "Live Aktivitet (Supabase Realtime)"
-              : "Live Activity (Supabase Realtime)"}
+            {t("liveActivity")}
           </h3>
           <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
             {activities.length === 0 ? (
               <p className="text-slate-500 text-sm italic">
-                {locale === "no"
-                  ? "Venter på hendelser..."
-                  : "Waiting for events..."}
+                {t("waitingForEvents")}
               </p>
             ) : (
               activities.map((activity, i) => (
@@ -348,9 +342,9 @@ export default function ClientAdminDashboard() {
               supabaseStatus === 'error' ? 'text-red-400' :
               'text-yellow-400'
             }`}>
-              {supabaseStatus === 'ok' ? (locale === 'no' ? 'Tilkoblet' : 'Connected') :
-               supabaseStatus === 'error' ? (locale === 'no' ? 'Feil' : 'Error') :
-               (locale === 'no' ? 'Sjekker...' : 'Checking...')}
+              {supabaseStatus === 'ok' ? t('connected') :
+               supabaseStatus === 'error' ? t('error') :
+               t('checking')}
             </span>
           </div>
           <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col items-center justify-center text-center">
@@ -359,7 +353,7 @@ export default function ClientAdminDashboard() {
               Resend API
             </span>
             <span className="text-green-400 text-xs">
-              {locale === "no" ? "Klar" : "Ready"}
+              {t("ready")}
             </span>
           </div>
           <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col items-center justify-center text-center">
@@ -368,7 +362,7 @@ export default function ClientAdminDashboard() {
               Vercel Edge
             </span>
             <span className="text-green-400 text-xs">
-              {locale === "no" ? "Operativ" : "Operational"}
+              {t("operational")}
             </span>
           </div>
           <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col items-center justify-center text-center">

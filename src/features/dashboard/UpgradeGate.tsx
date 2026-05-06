@@ -1,5 +1,3 @@
-'use client';
-
 import { Lock } from 'lucide-react';
 import { BRAND } from '@/lib/design/tokens';
 import type { ReactNode } from 'react';

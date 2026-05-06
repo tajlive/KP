@@ -1,9 +1,7 @@
-'use client';
+import { getTranslations } from 'next-intl/server';
 
-import { useTranslations } from 'next-intl';
-
-export default function ClientPersonvern() {
-  const t = useTranslations('legal.privacy');
+export default async function ClientPersonvern() {
+  const t = await getTranslations('legal.privacy');
 
   return (
     <div className="min-h-screen bg-white text-gray-900 py-16 pt-20 px-4 sm:px-6 lg:px-8">

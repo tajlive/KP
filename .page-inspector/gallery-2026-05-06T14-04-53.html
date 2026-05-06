@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Klarpakke Page Inspector — 2026-05-06T14-04-53</title>
+  <style>
+    :root { --bg: #0f172a; --surface: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --danger: #ef4444; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+    header { padding: 24px 32px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    header h1 { margin: 0; font-size: 22px; }
+    header .badge { background: var(--surface); padding: 4px 12px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+    header .badge.ok { color: #4ade80; }
+    header .badge.fail { color: var(--danger); }
+    .search { margin-left: auto; padding: 8px 14px; border-radius: 8px; border: 1px solid #334155; background: var(--surface); color: var(--text); font-size: 14px; width: 260px; }
+    main { padding: 24px 32px; }
+    section { margin-bottom: 32px; }
+    section h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
+    .count { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .card { background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid #334155; transition: border-color .2s; }
+    .card:hover { border-color: var(--accent); }
+    .card.failed { border-color: var(--danger); opacity: .7; }
+    .thumb { aspect-ratio: 16/10; background: #0b1220; overflow: hidden; cursor: zoom-in; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .3s; }
+    .thumb img:hover { transform: scale(1.03); }
+    .no-img { display: grid; place-items: center; height: 100%; color: var(--danger); font-size: 14px; }
+    .meta { padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .route { font-size: 13px; color: var(--accent); background: #0f172a; padding: 2px 8px; border-radius: 4px; }
+    .type { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-left: auto; }
+    .open { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .open:hover { color: var(--text); }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; place-items: center; padding: 40px; }
+    .modal.active { display: grid; }
+    .modal img { max-width: 90vw; max-height: 85vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+    .modal .info { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: var(--surface); padding: 8px 20px; border-radius: 8px; font-size: 14px; }
+    .modal .close { position: absolute; top: 20px; right: 20px; background: var(--surface); border: none; color: var(--text); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔍 Page Inspector</h1>
+    <span class="badge ok">40 OK</span>
+    <span class="badge fail">51 failed</span>
+    <span class="badge">https://www.klarpakke.no</span>
+    <input class="search" type="text" placeholder="Filter routes..." oninput="filter(this.value)">
+  </header>
+  <main>
+      <section>
+        <h2>Home <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_.png', '/', 'https://www.klarpakke.no')"></div>
+          <div class="meta">
+            <code class="route">/</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Admin <span class="count">20</span></h2>
+        <div class="grid">
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin.png', '/admin', 'https://www.klarpakke.no/admin')"></div>
+          <div class="meta">
+            <code class="route">/admin</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_ab_tests.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_ab_tests.png', '/admin/ab-tests', 'https://www.klarpakke.no/admin/ab-tests')"></div>
+          <div class="meta">
+            <code class="route">/admin/ab-tests</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/ab-tests" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_analytics.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_analytics.png', '/admin/analytics', 'https://www.klarpakke.no/admin/analytics')"></div>
+          <div class="meta">
+            <code class="route">/admin/analytics</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/analytics" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_auto_trading.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_auto_trading.png', '/admin/auto-trading', 'https://www.klarpakke.no/admin/auto-trading')"></div>
+          <div class="meta">
+            <code class="route">/admin/auto-trading</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/auto-trading" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_auto_trading_sessions.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_auto_trading_sessions.png', '/admin/auto-trading/sessions', 'https://www.klarpakke.no/admin/auto-trading/sessions')"></div>
+          <div class="meta">
+            <code class="route">/admin/auto-trading/sessions</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/auto-trading/sessions" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_campaign.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_campaign.png', '/admin/campaign', 'https://www.klarpakke.no/admin/campaign')"></div>
+          <div class="meta">
+            <code class="route">/admin/campaign</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/campaign" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_deploy.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_deploy.png', '/admin/deploy', 'https://www.klarpakke.no/admin/deploy')"></div>
+          <div class="meta">
+            <code class="route">/admin/deploy</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/deploy" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_forgot_password.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_forgot_password.png', '/admin/forgot-password', 'https://www.klarpakke.no/admin/forgot-password')"></div>
+          <div class="meta">
+            <code class="route">/admin/forgot-password</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/forgot-password" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_health.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_health.png', '/admin/health', 'https://www.klarpakke.no/admin/health')"></div>
+          <div class="meta">
+            <code class="route">/admin/health</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/health" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_login.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_login.png', '/admin/login', 'https://www.klarpakke.no/admin/login')"></div>
+          <div class="meta">
+            <code class="route">/admin/login</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/login" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_marketing_ctas.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_marketing_ctas.png', '/admin/marketing/ctas', 'https://www.klarpakke.no/admin/marketing/ctas')"></div>
+          <div class="meta">
+            <code class="route">/admin/marketing/ctas</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/marketing/ctas" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_monetization.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_monetization.png', '/admin/monetization', 'https://www.klarpakke.no/admin/monetization')"></div>
+          <div class="meta">
+            <code class="route">/admin/monetization</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/monetization" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_monitor.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_monitor.png', '/admin/monitor', 'https://www.klarpakke.no/admin/monitor')"></div>
+          <div class="meta">
+            <code class="route">/admin/monitor</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/monitor" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_reset_password.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_reset_password.png', '/admin/reset-password', 'https://www.klarpakke.no/admin/reset-password')"></div>
+          <div class="meta">
+            <code class="route">/admin/reset-password</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/reset-password" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_settings.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_settings.png', '/admin/settings', 'https://www.klarpakke.no/admin/settings')"></div>
+          <div class="meta">
+            <code class="route">/admin/settings</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/settings" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_students.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_students.png', '/admin/students', 'https://www.klarpakke.no/admin/students')"></div>
+          <div class="meta">
+            <code class="route">/admin/students</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/students" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_sync_status.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_sync_status.png', '/admin/sync-status', 'https://www.klarpakke.no/admin/sync-status')"></div>
+          <div class="meta">
+            <code class="route">/admin/sync-status</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/sync-status" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_system.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_system.png', '/admin/system', 'https://www.klarpakke.no/admin/system')"></div>
+          <div class="meta">
+            <code class="route">/admin/system</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/system" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_users.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_users.png', '/admin/users', 'https://www.klarpakke.no/admin/users')"></div>
+          <div class="meta">
+            <code class="route">/admin/users</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/users" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_admin_v2.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_admin_v2.png', '/admin/v2', 'https://www.klarpakke.no/admin/v2')"></div>
+          <div class="meta">
+            <code class="route">/admin/v2</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/admin/v2" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Akademi <span class="count">2</span></h2>
+        <div class="grid">
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_akademi.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_akademi.png', '/akademi', 'https://www.klarpakke.no/akademi')"></div>
+          <div class="meta">
+            <code class="route">/akademi</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/akademi" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_akademi_dashboard_guide.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_akademi_dashboard_guide.png', '/akademi/dashboard-guide', 'https://www.klarpakke.no/akademi/dashboard-guide')"></div>
+          <div class="meta">
+            <code class="route">/akademi/dashboard-guide</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/akademi/dashboard-guide" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Binance guide <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/binance-guide</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/binance-guide" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Callback <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/callback</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/callback" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Checkout <span class="count">2</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/checkout</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/checkout" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_checkout_success.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_checkout_success.png', '/checkout/success', 'https://www.klarpakke.no/checkout/success')"></div>
+          <div class="meta">
+            <code class="route">/checkout/success</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/checkout/success" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Copy trading <span class="count">3</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/copy-trading</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/copy-trading" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/copy-trading/discover</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/copy-trading/discover" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/copy-trading/traders/:id</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/copy-trading/traders/:id" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Dashboard <span class="count">15</span></h2>
+        <div class="grid">
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard.png', '/dashboard', 'https://www.klarpakke.no/dashboard')"></div>
+          <div class="meta">
+            <code class="route">/dashboard</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_ai.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_ai.png', '/dashboard/ai', 'https://www.klarpakke.no/dashboard/ai')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/ai</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/ai" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_asset_sample.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_asset_sample.png', '/dashboard/asset/sample', 'https://www.klarpakke.no/dashboard/asset/sample')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/asset/sample</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/asset/sample" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_auto_trade.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_auto_trade.png', '/dashboard/auto-trade', 'https://www.klarpakke.no/dashboard/auto-trade')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/auto-trade</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/auto-trade" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_bot_sample.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_bot_sample.png', '/dashboard/bot/sample', 'https://www.klarpakke.no/dashboard/bot/sample')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/bot/sample</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/bot/sample" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_earn.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_earn.png', '/dashboard/earn', 'https://www.klarpakke.no/dashboard/earn')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/earn</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/earn" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_guide.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_guide.png', '/dashboard/guide', 'https://www.klarpakke.no/dashboard/guide')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/guide</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/guide" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_metrics.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_metrics.png', '/dashboard/metrics', 'https://www.klarpakke.no/dashboard/metrics')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/metrics</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/metrics" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_portfolio.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_portfolio.png', '/dashboard/portfolio', 'https://www.klarpakke.no/dashboard/portfolio')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/portfolio</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/portfolio" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_referral.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_referral.png', '/dashboard/referral', 'https://www.klarpakke.no/dashboard/referral')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/referral</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/referral" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_resultater.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_resultater.png', '/dashboard/resultater', 'https://www.klarpakke.no/dashboard/resultater')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/resultater</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/resultater" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_settings.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_settings.png', '/dashboard/settings', 'https://www.klarpakke.no/dashboard/settings')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/settings</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/settings" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_strategies.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_strategies.png', '/dashboard/strategies', 'https://www.klarpakke.no/dashboard/strategies')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/strategies</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/strategies" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_tax_report.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_tax_report.png', '/dashboard/tax-report', 'https://www.klarpakke.no/dashboard/tax-report')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/tax-report</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/tax-report" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_dashboard_trade.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_dashboard_trade.png', '/dashboard/trade', 'https://www.klarpakke.no/dashboard/trade')"></div>
+          <div class="meta">
+            <code class="route">/dashboard/trade</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dashboard/trade" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Debug <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card ">
+          <div class="thumb"><img src="screenshots-2026-05-06T14-04-53/_debug_oauth.png" loading="lazy" onclick="openModal('screenshots-2026-05-06T14-04-53/_debug_oauth.png', '/debug/oauth', 'https://www.klarpakke.no/debug/oauth')"></div>
+          <div class="meta">
+            <code class="route">/debug/oauth</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/debug/oauth" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Dev <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/dev/cds-test</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/dev/cds-test" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Feil <span class="count">3</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/feil/ikke-funnet</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/feil/ikke-funnet" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/feil/ingen-tilgang</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/feil/ingen-tilgang" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/feil/serverfeil</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/feil/serverfeil" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Funding arbitrage <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/funding-arbitrage</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/funding-arbitrage" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Handelshistorikk <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/handelshistorikk</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/handelshistorikk" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Hjelp <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/hjelp</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/hjelp" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Interessetest <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/interessetest</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/interessetest" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Kalkulator <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kalkulator</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kalkulator" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Kontakt <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kontakt</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kontakt" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Kurs <span class="count">5</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kurs</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kurs" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kurs/grunnleggende/leksjon/introduksjon-til-krypto</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kurs/grunnleggende/leksjon/introduksjon-til-krypto" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kurs/sample</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kurs/sample" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kurs/sample/leksjon/sample</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kurs/sample/leksjon/sample" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/kurs/strategi/leksjon/dollar-cost-averaging</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/kurs/strategi/leksjon/dollar-cost-averaging" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Leaderboard <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/leaderboard</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/leaderboard" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Leksjon <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/leksjon/sample</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/leksjon/sample" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Live trading <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/live-trading</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/live-trading" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Login <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/login</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/login" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Marketplace <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/marketplace</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/marketplace" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Om oss <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/om-oss</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/om-oss" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Onboarding <span class="count">5</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/onboarding</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/onboarding" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/onboarding/step1-welcome</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/onboarding/step1-welcome" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/onboarding/step3-trading-mode</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/onboarding/step3-trading-mode" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/onboarding/step4-binance</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/onboarding/step4-binance" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/onboarding/step5-complete</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/onboarding/step5-complete" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Paper trading <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/paper-trading</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/paper-trading" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Personvern <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/personvern</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/personvern" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Priser <span class="count">3</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/priser</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/priser" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/priser/cancel</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/priser/cancel" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/priser/success</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/priser/success" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Profile <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/profile</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/profile" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Quiz <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/quiz</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/quiz" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Register <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/register</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/register" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Reset password <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/reset-password</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/reset-password" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Studio <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/studio/sample</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/studio/sample" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Tradere <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/tradere</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/tradere" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Update password <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/update-password</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/update-password" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Varsler <span class="count">2</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/varsler</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/varsler" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div>
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/varsler/innstillinger</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/varsler/innstillinger" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Velg strategi <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/velg-strategi</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/velg-strategi" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Velkommen <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/velkommen</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/velkommen" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Verify <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/verify</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/verify" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Vilkar <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/vilkar</code>
+            <span class="type">page</span>
+            <a href="https://www.klarpakke.no/vilkar" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section>
+      <section>
+        <h2>Sample page <span class="count">1</span></h2>
+        <div class="grid">
+        <div class="card failed">
+          <div class="thumb"><div class="no-img">❌ Failed</div></div>
+          <div class="meta">
+            <code class="route">/sample-page</code>
+            <span class="type">catch-all</span>
+            <a href="https://www.klarpakke.no/sample-page" target="_blank" class="open">↗ Open</a>
+          </div>
+        </div></div>
+      </section></main>
+  <div class="modal" id="modal" onclick="this.classList.remove('active')">
+    <div class="info" id="modalInfo"></div>
+    <button class="close">Close</button>
+    <img id="modalImg" src="">
+  </div>
+  <script>
+    function openModal(src, route, url) {
+      document.getElementById('modalImg').src = src;
+      document.getElementById('modalInfo').innerHTML = '<code>' + route + '</code> · <a href="' + url + '" target="_blank" style="color:#38bdf8">Open page ↗</a>';
+      document.getElementById('modal').classList.add('active');
+    }
+    function filter(q) {
+      const lower = q.toLowerCase();
+      document.querySelectorAll('.card').forEach(c => {
+        c.style.display = c.textContent.toLowerCase().includes(lower) ? '' : 'none';
+      });
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('modal').classList.remove('active'); });
+  </script>
+</body>
+</html>

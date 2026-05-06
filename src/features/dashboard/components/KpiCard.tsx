@@ -1,5 +1,3 @@
-"use client";
-
 import { RADIUS, SHADOW } from "@/lib/design/tokens";
 import type { ComponentType } from "react";
 

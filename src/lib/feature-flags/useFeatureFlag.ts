@@ -1,5 +1,3 @@
-'use client';
-
 import { useFeatureFlagContext } from './FeatureFlagProvider';
 import type { FeatureFlags } from '@/lib/flags';
 
