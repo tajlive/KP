@@ -84,3 +84,13 @@
 {"subject":"trading-tests","predicate":"added","object":"34-new-tests-currency-circuit-breaker","validFrom":"2026-05-05"}
 {"subject":"trading-todos","predicate":"fixed","object":"5-TODOs-leverage-s3-sync-logging-symbol","validFrom":"2026-05-05"}
 {"subject":"ExecuteTradeRequest","predicate":"has","object":"leverage-field","validFrom":"2026-05-05"}
+{"subject":"portfolio-page","predicate":"uses","object":"toLocaleString directly instead of formatNOK","validFrom":"2026-05-06T09:07:15.826Z"}
+{"subject":"portfolio-page","predicate":"has","object":"inconsistent number formatting (2 decimals vs 0 decimals)","validFrom":"2026-05-06T09:07:15.826Z"}
+{"subject":"SessionCards","predicate":"has","object":"hardcoded English text: Trading Sessions, win rate","validFrom":"2026-05-06T09:07:15.826Z"}
+{"subject":"RestartTradingButton","predicate":"has","object":"same restart text for no and en locales","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"PositionLotsCard","predicate":"uses","object":"hardcoded $ for entry prices, no currency for unrealized PnL","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"api-trading-position","predicate":"fetches","object":"only 1 active session (limit 1) — misses multiple active bots","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"portfolio-page","predicate":"calculates","object":"totalCapital from trading_sessions current_capital_nok","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"portfolio-page","predicate":"shows","object":"wallet balance as available cash","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"portfolio-page","predicate":"has","object":"fallback to paper_balance when no sessions or wallets","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"portfolio-page","predicate":"status","object":"requires auth — redirects to login when unauthenticated","validFrom":"2026-05-06T09:07:15.827Z"}

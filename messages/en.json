@@ -975,7 +975,10 @@
         "title": "No active coins",
         "description": "You have no active assets in your portfolio yet. Start trading to see them here!",
         "button": "Start your first trade"
-      }
+      },
+      "totalPortfolio": "Total Portfolio",
+      "available": "Available",
+      "totalValue": "Total Value"
     },
     "settingsPage": {
       "title": "Settings",
@@ -1421,6 +1424,20 @@
           "query": "What's my account balance?"
         }
       ]
+    },
+    "sessionCards": {
+      "title": "Trading Sessions",
+      "all": "All",
+      "active": "Active",
+      "stopped": "Stopped",
+      "paused": "Paused",
+      "trades": "trades",
+      "winRate": "win rate",
+      "seeDetails": "See details",
+      "noFiltered": "No {status} sessions",
+      "activeLC": "active",
+      "pausedLC": "paused",
+      "stoppedLC": "stopped"
     }
   },
   "footer": {
