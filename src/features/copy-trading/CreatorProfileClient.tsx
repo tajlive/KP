@@ -237,6 +237,7 @@ export default function CreatorProfileClient({
           total_pnl: number;
           total_trades: number;
           winning_trades: number;
+          losing_trades: number;
         };
 
         const { data: sessions } = await supabase
