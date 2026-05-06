@@ -15,10 +15,10 @@ const BacktestSchema = z.object({
   smaFast: z.number().min(5).max(50).optional(),
   smaSlow: z.number().min(20).max(200).optional(),
   maxPositionPct: z.number().min(0.1).max(1.0).optional(),
-  includeMonteCarlo: z.boolean().optional().default(false),
+  includeMonteCarlo: z.boolean().optional(),
 });
 
-export type BacktestInput = z.input<typeof BacktestSchema>;
+export type BacktestInput = z.infer<typeof BacktestSchema>;
 
 export async function executeBacktest(input: BacktestInput) {
   const validation = BacktestSchema.safeParse(input);
