@@ -75,9 +75,9 @@ export function TradingResultsCharts({
           <p className="mt-1 text-xs text-slate-500">
             {t("charts.cumulativeHint")}
           </p>
-          <div className="mt-4 h-[320px]">
+          <div className="mt-4 flex h-[240px] sm:h-[320px] items-center justify-center">
             {cumChart.length < 2 ? (
-              <p className="py-20 text-center text-sm text-slate-500">
+              <p className="text-center text-sm text-slate-500">
                 {t("empty.needTrades")}
               </p>
             ) : (
@@ -132,9 +132,9 @@ export function TradingResultsCharts({
           <p className="mt-1 text-xs text-slate-500">
             {t("charts.outcomeHint")}
           </p>
-          <div className="mt-4 h-[280px] w-full min-w-0">
+          <div className="mt-4 flex h-[240px] sm:h-[280px] w-full min-w-0 items-center justify-center">
             {data.winLossSlices.length === 0 ? (
-              <p className="py-16 text-center text-sm text-slate-500">
+              <p className="text-center text-sm text-slate-500">
                 {t("empty.noOutcomes")}
               </p>
             ) : (
@@ -186,9 +186,9 @@ export function TradingResultsCharts({
         <p className="mt-1 text-xs text-slate-500">
           {t("charts.dailyHint")}
         </p>
-        <div className="mt-4 h-[300px]">
+        <div className="mt-4 flex h-[240px] sm:h-[300px] items-center justify-center">
           {dailyTail.length === 0 ? (
-            <p className="py-20 text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-slate-500">
               {t("empty.needDaily")}
             </p>
           ) : (
@@ -241,9 +241,9 @@ export function TradingResultsCharts({
           <p className="mt-1 text-xs text-slate-500">
             {t("charts.pairsHint")}
           </p>
-          <div className="mt-4 h-[320px]">
+          <div className="mt-4 flex h-[240px] sm:h-[320px] items-center justify-center">
             {data.topPairs.length === 0 ? (
-              <p className="py-20 text-center text-sm text-slate-500">
+              <p className="text-center text-sm text-slate-500">
                 {t("empty.needPairs")}
               </p>
             ) : (

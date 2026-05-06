@@ -12,6 +12,7 @@ import {
   Download,
   History,
   RefreshCw,
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -268,10 +269,11 @@ export default function TradingResultsDashboard() {
 
       {error && (
         <div
-          className="rounded-2xl border border-red-500/30 bg-red-950/40 px-4 py-3 text-sm text-red-200"
+          className="rounded-2xl border border-red-500/30 bg-red-950/40 px-4 py-4 text-sm text-red-200"
           role="alert"
         >
-          {error}
+          <p className="font-semibold">{t("errorTitle")}</p>
+          <p className="mt-1 opacity-80">{error}</p>
         </div>
       )}
 
@@ -286,7 +288,26 @@ export default function TradingResultsDashboard() {
         </div>
       ) : null}
 
-      {data ? (
+      {data && data.tradeCount === 0 && !loading ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
+          <BarChart3 className="h-10 w-10 text-slate-600" />
+          <h3 className="mt-4 text-lg font-semibold text-slate-300">
+            {t("empty.noTradesTitle")}
+          </h3>
+          <p className="mt-2 max-w-sm text-sm text-slate-500">
+            {t("empty.noTradesDesc")}
+          </p>
+          <Link
+            href={hrefWithLocale(locale, "/handelshistorikk")}
+            className={`mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700 ${BRAND.focusRing}`}
+          >
+            <History className="h-4 w-4" />
+            {t("openHistory")}
+          </Link>
+        </div>
+      ) : null}
+
+      {data && data.tradeCount > 0 ? (
         <>
           <KpiCardsSection
             data={data}

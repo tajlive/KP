@@ -1,6 +1,7 @@
 {
   "tradingResults": {
     "errorLoad": "Kunne ikke laste trading-resultater",
+    "errorTitle": "Noe gikk galt",
     "mode": {
       "paper": "Paper",
       "live": "Live",
@@ -29,26 +30,28 @@
     "openHistory": "Åpne historikk",
     "notYetLoaded": "Ingen data lastet ennå",
     "charts": {
-      "cumulativeTitle": "Cumulative Title",
-      "cumulativeHint": "Cumulative Hint",
-      "cumulativeSeries": "Cumulative Series",
-      "outcomeTitle": "Outcome Title",
-      "outcomeHint": "Outcome Hint",
-      "dailyTitle": "Daily Title",
-      "dailyHint": "Daily Hint",
-      "dailySeries": "Daily Series",
-      "pairsTitle": "Pairs Title",
-      "pairsHint": "Pairs Hint",
-      "pairPnl": "Pair Pnl",
-      "modeTitle": "Mode Title",
-      "modeHint": "Mode Hint"
+      "cumulativeTitle": "Akkumulert P&L",
+      "cumulativeHint": "Din akkumulerte gevinst/tap over tid",
+      "cumulativeSeries": "P&L",
+      "outcomeTitle": "Utfall",
+      "outcomeHint": "Fordeling av vinnende og tapende trader",
+      "dailyTitle": "Daglig P&L",
+      "dailyHint": "Daglige resultater siste 6 uker",
+      "dailySeries": "P&L",
+      "pairsTitle": "Topp par",
+      "pairsHint": "Resultater per handelspar",
+      "pairPnl": "P&L",
+      "modeTitle": "Modus",
+      "modeHint": "Paper vs Live trading"
     },
     "empty": {
-      "needTrades": "Need Trades",
-      "noOutcomes": "No Outcomes",
-      "needDaily": "Need Daily",
-      "needPairs": "Need Pairs",
-      "needModes": "Need Modes"
+      "needTrades": "Start trading for å se statistikk",
+      "noOutcomes": "Ingen utfallsdata ennå",
+      "needDaily": "Ingen daglige data ennå",
+      "needPairs": "Ingen par-data ennå",
+      "needModes": "Ingen modus-data ennå",
+      "noTradesTitle": "Ingen trader ennå",
+      "noTradesDesc": "Når du har gjennomført handler, vil statistikk og grafer vises her automatisk."
     }
   }
 }

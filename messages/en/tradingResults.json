@@ -1,6 +1,7 @@
 {
   "tradingResults": {
     "errorLoad": "Could not load trading results",
+    "errorTitle": "Something went wrong",
     "mode": {
       "paper": "Paper",
       "live": "Live",
@@ -29,26 +30,28 @@
     "openHistory": "Open history",
     "notYetLoaded": "No data loaded yet",
     "charts": {
-      "cumulativeTitle": "Cumulative Title",
-      "cumulativeHint": "Cumulative Hint",
-      "cumulativeSeries": "Cumulative Series",
-      "outcomeTitle": "Outcome Title",
-      "outcomeHint": "Outcome Hint",
-      "dailyTitle": "Daily Title",
-      "dailyHint": "Daily Hint",
-      "dailySeries": "Daily Series",
-      "pairsTitle": "Pairs Title",
-      "pairsHint": "Pairs Hint",
-      "pairPnl": "Pair Pnl",
-      "modeTitle": "Mode Title",
-      "modeHint": "Mode Hint"
+      "cumulativeTitle": "Cumulative P&L",
+      "cumulativeHint": "Your cumulative profit/loss over time",
+      "cumulativeSeries": "P&L",
+      "outcomeTitle": "Outcomes",
+      "outcomeHint": "Distribution of winning and losing trades",
+      "dailyTitle": "Daily P&L",
+      "dailyHint": "Daily results last 6 weeks",
+      "dailySeries": "P&L",
+      "pairsTitle": "Top pairs",
+      "pairsHint": "Results per trading pair",
+      "pairPnl": "P&L",
+      "modeTitle": "Mode",
+      "modeHint": "Paper vs Live trading"
     },
     "empty": {
-      "needTrades": "Need Trades",
-      "noOutcomes": "No Outcomes",
-      "needDaily": "Need Daily",
-      "needPairs": "Need Pairs",
-      "needModes": "Need Modes"
+      "needTrades": "Start trading to see statistics",
+      "noOutcomes": "No outcome data yet",
+      "needDaily": "No daily data yet",
+      "needPairs": "No pair data yet",
+      "needModes": "No mode data yet",
+      "noTradesTitle": "No trades yet",
+      "noTradesDesc": "Once you have completed trades, statistics and charts will appear here automatically."
     }
   }
 }
