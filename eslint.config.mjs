@@ -373,6 +373,35 @@ const eslintConfig = [
     },
   },
 
+  // Block console.log in production source code (use logger instead)
+  // console.warn/error still allowed until full migration to logger.ts
+  {
+    name: "no-console-log-in-prod",
+    files: [
+      "src/app/**/*.ts",
+      "src/app/**/*.tsx",
+      "src/features/**/*.ts",
+      "src/features/**/*.tsx",
+      "src/lib/**/*.ts",
+      "src/lib/**/*.tsx",
+      "src/components/**/*.ts",
+      "src/components/**/*.tsx",
+      "src/hooks/**/*.ts",
+      "src/hooks/**/*.tsx",
+    ],
+    ignores: [
+      "src/app/**/error.tsx",
+      "src/app/**/global-error.tsx",
+      "src/lib/logger.ts",
+      "**/__tests__/**",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+    ],
+    rules: {
+      "no-console": ["error", { allow: ["warn", "error", "debug", "info"] }],
+    },
+  },
+
   // Unused vars av i src/e2e: prefiks med _ eller fjern når du rører koden. For streng sjekk: kjør eslint med --rule '@typescript-eslint/no-unused-vars: warn'
   {
     files: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.jsx", "e2e/**/*.ts", "tests/**/*.ts", "tests/**/*.tsx"],

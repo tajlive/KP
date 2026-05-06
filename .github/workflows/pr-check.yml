@@ -96,7 +96,6 @@ jobs:
 
       - name: Client Component Gate
         run: node scripts/ci-client-component-gate.mjs --threshold=5
-        continue-on-error: true
 
       - name: Generate client component report
         run: node scripts/client-component-refactor.mjs

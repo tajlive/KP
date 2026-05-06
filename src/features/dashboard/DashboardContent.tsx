@@ -33,6 +33,7 @@ export interface DashboardContentProps {
   preferredTradingMode?: DashboardMode;
   onboardingCompleted?: boolean;
   userName?: string;
+  signupDays?: number;
   cmsData?: DashboardCmsData | null;
   /** Server-side fetched metrics — when provided, skips client-side fetch */
   metrics?: DashboardMetrics | null;
@@ -43,6 +44,7 @@ export function DashboardContent({
   preferredTradingMode = "paper",
   onboardingCompleted = false,
   userName,
+  signupDays,
   cmsData,
   metrics: serverMetrics,
 }: DashboardContentProps) {
@@ -63,7 +65,7 @@ export function DashboardContent({
 
   const userState = computeUserState({
     tradesCount: data?.totalTrades ?? 0,
-    signupDays: 30, // TODO: fetch from user_profiles.created_at
+    signupDays: signupDays ?? 30,
     totalPnlPct: data && data.startingCapital > 0
       ? ((data.totalCapital - data.startingCapital) / data.startingCapital) * 100
       : 0,
