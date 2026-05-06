@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line, AreaChart, Area } from "recharts";
 import { ChartWrapper } from "@/shared/ui/chart-wrapper";
+import { formatNOK } from "@/lib/format/currency";
 
 interface SessionData {
   id: string;
@@ -392,9 +393,10 @@ export function SessionDetailDialog({
         100
       : 0;
   const isProfitable = pnlPct >= 0;
+  const completedTrades = session.winning_trades + session.losing_trades;
   const winRate =
-    session.total_trades > 0
-      ? Math.round((session.winning_trades / session.total_trades) * 100)
+    completedTrades > 0
+      ? Math.round((session.winning_trades / completedTrades) * 100)
       : 0;
 
   return (
@@ -422,7 +424,7 @@ export function SessionDetailDialog({
             </CardHeader>
             <CardContent>
               <p className="text-lg font-bold text-slate-900 dark:text-white">
-                {session.current_capital_nok.toLocaleString("no-NO")} kr
+                {formatNOK(session.current_capital_nok)}
               </p>
             </CardContent>
           </Card>
@@ -434,7 +436,7 @@ export function SessionDetailDialog({
             </CardHeader>
             <CardContent>
               <p className="text-lg font-bold text-slate-900 dark:text-white">
-                {session.starting_capital_nok.toLocaleString("no-NO")} kr
+                {formatNOK(session.starting_capital_nok)}
               </p>
             </CardContent>
           </Card>
@@ -465,7 +467,7 @@ export function SessionDetailDialog({
             <CardContent>
               <p className="text-lg font-bold text-slate-900 dark:text-white">{winRate}%</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {session.winning_trades} / {session.total_trades}
+                {session.winning_trades} / {completedTrades}
               </p>
             </CardContent>
           </Card>
