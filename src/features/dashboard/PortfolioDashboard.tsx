@@ -101,6 +101,7 @@ interface ActiveSession {
   total_pnl: number;
   total_trades: number;
   winning_trades?: number;
+  losing_trades?: number;
   created_at: string;
   name?: string;
   pnl?: number;
