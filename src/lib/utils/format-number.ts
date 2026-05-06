@@ -23,10 +23,15 @@ export interface FormatNumberOptions {
  * formatNumber(1500, { decimals: 0 })  // "2k"
  */
 export function formatNumber(
-  value: number,
+  value: number | null | undefined,
   options: FormatNumberOptions = {}
 ): string {
   const { decimals = 1, locale = 'no-NO', compact = false } = options;
+
+  // Guard against non-numeric values
+  if (value === null || value === undefined || Number.isNaN(value) || !Number.isFinite(value)) {
+    return "—";
+  }
 
   // For numbers less than 1000, return as-is unless compact is forced
   if (!compact && Math.abs(value) < 1000) {
@@ -67,9 +72,12 @@ export function formatNumber(
  * formatNumberFull(1500000)  // "1 500 000"
  */
 export function formatNumberFull(
-  value: number,
+  value: number | null | undefined,
   locale: string = 'no-NO'
 ): string {
+  if (value === null || value === undefined || Number.isNaN(value) || !Number.isFinite(value)) {
+    return "—";
+  }
   return value.toLocaleString(locale);
 }
 
