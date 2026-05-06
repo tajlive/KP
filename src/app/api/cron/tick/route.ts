@@ -23,6 +23,7 @@ import {
 } from "@/lib/trading/position-ledger";
 import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
 import { sma } from "@/lib/trading/strategies/indicators";
+import { logger } from "@/lib/logger";
 import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
 import { getFlagsAsync } from "@/lib/flags";
 // Rollout framework available for future A/B testing:
@@ -351,7 +352,7 @@ async function processSession(
       signal.indicators?.confidence ? (signal.indicators.confidence as number) / 3 : 0.8,
     );
 
-    console.log(`[MTF] Session ${session.id}: score=${mtfResult.score} trend=${mtfResult.trendDirection}(${mtfResult.trendScore}) entry=${mtfResult.entryConfirm} passed=${mtfResult.passed}`);
+    logger.debug(`[MTF] Session ${session.id}: score=${mtfResult.score} trend=${mtfResult.trendDirection}(${mtfResult.trendScore}) entry=${mtfResult.entryConfirm} passed=${mtfResult.passed}`);
 
     if (!mtfResult.passed) {
       signal = {
@@ -436,9 +437,9 @@ async function processSession(
       positionSize = dynamicSize.positionSize;
       positionSizeReason = dynamicSize.reason;
       kellyFraction = dynamicSize.kellyFraction;
-      console.log(`[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`);
+      logger.debug(`[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`);
     } catch (err) {
-      console.warn(`[PositionSize] Failed for session ${session.id}, using fallback:`, (err as Error).message);
+      logger.warn(`[PositionSize] Failed for session ${session.id}, using fallback:`, (err as Error).message);
     }
   }
 

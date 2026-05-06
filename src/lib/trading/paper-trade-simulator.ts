@@ -478,7 +478,7 @@ export function calculatePaperTradeStats(trades: PaperTrade[]): PaperTradeStats 
     totalTrades: closedTrades.length,
     winningTrades: winningTrades.length,
     losingTrades: losingTrades.length,
-    winRate: winningTrades.length / closedTrades.length,
+    winRate: closedTrades.length > 0 ? winningTrades.length / closedTrades.length : 0,
     totalPnl,
     totalPnlPercent: 0, // Calculate based on starting balance
     avgWin: winningTrades.length > 0 ? grossProfit / winningTrades.length : 0,

@@ -95,6 +95,9 @@ function getWeightsByRegime(regime: MarketRegime | 'unclear' = 'unclear'): {
     default:
       // Default: Use base weights but ensure normalization
       const total = baseWeights.technical + baseWeights.narrative + baseWeights.regime;
+      if (total === 0) {
+        return { technical: 0.34, narrative: 0.33, regime: 0.33 };
+      }
       return {
         technical: baseWeights.technical / total,
         narrative: baseWeights.narrative / total,
@@ -238,15 +241,23 @@ function calculateCompositeScore(
   if (!hasNarrative) {
     // Technical + Regime only
     const totalW = weights.technical + weights.regime;
-    const techWeight = weights.technical / totalW;
-    const regimeWeight = weights.regime / totalW;
-    score = technicalScore * techWeight + regimeScore * regimeWeight;
+    if (totalW === 0) {
+      score = technicalScore;
+    } else {
+      const techWeight = weights.technical / totalW;
+      const regimeWeight = weights.regime / totalW;
+      score = technicalScore * techWeight + regimeScore * regimeWeight;
+    }
   } else if (!hasRegime) {
     // Technical + Narrative only
     const totalW = weights.technical + weights.narrative;
-    const techWeight = weights.technical / totalW;
-    const narrativeWeight = weights.narrative / totalW;
-    score = technicalScore * techWeight + narrativeScore * narrativeWeight;
+    if (totalW === 0) {
+      score = technicalScore;
+    } else {
+      const techWeight = weights.technical / totalW;
+      const narrativeWeight = weights.narrative / totalW;
+      score = technicalScore * techWeight + narrativeScore * narrativeWeight;
+    }
   } else {
     // All three factors
     score = (

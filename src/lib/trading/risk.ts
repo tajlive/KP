@@ -105,7 +105,7 @@ export function calculatePositionSize(
   
   // Bruk den LAVESTE av de to
   const valueUsd = Math.min(maxValueFromBalance, maxValueFromConfig);
-  const quantity = valueUsd / currentPrice;
+  const quantity = currentPrice > 0 ? valueUsd / currentPrice : 0;
   
   return { quantity, valueUsd };
 }

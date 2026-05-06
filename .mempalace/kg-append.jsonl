@@ -101,3 +101,9 @@
 {"subject":"npm audit","predicate":"high_severity_count","object":"19 (post npm audit fix: 44 total vulnerabilities)","validFrom":"2026-05-06T17:58:28.546Z"}
 {"subject":"GamificationCard.test","predicate":"status","object":"hangs indefinitely (120s+ timeout)","validFrom":"2026-05-06T17:58:28.553Z"}
 {"subject":"DX Performance Sprint","predicate":"stabilization_status","object":"in progress - test fixes applied","validFrom":"2026-05-06T17:58:28.556Z"}
+{"subject":"bot-store","predicate":"has-bug","object":"pause-and-stop-both-set-is_active-false","validFrom":"2026-05-06T22:56:00.3NZ"}
+{"subject":"bot-store","predicate":"limitation","object":"calculateAggregatePnl-only-computes-all-not-day-week-month","validFrom":"2026-05-06T22:56:00.3NZ"}
+{"subject":"format-number","predicate":"hardened","object":"NaN-Infinity-null-guards","validFrom":"2026-05-06T22:56:00.3NZ"}
+{"subject":"trading-dashboard","predicate":"has-tests","object":"BotStatusCard-SessionCards-StatsGrid-89-total","validFrom":"2026-05-06T22:56:00.3NZ"}
+{"subject":"testing","predicate":"added","object":"cross-device-e2e-trading-consistency","validFrom":"2026-05-06T22:56:00.3NZ"}
+{"subject":"testing","predicate":"added","object":"visual-regression-dashboard-trading","validFrom":"2026-05-06T22:56:00.3NZ"}

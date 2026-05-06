@@ -280,7 +280,11 @@ serve(async (req) => {
         0
       );
 
-      const winRate = 0; // TODO: calculate from realized_pnl when sell trades are tracked
+      // Calculate win rate from trades with realized_pnl (set by DB trigger for sell trades)
+      const sellTrades = allTrades.filter((t: any) => t.side === 'sell' && t.realized_pnl !== null);
+      const winRate = sellTrades.length > 0
+        ? Math.round((sellTrades.filter((t: any) => parseFloat(t.realized_pnl) > 0).length / sellTrades.length) * 100)
+        : 0;
 
       // Update portfolio summary
       await supabase.from("portfolio_summary").upsert(
