@@ -337,3 +337,4 @@ export default async function PortfolioPage({ params }: PageProps) {
 // Re-export for TypeScript compatibility
 export type { PageProps };
 // Cache-bust: 1777815014
+// force-rebuild: 1778063752
