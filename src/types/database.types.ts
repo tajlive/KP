@@ -8549,11 +8549,13 @@ export type Database = {
           created_at: string | null
           currency: string | null
           current_capital: number | null
+          current_capital_nok: number | null
           daily_loss_limit_pct: number | null
           followers_count: number | null
           id: string | null
           initial_capital: number | null
           is_public: boolean | null
+          starting_capital_nok: number | null
           last_heartbeat: string | null
           last_trade_at: string | null
           losing_trades: number | null
@@ -8582,11 +8584,13 @@ export type Database = {
           created_at?: string | null
           currency?: never
           current_capital?: number | null
+          current_capital_nok?: number | null
           daily_loss_limit_pct?: never
           followers_count?: never
           id?: string | null
           initial_capital?: number | null
           is_public?: never
+          starting_capital_nok?: number | null
           last_heartbeat?: string | null
           last_trade_at?: never
           losing_trades?: number | null
@@ -8615,6 +8619,7 @@ export type Database = {
           created_at?: string | null
           currency?: never
           current_capital?: number | null
+          current_capital_nok?: number | null
           daily_loss_limit_pct?: never
           followers_count?: never
           id?: string | null

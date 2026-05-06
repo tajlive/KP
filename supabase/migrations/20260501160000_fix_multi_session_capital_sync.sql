@@ -14,19 +14,28 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  -- 1. Update trading_sessions (source of truth for session capital)
+  -- 1. Update trading_sessions capital ONLY for paper mode.
+  -- Live mode capital is managed via atomic RPC (decrement_capital / increment_capital)
+  -- and synced from the exchange, not derived from trade values.
+  IF NEW.mode = 'paper' THEN
+    UPDATE public.trading_sessions
+    SET
+      current_capital = CASE
+        WHEN NEW.side::text = 'buy' THEN current_capital - NEW.total_value - COALESCE(NEW.fee, 0)
+        WHEN NEW.side::text = 'sell' THEN current_capital + NEW.total_value - COALESCE(NEW.fee, 0)
+        ELSE current_capital
+      END,
+      current_capital_nok = CASE
+        WHEN NEW.side::text = 'buy' THEN current_capital_nok - NEW.total_value - COALESCE(NEW.fee, 0)
+        WHEN NEW.side::text = 'sell' THEN current_capital_nok + NEW.total_value - COALESCE(NEW.fee, 0)
+        ELSE current_capital_nok
+      END
+    WHERE id = NEW.session_id;
+  END IF;
+
+  -- 2. Update position state and trade counters (both paper and live)
   UPDATE public.trading_sessions
   SET
-    current_capital = CASE
-      WHEN NEW.side::text = 'buy' THEN current_capital - NEW.total_value - NEW.fee
-      WHEN NEW.side::text = 'sell' THEN current_capital + NEW.total_value - NEW.fee
-      ELSE current_capital
-    END,
-    current_capital_nok = CASE
-      WHEN NEW.side::text = 'buy' THEN current_capital_nok - NEW.total_value - NEW.fee
-      WHEN NEW.side::text = 'sell' THEN current_capital_nok + NEW.total_value - NEW.fee
-      ELSE current_capital_nok
-    END,
     open_position = CASE
       WHEN NEW.side::text = 'buy' THEN jsonb_build_object(
         'side', 'long',

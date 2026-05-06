@@ -24,6 +24,7 @@ import {
   type RiskValidationResult,
 } from "@/lib/trading/safety/risk-validator";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
+import { acquireTradeLock } from "./distributed-lock";
 import type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext } from "./types";
 
 export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
@@ -31,6 +32,32 @@ export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
 const PAPER_DEFAULT_CAPITAL = 100000;
 
 export async function executeTrade(
+  supabase: SupabaseClient<Database>,
+  request: ExecuteTradeRequest,
+): Promise<ExecuteTradeResult> {
+  // Acquire distributed lock to prevent concurrent trades for same user+symbol
+  const lockResult = await acquireTradeLock(request.userId, request.symbol, {
+    ttlSeconds: 30,
+    retries: 2,
+    retryDelayMs: 50,
+  });
+
+  if (!lockResult.acquired) {
+    return {
+      success: false,
+      rejectionReason: "CONCURRENT_TRADE_BLOCKED",
+      error: "Another trade is being processed for this symbol. Please wait and try again.",
+    };
+  }
+
+  try {
+    return await executeTradeWithLock(supabase, request);
+  } finally {
+    await lockResult.release();
+  }
+}
+
+async function executeTradeWithLock(
   supabase: SupabaseClient<Database>,
   request: ExecuteTradeRequest,
 ): Promise<ExecuteTradeResult> {
@@ -235,24 +262,18 @@ export async function executeTrade(
     // 5. Balance check
     // ========================================================================
     const orderValueUsdt = request.quantity * request.price;
-    const rate =
-      request.mode === "paper"
-        ? await getUsdtToNokRateAsync(supabase)
-        : null;
-    const orderValue =
-      request.mode === "paper"
-        ? usdtToNok(orderValueUsdt, rate ?? undefined)
-        : orderValueUsdt;
+    const rate = await getUsdtToNokRateAsync(supabase);
+    const orderValueNok = usdtToNok(orderValueUsdt, rate ?? undefined);
 
     const currentBalance = Number(
       session.current_capital_nok ?? session.current_capital ?? 0,
     );
 
-    if (request.side === "buy" && orderValue > currentBalance) {
+    if (request.side === "buy" && orderValueNok > currentBalance) {
       const rejectionResult: RiskValidationResult = {
         allowed: false,
         rejectionReason: "INSUFFICIENT_BALANCE",
-        rejectionDetails: { required: orderValue, available: currentBalance },
+        rejectionDetails: { required: orderValueNok, available: currentBalance },
       };
       await recordTradeRejection(supabase, tradeRequest, rejectionResult);
       await recordTradeDecision(supabase, tradeRequest, rejectionResult);
@@ -305,9 +326,12 @@ export async function executeTrade(
         price: execResult.executedPrice,
         total_value:
           request.mode === "paper"
-            ? execResult.executedQuantity * execResult.executedPrice
+            ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
             : execResult.executedQuantity * execResult.executedPrice,
-        fee: request.mode === "live" ? execResult.fee : 0,
+        fee:
+          request.mode === "live"
+            ? execResult.fee
+            : usdtToNok(execResult.fee || 0, rate ?? undefined),
         status: "filled",
         mode: request.mode,
         order_type: request.orderType,
@@ -353,37 +377,8 @@ export async function executeTrade(
     // 8. Update balance
     // ========================================================================
     if (request.mode === "paper") {
-      // Read session capital after DB trigger
-      const { data: sessionAfter, error: readErr } = await supabase
-        .from("trading_sessions")
-        .select("current_capital")
-        .eq("id", session.id)
-        .maybeSingle();
-
-      if (readErr) {
-        console.error("[executeTrade] Failed to read session after trade:", readErr);
-      }
-
-      const synced =
-        sessionAfter?.current_capital != null
-          ? Number(sessionAfter.current_capital)
-          : request.side === "buy"
-            ? currentBalance - orderValue
-            : currentBalance + orderValue;
-
-      const { error: updateError } = await supabase
-        .from("trading_sessions")
-        .update({
-          current_capital_nok: synced,
-          current_capital: synced,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", session.id);
-
-      if (updateError) {
-        console.error("[executeTrade] Failed to sync session capital:", updateError);
-      }
-
+      // Paper capital is updated by DB trigger (trigger_update_session_state)
+      // which reads total_value (now stored in NOK for paper trades).
       // Record successful decision
       await recordTradeDecision(
         supabase,
@@ -397,7 +392,7 @@ export async function executeTrade(
         success: true,
         tradeId: trade.id,
         sessionId: session.id,
-        newBalance: synced,
+        newBalance: currentBalance + (request.side === "buy" ? -orderValueNok : orderValueNok),
         orderId: execResult.orderId,
         executedPrice: execResult.executedPrice,
         executedQuantity: execResult.executedQuantity,
@@ -405,19 +400,20 @@ export async function executeTrade(
       };
     }
 
-    // Live mode: update balance atomically via RPC
-    const netValue =
+    // Live mode: update balance atomically via RPC (amount must be in NOK)
+    const netValueUsdt =
       request.side === "buy"
         ? execResult.executedQuantity * execResult.executedPrice +
           (execResult.fee || 0)
         : execResult.executedQuantity * execResult.executedPrice -
           (execResult.fee || 0);
+    const netValueNok = usdtToNok(netValueUsdt, rate ?? undefined);
 
     const { error: balanceError } = await supabase.rpc(
       request.side === "buy" ? "decrement_capital" : "increment_capital",
       {
         p_session_id: session.id,
-        p_amount: netValue,
+        p_amount: netValueNok,
         p_user_id: request.userId,
       },
     );

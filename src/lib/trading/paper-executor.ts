@@ -22,6 +22,7 @@ import type {
   OrderBookSnapshot,
 } from "./order-executor";
 import { calculateFee, fetchBinancePrice, fetchBinanceDepth } from "./order-executor";
+import { getUsdtToNokRate, usdtToNok } from "./currency";
 
 export class PaperExecutor implements OrderExecutor {
   constructor(
@@ -39,13 +40,14 @@ export class PaperExecutor implements OrderExecutor {
       if (params.side.toLowerCase() === "buy") {
         const balance = await this.getBalance();
         const currentPrice = await fetchBinancePrice(params.symbol);
-        const orderValue = params.quantity * currentPrice;
-        const fee = calculateFee(params.quantity, currentPrice);
-        const totalCost = orderValue + fee;
+        const orderValueUsdt = params.quantity * currentPrice;
+        const feeUsdt = calculateFee(params.quantity, currentPrice);
+        const totalCostUsdt = orderValueUsdt + feeUsdt;
+        const totalCostNok = usdtToNok(totalCostUsdt);
 
-        // Minimum $10 order value
-        const MIN_ORDER_VALUE = 10;
-        if (orderValue < MIN_ORDER_VALUE) {
+        // Minimum ~100 NOK order value (≈ $10)
+        const MIN_ORDER_VALUE_NOK = usdtToNok(10);
+        if (usdtToNok(orderValueUsdt) < MIN_ORDER_VALUE_NOK) {
           return {
             success: false,
             orderId: "",
@@ -53,11 +55,11 @@ export class PaperExecutor implements OrderExecutor {
             executedQuantity: 0,
             fee: 0,
             timestamp: new Date(),
-            error: `Order value must be at least $${MIN_ORDER_VALUE}. Current: $${orderValue.toFixed(2)}`,
+            error: `Order value must be at least ${MIN_ORDER_VALUE_NOK.toFixed(0)} NOK. Current: ${usdtToNok(orderValueUsdt).toFixed(0)} NOK`,
           };
         }
 
-        if (balance.available < totalCost) {
+        if (balance.available < totalCostNok) {
           return {
             success: false,
             orderId: "",
@@ -65,7 +67,7 @@ export class PaperExecutor implements OrderExecutor {
             executedQuantity: 0,
             fee: 0,
             timestamp: new Date(),
-            error: `Insufficient paper balance. Required: $${totalCost.toFixed(2)}, Available: $${balance.available.toFixed(2)}`,
+            error: `Insufficient paper balance. Required: ${totalCostNok.toFixed(0)} NOK, Available: ${balance.available.toFixed(0)} NOK`,
           };
         }
       }
@@ -150,15 +152,16 @@ export class PaperExecutor implements OrderExecutor {
       return { available: 0, locked: 0, total: 0 };
     }
 
-    // Calculate locked capital (in open position)
+    // Calculate locked capital (position value in NOK)
     const position = session.open_position as OpenPosition | null;
-    const locked = position ? position.quantity * position.entry_price : 0;
+    const lockedUsdt = position ? position.quantity * position.entry_price : 0;
+    const lockedNok = usdtToNok(lockedUsdt);
 
     const cap = session.current_capital_nok ?? 0;
     return {
       available: cap,
-      locked,
-      total: cap + locked,
+      locked: lockedNok,
+      total: cap + lockedNok,
     };
   }
 
