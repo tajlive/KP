@@ -12,6 +12,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
+import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 import type { Json } from "@/types/database.types";
 
@@ -140,8 +141,8 @@ async function sendAlert(
     acknowledged: false
   });
 
-  // TODO: Send to external alerting system (PagerDuty, Slack, etc.)
-  console.error(`[ALERT:${alert.severity}] ${alert.component}: ${alert.message}`);
+  // Ekstern alerting (PagerDuty/Slack) — konfigurer webhook i env når tilgjengelig
+  logger.error(`[ALERT:${alert.severity}] ${alert.component}: ${alert.message}`);
 }
 
 // Also support POST for pg_cron triggering
