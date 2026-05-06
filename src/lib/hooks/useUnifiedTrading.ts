@@ -6,6 +6,7 @@ import { TradingMode } from "@/types/trading";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWebSocketPrice } from "@/hooks/useWebSocketPrice";
+import { executeTradeAction } from "@/app/actions/trading";
 
 // Matches actual DB: trading_sessions table columns:
 // id, user_id, trading_pair, mode, strategy, status, params, started_at,
@@ -65,13 +66,14 @@ interface ExecuteTradeParams {
 interface ExecuteResult {
   success: boolean;
   error?: string;
-  trade?: Trade;
-  execution?: {
-    orderId: string;
-    executedPrice: number;
-    executedQuantity: number;
-    fee: number;
-    slippagePct?: number;
+  trade?: {
+    tradeId: string | undefined;
+    orderId: string | undefined;
+    symbol: string;
+    side: "buy" | "sell";
+    executedQuantity: number | undefined;
+    executedPrice: number | undefined;
+    fee: number | undefined;
   };
 }
 
@@ -343,22 +345,16 @@ export function useUnifiedTrading(
         setIsLoading(true);
         setError(null);
 
-        const res = await fetch("/api/trading/execute", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id: session.id,
-            symbol: params.symbol || symbol,
-            side: params.side,
-            order_type: params.orderType || "market",
-            quantity: params.quantity,
-            price: params.price,
-          }),
+        const data = await executeTradeAction({
+          session_id: session.id,
+          symbol: params.symbol || symbol,
+          side: params.side,
+          order_type: params.orderType || "market",
+          quantity: params.quantity,
+          price: params.price,
         });
 
-        const data = await res.json();
-
-        if (!res.ok) {
+        if (!data.success) {
           throw new Error(data.error || "Trade execution failed");
         }
 
@@ -372,7 +368,6 @@ export function useUnifiedTrading(
         return {
           success: true,
           trade: data.trade,
-          execution: data.execution,
         };
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : "Trade failed";

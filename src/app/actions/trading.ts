@@ -5,6 +5,7 @@ import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import type { TierSlug } from "@/lib/pricing/tiers";
 import { mapRiskLevelToConfig, RISK_LEVELS } from "@/lib/auto-trading/risk-levels";
 import { getOptimizedRiskProfile } from "@/lib/config/optimized-risk-profiles";
+import { executeTrade } from "@/lib/trading/core/execute-trade";
 import { z } from "zod";
 
 const paperTradeSchema = z.object({
@@ -307,5 +308,115 @@ export async function startPaperTrading(
       error: msg,
       next_step: "retry",
     };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Execute Trade Action
+// ─────────────────────────────────────────────────────────────────────────────
+
+const executeTradeSchema = z.object({
+  session_id: z.string().uuid(),
+  symbol: z.string().min(1),
+  side: z.enum(["buy", "sell"]),
+  quantity: z.number().positive(),
+  price: z.number().positive().optional(),
+  order_type: z.enum(["market", "limit"]).default("market"),
+  bot_id: z.string().uuid().optional(),
+});
+
+export type ExecuteTradeInput = z.infer<typeof executeTradeSchema>;
+
+export type ExecuteTradeActionResponse =
+  | {
+      success: true;
+      trade: {
+        tradeId: string | undefined;
+        orderId: string | undefined;
+        symbol: string;
+        side: "buy" | "sell";
+        executedQuantity: number | undefined;
+        executedPrice: number | undefined;
+        fee: number | undefined;
+      };
+    }
+  | {
+      success: false;
+      error: string;
+      rejectionReason?: string;
+      type?: "TRADE_REJECTED";
+    };
+
+export async function executeTradeAction(
+  data: ExecuteTradeInput
+): Promise<ExecuteTradeActionResponse> {
+  try {
+    const supabase = await createServerClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const validation = executeTradeSchema.safeParse(data);
+    if (!validation.success) {
+      return {
+        success: false,
+        error: "Invalid trade data",
+      };
+    }
+
+    const { session_id, symbol, side, quantity, price, order_type, bot_id } =
+      validation.data;
+
+    // Execute live trade via unified core
+    const result = await executeTrade(supabase, {
+      userId: user.id,
+      sessionId: session_id,
+      symbol: symbol.toUpperCase(),
+      side,
+      quantity,
+      price: price ?? 0,
+      orderType: order_type,
+      mode: "live",
+      botId: bot_id,
+    });
+
+    if (!result.success) {
+      if (result.rejectionReason) {
+        return {
+          success: false,
+          error: result.error || "Trade rejected",
+          rejectionReason: result.rejectionReason,
+          type: "TRADE_REJECTED",
+        };
+      }
+      return {
+        success: false,
+        error: result.error || "Live execution failed",
+      };
+    }
+
+    return {
+      success: true,
+      trade: {
+        tradeId: result.tradeId,
+        orderId: result.orderId,
+        symbol: symbol.toUpperCase(),
+        side,
+        executedQuantity: result.executedQuantity,
+        executedPrice: result.executedPrice,
+        fee: result.fee,
+      },
+    };
+  } catch (error) {
+    console.error("[actions/trading/execute] Unexpected error:", error);
+    const msg =
+      error instanceof Error ? error.message : "Internal server error";
+    return { success: false, error: msg };
   }
 }
