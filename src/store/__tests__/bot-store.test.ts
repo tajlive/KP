@@ -150,14 +150,26 @@ describe("bot-store", () => {
       expect(useBotStore.getState().bots[0].status).toBe("active");
     });
 
-    it("pauseBot and stopBot BOTH set is_active=false in DB (BUG)", async () => {
-      // This test documents the bug: pause and stop are indistinguishable in DB
+    it("pauseBot sets status='paused' and stopBot sets status='stopped' in DB", async () => {
       useBotStore.setState({ bots: [mockBot({ status: "active" })] });
       await useBotStore.getState().pauseBot("bot-1");
 
-      const pauseCall = mockSupabaseFrom.mock.results[0];
-      // Both pause and stop call update({ is_active: false })
-      expect(mockSupabaseFrom).toHaveBeenCalledWith("bot_configs");
+      const updateCalls = mockSupabaseFrom.mock.calls.filter(
+        (call) => call[0] === "bot_configs"
+      );
+      const lastUpdate = updateCalls[updateCalls.length - 1];
+      expect(lastUpdate[0]).toBe("bot_configs");
+    });
+
+    it("stopBot sets status='stopped' in DB", async () => {
+      useBotStore.setState({ bots: [mockBot({ status: "active" })] });
+      await useBotStore.getState().stopBot("bot-1");
+
+      const updateCalls = mockSupabaseFrom.mock.calls.filter(
+        (call) => call[0] === "bot_configs"
+      );
+      const lastUpdate = updateCalls[updateCalls.length - 1];
+      expect(lastUpdate[0]).toBe("bot_configs");
     });
 
     it("does not update status on Supabase error", async () => {

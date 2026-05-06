@@ -1,24 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { GamificationCard } from "../GamificationCard";
-import { createClient } from "@/lib/utils";
 
-vi.mock("@/lib/utils");
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: vi.fn(),
+}));
+
 vi.mock("@/lib/auth/new/AuthContext", () => ({
   useAuth: () => ({ user: { id: "user-123" } }),
 }));
+
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: { children: React.ReactNode }) => (
+    div: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
   },
 }));
 
+import { createClient } from "@/lib/supabase/client";
 const mockCreateClient = vi.mocked(createClient);
 
-// TODO: Test henger i >120s — trolig ufullstendig mock av framer-motion eller supabase client.
-// Se: https://github.com/vitest-dev/vitest/issues/xxxx (module mock deadlock med isolate: false)
+// NOTE: Testene fungerer isolert, men henger i CI pga. module mock deadlock
+// med framer-motion + lucide-react + supabase client. Krever isolate: true
+// eller refaktorering av komponenten til å bruke dependency injection.
+// Se: https://github.com/vitest-dev/vitest/issues/xxxx
 describe.skip("GamificationCard", () => {
   beforeEach(() => {
     vi.clearAllMocks();

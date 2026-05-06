@@ -206,7 +206,7 @@ export class PaperExecutor implements OrderExecutor {
     const entryValue = position.quantity * position.entry_price;
     const currentValue = position.quantity * currentPrice;
     const unrealizedPnL = currentValue - entryValue;
-    const unrealizedPnLPct = (unrealizedPnL / entryValue) * 100;
+    const unrealizedPnLPct = entryValue > 0 ? (unrealizedPnL / entryValue) * 100 : 0;
 
     return {
       symbol,

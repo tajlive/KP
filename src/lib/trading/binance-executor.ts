@@ -252,7 +252,7 @@ export class BinanceExecutor implements OrderExecutor {
       const currentValue = totalQty * currentPrice;
       const entryValue = totalValue;
       const unrealizedPnL = currentValue - entryValue;
-      const unrealizedPnLPct = (unrealizedPnL / entryValue) * 100;
+      const unrealizedPnLPct = entryValue > 0 ? (unrealizedPnL / entryValue) * 100 : 0;
 
       return {
         symbol,

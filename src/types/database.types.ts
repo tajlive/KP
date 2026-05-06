@@ -2057,6 +2057,7 @@ export type Database = {
           is_active: boolean | null
           is_paper_trade: boolean | null
           last_ai_adjustment_at: string | null
+          status: string | null
           max_position_size_percent: number | null
           stop_loss_percent: number | null
           strategy_type: string
@@ -2075,6 +2076,7 @@ export type Database = {
           is_paper_trade?: boolean | null
           last_ai_adjustment_at?: string | null
           max_position_size_percent?: number | null
+          status?: string | null
           stop_loss_percent?: number | null
           strategy_type?: string
           take_profit_percent?: number | null
@@ -2092,6 +2094,7 @@ export type Database = {
           is_paper_trade?: boolean | null
           last_ai_adjustment_at?: string | null
           max_position_size_percent?: number | null
+          status?: string | null
           stop_loss_percent?: number | null
           strategy_type?: string
           take_profit_percent?: number | null

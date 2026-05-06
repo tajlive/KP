@@ -135,7 +135,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
             userId: strat.user_id,
             name: strat.bot_name || "Unnamed Bot",
             strategyType: (strat.strategy_type as BotStrategyType) || "dca",
-            status: strat.is_active ? "active" : "stopped",
+            status: (strat.status as BotStatus) || (strat.is_active ? "active" : "stopped"),
             mode: strat.is_paper_trade ? "paper" : "live",
             symbol,
             config,
@@ -171,7 +171,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     const supabase = createClient();
     const { error } = await supabase
       .from("bot_configs")
-      .update({ is_active: false })
+      .update({ status: "paused", is_active: false })
       .eq("id", id);
 
     if (!error) {
@@ -187,7 +187,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     const supabase = createClient();
     const { error } = await supabase
       .from("bot_configs")
-      .update({ is_active: true })
+      .update({ status: "active", is_active: true })
       .eq("id", id);
 
     if (!error) {
@@ -203,7 +203,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     const supabase = createClient();
     const { error } = await supabase
       .from("bot_configs")
-      .update({ is_active: false })
+      .update({ status: "stopped", is_active: false })
       .eq("id", id);
 
     if (!error) {

@@ -6,6 +6,8 @@ export const metadata: Metadata = {
     default: "Klarpakke Universitet - Norges første krypto-trading skole",
     template: "%s | Klarpakke",
   },
+  description:
+    "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Lekepenger med 100 000 kr. Norges første krypto-trading skole.",
   keywords: [
     "krypto",
     "trading",
