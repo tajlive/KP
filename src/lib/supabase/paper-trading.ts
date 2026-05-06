@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database.types'
+import { usdtToNok, getUsdtToNokRateAsync } from '@/lib/trading/currency'
 
 type Supa = SupabaseClient<Database>
 
@@ -136,20 +137,25 @@ export async function executePaperTrade(
     throw new Error("No active paper trading session found");
   }
 
-  const totalValue = trade.quantity * trade.price;
+  // Convert USDT trade value to NOK for balance operations
+  const rate = await getUsdtToNokRateAsync(supabase);
+  const totalValueUsdt = trade.quantity * trade.price;
+  const totalValueNok = usdtToNok(totalValueUsdt, rate);
+  const feeNok = usdtToNok(totalValueUsdt * 0.001, rate);
 
-  // Validate balance for buy orders
-  if (trade.side === "buy" && session.current_capital_nok < totalValue) {
+  // Validate balance for buy orders (NOK vs NOK)
+  if (trade.side === "buy" && session.current_capital_nok < totalValueNok + feeNok) {
     throw new Error("Insufficient balance for this trade");
   }
 
-  // Calculate new balance
+  // Calculate new balance in NOK
   const newBalance =
     trade.side === "buy"
-      ? session.current_capital_nok - totalValue
-      : session.current_capital_nok + totalValue;
+      ? session.current_capital_nok - totalValueNok - feeNok
+      : session.current_capital_nok + totalValueNok - feeNok;
 
-  // Execute trade and update balance in a transaction-like manner
+  // Insert trade with NOK-converted values.
+  // DB trigger (trigger_update_session_state) will update session capital.
   const { data: tradeData, error: tradeError } = await supabase
     .from("trades")
     .insert({
@@ -159,8 +165,8 @@ export async function executePaperTrade(
       side: trade.side,
       quantity: trade.quantity,
       price: trade.price,
-      total_value: totalValue,
-      fee: totalValue * 0.001,
+      total_value: totalValueNok,
+      fee: feeNok,
       order_type: 'market',
       is_copy: false,
       status: 'filled',
@@ -174,19 +180,6 @@ export async function executePaperTrade(
   if (tradeError) {
     console.error("Failed to execute trade:", tradeError);
     throw new Error("Failed to execute trade");
-  }
-
-  // Update session balance
-  const { error: updateError } = await supabase
-    .from("trading_sessions")
-    .update({
-      current_capital_nok: newBalance,
-    })
-    .eq("id", session.id);
-
-  if (updateError) {
-    console.error("Failed to update balance:", updateError);
-    throw new Error("Failed to update balance");
   }
 
   return {
