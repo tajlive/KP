@@ -29,6 +29,7 @@ export function RiskMetricsPanel() {
   const t = useTranslations("trading.riskMetrics");
   const [metrics, setMetrics] = useState<RiskMetrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/user/trading-analytics")
@@ -38,10 +39,21 @@ export function RiskMetricsPanel() {
           setMetrics(data.riskMetrics);
         }
       })
+      .catch((e) => {
+        console.error("[RiskMetricsPanel] Failed to load:", e);
+        setError(t("loadError"));
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [t]);
 
   if (loading) return null;
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-500/30 bg-red-950/40 px-4 py-3 text-sm text-red-200">
+        {error}
+      </div>
+    );
+  }
   if (!metrics) return null;
 
   const cards = [
