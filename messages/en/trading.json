@@ -780,6 +780,7 @@
   },
   "riskMetrics": {
     "title": "Risk Metrics",
+    "loadError": "Could not load risk metrics",
     "panelTooltip": "Advanced risk measures based on actual trading history",
     "sortinoRatio": "Sortino Ratio",
     "sortinoTooltip": "Risk-adjusted return — only penalizes downside volatility. Higher is better.",

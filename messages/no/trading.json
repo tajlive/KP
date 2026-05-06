@@ -780,6 +780,7 @@
   },
   "riskMetrics": {
     "title": "Risikometrikker",
+    "loadError": "Kunne ikke laste risikometrikker",
     "panelTooltip": "Avanserte risikomålinger basert på faktisk handelshistorikk",
     "sortinoRatio": "Sortino-ratio",
     "sortinoTooltip": "Risikojustert avkastning — kun straffer nedsidevolatilitet. Høyere er bedre.",
