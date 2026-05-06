@@ -29,7 +29,7 @@ export function Testimonials({ language = "no", items }: TestimonialsProps) {
   const testimonialItems = items ?? (t.items as TestimonialItem[]);
 
   return (
-    <section className="pt-20 pb-32 bg-[#050510] relative overflow-hidden">
+    <section className="pt-12 pb-20 md:pt-20 md:pb-32 bg-[#050510] relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
 

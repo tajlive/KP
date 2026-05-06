@@ -40,32 +40,32 @@ interface SessionCardsProps {
   locale: string;
 }
 
-function statusConfig(status: string) {
+function statusConfig(status: string, t: (key: string) => string) {
   switch (status) {
     case "active":
       return {
-        badge: <Badge className="bg-green-600 text-white text-[10px] hover:bg-green-600">AKTIV</Badge>,
+        badge: <Badge className="bg-green-600 text-white text-[10px] hover:bg-green-600">{t("active")}</Badge>,
         icon: <Play className="w-4 h-4 text-green-600 dark:text-green-400" />,
         accent: "border-l-green-500",
         dot: "bg-green-500",
       };
     case "stopped":
       return {
-        badge: <Badge variant="secondary" className="text-[10px]">STOPPET</Badge>,
+        badge: <Badge variant="secondary" className="text-[10px]">{t("stopped")}</Badge>,
         icon: <Square className="w-4 h-4 text-slate-500 dark:text-slate-400" />,
         accent: "border-l-slate-400",
         dot: "bg-slate-400",
       };
     case "crashed":
       return {
-        badge: <Badge variant="destructive" className="text-[10px]">KRÆSJET</Badge>,
+        badge: <Badge variant="destructive" className="text-[10px]">{t("crashed")}</Badge>,
         icon: <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />,
         accent: "border-l-red-500",
         dot: "bg-red-500",
       };
     case "paused":
       return {
-        badge: <Badge variant="outline" className="text-[10px]">PAUSET</Badge>,
+        badge: <Badge variant="outline" className="text-[10px]">{t("paused")}</Badge>,
         icon: <PauseCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
         accent: "border-l-amber-500",
         dot: "bg-amber-500",
@@ -150,7 +150,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
         )}
 
         {filtered.map((session) => {
-          const cfg = statusConfig(session.status);
+          const cfg = statusConfig(session.status, t);
           const pnlAbs = session.current_capital_nok - session.starting_capital_nok;
           const pnlPct =
             session.starting_capital_nok > 0
@@ -181,7 +181,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
                       {cfg.badge}
                       {session.mode === "live" && (
                         <Badge className="bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30 text-[10px]">
-                          LIVE
+                          {t("live")}
                         </Badge>
                       )}
                     </div>

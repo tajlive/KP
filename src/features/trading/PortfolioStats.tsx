@@ -1,6 +1,7 @@
 "use client";
 
 import { useTradingStore } from "@/store/tradingStore";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
   PiggyBank,
@@ -9,38 +10,36 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import { formatNOK } from "@/lib/format/currency";
 
 export default function PortfolioStats() {
-  const { portfolio, positions: _positions } = useTradingStore();
+  const { portfolio } = useTradingStore();
+  const t = useTranslations("dashboard.portfolioStats");
 
   const stats = [
     {
-      label: "Total Equity",
+      label: t("totalEquity"),
       value: portfolio.equity,
       icon: Wallet,
       color: "blue",
-      format: (v: number) => `$${v.toLocaleString()}`,
     },
     {
-      label: "Tilgjengelig",
+      label: t("available"),
       value: portfolio.balance,
       icon: PiggyBank,
       color: "green",
-      format: (v: number) => `$${v.toLocaleString()}`,
     },
     {
-      label: "Margin Brukt",
+      label: t("marginUsed"),
       value: portfolio.marginUsed,
       icon: Scale,
       color: "yellow",
-      format: (v: number) => `$${v.toLocaleString()}`,
     },
     {
-      label: "Total P&L",
+      label: t("totalPnl"),
       value: portfolio.totalPnl,
       icon: portfolio.totalPnl >= 0 ? TrendingUp : TrendingDown,
       color: portfolio.totalPnl >= 0 ? "green" : "red",
-      format: (v: number) => `${v >= 0 ? "+" : ""}$${v.toLocaleString()}`,
       percent: portfolio.totalPnlPercent,
     },
   ];
@@ -72,7 +71,7 @@ export default function PortfolioStats() {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {stats.map((stat, index) => {
         const colors = colorClasses[stat.color];
         const Icon = stat.icon;
@@ -83,17 +82,17 @@ export default function PortfolioStats() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-200 dark:border-gray-800 p-4"
+            className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-200 dark:border-gray-800 p-3 sm:p-4"
           >
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
               <div
-                className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center`}
+                className={`w-8 h-8 sm:w-10 sm:h-10 ${colors.bg} rounded-xl flex items-center justify-center`}
               >
-                <Icon className={`w-5 h-5 ${colors.text}`} />
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.text}`} />
               </div>
               {stat.percent !== undefined && (
                 <span
-                  className={`text-xs font-bold px-2 py-1 rounded-full ${
+                  className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full ${
                     stat.percent >= 0
                       ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
                       : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
@@ -106,22 +105,22 @@ export default function PortfolioStats() {
             </div>
 
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">
                 {stat.label}
               </p>
               <motion.p
                 key={stat.value}
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
-                className="text-xl lg:text-2xl font-black text-gray-900 dark:text-white font-mono"
+                className="text-lg sm:text-xl lg:text-2xl font-black text-gray-900 dark:text-white font-mono"
               >
-                {stat.format(stat.value)}
+                {formatNOK(stat.value)}
               </motion.p>
             </div>
 
             {/* Margin usage bar */}
-            {stat.label === "Margin Brukt" && portfolio.marginUsed > 0 && (
-              <div className="mt-3">
+            {stat.label === t("marginUsed") && portfolio.marginUsed > 0 && (
+              <div className="mt-2 sm:mt-3">
                 <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-yellow-500 rounded-full transition-all"
@@ -135,13 +134,13 @@ export default function PortfolioStats() {
                     }}
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
                   {(
                     (portfolio.marginUsed /
                       (portfolio.marginUsed + portfolio.marginAvailable)) *
                     100
                   ).toFixed(1)}
-                  % brukt
+                  {t("percentUsed")}
                 </p>
               </div>
             )}

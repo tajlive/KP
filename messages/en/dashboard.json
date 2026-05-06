@@ -69,6 +69,29 @@
       "noEvents": "No new events"
     }
   },
+  "sessionCards": {
+    "title": "Active Sessions",
+    "all": "All",
+    "active": "Active",
+    "paused": "Paused",
+    "stopped": "Stopped",
+    "crashed": "Crashed",
+    "activeLC": "active",
+    "pausedLC": "paused",
+    "stoppedLC": "stopped",
+    "trades": "trades",
+    "winRate": "win rate",
+    "seeDetails": "See details",
+    "live": "LIVE",
+    "noFiltered": "No {status} sessions"
+  },
+  "portfolioStats": {
+    "totalEquity": "Total Equity",
+    "available": "Available",
+    "marginUsed": "Margin Used",
+    "totalPnl": "Total P&L",
+    "percentUsed": "% used"
+  },
   "welcomeBack": "Welcome back! Here is your real-time status.",
   "homeOverview": {
     "title": "Home — portfolio overview",
@@ -464,6 +487,7 @@
     "pause": "Pause",
     "resume": "Resume",
     "viewDetails": "View details",
+    "updateError": "Could not update status",
     "noBot": "No bot active",
     "noBotDescription": "Start your first trading bot to see status here.",
     "startPaperTrading": "Start paper trading",

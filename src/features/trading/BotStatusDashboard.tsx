@@ -601,19 +601,25 @@ export default function BotStatusDashboard({
                 {
                   label: t("dailyResult"),
                   value: pnlToday,
-                  percent: `${pnlToday >= 0 ? "+" : ""}${((pnlToday / (portfolio?.total_value || 1)) * 100).toFixed(2)}%`,
+                  percent: portfolio?.total_value && portfolio.total_value > 0
+                    ? `${pnlToday >= 0 ? "+" : ""}${((pnlToday / portfolio.total_value) * 100).toFixed(2)}%`
+                    : "—",
                   up: pnlToday >= 0,
                 },
                 {
                   label: t("weeklyResult"),
                   value: pnlWeek,
-                  percent: `${pnlWeek >= 0 ? "+" : ""}${((pnlWeek / (portfolio?.total_value || 1)) * 100).toFixed(2)}%`,
+                  percent: portfolio?.total_value && portfolio.total_value > 0
+                    ? `${pnlWeek >= 0 ? "+" : ""}${((pnlWeek / portfolio.total_value) * 100).toFixed(2)}%`
+                    : "—",
                   up: pnlWeek >= 0,
                 },
                 {
                   label: t("monthlyResult"),
                   value: pnlMonth,
-                  percent: `${pnlMonth >= 0 ? "+" : ""}${((pnlMonth / (portfolio?.total_value || 1)) * 100).toFixed(2)}%`,
+                  percent: portfolio?.total_value && portfolio.total_value > 0
+                    ? `${pnlMonth >= 0 ? "+" : ""}${((pnlMonth / portfolio.total_value) * 100).toFixed(2)}%`
+                    : "—",
                   up: pnlMonth >= 0,
                 },
               ].map((stat, i) => (
