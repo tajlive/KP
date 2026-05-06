@@ -377,13 +377,14 @@ export default function PortfolioDashboard({
     (t) =>
       t.created_at && Date.now() - new Date(t.created_at).getTime() < 3600000,
   );
+  const completedTradesSession =
+    (activeSession?.winning_trades ?? 0) + (activeSession?.losing_trades ?? 0);
   const winRateFromSession =
     activeSession &&
     typeof activeSession.winning_trades === "number" &&
-    typeof activeSession.total_trades === "number" &&
-    activeSession.total_trades > 0
+    completedTradesSession > 0
       ? Math.round(
-          (activeSession.winning_trades / activeSession.total_trades) * 100,
+          (activeSession.winning_trades / completedTradesSession) * 100,
         )
       : null;
   const winRateFromTrades = winRateFromRealizedTrades(displayTrades);
