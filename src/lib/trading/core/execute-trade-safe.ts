@@ -78,9 +78,18 @@ export async function executeTradeSafe(
   request: ExecuteTradeRequest,
 ): Promise<SafeExecutionResult> {
   const startTime = Date.now();
-  const trace = {
+  const trace: {
+    startedAt: number;
+    steps: string[];
+    riskCheckPassed: boolean;
+    auditPersisted: boolean;
+    statePersisted: boolean;
+    tradeRecorded: boolean;
+    success?: boolean;
+    error?: string;
+  } = {
     startedAt: startTime,
-    steps: [] as string[],
+    steps: [],
     riskCheckPassed: false,
     auditPersisted: false,
     statePersisted: false,
@@ -159,7 +168,7 @@ export async function executeTradeSafe(
 async function executeTradeWithLock(
   supabase: SupabaseClient<Database>,
   request: ExecuteTradeRequest,
-  trace: { startedAt: number; steps: string[]; riskCheckPassed: boolean; auditPersisted: boolean; statePersisted: boolean; tradeRecorded: boolean },
+  trace: { startedAt: number; steps: string[]; riskCheckPassed: boolean; auditPersisted: boolean; statePersisted: boolean; tradeRecorded: boolean; success?: boolean; error?: string },
   startTime: number,
   killSwitchStatus: { activated: boolean; reason?: string }
 ): Promise<SafeExecutionResult> {
