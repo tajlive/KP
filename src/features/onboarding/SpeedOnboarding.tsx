@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { RiskDisclaimer } from "./RiskDisclaimer";
+import { startPaperTrading } from "@/app/actions/trading";
 import { useCallback, useEffect, useState } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +26,7 @@ import { useCallback, useEffect, useState } from "react";
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface RiskProfile {
-  id: string;
+  id: "low" | "medium" | "high" | "safe" | "balanced" | "offensive" | "aggressive";
   name: string;
   color: string;
   bg: string;
@@ -117,7 +118,9 @@ export default function SpeedOnboarding({
   const t = useTranslations("onboarding");
   const tCommon = useTranslations("common");
   const [step, setStep] = useState(0);
-  const [selectedRisk, setSelectedRisk] = useState<string | null>(null);
+  const [selectedRisk, setSelectedRisk] = useState<
+    "low" | "medium" | "high" | "safe" | "balanced" | "offensive" | "aggressive" | null
+  >(null);
   const [selectedCoins, setSelectedCoins] = useState<string[]>(["BTC"]);
   const [countdown, setCountdown] = useState(60);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -199,14 +202,10 @@ export default function SpeedOnboarding({
           .eq("id", user.id);
 
         // Start paper trading session
-        await fetch("/api/auto-trading/paper", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            strategy: "dca",
-            risk_level: selectedRisk,
-            pairs: selectedCoins.map((c) => `${c}USDT`),
-          }),
+        await startPaperTrading({
+          strategy: "dca",
+          risk_level: selectedRisk,
+          pairs: selectedCoins.map((c) => `${c}USDT`),
         });
       }
     } catch {

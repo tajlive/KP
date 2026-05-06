@@ -73,3 +73,14 @@
 {"subject":"api-health-metrics","predicate":"created","object":"route-returns-activeUsers-dbLatency-trades-sessions","validFrom":"2026-05-05T01:30:00Z"}
 {"subject":"formatNOK","predicate":"options","object":"showSign-style-decimal-locale","validFrom":"2026-05-05T01:30:00Z"}
 {"subject":"dashboard-cleanup","predicate":"deployed","object":"production-2026-05-05-01-29","validFrom":"2026-05-05T01:30:00Z"}
+{"subject":"landing-page","predicate":"has","object":"zero-fake-data-claims-2026-05-05","validFrom":"2026-05-05"}
+{"subject":"landing-page","predicate":"i18n-parity","object":"369-identical-keys-no-en","validFrom":"2026-05-05"}
+{"subject":"ROISimulator","predicate":"i18n-ifisert","object":"landing.roiSimulator-6-keys","validFrom":"2026-05-05"}
+{"subject":"LandingBacktestTeaser","predicate":"i18n-ifisert","object":"landing.backtestTeaser-all-hardcoded-removed","validFrom":"2026-05-05"}
+{"subject":"landing-page","predicate":"audit-status","object":"100-percent-2026-optimized","validFrom":"2026-05-05"}
+{"subject":"landing.json","predicate":"key-count","object":"369-parity-verified","validFrom":"2026-05-05"}
+{"subject":"fake-data","predicate":"removed-from","object":"ComparisonSection-SocialProofSection-AutoTradeDemo-DashboardPreview-Features-KLTTeaser","validFrom":"2026-05-05"}
+{"subject":"fake-data","predicate":"removed-claims","object":"97-percent-cheaper-Binance-TradingView-partnership-50K-KLT-25-plus-hours","validFrom":"2026-05-05"}
+{"subject":"trading-tests","predicate":"added","object":"34-new-tests-currency-circuit-breaker","validFrom":"2026-05-05"}
+{"subject":"trading-todos","predicate":"fixed","object":"5-TODOs-leverage-s3-sync-logging-symbol","validFrom":"2026-05-05"}
+{"subject":"ExecuteTradeRequest","predicate":"has","object":"leverage-field","validFrom":"2026-05-05"}

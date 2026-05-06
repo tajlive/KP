@@ -26,6 +26,7 @@ import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useAnimatedPrice } from "@/hooks/usePrices";
 import { LivePricePreview } from "@/features/trading/LivePricePreview";
+import { startPaperTrading } from "@/app/actions/trading";
 
 interface BotWizardProps {
   userId: string;
@@ -73,7 +74,7 @@ export function BotWizard({
   const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
-  const [strategy, setStrategy] = useState("dca");
+  const [strategy, setStrategy] = useState<"dca" | "trend" | "grid" | "multi" | "ai-copy">("dca");
   const [riskLevel, setRiskLevel] = useState<"low" | "medium" | "high">("low");
   const [selectedPairs, setSelectedPairs] = useState<string[]>(["BTCUSDT"]);
   const [startingCapital, setStartingCapital] = useState(() => {
@@ -110,7 +111,14 @@ export function BotWizard({
 
   const coinLimit = TIER_COIN_LIMIT[tier] ?? 3;
 
-  const STRATEGIES = [
+  const STRATEGIES: {
+    id: "dca" | "trend" | "grid" | "multi" | "ai-copy";
+    name: string;
+    description: string;
+    Icon: React.ElementType;
+    tier: string;
+    recommended?: boolean;
+  }[] = [
     {
       id: "dca",
       name: "DCA",
@@ -188,35 +196,14 @@ export function BotWizard({
   const handleStart = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/auto-trading/paper", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          strategy,
-          risk_level: riskLevel,
-          pairs: selectedPairs,
-          starting_capital_nok: startingCapital,
-        }),
+      const data = await startPaperTrading({
+        strategy,
+        risk_level: riskLevel,
+        pairs: selectedPairs,
+        starting_capital_nok: startingCapital,
       });
-      let data: {
-        ok?: boolean;
-        code?: string;
-        message?: string;
-        error?: string;
-        session_id?: string;
-        max_sessions?: number;
-      };
-      try {
-        data = (await res.json()) as typeof data;
-      } catch {
-        toast.error(tToast("toasts.paperBot.startFailedTitle"), {
-          description: tToast("toasts.paperBot.networkError"),
-        });
-        return;
-      }
 
-      if (!res.ok || !data.ok) {
+      if (!data.ok) {
         if (data.code === "PAPER_BOT_SESSION_LIMIT") {
           toast.error(tToast("toasts.paperBot.sessionLimitTitle"), {
             description: tToast("toasts.paperBot.sessionLimitDesc", {

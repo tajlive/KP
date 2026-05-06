@@ -1,19 +1,36 @@
+"use server";
+
 import { createServerClient } from "@/lib/supabase/server";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import type { TierSlug } from "@/lib/pricing/tiers";
 import { mapRiskLevelToConfig, RISK_LEVELS } from "@/lib/auto-trading/risk-levels";
 import { getOptimizedRiskProfile } from "@/lib/config/optimized-risk-profiles";
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const paperTradeSchema = z.object({
   strategy: z.enum(["dca", "trend", "grid", "multi", "ai-copy"]).default("dca"),
-  risk_level: z.enum(["low", "medium", "high"]).default("medium"),
+  risk_level: z
+    .enum(["low", "medium", "high", "safe", "balanced", "offensive", "aggressive"])
+    .transform((val) => {
+      const map: Record<string, "low" | "medium" | "high"> = {
+        safe: "low",
+        balanced: "medium",
+        offensive: "high",
+        aggressive: "high",
+        low: "low",
+        medium: "medium",
+        high: "high",
+      };
+      return map[val];
+    })
+    .default("medium"),
   pairs: z.array(z.string()).default(["BTCUSDT"]),
   starting_capital_nok: z.number().min(10000).max(1000000).default(100000),
 });
 
-type StartPaperBotResponse = {
+export type PaperTradeInput = z.input<typeof paperTradeSchema>;
+
+export type StartPaperBotResponse = {
   ok: boolean;
   code:
     | "PAPER_BOT_STARTED"
@@ -30,42 +47,36 @@ type StartPaperBotResponse = {
   details?: unknown;
 };
 
-export async function POST(request: NextRequest) {
+export async function startPaperTrading(
+  data: PaperTradeInput
+): Promise<StartPaperBotResponse> {
   try {
-    const response = NextResponse.next();
-    const supabase = createServerClient(request, response);
+    const supabase = await createServerClient();
 
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json<StartPaperBotResponse>(
-        {
-          ok: false,
-          code: "UNAUTHORIZED",
-          message: "Unauthorized",
-          error: "Unauthorized",
-          next_step: "retry",
-        },
-        { status: 401 },
-      );
+      return {
+        ok: false,
+        code: "UNAUTHORIZED",
+        message: "Unauthorized",
+        error: "Unauthorized",
+        next_step: "retry",
+      };
     }
 
-    const body = await request.json();
-    const parsed = paperTradeSchema.safeParse(body);
+    const parsed = paperTradeSchema.safeParse(data);
     if (!parsed.success) {
-      return NextResponse.json<StartPaperBotResponse>(
-        {
-          ok: false,
-          code: "VALIDATION_FAILED",
-          message: "Validation failed",
-          error: "Validation failed",
-          details: parsed.error.flatten(),
-          next_step: "retry",
-        },
-        { status: 400 },
-      );
+      return {
+        ok: false,
+        code: "VALIDATION_FAILED",
+        message: "Validation failed",
+        error: "Validation failed",
+        details: parsed.error.flatten(),
+        next_step: "retry",
+      };
     }
 
     const {
@@ -82,7 +93,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (profErr) {
-      console.error("[auto-trading/paper] profile:", profErr.message);
+      console.error("[actions/trading] profile:", profErr.message);
     }
 
     const tier = (profRow?.tier ?? "student") as TierSlug;
@@ -96,22 +107,19 @@ export async function POST(request: NextRequest) {
       .eq("status", "active");
 
     if (countErr) {
-      console.error("[auto-trading/paper] count:", countErr.message);
+      console.error("[actions/trading] count:", countErr.message);
     }
 
     const nActive = activeCount ?? 0;
     if (nActive >= maxSessions) {
-      return NextResponse.json<StartPaperBotResponse>(
-        {
-          ok: false,
-          code: "PAPER_BOT_SESSION_LIMIT",
-          message: "Maximum number of active paper bot sessions reached",
-          error: "Maximum number of active paper bot sessions reached",
-          max_sessions: maxSessions,
-          next_step: "retry",
-        },
-        { status: 403 },
-      );
+      return {
+        ok: false,
+        code: "PAPER_BOT_SESSION_LIMIT",
+        message: "Maximum number of active paper bot sessions reached",
+        error: "Maximum number of active paper bot sessions reached",
+        max_sessions: maxSessions,
+        next_step: "retry",
+      };
     }
 
     const now = new Date().toISOString();
@@ -193,7 +201,10 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (updateErr) {
-        console.error("[auto-trading/paper] update existing session:", updateErr.message);
+        console.error(
+          "[actions/trading] update existing session:",
+          updateErr.message
+        );
         throw updateErr;
       }
       sessionId = updated.id;
@@ -255,7 +266,10 @@ export async function POST(request: NextRequest) {
       );
 
     if (settingsErr) {
-      console.error("[auto-trading/paper] auto_trade_settings upsert:", settingsErr.message);
+      console.error(
+        "[actions/trading] auto_trade_settings upsert:",
+        settingsErr.message
+      );
     }
 
     // Ensure wallet exists so portfolio page isn't empty
@@ -272,29 +286,26 @@ export async function POST(request: NextRequest) {
       );
 
     if (walletErr) {
-      console.error("[auto-trading/paper] wallet upsert:", walletErr.message);
+      console.error("[actions/trading] wallet upsert:", walletErr.message);
     }
 
-    return NextResponse.json<StartPaperBotResponse>({
+    return {
       ok: true,
       code: "PAPER_BOT_STARTED",
       message: "Paper bot started successfully",
       session_id: sessionId,
       next_step: "open_bot_details",
-    });
+    };
   } catch (error) {
-    console.error("[auto-trading/paper POST] Error:", error);
+    console.error("[actions/trading] Error:", error);
     const msg =
-      error instanceof Error ? error.message : "Ukjent feil ved oppstart av bot";
-    return NextResponse.json<StartPaperBotResponse>(
-      {
-        ok: false,
-        code: "INTERNAL_ERROR",
-        message: msg,
-        error: msg,
-        next_step: "retry",
-      },
-      { status: 500 },
-    );
+      error instanceof Error ? error.message : "Unknown error starting bot";
+    return {
+      ok: false,
+      code: "INTERNAL_ERROR",
+      message: msg,
+      error: msg,
+      next_step: "retry",
+    };
   }
 }
