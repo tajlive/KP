@@ -255,8 +255,8 @@ export default function CreatorProfileClient({
               mode: s.mode as "paper" | "live",
               totalPnl: s.total_pnl || 0,
               winRate:
-                s.total_trades > 0
-                  ? ((s.winning_trades || 0) / s.total_trades) * 100
+                s.winning_trades + s.losing_trades > 0
+                  ? ((s.winning_trades || 0) / (s.winning_trades + s.losing_trades)) * 100
                   : 0,
               totalTrades: s.total_trades || 0,
               subscriberCount: 0,

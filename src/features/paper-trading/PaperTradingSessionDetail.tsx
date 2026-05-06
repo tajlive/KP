@@ -272,9 +272,10 @@ export function PaperTradingSessionDetail({
       100
     : 0;
   const isProfitable = pnlPercent >= 0;
+  const completedTrades = session.winning_trades + session.losing_trades;
   const winRate =
-    session.total_trades > 0
-      ? Math.round((session.winning_trades / session.total_trades) * 100)
+    completedTrades > 0
+      ? Math.round((session.winning_trades / completedTrades) * 100)
       : 0;
 
   const getStatusBadge = (status: string) => {
@@ -393,7 +394,7 @@ export function PaperTradingSessionDetail({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {session.winning_trades}/{session.total_trades}{" "}
+              {session.winning_trades}/{completedTrades}{" "}
               {t("trades").toLowerCase()}
             </p>
           </CardContent>
