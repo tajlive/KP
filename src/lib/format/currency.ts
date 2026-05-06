@@ -7,6 +7,7 @@ export type FormatNOKOptions = {
   locale?: string;
   showSign?: boolean;
   style?: "currency" | "decimal";
+  fractionDigits?: number;
 };
 
 export function formatNOK(
@@ -18,13 +19,18 @@ export function formatNOK(
   const opts: FormatNOKOptions =
     typeof options === "string" ? { locale: options } : options ?? {};
 
-  const { locale = "no-NO", showSign = false, style = "currency" } = opts;
+  const {
+    locale = "no-NO",
+    showSign = false,
+    style = "currency",
+    fractionDigits = 0,
+  } = opts;
 
   if (showSign) {
     const abs = Math.abs(value);
     const prefix = value < 0 ? "−" : "+";
     const formatted = abs.toLocaleString(locale === "no" ? "nb-NO" : "en-US", {
-      maximumFractionDigits: 0,
+      maximumFractionDigits: fractionDigits,
     });
     return `${prefix}${formatted} kr`;
   }
@@ -32,16 +38,16 @@ export function formatNOK(
   if (style === "decimal") {
     return new Intl.NumberFormat(locale, {
       style: "decimal",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
     }).format(value);
   }
 
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "NOK",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   }).format(value);
 }
 

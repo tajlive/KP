@@ -9,6 +9,7 @@ import type { SessionCardData } from "@/features/dashboard/SessionCards";
 import { RestartTradingButton } from "@/features/dashboard/RestartTradingButton";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { formatNOK } from "@/lib/format/currency";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -202,7 +203,7 @@ export default async function PortfolioPage({ params }: PageProps) {
       displayAssets.push({
         type: "total",
         id: "total-capital",
-        currency: "Total Portefølje",
+        currency: t("totalPortfolio"),
         balance: totalCapital,
         label: totalReturn >= 0 ? `+${totalReturn.toFixed(2)}%` : `${totalReturn.toFixed(2)}%`,
       });
@@ -214,7 +215,7 @@ export default async function PortfolioPage({ params }: PageProps) {
         id: wallets![0].id,
         currency: wallets![0].currency,
         balance: walletBalance,
-        label: "Tilgjengelig",
+        label: t("available"),
       });
     }
 
@@ -273,10 +274,10 @@ export default async function PortfolioPage({ params }: PageProps) {
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-slate-900 dark:text-white">
-                  {asset.balance.toLocaleString("no-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kr
+                  {formatNOK(asset.balance, { fractionDigits: 2 })}
                 </p>
                 <p className="text-slate-500 dark:text-slate-500 text-xs font-medium">
-                  {asset.type === "total" ? "Total verdi" : t("balance")}
+                  {asset.type === "total" ? t("totalValue") : t("balance")}
                 </p>
               </div>
             </div>

@@ -108,7 +108,7 @@ export function RestartTradingButton({
         ) : (
           <Play className="w-4 h-4" />
         )}
-        {locale === "no" ? "Restart trading" : "Restart trading"}
+        {locale === "no" ? "Restart handel" : "Restart trading"}
       </button>
     </div>
   );

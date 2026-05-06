@@ -982,7 +982,10 @@
         "title": "Ingen aktive coins",
         "description": "Du har ingen aktive eiendeler i din portefølje ennå. Begynn å handle for å se de her!",
         "button": "Start din første handel"
-      }
+      },
+      "totalPortfolio": "Total Portefølje",
+      "available": "Tilgjengelig",
+      "totalValue": "Total verdi"
     },
     "settingsPage": {
       "title": "Innstillinger",
@@ -1421,6 +1424,20 @@
           "query": "Hva er min kontobalanse?"
         }
       ]
+    },
+    "sessionCards": {
+      "title": "Trading Sessions",
+      "all": "Alle",
+      "active": "Aktive",
+      "stopped": "Stoppet",
+      "paused": "Pauset",
+      "trades": "handler",
+      "winRate": "win rate",
+      "seeDetails": "Se detaljer",
+      "noFiltered": "Ingen {status} sessions",
+      "activeLC": "aktive",
+      "pausedLC": "pausete",
+      "stoppedLC": "stoppete"
     }
   },
   "footer": {

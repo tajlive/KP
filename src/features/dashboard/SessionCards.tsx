@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
+import { formatNOK } from "@/lib/format/currency";
 import { Badge } from "@/shared/ui/badge";
 import {
   TrendingUp,
@@ -85,9 +87,10 @@ function formatShortDate(dateStr: string) {
   });
 }
 
-type FilterTab = "all" | "active" | "stopped";
+type FilterTab = "all" | "active" | "stopped" | "paused";
 
 export function SessionCards({ sessions, locale }: SessionCardsProps) {
+  const t = useTranslations("dashboard.sessionCards");
   const [selectedSession, setSelectedSession] = useState<SessionCardData | null>(null);
   const [filter, setFilter] = useState<FilterTab>("all");
 
@@ -100,6 +103,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
     all: sessions.length,
     active: sessions.filter((s) => s.status === "active").length,
     stopped: sessions.filter((s) => s.status === "stopped").length,
+    paused: sessions.filter((s) => s.status === "paused").length,
   }), [sessions]);
 
   if (!sessions || sessions.length === 0) {
@@ -107,9 +111,10 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
   }
 
   const tabs: { key: FilterTab; label: string }[] = [
-    { key: "all", label: `Alle (${counts.all})` },
-    { key: "active", label: `Aktive (${counts.active})` },
-    { key: "stopped", label: `Stoppet (${counts.stopped})` },
+    { key: "all", label: `${t("all")} (${counts.all})` },
+    { key: "active", label: `${t("active")} (${counts.active})` },
+    { key: "stopped", label: `${t("stopped")} (${counts.stopped})` },
+    { key: "paused", label: `${t("paused")} (${counts.paused})` },
   ];
 
   return (
@@ -118,7 +123,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
-            Trading Sessions
+            {t("title")}
           </h2>
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
             {tabs.map((tab) => (
@@ -140,7 +145,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
         {filtered.length === 0 && (
           <div className="text-center py-6 text-slate-500 text-sm bg-slate-100 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-300 dark:border-slate-800">
             <Filter className="w-4 h-4 mx-auto mb-1 opacity-50" />
-            Ingen {filter === "active" ? "aktive" : "stoppete"} sessions.
+            {t("noFiltered", { status: filter === "active" ? t("activeLC") : filter === "paused" ? t("pausedLC") : t("stoppedLC") })}.
           </div>
         )}
 
@@ -192,7 +197,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
                 {/* Right: capital + PnL */}
                 <div className="text-right shrink-0">
                   <p className="font-bold text-slate-900 dark:text-white text-lg">
-                    {session.current_capital_nok.toLocaleString("no-NO")} kr
+                    {formatNOK(session.current_capital_nok)}
                   </p>
                   <div className="flex items-center justify-end gap-1">
                     {isProfitable ? (
@@ -216,7 +221,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
               <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-200 dark:border-slate-800/40">
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500">
                   <BarChart3 className="w-3.5 h-3.5" />
-                  {session.total_trades} handler
+                  {session.total_trades} {t("trades")}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500">
                   {winRate >= 50 ? (
@@ -224,11 +229,11 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
                   ) : (
                     <TrendingDown className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
                   )}
-                  {winRate}% win rate
+                  {winRate}% {t("winRate")}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-500 ml-auto">
                   <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Se detaljer
+                    {t("seeDetails")}
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </div>
