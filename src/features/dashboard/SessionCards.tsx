@@ -157,9 +157,10 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
               ? (pnlAbs / session.starting_capital_nok) * 100
               : 0;
           const isProfitable = pnlPct >= 0;
+          const completedTrades = session.winning_trades + session.losing_trades;
           const winRate =
-            session.total_trades > 0
-              ? Math.round((session.winning_trades / session.total_trades) * 100)
+            completedTrades > 0
+              ? Math.round((session.winning_trades / completedTrades) * 100)
               : 0;
 
           return (
