@@ -4,7 +4,6 @@ import { getTranslations } from 'next-intl/server';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';
 import { BadgePremium } from '@/shared/ui/BadgePremium';
-import { motion } from 'framer-motion';
 import { LiveSparkChartHero } from './LiveSparkChart';
 
 interface HeroSectionProps {
