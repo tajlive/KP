@@ -13,10 +13,11 @@
 name: 🧪 Test
 
 on:
-  # Fjernet push-trigger til main for å unngå duplikat testing.
-  # PR Check kjører allerede unit-tester på push til main.
-  # E2E-tester kjører fortsatt på PR og nattlig schedule.
+  # E2E-tester kjører på PR, push til main, og nattlig schedule.
+  # Deploy avhenger av at pr-check er grønn; E2E gir ekstra sikkerhet.
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
   schedule:
     - cron: '0 3 * * 0'  # Søndag kl 03:00 UTC
