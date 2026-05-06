@@ -4,6 +4,7 @@ import { Progress } from '@/shared/ui/progress';
 import { Sparkles, Clock, Lock, TrendingUp, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface TrialBannerProps {
   trialStatus: {
@@ -20,23 +21,27 @@ interface TrialBannerProps {
   };
 }
 
+const TRIAL_DAYS = 14;
+
 export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
+  const t = useTranslations('trading.sessionDetail');
+
   // Ingen banner for betalte tiers med live trading
   if (tier.liveTrading && tier.slug !== 'student') {
     return null;
   }
-  
+
   // Trial aktiv
   if (trialStatus?.isActive) {
-    const progressPercent = Math.max(0, Math.min(100, (trialStatus.daysRemaining / 14) * 100));
+    const progressPercent = Math.max(0, Math.min(100, (trialStatus.daysRemaining / TRIAL_DAYS) * 100));
     const isUrgent = trialStatus.urgency === 'critical';
     const isWarning = trialStatus.urgency === 'warning';
-    
+
     return (
-      <Alert 
+      <Alert
         className={cn(
           "relative overflow-hidden border-2 transition-all duration-300",
-          isUrgent 
+          isUrgent
             ? "bg-linear-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border-red-300 dark:border-red-800"
             : isWarning
             ? "bg-linear-to-r from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-amber-300 dark:border-amber-800"
@@ -47,11 +52,11 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
         <div className="absolute inset-0 opacity-30 dark:opacity-20 animate-gradient-slow">
           <div className="absolute inset-0 bg-linear-to-r from-transparent via-white to-transparent dark:via-white/10" />
         </div>
-        
-        <div className="relative flex items-start gap-4">
+
+        <div className="relative flex flex-col sm:flex-row items-start gap-4">
           <div className={cn(
             "shrink-0 w-12 h-12 rounded-full flex items-center justify-center",
-            isUrgent 
+            isUrgent
               ? "bg-red-100 dark:bg-red-900/50"
               : isWarning
               ? "bg-amber-100 dark:bg-amber-900/50"
@@ -63,26 +68,26 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
               <Sparkles className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             )}
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <AlertTitle className={cn(
               "text-lg font-bold mb-2",
-              isUrgent 
+              isUrgent
                 ? "text-red-900 dark:text-red-100"
                 : isWarning
                 ? "text-amber-900 dark:text-amber-100"
                 : "text-blue-900 dark:text-blue-100"
             )}>
-              {isUrgent 
-                ? `⏰ Kun ${trialStatus.hoursRemaining} timer igjen av trial!`
-                : `🎉 ${trialStatus.daysRemaining} dager igjen av din trial`
+              {isUrgent
+                ? t('hoursRemaining', { hours: trialStatus.hoursRemaining })
+                : t('daysRemaining', { days: trialStatus.daysRemaining })
               }
             </AlertTitle>
-            
+
             <AlertDescription className="space-y-3">
               <p className={cn(
                 "text-sm",
-                isUrgent 
+                isUrgent
                   ? "text-red-800 dark:text-red-200"
                   : isWarning
                   ? "text-amber-800 dark:text-amber-200"
@@ -90,45 +95,45 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
               )}>
                 {isUrgent ? (
                   <>
-                    Din trial utløper snart! Oppgrader nå for å fortsette med live auto-trading.
-                    <strong className="block mt-1">Spesialtilbud: 20% rabatt første måned</strong>
+                    {t('trialExpiringSoon')}
+                    <strong className="block mt-1">{t('specialOffer')}</strong>
                   </>
                 ) : isWarning ? (
                   <>
-                    Få mest mulig ut av din trial! Test alle strategier før den utløper.
+                    {t('trialWarning')}
                   </>
                 ) : (
                   <>
-                    Test <strong>LIVE auto-trading</strong> gratis i {trialStatus.daysRemaining} dager til.
-                    Alle funksjoner er åpne - ingen kredittkort påkrevd.
+                    {t('trialTestLive', { days: trialStatus.daysRemaining })}
+                    {' '}{t('subtitle')}
                   </>
                 )}
               </p>
-              
+
               {/* Progress bar */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs font-medium">
                   <span className={cn(
-                    isUrgent 
+                    isUrgent
                       ? "text-red-700 dark:text-red-300"
                       : isWarning
                       ? "text-amber-700 dark:text-amber-300"
                       : "text-blue-700 dark:text-blue-300"
                   )}>
-                    Trial fremgang
+                    {t('trialProgress')}
                   </span>
                   <span className={cn(
-                    isUrgent 
+                    isUrgent
                       ? "text-red-600 dark:text-red-400"
                       : isWarning
                       ? "text-amber-600 dark:text-amber-400"
                       : "text-blue-600 dark:text-blue-400"
                   )}>
-                    {trialStatus.daysRemaining} av 14 dager igjen
+                    {t('daysLeftOf14', { days: trialStatus.daysRemaining })}
                   </span>
                 </div>
-                <Progress 
-                  value={progressPercent} 
+                <Progress
+                  value={progressPercent}
                   className={cn(
                     "h-2",
                     isUrgent && "[&>div]:bg-red-600",
@@ -138,13 +143,13 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
               </div>
             </AlertDescription>
           </div>
-          
-          <Button 
-            asChild 
+
+          <Button
+            asChild
             size="lg"
             className={cn(
-              "shrink-0 group",
-              isUrgent 
+              "shrink-0 group w-full sm:w-auto",
+              isUrgent
                 ? "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/50"
                 : isWarning
                 ? "bg-amber-600 hover:bg-amber-700 text-white shadow-lg shadow-amber-500/50"
@@ -153,7 +158,7 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
           >
             <Link href={`/${locale}/priser`} className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              {isUrgent ? 'Oppgrader nå' : 'Se planer'}
+              {isUrgent ? t('upgradeNow') : t('seePlans')}
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
@@ -161,29 +166,29 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
       </Alert>
     );
   }
-  
+
   // Trial utløpt
   if (trialStatus && !trialStatus.isActive && !tier.liveTrading) {
     return (
       <Alert variant="destructive" className="border-2 border-red-300 dark:border-red-800">
         <Lock className="h-5 w-5" />
-        <div className="flex items-center justify-between flex-1">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between flex-1 gap-3">
           <div>
-            <AlertTitle className="text-lg font-bold">Trial Utløpt</AlertTitle>
+            <AlertTitle className="text-lg font-bold">{t('trialExpiredTitle')}</AlertTitle>
             <AlertDescription>
-              Din 14-dagers trial er utløpt. Paper trading er fortsatt tilgjengelig gratis.
-              <strong className="block mt-1">Oppgrader til Bachelor (249 kr/mnd) for live trading.</strong>
+              {t('trialExpired')}
+              <strong className="block mt-1">{t('upgradePrompt')}</strong>
             </AlertDescription>
           </div>
-          <Button asChild variant="outline" size="lg" className="ml-4">
+          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
             <Link href={`/${locale}/priser`}>
-              Oppgrader
+              {t('upgrade')}
             </Link>
           </Button>
         </div>
       </Alert>
     );
   }
-  
+
   return null;
 }

@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, ArrowLeft, Bot } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 // KLA-108: Dynamic Import for heavy chart components
@@ -79,6 +80,7 @@ interface LiveStrategyViewProps {
 }
 
 export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
+  const t = useTranslations("trading.liveStrategy");
   const engine = usePaperTradingEngine(strategy.symbol);
 
   const [priceHistory, setPriceHistory] = useState<number[]>([]);
@@ -281,7 +283,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
         </Button>
         <Badge
           variant={isPaper ? "outline" : "default"}
@@ -291,7 +293,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
               : "bg-linear-to-r from-green-600 to-emerald-600 text-white",
           )}
         >
-          {isPaper ? "📝 Paper" : "🟢 Live"}
+          {isPaper ? t("paperBadge") : t("liveBadge")}
         </Badge>
         <h2 className="text-xl font-bold">{strategyName}</h2>
         <span className="text-sm text-muted-foreground font-mono">
@@ -306,10 +308,10 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
             <div className="text-center space-y-3">
               <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                Analyserer markedet...
+                {t("warmupAnalyzing")}
               </p>
               <p className="text-sm text-muted-foreground">
-                Bygger indikator-buffere ({tickCount}/{WARMUP_TICKS} ticks)
+                {t("warmupBuildingBuffers", { tickCount, warmupTicks: WARMUP_TICKS })}
               </p>
               <div className="w-48 h-2 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto overflow-hidden">
                 <div
@@ -341,7 +343,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
             {/* Right: Stats */}
             <div className="space-y-4">
               <StatCard
-                label="P&L"
+                label={t("statPnl")}
                 value={`${simStats.pnl >= 0 ? "+" : ""}${simStats.pnl.toFixed(
                   2,
                 )} USDT`}
@@ -349,23 +351,23 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
                 animate={pnlChanged}
               />
               <StatCard
-                label="Win Rate"
+                label={t("statWinRate")}
                 value={`${simStats.winRate.toFixed(1)}%`}
                 positive={simStats.winRate >= 50}
               />
               <StatCard
-                label="Trades"
+                label={t("statTrades")}
                 value={`${simStats.totalTrades}`}
                 positive
               />
               <StatCard
-                label="Max Drawdown"
+                label={t("statMaxDrawdown")}
                 value={`-${simStats.maxDrawdown.toFixed(1)}%`}
                 positive={simStats.maxDrawdown < 5}
               />
               <Card className="bg-slate-900 border-slate-700">
                 <CardContent className="pt-4 pb-3 text-center">
-                  <p className="text-xs text-slate-500">Nåværende pris</p>
+                  <p className="text-xs text-slate-500">{t("currentPrice")}</p>
                   <p className="text-xl font-bold text-white font-mono">
                     {Math.round(engine.price).toLocaleString("no")} kr
                   </p>
@@ -379,7 +381,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-slate-400 flex items-center gap-2">
                 <Bot className="h-4 w-4" />
-                Bot-Logg
+                {t("botLogTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -387,7 +389,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
                 <AnimatePresence initial={false}>
                   {logEntries.length === 0 ? (
                     <p className="text-slate-500 text-sm text-center py-4">
-                      Venter på signaler...
+                      {t("waitingForSignals")}
                     </p>
                   ) : (
                     logEntries.map((entry) => (

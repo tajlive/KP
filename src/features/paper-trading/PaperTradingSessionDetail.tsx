@@ -97,6 +97,7 @@ export function PaperTradingSessionDetail({
   trialStartedAt,
 }: PaperTradingSessionDetailProps) {
   const t = useTranslations("paperTrading");
+  const td = useTranslations("trading.sessionDetail");
   const router = useRouter();
   const supabase = createClient();
 
@@ -108,20 +109,20 @@ export function PaperTradingSessionDetail({
 
   const handleDeleteTrade = async (tradeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Slette denne traden? Dette kan ikke angres.")) return;
+    if (!confirm(td("deleteConfirm"))) return;
     setDeletingId(tradeId);
     try {
       const res = await fetch(`/api/paper-trading/trades/${tradeId}`, { method: "DELETE" });
       if (res.ok) {
         setTrades((prev) => prev.filter((t) => t.id !== tradeId));
         if (selectedTrade?.id === tradeId) setSelectedTrade(null);
-        toast.success("Trade slettet");
+        toast.success(td("tradeDeleted"));
       } else {
         const d = await res.json();
-        toast.error(d?.error ?? "Kunne ikke slette traden");
+        toast.error(d?.error ?? td("deleteError"));
       }
     } catch {
-      toast.error("Nettverksfeil — prøv igjen");
+      toast.error(td("networkError"));
     } finally {
       setDeletingId(null);
     }
@@ -346,9 +347,7 @@ export function PaperTradingSessionDetail({
           }
         >
           {isLive
-            ? locale === "no"
-              ? "🔴 Live — Ekte penger. Handel med omhu."
-              : "🔴 Live — Real money. Trade carefully."
+            ? td("liveBanner")
             : t("contextBanner")}
         </p>
       </div>
@@ -404,7 +403,7 @@ export function PaperTradingSessionDetail({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              P&L
+              {td("pnl")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -467,7 +466,7 @@ export function PaperTradingSessionDetail({
           <CardTitle className="flex items-center gap-2">
             {t("trades")}
             <span className="text-xs font-normal text-slate-400 dark:text-slate-500 ml-1">
-              — klikk for detaljer
+              {td("clickForDetails")}
             </span>
           </CardTitle>
         </CardHeader>
@@ -573,7 +572,7 @@ export function PaperTradingSessionDetail({
               <Badge variant={selectedTrade?.side === "buy" ? "default" : "secondary"}>
                 {selectedTrade?.side === "buy" ? t("buy") : t("sell")}
               </Badge>
-              Trade-detaljer
+              {td("tradeDetails")}
             </DialogTitle>
           </DialogHeader>
           {selectedTrade && (() => {
@@ -581,16 +580,16 @@ export function PaperTradingSessionDetail({
             const pnl = tradePnl(selectedTrade);
             const pair = selectedTrade.trading_pair ?? session.trading_pair;
             const rows: [string, string][] = [
-              ["Par", pair],
-              ["Retning", selectedTrade.side === "buy" ? "Kjøp" : "Salg"],
-              ["Ordretype", selectedTrade.order_type ?? "market"],
-              ["Antall", qty.toFixed(8)],
-              ["Pris", `${selectedTrade.price.toLocaleString("nb-NO", { maximumFractionDigits: 2 })} USDT`],
-              ["Verdi", selectedTrade.total_value != null ? `${Number(selectedTrade.total_value).toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr` : "—"],
-              ["Gebyr", selectedTrade.fee != null ? `${Number(selectedTrade.fee).toLocaleString("nb-NO")} kr` : "0 kr"],
-              ["P&L", pnl != null ? `${pnl >= 0 ? "+" : ""}${pnl.toLocaleString("nb-NO")} kr` : "—"],
-              ["Status", selectedTrade.status ?? "filled"],
-              ["Tidspunkt", new Date(selectedTrade.created_at).toLocaleString("nb-NO")],
+              [td("pair"), pair],
+              [td("direction"), selectedTrade.side === "buy" ? td("directionBuy") : td("directionSell")],
+              [td("orderType"), selectedTrade.order_type ?? "market"],
+              [td("quantity"), qty.toFixed(8)],
+              [td("price"), `${selectedTrade.price.toLocaleString("nb-NO", { maximumFractionDigits: 2 })} USDT`],
+              [td("value"), selectedTrade.total_value != null ? `${Number(selectedTrade.total_value).toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr` : "—"],
+              [td("fee"), selectedTrade.fee != null ? `${Number(selectedTrade.fee).toLocaleString("nb-NO")} kr` : "0 kr"],
+              [td("pnl"), pnl != null ? `${pnl >= 0 ? "+" : ""}${pnl.toLocaleString("nb-NO")} kr` : "—"],
+              [td("status"), selectedTrade.status ?? "filled"],
+              [td("timestamp"), new Date(selectedTrade.created_at).toLocaleString("nb-NO")],
             ];
             return (
               <div className="space-y-3 pt-2">
@@ -604,7 +603,7 @@ export function PaperTradingSessionDetail({
                 </dl>
                 {selectedTrade.strategy_signal && (
                   <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Signal</p>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">{td("signal")}</p>
                     <p className="text-sm text-slate-700 dark:text-slate-300">{selectedTrade.strategy_signal}</p>
                   </div>
                 )}
@@ -617,7 +616,7 @@ export function PaperTradingSessionDetail({
                     onClick={(e) => handleDeleteTrade(selectedTrade.id, e)}
                   >
                     <Trash2 className="w-4 h-4" />
-                    Slett trade
+                    {td("deleteTrade")}
                   </Button>
                 )}
               </div>
