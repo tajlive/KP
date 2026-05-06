@@ -46,6 +46,7 @@ interface TradingSession {
   starting_capital_nok: number;
   total_pnl: number;
   winning_trades: number;
+  losing_trades: number;
   total_trades: number;
   created_at: string;
 }
