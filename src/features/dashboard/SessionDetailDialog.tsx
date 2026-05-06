@@ -408,6 +408,7 @@ export function SessionDetailDialog({
             <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
               {session.trading_pair}
             </DialogTitle>
+            <span className="text-[10px] text-green-500 font-mono">[v2-fix]</span>
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             {session.strategy_id} · {session.mode === "paper" ? "Paper Trading" : "Live"}
