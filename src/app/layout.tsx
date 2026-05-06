@@ -84,9 +84,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // TODO: Add Google Search Console verification code when available
+  // Google Search Console verification — konfigurer i Vercel env når kode er tilgjengelig
   // verification: {
-  //   google: "your-verification-code-here",
+  //   google: process.env.GOOGLE_SITE_VERIFICATION,
   // }
   appleWebApp: {
     capable: true,

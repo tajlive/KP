@@ -87,7 +87,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       decision: data.decision,
       durationMs: duration,
       success: true,
-      cached: false, // TODO: Track cache hits
+      cached: false, // Cache ikke implementert — forklaringer genereres per forespørsel
     });
 
     // Build response
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       _meta: {
         requestId,
         durationMs: duration,
-        cached: false, // TODO: Track cache hits
+        cached: false, // Cache ikke implementert
         timestamp: new Date().toISOString(),
       },
     };
