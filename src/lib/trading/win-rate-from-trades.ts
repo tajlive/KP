@@ -11,7 +11,7 @@ export function winRateFromRealizedTrades(
   trades: TradeWithPnl[],
   mode?: "paper" | "live" | "all",
 ): number | null {
-  const modeFilter = mode ?? "all";
+  const modeFilter = mode ?? "paper";
   const closed = trades.filter(
     (t) =>
       (modeFilter === "all" || String(t.mode ?? "paper").toLowerCase() === modeFilter) &&

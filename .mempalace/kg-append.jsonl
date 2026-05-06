@@ -94,3 +94,10 @@
 {"subject":"portfolio-page","predicate":"shows","object":"wallet balance as available cash","validFrom":"2026-05-06T09:07:15.827Z"}
 {"subject":"portfolio-page","predicate":"has","object":"fallback to paper_balance when no sessions or wallets","validFrom":"2026-05-06T09:07:15.827Z"}
 {"subject":"portfolio-page","predicate":"status","object":"requires auth — redirects to login when unauthenticated","validFrom":"2026-05-06T09:07:15.827Z"}
+{"subject":"win-rate-from-trades","predicate":"default_mode_changed_from","object":"all to paper","validFrom":"2026-05-06T17:58:28.527Z"}
+{"subject":"CompetitionClient","predicate":"tests_updated_for","object":"empty state behavior instead of mock data","validFrom":"2026-05-06T17:58:28.540Z"}
+{"subject":"type-check","predicate":"status_after_build_fix","object":"PASS","validFrom":"2026-05-06T17:58:28.545Z"}
+{"subject":"lint","predicate":"status","object":"PASS","validFrom":"2026-05-06T17:58:28.545Z"}
+{"subject":"npm audit","predicate":"high_severity_count","object":"19 (post npm audit fix: 44 total vulnerabilities)","validFrom":"2026-05-06T17:58:28.546Z"}
+{"subject":"GamificationCard.test","predicate":"status","object":"hangs indefinitely (120s+ timeout)","validFrom":"2026-05-06T17:58:28.553Z"}
+{"subject":"DX Performance Sprint","predicate":"stabilization_status","object":"in progress - test fixes applied","validFrom":"2026-05-06T17:58:28.556Z"}
