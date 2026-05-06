@@ -53,8 +53,7 @@ export default function OptimalTrader({
 
   useEffect(() => {
     calculatePreview();
-    const timer = setInterval(calculatePreview, 5000);
-    return () => clearInterval(timer);
+    // Recalculate when inputs change; no need to poll since price is passed as prop
   }, [calculatePreview]);
 
   const handleExecute = async () => {

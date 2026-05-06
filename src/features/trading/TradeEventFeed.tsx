@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { generateExplanation } from "@/lib/trader-explanations";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import type { TradeReasonCode, TradeSide, TradeReasonParams, IndicatorSnapshot } from "@/types/trading";
 
 interface TradeEvent {
@@ -338,10 +339,28 @@ export function TradeEventFeed({
     };
 
     fetchEvents();
-    
-    // Poll for new events
-    const interval = setInterval(fetchEvents, 10000);
-    return () => clearInterval(interval);
+
+    // Realtime subscription for new trades
+    const supabase = getSupabaseClient();
+    const channel = supabase
+      .channel(`trade-events-${sessionId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "trades",
+          filter: `session_id=eq.${sessionId}`,
+        },
+        () => {
+          void fetchEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [sessionId, propEvents, maxEvents]);
 
   if (loading) {
