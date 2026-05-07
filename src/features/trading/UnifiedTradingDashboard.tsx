@@ -153,7 +153,10 @@ export default function UnifiedTradingDashboard({
     description: tTrading(`strategies.${s.type}.description`),
   }));
 
-
+  // Fetch unified metrics for single source of truth — MUST be before early returns
+  const { data: dashboardMetrics } = useDashboardMetrics(mode, "active_and_completed", {
+    enabled: !!userId,
+  });
 
   if (loading) {
     return <DashboardLoadingSkeleton />;
@@ -173,11 +176,6 @@ export default function UnifiedTradingDashboard({
       </div>
     );
   }
-
-  // Fetch unified metrics for single source of truth
-  const { data: dashboardMetrics } = useDashboardMetrics(mode, "active_and_completed", {
-    enabled: !!userId,
-  });
 
   // KLA-100: Show BotStatusDashboard if a bot is active
   if (activeStrategies.length > 0 && userId) {

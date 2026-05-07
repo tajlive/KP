@@ -53,7 +53,7 @@ export const DEFAULT_DARK_FLEET_CONFIG: DarkFleetConfig = {
   narrativeWeight: 0.25,
   regimeWeight: 0.25,
   threshold: 0.3,
-  maxPositionSize: 0.12,
+  maxPositionSize: 0.08, // Reduced from 0.12 — safer sizing for new strategies
 };
 
 // ============================================================================

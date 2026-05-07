@@ -153,21 +153,45 @@ function calcEntryConfirm(candles15m: Candle[], signalAction: "buy" | "sell" | "
 /**
  * Main multi-timeframe filter
  */
+export interface MTFFilterOptions {
+  strategyKey?: string;
+  trendThreshold?: number;
+  entryThreshold?: number;
+}
+
 export function applyMultiTimeframeFilter(
   candles1h: Candle[],
   candles4h: Candle[],
   candles15m: Candle[],
   signalAction: "buy" | "sell" | "hold",
   signalScore: number = 0.8,
+  options?: MTFFilterOptions,
 ): MultiTimeframeResult {
+  // Skip MTF for time-based strategies (DCA) and grid (has own regime detection)
+  const strategyKey = options?.strategyKey ?? "";
+  const skipMtf = strategyKey === "dca" || strategyKey === "grid";
+  if (skipMtf) {
+    return {
+      score: 1.0,
+      trendScore: 1.0,
+      signalScore: 1.0,
+      entryConfirm: 1.0,
+      trendDirection: "neutral",
+      reason: "MTF skipped for time-based/grid strategy",
+      passed: true,
+    };
+  }
+
   const trend = calcTrendScore(candles4h);
   const entry = calcEntryConfirm(candles15m, signalAction);
 
   // Weighted combination: trend matters most
   const score = trend.score * 0.5 + signalScore * 0.3 + entry.score * 0.2;
 
-  // Gate requirements
-  const passed = signalAction === "hold" || (trend.score > 0.6 && entry.score > 0.8);
+  // Gate requirements — lowered threshold for better signal throughput
+  const trendThreshold = options?.trendThreshold ?? 0.5;
+  const entryThreshold = options?.entryThreshold ?? 0.7;
+  const passed = signalAction === "hold" || (trend.score > trendThreshold && entry.score > entryThreshold);
 
   return {
     score: Math.round(score * 100) / 100,

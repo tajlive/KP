@@ -56,12 +56,23 @@ export class DCAStrategy implements StrategyEngine {
     const currentPrice = closes[closes.length - 1];
 
     // Volatility-Harvesting: buy more in dips, less in FOMO
+    // ATR-based dip boost: deeper dips relative to volatility = bigger buys
+    const useAtrDip = (session.strategy_config as Record<string, unknown>)?.use_atr_dip_boost !== false;
     if (closes.length >= 24) {
       const price24hAgo = closes[closes.length - 24];
       const change24h = ((currentPrice - price24hAgo) / price24hAgo) * 100;
       if (change24h <= -5) positionSize *= dipMultiplier;
       else if (change24h <= -3) positionSize *= Math.max(1.5, dipMultiplier * 0.7);
       else if (change24h >= 5) positionSize *= fomoReduction;
+
+      if (useAtrDip && candles.length >= 14) {
+        const atrValue = atr(highs, lows, closes, 14);
+        const atrPct = (atrValue / currentPrice) * 100;
+        // If price dropped more than 1.5x ATR, it's a real dip — boost more
+        if (change24h <= -(atrPct * 1.5)) {
+          positionSize *= 1.3;
+        }
+      }
     }
 
     // If no position, buy (respecting daily limit)

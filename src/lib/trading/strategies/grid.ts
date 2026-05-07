@@ -57,13 +57,20 @@ export class GridBotStrategy implements StrategyEngine {
       lower = currentPrice * (1 - gridRangePct / 100 / 2);
     }
 
-    if (cfg.volatility_adjust !== false && candles.length >= 14) {
+    // ATR-based range expansion for volatile markets
+    const atrBasedRange = (session.strategy_config as Record<string, unknown>)?.atr_based_range !== false;
+    if ((cfg.volatility_adjust !== false || atrBasedRange) && candles.length >= 14) {
       const atrValue = atr(highs, lows, closes, 14);
       const volatilityPct = (atrValue / currentPrice) * 100;
-      // Widen range in volatile markets
-      const multiplier = Math.max(1, volatilityPct / 5);
+      // Widen range in volatile markets — use ATR directly for range sizing
+      const atrMultiplier = Math.max(1, volatilityPct / 5);
       const mid = (upper + lower) / 2;
-      const halfRange = ((upper - lower) / 2) * multiplier;
+      const baseHalfRange = (upper - lower) / 2;
+      // If ATR-based range is enabled, use 3x ATR as half-range (more adaptive)
+      const atrHalfRange = atrBasedRange ? atrValue * 3 : baseHalfRange;
+      const halfRange = atrBasedRange
+        ? Math.max(baseHalfRange, atrHalfRange) * atrMultiplier
+        : baseHalfRange * atrMultiplier;
       upper = mid + halfRange;
       lower = mid - halfRange;
     }

@@ -123,7 +123,7 @@ export async function GET(
           mode: mode as DashboardMode,
           sessionScope: sessionScope as SessionScope,
         }),
-      CACHE_TTL.USER_PROFILE, // 5 minutes — dashboard data changes slowly
+      15 * 1000, // 15 seconds — trading data changes frequently, keep it fresh
     );
 
     const durationMs = Date.now() - startTime;
