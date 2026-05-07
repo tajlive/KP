@@ -1,0 +1,66 @@
+{
+  "title": "Auto-handel",
+  "subtitle": "La AI handle for deg — fullstendig automatisk",
+  "risk": {
+    "title": "Risikonivå",
+    "conservative": {
+      "label": "Forsiktig",
+      "emoji": "🛡️",
+      "desc": "Lav risiko, steady growth. 2% posisjonsstørrelse, 1.5% stop-loss.",
+      "color": "text-green-400",
+      "border": "border-green-500/30",
+      "bg": "bg-green-500/10"
+    },
+    "moderate": {
+      "label": "Balansert",
+      "emoji": "📈",
+      "desc": "Medium risiko/reward. 5% posisjonsstørrelse, 2% stop-loss.",
+      "color": "text-blue-400",
+      "border": "border-blue-500/30",
+      "bg": "bg-blue-500/10"
+    },
+    "aggressive": {
+      "label": "Aktiv",
+      "emoji": "🔥",
+      "desc": "Høyere risiko, høyere potensiell avkastning. 8% posisjonsstørrelse, 3% stop-loss.",
+      "color": "text-orange-400",
+      "border": "border-orange-500/30",
+      "bg": "bg-orange-500/10"
+    }
+  },
+  "capital": {
+    "title": "Startkapital",
+    "suggested": "Foreslått: {{amount}} kr",
+    "balance": "Din saldo: {{amount}} kr"
+  },
+  "strategy": {
+    "title": "Strategi",
+    "aiEnsemble": "AI Ensemble (anbefalt)",
+    "dca": "Dollar-Cost Averaging",
+    "trend": "Trend Following",
+    "grid": "Grid Trading"
+  },
+  "activate": "Start auto-handel",
+  "activating": "Starter...",
+  "monitor": {
+    "title": "Auto-handel overvåking",
+    "status": {
+      "active": "Aktiv",
+      "paused": "Pauset",
+      "stopped": "Stoppet"
+    },
+    "capital": "Kapital",
+    "pnl": "Avkastning",
+    "trades": "Handler",
+    "lastTrade": "Siste handel",
+    "noTrades": "Ingen handler ennå. Systemet vil handle når signalene er rette.",
+    "pause": "Pause",
+    "resume": "Fortsett",
+    "stop": "Stopp"
+  },
+  "errors": {
+    "activationFailed": "Kunne ikke starte auto-handel. Prøv igjen.",
+    "insufficientBalance": "Ikke nok saldo. Minimum {{amount}} kr kreves.",
+    "generic": "Det oppstod en feil. Vennligst prøv igjen."
+  }
+}

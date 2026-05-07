@@ -32,6 +32,7 @@ import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from 
 import { queueEmail } from "@/lib/email";
 import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
 import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
+import { usdtToNok, getUsdtToNokRate, getUsdtToNokRateAsync } from "@/lib/trading/currency";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -652,6 +653,32 @@ async function processSession(
     throw new Error(`Trade insert failed: ${tradeError.message}`);
   }
 
+  // ── LIVE CAPITAL UPDATE (B1.3) ───────────────────────────────────────────
+  // Paper capital is updated by DB trigger; live capital MUST be updated here.
+  if (session.mode === "live" && trade?.id) {
+    try {
+      const rate = getUsdtToNokRate();
+      const netValueUsdt =
+        signal.action === "buy"
+          ? totalValue + finalFee
+          : totalValue - finalFee;
+      const netValueNok = usdtToNok(netValueUsdt, rate);
+      const { error: capitalError } = await db.rpc(
+        signal.action === "buy" ? "decrement_capital" : "increment_capital",
+        {
+          p_session_id: session.id,
+          p_amount: Math.abs(netValueNok),
+          p_user_id: session.user_id,
+        },
+      );
+      if (capitalError) {
+        console.error(`[Tick] Live capital update failed for session ${session.id}:`, capitalError.message);
+      }
+    } catch (capitalErr) {
+      console.error(`[Tick] Live capital update exception for session ${session.id}:`, capitalErr);
+    }
+  }
+
   // Update session position state with FIFO lots
   if (signal.action === "buy") {
     // Build ledger from current position (or create new)
@@ -711,6 +738,35 @@ async function processSession(
       } as never);
     } catch {
       // Non-critical: don't fail the tick if logging fails
+    }
+  }
+
+  // AUDIT TRAIL (B1.4): Log every executed trade for compliance & debugging
+  if (trade?.id) {
+    try {
+      await db.from("trading_logs").insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        action: "trade_executed",
+        details: {
+          trade_id: trade.id,
+          mode: session.mode,
+          side: signal.action,
+          symbol: pair.replace("/", ""),
+          quantity,
+          price: finalExecutedPrice,
+          total_value: totalValue,
+          fee: finalFee,
+          realized_pnl: realizedPnl ?? null,
+          binance_order_id: liveResult?.binanceOrderId ?? null,
+          idempotency_key: idempotencyKey,
+          strategy_id: session.strategy_id,
+          engine: resolvedEngine,
+          dark_fleet: useDarkFleet,
+        } as never,
+      } as never);
+    } catch {
+      // Non-critical: audit logging must not fail the trade
     }
   }
 
@@ -817,7 +873,18 @@ export async function GET(req: NextRequest) {
   const db = (await createClient()) as SupabaseClient<Database>;
 
   // Dark Fleet feature flags (hetes en gang per cron-run)
-  const flags = await getFlagsAsync().catch(() => ({ darkFleetPhase1: false, darkFleetKillSwitch: false }));
+  const flags = await getFlagsAsync().catch(() => ({ darkFleetPhase1: false, darkFleetKillSwitch: false, signalEngineKillSwitch: false }));
+
+  // GLOBAL KILL-SWITCH: Stop all trading if signal engine is halted
+  if (flags.signalEngineKillSwitch) {
+    console.warn("[Tick] GLOBAL KILL-SWITCH ACTIVE — signalEngineKillSwitch is true. All trading halted.");
+    await captureCronError("tick", new Error("KILL_SWITCH_ACTIVE"), { reason: "signalEngineKillSwitch" });
+    return NextResponse.json(
+      { error: "Trading halted", reason: "Global kill-switch active" },
+      { status: 503 },
+    );
+  }
+
   const darkFleetBaseConfig: DarkFleetConfig | undefined = flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
     ? {
         enabled: true,

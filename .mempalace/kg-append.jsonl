@@ -5,3 +5,20 @@
 {"subject":"GDPR","predicate":"implemented","object":"granular-consent-cookie-policy-sentry-gating","validFrom":"2026-05-07T03:00:00.000Z"}
 {"subject":"routing","predicate":"consolidated","object":"admin-routes-into-admin-group-locale-drift-fixed","validFrom":"2026-05-07T03:00:00.000Z"}
 {"subject":"architecture-audit","predicate":"completed","object":"routing-trades-bots-text-percent-duplicates-GDPR","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"trading-audit","predicate":"has","object":"24 identified issues across P0/P1/P2","validFrom":"2026-05-07T13:07:31.341Z"}
+{"subject":"trading-audit","predicate":"executed-by","object":"swarm-of-7-agents","validFrom":"2026-05-07T13:07:31.343Z"}
+{"subject":"trading-audit","predicate":"confirmed","object":"executeTradeSafe has ZERO callers from tick cron","validFrom":"2026-05-07T13:07:31.343Z"}
+{"subject":"trading-audit","predicate":"confirmed","object":"tradingStore uses futures terminology (long/short/leverage/margin)","validFrom":"2026-05-07T13:07:31.343Z"}
+{"subject":"trading-audit","predicate":"confirmed","object":"messages/no/autopilot.json is MISSING","validFrom":"2026-05-07T13:07:31.343Z"}
+{"subject":"trading-audit","predicate":"confirmed","object":"messages/en/ directory is MISSING","validFrom":"2026-05-07T13:07:31.343Z"}
+{"subject":"trading-audit","predicate":"confirmed","object":"7 dashboard pages are navigation orphans","validFrom":"2026-05-07T13:07:31.344Z"}
+{"subject":"trading-audit","predicate":"confirmed","object":"two competing auto-trading features (auto-trade vs autopilot)","validFrom":"2026-05-07T13:07:31.344Z"}
+{"subject":"master-plan","predicate":"divided-into","object":"7 blocks: Trading Core, Bot/Autopilot, UX/Navigation, i18n/Text, Data Model, Routing, Verification","validFrom":"2026-05-07T13:07:31.344Z"}
+{"subject":"master-plan-v2","predicate":"has","object":"7 blocks with step-by-step implementation","validFrom":"2026-05-07T13:33:51.515Z"}
+{"subject":"master-plan-v2","predicate":"total-effort","object":"62 hours across 4 sprints","validFrom":"2026-05-07T13:33:51.516Z"}
+{"subject":"master-plan-v2","predicate":"verified","object":"messages/en/ has 35 files (not missing)","validFrom":"2026-05-07T13:33:51.516Z"}
+{"subject":"master-plan-v2","predicate":"verified","object":"messages/en/autopilot.json missing","validFrom":"2026-05-07T13:33:51.516Z"}
+{"subject":"master-plan-v2","predicate":"verified","object":"messages/no/autopilot.json missing","validFrom":"2026-05-07T13:33:51.516Z"}
+{"subject":"master-plan-v2","predicate":"rollback-plan","object":"defined for each block","validFrom":"2026-05-07T13:33:51.517Z"}
+{"subject":"master-plan-v2","predicate":"architect-sign-off","object":"100% satisfied","validFrom":"2026-05-07T13:33:51.517Z"}
+{"subject":"master-plan-v2","predicate":"risk-strategy","object":"gradual refactor with fallback paths","validFrom":"2026-05-07T13:33:51.517Z"}

@@ -13,7 +13,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const isNo = locale === "no";
   return {
-    title: isNo ? "AI Autopilot" : "AI Autopilot",
+    title: isNo ? "Auto-handel" : "Auto Trading",
     description: isNo
       ? "La AI trade for deg — fullstendig automatisk."
       : "Let AI trade for you — fully automatic.",

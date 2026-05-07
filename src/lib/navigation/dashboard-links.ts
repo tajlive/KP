@@ -14,7 +14,12 @@ export type DashboardSidebarLabelKey =
   | "portfolio"
   | "profile"
   | "settings"
-  | "admin";
+  | "admin"
+  | "guide"
+  | "strategies"
+  | "metrics"
+  | "referral"
+  | "taxReport";
 
 export type DashboardMainNavItem = {
   href: string;
@@ -36,11 +41,11 @@ export const DASHBOARD_MAIN_NAV: readonly DashboardMainNavItem[] = [
 export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
   { href: "/dashboard/trade", labelKey: "trade" },
   {
-    href: "/dashboard/auto-trade",
+    href: "/dashboard/auto-handel",
     labelKey: "autoTrade",
-    alsoActiveForPathPrefixes: ["/dashboard/bot"],
+    alsoActiveForPathPrefixes: ["/dashboard/bot", "/dashboard/auto-trade"],
   },
-  { href: "/handelshistorikk", labelKey: "history" },
+  { href: "/dashboard/historikk", labelKey: "history" },
   { href: "/dashboard/resultater", labelKey: "results" },
 ];
 
@@ -64,6 +69,15 @@ export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
   { href: "/dashboard/ai", labelKey: "ai" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
+];
+
+/** Ekstra sider tilgjengelig via "Mer" dropdown i TopNav */
+export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
+  { href: "/dashboard/guide", labelKey: "guide" },
+  { href: "/dashboard/strategies", labelKey: "strategies" },
+  { href: "/dashboard/metrics", labelKey: "metrics" },
+  { href: "/dashboard/tax-report", labelKey: "taxReport" },
+  { href: "/dashboard/referral", labelKey: "referral" },
 ];
 
 /**

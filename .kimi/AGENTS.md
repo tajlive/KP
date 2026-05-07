@@ -586,3 +586,68 @@ node scripts/ai-health-report.mjs
 # CI — kjøres mandag 09:00
 # Se .github/workflows/ai-health-report.yml
 ```
+
+---
+
+## Pre-Push Gates & Mobil-First Testing (v1.0)
+
+> **Oppdatert:** 2026-05-07 | 75% av brukere er på mobil. Alle gates har mobil-dimensjon.
+
+### Rask verifisering før push
+
+```bash
+npm run pre-push
+```
+
+**5 Gates (maks ~8 min):**
+
+| # | Gate | Hva | Tid | Fail = |
+|---|------|-----|-----|--------|
+| 1 | Statisk analyse | type-check + lint:gate + i18n + migrations | ~90s | STOP |
+| 2 | Unit-tester | vitest run | ~120s | STOP |
+| 3 | Build | SKIP_LINT_IN_BUILD=true next build | ~90s | STOP |
+| 4 | Mobil fast-check | AST-basert audit av nye filer | ~10s | STOP |
+| 5 | E2E Smoke | Valgfritt, tips i output | ~150s | SKIP |
+
+### Mobil fast-check
+
+```bash
+node scripts/mobile-fast-check.mjs
+```
+
+Sjekker endrede `.tsx`-filer for:
+- **Touch-target:** Knapper/linker har minst 44×44 px eller `compact`/`size` prop
+- **Font-size:** Ingen tekst under 12 px
+- **Responsive:** Store pages har `md:` / `lg:` breakpoints
+- **Viewport:** Root layout har `min-h-screen` (ikke required per page)
+
+### CI Pipeline (GitHub Actions)
+
+```
+PR Check ──► Test (smoke + critical + mobile) ──► Deploy ──► Verify
+```
+
+**Nytt:** `test.yml` har nå `mobile` job som kjører på PR + push:
+- iPhone 13 (Safari, 390×844)
+- Pixel 5 (Chrome, 393×851)
+- E2E: `e2e/mobile/*`, `e2e/responsive/*`
+
+### Post-deploy verify (mobil)
+
+```bash
+npm run verify        # Inkluderer nå /no/dashboard, /no/dashboard/auto-handel, /handel
+npm run health:prod   # Full health check
+```
+
+### Lighthouse (mobil thresholds)
+
+| Metrikk | Minimum | Mål |
+|---------|---------|-----|
+| Performance | ≥ 60 | ≥ 75 |
+| Accessibility | ≥ 90 | ≥ 95 |
+| CLS | < 0.1 | < 0.05 |
+| LCP | < 4.0s | < 2.5s |
+
+```bash
+npm run test:lighthouse:prod
+```

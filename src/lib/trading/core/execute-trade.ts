@@ -417,7 +417,7 @@ async function executeTradeWithLock(
         success: true,
         tradeId: trade.id,
         sessionId: session.id,
-        newBalance: currentBalance + (request.side === "buy" ? -orderValueNok : orderValueNok),
+        newBalance: currentBalance, // Balance updated by DB trigger only
         orderId: execResult.orderId,
         executedPrice: execResult.executedPrice,
         executedQuantity: execResult.executedQuantity,

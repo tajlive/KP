@@ -163,6 +163,55 @@ jobs:
           KLARPAKKE_E2E_FROM_PROVISION: "1"
 
   # ═══════════════════════════════════════════════════════════════
+  # MOBILE TESTS — Mobil-spesifikk E2E (iPhone 13, Pixel 5)
+  # ═══════════════════════════════════════════════════════════════
+  mobile:
+    name: 📱 Mobile E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: smoke
+    if: github.event_name == 'pull_request' || github.event.inputs.test_type == 'full' || github.event_name == 'push'
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
+      
+      - name: 🎭 Install Playwright
+        run: npx playwright install chromium
+      
+      - name: 🏗️ Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SKIP_LINT_IN_BUILD: "true"
+      
+      - name: 👤 Provision Test Users
+        run: npm run test:e2e:provision:env
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+      
+      - name: 🚀 Start Server
+        run: |
+          npm start &
+          npx wait-on http://localhost:3000 --timeout 120000
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      
+      - name: 📱 Run Mobile Tests
+        run: npm run test:e2e:mobile
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          KLARPAKKE_E2E_FROM_PROVISION: "1"
+
+  # ═══════════════════════════════════════════════════════════════
   # REGRESSION TESTS — Full test-suite (kun nattlig/manuell)
   # ═══════════════════════════════════════════════════════════════
   regression:

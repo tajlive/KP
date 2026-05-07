@@ -38,7 +38,7 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
   },
   { 
     key: 'autoTrade', 
-    href: '/dashboard/auto-trade', 
+    href: '/dashboard/auto-handel', 
     labelKey: 'dashboard.sidebar.autoTrade', 
     icon: 'Bot',
     roles: ['auth'] 
@@ -139,7 +139,7 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
   },
   { 
     key: 'autoTrade', 
-    href: '/dashboard/auto-trade', 
+    href: '/dashboard/auto-handel', 
     labelKey: 'dashboard.sidebar.autoTrade', 
     icon: 'Bot',
     roles: ['auth'],

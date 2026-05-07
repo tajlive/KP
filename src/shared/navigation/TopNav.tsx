@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { Bell, Settings, User } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Bell, Settings, User, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/shared/theme";
 import { HStack } from "@coinbase/cds-web/layout";
 import { Text } from "@coinbase/cds-web/typography";
@@ -11,6 +12,7 @@ import { Button } from "@coinbase/cds-web/buttons";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import {
   DASHBOARD_COINBASE_TOP_NAV,
+  DASHBOARD_MORE_NAV,
   isDashboardSidebarLinkActive,
 } from "@/lib/navigation/dashboard-links";
 
@@ -34,6 +36,73 @@ function TopNavLink({
     >
       {label}
     </Link>
+  );
+}
+
+function MoreDropdown({ locale, pathname }: { locale: string; pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const t = useTranslations("dashboard.sidebar");
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const anyActive = DASHBOARD_MORE_NAV.some((item) =>
+    isDashboardSidebarLinkActive(
+      pathname,
+      locale,
+      item.href,
+      item.exact ? { exact: true } : undefined,
+    ),
+  );
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+          anyActive
+            ? "bg-[#0052FF]/10 text-[#0052FF] dark:bg-[#0052FF]/20 dark:text-[#6FA3FF]"
+            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+        }`}
+      >
+        {t("mainMenu")}
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+          {DASHBOARD_MORE_NAV.map((item) => {
+            const active = isDashboardSidebarLinkActive(
+              pathname,
+              locale,
+              item.href,
+              item.exact ? { exact: true } : undefined,
+            );
+            return (
+              <Link
+                key={item.href}
+                href={hrefWithLocale(locale, item.href)}
+                onClick={() => setOpen(false)}
+                className={`block px-4 py-2 text-sm ${
+                  active
+                    ? "bg-[#0052FF]/10 text-[#0052FF] dark:bg-[#0052FF]/20 dark:text-[#6FA3FF]"
+                    : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                }`}
+              >
+                {t(item.labelKey)}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -72,6 +141,7 @@ export function TopNav() {
                 )}
               />
             ))}
+            <MoreDropdown locale={locale} pathname={pathname} />
           </nav>
         </HStack>
 

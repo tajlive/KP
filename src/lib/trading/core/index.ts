@@ -6,5 +6,4 @@
  */
 
 export { executeTrade } from './execute-trade';
-export { executeTradeV3 } from './execute-trade-v3';
 export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext } from './types';
