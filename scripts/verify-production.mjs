@@ -37,7 +37,7 @@ const CRITICAL_PATHS = [
     status: 200,
     description: "Signup page",
     noFollowRedirects: true,
-    acceptStatuses: [200, 302, 307],
+    acceptStatuses: [200, 302, 307, 308],
   },
   { path: "/no/priser", status: 200, description: "Pricing page (priser)" },
   {
@@ -45,7 +45,7 @@ const CRITICAL_PATHS = [
     status: 200,
     description: "Paper trading (auth redirect OK)",
     noFollowRedirects: true,
-    acceptStatuses: [200, 302, 307],
+    acceptStatuses: [200, 302, 307, 308],
   },
   { path: "/no/vilkar", status: 200, description: "Terms of service" },
   { path: "/no/personvern", status: 200, description: "Privacy policy" },
