@@ -73,7 +73,7 @@ async function executeTradeWithLock(
         ? await supabase
             .from("trading_sessions")
             .select(
-              "id, user_id, current_capital_nok, current_capital, status, mode",
+              "id, user_id, current_capital_nok, current_capital, status, mode, open_position",
             )
             .eq("id", sessionId)
             .eq("user_id", request.userId)
@@ -83,7 +83,7 @@ async function executeTradeWithLock(
         : await supabase
             .from("trading_sessions")
             .select(
-              "id, user_id, current_capital_nok, current_capital, status, mode",
+              "id, user_id, current_capital_nok, current_capital, status, mode, open_position",
             )
             .eq("user_id", request.userId)
             .eq("mode", "paper")
@@ -310,7 +310,31 @@ async function executeTradeWithLock(
     }
 
     // ========================================================================
-    // 7. Record trade
+    // 7. Calculate realized P&L for sell trades
+    // ========================================================================
+    let realizedPnl: number | undefined;
+    if (request.side === "sell" && (session as Record<string, unknown>).open_position) {
+      const pos = (session as Record<string, unknown>).open_position as Record<string, unknown>;
+      const entryPrice = (pos.entry_price as number) || 0;
+      const positionQty = (pos.quantity as number) || 0;
+      if (entryPrice > 0 && positionQty > 0) {
+        const matchedQty = Math.min(execResult.executedQuantity, positionQty);
+        const feeNok =
+          request.mode === "live"
+            ? execResult.fee || 0
+            : usdtToNok(execResult.fee || 0, rate ?? undefined);
+        const tradeValueNok =
+          request.mode === "paper"
+            ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
+            : execResult.executedQuantity * execResult.executedPrice;
+        const costBasisNok = entryPrice * matchedQty;
+        // For simplicity, use the trade value in the same currency as cost basis
+        realizedPnl = Math.round((tradeValueNok - costBasisNok - feeNok) * 100) / 100;
+      }
+    }
+
+    // ========================================================================
+    // 8. Record trade
     // ========================================================================
     const nowIso = new Date().toISOString();
     const idempotencyKey = `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
@@ -335,6 +359,7 @@ async function executeTradeWithLock(
         status: "filled",
         mode: request.mode,
         order_type: request.orderType,
+        realized_pnl: realizedPnl,
         binance_order_id:
           request.mode === "live" ? execResult.orderId ?? null : null,
         idempotency_key: idempotencyKey,

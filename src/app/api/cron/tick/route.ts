@@ -757,6 +757,11 @@ async function mirrorTradeToFollowers(
 
       // Insert mirrored trade - matching actual trades table schema
       const tradeRecord = trade as Record<string, unknown>;
+      const sourceRealizedPnl = tradeRecord.realized_pnl as number | undefined;
+      const sourceTotalValue = (tradeRecord.total_value as number) || 1;
+      const followerRealizedPnl = sourceRealizedPnl
+        ? Math.round(sourceRealizedPnl * (followerTradeAmount / sourceTotalValue) * 100) / 100
+        : undefined;
       const { error: mirrorError } = await db.from("trades").insert({
         session_id: followerSession.id,
         user_id: followerSession.user_id,
@@ -774,6 +779,7 @@ async function mirrorTradeToFollowers(
         total_value: followerTradeAmount,
         fee: mul(followerTradeAmount, 0.001),
         status: "filled",
+        realized_pnl: followerRealizedPnl,
         strategy_signal: {
           ...(tradeRecord.strategy_signal as Record<string, unknown>),
           copied_from: tradeRecord.id as string,
