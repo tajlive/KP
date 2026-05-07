@@ -715,6 +715,11 @@
       "predicate": "status",
       "object": "production-ready-2026-04-26",
       "validFrom": "2026-04-26T21:02:09.750Z"
+    },
+    {
+      "predicate": "hardened",
+      "object": "workflow_run-depends-on-PR-Check-success",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
     }
   ],
   "mempalace": [
@@ -1515,6 +1520,11 @@
       "predicate": "remaining_issues",
       "object": "10-duplikat-formatNOK-hardcoded-i18n-pattern",
       "validFrom": "2026-05-05T01:10:00Z"
+    },
+    {
+      "predicate": "computes",
+      "object": "signupDays-dynamically-from-user_profiles-created_at",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
     }
   ],
   "kimi-cli": [
@@ -2073,6 +2083,11 @@
       "predicate": "moved_to",
       "object": "src/features/leaderboard/CompetitionClient.tsx",
       "validFrom": "2026-05-03T18:39:19.371Z"
+    },
+    {
+      "predicate": "tests_updated_for",
+      "object": "empty state behavior instead of mock data",
+      "validFrom": "2026-05-06T17:58:28.540Z"
     }
   ],
   "modernization": [
@@ -2142,6 +2157,11 @@
       "predicate": "status",
       "object": "0-errors-0-warnings",
       "validFrom": "2026-05-04"
+    },
+    {
+      "predicate": "status",
+      "object": "PASS",
+      "validFrom": "2026-05-06T17:58:28.545Z"
     }
   ],
   "type-check": [
@@ -2149,6 +2169,11 @@
       "predicate": "status",
       "object": "0-errors",
       "validFrom": "2026-05-04"
+    },
+    {
+      "predicate": "status_after_build_fix",
+      "object": "PASS",
+      "validFrom": "2026-05-06T17:58:28.545Z"
     }
   ],
   "production-build": [
@@ -2538,6 +2563,226 @@
       "predicate": "has",
       "object": "same restart text for no and en locales",
       "validFrom": "2026-05-06T09:07:15.827Z"
+    }
+  ],
+  "win-rate-from-trades": [
+    {
+      "predicate": "default_mode_changed_from",
+      "object": "all to paper",
+      "validFrom": "2026-05-06T17:58:28.527Z"
+    }
+  ],
+  "npm audit": [
+    {
+      "predicate": "high_severity_count",
+      "object": "19 (post npm audit fix: 44 total vulnerabilities)",
+      "validFrom": "2026-05-06T17:58:28.546Z"
+    }
+  ],
+  "GamificationCard.test": [
+    {
+      "predicate": "status",
+      "object": "hangs indefinitely (120s+ timeout)",
+      "validFrom": "2026-05-06T17:58:28.553Z"
+    }
+  ],
+  "DX Performance Sprint": [
+    {
+      "predicate": "stabilization_status",
+      "object": "in progress - test fixes applied",
+      "validFrom": "2026-05-06T17:58:28.556Z"
+    }
+  ],
+  "bot-store": [
+    {
+      "predicate": "has-bug",
+      "object": "pause-and-stop-both-set-is_active-false",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    },
+    {
+      "predicate": "limitation",
+      "object": "calculateAggregatePnl-only-computes-all-not-day-week-month",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "format-number": [
+    {
+      "predicate": "hardened",
+      "object": "NaN-Infinity-null-guards",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "trading-dashboard": [
+    {
+      "predicate": "has-tests",
+      "object": "BotStatusCard-SessionCards-StatsGrid-89-total",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "testing": [
+    {
+      "predicate": "added",
+      "object": "cross-device-e2e-trading-consistency",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    },
+    {
+      "predicate": "added",
+      "object": "visual-regression-dashboard-trading",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "pr-check": [
+    {
+      "predicate": "runs-build-on",
+      "object": "both-PR-and-push-to-main",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "test": [
+    {
+      "predicate": "runs-E2E-on",
+      "object": "push-to-main-smoke-critical",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "sentry": [
+    {
+      "predicate": "has",
+      "object": "client-config-with-tracing-replay",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "e2e": [
+    {
+      "predicate": "has",
+      "object": "console-guard-fixture-auto-catches-console-error-warn",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    },
+    {
+      "predicate": "has",
+      "object": "console-errors-smoke-test-for-6-public-routes",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "eslint": [
+    {
+      "predicate": "blocks",
+      "object": "console-log-in-src-with-exceptions",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "client-component-gate": [
+    {
+      "predicate": "is",
+      "object": "blocking-no-continue-on-error",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "outbox-recovery": [
+    {
+      "predicate": "uses",
+      "object": "logger-instead-of-console-error",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "ai_decision_log": [
+    {
+      "predicate": "has",
+      "object": "schema-mismatch-migration-004-vs-actual-DB",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "bot_configs": [
+    {
+      "predicate": "has-migration",
+      "object": "20260506200000-add-status-column",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    },
+    {
+      "predicate": "requires-deploy",
+      "object": "supabase-db-push",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "architecture-plan": [
+    {
+      "predicate": "completed",
+      "object": "secure-pipeline-first-phases-A-B-C",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "division-by-zero": [
+    {
+      "predicate": "guarded",
+      "object": "7-locations-in-trading-engine",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "win-rate": [
+    {
+      "predicate": "calculates-from",
+      "object": "sell-trades-with-realized_pnl-in-sync-binance-trades",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "seo": [
+    {
+      "predicate": "has",
+      "object": "meta-description-in-root-layout",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "session": [
+    {
+      "predicate": "completed",
+      "object": "6-commits-two-plans-all-phases",
+      "validFrom": "2026-05-06T22:56:00.3NZ"
+    }
+  ],
+  "console-guard": [
+    {
+      "predicate": "is",
+      "object": "playwright-fixture-in-e2e-fixtures-console-guard-ts",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    },
+    {
+      "predicate": "catches",
+      "object": "console-error-and-console-warn-in-e2e-tests",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    },
+    {
+      "predicate": "has-allow-list",
+      "object": "Klarpakke-prefix-401-403-Network-Error-patterns",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    },
+    {
+      "predicate": "smoke-test",
+      "object": "e2e-smoke-console-errors-spec-ts-for-6-public-routes",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    }
+  ],
+  "signupDays": [
+    {
+      "predicate": "computed-from",
+      "object": "user_profiles-created_at-dynamically",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    },
+    {
+      "predicate": "replaces",
+      "object": "hardcoded-30-day-value",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    },
+    {
+      "predicate": "used-in",
+      "object": "trading-dashboard-stats",
+      "validFrom": "2026-05-07T00:12:45.973Z"
+    }
+  ],
+  "meta-description": [
+    {
+      "predicate": "added-to",
+      "object": "root-layout-tsx-for-SEO",
+      "validFrom": "2026-05-07T00:12:45.973Z"
     }
   ]
 }
