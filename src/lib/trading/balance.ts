@@ -98,7 +98,7 @@ export async function getUserBalance(
   return {
     sessionCapitalNok: sessionCapital,
     sessionStartingNok: Number(session.starting_capital_nok ?? 0),
-    sessionPnl: Number(session.total_pnl ?? 0),
+    sessionPnl: sessionCapital - Number(session.starting_capital_nok ?? 0),
     sessionTrades: Number(session.total_trades ?? 0),
     sessionStrategyId: session.strategy_id ?? null,
     profilePaperBalance: profileBalance,

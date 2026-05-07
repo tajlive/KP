@@ -112,10 +112,11 @@ export function usePulseData({
         .maybeSingle<TradingSession>();
 
       if (session && !sessionError) {
-        const pnl = Number(session.total_pnl || 0);
+        const current = Number(session.current_capital_nok || 0);
         const initial = Number(session.initial_capital || 1);
+        const pnl = current - initial;
         setStats({
-          portfolioValue: Number(session.current_capital_nok),
+          portfolioValue: current,
           dailyChangeNok: pnl,
           dailyChangePct: initial > 0 ? (pnl / initial) * 100 : 0,
         });
@@ -174,10 +175,11 @@ export function usePulseData({
         },
         (payload) => {
           const session = payload.new;
-          const pnl = Number(session.total_pnl || 0);
+          const current = Number(session.current_capital_nok || 0);
           const initial = Number(session.initial_capital || 1);
+          const pnl = current - initial;
           setStats({
-            portfolioValue: Number(session.current_capital_nok),
+            portfolioValue: current,
             dailyChangeNok: pnl,
             dailyChangePct: initial > 0 ? (pnl / initial) * 100 : 0,
           });
