@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { runAutopilotAnalysis, type RiskAppetite } from "@/lib/ai/autopilot/decision-engine";
 import { z } from "zod";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
@@ -35,7 +35,8 @@ const STRATEGY_TO_ENGINE: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  const db = await createClient();
+  const res = NextResponse.next();
+  const db = createServerClient(req, res);
 
   // Auth check
   const {
