@@ -1536,7 +1536,8 @@
       "about": "Om oss",
       "contact": "Kontakt",
       "privacy": "Personvern",
-      "terms": "Vilkår"
+      "terms": "Vilkår",
+     "cookies": "Cookies"
     }
   },
   "gamification": {
@@ -1900,6 +1901,7 @@
   "legal": {
     "privacyTitle": "Personvernerklæring",
     "termsTitle": "Vilkår for bruk",
+    "cookieTitle": "Informasjonskapsler",
     "privacy": {
       "title": "Personvernerklæring",
       "intro": {

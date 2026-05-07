@@ -63,8 +63,8 @@ const FeaturesBentoGrid = dynamic(
   }
 );
 
-// ISR: Revalidate page every hour for fresh content
-export const revalidate = 3600;
+// ISR: Revalidate page every minute during active landing development
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
