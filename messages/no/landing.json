@@ -300,7 +300,9 @@
     "bronze": "Bronse",
     "returnLabel": "Avkastning",
     "kltLabel": "KLT",
-    "empty": "Leaderboard er tomt. Bli den første til å delta!"
+    "empty": "Leaderboard er tomt. Bli den første til å delta!",
+    "emptyTitle": "Ingen tradere ennå",
+    "emptyBody": "Bli den første på leaderboardet! Registrer deg og start trading med lekepenger i dag."
   },
   "comparison": {
     "badge": "Sammenligning",

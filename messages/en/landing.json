@@ -321,7 +321,9 @@
     "bronze": "Bronze",
     "returnLabel": "Return",
     "kltLabel": "KLT",
-    "empty": "Leaderboard is empty. Be the first to join!"
+    "empty": "Leaderboard is empty. Be the first to join!",
+    "emptyTitle": "No traders yet",
+    "emptyBody": "Be the first on the leaderboard! Sign up and start trading with paper money today."
   },
   "comparison": {
     "badge": "Comparison",
