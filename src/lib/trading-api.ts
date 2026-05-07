@@ -163,7 +163,7 @@ export async function getPortfolio(
     const initial = Number(s.starting_capital_nok ?? s.initial_capital ?? cash);
     totalCash += cash;
     totalInitial += initial;
-    totalPnl += Number(s.total_pnl ?? 0);
+    totalPnl += cash - initial;
     totalTrades += Number(s.total_trades ?? 0);
     totalWins += Number(s.winning_trades ?? 0);
 
@@ -244,7 +244,7 @@ export async function getActiveStrategies(
     ),
     total_trades: session.total_trades ?? 0,
     winning_trades: session.winning_trades ?? 0,
-    total_pnl: session.total_pnl ?? 0,
+    total_pnl: Number(session.current_capital_nok ?? session.current_capital ?? 0) - Number(session.starting_capital_nok ?? session.initial_capital ?? 0),
     started_at: session.started_at ?? null,
     status: session.status as UserStrategy["status"],
   }));
@@ -278,7 +278,7 @@ export async function getAllStrategies(
     ),
     total_trades: session.total_trades ?? 0,
     winning_trades: session.winning_trades ?? 0,
-    total_pnl: session.total_pnl ?? 0,
+    total_pnl: Number(session.current_capital_nok ?? session.current_capital ?? 0) - Number(session.starting_capital_nok ?? session.initial_capital ?? 0),
     started_at: session.started_at ?? null,
     status: session.status as UserStrategy["status"],
   }));

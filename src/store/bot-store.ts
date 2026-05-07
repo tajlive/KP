@@ -139,8 +139,10 @@ export const useBotStore = create<BotStore>()((set, get) => ({
             mode: strat.is_paper_trade ? "paper" : "live",
             symbol,
             config,
-            pnlNok: session?.total_pnl ?? 0,
-            pnlPct: session?.total_pnl_pct ?? 0,
+            pnlNok: (session?.current_capital_nok ?? session?.current_capital ?? 0) - (session?.starting_capital_nok ?? session?.initial_capital ?? 0),
+            pnlPct: session?.starting_capital_nok && session?.starting_capital_nok > 0
+              ? (((session?.current_capital_nok ?? session?.current_capital ?? 0) - session.starting_capital_nok) / session.starting_capital_nok) * 100
+              : 0,
             totalTrades: session?.total_trades ?? 0,
             winningTrades: session?.winning_trades ?? 0,
             losingTrades: session?.losing_trades ?? 0,
