@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Trophy } from 'lucide-react';
+import { TrendingUp, Trophy, Info } from 'lucide-react';
 
 interface StatsData {
   active_paper_traders: number;
@@ -33,7 +33,6 @@ export function LiveProofStrip() {
     fetchStats();
   }, []);
 
-  // Format percentage with sign
   const formatPct = (value: number | null): string => {
     if (value === null) return '—';
     const sign = value >= 0 ? '+' : '';
@@ -42,28 +41,28 @@ export function LiveProofStrip() {
 
   return (
     <section className="bg-kp-surface border-y border-kp-border">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap items-center justify-center gap-6 md:gap-10 text-sm"
+          className="flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm"
         >
-          {/* Paper-trading stats — clearly marked as simulated */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider bg-amber-400/10 px-2 py-0.5 rounded">
-              SIMULERT
-            </span>
-            <span className="text-kp-text-tertiary text-xs">
-              Papirhandel — ikke ekte penger
-            </span>
+          {/* Paper-trading indicator — subtle, not screaming */}
+          <div className="flex items-center gap-1.5 text-xs text-amber-400/70" title="Papirhandel = simulert. Ingen ekte penger.">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/50" />
+            <span>Papirhandel</span>
+            <Info className="w-3 h-3" />
           </div>
+
+          {/* Divider */}
+          <div className="hidden md:block w-px h-4 bg-kp-border" />
 
           {/* Average return */}
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-kp-success" />
             <span className="text-kp-text-secondary">
               {loading || !stats ? (
-                <span className="inline-block w-20 h-4 bg-kp-surface-highlight animate-pulse rounded" />
+                <span className="inline-block w-16 h-3 bg-kp-surface-highlight animate-pulse rounded" />
               ) : stats.hasEnoughData && stats.avg_return_pct !== null ? (
                 <>
                   Snitt{' '}
@@ -86,14 +85,13 @@ export function LiveProofStrip() {
             <Trophy className="w-4 h-4 text-amber-400" />
             <span className="text-kp-text-secondary">
               {loading || !stats ? (
-                <span className="inline-block w-20 h-4 bg-kp-surface-highlight animate-pulse rounded" />
+                <span className="inline-block w-16 h-3 bg-kp-surface-highlight animate-pulse rounded" />
               ) : stats.hasEnoughData && stats.best_return_pct !== null ? (
                 <>
                   Beste:{' '}
                   <span className="font-semibold text-kp-success">
                     {formatPct(stats.best_return_pct)}
-                  </span>{' '}
-                  <span className="text-kp-text-tertiary text-xs">(siste 30d)</span>
+                  </span>
                 </>
               ) : (
                 <span className="text-kp-text-tertiary">Beste —</span>
@@ -101,17 +99,11 @@ export function LiveProofStrip() {
             </span>
           </div>
 
-          {/* Disclaimer */}
-          <div className="hidden md:flex items-center gap-1 text-xs text-kp-text-tertiary border-l border-kp-border pl-6">
-            <span>⚠️</span>
-            <span>Historiske resultater fra papirhandel. Ingen garanti.</span>
+          {/* Subtle disclaimer */}
+          <div className="hidden md:flex items-center gap-1 text-xs text-kp-text-tertiary/50 border-l border-kp-border pl-4">
+            <span>Historiske resultater. Ingen garanti.</span>
           </div>
         </motion.div>
-
-        {/* Mobile disclaimer */}
-        <div className="md:hidden text-center mt-3 text-xs text-kp-text-tertiary">
-          ⚠️ Historiske resultater. Ingen garanti for fremtidig avkastning.
-        </div>
       </div>
     </section>
   );
