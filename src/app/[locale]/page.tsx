@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
 import SanityHeroSection from "@/features/landing/SanityHeroSection";
 import SanityFAQSection from "@/features/landing/SanityFAQSection";
@@ -16,7 +16,7 @@ import {
   FinalCTASkeleton,
 } from "@/features/landing/skeletons/BelowFoldSkeletons";
 
-const DemoWidget = dynamic(
+const DemoWidget = dynamicImport(
   () => import("@/features/landing/DemoWidget").then((mod) => mod.DemoWidget),
   {
     loading: () => <DemoWidgetSkeleton />,
@@ -24,7 +24,7 @@ const DemoWidget = dynamic(
   }
 );
 
-const CoursePreview = dynamic(
+const CoursePreview = dynamicImport(
   () => import("@/features/landing/CoursePreview").then((mod) => mod.CoursePreview),
   {
     loading: () => <CoursePreviewSkeleton />,
@@ -32,7 +32,7 @@ const CoursePreview = dynamic(
   }
 );
 
-const ThreeSteps = dynamic(
+const ThreeSteps = dynamicImport(
   () => import("@/features/landing/ThreeSteps").then((mod) => mod.ThreeSteps),
   {
     loading: () => <ThreeStepsSkeleton />,
@@ -40,7 +40,7 @@ const ThreeSteps = dynamic(
   }
 );
 
-const FinalCTASection = dynamic(
+const FinalCTASection = dynamicImport(
   () => import("@/features/landing/FinalCTASection"),
   {
     loading: () => <FinalCTASkeleton />,
@@ -48,7 +48,7 @@ const FinalCTASection = dynamic(
   }
 );
 
-const LeaderboardPreview = dynamic(
+const LeaderboardPreview = dynamicImport(
   () => import("@/features/landing/LeaderboardPreview").then((mod) => mod.LeaderboardPreview),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
@@ -56,15 +56,15 @@ const LeaderboardPreview = dynamic(
   }
 );
 
-const FeaturesBentoGrid = dynamic(
+const FeaturesBentoGrid = dynamicImport(
   () => import("@/features/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
   }
 );
 
-// ISR: Revalidate page every minute during active landing development
-export const revalidate = 60;
+// Force dynamic rendering during active landing development — bypasses all caching
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
