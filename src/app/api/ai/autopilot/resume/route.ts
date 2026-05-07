@@ -1,0 +1,50 @@
+/**
+ * POST /api/ai/autopilot/resume
+ * Gjenopptar autopiloten — starter sessions på nytt.
+ */
+
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function POST(req: NextRequest) {
+  const db = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await db.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const now = new Date().toISOString();
+
+    // Resume autopilot config
+    await (db as any)
+      .from("ai_autopilot_configs")
+      .update({ status: "active", updated_at: now })
+      .eq("user_id", user.id);
+
+    // Resume paused paper sessions
+    await db
+      .from("trading_sessions")
+      .update({
+        status: "active",
+        last_status_message: "Autopilot resumed by user",
+        updated_at: now,
+      })
+      .eq("user_id", user.id)
+      .eq("mode", "paper")
+      .eq("status", "paused");
+
+    return NextResponse.json({ ok: true, message: "Autopilot resumed" });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}

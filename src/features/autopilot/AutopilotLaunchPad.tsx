@@ -1,0 +1,237 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Button } from "@/shared/ui/button";
+import { SURFACE } from "@/lib/design/tokens";
+import {
+  BrainCircuit,
+  Rocket,
+  Shield,
+  TrendingUp,
+  Flame,
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
+
+interface AutopilotLaunchPadProps {
+  userId: string;
+  locale: string;
+  paperBalance?: number;
+}
+
+const RISK_OPTIONS = [
+  {
+    id: "conservative" as const,
+    label: "Konservativ",
+    emoji: "🛡️",
+    desc: "Lav risiko, steady growth. 2% posisjonsstørrelse, 1.5% stop-loss.",
+    color: "text-green-400",
+    border: "border-green-500/30",
+    bg: "bg-green-500/10",
+  },
+  {
+    id: "moderate" as const,
+    label: "Moderat",
+    emoji: "📈",
+    desc: "Balansert risiko/reward. 5% posisjonsstørrelse, 2% stop-loss.",
+    color: "text-blue-400",
+    border: "border-blue-500/30",
+    bg: "bg-blue-500/10",
+  },
+  {
+    id: "aggressive" as const,
+    label: "Aggressiv",
+    emoji: "🔥",
+    desc: "Høy risiko, høy avkastning. 8% posisjonsstørrelse, 3% stop-loss.",
+    color: "text-orange-400",
+    border: "border-orange-500/30",
+    bg: "bg-orange-500/10",
+  },
+];
+
+export function AutopilotLaunchPad({
+  userId: _userId,
+  locale,
+  paperBalance,
+}: AutopilotLaunchPadProps) {
+  const t = useTranslations("autopilot");
+  const router = useRouter();
+  const [risk, setRisk] = useState<"conservative" | "moderate" | "aggressive">("moderate");
+  const [capital, setCapital] = useState(
+    paperBalance ? Math.round(paperBalance) : 100000
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const selectedRisk = RISK_OPTIONS.find((r) => r.id === risk)!;
+
+  async function handleActivate() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/ai/autopilot/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          risk_appetite: risk,
+          total_capital_nok: capital,
+          max_pairs: 3,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Aktivering feilet");
+        return;
+      }
+
+      if (data.ok) {
+        setSuccess(true);
+        // Redirect etter 2 sekunder
+        setTimeout(() => {
+          router.push(`/${locale}/dashboard/autopilot`);
+        }, 2000);
+      } else {
+        setError(data.reason || "Ingen kvalifiserende signaler. Markedet er ugunstig.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Ukjent feil");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (success) {
+    return (
+      <div className={`min-h-[400px] flex flex-col items-center justify-center gap-6 p-8 ${SURFACE.BG} rounded-2xl border border-white/10`}>
+        <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
+          <CheckCircle2 className="w-8 h-8 text-green-400" />
+        </div>
+        <h2 className={`text-2xl font-bold ${SURFACE.TEXT}`}>🤖 Autopilot aktivert!</h2>
+        <p className={`${SURFACE.TEXT_MUTED} text-center max-w-sm`}>
+          AI analyserer markedet og trader for deg. Du omdirigeres til dashbordet...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`max-w-xl mx-auto p-6 ${SURFACE.BG} rounded-2xl border border-white/10 space-y-6`}>
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center mx-auto">
+          <BrainCircuit className="w-7 h-7 text-indigo-400" />
+        </div>
+        <h1 className={`text-2xl font-bold ${SURFACE.TEXT}`}>KlarBot AI Autopilot</h1>
+        <p className={`${SURFACE.TEXT_MUTED} text-sm`}>
+          La AI analysere markedet, velge strategi, og trade for deg — fullstendig automatisk.
+        </p>
+      </div>
+
+      {/* Risk Selector */}
+      <div className="space-y-3">
+        <label htmlFor="risk-selector" className={`text-sm font-medium ${SURFACE.TEXT}`}>Risikonivå</label>
+        <div id="risk-selector" className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Risikonivå">
+          {RISK_OPTIONS.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => setRisk(option.id)}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                risk === option.id
+                  ? `${option.border} ${option.bg} ring-1 ring-white/20`
+                  : "border-white/10 hover:border-white/20"
+              }`}
+            >
+              <span className="text-lg">{option.emoji}</span>
+              <div className={`text-xs font-semibold mt-1 ${SURFACE.TEXT}`}>
+                {option.label}
+              </div>
+            </button>
+          ))}
+        </div>
+        <p className={`text-xs ${selectedRisk.color}`}>
+          {selectedRisk.desc}
+        </p>
+      </div>
+
+      {/* Capital Input */}
+      <div className="space-y-2">
+        <label htmlFor="capital-input" className={`text-sm font-medium ${SURFACE.TEXT}`}>Startkapital (NOK)</label>
+        <div className="relative">
+          <input
+            id="capital-input"
+            type="number"
+            value={capital}
+            onChange={(e) => setCapital(Math.max(10000, Math.min(1000000, Number(e.target.value))))}
+            className={`w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 ${SURFACE.TEXT} focus:outline-none focus:border-indigo-500/50 transition-colors`}
+            min={10000}
+            max={1000000}
+            step={1000}
+          />
+          <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm ${SURFACE.TEXT_MUTED}`}>
+            NOK
+          </span>
+        </div>
+      </div>
+
+      {/* Stats / Social Proof */}
+      <div className="grid grid-cols-3 gap-3 py-2">
+        <div className="text-center">
+          <div className={`text-lg font-bold ${SURFACE.TEXT}`}>+12.4%</div>
+          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Siste 30 dager</div>
+        </div>
+        <div className="text-center">
+          <div className={`text-lg font-bold ${SURFACE.TEXT}`}>67%</div>
+          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Win rate</div>
+        </div>
+        <div className="text-center">
+          <div className={`text-lg font-bold ${SURFACE.TEXT}`}>8.2%</div>
+          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Max drawdown</div>
+        </div>
+      </div>
+
+      {/* Warning */}
+      <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+        <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
+        <p className={`text-xs ${SURFACE.TEXT_MUTED}`}>
+          Autopilot starter alltid i paper mode. Etter 7 dager med positiv performance kan du
+          bytte til live trading.
+        </p>
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+          <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
+      )}
+
+      {/* Activate Button */}
+      <Button
+        onClick={handleActivate}
+        disabled={loading}
+        className="w-full h-12 text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl transition-all"
+      >
+        {loading ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          <>
+            <Rocket className="w-5 h-5 mr-2" />
+            Aktiver Autopilot
+          </>
+        )}
+      </Button>
+
+      <p className={`text-center text-xs ${SURFACE.TEXT_MUTED}`}>
+        AI analyserer markedet før hver rebalansering. Neste: i morgen kl 08:00.
+      </p>
+    </div>
+  );
+}
