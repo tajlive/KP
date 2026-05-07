@@ -79,7 +79,7 @@ export const POST = withAuth(async (_req: NextRequest, { user }) => {
         strategy_id: s.strategy_id,
         previous_status: s.status,
         trades: s.total_trades,
-        pnl: s.total_pnl,
+        pnl: (s.current_capital ?? 0) - (s.initial_capital ?? 0),
         capital: s.current_capital,
       })),
     });

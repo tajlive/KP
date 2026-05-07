@@ -35,7 +35,13 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ sessions, success: true });
+    const sessionsWithComputedPnl = (sessions || []).map((s: Record<string, unknown>) => ({
+      ...s,
+      total_pnl:
+        (Number(s.current_capital_nok ?? s.current_capital ?? 0) -
+          Number(s.starting_capital_nok ?? s.initial_capital ?? 0)),
+    }));
+    return NextResponse.json({ sessions: sessionsWithComputedPnl, success: true });
   } catch (error) {
     console.error("Admin sessions error:", error);
     return NextResponse.json(

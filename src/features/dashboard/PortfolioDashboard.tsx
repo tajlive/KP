@@ -993,7 +993,7 @@ export default function PortfolioDashboard({
               <div className="text-right">
                 <p className="text-sm font-semibold text-[#1A1D26] tabular-nums">
                   {formatNOK(
-                    activeSession.total_pnl ?? activeSession.pnl ?? 0,
+                    activeSession.current_capital_nok - activeSession.starting_capital_nok,
                     locale,
                   )}
                 </p>

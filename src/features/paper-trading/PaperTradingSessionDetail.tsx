@@ -414,7 +414,7 @@ export function PaperTradingSessionDetail({
                 }`}
               >
                 {isProfitable ? "+" : ""}
-                {session.total_pnl?.toLocaleString("nb-NO") || 0} kr
+                {(session.current_capital_nok - session.starting_capital_nok).toLocaleString("nb-NO")} kr
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">

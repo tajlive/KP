@@ -101,7 +101,7 @@ export default function PaperTrading({
           id: activeSession.id,
           current_capital_nok: activeSession.current_capital,
           starting_capital_nok: activeSession.initial_capital,
-          total_pnl_nok: activeSession.total_pnl,
+          total_pnl_nok: activeSession.current_capital - activeSession.initial_capital,
           total_trades: activeSession.total_trades,
           status: activeSession.status === "active" ? "ACTIVE" : "PAUSED",
         });

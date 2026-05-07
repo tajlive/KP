@@ -128,7 +128,7 @@ export default async function PortfolioPage({ params }: PageProps) {
           ...s,
           current_capital_nok: Number(s.current_capital_nok ?? 0),
           starting_capital_nok: Number(s.starting_capital_nok ?? 0),
-          total_pnl: Number(s.total_pnl ?? 0),
+          total_pnl: Number(s.current_capital_nok ?? 0) - Number(s.starting_capital_nok ?? 0),
           total_trades: Number(s.total_trades ?? 0),
           winning_trades: Number(s.winning_trades ?? 0),
           losing_trades: Number(s.losing_trades ?? 0),
