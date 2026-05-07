@@ -350,6 +350,7 @@ async function processSession(
       preFetchedCandles15m,
       signal.action,
       signal.indicators?.confidence ? (signal.indicators.confidence as number) / 3 : 0.8,
+      { strategyKey: resolvedEngine, trendThreshold: 0.5, entryThreshold: 0.7 },
     );
 
     logger.debug(`[MTF] Session ${session.id}: score=${mtfResult.score} trend=${mtfResult.trendDirection}(${mtfResult.trendScore}) entry=${mtfResult.entryConfirm} passed=${mtfResult.passed}`);

@@ -8,7 +8,7 @@
  */
 
 import type { MinimalSession, StrategyEngine, StrategyInput, StrategySignal } from "./types";
-import { rsi, macd, bollingerBands, atr } from "./indicators";
+import { rsi, macd, bollingerBands, atr, adx } from "./indicators";
 
 export interface MultiConfig {
   rsi_buy_threshold?: number;
@@ -25,6 +25,9 @@ export interface MultiConfig {
   trailing_stop_atr_mult?: number;
   use_volume_filter?: boolean;
   use_rsi_divergence?: boolean;
+  use_adx_filter?: boolean;
+  adx_threshold?: number;
+  adx_period?: number;
 }
 
 export class MultiSignalStrategy implements StrategyEngine {
@@ -45,6 +48,17 @@ export class MultiSignalStrategy implements StrategyEngine {
     const minConfidence = cfg.min_confidence ?? 2;
     const positionSize = cfg.position_size ?? 0.1;
     const trailingAtrMult = cfg.trailing_stop_atr_mult ?? 2;
+
+    // ADX filter for trend strength (opt-in via config)
+    const useAdx = cfg.use_adx_filter !== false;
+    const adxPeriod = cfg.adx_period ?? 14;
+    const adxThreshold = cfg.adx_threshold ?? 20;
+    let adxValue = 0;
+    let trendIsStrong = true;
+    if (useAdx && candles.length >= adxPeriod + 5) {
+      adxValue = adx(highs, lows, closes, adxPeriod);
+      trendIsStrong = adxValue >= adxThreshold;
+    }
 
     if (closes.length < Math.max(rsiPeriod, macdSlow, momentumPeriod) + 5) {
       return { action: "hold", reason: "Insufficient data" };
@@ -143,13 +157,20 @@ export class MultiSignalStrategy implements StrategyEngine {
       }
     }
 
-    // Buy: need minConfidence signals, no position, and not overbought
+    // Buy: need minConfidence signals, no position, not overbought, and strong trend
     if (totalBuy >= minConfidence && !session.open_position && rsiValue < 70) {
+      if (useAdx && !trendIsStrong) {
+        return {
+          action: "hold",
+          indicators: { ...indicators, adx: Math.round(adxValue * 10) / 10 },
+          reason: `${totalBuy}/3 signals bullish but ADX too weak (${adxValue.toFixed(1)} < ${adxThreshold}) — skipping entry`,
+        };
+      }
       return {
         action: "buy",
         positionSize,
-        indicators,
-        reason: `${totalBuy}/3 signals bullish${nearLowerBand ? ' (BB lower band)' : ''} — RSI ${rsiValue.toFixed(1)}, MACD ${macdData.macd > macdData.signal ? '+' : '-'}`,
+        indicators: { ...indicators, adx: Math.round(adxValue * 10) / 10 },
+        reason: `${totalBuy}/3 signals bullish${nearLowerBand ? ' (BB lower band)' : ''} — RSI ${rsiValue.toFixed(1)}, MACD ${macdData.macd > macdData.signal ? '+' : '-'}${useAdx ? `, ADX ${adxValue.toFixed(1)}` : ''}`,
       };
     }
 

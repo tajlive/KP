@@ -99,6 +99,20 @@ export class RiskManager {
       }
     }
 
+    // 6. Correlation guard: check total exposure across all active sessions for this user
+    const userId = params.userId;
+    if (symbol && params.direction === "LONG") {
+      const totalSymbolExposure = await this.getTotalUserSymbolExposure(userId, symbol);
+      const correlationCap = 30; // Max 30% of total portfolio in one coin
+      if (totalSymbolExposure + positionSizePercent > correlationCap) {
+        return {
+          allowed: false,
+          reason: `Porteføljegrense for ${symbol} nådd (${totalSymbolExposure.toFixed(2)}% + ${positionSizePercent.toFixed(2)}% > ${correlationCap}%). Diversifiser for å redusere korrelasjonsrisiko.`,
+          currentExposure: totalSymbolExposure,
+        };
+      }
+    }
+
     return {
       allowed: true,
       currentExposure: await this.getCurrentExposure(sessionId),
@@ -246,6 +260,35 @@ export class RiskManager {
     }
 
     return 0;
+  }
+
+  private async getTotalUserSymbolExposure(
+    userId: string,
+    symbol: string,
+  ): Promise<number> {
+    const supabase = createClient();
+
+    const { data: sessions } = await supabase
+      .from("trading_sessions")
+      .select("open_position, current_capital, trading_pair, initial_capital")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .eq("trading_pair", symbol)
+      .not("open_position", "is", null);
+
+    if (!sessions || sessions.length === 0) return 0;
+
+    let totalExposureUsd = 0;
+    let totalCapital = 0;
+    for (const s of sessions) {
+      const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
+      if (pos) {
+        totalExposureUsd += (pos.quantity || 0) * (pos.entry_price || 0);
+      }
+      totalCapital += (s.current_capital ?? s.initial_capital ?? 0);
+    }
+
+    return totalCapital > 0 ? (totalExposureUsd / totalCapital) * 100 : 0;
   }
 }
 

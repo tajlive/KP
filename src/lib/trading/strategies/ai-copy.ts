@@ -7,7 +7,7 @@
  */
 
 import type { MinimalSession, StrategyEngine, StrategyInput, StrategySignal } from "./types";
-import { bollingerBands, sma } from "./indicators";
+import { bollingerBands, sma, atr } from "./indicators";
 
 export interface AICopyConfig {
   use_bollinger_breakout?: boolean;
@@ -17,6 +17,8 @@ export interface AICopyConfig {
   min_momentum_pct?: number;
   position_size?: number;
   hold_time_max_hours?: number;
+  use_atr_stop?: boolean;
+  atr_stop_mult?: number;
 }
 
 export class AICopyStrategy implements StrategyEngine {
@@ -30,6 +32,8 @@ export class AICopyStrategy implements StrategyEngine {
     const minMomentumPct = cfg.min_momentum_pct ?? 1.5;
     const positionSize = cfg.position_size ?? 0.08;
     const holdTimeMaxHours = cfg.hold_time_max_hours ?? 48;
+    const useAtrStop = cfg.use_atr_stop ?? false;
+    const atrStopMult = cfg.atr_stop_mult ?? 2;
 
     if (candles.length < bbPeriod + momentumPeriod) {
       return { action: "hold", reason: "Insufficient data" };
@@ -90,6 +94,26 @@ export class AICopyStrategy implements StrategyEngine {
           },
           reason: `Breakdown below lower Bollinger band — cutting loss`,
         };
+      }
+
+      // ATR-based stop loss (tighter than Bollinger for volatile moves)
+      if (useAtrStop && candles.length >= 14) {
+        const highs = candles.map((c) => c.high);
+        const lows = candles.map((c) => c.low);
+        const atrValue = atr(highs, lows, closes, 14);
+        const atrStopPrice = entryPrice * (1 - (atrStopMult * atrValue) / entryPrice / 100);
+        if (currentPrice < atrStopPrice && pnlPct < 0) {
+          return {
+            action: "sell",
+            positionSize,
+            indicators: {
+              atr_stop: true,
+              atr_stop_price: Math.round(atrStopPrice * 100) / 100,
+              pnl_pct: Math.round(pnlPct * 100) / 100,
+            },
+            reason: `ATR stop loss: price ${currentPrice.toFixed(0)} < ${atrStopPrice.toFixed(0)} (${atrStopMult}x ATR)`,
+          };
+        }
       }
     }
 
