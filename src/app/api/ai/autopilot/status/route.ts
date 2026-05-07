@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
           winning: s.winning_trades,
           losing: s.losing_trades,
         },
-        pnl: s.total_pnl,
+        pnl: (s.current_capital ?? 0) - (s.initial_capital ?? 0),
         has_open_position: !!s.open_position,
         last_tick_at: s.last_tick_at,
       })),

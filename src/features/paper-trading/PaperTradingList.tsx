@@ -533,7 +533,7 @@ export function PaperTradingList({
                         }`}
                       >
                         {isProfitable ? "+" : ""}
-                        {session.total_pnl?.toLocaleString("nb-NO") || 0} kr
+                        {(session.current_capital_nok - session.starting_capital_nok).toLocaleString("nb-NO")} kr
                       </p>
                       <p
                         className={`text-sm tabular-nums truncate ${

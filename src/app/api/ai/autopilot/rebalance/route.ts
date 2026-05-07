@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
         const now = new Date().toISOString();
 
         // ── 2c. Oppdater metrics ────────────────────────────────────────
-        const totalPnl = sessions?.reduce((sum, s) => sum + (s.total_pnl ?? 0), 0) ?? 0;
+        const totalPnl = sessions?.reduce((sum, s) => sum + ((s.current_capital ?? 0) - (s.initial_capital ?? 0)), 0) ?? 0;
         const winRate =
           sessions && sessions.length > 0
             ? sessions.reduce((sum, s) => sum + (s.winning_trades ?? 0), 0) /

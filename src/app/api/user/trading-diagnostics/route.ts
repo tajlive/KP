@@ -43,7 +43,7 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
         mode: s.mode,
         status: s.status,
         total_trades: s.total_trades,
-        total_pnl: s.total_pnl,
+        total_pnl: (s.current_capital_nok ?? s.current_capital ?? 0) - (s.starting_capital_nok ?? s.initial_capital ?? 0),
         current_capital: s.current_capital,
         initial_capital: s.initial_capital,
         last_tick_at: s.last_tick_at,
