@@ -244,11 +244,13 @@ const nextConfig = {
       { source: "/:locale/signup", destination: "/:locale/register", permanent: true },
       { source: "/autotrade", destination: "/no/dashboard/auto-trade", permanent: true },
       { source: "/:locale/autotrade", destination: "/:locale/dashboard/auto-trade", permanent: true },
-      // Paper-trading redirects - COMMENTED OUT to fix API routes
-      // { source: "/paper-trading", destination: "/paper", permanent: true },
-      // { source: "/:locale/paper-trading", destination: "/:locale/paper", permanent: true },
-      // { source: "/paper-trading/:path*", destination: "/paper/:path*", permanent: true },
-      // { source: "/:locale/paper-trading/:path*", destination: "/:locale/paper/:path*", permanent: true },
+      // Trading route unification: canonical /handel
+      { source: "/paper-trading", destination: "/handel", permanent: true },
+      { source: "/:locale/paper-trading", destination: "/:locale/handel", permanent: true },
+      { source: "/paper-trading/:path*", destination: "/handel", permanent: true },
+      { source: "/:locale/paper-trading/:path*", destination: "/:locale/handel", permanent: true },
+      { source: "/live-trading", destination: "/handel?mode=live", permanent: true },
+      { source: "/:locale/live-trading", destination: "/:locale/handel?mode=live", permanent: true },
 
       // Legacy English root URLs → actual Norwegian pages (localePrefix: "always")
       { source: "/pricing", destination: "/no/priser", permanent: true },
@@ -273,9 +275,22 @@ const nextConfig = {
       { source: "/trading", destination: "/no/dashboard/trade", permanent: true },
       { source: "/portfolio", destination: "/no/dashboard/portfolio", permanent: true },
       
-      // Legacy auto-trade paths → dashboard/auto-trade (direct, no chain)
-      { source: "/auto-trade", destination: "/no/dashboard/auto-trade", permanent: true },
-      { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-trade", permanent: true },
+      // Route unification: /dashboard/auto-handel replaces /dashboard/auto-trade
+      { source: "/dashboard/auto-trade", destination: "/dashboard/auto-handel", permanent: true },
+      { source: "/:locale/dashboard/auto-trade", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      { source: "/dashboard/auto-trade/:path*", destination: "/dashboard/auto-handel", permanent: true },
+      { source: "/:locale/dashboard/auto-trade/:path*", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      // Legacy auto-trade paths → dashboard/auto-handel (direct, no chain)
+      { source: "/auto-trade", destination: "/no/dashboard/auto-handel", permanent: true },
+      { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-handel", permanent: true },
+      // Autopilot → auto-handel canonical
+      { source: "/dashboard/autopilot", destination: "/dashboard/auto-handel", permanent: true },
+      { source: "/:locale/dashboard/autopilot", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      { source: "/dashboard/autopilot/:path*", destination: "/dashboard/auto-handel", permanent: true },
+      { source: "/:locale/dashboard/autopilot/:path*", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      // Handelshistorikk → dashboard/historikk canonical
+      { source: "/handelshistorikk", destination: "/dashboard/historikk", permanent: true },
+      { source: "/:locale/handelshistorikk", destination: "/:locale/dashboard/historikk", permanent: true },
       // /auto-trading and /auto-trading-ai handled by proxy CANONICAL_REDIRECTS
       // (proxy runs first → /dashboard/auto-trade). No need to duplicate here.
 

@@ -545,7 +545,7 @@ export function PaperTradingList({
                         {isProfitable ? "+" : ""}
                         {pnlPercent.toFixed(1)}%
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         {t("trades")}: {session.total_trades}
                       </p>
                     </div>

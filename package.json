@@ -78,6 +78,7 @@
     "audit:visual": "node scripts/page-inspector.mjs",
     "audit:visual:open": "node scripts/page-inspector.mjs --open",
     "audit:routes-list": "node scripts/page-inspector.mjs --routes-only",
+    "pre-push": "node scripts/pre-push.mjs",
     "release": "npm run lint && npm run type-check && npm run build",
     "launch": "bash scripts/launch-week2.sh",
     "deploy": "npx vercel --prod --archive=tgz",

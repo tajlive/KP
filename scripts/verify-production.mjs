@@ -51,6 +51,28 @@ const CRITICAL_PATHS = [
   { path: "/no/personvern", status: 200, description: "Privacy policy" },
   { path: "/no/kontakt", status: 200, description: "Contact page" },
   { path: "/en", status: 200, description: "English homepage" },
+  // Mobil-kritiske dashboard-ruter (75% av trafikk er mobil)
+  {
+    path: "/no/dashboard",
+    status: 200,
+    description: "Dashboard (mobil viewport, auth redirect OK)",
+    noFollowRedirects: true,
+    acceptStatuses: [200, 302, 307],
+  },
+  {
+    path: "/no/dashboard/auto-handel",
+    status: 200,
+    description: "Auto-handel (mobil viewport, auth redirect OK)",
+    noFollowRedirects: true,
+    acceptStatuses: [200, 302, 307],
+  },
+  {
+    path: "/handel",
+    status: 200,
+    description: "Handel (paper trading canonical, auth redirect OK)",
+    noFollowRedirects: true,
+    acceptStatuses: [200, 302, 307],
+  },
 ];
 
 // API endpoints som skal være tilgjengelige

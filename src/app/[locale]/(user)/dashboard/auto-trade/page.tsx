@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const isNo = locale === "no";
   return {
-    title: isNo ? "Start trading-bot" : "Start trading bot",
+    title: isNo ? "Auto-handel" : "Auto Trading",
     description: isNo
       ? "Sett opp din automatiske trading-strategi."
       : "Set up your automated trading strategy.",

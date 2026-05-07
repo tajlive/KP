@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── 5. Opprett trading sessions ──────────────────────────────────────
+    // ── 5. Opprett trading sessions (koblet til autopilot) ───────────────
     const riskProfile = getOptimizedRiskProfile(
       risk_appetite === "conservative"
         ? "conservative"
@@ -200,10 +200,11 @@ export async function POST(req: NextRequest) {
         };
       }
 
-      const { data: session, error: sessionErr } = await db
+      const { data: session, error: sessionErr } = await (db as any)
         .from("trading_sessions")
         .insert({
           user_id: user.id,
+          autopilot_id: autopilotConfig.id,
           mode: "paper",
           status: "active",
           strategy_id: engineKey,

@@ -19,9 +19,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  const isNo = locale === "no";
-  const title = isNo ? "Dashboard" : "Dashboard";
-  const description = isNo
+  const title = "Dashboard";
+  const description = locale === "no"
     ? "Din portefølje, live priser og trading-oversikt."
     : "Your portfolio, live prices and trading overview.";
 

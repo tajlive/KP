@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 /**
- * Én trading-side (alt 1): All trading lives under /paper-trading.
- * Redirect to single trading page with mode=live for tydelig UX.
+ * Canonical redirect: all trading routes converge on /handel.
  */
 export default async function LiveTradingPage({
   params,
@@ -12,5 +11,5 @@ export default async function LiveTradingPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  redirect(`/${locale}/paper-trading?mode=live`);
+  redirect(`/${locale}/handel?mode=live`);
 }

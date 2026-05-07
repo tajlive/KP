@@ -23,34 +23,10 @@ interface AutopilotLaunchPadProps {
 }
 
 const RISK_OPTIONS = [
-  {
-    id: "conservative" as const,
-    label: "Konservativ",
-    emoji: "🛡️",
-    desc: "Lav risiko, steady growth. 2% posisjonsstørrelse, 1.5% stop-loss.",
-    color: "text-green-400",
-    border: "border-green-500/30",
-    bg: "bg-green-500/10",
-  },
-  {
-    id: "moderate" as const,
-    label: "Moderat",
-    emoji: "📈",
-    desc: "Balansert risiko/reward. 5% posisjonsstørrelse, 2% stop-loss.",
-    color: "text-blue-400",
-    border: "border-blue-500/30",
-    bg: "bg-blue-500/10",
-  },
-  {
-    id: "aggressive" as const,
-    label: "Aggressiv",
-    emoji: "🔥",
-    desc: "Høy risiko, høy avkastning. 8% posisjonsstørrelse, 3% stop-loss.",
-    color: "text-orange-400",
-    border: "border-orange-500/30",
-    bg: "bg-orange-500/10",
-  },
-];
+  { id: "conservative" as const, key: "conservative" },
+  { id: "moderate" as const, key: "moderate" },
+  { id: "aggressive" as const, key: "aggressive" },
+] as const;
 
 export function AutopilotLaunchPad({
   userId: _userId,
@@ -68,6 +44,33 @@ export function AutopilotLaunchPad({
   const [success, setSuccess] = useState(false);
 
   const selectedRisk = RISK_OPTIONS.find((r) => r.id === risk)!;
+  const riskData = {
+    conservative: {
+      emoji: t("risk.conservative.emoji"),
+      label: t("risk.conservative.label"),
+      desc: t("risk.conservative.desc"),
+      color: "text-green-400",
+      border: "border-green-500/30",
+      bg: "bg-green-500/10",
+    },
+    moderate: {
+      emoji: t("risk.moderate.emoji"),
+      label: t("risk.moderate.label"),
+      desc: t("risk.moderate.desc"),
+      color: "text-blue-400",
+      border: "border-blue-500/30",
+      bg: "bg-blue-500/10",
+    },
+    aggressive: {
+      emoji: t("risk.aggressive.emoji"),
+      label: t("risk.aggressive.label"),
+      desc: t("risk.aggressive.desc"),
+      color: "text-orange-400",
+      border: "border-orange-500/30",
+      bg: "bg-orange-500/10",
+    },
+  } as const;
+  const currentRisk = riskData[risk];
 
   async function handleActivate() {
     setLoading(true);
@@ -87,7 +90,7 @@ export function AutopilotLaunchPad({
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Aktivering feilet");
+        setError(data.error || t("errors.activationFailed"));
         return;
       }
 
@@ -101,7 +104,7 @@ export function AutopilotLaunchPad({
         setError(data.reason || "Ingen kvalifiserende signaler. Markedet er ugunstig.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ukjent feil");
+      setError(err instanceof Error ? err.message : t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -113,9 +116,9 @@ export function AutopilotLaunchPad({
         <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
           <CheckCircle2 className="w-8 h-8 text-green-400" />
         </div>
-        <h2 className={`text-2xl font-bold ${SURFACE.TEXT}`}>🤖 Autopilot aktivert!</h2>
+        <h2 className={`text-2xl font-bold ${SURFACE.TEXT}`}>🤖 {t("monitor.status.active")}!</h2>
         <p className={`${SURFACE.TEXT_MUTED} text-center max-w-sm`}>
-          AI analyserer markedet og trader for deg. Du omdirigeres til dashbordet...
+          {t("subtitle")}
         </p>
       </div>
     );
@@ -128,15 +131,15 @@ export function AutopilotLaunchPad({
         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center mx-auto">
           <BrainCircuit className="w-7 h-7 text-indigo-400" />
         </div>
-        <h1 className={`text-2xl font-bold ${SURFACE.TEXT}`}>KlarBot AI Autopilot</h1>
+        <h1 className={`text-2xl font-bold ${SURFACE.TEXT}`}>{t("title")}</h1>
         <p className={`${SURFACE.TEXT_MUTED} text-sm`}>
-          La AI analysere markedet, velge strategi, og trade for deg — fullstendig automatisk.
+          {t("subtitle")}
         </p>
       </div>
 
       {/* Risk Selector */}
       <div className="space-y-3">
-        <label htmlFor="risk-selector" className={`text-sm font-medium ${SURFACE.TEXT}`}>Risikonivå</label>
+        <label htmlFor="risk-selector" className={`text-sm font-medium ${SURFACE.TEXT}`}>{t("risk.title")}</label>
         <div id="risk-selector" className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Risikonivå">
           {RISK_OPTIONS.map((option) => (
             <button
@@ -144,25 +147,25 @@ export function AutopilotLaunchPad({
               onClick={() => setRisk(option.id)}
               className={`p-3 rounded-xl border text-left transition-all ${
                 risk === option.id
-                  ? `${option.border} ${option.bg} ring-1 ring-white/20`
+                  ? `${riskData[option.key].border} ${riskData[option.key].bg} ring-1 ring-white/20`
                   : "border-white/10 hover:border-white/20"
               }`}
             >
-              <span className="text-lg">{option.emoji}</span>
+              <span className="text-lg">{riskData[option.key].emoji}</span>
               <div className={`text-xs font-semibold mt-1 ${SURFACE.TEXT}`}>
-                {option.label}
+                {riskData[option.key].label}
               </div>
             </button>
           ))}
         </div>
-        <p className={`text-xs ${selectedRisk.color}`}>
-          {selectedRisk.desc}
+        <p className={`text-xs ${currentRisk.color}`}>
+          {currentRisk.desc}
         </p>
       </div>
 
       {/* Capital Input */}
       <div className="space-y-2">
-        <label htmlFor="capital-input" className={`text-sm font-medium ${SURFACE.TEXT}`}>Startkapital (NOK)</label>
+        <label htmlFor="capital-input" className={`text-sm font-medium ${SURFACE.TEXT}`}>{t("capital.title")} (NOK)</label>
         <div className="relative">
           <input
             id="capital-input"
@@ -184,15 +187,15 @@ export function AutopilotLaunchPad({
       <div className="grid grid-cols-3 gap-3 py-2">
         <div className="text-center">
           <div className={`text-lg font-bold ${SURFACE.TEXT}`}>+12.4%</div>
-          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Siste 30 dager</div>
+          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>{t("monitor.pnl")} 30d</div>
         </div>
         <div className="text-center">
           <div className={`text-lg font-bold ${SURFACE.TEXT}`}>67%</div>
-          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Win rate</div>
+          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>{t("monitor.trades")}</div>
         </div>
         <div className="text-center">
           <div className={`text-lg font-bold ${SURFACE.TEXT}`}>8.2%</div>
-          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Max drawdown</div>
+          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Max DD</div>
         </div>
       </div>
 
@@ -200,8 +203,7 @@ export function AutopilotLaunchPad({
       <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
         <p className={`text-xs ${SURFACE.TEXT_MUTED}`}>
-          Autopilot starter alltid i paper mode. Etter 7 dager med positiv performance kan du
-          bytte til live trading.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -224,13 +226,13 @@ export function AutopilotLaunchPad({
         ) : (
           <>
             <Rocket className="w-5 h-5 mr-2" />
-            Aktiver Autopilot
+            {t("activate")}
           </>
         )}
       </Button>
 
       <p className={`text-center text-xs ${SURFACE.TEXT_MUTED}`}>
-        AI analyserer markedet før hver rebalansering. Neste: i morgen kl 08:00.
+        {t("subtitle")}
       </p>
     </div>
   );

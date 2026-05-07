@@ -82,10 +82,10 @@ export async function acquireLock(
   };
   
   if (!redis) {
-    return { 
-      acquired: false, 
-      error: 'Redis client not available for locking' 
-    };
+    throw new Error(
+      'TRADE_LOCK_UNAVAILABLE: Redis client not available for distributed locking. ' +
+      'Trade execution blocked to prevent race conditions.'
+    );
   }
   
   const maxAttempts = opts.retries! + 1;
