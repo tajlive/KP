@@ -94,13 +94,11 @@ const geist = Geist({
 });
 
 export async function generateStaticParams() {
-  // Generate static pages for ALL locales including default "no"
-  // This ensures / (no), /en/, /th/, /zh/ are all pre-rendered at build time
+  // Generate static pages for active locales only
+  // th/zh removed — not configured in next-intl (runtime 404, wasted build time)
   return [
     { locale: "no" }, // Default locale - critical for TTFB
     { locale: "en" },
-    { locale: "th" },
-    { locale: "zh" },
   ];
 }
 

@@ -15,6 +15,11 @@ interface DashboardBotStatusViewProps {
   mode: TradingMode;
   onLoadData: () => void;
   onSetExpandedStrategy: (s: null) => void;
+  dashboardMetrics?: {
+    totalPnl: number;
+    winRate: number;
+    totalTrades: number;
+  } | null;
 }
 
 export function DashboardBotStatusView({
@@ -26,6 +31,7 @@ export function DashboardBotStatusView({
   mode,
   onLoadData,
   onSetExpandedStrategy,
+  dashboardMetrics,
 }: DashboardBotStatusViewProps) {
   const { success: showSuccess } = useI18nToast();
 
@@ -36,6 +42,7 @@ export function DashboardBotStatusView({
       recentTrades={recentTrades}
       formatNOK={formatNOK}
       userId={userId}
+      dashboardMetrics={dashboardMetrics}
       onAction={async (action) => {
         if (action === "pause" || action === "stop_all") {
           await Promise.all(

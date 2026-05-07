@@ -30,6 +30,7 @@ export function Footer() {
     legal: [
       { href: '/personvern', label: t('links.privacy') },
       { href: '/vilkar', label: t('links.terms') },
+      { href: '/cookies', label: t('links.cookies') },
     ],
   };
 

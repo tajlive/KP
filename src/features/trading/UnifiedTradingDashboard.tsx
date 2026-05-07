@@ -15,6 +15,7 @@ import type {
 } from "@/lib/trading-api";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { useStrategyActions } from "./hooks/useStrategyActions";
+import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import { DashboardLoadingSkeleton } from "./components/DashboardLoadingSkeleton";
 import { DashboardBotStatusView } from "./components/DashboardBotStatusView";
 
@@ -173,6 +174,11 @@ export default function UnifiedTradingDashboard({
     );
   }
 
+  // Fetch unified metrics for single source of truth
+  const { data: dashboardMetrics } = useDashboardMetrics(mode, "active_and_completed", {
+    enabled: !!userId,
+  });
+
   // KLA-100: Show BotStatusDashboard if a bot is active
   if (activeStrategies.length > 0 && userId) {
     return (
@@ -185,6 +191,7 @@ export default function UnifiedTradingDashboard({
         mode={mode}
         onLoadData={loadData}
         onSetExpandedStrategy={setExpandedStrategy}
+        dashboardMetrics={dashboardMetrics}
       />
     );
   }
