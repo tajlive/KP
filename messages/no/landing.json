@@ -212,6 +212,7 @@
     "overlayLoggedIn": "Prøv full papirhandel i appen — samme følelse, fortsatt uten ekte penger",
     "overlayLoggedInCta": "Gå til papirhandel",
     "demoBadge": "Live simulering",
+    "liveBadge": "Live markedsdata",
     "paper": "Paper",
     "live": "Live",
     "virtualBalance": "Virtuell saldo",
@@ -467,6 +468,13 @@
   },
   "stickyCTA": {
     "label": "Start gratis nå"
+  },
+  "common": {
+    "bentoBadge": "Alt du trenger",
+    "bentoTitle": "Hva du får med",
+    "bentoCtaTitle": "Klar til å starte?",
+    "bentoCtaDesc": "Bli med i dag og få tilgang til alle funksjoner.",
+    "bentoCtaButton": "Start gratis nå"
   },
   "roiSimulator": {
     "badge": "Start din reise",
