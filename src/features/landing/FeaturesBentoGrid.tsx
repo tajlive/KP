@@ -12,9 +12,11 @@ import {
   Clock,
   Users,
   ArrowRight,
+  Activity,
 } from "lucide-react";
 import { GlassCard } from "@/shared/ui/GlassCard";
 import { ButtonPremium } from "@/shared/ui/ButtonPremium";
+import { useEffect, useState } from "react";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -40,73 +42,95 @@ function FeatureCard({
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
     >
-      <GlassCard
-        variant="elevated"
-        hover="lift"
-        className={`h-full ${className}`}
-      >
+      <GlassCard variant="elevated" hover="lift" className={`h-full ${className}`}>
         <div
           className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4`}
         >
           <div className="text-kp-text-primary">{icon}</div>
         </div>
-        <h3 className="text-lg font-semibold text-kp-text-primary mb-2">
-          {title}
-        </h3>
-        <p className="text-sm text-kp-text-secondary leading-relaxed">
-          {description}
-        </p>
+        <h3 className="text-lg font-semibold text-kp-text-primary mb-2">{title}</h3>
+        <p className="text-sm text-kp-text-secondary leading-relaxed">{description}</p>
       </GlassCard>
     </motion.div>
   );
 }
 
-function LargeFeatureCard({
-  icon,
-  title,
-  description,
-  stats,
-  className = "",
-  delay = 0,
-}: FeatureCardProps & { stats?: { value: string; label: string }[] }) {
+function LiveSignalCard({ delay = 0 }: { delay?: number }) {
+  const [signal, setSignal] = useState<"BUY" | "HOLD" | "SELL" | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchSignal() {
+      try {
+        const res = await fetch("/api/signal/latest?symbol=BTCUSDT");
+        if (!res.ok) throw new Error("Signal fetch failed");
+        const data = (await res.json()) as { action?: string };
+        const action = data.action?.toUpperCase();
+        setSignal(action === "BUY" || action === "SELL" ? action : "HOLD");
+      } catch {
+        setSignal("HOLD");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSignal();
+    const interval = setInterval(fetchSignal, 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const signalConfig = {
+    BUY: { color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30", label: "KJØP" },
+    SELL: { color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/30", label: "SALG" },
+    HOLD: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30", label: "HOLD" },
+  };
+
+  const config = signal ? signalConfig[signal] : signalConfig.HOLD;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className={`col-span-2 row-span-2 ${className}`}
+      className="col-span-2 row-span-2"
     >
-      <GlassCard
-        variant="elevated"
-        hover="lift"
-        className="h-full relative overflow-hidden"
-      >
+      <GlassCard variant="elevated" hover="lift" className="h-full relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-kp-brand/30 via-kp-brand/10 to-transparent opacity-50" />
-
         <div className="relative z-10 h-full flex flex-col">
           <div className="w-14 h-14 rounded-xl bg-kp-surface-highlight flex items-center justify-center mb-4">
-            <div className="text-kp-brand">{icon}</div>
+            <Bot className="w-7 h-7 text-kp-brand" />
           </div>
-
-          <h3 className="text-2xl font-bold text-kp-text-primary mb-3">
-            {title}
-          </h3>
-
+          <h3 className="text-2xl font-bold text-kp-text-primary mb-3">AI-signaler i sanntid</h3>
           <p className="text-kp-text-secondary mb-6 leading-relaxed">
-            {description}
+            Vår AI analyserer markedet kontinuerlig og gir deg tydelige kjøps-, salgs- eller hold-signaler
+            basert på teknisk analyse.
           </p>
 
-          {stats && (
-            <div className="grid grid-cols-2 gap-4 mt-auto">
-              {stats.map((stat, i) => (
-                <div key={i} className="text-center p-3 rounded-lg bg-kp-surface/50">
-                  <div className="text-xl font-bold text-kp-brand">{stat.value}</div>
-                  <div className="text-xs text-kp-text-tertiary">{stat.label}</div>
+          <div className="mt-auto">
+            <div
+              className={`flex items-center justify-between p-4 rounded-xl border ${config.border} ${config.bg}`}
+            >
+              <div className="flex items-center gap-3">
+                <Activity className={`w-5 h-5 ${config.color}`} />
+                <div>
+                  <p className={`text-sm font-medium ${config.color}`}>
+                    BTC/USDT — Siste signal
+                  </p>
+                  <p className="text-xs text-kp-text-tertiary">
+                    Oppdateres hvert minutt
+                  </p>
                 </div>
-              ))}
+              </div>
+              <div className="text-right">
+                {loading ? (
+                  <div className="w-16 h-6 bg-kp-surface-highlight animate-pulse rounded" />
+                ) : (
+                  <span className={`text-2xl font-black ${config.color}`}>{config.label}</span>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </GlassCard>
     </motion.div>
@@ -115,6 +139,8 @@ function LargeFeatureCard({
 
 export function FeaturesBentoGrid() {
   const t = useTranslations("landing.bentoGrid");
+  const tc = useTranslations("landing.common");
+
   const features = [
     {
       icon: <GraduationCap className="w-6 h-6" />,
@@ -171,7 +197,7 @@ export function FeaturesBentoGrid() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-kp-brand/10 text-kp-brand text-sm font-medium mb-4"
           >
             <TrendingUp className="w-4 h-4" />
-            <span>Alt du trenger</span>
+            <span>{tc("bentoBadge")}</span>
           </motion.div>
 
           <motion.h2
@@ -181,7 +207,7 @@ export function FeaturesBentoGrid() {
             transition={{ delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-kp-text-primary mb-4"
           >
-            Hva du får med{" "}
+            {tc("bentoTitle")}{" "}
             <span className="bg-gradient-to-r from-kp-brand to-kp-brand-light bg-clip-text text-transparent">
               Klarpakke
             </span>
@@ -189,12 +215,7 @@ export function FeaturesBentoGrid() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          <LargeFeatureCard
-            icon={<Bot className="w-7 h-7 text-kp-brand" />}
-            title="Handelsboten handler mens du sover"
-            description="Våre algoritmer analyserer markedet kontinuerlig og utfører handler automatisk basert på din strategi. Du bestemmer risikonivået — boten gjør jobben."
-            delay={0.1}
-          />
+          <LiveSignalCard delay={0.1} />
 
           {features.map((feature, index) => (
             <FeatureCard key={feature.title} {...feature} delay={0.1 + index * 0.05} />
@@ -211,15 +232,15 @@ export function FeaturesBentoGrid() {
               variant="glow"
               className="h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-br from-kp-brand to-kp-brand-dark"
             >
-              <h3 className="text-xl font-bold text-white mb-3">Klar til å starte?</h3>
-              <p className="text-white/80 mb-6">Bli med i dag og få tilgang til alle funksjoner.</p>
+              <h3 className="text-xl font-bold text-white mb-3">{tc("bentoCtaTitle")}</h3>
+              <p className="text-white/80 mb-6">{tc("bentoCtaDesc")}</p>
               <ButtonPremium
                 variant="secondary"
                 size="lg"
                 icon={<ArrowRight className="w-5 h-5" />}
                 iconPosition="right"
               >
-                Start gratis nå
+                {tc("bentoCtaButton")}
               </ButtonPremium>
             </GlassCard>
           </motion.div>

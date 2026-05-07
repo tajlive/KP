@@ -212,6 +212,7 @@
     "overlayLoggedIn": "Try full paper trading in the app — same feel, still no real money at risk",
     "overlayLoggedInCta": "Go to paper trading",
     "demoBadge": "Live simulation",
+    "liveBadge": "Live market data",
     "paper": "Paper",
     "live": "Live",
     "virtualBalance": "Virtual balance",
@@ -467,6 +468,13 @@
   },
   "stickyCTA": {
     "label": "Start for free"
+  },
+  "common": {
+    "bentoBadge": "Everything you need",
+    "bentoTitle": "What you get with",
+    "bentoCtaTitle": "Ready to start?",
+    "bentoCtaDesc": "Join today and get access to all features.",
+    "bentoCtaButton": "Start free now"
   },
   "roiSimulator": {
     "badge": "Start your journey",
