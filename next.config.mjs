@@ -215,8 +215,8 @@ const nextConfig = {
 
   // URL handling - REMOVED skipTrailingSlashRedirect as it may cause 404s
 
-  // SEO: Canonical redirects with localePrefix: 'as-needed'
-  // Norwegian (default) = no prefix, English = /en/ prefix
+  // SEO: Canonical redirects with localePrefix: 'always'
+  // Both Norwegian (/no/) and English (/en/) get prefixes
   async rewrites() {
     return [
       // Paper-trading API - rewrite to bypass any redirects

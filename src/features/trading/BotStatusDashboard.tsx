@@ -37,7 +37,6 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   sumEffectivePnlSince,
-  winRateEffective,
   effectiveDeltaForApiTrade,
 } from "@/lib/trading/trade-effective-pnl";
 import {
@@ -63,6 +62,12 @@ interface BotStatusDashboardProps {
   onAction: (action: string) => void;
   formatNOK: (v: number) => string;
   userId?: string;
+  /** Unified dashboard metrics — single source of truth for P&L, win rate, trade count */
+  dashboardMetrics?: {
+    totalPnl: number;
+    winRate: number;
+    totalTrades: number;
+  } | null;
 }
 
 interface RealtimeUpdate {
@@ -107,6 +112,7 @@ export default function BotStatusDashboard({
   onAction,
   formatNOK,
   userId,
+  dashboardMetrics,
 }: BotStatusDashboardProps) {
   const { locale } = useParams();
   const lang = (locale as string) || "no";
@@ -228,13 +234,16 @@ export default function BotStatusDashboard({
   );
 
   const totalValue = portfolio?.total_value || 0;
-  const winRateEffectiveVal = useMemo(
-    () => winRateEffective(recentTrades),
-    [recentTrades],
-  );
-  const winRate =
-    winRateEffectiveVal ??
-    (portfolio?.win_rate != null ? portfolio.win_rate : null);
+  // Use unified dashboard metrics as single source of truth for win rate.
+  // getUserDashboardMetrics returns 0-1; convert to 0-100 for display.
+  // pnlToday/Week/Month still use trade-effective-pnl for time-bounded calculations.
+  const rawWinRate =
+    dashboardMetrics?.winRate != null
+      ? dashboardMetrics.winRate
+      : portfolio?.win_rate != null
+        ? portfolio.win_rate
+        : null;
+  const winRate = rawWinRate != null ? rawWinRate * 100 : null;
 
   /** Krever daglige avkastningsserier — ikke vis falske tall. */
   const sharpeRatio: number | null = null;
@@ -391,6 +400,7 @@ export default function BotStatusDashboard({
               winRate={winRate}
               formatNOK={formatNOK}
               lang={lang}
+              dashboardMetrics={dashboardMetrics}
             />
           )}
           {currentView === "ai" && userId && mainStrategy && (
@@ -919,6 +929,7 @@ function AdvancedView({
   winRate,
   formatNOK,
   lang,
+  dashboardMetrics,
 }: {
   portfolio: Portfolio | null;
   activeStrategies: UserStrategy[];
@@ -931,13 +942,19 @@ function AdvancedView({
   winRate: number | null;
   formatNOK: (v: number) => string;
   lang: string;
+  dashboardMetrics?: {
+    totalPnl: number;
+    winRate: number;
+    totalTrades: number;
+  } | null;
 }) {
   const t = useTranslations("trading.botStatus");
   const totalTrades = activeStrategies.reduce(
     (sum, s) => sum + s.total_trades,
     0,
   );
-  const totalPnl = activeStrategies.reduce((sum, s) => sum + s.total_pnl, 0);
+  // Use unified dashboard metrics as single source of truth for total P&L
+  const totalPnl = dashboardMetrics?.totalPnl ?? activeStrategies.reduce((sum, s) => sum + s.total_pnl, 0);
 
   // Beregn gjennomsnittlig trade størrelse
   const avgTradeValue =
