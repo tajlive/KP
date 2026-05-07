@@ -17,8 +17,6 @@ import {
   FinalCTASkeleton,
 } from "@/features/landing/skeletons/BelowFoldSkeletons";
 
-// Dynamic imports for below-fold components (Phase 3: Code Splitting)
-// Keeps initial bundle small for better LCP
 const DemoWidget = dynamic(
   () => import("@/features/landing/DemoWidget").then((mod) => mod.DemoWidget),
   {
@@ -74,13 +72,6 @@ const FeaturesBentoGrid = dynamic(
   }
 );
 
-const BacktestROICoupled = dynamic(
-  () => import("@/features/landing/BacktestROICoupled").then((mod) => mod.BacktestROICoupled),
-  {
-    loading: () => <div className="h-[600px] bg-kp-bg-primary animate-pulse" />,
-  }
-);
-
 // ISR: Revalidate page every hour for fresh content
 export const revalidate = 3600;
 
@@ -126,7 +117,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <ScrollReveal direction="up" delay={0.1}>
           <DemoWidget />
         </ScrollReveal>
-        
+
         <ScrollReveal direction="up" delay={0.1}>
           <CoursePreview />
         </ScrollReveal>
@@ -135,10 +126,6 @@ export default async function HomePage({ params }: HomePageProps) {
           <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
             <ThreeSteps />
           </section>
-        </ScrollReveal>
-
-        <ScrollReveal direction="up" delay={0.1}>
-          <BacktestROICoupled />
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.1}>

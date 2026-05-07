@@ -159,7 +159,64 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
   // No fake default data — we don't display fabricated numbers.
   const displayEntries = entries ?? [];
 
-  if (displayEntries.length === 0) return null;
+  if (displayEntries.length === 0) {
+    return (
+      <section className="py-20 bg-[#050510] relative overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mb-16"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+              <Trophy className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium text-kp-text-secondary">
+                {t("badge")}
+              </span>
+            </div>
+
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+              {t("title")}
+            </h2>
+            <p className="text-xl text-kp-text-secondary max-w-2xl mx-auto">
+              {t("subtitle")}
+            </p>
+          </motion.div>
+
+          <div className="max-w-xl mx-auto">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-12">
+              <Trophy className="w-16 h-16 text-yellow-400/50 mx-auto mb-6" />
+              <h3 className="text-2xl font-bold text-white mb-3">
+                {t("emptyTitle")}
+              </h3>
+              <p className="text-kp-text-secondary mb-8">
+                {t("emptyBody")}
+              </p>
+              <Link
+                href={`/${locale}/register`}
+                className={`
+                  inline-flex items-center gap-2 px-8 py-4
+                  ${BRAND.gradient} text-white
+                  ${RADIUS.button} font-bold
+                  shadow-lg shadow-brand-500/25
+                  hover:shadow-brand-500/40 hover:scale-[1.02]
+                  transition-all duration-200
+                `}
+              >
+                {t("ctaPrimary")}
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-[#050510] relative overflow-hidden">
