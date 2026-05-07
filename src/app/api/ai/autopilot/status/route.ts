@@ -9,13 +9,14 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const db = await createClient();
+  const res = NextResponse.next();
+  const db = createServerClient(req, res);
 
   const {
     data: { user },
