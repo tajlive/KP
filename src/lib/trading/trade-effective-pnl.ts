@@ -20,21 +20,16 @@ export function sumEffectivePnlSince(trades: Trade[], sinceMs: number): number {
   for (const t of trades) {
     const ts = new Date(t.executed_at || t.created_at).getTime();
     if (!Number.isFinite(ts) || ts < sinceMs) continue;
-    s += effectiveDeltaForApiTrade(t);
+    // Use realized_pnl only — effectivePnlDelta fallback treats buys as losses
+    // for open positions, giving incorrect negative P&L in paper trading.
+    const pnl = t.realized_pnl;
+    if (pnl != null && Number.isFinite(Number(pnl))) {
+      s += Number(pnl);
+    }
   }
   return Math.round(s * 100) / 100;
 }
 
-/** Win rate basert på effektiv delta (ikke bare realisert P&L). */
-export function winRateEffective(trades: Trade[]): number | null {
-  let wins = 0;
-  let losses = 0;
-  for (const t of trades) {
-    const d = effectiveDeltaForApiTrade(t);
-    if (d > 0) wins += 1;
-    else if (d < 0) losses += 1;
-  }
-  const n = wins + losses;
-  if (n === 0) return null;
-  return Math.round((wins / n) * 100);
-}
+// NOTE: winRateEffective removed — use getUserDashboardMetrics (SSoT) instead.
+// effectiveDeltaForApiTrade fallback treats open-position buys as losses,
+// producing incorrect win rates for paper trading.
