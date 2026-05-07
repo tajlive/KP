@@ -1,12 +1,16 @@
 import { safeFetch } from '@/lib/sanity/client';
 import { allFaqsQuery } from '@/lib/sanity/queries';
-import { FAQList, type FAQ } from './FAQList';
 import { getTranslations } from 'next-intl/server';
 
 interface SanityFAQ {
   _id: string;
   question: string;
   answer: string | unknown[];
+}
+
+interface FAQ {
+  question: string;
+  answer: string;
 }
 
 interface SanityFAQSectionProps {
@@ -63,5 +67,32 @@ export default async function SanityFAQSection({ locale = 'no' }: SanityFAQSecti
   const t = await getTranslations("FAQ");
   const fallback = await getFallbackFAQs(t);
   const faqs = await getFAQs(locale, fallback);
-  return <FAQList faqs={faqs} />;
+
+  return (
+    <section className="py-20 bg-[#050510]">
+      <div className="max-w-3xl mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">
+          {t('title')}
+        </h2>
+        <div className="space-y-4">
+          {faqs.map((faq, i) => (
+            <details
+              key={i}
+              className="group bg-white/5 border border-white/10 rounded-xl overflow-hidden"
+            >
+              <summary className="flex items-center justify-between p-4 cursor-pointer text-white font-medium hover:bg-white/5 transition-colors">
+                {faq.question}
+                <span className="text-white/50 group-open:rotate-180 transition-transform">
+                  ▼
+                </span>
+              </summary>
+              <div className="px-4 pb-4 text-white/70 text-sm leading-relaxed whitespace-pre-line">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
