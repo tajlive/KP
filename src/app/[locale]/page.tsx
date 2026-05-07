@@ -13,7 +13,6 @@ import {
   DemoWidgetSkeleton,
   CoursePreviewSkeleton,
   ThreeStepsSkeleton,
-  LandingTransparencySkeleton,
   FinalCTASkeleton,
 } from "@/features/landing/skeletons/BelowFoldSkeletons";
 
@@ -37,14 +36,6 @@ const ThreeSteps = dynamic(
   () => import("@/features/landing/ThreeSteps").then((mod) => mod.ThreeSteps),
   {
     loading: () => <ThreeStepsSkeleton />,
-    ssr: true,
-  }
-);
-
-const LandingTransparencySection = dynamic(
-  () => import("@/features/landing/LandingTransparency").then((mod) => mod.LandingTransparencySection),
-  {
-    loading: () => <LandingTransparencySkeleton />,
     ssr: true,
   }
 );
@@ -140,10 +131,6 @@ export default async function HomePage({ params }: HomePageProps) {
           <SanityFAQSection locale={locale} />
         </ScrollReveal>
 
-        <ScrollReveal direction="up" delay={0.1}>
-          <LandingTransparencySection locale={locale} />
-        </ScrollReveal>
-        
         <ScrollReveal direction="up" delay={0.1}>
           <FinalCTASection />
         </ScrollReveal>

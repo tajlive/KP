@@ -23,6 +23,8 @@ function InlineFooter() {
         </div>
         <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-white/30">
           © {new Date().getFullYear()} Klarpakke AS. Org.no: 929003292 MVA.
+          <span className="mx-2">·</span>
+          <span className="text-white/20" title="Sist oppdatert">{new Date().toLocaleDateString('no-NO')}</span>
         </div>
       </div>
     </footer>
