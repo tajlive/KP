@@ -61,9 +61,7 @@ export function PositionLotsCard({ locale }: PositionLotsCardProps) {
       }
       setError(msg);
     } finally {
-      if (attempt >= 2) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   }, []);
 
