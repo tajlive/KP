@@ -105,10 +105,11 @@ const DEFAULT_PARAMETERS: Record<string, StrategyParameters> = {
 
 /**
  * Henter performance-metrikker fra trades
- * TODO: Implementere faktisk henting fra database
+ * TODO: Implementere faktisk henting fra database (ai_decision_log skjema mismatch —
+ *       migrasjon 004 definerer andre kolonner enn dagens DB. Krever skjema-synk.)
  */
 export async function getPerformanceMetrics(userId: string, strategyId: string): Promise<PerformanceMetrics> {
-  // Placeholder - skal hentes fra Supabase
+  // Placeholder - skal hentes fra Supabase etter skjema-synkronisering
   return {
     totalReturn: 12.5,
     winRate: 65,
@@ -240,17 +241,20 @@ export function getInitialParameters(strategyId: string): StrategyParameters {
 
 /**
  * Logger AI-beslutning til database
- * TODO: Implementere faktisk logging til Supabase
+ * TODO: Implementere faktisk logging til Supabase (ai_decision_log skjema mismatch —
+ *       dagens DB-kolonner: analysis_data, decision_type, opik_trace_id, sonar_* etc.
+ *       Krever mapping fra AIDecision-interfacet til faktisk skjema.)
  */
 export async function logAIDecision(decision: AIDecision): Promise<void> {
-  // TODO: Insert into ai_decision_log table
+  // Placeholder - skal logges til ai_decision_log etter skjema-synk
 }
 
 /**
  * Henter siste AI-beslutning for en bruker/strategi
- * TODO: Implementere faktisk henting fra database
+ * TODO: Implementere faktisk henting fra database (ai_decision_log skjema mismatch —
+ *       se logAIDecision for kontekst.)
  */
 export async function getLastAIDecision(userId: string, strategyId: string): Promise<AIDecision | null> {
-  // Placeholder
+  // Placeholder - skal hentes fra ai_decision_log etter skjema-synk
   return null;
 }
