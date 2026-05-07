@@ -1536,7 +1536,8 @@
       "about": "About Us",
       "contact": "Contact",
       "privacy": "Privacy",
-      "terms": "Terms"
+      "terms": "Terms",
+     "cookies": "Cookies"
     }
   },
   "gamification": {
@@ -1900,6 +1901,7 @@
   "legal": {
     "privacyTitle": "Privacy Policy",
     "termsTitle": "Terms of Service",
+    "cookieTitle": "Cookies",
     "privacy": {
       "title": "Privacy Policy",
       "intro": {
