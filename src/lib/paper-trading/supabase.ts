@@ -311,7 +311,7 @@ export async function saveBacktestResult(
       price: trade.entry_price,
       amount: trade.quantity,
       fee: 0,
-      pnl: trade.pnl,
+      realized_pnl: trade.pnl,
       status: 'executed',
       executed_at: trade.entry_time,
       idempotency_key: `${Date.now()}-${Math.random()}`,
