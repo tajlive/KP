@@ -1,0 +1,7 @@
+{"subject":"trade-effective-pnl","predicate":"fixed","object":"sumEffectivePnlSince-only-uses-realized_pnl-not-fallback","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"winRateEffective","predicate":"removed","object":"unused-replaced-by-getUserDashboardMetrics-SSoT","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"BotStatusCard","predicate":"deleted","object":"unused-in-production-only-tests","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"i18n","predicate":"cleaned","object":"dashboard.botStatus-removed-trading.botStatus-kept","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"GDPR","predicate":"implemented","object":"granular-consent-cookie-policy-sentry-gating","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"routing","predicate":"consolidated","object":"admin-routes-into-admin-group-locale-drift-fixed","validFrom":"2026-05-07T03:00:00.000Z"}
+{"subject":"architecture-audit","predicate":"completed","object":"routing-trades-bots-text-percent-duplicates-GDPR","validFrom":"2026-05-07T03:00:00.000Z"}
