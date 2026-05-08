@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { BotDetailView } from "@/features/auto-trade/BotDetailView";
@@ -18,6 +19,9 @@ export default async function BotDetailPage({
 }) {
   const { locale, session_id } = await params;
   const { supabase, user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/dashboard/bot/${session_id}`} />;
+  }
 
   const [sessionRes, tradesRes] = await Promise.all([
     supabase

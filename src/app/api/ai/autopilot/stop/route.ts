@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const now = new Date().toISOString();
 
     // Stop autopilot config
-    await (db as any)
+    await db
       .from("ai_autopilot_configs")
       .update({ status: "stopped", updated_at: now })
       .eq("user_id", user.id);

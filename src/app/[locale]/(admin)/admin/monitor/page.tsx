@@ -12,7 +12,9 @@
  */
 
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
+import { AccessDenied } from "@/shared/ui/AccessDenied";
 import { createServerClient } from "@/lib/supabase/server";
 import { MonitorDashboardClient } from "./MonitorDashboardClient";
 
@@ -111,13 +113,17 @@ async function getInitialMetrics() {
 
 export default async function MonitorPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isAdmin = await checkAdminAccess();
-
-  if (!isAdmin) {
-    redirect(`/${locale}/login?next=/${locale}/admin/monitor`);
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/admin/monitor`} />;
   }
-  
+
+  const isAdmin = await checkAdminAccess();
+  if (!isAdmin) {
+    return <AccessDenied next={`/${locale}/admin/monitor`} />;
+  }
+
   const initialMetrics = await getInitialMetrics();
-  
+
   return <MonitorDashboardClient initialMetrics={initialMetrics} />;
 }

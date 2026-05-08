@@ -8,7 +8,9 @@
  */
 
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
+import { AccessDenied } from "@/shared/ui/AccessDenied";
 import { createServerClient } from "@/lib/supabase/server";
 import { DeployDashboard } from "./DeployDashboard";
 
@@ -49,11 +51,15 @@ async function checkAdminAccess() {
 
 export default async function DeployAdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isAdmin = await checkAdminAccess();
-
-  if (!isAdmin) {
-    redirect(`/${locale}/login?next=/${locale}/admin/deploy`);
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/admin/deploy`} />;
   }
-  
+
+  const isAdmin = await checkAdminAccess();
+  if (!isAdmin) {
+    return <AccessDenied next={`/${locale}/admin/deploy`} />;
+  }
+
   return <DeployDashboard />;
 }

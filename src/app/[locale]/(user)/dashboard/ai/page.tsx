@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import { localizedPathname } from "@/middleware/locale-path";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { AiHub } from "@/features/coinbase/AiHub";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,9 @@ export default async function DashboardAiPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  await requireAuth(locale, localizedPathname(locale, "/dashboard/ai"));
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/dashboard/ai`} />;
+  }
   return <AiHub />;
 }

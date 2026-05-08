@@ -254,6 +254,69 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_autopilot_configs: {
+        Row: {
+          capital_per_pair: Json | null
+          created_at: string | null
+          detected_regime: string | null
+          id: string
+          last_rebalance_at: string | null
+          max_drawdown_pct: number | null
+          max_pairs: number
+          risk_appetite: string
+          selected_pairs: Json | null
+          selected_strategy: string | null
+          started_at: string | null
+          status: string
+          total_capital_nok: number
+          total_pnl_nok: number | null
+          total_pnl_pct: number | null
+          updated_at: string | null
+          user_id: string
+          win_rate: number | null
+        }
+        Insert: {
+          capital_per_pair?: Json | null
+          created_at?: string | null
+          detected_regime?: string | null
+          id?: string
+          last_rebalance_at?: string | null
+          max_drawdown_pct?: number | null
+          max_pairs?: number
+          risk_appetite: string
+          selected_pairs?: Json | null
+          selected_strategy?: string | null
+          started_at?: string | null
+          status?: string
+          total_capital_nok?: number
+          total_pnl_nok?: number | null
+          total_pnl_pct?: number | null
+          updated_at?: string | null
+          user_id: string
+          win_rate?: number | null
+        }
+        Update: {
+          capital_per_pair?: Json | null
+          created_at?: string | null
+          detected_regime?: string | null
+          id?: string
+          last_rebalance_at?: string | null
+          max_drawdown_pct?: number | null
+          max_pairs?: number
+          risk_appetite?: string
+          selected_pairs?: Json | null
+          selected_strategy?: string | null
+          started_at?: string | null
+          status?: string
+          total_capital_nok?: number
+          total_pnl_nok?: number | null
+          total_pnl_pct?: number | null
+          updated_at?: string | null
+          user_id?: string
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
       ai_cache: {
         Row: {
           cache_key: string
@@ -2057,7 +2120,6 @@ export type Database = {
           is_active: boolean | null
           is_paper_trade: boolean | null
           last_ai_adjustment_at: string | null
-          status: string | null
           max_position_size_percent: number | null
           stop_loss_percent: number | null
           strategy_type: string
@@ -2076,7 +2138,6 @@ export type Database = {
           is_paper_trade?: boolean | null
           last_ai_adjustment_at?: string | null
           max_position_size_percent?: number | null
-          status?: string | null
           stop_loss_percent?: number | null
           strategy_type?: string
           take_profit_percent?: number | null
@@ -2094,7 +2155,6 @@ export type Database = {
           is_paper_trade?: boolean | null
           last_ai_adjustment_at?: string | null
           max_position_size_percent?: number | null
-          status?: string | null
           stop_loss_percent?: number | null
           strategy_type?: string
           take_profit_percent?: number | null
@@ -6854,6 +6914,7 @@ export type Database = {
         Row: {
           archived: boolean | null
           archived_at: string | null
+          autopilot_id: string | null
           backtest_expected_pnl: number | null
           copied_from_listing_id: string | null
           copy_source_session_id: string | null
@@ -6892,6 +6953,7 @@ export type Database = {
         Insert: {
           archived?: boolean | null
           archived_at?: string | null
+          autopilot_id?: string | null
           backtest_expected_pnl?: number | null
           copied_from_listing_id?: string | null
           copy_source_session_id?: string | null
@@ -6930,6 +6992,7 @@ export type Database = {
         Update: {
           archived?: boolean | null
           archived_at?: string | null
+          autopilot_id?: string | null
           backtest_expected_pnl?: number | null
           copied_from_listing_id?: string | null
           copy_source_session_id?: string | null
@@ -6966,6 +7029,13 @@ export type Database = {
           winning_trades?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "trading_sessions_autopilot_id_fkey"
+            columns: ["autopilot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_autopilot_configs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "trading_sessions_copied_from_listing_id_fkey"
             columns: ["copied_from_listing_id"]
@@ -8552,13 +8622,11 @@ export type Database = {
           created_at: string | null
           currency: string | null
           current_capital: number | null
-          current_capital_nok: number | null
           daily_loss_limit_pct: number | null
           followers_count: number | null
           id: string | null
           initial_capital: number | null
           is_public: boolean | null
-          starting_capital_nok: number | null
           last_heartbeat: string | null
           last_trade_at: string | null
           losing_trades: number | null
@@ -8587,13 +8655,11 @@ export type Database = {
           created_at?: string | null
           currency?: never
           current_capital?: number | null
-          current_capital_nok?: number | null
           daily_loss_limit_pct?: never
           followers_count?: never
           id?: string | null
           initial_capital?: number | null
           is_public?: never
-          starting_capital_nok?: number | null
           last_heartbeat?: string | null
           last_trade_at?: never
           losing_trades?: number | null
@@ -8622,7 +8688,6 @@ export type Database = {
           created_at?: string | null
           currency?: never
           current_capital?: number | null
-          current_capital_nok?: number | null
           daily_loss_limit_pct?: never
           followers_count?: never
           id?: string | null

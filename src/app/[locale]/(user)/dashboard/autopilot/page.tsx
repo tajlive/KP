@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { Metadata } from "next";
 import { AutopilotLaunchPad } from "@/features/autopilot/AutopilotLaunchPad";
 import { AutopilotMonitor } from "@/features/autopilot/AutopilotMonitor";
@@ -27,9 +28,12 @@ export default async function AutopilotPage({
 }) {
   const { locale } = await params;
   const { supabase, user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/dashboard/autopilot`} />;
+  }
 
   // Check if user already has an active autopilot
-  const { data: autopilot } = await (supabase as any)
+  const { data: autopilot } = await supabase
     .from("ai_autopilot_configs")
     .select("status")
     .eq("user_id", user.id)

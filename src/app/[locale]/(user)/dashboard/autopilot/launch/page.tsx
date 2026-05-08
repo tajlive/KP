@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { Metadata } from "next";
 import { AutopilotLaunchPad } from "@/features/autopilot/AutopilotLaunchPad";
 
@@ -26,6 +27,9 @@ export default async function AutopilotLaunchPage({
 }) {
   const { locale } = await params;
   const { supabase, user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/dashboard/autopilot/launch`} />;
+  }
 
   const { data: profile } = await supabase
     .from("user_profiles")

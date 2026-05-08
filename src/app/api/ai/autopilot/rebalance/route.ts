@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // ── 1. Hent alle aktive autopilot-konfigurasjoner ────────────────────
-    const { data: autopilots, error: fetchErr } = await (db as any)
+    const { data: autopilots, error: fetchErr } = await db
       .from("ai_autopilot_configs")
       .select("*")
       .eq("status", "active");
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
 
         // Auto-pause ved drawdown > 10%
         if (drawdown >= 10) {
-          await (db as any)
+          await db
             .from("ai_autopilot_configs")
             .update({ status: "paused", updated_at: new Date().toISOString() })
             .eq("id", autopilot.id);
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
               )
             : 0;
 
-        await (db as any)
+        await db
           .from("ai_autopilot_configs")
           .update({
             detected_regime: decision.regime,
@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
           }
 
           // Oppdater config med nye pairs
-          await (db as any)
+          await db
             .from("ai_autopilot_configs")
             .update({
               selected_strategy: decision.strategy,

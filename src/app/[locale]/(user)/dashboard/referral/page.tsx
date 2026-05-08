@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import { localizedPathname } from "@/middleware/locale-path";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { ReferralDashboard } from "@/features/referral/ReferralDashboard";
 
 export const metadata = {
@@ -15,7 +15,10 @@ export default async function ReferralPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  await requireAuth(locale, localizedPathname(locale, "/dashboard/referral"));
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/dashboard/referral`} />;
+  }
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">

@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { PaperTradingPageClient } from "@/features/paper-trading/PaperTradingPageClient";
 
 type SessionRow = {
@@ -28,13 +28,11 @@ export default async function PaperTradingPage({
   const { locale } = await params;
   const { mode = "paper", view } = await searchParams;
   
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const { supabase, user } = await requireAuth(locale);
   if (!user) {
-    redirect(`/${locale}/login?next=/${locale}/paper-trading`);
+    return <LoginRequired next={`/${locale}/paper-trading`} />;
   }
-  
+
   // Hent sessions
   const { data: sessions } = await supabase
     .from("trading_sessions")
@@ -42,7 +40,7 @@ export default async function PaperTradingPage({
     .eq("user_id", user.id)
     .eq("mode", mode === "live" ? "live" : "paper")
     .order("created_at", { ascending: false });
-  
+
   // Hent balance
   const { data: profile } = await supabase
     .from("user_profiles")

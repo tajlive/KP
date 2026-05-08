@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // ── 1. Hent autopilot config ─────────────────────────────────────────
-    const { data: autopilot, error: autopilotErr } = await (db as any)
+    const { data: autopilot, error: autopilotErr } = await db
       .from("ai_autopilot_configs")
       .select("*")
       .eq("user_id", user.id)

@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 2. Sjekk om bruker allerede har autopilot ────────────────────────
-    const { data: existingAutopilot } = await (db as any)
+    const { data: existingAutopilot } = await db
       .from("ai_autopilot_configs")
       .select("id, status")
       .eq("user_id", user.id)
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
 
     // ── 4. Opprett autopilot config ──────────────────────────────────────
     const now = new Date().toISOString();
-    const { data: autopilotConfig, error: autopilotErr } = await (db as any)
+    const { data: autopilotConfig, error: autopilotErr } = await db
       .from("ai_autopilot_configs")
       .upsert(
         {
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
         };
       }
 
-      const { data: session, error: sessionErr } = await (db as any)
+      const { data: session, error: sessionErr } = await db
         .from("trading_sessions")
         .insert({
           user_id: user.id,

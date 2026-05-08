@@ -54,7 +54,6 @@ async function warmupPath(baseUrl: string, path: string): Promise<void> {
 export default async function globalSetup(): Promise<void> {
   const baseUrl = getBaseUrl();
   await warmupPath(baseUrl, "/no/dashboard");
-  await warmupPath(baseUrl, "/no/dashboard/metrics");
 }
 
 // Allow running directly via `tsx playwright/global-setup.ts`

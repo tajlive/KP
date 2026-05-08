@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { localizedPathname } from "@/middleware/locale-path";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
 import { PositionLotsCard } from "@/features/dashboard/PositionLotsCard";
@@ -63,11 +64,10 @@ export default async function PortfolioPage({ params }: PageProps) {
     locale = l;
     const t = await getTranslations("dashboard.portfolioPage");
 
-    // Use requireAuth for proper authentication (redirects to login if not authenticated)
-    const { supabase, user } = await requireAuth(
-      locale,
-      localizedPathname(locale, "/dashboard/portfolio")
-    );
+    const { supabase, user } = await requireAuth(locale);
+    if (!user) {
+      return <LoginRequired next={`/${locale}/dashboard/portfolio`} />;
+    }
 
     // Fetch wallets, portfolios, trading sessions, AND user profile
     // Each query is wrapped individually so one failure doesn't break everything
