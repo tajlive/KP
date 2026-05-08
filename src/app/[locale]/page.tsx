@@ -3,7 +3,7 @@ import dynamicImport from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
 import SanityHeroSection from "@/features/landing/SanityHeroSection";
 import SanityFAQSection from "@/features/landing/SanityFAQSection";
-import SanityTestimonials from "@/features/landing/SanityTestimonials";
+
 import { KLTTeaser } from "@/features/landing/KLTTeaser";
 import { TrustStrip } from "@/features/landing/TrustStrip";
 import { LiveProofStrip } from "@/features/landing/LiveProofStrip";
@@ -121,10 +121,6 @@ export default async function HomePage({ params }: HomePageProps) {
 
         <ScrollReveal direction="up" delay={0.1}>
           <FeaturesBentoGrid />
-        </ScrollReveal>
-
-        <ScrollReveal direction="up" delay={0.1}>
-          <SanityTestimonials />
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.1}>
