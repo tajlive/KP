@@ -20,15 +20,24 @@ interface CSPDirectives {
  * Generate a cryptographically secure nonce using Web Crypto API
  * (Edge Runtime compatible — unlike Node.js crypto.randomBytes)
  * Returns base64url-encoded 16 bytes (128 bits) - CSP standard
+ * 
+ * Returns null if generation fails (e.g. in some Edge Runtime environments
+ * where btoa or crypto may not be fully available).
  */
-function generateNonce(): string {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  // base64url avoids + and / which can cause issues in CSP headers
-  return btoa(String.fromCharCode(...array))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
+function generateNonce(): string | null {
+  try {
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    // Build binary string safely for btoa (each char = one byte)
+    const binary = Array.from(array, (byte) => String.fromCharCode(byte)).join("");
+    // base64url avoids + and / which can cause issues in CSP headers
+    return btoa(binary)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -64,28 +73,18 @@ export const cspMiddleware: MiddlewareFn = (
   const res = response ?? NextResponse.next();
   const isDev = process.env.NODE_ENV === "development";
   
-  // Generate cryptographically secure nonce
-  let nonce: string;
-  try {
-    nonce = generateNonce();
-  } catch (error) {
-    // Fallback: If crypto fails, log and use a fallback (should never happen)
-    console.error("[CSP] Failed to generate nonce:", error);
-    // In production, we should still serve the page but with unsafe-inline
-    // This is a safety fallback only
-    if (!isDev) {
-      console.warn("[CSP] Using fallback CSP without nonce");
-    }
-    nonce = "";
-  }
+  // Generate nonce (may fail in some Edge Runtime environments)
+  const nonce = generateNonce();
 
-  // Define CSP directives with nonce placeholder
-  // NOTE: 'unsafe-inline' is ignored by browsers when nonce is present (backward compat)
+  // Define CSP directives
+  // 'unsafe-inline' + nonce: browsers ignore 'unsafe-inline' when nonce is present,
+  // but 'unsafe-inline' is required as fallback when nonce cannot be generated.
   const directives: CSPDirectives = {
     "default-src": ["'self'"],
     "script-src": [
       "'self'",
-      "'NONCE_PLACEHOLDER'",
+      ...(nonce ? [`'nonce-${nonce}'`] : []),
+      "'unsafe-inline'",
       ...(isDev ? ["'unsafe-eval'"] : []),
       "https://vuxbjlykgmzskxbclquf.supabase.co",
       "https://*.tradingview.com",
@@ -95,7 +94,8 @@ export const cspMiddleware: MiddlewareFn = (
     ],
     "style-src": [
       "'self'",
-      "'NONCE_PLACEHOLDER'",
+      ...(nonce ? [`'nonce-${nonce}'`] : []),
+      "'unsafe-inline'",
     ],
     "img-src": [
       "'self'",
@@ -143,15 +143,19 @@ export const cspMiddleware: MiddlewareFn = (
     "upgrade-insecure-requests": [],
   };
 
-  // Build CSP header with nonce
-  const cspHeader = buildCSPHeader(directives, nonce);
+  // Build CSP header from directives
+  const cspHeader = Object.entries(directives)
+    .map(([key, values]) => `${key} ${values.join(" ")}`)
+    .join("; ");
 
   // Set CSP header on response
   res.headers.set("Content-Security-Policy", cspHeader);
 
   // Also set nonce in a custom header for client-side access (if needed)
   // This allows client components to access the nonce for inline scripts
-  res.headers.set("X-CSP-Nonce", nonce);
+  if (nonce) {
+    res.headers.set("X-CSP-Nonce", nonce);
+  }
 
   return res;
 };
