@@ -10,10 +10,12 @@ import { createServerClient } from "@/lib/supabase/server";
 import { handleOnboarding } from "./onboarding";
 import { handleTierGate } from "./tier-gate";
 
-/** Redirect med Cache-Control: no-store — forhindrer at auth-redirects caches av CDN */
+/** Redirect med cache-bypass — forhindrer at auth-redirects caches av CDN */
 function redirectNoCache(url: string | URL, status?: number): NextResponse {
   const res = NextResponse.redirect(url, status);
   res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+  res.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
+  res.headers.set("CDN-Cache-Control", "no-store, max-age=0");
   return res;
 }
 
