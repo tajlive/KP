@@ -85,6 +85,7 @@ export function redirectWithCookies(
   response: NextResponse,
 ): NextResponse {
   const redirectResponse = NextResponse.redirect(url);
+  redirectResponse.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
   const cookieDomain = getCookieDomain(request);
 
   // Copy cookies from the next() response to the redirect response

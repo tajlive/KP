@@ -29,7 +29,9 @@ export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
       searchParams.get("redirectTo");
     if (next) callbackUrl.searchParams.set("next", next);
 
-    return NextResponse.redirect(callbackUrl);
+    const res = NextResponse.redirect(callbackUrl);
+    res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+    return res;
   }
 
   return null;

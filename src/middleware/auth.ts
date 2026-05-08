@@ -10,6 +10,13 @@ import { createServerClient } from "@/lib/supabase/server";
 import { handleOnboarding } from "./onboarding";
 import { handleTierGate } from "./tier-gate";
 
+/** Redirect med Cache-Control: no-store — forhindrer at auth-redirects caches av CDN */
+function redirectNoCache(url: string | URL, status?: number): NextResponse {
+  const res = NextResponse.redirect(url, status);
+  res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+  return res;
+}
+
 const PROTECTED_PATHS = [
   "/dashboard",
   "/innstillinger",
@@ -107,7 +114,7 @@ export async function authMiddleware(
       "next",
       localizedPathname(parseLocalePath(pathname).locale, strippedPath),
     );
-    return NextResponse.redirect(loginUrl);
+    return redirectNoCache(loginUrl);
   }
 
   // Logged-in users should not see guest auth pages
@@ -128,7 +135,7 @@ export async function authMiddleware(
 
   // Authenticated users on auth pages -> dashboard
   if (user && isAuthPage) {
-    return NextResponse.redirect(
+    return redirectNoCache(
       new URL(
         localizedPathname(parseLocalePath(pathname).locale, "/dashboard"),
         request.url,
