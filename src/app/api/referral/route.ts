@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const { data: tickets, error: fetchError } = await supabase
       .from("referral_tracking")
       .select(
-        "id, referral_code, referrer_user_id, status, created_at, referred_user_id",
+        "id, referral_code, referrer_user_id, status, created_at, referred_user_id, referrer_reward_months, referrer_reward_points",
       )
       .eq("referrer_user_id", user.id)
       .order("created_at", { ascending: false });
@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
         status: string | null;
         created_at: string | null;
         referred_user_id: string | null;
+        referrer_reward_months: number | null;
       }) => ({
         id: t.id,
         ticket_code: t.referral_code,
@@ -54,6 +55,7 @@ export async function GET(request: NextRequest) {
         status: t.status ?? "pending",
         created_at: t.created_at,
         redeemed_by: t.referred_user_id,
+        referrer_reward_months: t.referrer_reward_months ?? 0,
       }),
     );
 
@@ -80,17 +82,22 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Check if user has generated 3 tickets this month.
+    // Check if user has generated 3 tickets this calendar month.
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
     const { count, error: countError } = await supabase
       .from("referral_tracking")
       .select("*", { count: "exact", head: true })
-      .eq("referrer_user_id", user.id);
+      .eq("referrer_user_id", user.id)
+      .gte("created_at", startOfMonth.toISOString());
 
     if (countError) throw countError;
 
     if (count !== null && count >= 3) {
       return NextResponse.json(
-        { error: "You have reached your limit of 3 Golden Tickets." },
+        { error: "Du har nådd grensen på 3 Golden Tickets denne måneden." },
         { status: 403 },
       );
     }
