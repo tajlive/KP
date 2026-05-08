@@ -6,6 +6,48 @@ import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 
+// Custom regel: advarsel ved høye ISR-verdier på sider som endres ofte
+const noHighRevalidateRule = {
+  meta: {
+    type: "suggestion",
+    docs: {
+      description: "Advarsel ved revalidate > 3600 på ofte-endrede ruter",
+    },
+    messages: {
+      highRevalidate:
+        "revalidate={{value}}s er for høyt for {{path}}. Bruk force-dynamic eller ≤60s for sider som endres ofte. Se AGENTS.md → Caching & ISR.",
+    },
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+    const isPage = /page\.tsx$/.test(filename);
+    const isHighChangeRoute =
+      isPage &&
+      !/(legal|vilkar|personvern|cookies|hjelp|quiz)\//.test(filename) &&
+      !/\[\.\.\.slug\]/.test(filename);
+    if (!isHighChangeRoute) return {};
+
+    return {
+      ExportNamedDeclaration(node) {
+        const decl = node.declaration;
+        if (!decl || decl.type !== "VariableDeclaration") return;
+        for (const d of decl.declarations) {
+          if (d.id?.name === "revalidate" && d.init?.type === "Literal") {
+            const value = d.init.value;
+            if (typeof value === "number" && value > 3600) {
+              context.report({
+                node: d,
+                messageId: "highRevalidate",
+                data: { value: String(value), path: filename },
+              });
+            }
+          }
+        }
+      },
+    };
+  },
+};
+
 // Globale variabler for både Browser og Node.js
 const commonGlobals = {
   // Browser globals
@@ -397,12 +439,16 @@ const eslintConfig = [
       "**/*.test.ts",
       "**/*.test.tsx",
     ],
+    plugins: {
+      "klarpakke": { rules: { "no-high-revalidate": noHighRevalidateRule } },
+    },
     rules: {
       "no-console": ["error", { allow: ["warn", "error", "debug", "info"] }],
+      "klarpakke/no-high-revalidate": "warn",
     },
   },
 
-  // Unused vars av i src/e2e: prefiks med _ eller fjern når du rører koden. For streng sjekk: kjør eslint med --rule '@typescript-eslint/no-unused-vars: warn'
+// Unused vars av i src/e2e: prefiks med _ eller fjern når du rører koden. For streng sjekk: kjør eslint med --rule '@typescript-eslint/no-unused-vars: warn'
   {
     files: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.jsx", "e2e/**/*.ts", "tests/**/*.ts", "tests/**/*.tsx"],
     rules: {
