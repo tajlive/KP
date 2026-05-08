@@ -10,23 +10,24 @@ export interface Ticket {
   ticket_code: string;
   status:
     | "pending"
-    | "account_created"
-    | "binance_connected"
-    | "deposit_made"
-    | "rewarded";
+    | "signed_up"
+    | "trial_completed"
+    | "converted"
+    | "expired";
+  referrer_reward_months?: number;
 }
 
 interface GoldenTicketProps {
   ticket: Ticket;
+  locale: string;
 }
 
-export function GoldenTicket({ ticket }: GoldenTicketProps) {
+export function GoldenTicket({ ticket, locale }: GoldenTicketProps) {
   const [copied, setCopied] = useState(false);
   const isUsed = ticket.status !== "pending";
 
   const handleCopy = () => {
     // Peker på registreringssiden — nye brukere trenger ikke logg inn, de registrerer seg
-    const locale = document.documentElement.lang || 'no';
     const inviteLink = `${window.location.origin}/${locale}/innlogging?ref=${ticket.ticket_code}`;
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
@@ -82,7 +83,7 @@ export function GoldenTicket({ ticket }: GoldenTicketProps) {
             className={`text-sm mb-4 ${isUsed ? "text-slate-500" : "text-slate-300"}`}
           >
             {isUsed
-              ? "Denne billetten er allerede brukt av en venn."
+              ? "Denne billetten er aktivert av en venn."
               : "Gir 1 gratis måned med Master-tier auto-trading."}
           </p>
 

@@ -59,3 +59,7 @@
 {"subject":"next.config.mjs redirects","predicate":"run after","object":"CDN cache lookup — unreliable for deleted pages","validFrom":"2026-05-08T12:40:42.002Z"}
 {"subject":"middleware","predicate":"runs before","object":"CDN cache lookup + Next.js routing","validFrom":"2026-05-08T12:40:42.003Z"}
 {"subject":"deleted page stale cache","predicate":"max window reduced from","object":"25h → 1h (marketing), 0 (auth)","validFrom":"2026-05-08T12:40:42.003Z"}
+{"subject":"ChatWidget","predicate":"status","object":"midlertidig skjult — 2026-05-07","validFrom":"2026-05-08T12:54:06.700Z"}
+{"subject":"ChatWidgetLoader","predicate":"location","object":"src/shared/providers/ClientSideProviders.tsx","validFrom":"2026-05-08T12:54:06.700Z"}
+{"subject":"ChatWidgetLoader","predicate":"rendered in","object":"root layout — global for all pages","validFrom":"2026-05-08T12:54:06.700Z"}
+{"subject":"ChatWidget","predicate":"hidden by","object":"commenting out JSX in ClientSideProviders","validFrom":"2026-05-08T12:54:06.700Z"}

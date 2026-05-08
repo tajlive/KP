@@ -14,7 +14,11 @@ import { toast } from "sonner";
 import { Button } from "@/shared/ui/button";
 import { GoldenTicket, Ticket } from "./GoldenTicket";
 
-export function ReferralDashboard() {
+interface ReferralDashboardProps {
+  locale: string;
+}
+
+export function ReferralDashboard({ locale }: ReferralDashboardProps) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -56,9 +60,11 @@ export function ReferralDashboard() {
     }
   };
 
-  const usedTickets = tickets.filter((t) => t.status !== "pending").length;
+  const activeTickets = tickets.filter((t) => t.status !== "pending" && t.status !== "expired");
+  const usedTickets = activeTickets.length;
   const maxTickets = 3;
-  const progressPercent = (usedTickets / maxTickets) * 100;
+  const progressPercent = Math.min((usedTickets / maxTickets) * 100, 100);
+  const totalRewardMonths = tickets.reduce((sum, t) => sum + (t.referrer_reward_months ?? 0), 0);
 
   if (loading) {
     return (
@@ -120,10 +126,10 @@ export function ReferralDashboard() {
               <TrendingUp className="h-4 w-4" /> Opptjent Verdi
             </div>
             <div className="text-2xl font-bold text-emerald-400">
-              {(usedTickets * 499).toLocaleString("no-NO")} kr
+              {totalRewardMonths} mnd
             </div>
             <div className="text-xs text-slate-500">
-              I sparte abonnementskostnader
+              {locale === "no" ? "Gratis Master-tier tjent" : "Free Master-tier earned"}
             </div>
           </div>
         </div>
@@ -169,7 +175,7 @@ export function ReferralDashboard() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: i * 0.1, type: "spring", stiffness: 300 }}
               >
-                <GoldenTicket ticket={ticket} />
+                <GoldenTicket ticket={ticket} locale={locale} />
               </motion.div>
             ))}
           </div>

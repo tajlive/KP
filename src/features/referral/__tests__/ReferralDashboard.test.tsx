@@ -32,7 +32,7 @@ describe("ReferralDashboard", () => {
 
   it("shows loading state initially", () => {
     vi.mocked(fetch).mockImplementation(() => new Promise(() => {}));
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
     // Empty state should NOT be visible during loading
     expect(screen.queryByText(/Ingen billetter generert ennå/i)).not.toBeInTheDocument();
     // Loading spinner should be present
@@ -45,12 +45,12 @@ describe("ReferralDashboard", () => {
       json: () => Promise.resolve({
         tickets: [
           { id: "t1", ticket_code: "CODE1", status: "pending" },
-          { id: "t2", ticket_code: "CODE2", status: "account_created" },
+          { id: "t2", ticket_code: "CODE2", status: "signed_up" },
         ],
       }),
     } as Response);
 
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
 
     await waitFor(() => {
       expect(screen.getByText("CODE1")).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("ReferralDashboard", () => {
       json: () => Promise.resolve({ tickets: [] }),
     } as Response);
 
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
 
     await waitFor(() => {
       expect(screen.getByText(/Ingen billetter generert ennå/i)).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe("ReferralDashboard", () => {
   it("shows error toast on fetch failure", async () => {
     vi.mocked(fetch).mockRejectedValue(new Error("Network error"));
 
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith(
@@ -96,7 +96,7 @@ describe("ReferralDashboard", () => {
         }),
       } as Response);
 
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
 
     await waitFor(() => {
       expect(screen.getByText(/Generer Ny Billett/i)).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe("ReferralDashboard", () => {
       }),
     } as Response);
 
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
 
     await waitFor(() => {
       const button = screen.getByText(/Generer Ny Billett/i).closest("button");
@@ -137,17 +137,17 @@ describe("ReferralDashboard", () => {
       json: () => Promise.resolve({
         tickets: [
           { id: "t1", ticket_code: "CODE1", status: "pending" },
-          { id: "t2", ticket_code: "CODE2", status: "account_created" },
-          { id: "t3", ticket_code: "CODE3", status: "rewarded" },
+          { id: "t2", ticket_code: "CODE2", status: "signed_up" },
+          { id: "t3", ticket_code: "CODE3", status: "converted", referrer_reward_months: 1 },
         ],
       }),
     } as Response);
 
-    render(<ReferralDashboard />);
+    render(<ReferralDashboard locale="no" />);
 
     await waitFor(() => {
       expect(screen.getByText("2")).toBeInTheDocument(); // Active friends
-      expect(screen.getByText(/998 kr/i)).toBeInTheDocument(); // 2 * 499 kr
+      expect(screen.getByText("1 mnd")).toBeInTheDocument(); // Total reward months
     });
   });
 });

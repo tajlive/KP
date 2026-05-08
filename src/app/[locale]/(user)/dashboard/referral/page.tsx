@@ -26,7 +26,7 @@ export default async function ReferralPage({
           The Golden Ticket
         </h2>
       </div>
-      <ReferralDashboard />
+      <ReferralDashboard locale={locale} />
     </div>
   );
 }
