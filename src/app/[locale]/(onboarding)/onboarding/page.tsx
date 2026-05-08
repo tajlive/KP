@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { createClient } from "@/lib/supabase/server";
 import { getUserProfileOnboarding } from "@/lib/supabase/helpers";
 import { getTranslations } from "next-intl/server";
@@ -55,18 +57,12 @@ export default async function OnboardingPage({
   try {
     const { locale: l } = await params;
     locale = l;
-    const supabase = createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+    const { user } = await requireAuth(locale);
     if (!user) {
-      redirect(
-        `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding`)}`,
-      );
+      return <LoginRequired next={`/${locale}/onboarding`} />;
     }
 
+    const supabase = createClient();
     const { data: profile } = await getUserProfileOnboarding(supabase, user.id);
 
     // Hvis fullført → dashboard

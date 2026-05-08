@@ -1,6 +1,7 @@
 import { safeFetch } from '@/lib/sanity/client';
 import { activeTestimonialsQuery } from '@/lib/sanity/queries';
 import { Star } from 'lucide-react';
+import Image from 'next/image';
 
 interface SanityTestimonial {
   _id: string;
@@ -74,9 +75,11 @@ export default async function SanityTestimonials() {
               </p>
               <div className="flex items-center gap-3">
                 {item.avatar ? (
-                  <img
+                  <Image
                     src={item.avatar}
                     alt={item.name}
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (

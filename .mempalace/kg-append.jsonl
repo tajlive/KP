@@ -22,3 +22,29 @@
 {"subject":"master-plan-v2","predicate":"rollback-plan","object":"defined for each block","validFrom":"2026-05-07T13:33:51.517Z"}
 {"subject":"master-plan-v2","predicate":"architect-sign-off","object":"100% satisfied","validFrom":"2026-05-07T13:33:51.517Z"}
 {"subject":"master-plan-v2","predicate":"risk-strategy","object":"gradual refactor with fallback paths","validFrom":"2026-05-07T13:33:51.517Z"}
+{"subject":"landing-page","predicate":"has","object":"force-dynamic rendering (no ISR cache)","validFrom":"2026-05-08T01:44:28.794Z"}
+{"subject":"landing-page","predicate":"removed","object":"LiveProofStrip (fake claims)","validFrom":"2026-05-08T01:44:28.796Z"}
+{"subject":"landing-page","predicate":"removed","object":"TrustStrip (payment logos, trust badges)","validFrom":"2026-05-08T01:44:28.796Z"}
+{"subject":"landing-page","predicate":"removed","object":"SanityTestimonials (fake users: Martin Holm, Sarah Chen, Erik Nilsen)","validFrom":"2026-05-08T01:44:28.796Z"}
+{"subject":"deploy","predicate":"uses","object":"auto-revalidate API at /api/revalidate","validFrom":"2026-05-08T01:44:28.797Z"}
+{"subject":"deploy","predicate":"has","object":"Playwright smoke-test after deploy","validFrom":"2026-05-08T01:44:28.798Z"}
+{"subject":"deploy","predicate":"has","object":"ESLint rule klarpakke/no-high-revalidate","validFrom":"2026-05-08T01:44:28.798Z"}
+{"subject":"vercel","predicate":"fixed","object":"requireVerifiedCommits=false (was canceling all deploys)","validFrom":"2026-05-08T01:44:28.799Z"}
+{"subject":"vercel","predicate":"deployed-via","object":"Vercel CLI with VERCEL_TOKEN","validFrom":"2026-05-08T01:44:28.799Z"}
+{"subject":"auth","predicate":"middleware-redirects-have","object":"Cache-Control + Vercel-CDN-Cache-Control: no-store","validFrom":"2026-05-08T01:44:28.799Z"}
+{"subject":"auth","predicate":"uses","object":"redirectNoCache helper in middleware","validFrom":"2026-05-08T01:44:28.800Z"}
+{"subject":"auth","predicate":"uses","object":"redirectWithCookies with no-store","validFrom":"2026-05-08T01:44:28.800Z"}
+{"subject":"REVALIDATE_SECRET","predicate":"stored-in","object":"GitHub Actions secrets + Vercel env","validFrom":"2026-05-08T01:44:28.800Z"}
+{"subject":"auth","predicate":"uses","object":"guard-as-render-pattern","validFrom":"2026-05-08T02:12:25.212Z"}
+{"subject":"guard-as-render-pattern","predicate":"replaces","object":"redirect-307-for-auth","validFrom":"2026-05-08T02:12:25.214Z"}
+{"subject":"vercel-edge-cache","predicate":"caches","object":"307-redirects-despite-no-store","validFrom":"2026-05-08T02:12:25.215Z"}
+{"subject":"login-required","predicate":"component","object":"src/shared/ui/LoginRequired.tsx","validFrom":"2026-05-08T02:12:25.217Z"}
+{"subject":"access-denied","predicate":"component","object":"src/shared/ui/AccessDenied.tsx","validFrom":"2026-05-08T02:12:25.217Z"}
+{"subject":"require-auth","predicate":"returns","object":"{user,supabase}-without-redirect","validFrom":"2026-05-08T02:12:25.218Z"}
+{"subject":"pre-commit-hook","predicate":"includes","object":"verify-no-auth-redirects.mjs","validFrom":"2026-05-08T02:12:25.218Z"}
+{"subject":"verify-no-auth-redirects","predicate":"blocks","object":"auth-redirects-in-page-tsx","validFrom":"2026-05-08T02:12:25.218Z"}
+{"subject":"dead-pages","predicate":"deleted","object":"dashboard/earn,strategies,tax-report,guide,metrics","validFrom":"2026-05-08T02:12:25.219Z"}
+{"subject":"profile-page","predicate":"uses","object":"guard-as-render","validFrom":"2026-05-08T02:12:25.219Z"}
+{"subject":"paper-trading","predicate":"uses","object":"guard-as-render","validFrom":"2026-05-08T02:12:25.221Z"}
+{"subject":"onboarding-page","predicate":"uses","object":"guard-as-render","validFrom":"2026-05-08T02:12:25.222Z"}
+{"subject":"admin-pages","predicate":"uses","object":"guard-as-render-plus-access-denied","validFrom":"2026-05-08T02:12:25.222Z"}

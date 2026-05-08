@@ -11,7 +11,9 @@
  */
 
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
+import { AccessDenied } from "@/shared/ui/AccessDenied";
 import { createServerClient } from "@/lib/supabase/server";
 import { HealthDashboardClient } from "./HealthDashboardClient";
 
@@ -104,13 +106,17 @@ async function getHealthData() {
 
 export default async function HealthDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isAdmin = await checkAdminAccess();
-
-  if (!isAdmin) {
-    redirect(`/${locale}/login?next=/${locale}/admin/health`);
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/admin/health`} />;
   }
-  
+
+  const isAdmin = await checkAdminAccess();
+  if (!isAdmin) {
+    return <AccessDenied next={`/${locale}/admin/health`} />;
+  }
+
   const initialData = await getHealthData();
-  
+
   return <HealthDashboardClient initialData={initialData} />;
 }

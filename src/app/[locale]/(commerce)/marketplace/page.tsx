@@ -1,3 +1,4 @@
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { requireAuth } from "@/lib/auth-guard";
 import MarketplaceClient from "@/features/marketplace/MarketplaceClient";
 
@@ -13,7 +14,10 @@ export default async function MarketplacePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  await requireAuth(locale);
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/marketplace`} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950">

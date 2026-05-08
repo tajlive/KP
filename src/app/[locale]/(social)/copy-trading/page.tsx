@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import CopyTradingDashboard from "@/features/copy-trading/CopyTradingDashboard";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +14,10 @@ export default async function CopyTradingPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  await requireAuth(locale);
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/copy-trading`} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950">

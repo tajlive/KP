@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { localizedPathname } from "@/middleware/locale-path";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -71,10 +72,10 @@ export default async function DashboardPage({
   const { locale } = await params;
 
   try {
-    const { supabase, user } = await requireAuth(
-      locale,
-      localizedPathname(locale, "/dashboard"),
-    );
+    const { supabase, user } = await requireAuth(locale);
+    if (!user) {
+      return <LoginRequired next={`/${locale}/dashboard`} />;
+    }
 
     const { data: profile } = await supabase
       .from("user_profiles")

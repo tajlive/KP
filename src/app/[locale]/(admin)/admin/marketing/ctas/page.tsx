@@ -6,7 +6,9 @@
  */
 
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
+import { AccessDenied } from "@/shared/ui/AccessDenied";
 import { createServerClient } from "@/lib/supabase/server";
 import { CtaAnalyticsDashboard } from "./CtaAnalyticsDashboard";
 
@@ -54,10 +56,14 @@ interface CtaEvent {
 
 export default async function MarketingCtaAdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isAdmin = await checkAdminAccess();
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/admin/marketing/ctas`} />;
+  }
 
+  const isAdmin = await checkAdminAccess();
   if (!isAdmin) {
-    redirect(`/${locale}/login?next=/${locale}/admin/marketing/ctas`);
+    return <AccessDenied next={`/${locale}/admin/marketing/ctas`} />;
   }
 
   // Fetch initial data

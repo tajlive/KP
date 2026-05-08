@@ -135,19 +135,19 @@ export const useBotStore = create<BotStore>()((set, get) => ({
             userId: strat.user_id,
             name: strat.bot_name || "Unnamed Bot",
             strategyType: (strat.strategy_type as BotStrategyType) || "dca",
-            status: (strat.status as BotStatus) || (strat.is_active ? "active" : "stopped"),
+            status: (strat.is_active ? "active" : "stopped"),
             mode: strat.is_paper_trade ? "paper" : "live",
             symbol,
             config,
-            pnlNok: (session?.current_capital_nok ?? session?.current_capital ?? 0) - (session?.starting_capital_nok ?? session?.initial_capital ?? 0),
-            pnlPct: session?.starting_capital_nok && session?.starting_capital_nok > 0
-              ? (((session?.current_capital_nok ?? session?.current_capital ?? 0) - session.starting_capital_nok) / session.starting_capital_nok) * 100
+            pnlNok: (session?.current_capital ?? 0) - (session?.initial_capital ?? 0),
+            pnlPct: session?.initial_capital && session?.initial_capital > 0
+              ? (((session?.current_capital ?? 0) - session.initial_capital) / session.initial_capital) * 100
               : 0,
             totalTrades: session?.total_trades ?? 0,
             winningTrades: session?.winning_trades ?? 0,
             losingTrades: session?.losing_trades ?? 0,
-            currentCapitalNok: session?.current_capital_nok ?? session?.current_capital ?? 0,
-            startingCapitalNok: session?.starting_capital_nok ?? session?.initial_capital ?? 0,
+            currentCapitalNok: session?.current_capital ?? 0,
+            startingCapitalNok: session?.initial_capital ?? 0,
             maxDrawdownPct: session?.max_drawdown_pct ?? 0,
             lastTradeAt: session?.last_trade_at || null,
             createdAt: strat.created_at ?? "",
@@ -173,7 +173,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     const supabase = createClient();
     const { error } = await supabase
       .from("bot_configs")
-      .update({ status: "paused", is_active: false })
+      .update({ is_active: false })
       .eq("id", id);
 
     if (!error) {
@@ -189,7 +189,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     const supabase = createClient();
     const { error } = await supabase
       .from("bot_configs")
-      .update({ status: "active", is_active: true })
+      .update({ is_active: true })
       .eq("id", id);
 
     if (!error) {
@@ -205,7 +205,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     const supabase = createClient();
     const { error } = await supabase
       .from("bot_configs")
-      .update({ status: "stopped", is_active: false })
+      .update({ is_active: false })
       .eq("id", id);
 
     if (!error) {

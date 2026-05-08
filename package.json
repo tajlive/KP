@@ -32,6 +32,7 @@
     "editor:changeset": "node scripts/super-editor-changeset.mjs",
     "editor:screenshot": "node scripts/super-editor-screenshot.mjs",
     "editor:apply": "node scripts/super-editor-apply.mjs",
+    "verify:auth-redirects": "node scripts/verify-no-auth-redirects.mjs",
     "verify:ts-ast": "tsx scripts/verify-ts-ast.ts",
     "i18n:validate": "node scripts/validate-i18n.js",
     "check": "bash scripts/verify-production.sh",
@@ -533,7 +534,9 @@
     "rimraf": "^5.0.10",
     "glob": "^13.0.6",
     "tmp": "^0.2.4",
-    "import-in-the-middle": "3.0.0"
+    "import-in-the-middle": "3.0.0",
+    "playwright": "1.59.1",
+    "playwright-core": "1.59.1"
   },
   "browserslist": [
     "chrome >= 109",

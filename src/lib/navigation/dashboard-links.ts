@@ -9,15 +9,11 @@ export type DashboardSidebarLabelKey =
   | "results"
   | "autoTrade"
   | "ai"
-  | "earn"
   | "forYou"
   | "portfolio"
   | "profile"
   | "settings"
   | "admin"
-  | "guide"
-  | "strategies"
-  | "metrics"
   | "referral"
   | "taxReport";
 
@@ -61,7 +57,6 @@ export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
   { href: "/dashboard/ai", labelKey: "ai" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
-  { href: "/dashboard/earn", labelKey: "earn" },
 ];
 
 export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
@@ -73,9 +68,6 @@ export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
 
 /** Ekstra sider tilgjengelig via "Mer" dropdown i TopNav */
 export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
-  { href: "/dashboard/guide", labelKey: "guide" },
-  { href: "/dashboard/strategies", labelKey: "strategies" },
-  { href: "/dashboard/metrics", labelKey: "metrics" },
   { href: "/dashboard/tax-report", labelKey: "taxReport" },
   { href: "/dashboard/referral", labelKey: "referral" },
 ];

@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
 import { useHaptic } from "@/hooks/use-haptic";
 
-type TabId = "home" | "copyTrading" | "trade" | "autoTrade" | "profile";
+type TabId = "home" | "trade" | "portfolio" | "autoTrade" | "profile";
 
 interface Tab {
   id: TabId;
@@ -66,18 +66,17 @@ const BotFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const GraduationCapIcon = ({ className }: { className?: string }) => (
+const PieChartIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+    <path d="M22 12A10 10 0 0 0 12 2v10z" />
   </svg>
 );
 
-const GraduationCapFilled = ({ className }: { className?: string }) => (
+const PieChartFilled = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M22 10v6l-10 5L2 16v-6l10 5 10-5z" />
-    <path d="M6 12v5c3 3 9 3 12 0v-5" />
-    <path d="M22 10L12 15 2 10l10-5 10 5z" />
+    <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
+    <path d="M12 2v10h10a10 10 0 0 0-10-10z" />
   </svg>
 );
 
@@ -91,21 +90,6 @@ const UserIcon = ({ className }: { className?: string }) => (
 const UserFilled = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2C9.243 2 7 4.243 7 7s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5zm-7 19a1 1 0 0 1-1-1v-1a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v1a1 1 0 0 1-1 1H5z" />
-  </svg>
-);
-
-const WalletIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-    <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
-  </svg>
-);
-
-const WalletFilled = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h15a2 2 0 0 0 2-2v-2h-3a2 2 0 0 1 0-4h3v-4h-3a2 2 0 0 1 0-4h3z" />
-    <circle cx="17" cy="12" r="1" fill="white" />
   </svg>
 );
 
@@ -123,31 +107,13 @@ const CopyFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const MenuIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="3" y1="12" x2="21" y2="12" />
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-
-const MenuFilled = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <rect x="3" y="5" width="18" height="2" rx="1" />
-    <rect x="3" y="11" width="18" height="2" rx="1" />
-    <rect x="3" y="17" width="18" height="2" rx="1" />
-  </svg>
-);
-
 // Map icon names from nav config to icon components
 const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledIcon: React.FC<{ className?: string }> }> = {
   Home: { icon: HomeIcon, filledIcon: HomeFilled },
-  Gamepad2: { icon: WalletIcon, filledIcon: WalletFilled }, // Using wallet for paper trading
   TrendingUp: { icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
-  BookOpen: { icon: GraduationCapIcon, filledIcon: GraduationCapFilled },
+  PieChart: { icon: PieChartIcon, filledIcon: PieChartFilled },
   User: { icon: UserIcon, filledIcon: UserFilled },
   Bot: { icon: BotIcon, filledIcon: BotFilled },
-  Copy: { icon: CopyIcon, filledIcon: CopyFilled },
 };
 
 // Build tabs from nav config
@@ -162,9 +128,9 @@ const TABS: Tab[] = MOBILE_BOTTOM_TABS.map(navItem => {
   };
 });
 
-const ACTIVE_COLOR = "#3b82f6";
-const INACTIVE_COLOR = "#6b7280";
-const ACTIVE_GLOW = "rgba(59,130,246,0.25)";
+const ACTIVE_COLOR = "var(--kp-brand)";
+const INACTIVE_COLOR = "var(--kp-text-muted)";
+const ACTIVE_GLOW = "var(--kp-brand-glow)";
 
 export function BottomTabs() {
   const router = useRouter();

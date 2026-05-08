@@ -53,16 +53,6 @@ export async function authMiddleware(
   const pathname = request.nextUrl.pathname;
   const { strippedPath } = parseLocalePath(pathname);
 
-  // DEBUG: Log all cookies on every request
-  const allCookies = request.cookies.getAll();
-  const authCookies = allCookies.filter(c => c.name.includes('auth') || c.name.includes('sb-'));
-  console.error("🔥 MIDDLEWARE COOKIES:", {
-    path: pathname,
-    totalCookies: allCookies.length,
-    authCookieCount: authCookies.length,
-    authCookieNames: authCookies.map(c => c.name),
-  });
-
   // If i18n already redirected, we still operate on the original request
   // but the response object may carry cookies from i18n.
   // If response is not a 200, auth stops the chain via isTerminal.
@@ -102,22 +92,6 @@ export async function authMiddleware(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  // 0. Pre-auth guard for protected paths - use the SAME supabase client
-  const isProtectedEarly = PROTECTED_PATHS.some((p) =>
-    strippedPath.startsWith(p),
-  );
-  if (isProtectedEarly && !user) {
-    const loginUrl = new URL(
-      localizedPathname(parseLocalePath(pathname).locale, "/login"),
-      request.url,
-    );
-    loginUrl.searchParams.set(
-      "next",
-      localizedPathname(parseLocalePath(pathname).locale, strippedPath),
-    );
-    return redirectNoCache(loginUrl);
-  }
 
   // Logged-in users should not see guest auth pages
   if (user && isGuestAuthRoute(strippedPath)) {

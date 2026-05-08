@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
 import { BotWizard } from "@/features/auto-trade/BotWizard";
@@ -30,6 +31,7 @@ export default async function AutoTradePage({
 }) {
   const { locale } = await params;
   const { supabase, user } = await requireAuth(locale);
+  if (!user) return <LoginRequired next={`/${locale}/dashboard/auto-trade`} />;
 
   const { data: profile } = await supabase
     .from("user_profiles")

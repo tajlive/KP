@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import CreatorProfileClient from "@/features/copy-trading/CreatorProfileClient";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -77,7 +78,10 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
 export default async function TraderProfilePage({ params }: TraderProfilePageProps) {
   try {
     const { id, locale: _locale } = await params;
-    await requireAuth(_locale);
+    const { user } = await requireAuth(_locale);
+    if (!user) {
+      return <LoginRequired next={`/${_locale}/copy-trading/traders/${id}`} />;
+    }
 
     const supabase = await createClient();
 

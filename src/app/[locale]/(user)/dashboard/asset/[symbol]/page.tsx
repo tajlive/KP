@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import { localizedPathname } from "@/middleware/locale-path";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { AssetDetailView } from "@/features/coinbase/AssetDetailView";
 
 export const dynamic = "force-dynamic";
@@ -10,9 +10,9 @@ export default async function DashboardAssetPage({
   params: Promise<{ locale: string; symbol: string }>;
 }) {
   const { locale, symbol } = await params;
-  await requireAuth(
-    locale,
-    localizedPathname(locale, `/dashboard/asset/${symbol}`),
-  );
+  const { user } = await requireAuth(locale);
+  if (!user) {
+    return <LoginRequired next={`/${locale}/dashboard/asset/${symbol}`} />;
+  }
   return <AssetDetailView symbol={symbol} />;
 }
