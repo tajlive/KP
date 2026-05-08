@@ -275,6 +275,9 @@ const nextConfig = {
       { source: "/trading", destination: "/no/dashboard/trade", permanent: true },
       { source: "/portfolio", destination: "/no/dashboard/portfolio", permanent: true },
       
+      // Removed page redirects
+      { source: "/dashboard/ai", destination: "/dashboard", permanent: true },
+      { source: "/:locale/dashboard/ai", destination: "/:locale/dashboard", permanent: true },
       // Route unification: /dashboard/auto-handel replaces /dashboard/auto-trade
       { source: "/dashboard/auto-trade", destination: "/dashboard/auto-handel", permanent: true },
       { source: "/:locale/dashboard/auto-trade", destination: "/:locale/dashboard/auto-handel", permanent: true },
