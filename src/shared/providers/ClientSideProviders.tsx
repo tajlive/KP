@@ -107,7 +107,8 @@ export function ClientSideProviders({ children }: { children: React.ReactNode })
     <>
       <ErrorHandlerInit />
       {children}
-      <ChatWidgetLoader />
+      {/* ChatWidget midlertidig skjult — 2026-05-07 */}
+      {/* <ChatWidgetLoader /> */}
       <PWALoader />
     </>
   );

@@ -48,3 +48,14 @@
 {"subject":"paper-trading","predicate":"uses","object":"guard-as-render","validFrom":"2026-05-08T02:12:25.221Z"}
 {"subject":"onboarding-page","predicate":"uses","object":"guard-as-render","validFrom":"2026-05-08T02:12:25.222Z"}
 {"subject":"admin-pages","predicate":"uses","object":"guard-as-render-plus-access-denied","validFrom":"2026-05-08T02:12:25.222Z"}
+{"subject":"vercel.json","predicate":"has","object":"tiered cache headers for HTML pages","validFrom":"2026-05-08T12:40:41.995Z"}
+{"subject":"auth pages","predicate":"cache-control","object":"private, no-store, max-age=0","validFrom":"2026-05-08T12:40:41.996Z"}
+{"subject":"marketing pages","predicate":"cache-control","object":"public, s-maxage=300, stale-while-revalidate=3600","validFrom":"2026-05-08T12:40:41.999Z"}
+{"subject":"removed-pages middleware","predicate":"contains","object":"REMOVED_PAGES registry","validFrom":"2026-05-08T12:40:41.999Z"}
+{"subject":"REMOVED_PAGES","predicate":"first entry","object":"from=/dashboard/ai, to=/dashboard, status=301","validFrom":"2026-05-08T12:40:42.000Z"}
+{"subject":"removed-pages","predicate":"has tests in","object":"src/middleware/removed-pages.test.ts","validFrom":"2026-05-08T12:40:42.001Z"}
+{"subject":"removed-pages","predicate":"has build-time check","object":"scripts/verify-removed-pages.mjs","validFrom":"2026-05-08T12:40:42.001Z"}
+{"subject":"Vercel CDN","predicate":"caches HTML with","object":"s-maxage from vercel.json headers","validFrom":"2026-05-08T12:40:42.002Z"}
+{"subject":"next.config.mjs redirects","predicate":"run after","object":"CDN cache lookup — unreliable for deleted pages","validFrom":"2026-05-08T12:40:42.002Z"}
+{"subject":"middleware","predicate":"runs before","object":"CDN cache lookup + Next.js routing","validFrom":"2026-05-08T12:40:42.003Z"}
+{"subject":"deleted page stale cache","predicate":"max window reduced from","object":"25h → 1h (marketing), 0 (auth)","validFrom":"2026-05-08T12:40:42.003Z"}
