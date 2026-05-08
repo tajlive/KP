@@ -5,8 +5,6 @@ import SanityHeroSection from "@/features/landing/SanityHeroSection";
 import SanityFAQSection from "@/features/landing/SanityFAQSection";
 
 import { KLTTeaser } from "@/features/landing/KLTTeaser";
-import { TrustStrip } from "@/features/landing/TrustStrip";
-import { LiveProofStrip } from "@/features/landing/LiveProofStrip";
 import { StickyCTA } from "@/features/landing/StickyCTA";
 import { ScrollReveal } from "@/features/landing/ScrollReveal";
 import {
@@ -97,9 +95,6 @@ export default async function HomePage({ params }: HomePageProps) {
         {/* Above-fold: Synchronous for LCP */}
         <SanityHeroSection locale={locale} />
         <KLTTeaser locale={locale} />
-        <LiveProofStrip />
-        <TrustStrip locale={locale} />
-
         {/* Below-fold: Dynamic imports with skeleton fallbacks + ScrollReveal */}
         <ScrollReveal direction="up" delay={0.1}>
           <LeaderboardPreview />
