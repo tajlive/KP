@@ -257,6 +257,16 @@ cat .kimi/PROJECT_CONTEXT.md
 - **DECLARE** på toppnivå, aldri nested
 - **EXCEPTION WHEN OTHERS** skal ALLTID ha `RAISE WARNING`
 
+### Caching & ISR (Aldri bryt)
+- **Landingssiden** (`src/app/[locale]/page.tsx`) skal ALLTID bruke `force-dynamic`
+- **App-ruter** (dashboard, admin, trading) skal ALLTID bruke `force-dynamic`
+- **Legal-sider** (vilkår, personvern, cookies) kan bruke `revalidate = 86400`
+- **Hjelp / Leksjoner** kan bruke `revalidate = 3600`
+- **Catch-all** (`[...slug]`) skal bruke `revalidate = 60` ( Sanity webhook invaliderer )
+- **Regel:** Sider som endres oftere enn 1× i uken skal IKKE bruke ISR > 60s
+- **Deploy:** GitHub Actions kaller `/api/revalidate` etter hver deploy for å invalidere cache
+- **Playwright smoke-test** kjøres etter deploy for å fange fantom-feil
+
 ### Agent Tenke-Disiplin (ALLTID)
 > **Mål:** Match Claude Opus 4.7 sin reasoning-dybde ved å tvinge systematisk tenking.
 

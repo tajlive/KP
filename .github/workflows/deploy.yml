@@ -197,6 +197,14 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}' || true
 
+      - name: Revalidate Next.js ISR cache
+        if: env.IS_PRODUCTION == 'true' && success()
+        run: |
+          echo "Invalidating ISR cache for key paths..."
+          curl -sfS "https://www.klarpakke.no/api/revalidate?secret=${{ secrets.REVALIDATE_SECRET }}&path=/no&path=/en" || echo "⚠️ Revalidate failed (non-blocking)"
+          curl -sfS "https://www.klarpakke.no/api/revalidate?secret=${{ secrets.REVALIDATE_SECRET }}&path=/no/kontakt&path=/en/contact" || true
+        continue-on-error: true
+
       - name: 🔔 Slack notification on failure
         if: failure() && env.IS_PRODUCTION == 'true'
         run: npx tsx scripts/notify-deploy-status.ts --status=error --url=https://www.klarpakke.no --message="Deploy eller verify feilet, se GitHub Actions"
