@@ -1,10 +1,9 @@
-import { Wallet, Bot, Brain, LucideIcon } from "lucide-react";
+import { Wallet, Bot, LucideIcon } from "lucide-react";
 
 export interface UserContext {
   hasTraded: boolean;
   tradeCount: number;
   hasAutoTrade: boolean;
-  hasUsedAI: boolean;
 }
 
 export interface OnboardingTip {
@@ -36,15 +35,7 @@ export const ONBOARDING_TIPS: OnboardingTip[] = [
     icon: Bot,
     priority: 2,
   },
-  {
-    id: "explore-ai",
-    condition: (u) => u.hasAutoTrade && !u.hasUsedAI,
-    title: "Utforsk AI-analyse",
-    description: "Få innsikt fra vår AI om markedet",
-    cta: { label: "Se analyse", href: "/dashboard/ai" },
-    icon: Brain,
-    priority: 3,
-  },
+
 ];
 
 export function getActiveTip(user: UserContext): OnboardingTip | null {
