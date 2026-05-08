@@ -151,6 +151,11 @@ export const cspMiddleware: MiddlewareFn = (
   // Set CSP header on response
   res.headers.set("Content-Security-Policy", cspHeader);
 
+  // Prevent caching of HTML responses that contain CSP headers
+  // This ensures the nonce is always fresh and prevents stale CSP issues
+  res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+  res.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
+
   // Also set nonce in a custom header for client-side access (if needed)
   // This allows client components to access the nonce for inline scripts
   if (nonce) {
