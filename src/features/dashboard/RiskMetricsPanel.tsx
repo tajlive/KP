@@ -33,10 +33,15 @@ export function RiskMetricsPanel() {
 
   useEffect(() => {
     fetch("/api/user/trading-analytics")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((data) => {
         if (data.ok && data.riskMetrics) {
           setMetrics(data.riskMetrics);
+        } else {
+          setError(t("loadError"));
         }
       })
       .catch((e) => {

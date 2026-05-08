@@ -11,11 +11,11 @@ const tradeRowSchema = z.object({
   id: z.string(),
   trading_pair: z.string(),
   side: z.string(),
-  realized_pnl: z.number().nullable(),
-  mode: z.string().nullable(),
+  realized_pnl: z.coerce.number().nullish().transform((v) => (v == null ? null : v)),
+  mode: z.string().nullish().transform((v) => (v == null ? null : v)),
   created_at: z.string(),
-  executed_at: z.string().nullable(),
-  total_value: z.number().nullable(),
+  executed_at: z.string().nullish().transform((v) => (v == null ? null : v)),
+  total_value: z.coerce.number().nullish().transform((v) => (v == null ? null : v)),
 });
 
 const responseSchema = z.object({
@@ -111,13 +111,28 @@ export async function GET(request: NextRequest) {
 
     const parsed = z.array(tradeRowSchema).safeParse(rows ?? []);
     if (!parsed.success) {
+      console.error(
+        "[GET /api/user/trading-analytics] Trade row validation failed:",
+        parsed.error.flatten(),
+      );
       return NextResponse.json(
-        { ok: false, error: "Invalid trade payload" },
+        { ok: false, error: "Invalid trade payload", details: parsed.error.format() },
         { status: 500 },
       );
     }
 
-    const built = buildTradingAnalytics(parsed.data);
+    let built;
+    try {
+      built = buildTradingAnalytics(parsed.data);
+    } catch (buildErr) {
+      const buildMsg = buildErr instanceof Error ? buildErr.message : "Unknown build error";
+      console.error("[GET /api/user/trading-analytics] buildTradingAnalytics failed:", buildMsg, buildErr);
+      return NextResponse.json(
+        { ok: false, error: "Failed to compute analytics", details: buildMsg },
+        { status: 500 },
+      );
+    }
+
     const body = {
       ok: true as const,
       generatedAt: built.generatedAt,
@@ -135,8 +150,12 @@ export async function GET(request: NextRequest) {
 
     const check = responseSchema.safeParse(body);
     if (!check.success) {
+      console.error(
+        "[GET /api/user/trading-analytics] Response validation failed:",
+        check.error.flatten(),
+      );
       return NextResponse.json(
-        { ok: false, error: "Response validation failed" },
+        { ok: false, error: "Response validation failed", details: check.error.format() },
         { status: 500 },
       );
     }
