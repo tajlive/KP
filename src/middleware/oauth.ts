@@ -31,6 +31,8 @@ export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
 
     const res = NextResponse.redirect(callbackUrl);
     res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+    res.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
+    res.headers.set("CDN-Cache-Control", "no-store, max-age=0");
     return res;
   }
 
