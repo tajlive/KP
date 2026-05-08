@@ -9,7 +9,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "crypto";
 import type { MiddlewareFn } from "./types";
 
 // CSP directive types
@@ -18,19 +17,18 @@ interface CSPDirectives {
 }
 
 /**
- * Generate a cryptographically secure nonce
- * Returns base64-encoded 16 bytes (128 bits) - CSP standard
+ * Generate a cryptographically secure nonce using Web Crypto API
+ * (Edge Runtime compatible — unlike Node.js crypto.randomBytes)
+ * Returns base64url-encoded 16 bytes (128 bits) - CSP standard
  */
 function generateNonce(): string {
-  return randomBytes(16).toString("base64");
-}
-
-/**
- * Escape special regex characters in a string
- * Prevents regex injection when replacing nonce placeholders
- */
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  // base64url avoids + and / which can cause issues in CSP headers
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
 /**
@@ -38,15 +36,15 @@ function escapeRegex(str: string): string {
  */
 function buildCSPHeader(directives: CSPDirectives, nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
-  
+
   const directiveEntries = Object.entries(directives).map(([key, values]) => {
     // Replace NONCE_PLACEHOLDER with actual nonce
-    const processedValues = values.map(v => 
-      v === "'NONCE_PLACEHOLDER'" ? `'nonce-${escapeRegex(nonce)}'` : v
+    const processedValues = values.map(v =>
+      v === "'NONCE_PLACEHOLDER'" ? `'nonce-${nonce}'` : v
     );
     return `${key} ${processedValues.join(" ")}`;
   });
-  
+
   return directiveEntries.join("; ");
 }
 
