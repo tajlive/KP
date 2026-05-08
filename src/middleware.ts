@@ -1,4 +1,5 @@
 import { chain } from "@/middleware/chain";
+import { removedPagesMiddleware } from "@/middleware/removed-pages";
 import { i18nMiddleware } from "@/middleware/i18n";
 import { authMiddleware } from "@/middleware/auth";
 import { rateLimitMiddleware } from "@/middleware/rateLimit";
@@ -18,6 +19,7 @@ import { cspMiddleware } from "@/middleware/csp";
  * stops immediately.
  */
 export default chain(
+  removedPagesMiddleware,
   i18nMiddleware,
   authMiddleware,
   rateLimitMiddleware,
