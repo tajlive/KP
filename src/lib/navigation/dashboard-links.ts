@@ -55,14 +55,12 @@ export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
   { href: "/dashboard/trade", labelKey: "trade" },
   { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
-  { href: "/dashboard/ai", labelKey: "ai" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
 ];
 
 export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
   { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
-  { href: "/dashboard/ai", labelKey: "ai" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
 ];
 

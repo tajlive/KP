@@ -28,7 +28,6 @@ const DEFAULT_CONTEXT: UserContext = {
   hasTraded: false,
   tradeCount: 0,
   hasAutoTrade: false,
-  hasUsedAI: false,
 };
 
 export function useOnboardingProgress(): UseOnboardingProgressReturn {

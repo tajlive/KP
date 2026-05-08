@@ -44,13 +44,6 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ['auth'] 
   },
   { 
-    key: 'ai', 
-    href: '/dashboard/ai', 
-    labelKey: 'dashboard.sidebar.ai', 
-    icon: 'Sparkles',
-    roles: ['auth'] 
-  },
-  { 
     key: 'portfolio', 
     href: '/dashboard/portfolio', 
     labelKey: 'dashboard.sidebar.portfolio', 
