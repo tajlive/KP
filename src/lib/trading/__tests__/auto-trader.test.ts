@@ -73,7 +73,7 @@ describe('AutoTrader', () => {
         confidence: 85,
         price: 900000,
         reasoning: 'Old signal',
-        created_at: new Date(Date.now() - 10 * 60 * 1000).toISOString(), // 10 minutes old
+        created_at: new Date(Date.now() - 16 * 60 * 1000).toISOString(), // 16 minutes old (exceeds 15min threshold)
       };
 
       const result = await trader.shouldExecute(oldSignal);
