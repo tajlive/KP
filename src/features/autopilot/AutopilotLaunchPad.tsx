@@ -8,9 +8,6 @@ import { SURFACE } from "@/lib/design/tokens";
 import {
   BrainCircuit,
   Rocket,
-  Shield,
-  TrendingUp,
-  Flame,
   AlertTriangle,
   CheckCircle2,
   Loader2,
@@ -183,20 +180,11 @@ export function AutopilotLaunchPad({
         </div>
       </div>
 
-      {/* Stats / Social Proof */}
-      <div className="grid grid-cols-3 gap-3 py-2">
-        <div className="text-center">
-          <div className={`text-lg font-bold ${SURFACE.TEXT}`}>+12.4%</div>
-          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>{t("monitor.pnl")} 30d</div>
-        </div>
-        <div className="text-center">
-          <div className={`text-lg font-bold ${SURFACE.TEXT}`}>67%</div>
-          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>{t("monitor.trades")}</div>
-        </div>
-        <div className="text-center">
-          <div className={`text-lg font-bold ${SURFACE.TEXT}`}>8.2%</div>
-          <div className={`text-xs ${SURFACE.TEXT_MUTED}`}>Max DD</div>
-        </div>
+      {/* Info: AI Autopilot bruker markedsanalyse og automatisk rebalansering */}
+      <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
+        <p className={`text-xs ${SURFACE.TEXT_MUTED}`}>
+          KlarBot analyserer markedet og plasserer handler automatisk basert på din risikoprofil.
+        </p>
       </div>
 
       {/* Warning */}
