@@ -423,7 +423,7 @@ async function processSession(
     stopLossPercent: 1,
     trailingStopLossPercent: 1.5,
     maxDailyLossPercent: 5,
-    maxDailyTrades: 10,
+    maxDailyTrades: 20, // Increased from 10 → 20 with 15-min signal frequency
     maxDrawdownPercent: 15,
     maxLeverage: 1,
   };
