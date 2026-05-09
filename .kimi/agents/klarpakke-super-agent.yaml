@@ -3,10 +3,10 @@ agent:
   extend: default
   name: klarpakke-super
   description: >-
-    Klarpakke Super Agent — Auto-context, self-correction, and MemPalace integration.
-    This is the DEFAULT agent for all Klarpakke work. It loads the master system
-    prompt which mandates MemPalace context retrieval, self-classification, and
-    post-task memory sync.
+    Klarpakke Super Agent — Auto-context, self-correction, and MemPalace MCP v3.3.0
+    integration. Uses the Node.js MCP server (NOT the Python CLI) for zero-dep
+    in-memory FTS + KG. Loads the master system prompt which mandates MemPalace
+    context retrieval, self-classification, and post-task memory sync.
   system_prompt_path: ./KIMI-MASTER-SYSTEM.md
   # MCP profile: auto-detected based on task domain
   # Use: kimi --agent-file .kimi/agents/klarpakke-super-agent.yaml
