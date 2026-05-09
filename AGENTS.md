@@ -137,12 +137,19 @@ kimil --super --launch
 - MemPalace brief med kontekst
 - Session context lagret til `.kimi/session-summaries/current-session-context.md`
 
-### `kimi-super` — Super-Agent Direkte
+### `kimi-super` — Super-Agent med Full Smart-Launch ⭐
 ```bash
-# Start KIMI med super-agent (master system prompt injisert)
+# Start KIMI med super-agent + pre-session kontekst + post-session analyse
 kimi-super
-# Ekvivalent: kimi --agent-file .kimi/agents/klarpakke-super-agent.yaml
+# Ekvivalent: kimi-smart-launch --super --launch
+# Inkluderer: MemPalace search → git-kontekst → agent-launch → self-improve
 ```
+
+**Prefer `kimi-super` over raw `kimi --agent-file`** — den gir deg:
+- Pre-session MemPalace brief med kontekst
+- Git-kontekst (branch, commits, modified files)
+- Auto-detect domain + MCP profile
+- Post-session self-improve + verify-anbefalinger
 
 Super-agenten laster **KIMI-MASTER-SYSTEM.md** som inneholder:
 - **MANDATORY pre-task protocol:** MemPalace search + recent_context + kg_query
