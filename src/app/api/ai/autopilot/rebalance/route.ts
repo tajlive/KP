@@ -150,18 +150,21 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", autopilot.id);
 
-        // ── 2d. Hvis regime endret → rebalance sessions ─────────────────
-        if (decision.regime !== previousRegime && previousRegime !== null) {
+        // ── 2d. Rebalance sessions ─────────────────────────────────────
+        // ALLTID stoppe gamle sessions før nye opprettes — unngå session-sprawl
+        const shouldRebalance = decision.regime !== previousRegime || previousRegime === null;
+        
+        if (shouldRebalance) {
           console.info(
-            `[Autopilot Rebalance] User ${userId}: regime changed ${previousRegime} → ${decision.regime}. Rebalancing.`
+            `[Autopilot Rebalance] User ${userId}: rebalancing. Regime: ${previousRegime ?? 'null'} → ${decision.regime}. Stopping old sessions.`
           );
 
-          // Stopp gamle sessions
+          // Stopp ALLE gamle sessions (paper only)
           const { data: stopped } = await db
             .from("trading_sessions")
             .update({
               status: "stopped",
-              last_status_message: `Autopilot rebalance: regime ${previousRegime} → ${decision.regime}`,
+              last_status_message: `Autopilot rebalance: ${previousRegime ?? 'init'} → ${decision.regime}`,
               updated_at: now,
             })
             .eq("user_id", userId)
@@ -169,9 +172,10 @@ export async function POST(req: NextRequest) {
             .eq("status", "active")
             .select("id");
 
-          // Opprett nye sessions med ny strategi
+          // Opprett nye sessions — maks max_pairs
+          const pairsToCreate = decision.pairs.slice(0, autopilot.max_pairs ?? 3);
           let newSessions = 0;
-          for (const pairAlloc of decision.pairs) {
+          for (const pairAlloc of pairsToCreate) {
             const strategyConfig: Record<string, unknown> = {
               risk_level: autopilot.risk_appetite,
               pairs: [pairAlloc.symbol],
@@ -204,14 +208,14 @@ export async function POST(req: NextRequest) {
             if (!insertErr) newSessions++;
           }
 
-          // Oppdater config med nye pairs
+          // Oppdater config med nye pairs (respekter max_pairs)
           await db
             .from("ai_autopilot_configs")
             .update({
               selected_strategy: decision.strategy,
-              selected_pairs: decision.pairs.map((p) => p.symbol),
+              selected_pairs: pairsToCreate.map((p) => p.symbol),
               capital_per_pair: Object.fromEntries(
-                decision.pairs.map((p) => [p.symbol, p.capital_nok])
+                pairsToCreate.map((p) => [p.symbol, p.capital_nok])
               ),
             })
             .eq("id", autopilot.id);
