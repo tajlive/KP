@@ -287,31 +287,31 @@ export default function ClientAkademi() {
             </div>
             
             {/* Nivå-filter */}
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-3 flex-wrap">
               <Badge 
                 variant={filterLevel === 'all' ? 'default' : 'outline'}
-                className="cursor-pointer min-h-[40px] px-3"
+                className="cursor-pointer min-h-[44px] px-4 py-2"
                 onClick={() => handleLevelChange('all')}
               >
                 Alle nivåer
               </Badge>
               <Badge 
                 variant={filterLevel === 'beginner' ? 'default' : 'outline'}
-                className={cn('cursor-pointer min-h-[40px] px-3', filterLevel === 'beginner' && 'bg-green-600')}
+                className={cn('cursor-pointer min-h-[44px] px-4 py-2', filterLevel === 'beginner' && 'bg-green-600')}
                 onClick={() => handleLevelChange('beginner')}
               >
                 Nybegynner
               </Badge>
               <Badge 
                 variant={filterLevel === 'intermediate' ? 'default' : 'outline'}
-                className={cn('cursor-pointer min-h-[40px] px-3', filterLevel === 'intermediate' && 'bg-blue-600')}
+                className={cn('cursor-pointer min-h-[44px] px-4 py-2', filterLevel === 'intermediate' && 'bg-blue-600')}
                 onClick={() => handleLevelChange('intermediate')}
               >
                 Viderekommen
               </Badge>
               <Badge 
                 variant={filterLevel === 'advanced' ? 'default' : 'outline'}
-                className={cn('cursor-pointer min-h-[40px] px-3', filterLevel === 'advanced' && 'bg-emerald-600')}
+                className={cn('cursor-pointer min-h-[44px] px-4 py-2', filterLevel === 'advanced' && 'bg-emerald-600')}
                 onClick={() => handleLevelChange('advanced')}
               >
                 Erfaren
@@ -320,8 +320,8 @@ export default function ClientAkademi() {
           </div>
 
           {/* Type-filter */}
-          <div className="flex gap-2 flex-wrap">
-            <span className="text-sm text-gray-500 flex items-center">
+          <div className="flex gap-3 flex-wrap items-center">
+            <span className="text-sm text-gray-500 flex items-center min-h-[44px]">
               <Filter className="w-4 h-4 mr-1" />
               Type:
             </span>
@@ -329,7 +329,7 @@ export default function ClientAkademi() {
               <Badge 
                 key={type}
                 variant={filterType === type ? 'default' : 'outline'}
-                className="cursor-pointer text-xs min-h-[40px] px-3"
+                className="cursor-pointer text-xs min-h-[44px] px-4 py-2"
                 onClick={() => handleTypeChange(type)}
               >
                 {type === 'all' ? 'Alt' : getLessonTypeLabel(type)}

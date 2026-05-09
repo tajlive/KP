@@ -52,8 +52,8 @@ export function ThreeSteps() {
   ];
 
   return (
-    <div suppressHydrationWarning className="pt-16 pb-12 md:pt-24 md:pb-16">
-      <div className="text-center mb-12">
+    <div suppressHydrationWarning className="pt-10 pb-8 md:pt-16 md:pb-12">
+      <div className="text-center mb-8">
         <h2 className="font-fraunces text-3xl md:text-4xl font-bold text-slate-100 mb-4">
           {t("sectionTitle")}
         </h2>
@@ -106,7 +106,7 @@ export function ThreeSteps() {
       </div>
 
       {/* CTA */}
-      <div className="text-center mt-12">
+      <div className="text-center mt-8">
         <button
           type="button"
           onClick={() =>
