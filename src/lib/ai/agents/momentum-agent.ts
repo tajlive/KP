@@ -26,8 +26,9 @@ export const momentumAgent: TradingAgent = {
     score = Math.max(0, Math.min(100, score));
 
     let action: AgentSignal['action'] = 'hold';
-    if (score >= 65) action = 'buy';
-    else if (score <= 35) action = 'sell';
+    // OPTIMIZED: Lowered from 65/35 → 55/45 for more signal generation
+    if (score >= 55) action = 'buy';
+    else if (score <= 45) action = 'sell';
 
     return {
       action,

@@ -223,7 +223,10 @@ async function processSession(
         .then((r) => r.data);
     }
 
-    const maxAgeMs = 2 * 60 * 60 * 1000; // 2 hours
+    const maxAgeMs = 4 * 60 * 60 * 1000; // 4 hours (was 2h)
+    // OPTIMIZED: Increased from 2h → 4h because ai-engine runs hourly.
+    // Tick cron runs every 5 min. With 4h window we survive 3 consecutive
+    // ai-engine failures while still rejecting truly stale signals.
     const isRecent = aiSignal?.created_at
       ? Date.now() - new Date(aiSignal.created_at).getTime() < maxAgeMs
       : false;
