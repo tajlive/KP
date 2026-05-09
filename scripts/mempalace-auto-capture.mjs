@@ -24,12 +24,15 @@ function getStagedFiles() {
 
 function getCommitMessage() {
   try {
-    // Hvis vi kjører i en hook, kan vi kanskje ikke lese meldingen ennå,
-    // men vi kan prøve å se på siste commit hvis vi er i post-commit,
-    // eller bare logge filene hvis vi er i pre-commit.
+    // I post-commit: les faktisk commit-melding
+    // I pre-commit: git log -1 returnerer forrige commit, så sjekk om vi er i pre-commit
+    const inPreCommit = process.env.GIT_INDEX_FILE !== undefined;
+    if (inPreCommit) {
+      return null; // Vil bli erstattet med fil-basert beskrivelse
+    }
     return execSync('git log -1 --pretty=%B', { encoding: 'utf8' }).trim();
   } catch (e) {
-    return 'Automatic commit capture';
+    return null;
   }
 }
 
@@ -94,16 +97,22 @@ function capture() {
   const { changes, types } = analyzeChanges(files);
   if (!types) return; // Ingenting "interessant" å logge auto
 
-  const msg = getCommitMessage();
+  let msg = getCommitMessage();
+  if (!msg || msg === 'Automatic commit capture') {
+    // Pre-commit context: bygg beskrivelse fra filer
+    const fileList = files.slice(0, 5).map(f => f.split('/').pop()).join(', ');
+    const more = files.length > 5 ? ` +${files.length - 5} more` : '';
+    msg = `Auto-capture: ${fileList}${more}`;
+  }
   const ts = new Date().toISOString();
-  
+
   const entry = {
     ts,
     type: 'AUTO',
     task: `[${types}] ${msg}`,
     files: files.length,
     status: 'GO',
-    rating: 2,
+    rating: 3, // Pre-commit hook har allerede validert (auth-guard, secrets, TS, lint)
     agent: AGENT,
     meta: {
       staged_files: files,
