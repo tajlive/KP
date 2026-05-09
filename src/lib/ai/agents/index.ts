@@ -5,6 +5,7 @@ export { breakoutAgent } from './breakout-agent';
 export { volatilityAgent } from './volatility-agent';
 export { momentumAgent } from './momentum-agent';
 export { volumeAgent } from './volume-agent';
+export { hurstAgent } from './hurst-agent';
 
 import type { TradingAgent } from './types';
 import { trendAgent } from './trend-agent';
@@ -13,6 +14,7 @@ import { breakoutAgent } from './breakout-agent';
 import { volatilityAgent } from './volatility-agent';
 import { momentumAgent } from './momentum-agent';
 import { volumeAgent } from './volume-agent';
+import { hurstAgent } from './hurst-agent';
 
 export const DEFAULT_AGENTS: TradingAgent[] = [
   trendAgent,
@@ -21,4 +23,5 @@ export const DEFAULT_AGENTS: TradingAgent[] = [
   volatilityAgent,
   momentumAgent,
   volumeAgent,
+  hurstAgent,
 ];

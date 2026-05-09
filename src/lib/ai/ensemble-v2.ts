@@ -23,6 +23,59 @@ export interface ConsensusResult {
   runId: string;
 }
 
+/**
+ * Calculate Hurst exponent using R/S analysis.
+ * H < 0.5 = mean-reverting, H = 0.5 = random walk, H > 0.5 = trending.
+ * Research: Bitcoin Hurst ~0.52 on hourly data (QuantifiedStrategies 2026).
+ */
+function calculateHurst(prices: number[]): number {
+  if (prices.length < 30) return 0.5;
+
+  const returns: number[] = [];
+  for (let i = 1; i < prices.length; i++) {
+    returns.push(Math.log(prices[i] / prices[i - 1]));
+  }
+
+  const maxChunk = Math.floor(returns.length / 2);
+  const chunks = [8, 16, 32, Math.min(64, maxChunk)].filter((n) => n <= maxChunk);
+  const rsValues: { n: number; rs: number }[] = [];
+
+  for (const chunkSize of chunks) {
+    const numChunks = Math.floor(returns.length / chunkSize);
+    let totalRS = 0;
+
+    for (let i = 0; i < numChunks; i++) {
+      const chunk = returns.slice(i * chunkSize, (i + 1) * chunkSize);
+      const mean = chunk.reduce((a, b) => a + b, 0) / chunk.length;
+      const cumDevs: number[] = [];
+      let cumSum = 0;
+      for (const r of chunk) {
+        cumSum += r - mean;
+        cumDevs.push(cumSum);
+      }
+      const R = Math.max(...cumDevs) - Math.min(...cumDevs);
+      const S = Math.sqrt(chunk.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / chunk.length);
+      if (S > 0) totalRS += R / S;
+    }
+
+    rsValues.push({ n: chunkSize, rs: totalRS / numChunks });
+  }
+
+  if (rsValues.length < 2) return 0.5;
+
+  // Linear regression on log-log scale
+  const x = rsValues.map((v) => Math.log(v.n));
+  const y = rsValues.map((v) => Math.log(v.rs));
+  const n = x.length;
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = y.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+  const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  return Math.max(0.1, Math.min(0.9, slope));
+}
+
 function computeFeatures(prices: number[], volumes?: number[]): AgentFeatures {
   const rsiSeries = prices.length >= 14 ? calculateRSI(prices, 14) : [];
   const rsi = rsiSeries[rsiSeries.length - 1] ?? undefined;
@@ -62,6 +115,18 @@ function computeFeatures(prices: number[], volumes?: number[]): AgentFeatures {
     atr14 = trs.reduce((a, b) => a + b, 0) / trs.length;
   }
 
+  // Hurst exponent for regime detection (QuantifiedStrategies 2026)
+  const hurst = prices.length >= 30 ? calculateHurst(prices) : undefined;
+
+  // 24h volume quality filter (NexusTrade: quality filters = key to profitability)
+  let volumeQuality: 'high' | 'medium' | 'low' = 'medium';
+  if (volumes && volumes.length >= 24) {
+    const recentVol = volumes.slice(-24).reduce((a, b) => a + b, 0);
+    // Heuristic: >100M USDT 24h = high quality (liquid)
+    if (recentVol > 100_000_000) volumeQuality = 'high';
+    else if (recentVol < 10_000_000) volumeQuality = 'low';
+  }
+
   return {
     symbol: '',
     prices,
@@ -74,6 +139,8 @@ function computeFeatures(prices: number[], volumes?: number[]): AgentFeatures {
     sma50,
     volatility14,
     atr14,
+    hurst,
+    volumeQuality,
   };
 }
 
@@ -105,15 +172,32 @@ function adjustWeight(
 }
 
 /**
- * Detect micro-regime from recent price action.
+ * Detect micro-regime from recent price action + Hurst exponent.
  * Used for regime-based agent weight adjustment.
+ *
+ * Research: QuantifiedStrategies 2026 — Hurst is the most reliable
+ * metric for distinguishing trending vs mean-reverting markets.
  */
 function detectMicroRegime(
   prices: number[],
-  volatility14?: number
+  volatility14?: number,
+  hurst?: number
 ): 'bull' | 'bear' | 'sideways' | 'volatile' {
   if (prices.length < 20) return 'sideways';
 
+  // Primary: use Hurst exponent if available (most statistically sound)
+  if (hurst != null) {
+    if (volatility14 && volatility14 > 0.04) return 'volatile';
+    if (hurst > 0.55) {
+      const sma20 = prices.slice(-20).reduce((a, b) => a + b, 0) / 20;
+      const currentPrice = prices[prices.length - 1];
+      return currentPrice > sma20 ? 'bull' : 'bear';
+    }
+    if (hurst < 0.45) return 'sideways'; // mean reversion = sideways range
+    return 'sideways'; // Hurst ~0.5 = random walk
+  }
+
+  // Fallback: SMA-based detection
   const sma20 = prices.slice(-20).reduce((a, b) => a + b, 0) / 20;
   const sma10 = prices.slice(-10).reduce((a, b) => a + b, 0) / 10;
   const currentPrice = prices[prices.length - 1];
@@ -209,7 +293,7 @@ export async function runEnsembleForSymbol(
   );
 
   // Regime-based weight adjustment (Strategy-Market Fit)
-  const regime = detectMicroRegime(prices, features.volatility14);
+  const regime = detectMicroRegime(prices, features.volatility14, features.hurst);
 
   const agentResults: AgentResult[] = [];
   const baseWeights = new Map<string, number>();

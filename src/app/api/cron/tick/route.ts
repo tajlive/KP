@@ -271,9 +271,36 @@ async function processSession(
   if (session.open_position && signal.action === "hold") {
     const entryPrice = session.open_position.entry_price;
     const highest = session.open_position.highest_price ?? entryPrice;
-    const trailingPct =
-      ((session.strategy_config as Record<string, unknown>)
-        ?.trailing_stop_pct as number) ?? 2.5;
+
+    // OPTIMIZED: ATR-based trailing stop (AssetWhisper 2026 research: 2 ATR optimal)
+    // Falls back to percentage-based if ATR unavailable or disabled
+    const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
+    const useAtrTrailing = stratCfg.use_atr_trailing === true;
+    let trailingDistance: number;
+    let trailingReason: string;
+
+    if (useAtrTrailing && candles.length >= 15) {
+      // Calculate ATR14 from candles
+      const atrValues: number[] = [];
+      for (let i = candles.length - 14; i < candles.length; i++) {
+        const high = candles[i].high;
+        const low = candles[i].low;
+        const prevClose = candles[i - 1]?.close ?? candles[i].open;
+        const tr1 = high - low;
+        const tr2 = Math.abs(high - prevClose);
+        const tr3 = Math.abs(low - prevClose);
+        atrValues.push(Math.max(tr1, tr2, tr3));
+      }
+      const atr14 = atrValues.reduce((a, b) => a + b, 0) / atrValues.length;
+      // 2 ATR trailing distance (research-backed optimal)
+      trailingDistance = 2 * atr14;
+      trailingReason = `ATR14=${atr14.toFixed(2)}`;
+    } else {
+      // Fallback: percentage-based trailing stop
+      const trailingPct = (stratCfg.trailing_stop_pct as number) ?? 2.5;
+      trailingDistance = highest * (trailingPct / 100);
+      trailingReason = `${trailingPct}%`;
+    }
 
     // Update highest price tracking
     if (currentPrice > highest) {
@@ -288,12 +315,12 @@ async function processSession(
         .eq("id", session.id);
     }
 
-    // Trailing stop: if price drops X% from peak AND still in profit
-    const dropFromPeak = ((highest - currentPrice) / highest) * 100;
-    if (dropFromPeak >= trailingPct && currentPrice > entryPrice) {
-      // Trigger trailing take-profit sell
+    // Trailing stop: if price drops trailingDistance from peak AND still in profit
+    const dropFromPeak = highest - currentPrice;
+    if (dropFromPeak >= trailingDistance && currentPrice > entryPrice) {
+      const dropPct = ((highest - currentPrice) / highest) * 100;
       signal.action = "sell";
-      signal.reason = `Trailing TP: dropped ${dropFromPeak.toFixed(1)}% from peak $${highest.toFixed(0)}`;
+      signal.reason = `Trailing TP: dropped ${dropPct.toFixed(1)}% (${trailingReason}) from peak $${highest.toFixed(0)}`;
     }
 
     // Time-based exit: Sell after 7 days if position is not profitable
