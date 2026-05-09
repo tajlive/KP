@@ -36,6 +36,8 @@ export interface PositionSizeResult {
   drawdownMultiplier: number;
   rawSize: number;
   reason: string;
+  expectancy?: number; // %
+  profitFactor?: number;
 }
 
 const REGIME_MULTIPLIERS: Record<string, number> = {
@@ -68,12 +70,30 @@ export async function calculateDynamicPositionSize(
     riskProfile = "balanced",
   } = input;
 
-  // ── 1. KELLY CRITERION ──────────────────────────────────────────────────
+  // ── 1. KELLY CRITERION + EXPECTANCY FILTER ──────────────────────────────
   let kellyFraction = 0;
   let kellyStats: KellyStats | null = null;
+  let expectancy = 0;
+  let profitFactor = 0;
   try {
-    kellyStats = await updateKellyStats(userId, strategyId);
-    kellyFraction = calculateKelly(kellyStats, riskProfile, regime as never);
+    // FIX: Pass db client so Kelly works in server context (tick.ts, ai-engine)
+    kellyStats = await updateKellyStats(userId, strategyId, db);
+
+    // Calculate expectancy: (Win% × AvgWin) - (Loss% × AvgLoss)
+    // Research: 73% of bots fail. Expectancy < 0 = don't trade.
+    const lossRate = 1 - kellyStats.winrate;
+    expectancy = (kellyStats.winrate * kellyStats.avgWin) - (lossRate * kellyStats.avgLoss);
+    profitFactor = kellyStats.avgLoss > 0
+      ? (kellyStats.winrate * kellyStats.avgWin) / (lossRate * kellyStats.avgLoss)
+      : 0;
+
+    // CRITICAL: If expectancy is negative, dramatically reduce size or skip
+    if (expectancy < 0 && kellyStats.sampleSize >= 10) {
+      console.warn(`[PositionSize] User ${userId}: expectancy ${expectancy.toFixed(2)}% < 0. Reducing size.`);
+      kellyFraction = 0.005; // Minimum 0.5% — effectively a warning mode
+    } else {
+      kellyFraction = calculateKelly(kellyStats, riskProfile, regime as never);
+    }
   } catch {
     // Fallback: use base position size as starting point
     kellyFraction = basePositionSize * 0.5;
@@ -138,7 +158,10 @@ export async function calculateDynamicPositionSize(
 
   const reasons: string[] = [];
   if (kellyStats && kellyStats.sampleSize >= 10) {
-    reasons.push(`Kelly ${(kellyFraction * 100).toFixed(2)}% (WR ${(kellyStats.winrate * 100).toFixed(0)}%)`);
+    reasons.push(`Kelly ${(kellyFraction * 100).toFixed(2)}% (WR ${(kellyStats.winrate * 100).toFixed(0)}%, E=${expectancy.toFixed(1)}%, PF=${profitFactor.toFixed(1)})`);
+    if (expectancy < 0) {
+      reasons.push(`WARNING: expectancy < 0`);
+    }
   } else {
     reasons.push(`Conservative default (insufficient history)`);
   }
@@ -156,6 +179,8 @@ export async function calculateDynamicPositionSize(
     drawdownMultiplier,
     rawSize,
     reason: reasons.join(" | "),
+    expectancy,
+    profitFactor,
   };
 }
 
