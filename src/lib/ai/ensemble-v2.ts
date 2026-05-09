@@ -104,6 +104,79 @@ function adjustWeight(
   return Math.max(0.05, Math.min(0.5, w));
 }
 
+/**
+ * Detect micro-regime from recent price action.
+ * Used for regime-based agent weight adjustment.
+ */
+function detectMicroRegime(
+  prices: number[],
+  volatility14?: number
+): 'bull' | 'bear' | 'sideways' | 'volatile' {
+  if (prices.length < 20) return 'sideways';
+
+  const sma20 = prices.slice(-20).reduce((a, b) => a + b, 0) / 20;
+  const sma10 = prices.slice(-10).reduce((a, b) => a + b, 0) / 10;
+  const currentPrice = prices[prices.length - 1];
+  const vol = volatility14 ?? 0;
+
+  if (vol > 0.04) return 'volatile';
+  if (sma10 > sma20 && currentPrice > sma20 * 1.02) return 'bull';
+  if (sma10 < sma20 && currentPrice < sma20 * 0.98) return 'bear';
+  return 'sideways';
+}
+
+/**
+ * Apply regime-based weight multipliers.
+ * Strategy-Market Fit is the #1 predictor of bot profitability.
+ * (Altrady 2026 research: regime-switching beats static strategies)
+ */
+function applyRegimeWeights(
+  weights: Map<string, number>,
+  regime: 'bull' | 'bear' | 'sideways' | 'volatile'
+): Map<string, number> {
+  const multipliers: Record<string, Record<string, number>> = {
+    bull: {
+      trend: 1.5,
+      momentum: 1.3,
+      breakout: 1.2,
+      volume: 1.1,
+      mean_reversion: 0.6,
+      volatility: 0.7,
+    },
+    bear: {
+      trend: 0.5,
+      momentum: 0.6,
+      breakout: 0.4,
+      volume: 1.0,
+      mean_reversion: 1.4,
+      volatility: 1.3,
+    },
+    sideways: {
+      trend: 0.6,
+      momentum: 0.7,
+      breakout: 0.5,
+      volume: 1.2,
+      mean_reversion: 1.5,
+      volatility: 1.0,
+    },
+    volatile: {
+      trend: 0.7,
+      momentum: 1.0,
+      breakout: 1.3,
+      volume: 1.4,
+      mean_reversion: 1.1,
+      volatility: 1.5,
+    },
+  };
+
+  const m = multipliers[regime] ?? {};
+  const result = new Map<string, number>();
+  for (const [agentId, weight] of weights) {
+    result.set(agentId, weight * (m[agentId] ?? 1.0));
+  }
+  return result;
+}
+
 export async function runEnsembleForSymbol(
   db: SupabaseClient<Database>,
   symbol: string,
@@ -135,12 +208,25 @@ export async function runEnsembleForSymbol(
     ])
   );
 
+  // Regime-based weight adjustment (Strategy-Market Fit)
+  const regime = detectMicroRegime(prices, features.volatility14);
+
   const agentResults: AgentResult[] = [];
+  const baseWeights = new Map<string, number>();
   for (const agent of agents) {
     const signal = await agent.run(symbol, features);
     const stats = statsMap.get(agent.id) ?? null;
-    const adjustedWeight = adjustWeight(agent.baselineWeight, stats);
-    agentResults.push({ agent, signal, adjustedWeight });
+    const performanceWeight = adjustWeight(agent.baselineWeight, stats);
+    baseWeights.set(agent.id, performanceWeight);
+    agentResults.push({ agent, signal, adjustedWeight: performanceWeight });
+  }
+
+  // Apply regime multipliers to weights
+  const regimeWeights = applyRegimeWeights(baseWeights, regime);
+
+  // Recompute with regime-adjusted weights
+  for (const ar of agentResults) {
+    ar.adjustedWeight = regimeWeights.get(ar.agent.id) ?? ar.adjustedWeight;
   }
 
   // Compute weighted consensus score
@@ -157,11 +243,13 @@ export async function runEnsembleForSymbol(
 
   const consensusScore = totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 50;
   let action: ConsensusResult['action'] = 'hold';
-  if (consensusScore >= 65) action = 'buy';
-  else if (consensusScore <= 35) action = 'sell';
+  // OPTIMIZED: Lowered thresholds from 65/35 → 55/45 based on competitor research
+  // (3Commas, Cryptohopper use 50-55 for signal generation in volatile markets)
+  if (consensusScore >= 55) action = 'buy';
+  else if (consensusScore <= 45) action = 'sell';
 
   const reasoningParts = [
-    `Consensus ${consensusScore}/100 → ${action.toUpperCase()}`,
+    `Consensus ${consensusScore}/100 → ${action.toUpperCase()} (threshold: 55/45, regime: ${regime})`,
     ...agentResults.map(
       (ar) =>
         `${ar.agent.name} (${(ar.adjustedWeight * 100).toFixed(0)}%): ${ar.signal.action.toUpperCase()} @ ${ar.signal.confidence}`

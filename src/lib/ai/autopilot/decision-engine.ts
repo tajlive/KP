@@ -141,9 +141,11 @@ function kellyAllocate(
   maxPairs: number,
   riskProfile: ReturnType<typeof getRiskProfile>,
 ): PairAllocation[] {
-  // Filter to buy signals with confidence >= 60
+  // Filter to buy signals with confidence >= 50
+  // OPTIMIZED: Lowered from 60 → 50 based on competitor research
+  // (Pionex grid/DCA bots trade more actively with lower thresholds)
   const buySignals = signals
-    .filter((s) => s.action === "buy" && s.confidence >= 60)
+    .filter((s) => s.action === "buy" && s.confidence >= 50)
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, maxPairs);
 
