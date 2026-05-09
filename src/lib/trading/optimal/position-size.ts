@@ -149,8 +149,8 @@ export async function calculateDynamicPositionSize(
   const rawSize = kellyFraction * atrMultiplier * regimeMultiplier * drawdownMultiplier;
 
   // ── 6. GUARDRAILS ───────────────────────────────────────────────────────
-  // Max 15% per trade (Kelly can be aggressive)
-  const maxPositionSize = 0.15;
+  // Max 10% per trade (professional standard: 3Commas, Stoic.ai cap at 10%)
+  const maxPositionSize = 0.10;
   // Max 30% of portfolio in open positions
   const portfolioCap = await getPortfolioPositionCap(db, userId, currentCapital);
 
