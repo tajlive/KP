@@ -50,7 +50,7 @@ const LeaderboardPreview = dynamicImport(
   () => import("@/features/landing/LeaderboardPreview").then((mod) => mod.LeaderboardPreview),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
-    ssr: true,
+    ssr: false,
   }
 );
 
@@ -58,6 +58,7 @@ const FeaturesBentoGrid = dynamicImport(
   () => import("@/features/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
+    ssr: false,
   }
 );
 

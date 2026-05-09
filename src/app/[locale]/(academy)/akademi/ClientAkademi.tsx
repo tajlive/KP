@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
@@ -54,12 +54,15 @@ const typeIcons: Record<LessonType, React.ElementType> = {
   calculator: Calculator,
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function ClientAkademi() {
   const locale = useLocale();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterLevel, setFilterLevel] = useState<FilterLevel>('all');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
+  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
 
   const { 
     completedLessonIds: _completedLessonIds, 
@@ -118,10 +121,39 @@ export default function ClientAkademi() {
     return lessons;
   }, [searchQuery, filterLevel, filterType, selectedTrack]);
 
+  // Paginerte leksjoner
+  const paginatedLessons = filteredLessons.slice(0, displayCount);
+  const hasMore = filteredLessons.length > displayCount;
+
   // Hent track detaljer hvis valgt
   const selectedTrackDetails = selectedTrack 
     ? LEARNING_TRACKS.find(t => t.id === selectedTrack)
     : null;
+
+  // Reset paginering når filtre endres
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, []);
+
+  const handleLevelChange = useCallback((level: FilterLevel) => {
+    setFilterLevel(level);
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, []);
+
+  const handleTypeChange = useCallback((type: FilterType) => {
+    setFilterType(type);
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, []);
+
+  const handleTrackSelect = useCallback((trackId: string | null) => {
+    setSelectedTrack(trackId);
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, []);
+
+  const handleLoadMore = useCallback(() => {
+    setDisplayCount(prev => prev + ITEMS_PER_PAGE);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 md:py-12 px-4">
@@ -176,7 +208,7 @@ export default function ClientAkademi() {
                     'cursor-pointer transition-all hover:shadow-md',
                     isCompleted && 'border-green-300 bg-green-50/30'
                   )}
-                  onClick={() => setSelectedTrack(track.id)}
+                  onClick={() => handleTrackSelect(track.id)}
                 >
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between mb-3">
@@ -212,7 +244,7 @@ export default function ClientAkademi() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => setSelectedTrack(null)}
+                  onClick={() => handleTrackSelect(null)}
                 >
                   <ArrowLeft className="w-4 h-4 mr-1" />
                   Vis alle kurs
@@ -249,7 +281,7 @@ export default function ClientAkademi() {
               <Input
                 placeholder="Søk etter kurs, quizer, verktøy..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -259,28 +291,28 @@ export default function ClientAkademi() {
               <Badge 
                 variant={filterLevel === 'all' ? 'default' : 'outline'}
                 className="cursor-pointer"
-                onClick={() => setFilterLevel('all')}
+                onClick={() => handleLevelChange('all')}
               >
                 Alle nivåer
               </Badge>
               <Badge 
                 variant={filterLevel === 'beginner' ? 'default' : 'outline'}
                 className={cn('cursor-pointer', filterLevel === 'beginner' && 'bg-green-600')}
-                onClick={() => setFilterLevel('beginner')}
+                onClick={() => handleLevelChange('beginner')}
               >
                 Nybegynner
               </Badge>
               <Badge 
                 variant={filterLevel === 'intermediate' ? 'default' : 'outline'}
                 className={cn('cursor-pointer', filterLevel === 'intermediate' && 'bg-blue-600')}
-                onClick={() => setFilterLevel('intermediate')}
+                onClick={() => handleLevelChange('intermediate')}
               >
                 Viderekommen
               </Badge>
               <Badge 
                 variant={filterLevel === 'advanced' ? 'default' : 'outline'}
                 className={cn('cursor-pointer', filterLevel === 'advanced' && 'bg-emerald-600')}
-                onClick={() => setFilterLevel('advanced')}
+                onClick={() => handleLevelChange('advanced')}
               >
                 Erfaren
               </Badge>
@@ -298,7 +330,7 @@ export default function ClientAkademi() {
                 key={type}
                 variant={filterType === type ? 'default' : 'outline'}
                 className="cursor-pointer text-xs"
-                onClick={() => setFilterType(type)}
+                onClick={() => handleTypeChange(type)}
               >
                 {type === 'all' ? 'Alt' : getLessonTypeLabel(type)}
               </Badge>
@@ -317,87 +349,107 @@ export default function ClientAkademi() {
               <p className="text-sm text-gray-400">Prøv å endre søket eller filtrene</p>
             </div>
           ) : (
-            filteredLessons.map((lesson, index) => {
-              const isCompleted = hasCompletedLesson(lesson.id);
-              const Icon = typeIcons[lesson.type];
-              const levelStyle = levelColors[lesson.level];
+            <>
+              {paginatedLessons.map((lesson, index) => {
+                const isCompleted = hasCompletedLesson(lesson.id);
+                const Icon = typeIcons[lesson.type];
+                const levelStyle = levelColors[lesson.level];
 
-              return (
-                <Card 
-                  key={lesson.id}
-                  className={cn(
-                    'border-0 shadow-sm hover:shadow-md transition-all',
-                    isCompleted && 'bg-green-50/50'
-                  )}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                      {/* Nummer eller check */}
-                      <div className={cn(
-                        'w-10 h-10 rounded-full flex items-center justify-center shrink-0',
-                        isCompleted 
-                          ? 'bg-green-500 text-white' 
-                          : 'bg-gray-100 text-gray-500'
-                      )}>
-                        {isCompleted ? (
-                          <CheckCircle2 className="w-5 h-5" />
-                        ) : (
-                          <span className="font-semibold">{index + 1}</span>
-                        )}
-                      </div>
-
-                      {/* Ikon */}
-                      <div className={cn(
-                        'w-10 h-10 rounded-lg flex items-center justify-center shrink-0',
-                        levelStyle.bg
-                      )}>
-                        <Icon className={cn('w-5 h-5', levelStyle.text)} />
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className={cn(
-                            'font-semibold',
-                            isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
-                          )}>
-                            {lesson.title}
-                          </h3>
-                          <Badge variant="outline" className="text-xs">
-                            {getLessonTypeLabel(lesson.type)}
-                          </Badge>
-                          {!selectedTrack && (
-                            <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
-                              {lesson.trackTitle}
-                            </span>
+                return (
+                  <Card 
+                    key={lesson.id}
+                    className={cn(
+                      'border-0 shadow-sm hover:shadow-md transition-all',
+                      isCompleted && 'bg-green-50/50'
+                    )}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        {/* Nummer eller check */}
+                        <div className={cn(
+                          'w-10 h-10 rounded-full flex items-center justify-center shrink-0',
+                          isCompleted 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-gray-100 text-gray-500'
+                        )}>
+                          {isCompleted ? (
+                            <CheckCircle2 className="w-5 h-5" />
+                          ) : (
+                            <span className="font-semibold">{index + 1}</span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-1 mt-1">
-                          {lesson.description}
-                        </p>
-                        <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {lesson.estimatedMinutes} min
-                          </span>
-                          <Badge className={levelStyle.badge}>
-                            {getLevelLabel(lesson.level)}
-                          </Badge>
-                        </div>
-                      </div>
 
-                      {/* CTA */}
-                      <Button asChild size="sm" variant={isCompleted ? 'outline' : 'default'}>
-                        <Link href={lesson.href}>
-                          {isCompleted ? 'Gjenta' : 'Start'}
-                          <ChevronRight className="w-4 h-4 ml-1" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
+                        {/* Ikon */}
+                        <div className={cn(
+                          'w-10 h-10 rounded-lg flex items-center justify-center shrink-0',
+                          levelStyle.bg
+                        )}>
+                          <Icon className={cn('w-5 h-5', levelStyle.text)} />
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className={cn(
+                              'font-semibold',
+                              isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
+                            )}>
+                              {lesson.title}
+                            </h3>
+                            <Badge variant="outline" className="text-xs">
+                              {getLessonTypeLabel(lesson.type)}
+                            </Badge>
+                            {!selectedTrack && (
+                              <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
+                                {lesson.trackTitle}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-1 mt-1">
+                            {lesson.description}
+                          </p>
+                          <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {lesson.estimatedMinutes} min
+                            </span>
+                            <Badge className={levelStyle.badge}>
+                              {getLevelLabel(lesson.level)}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {/* CTA */}
+                        <Button asChild size="sm" variant={isCompleted ? 'outline' : 'default'}>
+                          <Link href={lesson.href}>
+                            {isCompleted ? 'Gjenta' : 'Start'}
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+
+              {/* Load more */}
+              {hasMore && (
+                <div className="text-center pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleLoadMore}
+                    className="min-h-[48px]"
+                  >
+                    Vis flere ({filteredLessons.length - displayCount} igjen)
+                  </Button>
+                </div>
+              )}
+
+              {/* Resultat-teller */}
+              <p className="text-center text-xs text-gray-400 pt-2">
+                Viser {paginatedLessons.length} av {filteredLessons.length} leksjoner
+              </p>
+            </>
           )}
         </div>
 
