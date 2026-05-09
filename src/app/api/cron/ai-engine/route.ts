@@ -11,8 +11,8 @@ const SYSTEM_SIGNAL_USER_ID = '6408d389-2021-4a2f-92b6-bebf0459a398';
 
 // OPTIMIZED: Only fetch 55 candles — computeFeatures needs max 50 (SMA50)
 // Saves 45% of klines API weight vs 100 candles
-async function fetchHourlyCandles(symbol: string, limit = 55) {
-  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=${limit}`;
+async function fetchCandles(symbol: string, interval: string, limit = 55) {
+  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Binance API error: ${res.status} for ${symbol}`);
   const data = await res.json() as [number, string, string, string, string, string][];
@@ -23,6 +23,45 @@ async function fetchHourlyCandles(symbol: string, limit = 55) {
     close: parseFloat(c[4]),
     volume: parseFloat(c[5]),
   }));
+}
+
+/**
+ * Multi-timeframe trend filter.
+ * Research: Professional traders use 4h trend to filter 1h signals.
+ * Buy signals in a 4h downtrend are often false breakouts.
+ */
+function applyTimeframeFilter(
+  consensus: { action: 'buy' | 'sell' | 'hold'; confidence: number },
+  candles4h: { close: number }[]
+): { action: 'buy' | 'sell' | 'hold'; confidence: number; reason: string } {
+  if (consensus.action === 'hold' || candles4h.length < 10) {
+    return { ...consensus, reason: 'No MTF filter needed' };
+  }
+
+  const sma10 = candles4h.slice(-10).reduce((a, b) => a + b.close, 0) / 10;
+  const currentPrice = candles4h[candles4h.length - 1].close;
+  const trend4h = currentPrice > sma10 ? 'bull' : 'bear';
+
+  // If 1h says buy but 4h is bearish → likely false breakout, reduce confidence
+  if (consensus.action === 'buy' && trend4h === 'bear') {
+    const newConfidence = Math.max(0, consensus.confidence - 20);
+    if (newConfidence < 55) {
+      return { action: 'hold', confidence: newConfidence, reason: `MTF blocked: 1h BUY but 4h bearish (SMA10=${sma10.toFixed(0)})` };
+    }
+    return { action: 'buy', confidence: newConfidence, reason: `MTF weakened: 4h bearish (-20 conf)` };
+  }
+
+  // If 1h says sell but 4h is bullish → likely pullback, reduce confidence
+  if (consensus.action === 'sell' && trend4h === 'bull') {
+    const newConfidence = Math.max(0, consensus.confidence - 20);
+    if (newConfidence < 45) {
+      return { action: 'hold', confidence: newConfidence, reason: `MTF blocked: 1h SELL but 4h bullish (SMA10=${sma10.toFixed(0)})` };
+    }
+    return { action: 'sell', confidence: newConfidence, reason: `MTF weakened: 4h bullish (-20 conf)` };
+  }
+
+  // Aligning timeframes → boost confidence slightly
+  return { ...consensus, confidence: Math.min(100, consensus.confidence + 5), reason: `MTF confirmed: 1h+4h ${trend4h}` };
 }
 
 export const runtime = 'nodejs';
@@ -55,16 +94,24 @@ export async function GET(req: NextRequest) {
   const results: { symbol: string; status: string; confidence?: number; error?: string }[] = [];
 
   try {
-    // Fetch price data for all symbols concurrently
+    // Fetch 1h + 4h candles for all symbols concurrently
     const priceMap = new Map<string, number[]>();
     const volumeMap = new Map<string, number[]>();
+    const candles4hMap = new Map<string, { close: number }[]>();
+
     await Promise.all(
       TOP_SYMBOLS.map(async (symbol) => {
         try {
-          const candles = await fetchHourlyCandles(symbol, 100);
-          if (candles && candles.length >= 50) {
-            priceMap.set(symbol, candles.map((c) => c.close));
-            volumeMap.set(symbol, candles.map((c) => c.volume));
+          // 1h candles (primary timeframe)
+          const candles1h = await fetchCandles(symbol, '1h', 100);
+          if (candles1h && candles1h.length >= 50) {
+            priceMap.set(symbol, candles1h.map((c) => c.close));
+            volumeMap.set(symbol, candles1h.map((c) => c.volume));
+          }
+          // 4h candles (trend filter)
+          const candles4h = await fetchCandles(symbol, '4h', 25);
+          if (candles4h && candles4h.length >= 10) {
+            candles4hMap.set(symbol, candles4h.map((c) => ({ close: c.close })));
           }
         } catch (err) {
           console.warn(`[Cron AI-Engine] Failed to fetch prices for ${symbol}:`, err);
@@ -109,10 +156,20 @@ export async function GET(req: NextRequest) {
         }
 
         // 2) Run multi-agent ensemble
-        const consensus = await runEnsembleForSymbol(db, symbol, prices, volumes, {
+        let consensus = await runEnsembleForSymbol(db, symbol, prices, volumes, {
           modelVersion: 'ensemble-v2',
           featureVersion: '1h-basic',
         });
+
+        // 2b) Apply multi-timeframe filter (4h trend confirmation)
+        const candles4h = candles4hMap.get(symbol);
+        if (candles4h) {
+          const mtfResult = applyTimeframeFilter(consensus, candles4h);
+          if (mtfResult.action !== consensus.action || mtfResult.confidence !== consensus.confidence) {
+            console.info(`[AI-Engine MTF] ${symbol}: ${consensus.action}@${consensus.confidence} → ${mtfResult.action}@${mtfResult.confidence} (${mtfResult.reason})`);
+          }
+          consensus = { ...consensus, action: mtfResult.action, confidence: mtfResult.confidence };
+        }
 
         // 3) Persist to ai_decision_log (legacy observability)
         const { error: insertError } = await db.from('ai_decision_log').insert({

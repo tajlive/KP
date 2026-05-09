@@ -127,12 +127,81 @@ export async function POST(req: NextRequest) {
         // CRITICAL: Use REAL trade history for professional metrics
         const metrics = await calculateAutopilotMetrics(db, userId, totalInitial);
 
-        // ALARM: Negative expectancy = notify user
+        // CIRCUIT BREAKER: Auto-pause if expectancy negative for 3+ days
+        const autopilotAny = autopilot as unknown as Record<string, unknown>;
+        let negativeSince = autopilotAny.negative_expectancy_since
+          ? new Date(autopilotAny.negative_expectancy_since as string)
+          : null;
+
         if (metrics.expectancy < 0 && metrics.total_trades >= 10) {
-          console.warn(
-            `[Autopilot ALARM] User ${userId}: expectancy ${metrics.expectancy} NOK < 0 after ${metrics.total_trades} trades. Win rate ${metrics.win_rate}%, PF ${metrics.profit_factor}.`
-          );
-          // Insert alarm log
+          if (!negativeSince) {
+            // First day of negative expectancy — mark timestamp
+            negativeSince = new Date();
+            await db
+              .from("ai_autopilot_configs")
+              .update({ negative_expectancy_since: negativeSince.toISOString() } as never)
+              .eq("id", autopilot.id);
+            console.warn(
+              `[Autopilot ALARM] User ${userId}: expectancy ${metrics.expectancy} NOK < 0. Day 1/3 before auto-pause.`
+            );
+          } else {
+            const daysNegative = (Date.now() - negativeSince.getTime()) / (1000 * 60 * 60 * 24);
+            if (daysNegative >= 3) {
+              // AUTO-PAUSE: 3+ days of negative expectancy
+              console.error(
+                `[Autopilot CIRCUIT BREAKER] User ${userId}: auto-paused after ${daysNegative.toFixed(1)} days of negative expectancy.`
+              );
+              await db
+                .from("ai_autopilot_configs")
+                .update({
+                  status: "paused",
+                  negative_expectancy_since: null,
+                  updated_at: new Date().toISOString(),
+                } as never)
+                .eq("id", autopilot.id);
+
+              // Stop all active sessions
+              await db
+                .from("trading_sessions")
+                .update({
+                  status: "stopped",
+                  last_status_message: `Circuit breaker: negative expectancy for ${daysNegative.toFixed(0)} days`,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("user_id", userId)
+                .eq("mode", "paper")
+                .eq("status", "active");
+
+              // Log circuit breaker
+              await db.from("trading_logs").insert({
+                user_id: userId,
+                action: "circuit_breaker",
+                details: {
+                  reason: "negative_expectancy_3days",
+                  expectancy: metrics.expectancy,
+                  win_rate: metrics.win_rate,
+                  profit_factor: metrics.profit_factor,
+                  total_trades: metrics.total_trades,
+                  days_negative: Math.round(daysNegative),
+                } as unknown as import("@/types/database.types").Json,
+              } as never);
+
+              results.push({
+                user_id: userId,
+                regime_before: previousRegime,
+                regime_after: previousRegime ?? "unknown",
+                action: "paused",
+                sessions_affected: sessions?.length ?? 0,
+              });
+              continue;
+            } else {
+              console.warn(
+                `[Autopilot ALARM] User ${userId}: expectancy ${metrics.expectancy} NOK < 0. Day ${Math.ceil(daysNegative)}/3 before auto-pause.`
+              );
+            }
+          }
+
+          // Insert daily alarm log
           await db.from("trading_logs").insert({
             user_id: userId,
             action: "autopilot_alarm",
@@ -145,6 +214,15 @@ export async function POST(req: NextRequest) {
               recommendation: "Consider pausing and reviewing strategy settings",
             } as unknown as import("@/types/database.types").Json,
           } as never);
+        } else if (metrics.expectancy >= 0 && negativeSince) {
+          // Expectancy recovered — reset timer
+          await db
+            .from("ai_autopilot_configs")
+            .update({ negative_expectancy_since: null } as never)
+            .eq("id", autopilot.id);
+          console.info(
+            `[Autopilot RECOVERY] User ${userId}: expectancy recovered to ${metrics.expectancy} NOK. Resetting negative timer.`
+          );
         }
 
         await db
