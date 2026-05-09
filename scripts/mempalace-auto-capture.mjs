@@ -90,9 +90,29 @@ function analyzeChanges(files) {
   return { changes, types: types.join(',') };
 }
 
+const SKIP_PATHS = [
+  /^scripts\/verify\//,
+  /^scripts\/check-/,
+  /^scripts\/kimi-(self-improve|smart|cli-wrapper)/,
+  /^\.husky\//,
+  /^\.github\//,
+  /^\.kimi\/session-summaries\//,
+  /^\.mempalace\//,
+];
+
+function shouldSkip(files) {
+  // Skip hvis ALLE filer matcher skip-patterns
+  return files.length > 0 && files.every(f => SKIP_PATHS.some(p => p.test(f)));
+}
+
 function capture() {
   const files = getStagedFiles();
   if (files.length === 0) return;
+
+  if (shouldSkip(files)) {
+    console.log('🏛️  MemPalace auto-capture skipped (verify/config-only changes)');
+    return;
+  }
 
   const { changes, types } = analyzeChanges(files);
   if (!types) return; // Ingenting "interessant" å logge auto
