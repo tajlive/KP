@@ -226,6 +226,9 @@ function applyRegimeWeights(
       volume: 1.1,
       mean_reversion: 0.6,
       volatility: 0.7,
+      grid: 0.0, // Grid inactive in trending markets
+      hurst: 1.2,
+      sentiment: 1.0,
     },
     bear: {
       trend: 0.5,
@@ -234,6 +237,9 @@ function applyRegimeWeights(
       volume: 1.0,
       mean_reversion: 1.4,
       volatility: 1.3,
+      grid: 0.0, // Grid inactive in bear markets
+      hurst: 1.2,
+      sentiment: 1.2, // Fear signals more valuable in bear
     },
     sideways: {
       trend: 0.6,
@@ -244,6 +250,7 @@ function applyRegimeWeights(
       volatility: 1.0,
       grid: 1.8, // Grid is KING in sideways markets (Pionex: 2.5-4%/month)
       hurst: 1.3,
+      sentiment: 0.8, // Less relevant in sideways
     },
     volatile: {
       trend: 0.7,
@@ -252,6 +259,9 @@ function applyRegimeWeights(
       volume: 1.4,
       mean_reversion: 1.1,
       volatility: 1.5,
+      grid: 1.2, // Wide-range grid can work in volatile markets
+      hurst: 1.0,
+      sentiment: 1.3, // Extreme fear/greed most valuable in volatile
     },
   };
 
