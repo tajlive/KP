@@ -23,7 +23,7 @@ export function KLTTeaser({
 
   return (
     <section className="w-full border-t border-kp-border/50 bg-kp-bg-primary">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
         <Link
           href={coursePath}
           className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-lg text-slate-300 hover:text-slate-200 transition-colors group"

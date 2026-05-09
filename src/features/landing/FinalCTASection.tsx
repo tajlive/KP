@@ -63,7 +63,7 @@ export default function FinalCTASection() {
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-10"
+              className="w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6"
               style={{
                 backgroundColor: BRAND_COLOR.DEFAULT,
                 boxShadow: `0 0 50px ${BRAND_COLOR.DEFAULT}66`,
@@ -74,7 +74,7 @@ export default function FinalCTASection() {
 
             <h2
               id="final-cta-heading"
-              className="text-3xl sm:text-5xl lg:text-7xl font-black text-white mb-8 tracking-tighter leading-[1.1] break-words"
+              className="text-3xl sm:text-5xl lg:text-7xl font-black text-white mb-5 tracking-tighter leading-[1.1] break-words"
             >
               {user ? t("loggedInTitleLine1") : t("titleLine1")}
               <br />
@@ -85,11 +85,11 @@ export default function FinalCTASection() {
               </span>
             </h2>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-slate-200/95 mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-200/95 mb-8 max-w-2xl mx-auto leading-relaxed">
               {user ? t("loggedInSubtitle") : t("subtitle")}
             </p>
 
-            <div className="flex justify-center items-center mb-16">
+            <div className="flex justify-center items-center mb-10">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

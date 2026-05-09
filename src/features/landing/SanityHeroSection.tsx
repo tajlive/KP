@@ -58,7 +58,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
   ]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-kp-bg-primary">
+    <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-kp-bg-primary">
       {/* Animated background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div 
@@ -77,7 +77,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
         />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
         <div className="text-center max-w-4xl mx-auto">
           {/* Badge */}
           <div className="mb-8">
@@ -95,7 +95,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
           </h1>
 
           {/* Subtitle - FROM SANITY */}
-          <p className="text-lg sm:text-xl text-kp-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg sm:text-xl text-kp-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
             {content.heroSubtitle}
           </p>
 
@@ -113,7 +113,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
             </ButtonPremium>
             
             {/* Trust indicators - FROM SANITY */}
-            <div className="mt-12 pt-8 border-t border-kp-border flex flex-wrap items-center justify-center gap-6 text-sm text-kp-text-tertiary">
+            <div className="mt-10 pt-6 border-t border-kp-border flex flex-wrap items-center justify-center gap-6 text-sm text-kp-text-tertiary">
               {content.trustBadges.map((badge, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-kp-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -136,8 +136,8 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
 // Loading skeleton
 export function SanityHeroSectionSkeleton() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center bg-kp-bg-primary">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
+    <section className="relative min-h-[85vh] flex items-center justify-center bg-kp-bg-primary">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 text-center">
         <Skeleton className="h-8 w-32 mx-auto mb-8" />
         <Skeleton className="h-16 sm:h-20 md:h-24 w-3/4 mx-auto mb-6" />
         <Skeleton className="h-8 w-1/2 mx-auto mb-10" />

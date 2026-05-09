@@ -50,7 +50,7 @@ const LeaderboardPreview = dynamicImport(
   () => import("@/features/landing/LeaderboardPreview").then((mod) => mod.LeaderboardPreview),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
-    ssr: false,
+    ssr: true,
   }
 );
 
