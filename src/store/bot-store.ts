@@ -102,59 +102,47 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     try {
       const supabase = createClient();
 
-      // Fetch strategies with their latest session data
-      const { data: strategies, error: stratError } = await supabase
-        .from("bot_configs")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (stratError) throw stratError;
-
-      // Fetch sessions for P&L data
-      const { data: sessions } = await supabase
+      // PRIMARY: Fetch from unified_trading_sessions (source of truth for active bots)
+      const { data: sessions, error: sessionsError } = await supabase
         .from("unified_trading_sessions")
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (sessionsError) throw sessionsError;
+
       const sessionRows = (sessions ?? []) as UnifiedTradingSessionRow[];
-      const sessionMap = new Map(sessionRows.map((s) => [s.id ?? "", s]));
 
-      const bots: Bot[] = (strategies ?? []).map(
-        (strat: Tables<"bot_configs">) => {
-          const session = sessionMap.get(strat.id) as
-            | UnifiedTradingSessionRow
-            | undefined;
+      // Build bots from sessions (each session = one active bot)
+      const bots: Bot[] = sessionRows.map((session) => {
+        const strategyName = session.strategy ?? "unknown";
+        const pair = session.symbol ?? "BTCUSDT";
+        const pnlNok = (session.current_capital ?? 0) - (session.initial_capital ?? 0);
+        const pnlPct = session.initial_capital && session.initial_capital > 0
+          ? (pnlNok / session.initial_capital) * 100
+          : 0;
 
-          const stratRow = strat as Record<string, unknown>;
-          const config = (stratRow.config as Record<string, unknown>) ?? {};
-          const symbol =
-            (typeof config.symbol === "string" ? config.symbol : null) ??
-            "BTCUSDT";
-          return {
-            id: strat.id,
-            userId: strat.user_id,
-            name: strat.bot_name || "Unnamed Bot",
-            strategyType: (strat.strategy_type as BotStrategyType) || "dca",
-            status: (strat.is_active ? "active" : "stopped"),
-            mode: strat.is_paper_trade ? "paper" : "live",
-            symbol,
-            config,
-            pnlNok: (session?.current_capital ?? 0) - (session?.initial_capital ?? 0),
-            pnlPct: session?.initial_capital && session?.initial_capital > 0
-              ? (((session?.current_capital ?? 0) - session.initial_capital) / session.initial_capital) * 100
-              : 0,
-            totalTrades: session?.total_trades ?? 0,
-            winningTrades: session?.winning_trades ?? 0,
-            losingTrades: session?.losing_trades ?? 0,
-            currentCapitalNok: session?.current_capital ?? 0,
-            startingCapitalNok: session?.initial_capital ?? 0,
-            maxDrawdownPct: session?.max_drawdown_pct ?? 0,
-            lastTradeAt: session?.last_trade_at || null,
-            createdAt: strat.created_at ?? "",
-            updatedAt: strat.updated_at ?? strat.created_at ?? "",
-          };
-        },
-      );
+        return {
+          id: session.id ?? "",
+          userId: session.user_id ?? "",
+          name: `${strategyName.toUpperCase()} Bot — ${pair}`,
+          strategyType: (strategyName as BotStrategyType) || "dca",
+          status: session.status === "active" ? "active" : "stopped",
+          mode: session.mode === "live" ? "live" : "paper",
+          symbol: pair,
+          config: (session.config ?? {}) as Record<string, unknown>,
+          pnlNok,
+          pnlPct,
+          totalTrades: session.total_trades ?? 0,
+          winningTrades: session.winning_trades ?? 0,
+          losingTrades: session.losing_trades ?? 0,
+          currentCapitalNok: session.current_capital ?? 0,
+          startingCapitalNok: session.initial_capital ?? 0,
+          maxDrawdownPct: session.max_drawdown_pct ?? 0,
+          lastTradeAt: session.last_trade_at || null,
+          createdAt: session.created_at ?? "",
+          updatedAt: session.updated_at ?? session.created_at ?? "",
+        };
+      });
 
       set({
         bots,
