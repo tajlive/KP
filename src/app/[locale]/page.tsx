@@ -58,7 +58,7 @@ const FeaturesBentoGrid = dynamicImport(
   () => import("@/features/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
-    ssr: false,
+    ssr: true,
   }
 );
 
