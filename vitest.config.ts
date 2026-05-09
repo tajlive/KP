@@ -85,8 +85,8 @@ export default defineConfig({
       ),
     },
   },
-  // Bygg-optimalisering
-  esbuild: {
+  // Bygg-optimalisering (OXC brukes automatisk i Vitest 4+, es2022 er default)
+  build: {
     target: "es2022",
   },
 });
