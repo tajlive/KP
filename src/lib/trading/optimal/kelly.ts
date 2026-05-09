@@ -1,5 +1,7 @@
 import { type MarketRegime } from '@/lib/ai/sonar';
-import { createClient } from '@/lib/supabase/client';
+import { createClient as createBrowserClient } from '@/lib/supabase/client';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 
 export interface KellyStats {
   winrate: number;
@@ -55,9 +57,18 @@ export function calculateKelly(
  * Real-time Kelly update from recent trades.
  * Calculates Win/Loss using actual trade values for high precision.
  */
-export async function updateKellyStats(userId: string, strategy?: string): Promise<KellyStats> {
-  const supabase = createClient();
-  
+/**
+ * Update Kelly stats from recent trades.
+ * NOW accepts SupabaseClient to work in both browser and server contexts.
+ */
+export async function updateKellyStats(
+  userId: string,
+  strategy?: string,
+  db?: SupabaseClient<Database>
+): Promise<KellyStats> {
+  // Use provided db client, or fallback to browser client (for client-side use)
+  const supabase = db ?? createBrowserClient();
+
   const query = supabase
     .from('trades')
     .select('realized_pnl, quantity, price')
@@ -68,26 +79,26 @@ export async function updateKellyStats(userId: string, strategy?: string): Promi
     .limit(50);
 
   if (strategy) {
-    // If trade metadata contains strategy info, we could filter here. 
+    // If trade metadata contains strategy info, we could filter here.
     // Currently, we look at global user performance for the core Kelly stat.
   }
 
   const { data } = await query;
-    
+
   if (!data?.length || data.length < 5) {
     return { winrate: 0.52, avgWin: 2.5, avgLoss: 1.5, sampleSize: data?.length || 0 }; // Conservative defaults
   }
-  
+
   // Calculate PnL as % of individual trade notional
   const pnlPcts = data.map(t => {
     const notional = (t.quantity || 0) * (t.price || 0);
     if (notional === 0) return 0;
     return ((t.realized_pnl || 0) / notional) * 100;
   }).filter(p => p !== 0);
-  
+
   const wins = pnlPcts.filter(p => p > 0);
   const losses = pnlPcts.filter(p => p < 0);
-  
+
   const stats = {
     winrate: wins.length / pnlPcts.length,
     avgWin: wins.length ? wins.reduce((sum, p) => sum + p, 0) / wins.length : 2.5,
@@ -101,14 +112,19 @@ export async function updateKellyStats(userId: string, strategy?: string): Promi
 /**
  * Persists calculated stats to the performance tracking layer.
  */
+/**
+ * Persist calculated stats to the performance tracking layer.
+ * NOW accepts SupabaseClient to work in both browser and server contexts.
+ */
 export async function saveKellyStats(
   userId: string,
   strategy: string,
   stats: KellyStats,
-  kellyFraction: number
+  kellyFraction: number,
+  db?: SupabaseClient<Database>
 ) {
-  const supabase = createClient();
-  
+  const supabase = db ?? createBrowserClient();
+
   const { error } = await supabase
     .from('strategy_performance')
     .upsert({
