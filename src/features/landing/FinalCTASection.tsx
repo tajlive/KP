@@ -24,7 +24,7 @@ export default function FinalCTASection() {
 
   return (
     <section
-      className={`relative py-32 overflow-x-hidden ${SURFACE.BG}`}
+      className={`relative py-16 lg:py-20 overflow-x-hidden ${SURFACE.BG}`}
       aria-labelledby="final-cta-heading"
     >
       <div className="absolute inset-0 z-0 opacity-20">
@@ -58,7 +58,7 @@ export default function FinalCTASection() {
             />
           </div>
 
-          <div className="relative z-10 p-10 sm:p-16 lg:p-24">
+          <div className="relative z-10 p-8 sm:p-12 lg:p-16">
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -136,7 +136,7 @@ export default function FinalCTASection() {
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="mt-14 sm:mt-16 max-w-full inline-flex items-center gap-3 px-5 py-3.5 backdrop-blur-sm rounded-full border tabular-nums mx-auto"
+              className="mt-10 sm:mt-12 max-w-full inline-flex items-center gap-3 px-5 py-3.5 backdrop-blur-sm rounded-full border tabular-nums mx-auto"
               style={{
                 backgroundColor: `${BRAND_COLOR.DEFAULT}1A`,
                 borderColor: `${BRAND_COLOR.DEFAULT}33`,
