@@ -79,6 +79,16 @@ export async function GET(req: NextRequest) {
         const lastPrice = prices.length > 0 ? prices[prices.length - 1] : 0;
         const asOf = new Date().toISOString();
 
+        // QUALITY FILTER: Skip illiquid coins (NexusTrade research: quality filters = key)
+        if (volumes && volumes.length >= 24) {
+          const recentVol = volumes.slice(-24).reduce((a, b) => a + b, 0);
+          if (recentVol < 5_000_000) { // < 5M USDT 24h = too illiquid
+            console.warn(`[AI-Engine] Skipping ${symbol}: 24h volume ${(recentVol / 1e6).toFixed(1)}M USDT < 5M threshold`);
+            results.push({ symbol, status: 'skipped_low_volume' });
+            continue;
+          }
+        }
+
         // 1) Persist features to ai_feature_store
         const featuresPayload = {
           symbol,

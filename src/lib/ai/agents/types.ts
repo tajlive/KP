@@ -19,6 +19,10 @@ export interface AgentFeatures {
   sma50?: number;
   volatility14?: number;
   atr14?: number;
+  /** Hurst exponent: <0.5 = mean-reverting, 0.5 = random, >0.5 = trending */
+  hurst?: number;
+  /** Volume quality: high = >100M USDT 24h, low = <10M USDT 24h */
+  volumeQuality?: 'high' | 'medium' | 'low';
   [key: string]: unknown;
 }
 

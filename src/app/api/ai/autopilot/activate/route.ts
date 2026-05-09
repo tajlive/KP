@@ -190,6 +190,10 @@ export async function POST(req: NextRequest) {
         risk_config: riskConfig,
         autopilot: true,
         confidence: pairAlloc.confidence,
+        // OPTIMIZED: ATR-based trailing stop (AssetWhisper 2026: 2 ATR optimal)
+        use_atr_trailing: true,
+        trailing_stop_pct: 2.5, // fallback if ATR unavailable
+        time_exit_days: 5, // OPTIMIZED: Reduced from 7 → 5 for faster capital rotation
       };
 
       // Strategy-specific defaults
