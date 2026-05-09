@@ -122,14 +122,21 @@ function printBanner(text) {
   log('', '');
 }
 
-function runPreSession(prompt) {
+function runPreSession(prompt, forcedAgent) {
   printBanner('🧠 KIMI SMART LAUNCH v2.0');
 
   const git = fetchGitContext();
-  const classification = classifyIntent(prompt || git.lastCommit || 'general');
-  const agent = AGENTS[classification.domain] || AGENTS.general;
+  let classification, agent;
 
-  log('🔮', `Domain detected: ${agent.name} (confidence: ${classification.confidence})`);
+  if (forcedAgent && AGENTS[forcedAgent]) {
+    agent = AGENTS[forcedAgent];
+    classification = { domain: forcedAgent, confidence: 10, scores: {} };
+    log('🔮', `Agent forced: ${agent.name} (via --${forcedAgent})`);
+  } else {
+    classification = classifyIntent(prompt || git.lastCommit || 'general');
+    agent = AGENTS[classification.domain] || AGENTS.general;
+    log('🔮', `Domain detected: ${agent.name} (confidence: ${classification.confidence})`);
+  }
 
   // MemPalace brief
   log('🧠', 'Fetching MemPalace context...');
@@ -274,19 +281,23 @@ function launchKimi(agent, mcpProfile) {
 // ─── MAIN ───
 function main() {
   const args = process.argv.slice(2);
-  const flags = { super: false, architect: false, autoLaunch: false };
+  const flags = { super: false, architect: false, auth: false, autoLaunch: false };
   let prompt = '';
 
   for (const arg of args) {
     if (arg === '--super') flags.super = true;
     else if (arg === '--architect') flags.architect = true;
+    else if (arg === '--auth') flags.auth = true;
     else if (arg === '--launch') flags.autoLaunch = true;
     else prompt += arg + ' ';
   }
   prompt = prompt.trim();
 
+  // Resolve forced agent
+  const forcedAgent = flags.architect ? 'database' : flags.auth ? 'auth' : flags.super ? 'general' : null;
+
   // Pre-session
-  const session = runPreSession(prompt);
+  const session = runPreSession(prompt, forcedAgent);
 
   // Hvis --launch flagg, start KIMI automatisk
   if (flags.autoLaunch) {
