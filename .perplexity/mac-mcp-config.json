@@ -38,9 +38,9 @@
       "args": ["/Users/taj/klarpakke/scripts/run-context7-mcp.mjs"]
     },
     "mempalace": {
-      "description": "🏛️ MemPalace v3.1.1 — Prosjektkunnskap, KG, diary (zero-dep, <1s oppstart)",
+      "description": "🏛️ MemPalace v3.3.0 — Prosjektkunnskap, KG, diary (zero-dep, SuperKIMI-optimalisert)",
       "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v2.mjs"]
+      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
     },
     "sanity": {
       "description": "🎨 Sanity CMS v2 — Read + write (krever SANITY_API_READ_TOKEN / SANITY_API_WRITE_TOKEN)",
