@@ -17,9 +17,9 @@ export function i18nMiddleware(
 ): NextResponse | Promise<NextResponse> {
   const pathname = request.nextUrl.pathname;
   
-  // KRITISK: Ikke redirect auth/* routes - de er utenfor [locale] mappa
-  // og skal ikke prosesseres av next-intl (forårsaker redirect loops)
-  if (pathname.startsWith("/auth/") || pathname === "/login" || pathname === "/register") {
+  // KRITISK: Ikke redirect auth/* eller api/* routes - de er utenfor [locale] mappa
+  // og skal ikke prosesseres av next-intl (forårsaker redirect loops / API-feil)
+  if (pathname.startsWith("/auth/") || pathname.startsWith("/api/") || pathname === "/login" || pathname === "/register") {
     const res = NextResponse.next();
     res.headers.set("x-kp-auth-route", "skipped-i18n");
     return res;
