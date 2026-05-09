@@ -7,6 +7,7 @@ export { momentumAgent } from './momentum-agent';
 export { volumeAgent } from './volume-agent';
 export { hurstAgent } from './hurst-agent';
 export { gridAgent } from './grid-agent';
+export { sentimentAgent } from './sentiment-agent';
 
 import type { TradingAgent } from './types';
 import { trendAgent } from './trend-agent';
@@ -17,6 +18,7 @@ import { momentumAgent } from './momentum-agent';
 import { volumeAgent } from './volume-agent';
 import { hurstAgent } from './hurst-agent';
 import { gridAgent } from './grid-agent';
+import { sentimentAgent } from './sentiment-agent';
 
 export const DEFAULT_AGENTS: TradingAgent[] = [
   trendAgent,
@@ -27,4 +29,5 @@ export const DEFAULT_AGENTS: TradingAgent[] = [
   volumeAgent,
   hurstAgent,
   gridAgent,
+  sentimentAgent,
 ];

@@ -16,7 +16,8 @@ ADD COLUMN IF NOT EXISTS sharpe_ratio numeric DEFAULT 0,
 ADD COLUMN IF NOT EXISTS avg_win_nok numeric DEFAULT 0,
 ADD COLUMN IF NOT EXISTS avg_loss_nok numeric DEFAULT 0,
 ADD COLUMN IF NOT EXISTS total_trades_count integer DEFAULT 0,
-ADD COLUMN IF NOT EXISTS consecutive_losses integer DEFAULT 0;
+ADD COLUMN IF NOT EXISTS consecutive_losses integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS negative_expectancy_since timestamptz; -- Auto-pause circuit breaker
 
 -- Index for fast monitoring queries
 CREATE INDEX IF NOT EXISTS idx_ai_autopilot_expectancy
