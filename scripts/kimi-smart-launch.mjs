@@ -110,7 +110,12 @@ function getMcpConfigPath(profile) {
     medium: `${KP_DIR}/.mcp/mcp_config.medium.json`,
     full: `${KP_DIR}/.mcp/mcp_config.full.json`,
   };
-  return paths[profile] || paths.minimal;
+  const target = paths[profile] || paths.minimal;
+  // Fallback to minimal if target doesn't exist
+  if (!existsSync(target)) {
+    return paths.minimal;
+  }
+  return target;
 }
 
 function printBanner(text) {
@@ -238,7 +243,19 @@ function runPostSession() {
   // Git-diff analyse
   try {
     const fileCount = parseInt(execSync('git diff --name-only | wc -l', { cwd: KP_DIR, encoding: 'utf8' }).trim()) || 0;
-    const lineCount = parseInt(execSync('git diff --numstat | awk "{sum+=$1+$2} END {print sum+0}"', { cwd: KP_DIR, encoding: 'utf8' }).trim()) || 0;
+    let lineCount = 0;
+    try {
+      const numstat = execSync('git diff --numstat', { cwd: KP_DIR, encoding: 'utf8' }).trim();
+      if (numstat) {
+        lineCount = numstat.split('\n').reduce((sum, line) => {
+          const parts = line.trim().split(/\s+/);
+          if (parts.length >= 2) {
+            return sum + (parseInt(parts[0]) || 0) + (parseInt(parts[1]) || 0);
+          }
+          return sum;
+        }, 0);
+      }
+    } catch { /* ignore */ }
 
     if (fileCount > 0) {
       log('📊', `Changes: ${fileCount} files, ${lineCount} lines`);
