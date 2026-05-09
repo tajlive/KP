@@ -69,7 +69,7 @@ export default async function SanityFAQSection({ locale = 'no' }: SanityFAQSecti
   const faqs = await getFAQs(locale, fallback);
 
   return (
-    <section className="py-20 bg-[#050510]">
+    <section className="py-12 md:py-16 bg-[#050510]">
       <div className="max-w-3xl mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">
           {t('title')}

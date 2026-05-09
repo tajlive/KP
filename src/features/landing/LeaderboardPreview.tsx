@@ -161,7 +161,7 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
 
   if (displayEntries.length === 0) {
     return (
-      <section className="py-20 bg-[#050510] relative overflow-hidden">
+      <section className="py-14 md:py-16 bg-[#050510] relative overflow-hidden">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
@@ -219,7 +219,7 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
   }
 
   return (
-    <section className="py-20 bg-[#050510] relative overflow-hidden">
+    <section className="py-14 md:py-16 bg-[#050510] relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />

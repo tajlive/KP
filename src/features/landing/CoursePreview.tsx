@@ -35,7 +35,7 @@ export async function CoursePreview() {
     <section
       suppressHydrationWarning
       id="land-kurs"
-      className="scroll-mt-24 border-y border-white/[0.06] bg-slate-950/90 py-14 md:py-20"
+      className="scroll-mt-24 border-y border-white/[0.06] bg-slate-950/90 py-10 md:py-14"
     >
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-10">
