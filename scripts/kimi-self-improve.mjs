@@ -14,10 +14,27 @@ import { execSync } from 'child_process';
 
 const root = process.cwd();
 const diaryPath = resolve(root, '.kimi/diary.jsonl');
+const summaryDir = resolve(root, '.kimi/session-summaries');
+const outputPath = resolve(summaryDir, 'self-improve-latest.txt');
+
+const outputLines = [];
 
 function log(level, msg) {
   const icons = { info: 'ℹ️', warn: '⚠️', success: '✅', error: '❌', think: '🧠' };
-  console.error(`${icons[level] || '•'} ${msg}`);
+  const line = `${icons[level] || '•'} ${msg}`;
+  console.error(line);
+  outputLines.push(line);
+}
+
+function saveOutput() {
+  try {
+    import('fs').then(fs => {
+      fs.mkdirSync(summaryDir, { recursive: true });
+      fs.writeFileSync(outputPath, outputLines.join('\n') + '\n', 'utf8');
+    }).catch(() => {});
+  } catch (e) {
+    console.error(`• Failed to save self-improve output: ${e.message}`);
+  }
 }
 
 function main() {
@@ -122,6 +139,8 @@ function main() {
   } else {
     log('success', 'Ingen problemer identifisert — keep it up! 🚀');
   }
+
+  saveOutput();
 }
 
 main();

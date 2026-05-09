@@ -299,6 +299,8 @@ cat .kimi/PROJECT_CONTEXT.md
 
 > **Status:** v3.3.0 — SUPERKIMI: TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens
 
+> ⚠️ **NEVER use `mempalace mine` (Python CLI)** — it segfaults on Python 3.13/macOS due to ChromaDB Rust backend bug. Use the Node.js MCP server only. See `.knowledge/errors/mempalace-chromadb-segfault.md`.
+
 ### Kommandoer
 ```bash
 # Søk i kunnskap
