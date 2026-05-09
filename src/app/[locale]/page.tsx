@@ -62,8 +62,8 @@ const FeaturesBentoGrid = dynamicImport(
   }
 );
 
-// Force dynamic rendering during active landing development — bypasses all caching
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 60s, Sanity webhook invalidates on content change
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,

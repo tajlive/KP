@@ -251,3 +251,9 @@ config/perplexity-local-mcp.json
 .mempalace/index-cache*.json
 .mempalace/index-cache*.json.gz
 # KIMI Smart Orchestrator auto-generert kontekst\n.kimi/session-summaries/
+
+# KIMI / MemPalace autogenererte rapporter
+.knowledge/session/
+.mempalace/kimi_sessions/
+# Swarm auto-genererte rapporter
+.knowledge/session/

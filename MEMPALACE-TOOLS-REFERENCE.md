@@ -1,6 +1,6 @@
 # 🏛️ MemPalace MCP — Verktøy Referanse (v3.1.1)
 
-> **Oppdatert:** 2026-05-03 | MemPalace MCP Server v3.1.1 | KIMI CLI v1.40.0 + k2.6
+> **Oppdatert:** 2026-05-03 | MemPalace MCP Server v3.1.1 | KIMI CLI v1.41.0 + k2.6
 
 ---
 
