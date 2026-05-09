@@ -107,7 +107,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
               className="w-full sm:w-auto min-w-[240px] hover:scale-[1.02] transition-all duration-200"
               icon={<ArrowRight className="w-5 h-5" />}
               iconPosition="right">
-              <a href={content.heroCta.link}>
+              <a href={content.heroCta.link} className="block w-full h-full min-h-[48px] min-w-[48px] flex items-center justify-center">
                 {content.heroCta.text}
               </a>
             </ButtonPremium>
