@@ -42,6 +42,9 @@ function runStep(name, command) {
 console.log(`${BOLD}Klarpakke Post-Change Verification Suite${RESET}`);
 console.log(`Run this after making changes, before committing.\n`);
 
+// Step 0: MemPalace health
+runStep("MemPalace Health", "node scripts/verify-mempalace.mjs");
+
 // Step 1: Claims verification
 runStep("Verify Claims", "node scripts/verify/verify-claims.mjs");
 
