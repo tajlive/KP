@@ -240,6 +240,18 @@ export default defineConfig({
     },
 
     // ============================================
+    // SAFARI DESKTOP (WebKit, macOS)
+    // ============================================
+    {
+      name: "smoke-webkit",
+      testMatch: /smoke\/.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+
+    // ============================================
     // REGRESSION TESTS (Full coverage, non-blocking initially)
     // ============================================
     {

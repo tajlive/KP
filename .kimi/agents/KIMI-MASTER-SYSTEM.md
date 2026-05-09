@@ -206,5 +206,5 @@ IF auth / api / db changes:
 ---
 
 *This master prompt is version-controlled. Updates happen via AGENTS.md.*
-*Last updated: 2026-05-07 | Compatible with KIMI CLI v1.40.0 + k2.6 + MemPalace v3.3.0*
+*Last updated: 2026-05-07 | Compatible with KIMI CLI v1.41.0 + k2.6 + MemPalace v3.3.0*
 *Note: MemPalace Python CLI segfaults on macOS/Python 3.13. Always use Node.js MCP server.*

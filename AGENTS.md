@@ -497,11 +497,11 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-## ⚡ KIMI CLI v1.40.0 Optimaliseringer (2026-05-01)
+## ⚡ KIMI CLI v1.41.0 Optimaliseringer (2026-05-09)
 
 ### Kontekst-tuning
 ```toml
-max_steps_per_turn = 750              # økt fra 500
+max_steps_per_turn = 1000             # v1.40.0: 500→1000
 max_retries_per_step = 5              # økt fra 3 → mer robusthet
 max_ralph_iterations = 2              # NY — aktiverer self-improvement loop
 reserved_context_size = 40000         # ned fra 45000 → +5k arbeidsminne
@@ -536,7 +536,7 @@ merge_all_available_skills = true     # auto-aktiver skills
 
 ### Rask diagnose
 ```bash
-kimi --version                    # skal vise 1.40.0
+kimi --version                    # skal vise 1.41.0
 kimi mcp list                     # sjekk at mempalace er grønn
 npm run mempalace:status          # eller: node scripts/mempalace-search.mjs "test"
 ```

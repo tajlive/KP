@@ -33,42 +33,14 @@ import {
   type TradeHistoryModeFilter,
 } from "@/lib/trading/trade-history-mode";
 import { toast } from "sonner";
+import {
+  type Trade,
+  type TradeDecisionRow,
+  parseStrategySignal,
+} from "./trade-history.types";
+import { TradeHistoryStatCard } from "./TradeHistoryStatCard";
 
-interface Trade {
-  id: string;
-  trading_pair: string;
-  side: string;
-  quantity: number;
-  price: number;
-  total_value: number;
-  realized_pnl: number | null;
-  mode?: string | null;
-  status: string;
-  created_at: string;
-  executed_at: string | null;
-  strategy_signal: Json | null;
-}
-
-interface TradeDecisionRow {
-  id: string;
-  decision_type: string;
-  trading_mode: string;
-  symbol: string;
-  side: string;
-  requested_quantity: number;
-  requested_price: number;
-  rejection_reason: string | null;
-  created_at: string;
-}
-
-function parseStrategySignal(raw: Json | null): Record<string, unknown> | null {
-  if (raw === null || raw === undefined) return null;
-  if (typeof raw === "object" && !Array.isArray(raw)) {
-    return raw as Record<string, unknown>;
-  }
-  return null;
-}
-
+// Legacy local type — now imported from trade-history.types.ts
 export default function ClientHandelshistorikk() {
   const t = useTranslations("tradeHistory");
   const locale = useLocale();
@@ -392,22 +364,22 @@ export default function ClientHandelshistorikk() {
               className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
               data-testid="trade-history-aggregates"
             >
-              <StatCard
+              <TradeHistoryStatCard
                 label={t("totalTrades")}
                 value={String(stats.rowCount)}
                 tone="neutral"
               />
-              <StatCard
+              <TradeHistoryStatCard
                 label={t("wins")}
                 value={String(stats.winCount)}
                 tone="positive"
               />
-              <StatCard
+              <TradeHistoryStatCard
                 label={t("losses")}
                 value={String(stats.lossCount)}
                 tone="negative"
               />
-              <StatCard
+              <TradeHistoryStatCard
                 label={t("totalRealizedPnl")}
                 value={`${stats.totalRealizedPnl >= 0 ? "+" : ""}${formatNOK(stats.totalRealizedPnl)}`}
                 tone={stats.totalRealizedPnl >= 0 ? "positive" : "negative"}
@@ -678,29 +650,4 @@ export default function ClientHandelshistorikk() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone: "neutral" | "positive" | "negative";
-}) {
-  const valueClass =
-    tone === "positive"
-      ? "text-emerald-600 dark:text-emerald-400"
-      : tone === "negative"
-        ? "text-rose-600 dark:text-rose-400"
-        : "text-slate-900 dark:text-white";
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 dark:border-slate-700 dark:bg-slate-950/60">
-      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        {label}
-      </p>
-      <p className={`mt-1 text-base font-semibold tabular-nums ${valueClass}`}>
-        {value}
-      </p>
-    </div>
-  );
-}
+
