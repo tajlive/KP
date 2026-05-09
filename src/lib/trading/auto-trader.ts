@@ -32,9 +32,9 @@ export class AutoTrader {
       return false;
     }
 
-    // Check if signal is recent (< 5 minutes old)
+    // Check if signal is recent (< 15 minutes old — matches AI-engine cron interval)
     const signalAge = Date.now() - new Date(signal.created_at).getTime();
-    if (signalAge > 5 * 60 * 1000) {
+    if (signalAge > 15 * 60 * 1000) {
       return false;
     }
 
