@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 /**
+ * 🐝 Swarm Orchestrator v3 — Optimized Multi-Agent Quality Control
+ *
+ * Optimizations in v3:
+ *  - Parallel agent execution (Promise.all)
+ *  - PerformanceAgent → checks Next.js render strategies, lazy loading
+ *  - Enhanced complexity: nesting depth, import count, JSX complexity
+ *  - Delta analysis: suppresses repeated warnings from previous runs
+ *  - Improved filtering: excludes auto-generated dirs (.kimi, .mempalace, etc.)
+ *  - Auto-fix suggestions in agent outputs
+ *
  * 🐝 Swarm Orchestrator v2 — Real Multi-Agent Quality Control
  *
  * Runs actual local analysis across 5 swarm agents:
@@ -23,6 +33,16 @@ import { join, dirname, basename } from 'node:path';
 
 const SWARM_DIR = '.kimi/swarm';
 const KNOWLEDGE_DIR = '.knowledge';
+
+const EXCLUDE_PATTERNS = [
+  'node_modules/', '.next/', '.vercel/', 'package-lock.json',
+  '.kimi/', '.mempalace/', '.knowledge/session/', '.lighthouseci/',
+  'supabase/.temp/', '.changeset/',
+  // Auto-generated data files
+  /\.mempalace\/kg\.json$/, /entities\.json$/, /mempalace\.yaml$/,
+  // Test coverage reports
+  /coverage\//, /allure-(report|results)\//,
+];
 
 const C = {
   reset: '\x1b[0m',
@@ -67,8 +87,24 @@ function complexityScore(content) {
   const lines = content.split('\n').length;
   const branches = (content.match(/\b(if|else|switch|case|for|while|catch|\?\:)\b/g) || []).length;
   const functions = (content.match(/\b(function|=>)\b/g) || []).length;
-  let score = Math.min(10, Math.ceil(lines / 80) + Math.ceil(branches / 8) + Math.ceil(functions / 10));
-  return { score, lines, branches, functions };
+  // Nesting depth: count indentation levels
+  const indentMatch = content.match(/^(\s*)\S/gm) || [];
+  const maxNesting = indentMatch.reduce((max, line) => {
+    const spaces = line.match(/^(\s*)/)?.[1]?.length || 0;
+    return Math.max(max, Math.floor(spaces / 2));
+  }, 0);
+  // Import count
+  const imports = (content.match(/^import\s+/gm) || []).length;
+  // JSX complexity: count JSX tags
+  const jsxTags = (content.match(/<[A-Z][a-zA-Z0-9_]*/g) || []).length;
+  let score = Math.min(10,
+    Math.ceil(lines / 80) +
+    Math.ceil(branches / 8) +
+    Math.ceil(functions / 10) +
+    Math.ceil(maxNesting / 4) +
+    Math.ceil(jsxTags / 15)
+  );
+  return { score, lines, branches, functions, maxNesting, imports, jsxTags };
 }
 
 class AnalyzerAgent {
@@ -246,6 +282,51 @@ class SecurityAgent {
   }
 }
 
+class PerformanceAgent {
+  static async analyze(filePath, content) {
+    const findings = [];
+    const fixes = [];
+    // Check Next.js render strategy
+    if (filePath.includes('/app/') && filePath.endsWith('.tsx')) {
+      if (content.includes('export const dynamic = "force-dynamic"')) {
+        findings.push('force-dynamic disables all caching — verify ISR is not better');
+        if (content.includes('export const revalidate')) {
+          findings.push('Conflicting: both force-dynamic AND revalidate defined');
+        }
+      }
+      if (filePath.includes('/app/[locale]/page.tsx') && !content.includes('revalidate') && !content.includes('force-dynamic')) {
+        findings.push('Landing page has no caching strategy — consider ISR');
+        fixes.push('Add: export const revalidate = 60; // ISR with Sanity webhook invalidation');
+      }
+      // Check for below-fold optimization opportunities
+      if (content.includes('import') && content.includes('from "next/dynamic"') && content.includes('ssr: true')) {
+        const ssrTrueCount = (content.match(/ssr:\s*true/g) || []).length;
+        if (ssrTrueCount >= 3) {
+          findings.push(`${ssrTrueCount} dynamic imports use ssr:true — consider Client Component wrapper with ssr:false for below-fold`);
+          fixes.push('Create a "use client" wrapper component that imports below-fold sections with ssr:false');
+        }
+      }
+      // Check image optimization
+      const imgWithoutPriority = (content.match(/<img\s/g) || []).length;
+      const nextImgWithoutPriority = (content.match(/<Image\s(?!.*priority)/g) || []).length;
+      if (nextImgWithoutPriority > 0 && filePath.includes('/app/')) {
+        findings.push(`${nextImgWithoutPriority} <Image> without priority — LCP images should use priority`);
+        fixes.push('Add priority prop to above-fold images: <Image src="..." priority ... />');
+      }
+    }
+    // Check for Plausible script strategy
+    if (content.includes('plausible.io') && !content.includes('strategy="lazyOnload"')) {
+      findings.push('Plausible script without lazyOnload — blocks initial render');
+      fixes.push('Add strategy="lazyOnload" to Plausible <Script> component');
+    }
+    return {
+      findings,
+      fixes,
+      approval: findings.length > 0 ? 'warn' : 'proceed'
+    };
+  }
+}
+
 class KnowledgeAgent {
   static async analyze(filePath, content, taskType, results) {
     const timestamp = new Date().toISOString();
@@ -286,6 +367,7 @@ class SwarmOrchestrator {
       architect: ArchitectAgent,
       tester: TesterAgent,
       security: SecurityAgent,
+      performance: PerformanceAgent,
       knowledge: KnowledgeAgent
     };
   }
@@ -293,22 +375,31 @@ class SwarmOrchestrator {
   async runWorkflow(workflowType, files) {
     console.log(`${C.magenta}`);
     console.log('╔══════════════════════════════════════════════════════════════════╗');
-    console.log('║  🐝 KLARPAKKE SWARM v2 — Multi-Agent Quality Control            ║');
+    console.log('║  🐝 KLARPAKKE SWARM v3 — Parallel Multi-Agent Quality Control   ║');
     console.log('╚══════════════════════════════════════════════════════════════════╝');
     console.log(`${C.reset}`);
 
     const workflows = {
-      feature: ['analyzer', 'architect', 'tester', 'security', 'knowledge'],
-      bugfix: ['analyzer', 'tester', 'security', 'knowledge'],
-      refactor: ['analyzer', 'architect', 'tester', 'security', 'knowledge'],
+      feature: ['analyzer', 'architect', 'tester', 'security', 'performance', 'knowledge'],
+      bugfix: ['analyzer', 'tester', 'security', 'performance', 'knowledge'],
+      refactor: ['analyzer', 'architect', 'tester', 'security', 'performance', 'knowledge'],
       security: ['security', 'analyzer', 'tester', 'knowledge'],
-      review: ['analyzer', 'architect', 'tester', 'security', 'knowledge'],
+      review: ['analyzer', 'architect', 'tester', 'security', 'performance', 'knowledge'],
       architect: ['architect', 'analyzer', 'knowledge']
     };
 
     const agentOrder = workflows[workflowType] || workflows.review;
     const allResults = [];
     const fileResults = [];
+
+    // Load previous report for delta analysis
+    let prevReport = null;
+    try {
+      const prev = await readFile(`${KNOWLEDGE_DIR}/session/swarm-report-latest.json`, 'utf8');
+      prevReport = JSON.parse(prev);
+    } catch {
+      // No previous report — first run
+    }
 
     for (const file of files) {
       let content;
@@ -320,35 +411,71 @@ class SwarmOrchestrator {
       }
 
       const fileReport = { file, agents: [] };
-      const perFileResults = [];
 
-      for (const agentId of agentOrder) {
+      // Run all agents in parallel (except knowledge which needs other results)
+      const nonKnowledgeAgents = agentOrder.filter(a => a !== 'knowledge');
+      const knowledgeAgent = agentOrder.find(a => a === 'knowledge');
+
+      const agentPromises = nonKnowledgeAgents.map(async agentId => {
         const Agent = this.agents[agentId];
-        let result;
         try {
-          if (agentId === 'knowledge') {
-            result = await Agent.analyze(file, content, workflowType, perFileResults);
-          } else {
-            result = await Agent.analyze(file, content);
-          }
+          const result = await Agent.analyze(file, content);
+          return { agent: agentId, ...result };
         } catch (err) {
-          result = { approval: 'block', error: err.message };
+          return { agent: agentId, approval: 'block', error: err.message };
         }
+      });
 
-        const labeled = { agent: agentId, ...result };
-        perFileResults.push(labeled);
-        fileReport.agents.push(labeled);
-        allResults.push(labeled);
+      const perFileResults = await Promise.all(agentPromises);
 
+      // Knowledge agent runs last (needs other results)
+      if (knowledgeAgent) {
+        try {
+          const kResult = await this.agents[knowledgeAgent].analyze(file, content, workflowType, perFileResults);
+          perFileResults.push({ agent: knowledgeAgent, ...kResult });
+        } catch (err) {
+          perFileResults.push({ agent: knowledgeAgent, approval: 'block', error: err.message });
+        }
+      }
+
+      // Delta analysis: filter warnings already seen in previous run for same file
+      if (prevReport) {
+        const prevFile = prevReport.results?.find(r => r.file === file);
+        if (prevFile) {
+          for (const result of perFileResults) {
+            if (result.approval === 'warn') {
+              const prevAgent = prevFile.agents.find(a => a.agent === result.agent);
+              if (prevAgent && prevAgent.approval === 'warn') {
+                // Check if warnings are identical
+                const prevRisks = JSON.stringify(prevAgent.risks || prevAgent.violations || prevAgent.findings || []);
+                const currRisks = JSON.stringify(result.risks || result.violations || result.findings || []);
+                if (prevRisks === currRisks) {
+                  result.approval = 'proceed';
+                  result._suppressed = true;
+                  result._suppressed_reason = 'Identical warning in previous run (delta analysis)';
+                }
+              }
+            }
+          }
+        }
+      }
+
+      fileReport.agents.push(...perFileResults);
+      allResults.push(...perFileResults);
+
+      // Print results
+      for (const result of perFileResults) {
         const status = result.approval === 'proceed' ? `${C.green}✅` :
                        result.approval === 'warn' || result.approval === 'add_tests' ? `${C.yellow}⚠️` :
                        `${C.red}❌`;
-        const label = agentId.charAt(0).toUpperCase() + agentId.slice(1);
-        console.log(`  ${status} ${label}: ${result.approval}${C.reset}`);
+        const label = result.agent.charAt(0).toUpperCase() + result.agent.slice(1);
+        const suppressed = result._suppressed ? ` ${C.cyan}(suppressed — seen before)${C.reset}` : '';
+        console.log(`  ${status} ${label}: ${result.approval}${suppressed}${C.reset}`);
         if (result.findings?.length) {
           for (const f of result.findings) {
             const sevColor = f.severity === 'high' ? C.red : f.severity === 'medium' ? C.yellow : C.blue;
             console.log(`      ${sevColor}[${f.severity}]${C.reset} ${f.issue}`);
+            if (f.mitigation) console.log(`      ${C.cyan}  → ${f.mitigation}${C.reset}`);
           }
         }
         if (result.violations?.length) {
@@ -364,6 +491,11 @@ class SwarmOrchestrator {
         if (result.scenarios?.length && !result.has_test_file) {
           console.log(`      ${C.blue}ℹ${C.reset} Missing tests — scenarios: ${result.scenarios.join(', ')}`);
         }
+        if (result.fixes?.length) {
+          for (const fix of result.fixes) {
+            console.log(`      ${C.green}💡${C.reset} ${fix}`);
+          }
+        }
       }
 
       fileResults.push(fileReport);
@@ -376,7 +508,8 @@ class SwarmOrchestrator {
     const warns = allResults.filter(r => r.approval === 'warn' || r.approval === 'revise' || r.approval === 'add_tests').length;
     const passes = allResults.filter(r => r.approval === 'proceed').length;
 
-    console.log(`Results: ${C.green}${passes} passed${C.reset}, ${C.yellow}${warns} warnings${C.reset}, ${C.red}${blocks} blocked${C.reset}`);
+    const suppressed = allResults.filter(r => r._suppressed).length;
+    console.log(`Results: ${C.green}${passes} passed${C.reset}, ${C.yellow}${warns} warnings${C.reset}, ${C.red}${blocks} blocked${C.reset}${suppressed > 0 ? ', ' + C.cyan + suppressed + ' suppressed (delta)' + C.reset : ''}`);
 
     // Write JSON report
     const reportPath = `${KNOWLEDGE_DIR}/session/swarm-report-latest.json`;
@@ -446,12 +579,13 @@ async function main() {
   }
 
   // Filter to code-relevant files
-  const codeFiles = files.filter(f =>
-    f.match(/\.(ts|tsx|js|jsx|sql|json|yaml|yml|md)$/) &&
-    !f.includes('node_modules/') &&
-    !f.includes('.next/') &&
-    !f.includes('package-lock.json')
-  );
+  const codeFiles = files.filter(f => {
+    const hasCodeExt = f.match(/\.(ts|tsx|js|jsx|sql|json|yaml|yml|md)$/);
+    const excluded = EXCLUDE_PATTERNS.some(pattern =>
+      typeof pattern === 'string' ? f.includes(pattern) : pattern.test(f)
+    );
+    return hasCodeExt && !excluded;
+  });
 
   if (codeFiles.length === 0) {
     console.log(`${C.yellow}No code files to review in the change set.${C.reset}`);
