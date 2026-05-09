@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { runAutopilotAnalysis } from "@/lib/ai/autopilot/decision-engine";
 import type { RiskAppetite } from "@/lib/ai/autopilot/decision-engine";
+import { calculateAutopilotMetrics } from "@/lib/ai/autopilot/metrics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -123,31 +124,47 @@ export async function POST(req: NextRequest) {
         const now = new Date().toISOString();
 
         // ── 2c. Oppdater metrics ────────────────────────────────────────
-        const totalPnl = sessions?.reduce((sum, s) => sum + ((s.current_capital ?? 0) - (s.initial_capital ?? 0)), 0) ?? 0;
-        const winRate =
-          sessions && sessions.length > 0
-            ? sessions.reduce((sum, s) => sum + (s.winning_trades ?? 0), 0) /
-              Math.max(
-                1,
-                sessions.reduce(
-                  (sum, s) => sum + (s.winning_trades ?? 0) + (s.losing_trades ?? 0),
-                  0
-                )
-              )
-            : 0;
+        // CRITICAL: Use REAL trade history for professional metrics
+        const metrics = await calculateAutopilotMetrics(db, userId, totalInitial);
+
+        // ALARM: Negative expectancy = notify user
+        if (metrics.expectancy < 0 && metrics.total_trades >= 10) {
+          console.warn(
+            `[Autopilot ALARM] User ${userId}: expectancy ${metrics.expectancy} NOK < 0 after ${metrics.total_trades} trades. Win rate ${metrics.win_rate}%, PF ${metrics.profit_factor}.`
+          );
+          // Insert alarm log
+          await db.from("trading_logs").insert({
+            user_id: userId,
+            action: "autopilot_alarm",
+            details: {
+              alarm_type: "negative_expectancy",
+              expectancy: metrics.expectancy,
+              win_rate: metrics.win_rate,
+              profit_factor: metrics.profit_factor,
+              total_trades: metrics.total_trades,
+              recommendation: "Consider pausing and reviewing strategy settings",
+            } as unknown as import("@/types/database.types").Json,
+          } as never);
+        }
 
         await db
           .from("ai_autopilot_configs")
           .update({
             detected_regime: decision.regime,
-            total_pnl_nok: totalPnl,
-            total_pnl_pct:
-              totalInitial > 0 ? Math.round((totalPnl / totalInitial) * 10000) / 100 : 0,
-            max_drawdown_pct: Math.round(drawdown * 100) / 100,
-            win_rate: Math.round(winRate * 10000) / 100,
+            total_pnl_nok: metrics.total_pnl_nok,
+            total_pnl_pct: metrics.total_pnl_pct,
+            max_drawdown_pct: metrics.max_drawdown_pct,
+            win_rate: metrics.win_rate,
+            expectancy: metrics.expectancy,
+            profit_factor: metrics.profit_factor,
+            sharpe_ratio: metrics.sharpe_ratio,
+            avg_win_nok: metrics.avg_win_nok,
+            avg_loss_nok: metrics.avg_loss_nok,
+            total_trades_count: metrics.total_trades,
+            consecutive_losses: metrics.consecutive_losses,
             last_rebalance_at: now,
             updated_at: now,
-          })
+          } as never)
           .eq("id", autopilot.id);
 
         // ── 2d. Rebalance sessions ─────────────────────────────────────

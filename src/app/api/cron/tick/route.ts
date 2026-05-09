@@ -33,6 +33,7 @@ import { queueEmail } from "@/lib/email";
 import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
 import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
 import { usdtToNok, getUsdtToNokRate, getUsdtToNokRateAsync } from "@/lib/trading/currency";
+import { runEnsembleForSymbol } from "@/lib/ai/ensemble-v2";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -239,7 +240,35 @@ async function processSession(
         reason: aiSignal.reasoning || "Ensemble AI signal",
       };
     } else {
-      signal = { action: "hold", reason: "No recent ensemble AI signal" };
+      // CRITICAL FALLBACK: If trading_signals is empty/stale, run ensemble DIRECTLY
+      // in tick. Prevents zero-trading when ai-engine cron fails or is delayed.
+      // Research: 73% of bot failures are execution mismatches, not signal quality.
+      try {
+        const prices = candles.map((c) => c.close);
+        const volumes = candles.map((c) => c.volume);
+        const consensus = await runEnsembleForSymbol(db, symbol, prices, volumes, {
+          modelVersion: 'ensemble-v2',
+          featureVersion: '1h-tick-fallback',
+        });
+
+        if (consensus.action === 'buy' || consensus.action === 'sell') {
+          signal = {
+            action: consensus.action,
+            positionSize: (mergedConfig.position_size as number) ?? 0.05,
+            indicators: {
+              source: "ensemble_fallback",
+              confidence: consensus.confidence,
+              regime: consensus.agentResults.find((a) => a.agent.id === 'hurst')?.signal.meta?.regime ?? 'unknown',
+            },
+            reason: `Fallback: ${consensus.reasoning}`,
+          };
+        } else {
+          signal = { action: "hold", reason: `Fallback ensemble: ${consensus.reasoning}` };
+        }
+      } catch (fallbackErr) {
+        console.error(`[Tick] Ensemble fallback failed for ${symbol}:`, (fallbackErr as Error).message);
+        signal = { action: "hold", reason: "No recent ensemble AI signal + fallback failed" };
+      }
     }
   } else {
     // === PATH B: V2 strategies with merged config ===

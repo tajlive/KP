@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { calculateAutopilotMetrics } from "@/lib/ai/autopilot/metrics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -131,6 +132,14 @@ export async function GET(req: NextRequest) {
         total_pnl_pct: autopilot.total_pnl_pct,
         max_drawdown_pct: autopilot.max_drawdown_pct,
         win_rate: autopilot.win_rate,
+        // New professional metrics (types will be generated after migration deploy)
+        expectancy: (autopilot as unknown as Record<string, unknown>).expectancy ?? 0,
+        profit_factor: (autopilot as unknown as Record<string, unknown>).profit_factor ?? 0,
+        sharpe_ratio: (autopilot as unknown as Record<string, unknown>).sharpe_ratio ?? 0,
+        avg_win_nok: (autopilot as unknown as Record<string, unknown>).avg_win_nok ?? 0,
+        avg_loss_nok: (autopilot as unknown as Record<string, unknown>).avg_loss_nok ?? 0,
+        total_trades: (autopilot as unknown as Record<string, unknown>).total_trades_count ?? 0,
+        consecutive_losses: (autopilot as unknown as Record<string, unknown>).consecutive_losses ?? 0,
       },
       sessions: sessions?.map((s) => ({
         id: s.id,

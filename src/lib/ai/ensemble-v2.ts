@@ -242,6 +242,8 @@ function applyRegimeWeights(
       volume: 1.2,
       mean_reversion: 1.5,
       volatility: 1.0,
+      grid: 1.8, // Grid is KING in sideways markets (Pionex: 2.5-4%/month)
+      hurst: 1.3,
     },
     volatile: {
       trend: 0.7,
