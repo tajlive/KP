@@ -19,7 +19,8 @@ import { nb, enUS } from "date-fns/locale";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Trade } from "@/lib/trading-api";
+import type { Trade, TradingMode } from "@/lib/trading-api";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   buildTradeExplanation,
   getLearnMoreTitle,
@@ -84,8 +85,8 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
 
   const t = useTranslations("trading.tradeDetails");
   const tCommon = useTranslations("trading");
-  const locale = useLocale();
-  const isNorwegian = locale === "no";
+  const isNorwegian = useLocale() === "no";
+  const { formatByMode } = useCurrency();
   const dateLocale = isNorwegian ? nb : enUS;
 
   useEffect(() => {
@@ -249,14 +250,14 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
   };
 
   // Format PnL
-  const formatPnL = (pnl: number | null) => {
+  const formatPnL = (pnl: number | null, mode: TradingMode | "paper" | "live") => {
     if (pnl === null || pnl === undefined) return "—";
     const isProfit = pnl >= 0;
     const sign = isProfit ? "+" : "";
     return (
       <span className={`text-2xl font-bold ${isProfit ? "text-kp-success" : "text-kp-danger"}`}>
         {sign}
-        {pnl.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 })} kr
+        {formatByMode(Math.abs(pnl), mode)}
       </span>
     );
   };
@@ -352,7 +353,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                 {/* PnL Summary */}
                 <div className="bg-kp-bg-tertiary rounded-xl p-4 border border-kp-border">
                   <p className="text-kp-text-muted text-sm mb-1">{t("result")}</p>
-                  {formatPnL(trade.realized_pnl)}
+                  {formatPnL(trade.realized_pnl, trade.mode as TradingMode)}
                 </div>
 
                 {/* Trade Overview */}
@@ -396,10 +397,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                     <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-light">
                       <p className="text-kp-text-muted text-xs mb-1">{t("totalValue")}</p>
                       <p className="text-kp-text-primary font-medium tabular-nums">
-                        {trade.total_value.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                          maximumFractionDigits: 0,
-                        })}{" "}
-                        kr
+                        {formatByMode(trade.total_value, trade.mode as TradingMode)}
                       </p>
                     </div>
                   </div>
@@ -486,20 +484,14 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                         <tr>
                           <td className="px-4 py-3 text-kp-text-muted">{t("entryPrice")}</td>
                           <td className="px-4 py-3 text-right text-kp-text-primary font-medium tabular-nums">
-                            {trade.entryPrice?.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                              maximumFractionDigits: 0,
-                            })}{" "}
-                            kr
+                            {trade.entryPrice ? formatByMode(trade.entryPrice, trade.mode as TradingMode) : "—"}
                           </td>
                         </tr>
                         {trade.exitPrice && trade.side === "sell" && (
                           <tr>
                             <td className="px-4 py-3 text-kp-text-muted">{t("exitPrice")}</td>
                             <td className="px-4 py-3 text-right text-kp-text-primary font-medium tabular-nums">
-                              {trade.exitPrice.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                                maximumFractionDigits: 0,
-                              })}{" "}
-                              kr
+                              {formatByMode(trade.exitPrice, trade.mode as TradingMode)}
                             </td>
                           </tr>
                         )}
@@ -507,10 +499,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                           <tr>
                             <td className="px-4 py-3 text-kp-text-muted">{t("stopLoss")}</td>
                             <td className="px-4 py-3 text-right text-kp-danger font-medium tabular-nums">
-                              {trade.stopLoss.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                                maximumFractionDigits: 0,
-                              })}{" "}
-                              kr
+                              {formatByMode(trade.stopLoss, trade.mode as TradingMode)}
                             </td>
                           </tr>
                         )}
@@ -518,20 +507,14 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                           <tr>
                             <td className="px-4 py-3 text-kp-text-muted">{t("takeProfit")}</td>
                             <td className="px-4 py-3 text-right text-kp-success font-medium tabular-nums">
-                              {trade.takeProfit.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                                maximumFractionDigits: 0,
-                              })}{" "}
-                              kr
+                              {formatByMode(trade.takeProfit, trade.mode as TradingMode)}
                             </td>
                           </tr>
                         )}
                         <tr>
                           <td className="px-4 py-3 text-kp-text-muted">{t("fee")}</td>
                           <td className="px-4 py-3 text-right text-kp-text-secondary tabular-nums">
-                            {trade.fee?.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                              maximumFractionDigits: 2,
-                            })}{" "}
-                            kr
+                            {trade.fee ? formatByMode(trade.fee, trade.mode as TradingMode) : "—"}
                           </td>
                         </tr>
                       </tbody>

@@ -39,6 +39,8 @@ import {
   parseStrategySignal,
 } from "./trade-history.types";
 import { TradeHistoryStatCard } from "./TradeHistoryStatCard";
+import { useCurrency } from "@/hooks/useCurrency";
+import type { TradingMode } from "@/lib/trading-api";
 
 // Legacy local type — now imported from trade-history.types.ts
 export default function ClientHandelshistorikk() {
@@ -276,13 +278,12 @@ export default function ClientHandelshistorikk() {
     [filteredTrades],
   );
 
-  const formatNOK = (n: number) =>
-    new Intl.NumberFormat(locale === "en" ? "en-GB" : "no-NO", {
-      style: "currency",
-      currency: "NOK",
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0,
-    }).format(n);
+  const { formatByMode } = useCurrency();
+
+  const formatCurrencyValue = (n: number, mode: TradeHistoryModeFilter | "paper" | "live" | "all") => {
+    const activeMode: TradingMode = mode === "all" ? "paper" : (mode as TradingMode);
+    return formatByMode(n, activeMode);
+  };
 
   const dateLocale = locale === "en" ? "en-GB" : "no-NO";
 
@@ -381,7 +382,7 @@ export default function ClientHandelshistorikk() {
               />
               <TradeHistoryStatCard
                 label={t("totalRealizedPnl")}
-                value={`${stats.totalRealizedPnl >= 0 ? "+" : ""}${formatNOK(stats.totalRealizedPnl)}`}
+                value={`${stats.totalRealizedPnl >= 0 ? "+" : ""}${formatCurrencyValue(stats.totalRealizedPnl, filter)}`}
                 tone={stats.totalRealizedPnl >= 0 ? "positive" : "negative"}
               />
             </div>
@@ -601,12 +602,12 @@ export default function ClientHandelshistorikk() {
                         <td className="px-4 py-3 text-sm tabular-nums">
                           {Number(trade.quantity).toFixed(4)}
                         </td>
-                        <td className="px-4 py-3 text-sm tabular-nums">
-                          {formatNOK(trade.price)}
+                         <td className="px-4 py-3 text-sm tabular-nums">
+                          {formatByMode(trade.price, trade.mode as TradingMode)}
                         </td>
                         <td className="px-4 py-3">
                           {hasRealized && pnl != null ? (
-                            <span
+                             <span
                               className={
                                 pnl > 0
                                   ? "text-green-600 dark:text-green-400 font-medium"
@@ -616,7 +617,7 @@ export default function ClientHandelshistorikk() {
                               }
                             >
                               {pnl > 0 ? "+" : ""}
-                              {formatNOK(pnl)}
+                              {formatByMode(Math.abs(pnl), trade.mode as TradingMode)}
                             </span>
                           ) : (
                             <span

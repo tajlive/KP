@@ -312,7 +312,7 @@
     "modeLive": "live",
     "paperShort": "Øv",
     "liveShort": "Live",
-    "sizeFormat": "{quantity} @ {price} kr"
+    "sizeFormat": "{quantity} @ {price}"
   },
   "strategyConfig": {
     "dca": {
@@ -419,12 +419,12 @@
     "title": "Hvor mye vil du handle for?",
     "status": {
       "blocked": {
-        "title": "Overstiger maksgrensen på {amount} kr",
+        "title": "Overstiger maksgrensen på {amount}",
         "description": "Systemet vil blokkere denne handelen. Velg et lavere beløp."
       },
       "warning": {
         "title": "Nærmer seg total eksponeringsgrense",
-        "description": "Du har {remaining} kr igjen til din maksimale eksponering."
+        "description": "Du har {remaining} igjen til din maksimale eksponering."
       },
       "caution": {
         "title": "Stor andel av saldoen ({percentage}%)",
@@ -437,9 +437,9 @@
     },
     "whatThisMeans": "Dette betyr",
     "scenarios": {
-      "gain": "Hvis markedet stiger 10%, tjener du ca {amount} kr",
-      "loss": "Hvis markedet faller 10%, taper du ca {amount} kr",
-      "stopLoss": "Roboten selger automatisk hvis tapet overstiger {amount} kr (15%)"
+      "gain": "Hvis markedet stiger 10%, tjener du ca {amount}",
+      "loss": "Hvis markedet faller 10%, taper du ca {amount}",
+      "stopLoss": "Roboten selger automatisk hvis tapet overstiger {amount} (15%)"
     },
     "paperTrading": {
       "title": "Du handler med lekepenger",

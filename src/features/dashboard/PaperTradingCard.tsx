@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
+import { useCurrency } from "@/hooks/useCurrency";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ interface BalanceData {
 export function PaperTradingCard() {
   const t = useTranslations("trading.paperTrading.card");
   const { toast } = useToast();
+  const { formatByMode } = useCurrency();
   const [balance, setBalance] = useState<BalanceData["balance"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasSession, setHasSession] = useState(true);
@@ -234,20 +236,14 @@ export function PaperTradingCard() {
         <div>
           <p className="text-sm text-kp-text-muted">{t("currentBalance")}</p>
           <p className="text-2xl font-bold text-kp-text-primary">
-            {balance.current.toLocaleString("no-NO", {
-              style: "currency",
-              currency: "NOK",
-            })}
+            {formatByMode(balance.current, "paper")}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-kp-text-muted">{t("startingCapital")}</p>
             <p className="text-sm font-semibold text-kp-text-primary">
-              {balance.starting.toLocaleString("no-NO", {
-                style: "currency",
-                currency: "NOK",
-              })}
+              {formatByMode(balance.starting, "paper")}
             </p>
           </div>
           <div>
@@ -259,11 +255,8 @@ export function PaperTradingCard() {
               )}
             >
               {balance.isPositive ? "+" : ""}
-              {balance.pnl.toLocaleString("no-NO", {
-                style: "currency",
-                currency: "NOK",
-              })}
-              ({balance.pnlPercentage.toFixed(2)}%)
+              {formatByMode(Math.abs(balance.pnl), "paper")}
+              {" "}({balance.pnlPercentage.toFixed(2)}%)
             </p>
           </div>
         </div>
