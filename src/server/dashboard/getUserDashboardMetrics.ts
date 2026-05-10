@@ -47,6 +47,10 @@ export interface DashboardMetrics {
   winningTrades: number;
   /** Number of losing trades. */
   losingTrades: number;
+  /** Number of sessions in the chosen scope. */
+  sessionCount: number;
+  /** The 5 most recent sessions for display in the dashboard. */
+  recentSessions: any[];
 }
 
 export class DashboardMetricsError extends Error {
@@ -85,7 +89,23 @@ export async function getUserDashboardMetrics(
   const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
 
   // ------------------------------------------------------------------
-  // 1. Attempt PostgreSQL RPC (enterprise path)
+  // 1. Fetch recent sessions for display (always needed)
+  // ------------------------------------------------------------------
+  const { data: recentSessions, error: sessionsError } = await supabaseClient
+    .from("trading_sessions")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("mode", mode)
+    .is("archived", false)
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  if (sessionsError) {
+    console.error("[getUserDashboardMetrics] failed to fetch recent sessions:", sessionsError.message);
+  }
+
+  // ------------------------------------------------------------------
+  // 2. Attempt PostgreSQL RPC (enterprise path)
   // ------------------------------------------------------------------
   const statuses = sessionStatusesForScope(sessionScope);
 
@@ -109,7 +129,8 @@ export async function getUserDashboardMetrics(
     const row = rpcRows?.[0];
     if (!row) {
       // No data returned — valid state (no sessions/trades).
-      return await fallbackMetrics(supabaseClient, userId, mode);
+      const fb = await fallbackMetrics(supabaseClient, userId, mode);
+      return { ...fb, recentSessions: recentSessions || [] };
     }
 
     const totalPnl = Number(row.total_pnl ?? 0);
@@ -139,6 +160,8 @@ export async function getUserDashboardMetrics(
       startingCapital: Math.round(startingCapital * 100) / 100,
       winningTrades,
       losingTrades,
+      sessionCount: Number(row.session_count ?? 0),
+      recentSessions: recentSessions || [],
     };
   } catch (error) {
     // If RPC throws (e.g. function does not exist), fall back to TypeScript aggregation
@@ -150,7 +173,8 @@ export async function getUserDashboardMetrics(
         "[getUserDashboardMetrics] RPC unavailable, falling back to TS aggregation:",
         error.message,
       );
-      return tsAggregationFallback(input);
+      const metrics = await tsAggregationFallback(input);
+      return { ...metrics, recentSessions: recentSessions || [] };
     }
     throw error;
   }
@@ -193,6 +217,8 @@ async function fallbackMetrics(
       startingCapital: fb.startingCapital,
       winningTrades: 0,
       losingTrades: 0,
+      sessionCount: 0,
+      recentSessions: [],
     };
   }
 
@@ -204,6 +230,8 @@ async function fallbackMetrics(
     startingCapital: 0,
     winningTrades: 0,
     losingTrades: 0,
+    sessionCount: 0,
+    recentSessions: [],
   };
 }
 
@@ -302,5 +330,7 @@ async function tsAggregationFallback(
     startingCapital: Math.round(startingCapital * 100) / 100,
     winningTrades,
     losingTrades,
+    sessionCount: sessions?.length ?? 0,
+    recentSessions: [], // Fallback doesn't fetch recent sessions details
   };
 }

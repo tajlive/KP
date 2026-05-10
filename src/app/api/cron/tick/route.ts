@@ -286,6 +286,37 @@ async function processSession(
       session,
       config: mergedConfig,
     });
+
+    // Check for Trailing Up config changes returned from strategy
+    if (signal.indicators?.new_grid_upper && signal.indicators?.new_grid_lower) {
+      const newUpper = signal.indicators.new_grid_upper as number;
+      const newLower = signal.indicators.new_grid_lower as number;
+      const stratCfg = session.strategy_config as Record<string, any>;
+      
+      const newGridConfig = {
+        ...(stratCfg.grid_config || {}),
+        upper_price: newUpper,
+        lower_price: newLower,
+      };
+      
+      const newStrategyConfig = {
+        ...stratCfg,
+        grid_config: newGridConfig
+      };
+      
+      // Update config asynchronously but catch errors
+      try {
+        await db.from("trading_sessions")
+          .update({ strategy_config: newStrategyConfig } as never)
+          .eq("id", session.id);
+        console.log(`[Tick] Updated grid config for session ${session.id} (Trailing Up: upper=${newUpper}, lower=${newLower})`);
+      } catch (err: any) {
+        console.error(`[Tick] Failed to persist new grid config for ${session.id}`, err);
+      }
+        
+      // Update local session config for the rest of the tick
+      session.strategy_config = newStrategyConfig as any;
+    }
   }
 
   // Update heartbeat
