@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/shared/theme";
 import { NextIntlClientProvider } from "next-intl";
@@ -10,7 +11,9 @@ import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
 import { AsyncFeatureFlagProvider } from "@/app/providers/AsyncFeatureFlagProvider";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import type { NavigationData } from "@/shared/layout/NavigationServer";
-import { LazyMotion, domAnimation } from "framer-motion";
+import { LazyMotion } from "framer-motion";
+
+const loadFeatures = () => import("framer-motion").then((res) => res.domAnimation);
 
 interface RootProvidersProps {
   locale: string;
@@ -45,7 +48,7 @@ export function RootProviders({
                   <AuthHashHandler />
                   <AsyncFeatureFlagProvider>
                     <LocaleMarketingShell navData={navData}>
-                      <LazyMotion features={domAnimation} strict={false}>
+                      <LazyMotion features={loadFeatures} strict={false}>
                         {children}
                       </LazyMotion>
                     </LocaleMarketingShell>
