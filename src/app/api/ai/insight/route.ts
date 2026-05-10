@@ -65,9 +65,11 @@ function getTodayKey(): string {
 }
 
 function computeMetrics(trades: Trade[]): TradeMetrics {
-  if (trades.length === 0) {
+  const closedTrades = trades.filter((t) => t.realized_pnl !== undefined && t.realized_pnl !== null);
+  
+  if (closedTrades.length === 0) {
     return {
-      totalTrades: 0,
+      totalTrades: trades.length, // Still show total activity
       winRate: 0,
       totalPnl: 0,
       avgTradePnl: 0,
@@ -83,7 +85,7 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
   let totalPnl = 0;
   let wins = 0;
 
-  for (const t of trades) {
+  for (const t of closedTrades) {
     const pnl = t.realized_pnl ?? 0;
     totalPnl += pnl;
     if (pnl > 0) wins++;
@@ -92,12 +94,12 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
     dailyPnl[day] = (dailyPnl[day] ?? 0) + pnl;
   }
 
-  const winRate = Math.round((wins / trades.length) * 100);
-  const avgTradePnl = totalPnl / trades.length;
+  const winRate = Math.round((wins / closedTrades.length) * 100);
+  const avgTradePnl = totalPnl / closedTrades.length;
 
   let currentStreak = 0;
-  for (let i = trades.length - 1; i >= 0; i--) {
-    const pnl = trades[i].realized_pnl ?? 0;
+  for (let i = closedTrades.length - 1; i >= 0; i--) {
+    const pnl = closedTrades[i].realized_pnl ?? 0;
     if (pnl > 0) {
       if (currentStreak >= 0) currentStreak++;
       else break;
@@ -112,7 +114,7 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
   let peak = 0;
   let cumulative = 0;
   let maxDrawdown = 0;
-  for (const t of trades) {
+  for (const t of closedTrades) {
     cumulative += t.realized_pnl ?? 0;
     if (cumulative > peak) peak = cumulative;
     const dd = peak - cumulative;
@@ -121,9 +123,13 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
   const maxDrawdownPct = peak > 0 ? Math.round((maxDrawdown / peak) * 100) : 0;
 
   const dailyValues = Object.values(dailyPnl);
-  const mean = dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length;
-  const variance = dailyValues.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / dailyValues.length;
-  const volatilityEstimate = Math.sqrt(variance);
+  let volatilityEstimate = 0;
+  
+  if (dailyValues.length > 1) {
+    const mean = dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length;
+    const variance = dailyValues.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / dailyValues.length;
+    volatilityEstimate = Math.sqrt(variance);
+  }
 
   const sortedDays = [...dailyValues].sort((a, b) => a - b);
   const bestDayPnl = sortedDays[sortedDays.length - 1] ?? 0;
