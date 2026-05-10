@@ -15,58 +15,7 @@ interface Props {
   sessionMode?: "paper" | "live";
 }
 
-/** Animated counter that smoothly counts up to the target value */
-function AnimatedBalance({
-  value,
-  locale,
-}: {
-  value: number;
-  locale: string;
-}) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const prevValue = useRef(0);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const from = prevValue.current;
-    const to = value;
-    prevValue.current = value;
-
-    const formatter = new Intl.NumberFormat(
-      locale === "no" ? "nb-NO" : "en-US",
-      {
-        style: "currency",
-        currency: "NOK",
-        maximumFractionDigits: 0,
-      }
-    );
-
-    // Skip animation if it's the initial render (from = 0)
-    if (from === 0 && to > 0) {
-      node.textContent = formatter.format(to);
-      return;
-    }
-
-    const duration = 600; // ms
-    const start = performance.now();
-
-    function step(now: number) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = from + (to - from) * eased;
-      if (node) node.textContent = formatter.format(Math.round(current));
-      if (progress < 1) requestAnimationFrame(step);
-    }
-
-    requestAnimationFrame(step);
-  }, [value, locale]);
-
-  return <span ref={ref} />;
-}
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
 export function SimplifiedHero({
   balance,
@@ -137,7 +86,17 @@ export function SimplifiedHero({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.4 }}
       >
-        <AnimatedBalance value={balance} locale={locale} />
+        <AnimatedNumber 
+          value={balance} 
+          duration={0.6}
+          formatFn={(val) => 
+            new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
+              style: "currency",
+              currency: "NOK",
+              maximumFractionDigits: 0,
+            }).format(Math.round(val))
+          } 
+        />
       </m.div>
 
       {/* Change percent */}
