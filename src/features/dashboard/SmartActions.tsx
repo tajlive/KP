@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   TrendingUp,
   Bot,
@@ -96,7 +96,7 @@ export function SmartActions({ userState, cmsData, compact = false }: SmartActio
   if (actions.length === 0) return null;
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.15 }}
@@ -124,7 +124,7 @@ export function SmartActions({ userState, cmsData, compact = false }: SmartActio
           </div>
         </>
       )}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -194,7 +194,7 @@ function CompactActionCard({
   const Icon = ICON_MAP[action.icon ?? "TrendingUp"] ?? TrendingUp;
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.08 }}
@@ -220,7 +220,7 @@ function CompactActionCard({
           </div>
         </div>
       </Link>
-    </motion.div>
+    </m.div>
   );
 }
 

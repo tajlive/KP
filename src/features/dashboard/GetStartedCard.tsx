@@ -9,7 +9,7 @@
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { X, BookOpen, TrendingUp, BarChart3, ArrowRight, CheckCircle2, Circle, UserPlus, Trophy, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
@@ -230,7 +230,7 @@ export default function GetStartedCard({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -239,7 +239,7 @@ export default function GetStartedCard({
           <Card className="bg-linear-to-br from-blue-900/20 via-gray-50 to-gray-50 dark:via-slate-900 dark:to-slate-900 border-blue-500/20 rounded-3xl overflow-hidden shadow-xl relative">
             {/* Progress bar på toppen */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 dark:bg-slate-800">
-              <motion.div
+              <m.div
                 className="h-full bg-linear-to-r from-blue-500 to-blue-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${checklistProgress}%` }}
@@ -282,7 +282,7 @@ export default function GetStartedCard({
                     <div key={item.id}>
                       {item.href && !isCompleted ? (
                         <Link href={item.href}>
-                          <motion.div
+                          <m.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.05 }}
@@ -299,10 +299,10 @@ export default function GetStartedCard({
                             {!isCompleted && (
                               <ArrowRight className="w-4 h-4 text-gray-500 dark:text-slate-500 group-hover:text-gray-900 dark:group-hover:text-white ml-auto group-hover:translate-x-0.5 transition-all" />
                             )}
-                          </motion.div>
+                          </m.div>
                         </Link>
                       ) : (
-                        <motion.div
+                        <m.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
@@ -316,7 +316,7 @@ export default function GetStartedCard({
                           <span className={`text-sm font-medium ${isCompleted ? "text-slate-500 line-through" : "text-slate-500"}`}>
                             {label}
                           </span>
-                        </motion.div>
+                        </m.div>
                       )}
                     </div>
                   );
@@ -336,7 +336,7 @@ export default function GetStartedCard({
                     const isCompleted = completedLessons.includes(item.id);
                     return (
                       <Link key={item.id} href={`/${locale}${item.href}`}>
-                        <motion.div
+                        <m.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
@@ -393,7 +393,7 @@ export default function GetStartedCard({
                               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                             )}
                           </div>
-                        </motion.div>
+                        </m.div>
                       </Link>
                     );
                   })}
@@ -417,7 +417,7 @@ export default function GetStartedCard({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

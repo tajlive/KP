@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useLocale } from "next-intl";
 import { TrendingUp, BarChart3, Wallet } from "lucide-react";
 import type { UserState } from "@/hooks/useUserState";
@@ -81,7 +81,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
   const isLive = preferredTradingMode === "live";
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -105,7 +105,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
       <SmartActions userState="NyBruker" compact />
 
       {/* DemoChart fjernet — viste fake generert kurve, ikke ekte data */}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -144,7 +144,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
     : [];
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
@@ -191,7 +191,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
       )}
 
       <SmartActions userState="Onboarded" compact />
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -246,7 +246,7 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
       <ActiveTraderView {...props} />
 
       {/* Extra power-user CTA */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -270,7 +270,7 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
             {isNo ? "Se rangering →" : "View ranking →"}
           </a>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -293,7 +293,7 @@ export function AdaptiveDashboard({
   return (
     <AnimatePresence mode="wait">
       {userState === "NyBruker" && (
-        <motion.div
+        <m.div
           key="newuser"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -301,11 +301,11 @@ export function AdaptiveDashboard({
           transition={{ duration: 0.3 }}
         >
           <NewUserHero userName={userName} preferredTradingMode={preferredTradingMode} />
-        </motion.div>
+        </m.div>
       )}
 
       {userState === "Onboarded" && (
-        <motion.div
+        <m.div
           key="onboarded"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -313,11 +313,11 @@ export function AdaptiveDashboard({
           transition={{ duration: 0.3 }}
         >
           <OnboardedView userId={userId} stats={stats} userName={userName} preferredTradingMode={preferredTradingMode} />
-        </motion.div>
+        </m.div>
       )}
 
       {userState === "AktivTrader" && (
-        <motion.div
+        <m.div
           key="activetrader"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -334,11 +334,11 @@ export function AdaptiveDashboard({
             onRetry={onRetry}
             cmsData={cmsData}
           />
-        </motion.div>
+        </m.div>
       )}
 
       {userState === "PowerUser" && (
-        <motion.div
+        <m.div
           key="poweruser"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -355,7 +355,7 @@ export function AdaptiveDashboard({
             onRetry={onRetry}
             cmsData={cmsData}
           />
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

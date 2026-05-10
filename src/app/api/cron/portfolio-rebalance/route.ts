@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
+import { createNotification } from "@/lib/notifications";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +36,30 @@ async function fetchCurrentPrices(symbols: string[]): Promise<Record<string, num
   }
 
   return prices;
+}
+
+// Volatility Check (e.g., check if price moved > 5% in last 15m)
+async function isAssetVolatile(symbol: string): Promise<{ volatile: boolean, change: number }> {
+  try {
+    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=15m&limit=1`, {
+      next: { revalidate: 60 }
+    });
+    if (!res.ok) return { volatile: false, change: 0 };
+    
+    const data = await res.json();
+    if (!data || data.length === 0) return { volatile: false, change: 0 };
+    
+    const [openTime, open, high, low, close] = data[0];
+    const change = Math.abs((parseFloat(close) - parseFloat(open)) / parseFloat(open)) * 100;
+    
+    return {
+      volatile: change > 5.0, // 5% threshold
+      change
+    };
+  } catch (err) {
+    logger.error(`Volatility check failed for ${symbol}`, { error: (err as Error).message });
+    return { volatile: false, change: 0 };
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -127,6 +153,26 @@ export async function POST(req: NextRequest) {
 
           const diff = Math.abs(currentWeight - targetWeight);
           if (diff >= threshold) {
+            // VOLATILITY BRAKE CHECK
+            if (asset !== "USDT" && asset !== "NOK") {
+              const { volatile, change } = await isAssetVolatile(asset);
+              if (volatile) {
+                logger.warn(`Volatility brake triggered for ${asset} (${change.toFixed(2)}% move). Skipping rebalance for ${userId}.`);
+                
+                await createNotification(
+                   supabase as any,
+                   userId,
+                   "system_alert",
+                   "Rebalansering utsatt",
+                   `Markedet for ${asset} er for øyeblikket for volatilt (${change.toFixed(1)}% endring). Vi har utsatt rebalanseringen din for å beskytte kapitalen din.`,
+                   { asset, change }
+                );
+
+                needsRebalance = false;
+                break;
+              }
+            }
+
             needsRebalance = true;
             triggerReason = `Asset ${asset} deviated by ${(diff * 100).toFixed(2)}% (Target: ${(targetWeight * 100).toFixed(2)}%, Current: ${(currentWeight * 100).toFixed(2)}%)`;
             break; // Stop checking, we already know we need to rebalance
@@ -162,6 +208,16 @@ export async function POST(req: NextRequest) {
             .single();
 
           if (eventInsertError) throw eventInsertError;
+
+          // Notify user
+          await createNotification(
+            supabase as any,
+            userId,
+            "portfolio_rebalance_started",
+            "Rebalansering startet",
+            `Porteføljen din avviker fra målet og rebalansering er startet via TWAP.`,
+            { eventId: newEvent.id }
+          );
 
           // 6. Generate Rebalance Orders
           const ordersToInsert = [];

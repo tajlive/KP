@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { RiskMetricsPanel } from "./RiskMetricsPanel";
 import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import { computeUserState } from "@/hooks/useUserState";
@@ -85,13 +85,13 @@ export function DashboardContent({
 
   return (
     <div suppressHydrationWarning>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.25 }}
-        className="bg-slate-950 min-h-screen"
+        transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="bg-gray-50 dark:bg-slate-950 min-h-screen"
       >
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4">
+        <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
           <AdaptiveDashboard
             userId={userId}
             userState={userState}
@@ -106,12 +106,12 @@ export function DashboardContent({
           />
         </div>
 
-        <div className="bg-slate-950 px-4 md:px-8 pb-8">
+        <div className="bg-gray-50 dark:bg-slate-950 px-0 sm:px-4 md:px-8 pb-8">
           <div className="max-w-7xl mx-auto">
             <RiskMetricsPanel />
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

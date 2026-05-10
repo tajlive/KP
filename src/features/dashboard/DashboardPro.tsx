@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react";
 
 // Nye WOW-komponenter
 import { PortfolioChart } from "./PortfolioChart";
 import { StatsGrid } from "./StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
+import { SkeletonBlock } from "./loading-skeleton";
 
 import { DailyChallenge } from "@/features/gamification/DailyChallenge";
 
@@ -63,10 +64,10 @@ interface DashboardProProps {
 
 function StatSkeleton() {
   return (
-    <div className="bg-white dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-slate-700/50 shadow-sm animate-pulse">
-      <div className="h-4 w-4 bg-slate-700 rounded mb-2" />
-      <div className="h-8 w-24 bg-slate-700 rounded mb-1" />
-      <div className="h-3 w-16 bg-slate-700 rounded" />
+    <div className="bg-[#161719] rounded-2xl p-4 sm:p-5 border border-white/[0.06] space-y-3">
+      <SkeletonBlock className="w-8 h-8 rounded-xl" />
+      <SkeletonBlock className="h-7 w-24" delay={0.1} />
+      <SkeletonBlock className="h-3 w-16" delay={0.2} />
     </div>
   );
 }
@@ -96,7 +97,7 @@ function ErrorCard({ message, onRetry, t }: { message?: string; onRetry?: () => 
 
 function EmptyState({ emptyText }: { emptyText: string }) {
   return (
-    <div className="bg-gray-100 dark:bg-slate-800/50 rounded-xl p-6 text-center border border-gray-200 dark:border-slate-700/50">
+    <div className="bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-8 text-center border border-gray-200 dark:border-white/[0.06] backdrop-blur-sm">
       <p className="text-gray-500 dark:text-slate-400 text-sm">
         {emptyText}
       </p>
@@ -173,8 +174,8 @@ export function DashboardPro({
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 px-3 py-4 sm:p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-5 sm:space-y-6">
         {/* Personalized Greeting — Enterprise 2026 */}
         <PersonalizedGreeting
           userName={userName}
@@ -183,7 +184,7 @@ export function DashboardPro({
         />
 
         {/* Hero - Simplified balance */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -194,7 +195,7 @@ export function DashboardPro({
             ctaLink={cmsData?.heroCtaLink}
             sessionMode={isPaperMode ? "paper" : "live"}
           />
-        </motion.div>
+        </m.div>
 
         {/* First Trade Reward — kun for Onboarded+ */}
         {userState !== "NyBruker" && (
@@ -223,9 +224,9 @@ export function DashboardPro({
         )}
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left column - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Portfolio Chart — vis for alle, men tom for nye brukere */}
             <PortfolioChart userId={userId} mode={preferredTradingMode} />
 
@@ -291,7 +292,7 @@ export function DashboardPro({
           </div>
 
           {/* Right column - 1/3 width */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* AI Insight — Enterprise 2026. Kun for AktivTrader+. Bak feature flag. */}
             {(userState === "AktivTrader" || userState === "PowerUser") && (
               <FeatureGate flag="aiInsight">
@@ -323,30 +324,34 @@ export function DashboardPro({
         {userState === "PowerUser" && <NLQChat />}
 
         {/* Upgrade Banner — CMS-drevet */}
-        <motion.div
-          className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-gray-200 dark:border-slate-700"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+        <m.div
+          className="relative overflow-hidden rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-xl"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
         >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                {cmsData?.upgradeBanner?.title ?? "Klar for neste nivå?"}
-              </h3>
-              <p className="text-gray-500 dark:text-slate-400 mt-1">
-                {cmsData?.upgradeBanner?.description ??
-                  "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support."}
-              </p>
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0052FF]/5 via-indigo-500/5 to-emerald-500/5 dark:from-[#0052FF]/10 dark:via-indigo-500/8 dark:to-emerald-500/8 pointer-events-none" />
+          <div className="relative p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                  {cmsData?.upgradeBanner?.title ?? "Klar for neste nivå?"}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-slate-400">
+                  {cmsData?.upgradeBanner?.description ??
+                    "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support."}
+                </p>
+              </div>
+              <Link
+                href={`/${locale}${cmsData?.upgradeBanner?.ctaLink ?? "/priser"}`}
+                className="shrink-0 px-6 py-3 bg-gradient-to-r from-[#0052FF] to-[#0052FF]/80 rounded-xl text-white text-sm font-semibold shadow-lg shadow-[#0052FF]/20 hover:shadow-xl hover:shadow-[#0052FF]/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 whitespace-nowrap inline-flex items-center justify-center"
+              >
+                {cmsData?.upgradeBanner?.ctaText ?? "Se priser"}
+              </Link>
             </div>
-            <Link
-              href={`/${locale}${cmsData?.upgradeBanner?.ctaLink ?? "/priser"}`}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity whitespace-nowrap inline-flex items-center justify-center"
-            >
-              {cmsData?.upgradeBanner?.ctaText ?? "Se priser"}
-            </Link>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );
