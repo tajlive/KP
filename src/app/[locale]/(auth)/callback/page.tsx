@@ -98,8 +98,8 @@ export default function AuthCallbackPage() {
     >
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-white mb-2">Fullfører innlogging...</h1>
-        <p className="text-slate-400">Vennligst vent mens vi verifiserer din konto.</p>
+        <h1 suppressHydrationWarning className="text-xl font-bold text-white mb-2">Fullfører innlogging...</h1>
+        <p suppressHydrationWarning className="text-slate-400">Vennligst vent mens vi verifiserer din konto.</p>
       </div>
     </div>
   );
