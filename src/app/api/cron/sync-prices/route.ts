@@ -35,10 +35,11 @@ interface BinanceTicker {
  */
 export async function GET(request: NextRequest) {
   // Verify cron secret in production
-  const authHeader = request.headers.get("authorization");
+  const cronSecretRaw = request.headers.get("authorization")?.replace("Bearer ", "");
+  const isDev = process.env.NODE_ENV === "development";
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!isDev && cronSecret && cronSecretRaw !== cronSecret.trim()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
