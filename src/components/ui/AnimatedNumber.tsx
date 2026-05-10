@@ -41,6 +41,7 @@ export function AnimatedNumber({
 
   return (
     <motion.span
+      suppressHydrationWarning
       className={`${className} transition-colors duration-300 ${
         isChanging === "up" ? "text-emerald-400" : isChanging === "down" ? "text-red-400" : ""
       }`}
