@@ -1,0 +1,7 @@
+🧠 Analyserer siste økt: Fix: signal validity 5min→15min for tomarnejensen@...
+🧠 1 gjentatte oppgaver — vurder automatisering:
+ℹ️   "[trading] auto-capture: auto-t..." → 2 ganger
+ℹ️ Agent-effektivitet (siste 10):
+ℹ️   default: 100% GO, 3.6/5 avg
+ℹ️   multi-agent: 100% GO, 5.0/5 avg
+✅ Ingen problemer identifisert — keep it up! 🚀

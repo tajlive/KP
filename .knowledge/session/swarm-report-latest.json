@@ -1,92 +1,25 @@
 {
   "workflow": "review",
   "files": [
-    "src/features/trading/UnifiedTradingDashboard.tsx",
-    "src/features/dashboard/TradingResultsDashboard.tsx",
-    "src/features/trading/SignalFeed.tsx",
-    "src/app/[locale]/layout.tsx"
+    ".knowledge/patterns/hot-files.md",
+    ".knowledge/patterns/scripts-overview.md",
+    "supabase/migrations/20260507041802_ai_autopilot_configs.sql",
+    "supabase/migrations/999_fix_materialized_view.sql"
   ],
-  "timestamp": "2026-05-04T00:49:27.503Z",
+  "timestamp": "2026-05-09T14:26:43.626Z",
   "summary": {
-    "passes": 11,
-    "warns": 7,
-    "blocks": 2
+    "passes": 24,
+    "warns": 0,
+    "blocks": 0
   },
   "results": [
     {
-      "file": "src/features/trading/UnifiedTradingDashboard.tsx",
+      "file": ".knowledge/patterns/hot-files.md",
       "agents": [
         {
           "agent": "analyzer",
-          "complexity_score": 9,
-          "lines": 374,
-          "risks": [
-            "High complexity score (9/10)"
-          ],
-          "suggestions": [],
-          "approval": "warn"
-        },
-        {
-          "agent": "architect",
-          "adr_compliance": [
-            "KLA-91"
-          ],
-          "violations": [],
-          "boundary_check": "pass",
-          "approval": "proceed"
-        },
-        {
-          "agent": "tester",
-          "test_level": "P0",
-          "scenarios": [
-            "Happy path",
-            "Error handling",
-            "Edge cases",
-            "Security",
-            "MISSING: Add unit/integration test file"
-          ],
-          "coverage_target": 90,
-          "has_test_file": false,
-          "approval": "add_tests"
-        },
-        {
-          "agent": "security",
-          "findings": [
-            {
-              "severity": "medium",
-              "file": "src/features/trading/UnifiedTradingDashboard.tsx",
-              "issue": "Live trading logic without feature flag check",
-              "mitigation": "Verify live_trading_enabled flag is checked"
-            }
-          ],
-          "checked": [
-            "auth",
-            "api",
-            "db",
-            "trading",
-            "secrets"
-          ],
-          "approval": "warn"
-        },
-        {
-          "agent": "knowledge",
-          "files_created": [
-            "session/2026-05-04T00-49-27-499Z-UnifiedTradingDashboard-tsx.json"
-          ],
-          "patterns_identified": [],
-          "mem_palace_synced": false,
-          "wake_up_updated": false,
-          "approval": "proceed"
-        }
-      ]
-    },
-    {
-      "file": "src/features/dashboard/TradingResultsDashboard.tsx",
-      "agents": [
-        {
-          "agent": "analyzer",
-          "complexity_score": 7,
-          "lines": 363,
+          "complexity_score": 1,
+          "lines": 31,
           "risks": [],
           "suggestions": [],
           "approval": "proceed"
@@ -112,14 +45,7 @@
         },
         {
           "agent": "security",
-          "findings": [
-            {
-              "severity": "high",
-              "file": "src/features/dashboard/TradingResultsDashboard.tsx",
-              "issue": "Possible hardcoded secret/token",
-              "mitigation": "Move to environment variables or Vault"
-            }
-          ],
+          "findings": [],
           "checked": [
             "auth",
             "api",
@@ -127,12 +53,18 @@
             "trading",
             "secrets"
           ],
-          "approval": "block"
+          "approval": "proceed"
+        },
+        {
+          "agent": "performance",
+          "findings": [],
+          "fixes": [],
+          "approval": "proceed"
         },
         {
           "agent": "knowledge",
           "files_created": [
-            "session/2026-05-04T00-49-27-501Z-TradingResultsDashboard-tsx.json"
+            "session/2026-05-09T14-26-43-620Z-hot-files-md.json"
           ],
           "patterns_identified": [],
           "mem_palace_synced": false,
@@ -142,93 +74,15 @@
       ]
     },
     {
-      "file": "src/features/trading/SignalFeed.tsx",
+      "file": ".knowledge/patterns/scripts-overview.md",
       "agents": [
         {
           "agent": "analyzer",
-          "complexity_score": 9,
-          "lines": 410,
-          "risks": [
-            "High complexity score (9/10)"
-          ],
-          "suggestions": [
-            "Consider extracting sub-modules"
-          ],
-          "approval": "warn"
-        },
-        {
-          "agent": "architect",
-          "adr_compliance": [
-            "KLA-91"
-          ],
-          "violations": [],
-          "boundary_check": "pass",
-          "approval": "proceed"
-        },
-        {
-          "agent": "tester",
-          "test_level": "P0",
-          "scenarios": [
-            "Happy path",
-            "Error handling",
-            "Edge cases",
-            "Security",
-            "MISSING: Add unit/integration test file"
-          ],
-          "coverage_target": 90,
-          "has_test_file": false,
-          "approval": "add_tests"
-        },
-        {
-          "agent": "security",
-          "findings": [
-            {
-              "severity": "medium",
-              "file": "src/features/trading/SignalFeed.tsx",
-              "issue": "Console logging in auth/trading code",
-              "mitigation": "Use structured logging or remove before production"
-            },
-            {
-              "severity": "medium",
-              "file": "src/features/trading/SignalFeed.tsx",
-              "issue": "Live trading logic without feature flag check",
-              "mitigation": "Verify live_trading_enabled flag is checked"
-            }
-          ],
-          "checked": [
-            "auth",
-            "api",
-            "db",
-            "trading",
-            "secrets"
-          ],
-          "approval": "warn"
-        },
-        {
-          "agent": "knowledge",
-          "files_created": [
-            "session/2026-05-04T00-49-27-502Z-SignalFeed-tsx.json"
-          ],
-          "patterns_identified": [],
-          "mem_palace_synced": false,
-          "wake_up_updated": false,
-          "approval": "proceed"
-        }
-      ]
-    },
-    {
-      "file": "src/app/[locale]/layout.tsx",
-      "agents": [
-        {
-          "agent": "analyzer",
-          "complexity_score": 9,
-          "lines": 290,
-          "risks": [
-            "High complexity score (9/10)",
-            "High branch count (31) — consider splitting"
-          ],
+          "complexity_score": 1,
+          "lines": 35,
+          "risks": [],
           "suggestions": [],
-          "approval": "warn"
+          "approval": "proceed"
         },
         {
           "agent": "architect",
@@ -251,14 +105,7 @@
         },
         {
           "agent": "security",
-          "findings": [
-            {
-              "severity": "high",
-              "file": "src/app/[locale]/layout.tsx",
-              "issue": "Possible hardcoded secret/token",
-              "mitigation": "Move to environment variables or Vault"
-            }
-          ],
+          "findings": [],
           "checked": [
             "auth",
             "api",
@@ -266,12 +113,138 @@
             "trading",
             "secrets"
           ],
-          "approval": "block"
+          "approval": "proceed"
+        },
+        {
+          "agent": "performance",
+          "findings": [],
+          "fixes": [],
+          "approval": "proceed"
         },
         {
           "agent": "knowledge",
           "files_created": [
-            "session/2026-05-04T00-49-27-503Z-layout-tsx.json"
+            "session/2026-05-09T14-26-43-623Z-scripts-overview-md.json"
+          ],
+          "patterns_identified": [],
+          "mem_palace_synced": false,
+          "wake_up_updated": false,
+          "approval": "proceed"
+        }
+      ]
+    },
+    {
+      "file": "supabase/migrations/20260507041802_ai_autopilot_configs.sql",
+      "agents": [
+        {
+          "agent": "analyzer",
+          "complexity_score": 4,
+          "lines": 134,
+          "risks": [],
+          "suggestions": [],
+          "approval": "proceed"
+        },
+        {
+          "agent": "architect",
+          "adr_compliance": [
+            "KLA-91"
+          ],
+          "violations": [],
+          "boundary_check": "pass",
+          "approval": "proceed"
+        },
+        {
+          "agent": "tester",
+          "test_level": "P2",
+          "scenarios": [
+            "Basic functionality"
+          ],
+          "coverage_target": 80,
+          "has_test_file": false,
+          "approval": "proceed"
+        },
+        {
+          "agent": "security",
+          "findings": [],
+          "checked": [
+            "auth",
+            "api",
+            "db",
+            "trading",
+            "secrets"
+          ],
+          "approval": "proceed"
+        },
+        {
+          "agent": "performance",
+          "findings": [],
+          "fixes": [],
+          "approval": "proceed"
+        },
+        {
+          "agent": "knowledge",
+          "files_created": [
+            "session/2026-05-09T14-26-43-624Z-20260507041802_ai_autopilot_configs-sql.json"
+          ],
+          "patterns_identified": [],
+          "mem_palace_synced": false,
+          "wake_up_updated": false,
+          "approval": "proceed"
+        }
+      ]
+    },
+    {
+      "file": "supabase/migrations/999_fix_materialized_view.sql",
+      "agents": [
+        {
+          "agent": "analyzer",
+          "complexity_score": 6,
+          "lines": 257,
+          "risks": [],
+          "suggestions": [],
+          "approval": "proceed"
+        },
+        {
+          "agent": "architect",
+          "adr_compliance": [
+            "KLA-91"
+          ],
+          "violations": [],
+          "boundary_check": "pass",
+          "approval": "proceed"
+        },
+        {
+          "agent": "tester",
+          "test_level": "P2",
+          "scenarios": [
+            "Basic functionality"
+          ],
+          "coverage_target": 80,
+          "has_test_file": false,
+          "approval": "proceed"
+        },
+        {
+          "agent": "security",
+          "findings": [],
+          "checked": [
+            "auth",
+            "api",
+            "db",
+            "trading",
+            "secrets"
+          ],
+          "approval": "proceed"
+        },
+        {
+          "agent": "performance",
+          "findings": [],
+          "fixes": [],
+          "approval": "proceed"
+        },
+        {
+          "agent": "knowledge",
+          "files_created": [
+            "session/2026-05-09T14-26-43-625Z-999_fix_materialized_view-sql.json"
           ],
           "patterns_identified": [],
           "mem_palace_synced": false,
