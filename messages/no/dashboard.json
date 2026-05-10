@@ -512,5 +512,115 @@
     },
     "pnlLabel": "P&L",
     "winRateLabel": "Win Rate"
+  },
+  "dashboardPro": {
+    "errorTitle": "Kunne ikke laste dashboard-tall",
+    "errorFallback": "Prøv igjen, eller kontakt support hvis problemet vedvarer.",
+    "retry": "Prøv igjen",
+    "emptyState": "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk.",
+    "stats": {
+      "totalReturn": "Total avkastning",
+      "totalReturnSub": "Akkumulert profitt",
+      "winRate": "Vinnrate",
+      "winRateSub": "{totalTrades} handler totalt",
+      "balance": "Kontobalanse",
+      "balanceSub": "Tilgjengelig kapital"
+    },
+    "scopeLabel": "Basert på aktive og fullførte {mode}-sessions"
+  },
+  "nlqChat": {
+    "openChat": "Åpne chat",
+    "title": "Trading Assistent",
+    "subtitle": "Spør om dine tall",
+    "close": "Lukk",
+    "welcome": "Hei! Jeg kan hjelpe deg å forstå trading-dataen din.",
+    "notUnderstood": "Beklager, jeg forstod ikke det.",
+    "error": "Beklager, noe gikk galt. Prøv igjen senere.",
+    "waiting": "Venter på svar...",
+    "placeholder": "Spør om dine tall...",
+    "send": "Send",
+    "quickQuestions": [
+      {
+        "label": "Win rate?",
+        "query": "Hva er min win rate?"
+      },
+      {
+        "label": "P&L siste uke",
+        "query": "Hvordan gikk det forrige uke?"
+      },
+      {
+        "label": "Risk",
+        "query": "Hva er min max drawdown?"
+      },
+      {
+        "label": "Balance",
+        "query": "Hva er min kontobalanse?"
+      }
+    ]
+  },
+  "aiInsight": {
+    "title": "AI-innsikt",
+    "subtitle": "Professor Kimi analyserer dine handler",
+    "tabs": {
+      "performance": "Ytelse",
+      "risk": "Risk",
+      "strategy": "Strategi"
+    },
+    "error": "Kunne ikke hente innsikt",
+    "retry": "Prøv igjen",
+    "confidence": {
+      "high": "Høy tillit",
+      "medium": "Middels tillit",
+      "low": "Lav tillit"
+    },
+    "cached": "(cachet)",
+    "metrics": {
+      "winRate": "Win rate",
+      "drawdown": "Drawdown",
+      "streak": "Streak"
+    },
+    "disclaimer": "Dette er utdanning, ikke finansiell rådgivning."
+  },
+  "smartActions": {
+    "newUser": {
+      "title": "Start Paper Trading",
+      "description": "Øv deg risikofritt med 100 000 kr i virtuell kapital.",
+      "cta": "Kom i gang"
+    },
+    "noSession": {
+      "title": "Aktiver en strategi",
+      "description": "La vår KI handle for deg mens du sover.",
+      "cta": "Utforsk strategier"
+    },
+    "paperMode": {
+      "title": "Gå Live",
+      "description": "Klar for ekte trading? Oppgrader til live-modus.",
+      "cta": "Aktiver Live"
+    },
+    "liveMode": {
+      "title": "Optimaliser strategien",
+      "description": "Se resultater og juster strategien for bedre avkastning.",
+      "cta": "Se resultater"
+    }
+  },
+  "aiTip": {
+    "default": {
+      "message": "Start din første paper-trade for å se AI-innsikt her."
+    },
+    "winRateLow": {
+      "message": "Win rate på {winRate}% er under bransjesnittet (55%). Gjennomgå tapende trades for å finne mønstre.",
+      "action": "Gå til trade-historikk"
+    },
+    "drawdownHigh": {
+      "message": "Maks drawdown på {maxDrawdown}% er høy. Vurder å redusere posisjonsstørrelse.",
+      "action": "Se risiko-innstillinger"
+    },
+    "pnlFlat": {
+      "message": "P&L er flat etter flere trades. Prøv copy-trading for å se hvordan erfarne tradere opererer.",
+      "action": "Utforsk copy-trading"
+    },
+    "doingGreat": {
+      "message": "Sterkt! {winRate}% win rate og positiv avkastning. Vurder å øke kapitalen gradvis."
+    }
   }
 }

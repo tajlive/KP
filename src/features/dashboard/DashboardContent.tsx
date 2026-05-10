@@ -66,6 +66,7 @@ export function DashboardContent({
   const userState = computeUserState({
     tradesCount: data?.totalTrades ?? 0,
     signupDays: signupDays ?? 30,
+    sessionCount: data?.sessionCount ?? 0,
     totalPnlPct: data && data.startingCapital > 0
       ? ((data.totalCapital - data.startingCapital) / data.startingCapital) * 100
       : 0,

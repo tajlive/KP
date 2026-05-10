@@ -5,6 +5,7 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { localizedPathname } from "@/middleware/locale-path";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
 import { PositionLotsCard } from "@/features/dashboard/PositionLotsCard";
+import { SmartPortfolioDashboard } from "@/components/dashboard/SmartPortfolioDashboard";
 import { SessionCards } from "@/features/dashboard/SessionCards";
 import type { SessionCardData } from "@/features/dashboard/SessionCards";
 import { RestartTradingButton } from "@/features/dashboard/RestartTradingButton";
@@ -319,6 +320,10 @@ export default async function PortfolioPage({ params }: PageProps) {
         )}
 
         <PositionLotsCard locale={locale} />
+        
+        <div className="mt-8">
+          <SmartPortfolioDashboard userId={user.id} />
+        </div>
       </div>
     );
   } catch (error) {
