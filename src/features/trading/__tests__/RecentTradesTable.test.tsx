@@ -67,7 +67,7 @@ const messages = {
       modeLive: "live",
       paperShort: "Øv",
       liveShort: "Live",
-      sizeFormat: "{quantity} @ {price} kr",
+      sizeFormat: "{quantity} @ {price}",
     },
   },
 };
@@ -123,8 +123,8 @@ describe("RecentTradesTable", () => {
   it("shows PnL for trades with realized_pnl", () => {
     renderWithI18n(<RecentTradesTable {...defaultProps} />);
 
-    // ETH-salg har +5,000 kr PnL (vises både i tabell og mobilkort)
-    expect(screen.getAllByText("+5 000 kr").length).toBeGreaterThanOrEqual(1);
+    // ETH-salg har +5,000 USDT PnL (vises både i tabell og mobilkort)
+    expect(screen.getAllByText("+5 000,00 USDT").length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows filter buttons when onModeFilterChange is provided", () => {

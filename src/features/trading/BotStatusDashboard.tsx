@@ -10,7 +10,8 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { createClient } from "@/lib/utils";
-import { Portfolio, Trade, UserStrategy } from "@/lib/trading-api";
+import { Portfolio, Trade, UserStrategy, TradingMode } from "@/lib/trading-api";
+import { useCurrency } from "@/hooks/useCurrency";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -117,6 +118,7 @@ export default function BotStatusDashboard({
   const { locale } = useParams();
   const lang = (locale as string) || "no";
   const t = useTranslations("trading.botStatus");
+  const { formatByMode } = useCurrency();
   const isBotActive = activeStrategies.length > 0;
   const mainStrategy = activeStrategies[0];
   const lastTrade = recentTrades[0];
@@ -536,10 +538,10 @@ export default function BotStatusDashboard({
                         .trading_pair || trade.symbol}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-300">
-                      {formatNOK(trade.price)}
+                      {formatByMode(trade.price, trade.mode as TradingMode)}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-300">
-                      {formatNOK(trade.total_value)}
+                      {formatByMode(trade.total_value, trade.mode as TradingMode)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       {trade.realized_pnl ? (
@@ -551,7 +553,7 @@ export default function BotStatusDashboard({
                           }
                         >
                           {trade.realized_pnl >= 0 ? "+" : ""}
-                          {formatNOK(trade.realized_pnl)}
+                          {formatByMode(Math.abs(trade.realized_pnl), trade.mode as TradingMode)}
                         </span>
                       ) : (
                         "-"

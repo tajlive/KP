@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useCurrency } from "@/hooks/useCurrency";
 import { createClient } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
@@ -106,6 +107,7 @@ export function PaperTradingList({
   const [startCapital, setStartCapital] = useState("100000");
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const { formatByMode } = useCurrency();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Supabase realtime: oppdater listen når trading_sessions endres for denne brukeren
@@ -304,7 +306,7 @@ export function PaperTradingList({
                   {t("stats.availableBalance")}
                 </p>
                 <p className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white truncate">
-                  {balance.toLocaleString("nb-NO")} kr
+                  {formatByMode(balance, "paper")}
                 </p>
               </div>
             </div>
@@ -409,7 +411,7 @@ export function PaperTradingList({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="start-capital">{t("startCapital")} (kr)</Label>
+              <Label htmlFor="start-capital">{t("startCapital")}</Label>
               <Input
                 id="start-capital"
                 type="number"
@@ -533,7 +535,7 @@ export function PaperTradingList({
                         }`}
                       >
                         {isProfitable ? "+" : ""}
-                        {(session.current_capital_nok - session.starting_capital_nok).toLocaleString("nb-NO")} kr
+                        {formatByMode(Math.abs(session.current_capital_nok - session.starting_capital_nok), "paper")}
                       </p>
                       <p
                         className={`text-sm tabular-nums truncate ${

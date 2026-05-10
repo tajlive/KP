@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { useTranslations, useLocale } from "next-intl";
 import type { Trade, TradingMode } from "@/lib/trading-api";
+import { useCurrency } from "@/hooks/useCurrency";
 import { TradeReasonChip } from "./TradeReasonChip";
 
 interface RecentTradesTableProps {
@@ -28,6 +29,7 @@ export function RecentTradesTable({
   const t = useTranslations("trading.recentTrades");
   const locale = useLocale();
   const isNorwegian = locale === "no";
+  const { formatByMode } = useCurrency();
   const dateLocale = isNorwegian ? nb : enUS;
 
   // Filter trades by mode
@@ -35,15 +37,11 @@ export function RecentTradesTable({
     modeFilter === "all" ? trades : trades.filter((t) => t.mode === modeFilter);
 
   // Format PnL with color
-  const formatPnL = (pnl: number | null) => {
+  const formatPnL = (pnl: number | null, mode: TradingMode | "paper" | "live") => {
     if (pnl === null || pnl === undefined) return "—";
     const isProfit = pnl >= 0;
     const sign = isProfit ? "+" : "";
-    const formatted = new Intl.NumberFormat(isNorwegian ? "nb-NO" : "en-US", {
-      style: "currency",
-      currency: "NOK",
-      maximumFractionDigits: 0,
-    }).format(Math.abs(pnl));
+    const formatted = formatByMode(Math.abs(pnl), mode);
     return (
       <span className={isProfit ? "text-kp-success" : "text-kp-danger"}>
         {sign}{formatted}
@@ -201,7 +199,7 @@ export function RecentTradesTable({
                           quantity: trade.quantity.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
                             maximumFractionDigits: 4,
                           }),
-                          price: trade.price.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 }),
+                          price: formatByMode(trade.price, trade.mode as TradingMode),
                         })}
                       </span>
                     </div>
@@ -209,7 +207,7 @@ export function RecentTradesTable({
                     {/* PnL */}
                     <div className="col-span-2 text-right">
                       {hasPnL ? (
-                        formatPnL(trade.realized_pnl)
+                        formatPnL(trade.realized_pnl, trade.mode as TradingMode)
                       ) : (
                         <span className="text-kp-text-muted">—</span>
                       )}
@@ -255,7 +253,7 @@ export function RecentTradesTable({
                     </span>
                   </div>
                   <div className="text-right">
-                    {hasPnL ? formatPnL(trade.realized_pnl) : <span className="text-kp-text-muted">—</span>}
+                    {hasPnL ? formatPnL(trade.realized_pnl, trade.mode as TradingMode) : <span className="text-kp-text-muted">—</span>}
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -278,7 +276,7 @@ export function RecentTradesTable({
                       quantity: trade.quantity.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
                         maximumFractionDigits: 4,
                       }),
-                      price: trade.price.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 }),
+                      price: formatByMode(trade.price, trade.mode as TradingMode),
                     })}
                   </span>
                 </div>

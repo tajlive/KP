@@ -8,6 +8,7 @@ import { SimplifiedHero } from "./SimplifiedHero";
 import { StatsGrid } from "./StatsGrid";
 import { AITip } from "./AITip";
 import { SmartActions } from "./SmartActions";
+import { useCurrency } from "@/hooks/useCurrency";
 
 import { DashboardPro } from "./DashboardPro";
 import type { DashboardCmsData } from "./DashboardContent";
@@ -116,6 +117,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
   const locale = useLocale();
   const isNo = locale === "no";
   const isLive = preferredTradingMode === "live";
+  const { formatByMode } = useCurrency();
 
   const displayStats = stats
     ? [
@@ -135,7 +137,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
         },
         {
           label: isNo ? "P&L" : "P&L",
-          value: `${stats.totalPnl >= 0 ? "+" : ""}${Math.round(stats.totalPnl).toLocaleString()} kr`,
+          value: `${stats.totalPnl >= 0 ? "+" : ""}${formatByMode(Math.abs(stats.totalPnl), preferredTradingMode)}`,
           subtext: isNo ? "Avkastning" : "Return",
           trend: stats.totalPnl >= 0 ? ("up" as const) : ("down" as const),
           icon: Wallet,

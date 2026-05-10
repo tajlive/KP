@@ -312,7 +312,7 @@
     "modeLive": "live",
     "paperShort": "Paper",
     "liveShort": "Live",
-    "sizeFormat": "{quantity} @ {price} kr"
+    "sizeFormat": "{quantity} @ {price}"
   },
   "strategyConfig": {
     "dca": {
@@ -419,12 +419,12 @@
     "title": "How much do you want to trade?",
     "status": {
       "blocked": {
-        "title": "Exceeds maximum limit of {amount} kr",
+        "title": "Exceeds maximum limit of {amount}",
         "description": "System will block this trade. Choose a lower amount."
       },
       "warning": {
         "title": "Approaching total exposure limit",
-        "description": "You have {remaining} kr left for your maximum exposure."
+        "description": "You have {remaining} left for your maximum exposure."
       },
       "caution": {
         "title": "Large portion of balance ({percentage}%)",
@@ -437,9 +437,9 @@
     },
     "whatThisMeans": "This Means",
     "scenarios": {
-      "gain": "If market rises 10%, you earn approx {amount} kr",
-      "loss": "If market falls 10%, you lose approx {amount} kr",
-      "stopLoss": "Bot auto-sells if loss exceeds {amount} kr (15%)"
+      "gain": "If market rises 10%, you earn approx {amount}",
+      "loss": "If market falls 10%, you lose approx {amount}",
+      "stopLoss": "Bot auto-sells if loss exceeds {amount} (15%)"
     },
     "paperTrading": {
       "title": "You're trading with play money",

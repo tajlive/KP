@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import type { UserStrategy, StrategyType } from "@/lib/trading-api";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export function ActiveStrategiesSection({
   activeStrategies,
@@ -21,6 +22,7 @@ export function ActiveStrategiesSection({
     description: string;
   }[];
 }) {
+  const { formatByMode } = useCurrency();
   const t = useTranslations("trading.activeStrategiesPanel");
   if (activeStrategies.length === 0) {
     return (
@@ -50,7 +52,7 @@ export function ActiveStrategiesSection({
                 </div>
                 <p className="text-slate-300 text-sm mt-1">
                   {t("pnlLine", {
-                    pnl: formatNOK(strategy.total_pnl),
+                    pnl: formatByMode(strategy.total_pnl, strategy.mode),
                     count: strategy.total_trades,
                   })}
                 </p>

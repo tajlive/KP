@@ -11,7 +11,9 @@ import {
   getStoredCurrency,
   setStoredCurrency,
 } from "@/lib/currency";
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
+import { useLocale } from "next-intl";
+import type { TradingMode } from "@/lib/trading-api";
 
 export type CurrencyCode = Currency | "BTC";
 
@@ -49,6 +51,8 @@ export function useCurrency() {
     emitChange();
   }, []);
 
+  const isNorwegian = useLocale() === "no";
+
   const format = useCallback(
     (amountNOK: number) => formatFromNOK(amountNOK, currency),
     [currency],
@@ -74,6 +78,20 @@ export function useCurrency() {
     return `${sign}${value.toFixed(2)}%`;
   }, []);
 
+  const formatByMode = useCallback(
+    (amount: number, mode: TradingMode | "paper" | "live") => {
+      if (mode === "paper") {
+        return formatFromNOK(amount, currency);
+      }
+      return new Intl.NumberFormat(isNorwegian ? "nb-NO" : "en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 2,
+      }).format(amount).replace("USD", "USDT");
+    },
+    [currency, isNorwegian],
+  );
+
   return {
     currency,
     setCurrency,
@@ -81,6 +99,7 @@ export function useCurrency() {
     symbol: CURRENCY_SYMBOLS[currency],
     format,
     formatRaw,
+    formatByMode,
     toDisplay,
     toNOK,
     formatPercent,

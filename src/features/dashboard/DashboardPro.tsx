@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { m, AnimatePresence } from "framer-motion";
 import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react";
+import { useCurrency } from "@/hooks/useCurrency";
 
 // Nye WOW-komponenter
 import { PortfolioChart } from "./PortfolioChart";
@@ -120,6 +121,7 @@ export function DashboardPro({
   const locale = useLocale();
   const t = useTranslations("dashboard.dashboardPro");
   const isPaperMode = preferredTradingMode === "paper";
+  const { formatByMode } = useCurrency();
 
   const effectiveStats = stats || {
     totalTrades: 0,
@@ -151,7 +153,7 @@ export function DashboardPro({
   const statItems = [
     {
       label: t("stats.totalReturn"),
-      value: `${effectiveStats.totalPnl > 0 ? "+" : ""}${effectiveStats.totalPnl.toLocaleString()} kr`,
+      value: `${effectiveStats.totalPnl > 0 ? "+" : ""}${formatByMode(Math.abs(effectiveStats.totalPnl), preferredTradingMode)}`,
       subtext: t("stats.totalReturnSub"),
       trend: effectiveStats.totalPnl >= 0 ? ("up" as const) : ("down" as const),
       icon: TrendingUp,
@@ -166,7 +168,7 @@ export function DashboardPro({
     },
     {
       label: t("stats.balance"),
-      value: `${Math.round(effectiveStats.currentCapital).toLocaleString()} kr`,
+      value: formatByMode(effectiveStats.currentCapital, preferredTradingMode),
       subtext: t("stats.balanceSub"),
       trend: "neutral" as const,
       icon: Wallet,
