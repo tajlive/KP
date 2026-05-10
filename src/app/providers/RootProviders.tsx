@@ -10,6 +10,7 @@ import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
 import { AsyncFeatureFlagProvider } from "@/app/providers/AsyncFeatureFlagProvider";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import type { NavigationData } from "@/shared/layout/NavigationServer";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 interface RootProvidersProps {
   locale: string;
@@ -44,7 +45,9 @@ export function RootProviders({
                   <AuthHashHandler />
                   <AsyncFeatureFlagProvider>
                     <LocaleMarketingShell navData={navData}>
-                      {children}
+                      <LazyMotion features={domAnimation} strict={false}>
+                        {children}
+                      </LazyMotion>
                     </LocaleMarketingShell>
                   </AsyncFeatureFlagProvider>
                 </AuthProvider>

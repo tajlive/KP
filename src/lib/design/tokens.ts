@@ -140,3 +140,27 @@ export const TABLE = {
   header:
     "px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider",
 } as const;
+
+/** Motion easing curves — consistent across all dashboard animations */
+export const MOTION = {
+  /** Standard ease-out for entrances */
+  easeOut: [0.25, 0.46, 0.45, 0.94] as const,
+  /** Spring config for interactive elements */
+  spring: { type: "spring" as const, stiffness: 400, damping: 28 },
+  /** Staggered children delay factor */
+  staggerChildren: 0.06,
+  /** Page transition duration */
+  pageDuration: 0.35,
+} as const;
+
+/** Mobile-first design constraints */
+export const MOBILE = {
+  /** Minimum touch target (WCAG 2.5.5 Target Size) */
+  touchTarget: "min-h-[44px] min-w-[44px]",
+  /** Safe area padding for bottom nav */
+  safeBottom: "pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]",
+  /** Tight padding for mobile, normal for desktop */
+  responsivePadding: "px-3 sm:px-4 lg:px-8",
+  /** Gap scaling */
+  responsiveGap: "gap-3 sm:gap-4 lg:gap-6",
+} as const;

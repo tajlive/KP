@@ -8,6 +8,7 @@ import { PositionLotsCard } from "@/features/dashboard/PositionLotsCard";
 import { SmartPortfolioDashboard } from "@/components/dashboard/SmartPortfolioDashboard";
 import { SessionCards } from "@/features/dashboard/SessionCards";
 import type { SessionCardData } from "@/features/dashboard/SessionCards";
+import { PortfolioHealthHeader } from "@/components/dashboard/PortfolioHealthHeader";
 import { RestartTradingButton } from "@/features/dashboard/RestartTradingButton";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -76,6 +77,7 @@ export default async function PortfolioPage({ params }: PageProps) {
     let portfolios: { id: string; name: string | null; current_balance: number | null; initial_balance: number | null } | null = null;
     let sessions: SessionCardData[] | null = null;
     let profile: { paper_balance: number | null } | null = null;
+    let rebalanceConfig: any | null = null;
 
     // Query 1: Wallets
     try {
@@ -92,6 +94,16 @@ export default async function PortfolioPage({ params }: PageProps) {
     } catch (e) {
       errorLog.push(`Wallets query exception: ${e instanceof Error ? e.message : String(e)}`);
     }
+
+    // Query 5: Rebalance Config
+    try {
+      const { data, error } = await (supabase as any)
+        .from("portfolio_rebalance_configs")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!error) rebalanceConfig = data;
+    } catch (e) {}
 
     // Query 2: Portfolios (latest only)
     try {
@@ -239,10 +251,15 @@ export default async function PortfolioPage({ params }: PageProps) {
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t("title")}</h1>
             <p className="text-slate-600 dark:text-slate-400">{t("subtitle")}</p>
           </div>
-          <div className="p-3 bg-blue-50 dark:bg-blue-600/10 rounded-xl border border-blue-200 dark:border-blue-600/20">
-            <span className="text-blue-700 dark:text-blue-400 font-bold text-sm">
-              {t("totalAssets", { count: wallets?.length || 0 })}
-            </span>
+          <div className="flex items-center gap-3">
+            {rebalanceConfig && wallets && (
+              <PortfolioHealthHeader wallets={wallets} config={rebalanceConfig} />
+            )}
+            <div className="p-3 bg-blue-50 dark:bg-blue-600/10 rounded-xl border border-blue-200 dark:border-blue-600/20">
+              <span className="text-blue-700 dark:text-blue-400 font-bold text-sm">
+                {t("totalAssets", { count: wallets?.length || 0 })}
+              </span>
+            </div>
           </div>
         </div>
 

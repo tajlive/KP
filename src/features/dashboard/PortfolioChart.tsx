@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   AreaChart,
   Area,
@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { SkeletonBlock } from "./loading-skeleton";
 
 interface ChartDataPoint {
   date: string;
@@ -37,31 +38,20 @@ const TIME_PERIODS = [
 
 function SkeletonChart() {
   return (
-    <div className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-5 md:p-6 border border-gray-200 dark:border-slate-700">
-      {/* Header skeleton */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="space-y-2">
-          <div className="h-4 w-24 bg-gray-300 dark:bg-slate-700 rounded animate-pulse" />
-          <div className="h-8 w-40 bg-gray-300 dark:bg-slate-700 rounded animate-pulse" />
-          <div className="h-3 w-32 bg-gray-300 dark:bg-slate-700 rounded animate-pulse" />
+    <div className="h-[300px] sm:h-[380px] w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-md p-6 overflow-hidden">
+      <div className="flex justify-between items-start mb-6">
+        <div className="space-y-3">
+          <SkeletonBlock className="h-4 w-24" delay={0.1} />
+          <SkeletonBlock className="h-8 w-40" delay={0.2} />
+          <SkeletonBlock className="h-3 w-32" delay={0.3} />
         </div>
         <div className="flex gap-2">
-          <div className="h-8 w-8 bg-gray-300 dark:bg-slate-700 rounded-lg animate-pulse" />
-          <div className="h-8 w-48 bg-gray-300 dark:bg-slate-700 rounded-lg animate-pulse" />
+          <SkeletonBlock className="h-9 w-9 rounded-xl" delay={0.4} />
+          <SkeletonBlock className="h-9 w-48 rounded-xl" delay={0.5} />
         </div>
       </div>
-      {/* Chart area skeleton */}
-      <div className="h-[250px] flex items-end gap-2 px-2">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 bg-gray-300/50 dark:bg-slate-700/50 rounded-t animate-pulse"
-            style={{
-              height: `${20 + Math.random() * 60}%`,
-              animationDelay: `${i * 0.05}s`,
-            }}
-          />
-        ))}
+      <div className="relative h-[200px] mt-8">
+        <SkeletonBlock className="absolute inset-0 w-full h-full rounded-xl opacity-30" delay={0.6} />
       </div>
     </div>
   );
@@ -259,7 +249,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
 
   if (!hasData) {
     return (
-      <motion.div
+      <m.div
         className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -271,13 +261,13 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">
           Start din første øvingssesjon for å se grafen
         </p>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.div
-      className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-5 md:p-6 border border-gray-200 dark:border-slate-700"
+    <m.div
+      className="h-[300px] sm:h-[380px] w-full rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.04] backdrop-blur-xl p-5 md:p-6 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -374,7 +364,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 

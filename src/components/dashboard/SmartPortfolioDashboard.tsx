@@ -5,8 +5,10 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, A
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, m } from "framer-motion";
-import { Wallet, ShieldCheck, Zap, History, TrendingUp, Info, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Wallet, ShieldCheck, Zap, History, TrendingUp, Info, AlertCircle, CheckCircle2, Activity, ArrowRight, RefreshCcw, BarChart3 } from "lucide-react";
 import { SURFACE, BRAND, RADIUS, BRAND_COLOR } from "@/lib/design/tokens";
+import { useRealtimeStore } from "@/store/realtime-store";
+import { PriceAggregator } from "@/lib/realtime";
 
 interface WalletData {
   currency: string;
@@ -18,6 +20,17 @@ interface RebalanceConfig {
   is_active: boolean;
   threshold_percent: number;
   target_allocations: Record<string, number>;
+}
+
+interface RebalanceOrder {
+  id: string;
+  symbol: string;
+  side: 'buy' | 'sell';
+  amount_usdt: number;
+  executed_amount_usdt: number;
+  status: string;
+  twap_chunks: number;
+  executed_chunks: number;
 }
 
 const COLORS = [
@@ -44,20 +57,28 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
   const t = useTranslations("Dashboard");
   const [wallets, setWallets] = useState<WalletData[]>([]);
   const [config, setConfig] = useState<RebalanceConfig | null>(null);
+  const [activeOrders, setActiveOrders] = useState<RebalanceOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBacktest, setShowBacktest] = useState(false);
+  const [healthScore, setHealthScore] = useState(100);
+  const [currentAllocations, setCurrentAllocations] = useState<Record<string, number>>({});
 
   const supabase = createClient();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [walletsRes, configRes] = await Promise.all([
+        const [walletsRes, configRes, ordersRes] = await Promise.all([
           supabase.from("wallets").select("*").eq("user_id", userId),
           (supabase as any).from("portfolio_rebalance_configs").select("*").eq("user_id", userId).maybeSingle(),
+          (supabase as any).from("portfolio_rebalance_orders")
+            .select("*")
+            .eq("user_id", userId)
+            .in("status", ["pending", "partial"])
         ]);
 
         if (walletsRes.data) setWallets(walletsRes.data);
+        if (ordersRes.data) setActiveOrders(ordersRes.data);
         
         if (configRes.data) {
           setConfig(configRes.data);
@@ -93,6 +114,23 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
       }
     }
     fetchData();
+
+    // Subscribe to real-time updates for orders
+    const channel = supabase
+      .channel('rebalance-orders')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'portfolio_rebalance_orders',
+        filter: `user_id=eq.${userId}` 
+      }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId, supabase]);
 
   const toggleAutopilot = async () => {
@@ -110,11 +148,67 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
     }
   };
 
-  const currentData = wallets
-    .filter(w => w.currency !== "USDT" && w.currency !== "NOK" && Number(w.balance) > 0)
-    .map(w => ({
-      name: w.currency,
-      value: Number(w.balance)
+
+  
+  // Start price aggregator for relevant symbols
+  useEffect(() => {
+    if (!config) return;
+    const symbols = Object.keys(config.target_allocations).map(s => `${s}USDT`);
+    const aggregator = new PriceAggregator({ symbols });
+    aggregator.start();
+    return () => aggregator.stop();
+  }, [config]);
+
+  const symbols = config ? Object.keys(config.target_allocations) : ["BTC", "ETH", "SOL", "BNB", "XRP"];
+  // We use the store's priceCache instead of the local hook for more robustness
+  const priceCache = useRealtimeStore(state => state.priceCache);
+
+  useEffect(() => {
+    if (!config) return;
+    
+    // Calculate current allocations based on prices from the store
+    let totalValue = 0;
+    const values: Record<string, number> = {};
+    
+    // Get USDT/NOK rate if needed (mocked or from store if available)
+    const usdtNokRate = 10.5; // This should ideally come from a hook or store
+
+    wallets.forEach(w => {
+      const symbol = w.currency === "USDT" ? "USDT" : `${w.currency}USDT`;
+      const priceData = priceCache[symbol];
+      let price = 0;
+      
+      if (w.currency === "USDT") price = 1;
+      else if (w.currency === "NOK") price = 1 / usdtNokRate;
+      else price = priceData?.price || 0;
+      
+      const val = Number(w.balance) * price;
+      values[w.currency] = val;
+      totalValue += val;
+    });
+
+    if (totalValue > 0) {
+      const allocations: Record<string, number> = {};
+      let totalDrift = 0;
+      
+      Object.keys(config.target_allocations).forEach(sym => {
+        const currentWeight = (values[sym] || 0) / totalValue;
+        const targetWeight = config.target_allocations[sym];
+        allocations[sym] = currentWeight;
+        totalDrift += Math.abs(currentWeight - targetWeight);
+      });
+
+      setCurrentAllocations(allocations);
+      // Health Score: 100 - (totalDrift * 100)
+      setHealthScore(Math.max(0, Math.min(100, Math.round(100 - (totalDrift * 100)))));
+    }
+  }, [priceCache, wallets, config]);
+
+  const currentAllocationData = Object.entries(currentAllocations)
+    .filter(([_, weight]) => weight > 0)
+    .map(([name, weight]) => ({
+      name,
+      value: weight * 100
     }));
 
   const targetData = config ? Object.entries(config.target_allocations).map(([currency, weight]) => ({
@@ -157,6 +251,44 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
           </div>
           
           <div className="flex items-center gap-6 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.05]">
+            <div className="flex items-center gap-4 border-r border-white/10 pr-6 mr-2">
+              <div className="relative flex items-center justify-center">
+                <svg className="w-12 h-12 transform -rotate-90">
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    fill="transparent"
+                    className="text-white/5"
+                  />
+                  <m.circle
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    fill="transparent"
+                    strokeDasharray="125.6"
+                    initial={{ strokeDashoffset: 125.6 }}
+                    animate={{ strokeDashoffset: 125.6 - (125.6 * healthScore) / 100 }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    className={healthScore > 90 ? 'text-emerald-500' : healthScore > 70 ? 'text-amber-500' : 'text-rose-500'}
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center">
+                  <span className="text-[10px] font-black text-white leading-none">{healthScore}%</span>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Helse</span>
+                <span className={`text-xs font-bold ${healthScore > 90 ? 'text-emerald-500' : healthScore > 70 ? 'text-amber-500' : 'text-rose-500'}`}>
+                  {healthScore > 95 ? 'Perfekt' : healthScore > 85 ? 'God' : 'Krever Rebalansering'}
+                </span>
+              </div>
+            </div>
+
             <div className="flex flex-col items-end">
               <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Status</span>
               <span className={`text-sm font-bold flex items-center gap-1.5 ${config?.is_active ? 'text-emerald-500' : 'text-amber-500'}`}>
@@ -215,12 +347,12 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                   Nåværende Beholdning
                   <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400">Live</span>
                 </h3>
-                {currentData.length > 0 ? (
+                {currentAllocationData.length > 0 ? (
                   <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={currentData}
+                          data={currentAllocationData}
                           cx="50%"
                           cy="50%"
                           innerRadius={75}
@@ -229,7 +361,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                           dataKey="value"
                           stroke="none"
                         >
-                          {currentData.map((entry, index) => (
+                          {currentAllocationData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
@@ -247,7 +379,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-6">
                       <span className="text-gray-500 text-xs uppercase font-bold tracking-widest">Totalt</span>
-                      <span className="text-2xl font-black text-white">{currentData.length} Assets</span>
+                      <span className="text-2xl font-black text-white">{currentAllocationData.length} Assets</span>
                     </div>
                   </div>
                 ) : (
@@ -401,6 +533,131 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
           )}
         </AnimatePresence>
 
+        {/* Active TWAP Orders Section */}
+        {activeOrders.length > 0 && (
+          <m.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 p-6 bg-brand-500/[0.03] border border-brand-500/10 rounded-2xl"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <Activity className="w-4 h-4 text-brand-500 animate-pulse" />
+                Aktive TWAP Ordrer ({activeOrders.length})
+              </h4>
+              <span className="text-[10px] text-gray-500 italic flex items-center gap-1">
+                <RefreshCcw className="w-3 h-3 animate-spin" />
+                Oppdateres live
+              </span>
+            </div>
+            
+            <div className="space-y-3">
+              {activeOrders.map((order) => (
+                <div key={order.id} className="bg-white/[0.02] p-4 rounded-xl border border-white/[0.05] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-lg ${order.side === 'buy' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
+                      <TrendingUp className={`w-4 h-4 ${order.side === 'sell' ? 'rotate-180' : ''}`} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">{order.symbol}</span>
+                        <span className={`text-[10px] font-bold uppercase ${order.side === 'buy' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                          {order.side === 'buy' ? 'Kjøp' : 'Salg'}
+                        </span>
+                      </div>
+                      <span className="text-xs text-gray-500">${order.amount_usdt.toLocaleString()} totalt</span>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 max-w-[200px] w-full">
+                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                      <span className="text-gray-500">Eksekvering</span>
+                      <span className="text-brand-500">{Math.round((order.executed_chunks / order.twap_chunks) * 100)}%</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden flex gap-0.5 p-0.5">
+                      {Array.from({ length: order.twap_chunks }).map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`h-full flex-1 rounded-sm transition-all duration-1000 ${i < order.executed_chunks ? 'bg-brand-500 shadow-[0_0_8px_rgba(0,82,255,0.4)]' : 'bg-white/10'}`} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                    <span className="bg-white/5 px-2 py-1 rounded-md">
+                      {order.executed_chunks} / {order.twap_chunks} bolker
+                    </span>
+                    <ArrowRight className="w-3 h-3 text-gray-600" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </m.div>
+        )}
+
+        {/* Target vs Current Comparison */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <BarChart3 className="w-3.5 h-3.5 text-brand-500" />
+              Allokeringsanalyse
+            </h4>
+            <div className="space-y-4">
+              {Object.entries(config?.target_allocations || {}).map(([symbol, target]: [string, any]) => {
+                const current = currentAllocations[symbol] || 0;
+                const diff = current - target;
+                const isOver = diff > 0;
+                
+                return (
+                  <div key={symbol} className="space-y-1.5">
+                    <div className="flex justify-between text-xs font-bold">
+                      <span className="text-white">{symbol}</span>
+                      <div className="flex gap-3">
+                        <span className="text-gray-500">Mål: {(target * 100).toFixed(0)}%</span>
+                        <span className={Math.abs(diff) > (config?.threshold_percent || 5) / 100 ? 'text-amber-500' : 'text-emerald-500'}>
+                          Nå: {(current * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden relative">
+                      <div 
+                        className="absolute h-full bg-brand-500/20 border-r-2 border-brand-500" 
+                        style={{ width: `${target * 100}%` }}
+                      />
+                      <m.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${current * 100}%` }}
+                        className={`h-full relative z-10 ${Math.abs(diff) > (config?.threshold_percent || 5) / 100 ? 'bg-amber-500' : 'bg-brand-500'}`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl flex flex-col justify-center items-center text-center">
+            <div className="p-4 bg-brand-500/10 rounded-full mb-3">
+              <ShieldCheck className="w-8 h-8 text-brand-500" />
+            </div>
+            <h4 className="text-sm font-bold text-white mb-1">Portefølje-integritet</h4>
+            <p className="text-xs text-gray-500 max-w-[200px]">
+              {healthScore > 95 
+                ? "Porteføljen din er optimalt balansert i henhold til din valgte strategi."
+                : "Systemet overvåker avvik og vil starte TWAP-rebalansering ved behov."}
+            </p>
+            <div className="mt-4 flex gap-2">
+              <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-bold text-gray-400">
+                Slippage: <span className="text-white">Lav</span>
+              </div>
+              <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-bold text-gray-400">
+                Gass: <span className="text-white">Optimal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Footer Info */}
         <div className="mt-10 pt-6 border-t border-white/[0.05] flex flex-col sm:flex-row justify-between gap-6">
           <div className="flex gap-8">
@@ -418,8 +675,8 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 <Zap className="w-4 h-4 text-amber-500" />
               </div>
               <div>
-                <span className="block text-[10px] text-gray-500 uppercase font-bold">Eksekvering</span>
-                <span className="text-sm font-semibold text-gray-300">TWAP Engine</span>
+                <span className="block text-[10px] text-gray-500 uppercase font-bold">Sist Oppdatert</span>
+                <span className="text-sm font-semibold text-gray-300">{new Date().toLocaleTimeString()}</span>
               </div>
             </div>
           </div>

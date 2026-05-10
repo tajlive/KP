@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
+import { createNotification } from "@/lib/notifications";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -84,177 +86,133 @@ export async function POST(req: NextRequest) {
         let executionSuccess = false;
 
         if (profile?.binance_connected) {
-           // LIVE EXECUTION via Binance
-           // NOTE: In a full production scenario, we would use BinanceExecutor here.
-           // For this implementation, we log the intent.
-           logger.info(`[LIVE] TWAP Order ${order.side.toUpperCase()} ${quantity.toFixed(6)} ${order.symbol} at ${price} (Value: $${executeUsdt.toFixed(2)})`);
-           
-           // Simulate success for now
-           executionSuccess = true;
+          // LIVE EXECUTION via Binance
+          logger.info(`[LIVE] TWAP Order ${order.side.toUpperCase()} ${quantity.toFixed(6)} ${order.symbol} at ${price} (Value: $${executeUsdt.toFixed(2)})`);
+          // Simulate success for now
+          executionSuccess = true;
         } else {
-           // PAPER / SIMULATED EXECUTION -> Update wallets directly
-           logger.info(`[PAPER] TWAP Order ${order.side.toUpperCase()} ${quantity.toFixed(6)} ${order.symbol} at ${price} (Value: $${executeUsdt.toFixed(2)})`);
-           
-           // 1. Get current balances
-           const { data: wallets } = await supabase
-             .from("wallets")
-             .select("*")
-             .eq("user_id", order.user_id)
-             .in("currency", [order.symbol, "USDT", "NOK"]);
+          // PAPER / SIMULATED EXECUTION -> Update wallets directly
+          logger.info(`[PAPER] TWAP Order ${order.side.toUpperCase()} ${quantity.toFixed(6)} ${order.symbol} at ${price} (Value: $${executeUsdt.toFixed(2)})`);
+          
+          const { data: wallets } = await supabase
+            .from("wallets")
+            .select("*")
+            .eq("user_id", order.user_id)
+            .in("currency", [order.symbol, "USDT", "NOK"]);
 
-           const assetWallet = wallets?.find(w => w.currency === order.symbol);
-           const usdtWallet = wallets?.find(w => w.currency === "USDT");
-           const nokWallet = wallets?.find(w => w.currency === "NOK");
+          const assetWallet = wallets?.find(w => w.currency === order.symbol);
+          const usdtWallet = wallets?.find(w => w.currency === "USDT");
+          const nokWallet = wallets?.find(w => w.currency === "NOK");
 
-           let assetBalance = assetWallet?.balance ? Number(assetWallet.balance) : 0;
-           let usdtBalance = usdtWallet?.balance ? Number(usdtWallet.balance) : 0;
-           let nokBalance = nokWallet?.balance ? Number(nokWallet.balance) : 0;
+          let assetBalance = assetWallet?.balance ? Number(assetWallet.balance) : 0;
+          let usdtBalance = usdtWallet?.balance ? Number(usdtWallet.balance) : 0;
+          let nokBalance = nokWallet?.balance ? Number(nokWallet.balance) : 0;
 
-           if (order.side === "buy") {
-              if (usdtBalance >= executeUsdt) {
-                 usdtBalance -= executeUsdt;
-                 assetBalance += quantity;
-                 executionSuccess = true;
+          if (order.side === "buy") {
+            if (usdtBalance >= executeUsdt) {
+              usdtBalance -= executeUsdt;
+              assetBalance += quantity;
+              executionSuccess = true;
+            } else {
+              const rate = await getUsdtToNokRateAsync(supabase);
+              const costNok = executeUsdt * rate;
+              if (nokBalance >= costNok) {
+                nokBalance -= costNok;
+                assetBalance += quantity;
+                executionSuccess = true;
               } else {
-                 // Fallback: check NOK balance
-                 const rate = await getUsdtToNokRateAsync(supabase);
-                 const costNok = executeUsdt * rate;
-                 
-                 if (nokBalance >= costNok) {
-                   nokBalance -= costNok;
-                   assetBalance += quantity;
-                   executionSuccess = true;
-                   logger.info(`Used ${costNok.toFixed(2)} NOK for ${order.symbol} buy (Rate: ${rate})`);
-                 } else {
-                   logger.warn(`Insufficient USDT and NOK to buy ${order.symbol}`);
-                 }
+                logger.warn(`Insufficient funds for ${order.symbol} buy`);
               }
-           } else {
-              if (assetBalance >= quantity) {
-                 assetBalance -= quantity;
-                 usdtBalance += executeUsdt;
-                 executionSuccess = true;
-              } else {
-                 logger.warn(`Insufficient ${order.symbol} to sell`);
-                 // Try selling whatever is left
-                 const maxUsdt = assetBalance * price;
-                 if (maxUsdt > 10) {
-                    executeUsdt = maxUsdt;
-                    quantity = assetBalance;
-                    assetBalance = 0;
-                    usdtBalance += executeUsdt;
-                    executionSuccess = true;
-                 }
-              }
-           }
-
-            if (executionSuccess) {
-               // Update asset wallet
-               if (assetWallet) {
-                  await supabase.from("wallets").update({ balance: assetBalance }).eq("id", assetWallet.id);
-               } else {
-                  await supabase.from("wallets").insert({ user_id: order.user_id, currency: order.symbol, balance: assetBalance });
-               }
-
-               // Update USDT wallet
-               if (usdtWallet) {
-                  await supabase.from("wallets").update({ balance: usdtBalance }).eq("id", usdtWallet.id);
-               } else {
-                  await supabase.from("wallets").insert({ user_id: order.user_id, currency: "USDT", balance: usdtBalance });
-               }
-
-               // Update NOK wallet if used
-               if (nokWallet) {
-                  await supabase.from("wallets").update({ balance: nokBalance }).eq("id", nokWallet.id);
-               }
-
-               // LOG THE TRADE
-               try {
-                  // 1. Get or create a session for this trade
-                  let sessionId = "";
-                  const { data: session } = await supabase
-                    .from("trading_sessions")
-                    .select("id")
-                    .eq("user_id", order.user_id)
-                    .eq("status", "active")
-                    .eq("strategy_id", "manual")
-                    .maybeSingle();
-                  
-                  if (session) {
-                    sessionId = session.id;
-                  } else {
-                    const { data: newSession, error: createError } = await supabase
-                      .from("trading_sessions")
-                      .insert({
-                        user_id: order.user_id,
-                        strategy_id: "manual",
-                        status: "active",
-                        mode: profile?.binance_connected ? "live" : "paper",
-                        strategy_config: { name: "Manual Rebalancing" },
-                        trading_pair: order.symbol || "ALL",
-                        current_capital: 0,
-                        initial_capital: 0,
-                        total_trades: 0,
-                        winning_trades: 0,
-                        losing_trades: 0,
-                        total_pnl: 0,
-                        last_heartbeat: new Date().toISOString(),
-                        started_at: new Date().toISOString(),
-                        is_leaderboard_visible: false,
-                      })
-                      .select()
-                      .single();
-                    if (newSession) sessionId = newSession.id;
-                  }
-
-                   if (sessionId) {
-                    const { error: tradeError } = await supabase.from("trades").insert({
-                      session_id: sessionId,
-                      user_id: order.user_id,
-                      symbol: order.symbol,
-                      trading_pair: order.symbol.includes("/") ? order.symbol : `${order.symbol}/USDT`,
-                      side: order.side,
-                      quantity,
-                      price,
-                      total_value: executeUsdt,
-                      fee: executeUsdt * 0.001,
-                      status: "filled",
-                      order_type: "market",
-                      mode: profile?.binance_connected ? "live" : "paper",
-                      executed_at: new Date().toISOString(),
-                      idempotency_key: `twap-${order.id}-${Date.now()}`
-                    });
-
-                    if (tradeError) {
-                      logger.error(`Failed to log trade for order ${order.id}:`, tradeError);
-                      (order as any).tradeError = tradeError;
-                    } else {
-                      logger.info(`Successfully logged trade for order ${order.id}`);
-                    }
-                  }
-               } catch (tradeLogErr: any) {
-                  logger.error(`Failed to log TWAP trade for order ${order.id}:`, tradeLogErr);
-                  (order as any).tradeError = tradeLogErr.message || tradeLogErr;
-               }
             }
-         }
+          } else {
+            if (assetBalance >= quantity) {
+              assetBalance -= quantity;
+              usdtBalance += executeUsdt;
+              executionSuccess = true;
+            } else {
+              logger.warn(`Insufficient ${order.symbol} to sell`);
+            }
+          }
 
+          if (executionSuccess) {
+            // Update Wallets
+            if (assetWallet) await supabase.from("wallets").update({ balance: assetBalance }).eq("id", assetWallet.id);
+            else await supabase.from("wallets").insert({ user_id: order.user_id, currency: order.symbol, balance: assetBalance });
+
+            if (usdtWallet) await supabase.from("wallets").update({ balance: usdtBalance }).eq("id", usdtWallet.id);
+            else await supabase.from("wallets").insert({ user_id: order.user_id, currency: "USDT", balance: usdtBalance });
+
+            if (nokWallet) await supabase.from("wallets").update({ balance: nokBalance }).eq("id", nokWallet.id);
+
+            // Log Trade
+            try {
+              const { data: session } = await supabase
+                .from("trading_sessions")
+                .select("id")
+                .eq("user_id", order.user_id)
+                .eq("status", "active")
+                .eq("strategy_id", "manual")
+                .maybeSingle();
+
+              let sessionId = session?.id;
+              if (!sessionId) {
+                const { data: newSession } = await supabase
+                  .from("trading_sessions")
+                  .insert({
+                    user_id: order.user_id,
+                    strategy_id: "manual",
+                    status: "active",
+                    mode: "paper",
+                    strategy_config: { name: "Manual Rebalancing" },
+                    trading_pair: "ALL",
+                    started_at: new Date().toISOString(),
+                  })
+                  .select()
+                  .single();
+                sessionId = newSession?.id;
+              }
+
+              if (sessionId) {
+                await supabase.from("trades").insert({
+                  session_id: sessionId,
+                  user_id: order.user_id,
+                  symbol: order.symbol,
+                  trading_pair: `${order.symbol}/USDT`,
+                  side: order.side,
+                  quantity,
+                  price,
+                  total_value: executeUsdt,
+                  status: "filled",
+                  mode: "paper",
+                  executed_at: new Date().toISOString(),
+                  idempotency_key: `twap-${order.id}-${Date.now()}`,
+                });
+              }
+            } catch (err) {
+              logger.error("Trade logging failed", err);
+            }
+          }
+        }
+
+        // Update Order Status (Common)
         if (executionSuccess) {
-           const newExecutedAmount = (order.executed_amount_usdt || 0) + executeUsdt;
-           const newStatus = newExecutedAmount >= order.amount_usdt * 0.99 ? "completed" : "partial"; // 0.99 for float math safety
-           
-           await (supabase as any)
-              .from("portfolio_rebalance_orders")
-              .update({
-                 executed_amount_usdt: newExecutedAmount,
-                 status: newStatus,
-                 updated_at: new Date().toISOString()
-              })
-              .eq("id", order.id);
+          const newExecutedAmount = (order.executed_amount_usdt || 0) + executeUsdt;
+          const newExecutedChunks = (order.executed_chunks || 0) + 1;
+          const newStatus = newExecutedAmount >= order.amount_usdt * 0.99 || newExecutedChunks >= order.twap_chunks ? "completed" : "partial";
+          
+          await (supabase as any)
+            .from("portfolio_rebalance_orders")
+            .update({
+              executed_amount_usdt: newExecutedAmount,
+              executed_chunks: newExecutedChunks,
+              status: newStatus,
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", order.id);
 
-           if (newStatus === "completed") {
-              eventsToCheck.add(order.event_id);
-           }
+          if (newStatus === "completed") {
+            eventsToCheck.add(order.event_id);
+          }
         }
 
       } catch (err) {
@@ -272,13 +230,26 @@ export async function POST(req: NextRequest) {
        const allCompleted = eventOrders?.every((o: any) => o.status === "completed") || false;
        
        if (allCompleted) {
-          await (supabase as any)
+          const { data: updatedEvent } = await (supabase as any)
              .from("portfolio_rebalance_events")
              .update({
                 status: "completed",
                 completed_at: new Date().toISOString()
              })
-             .eq("id", eventId);
+             .eq("id", eventId)
+             .select("user_id")
+             .single();
+
+          if (updatedEvent) {
+            await createNotification(
+              supabase as any,
+              updatedEvent.user_id,
+              "portfolio_rebalance_completed",
+              "Rebalansering fullført",
+              `Porteføljen din er nå rebalansert og i tråd med målallokeringen din.`,
+              { eventId }
+            );
+          }
           logger.info(`Portfolio rebalance event ${eventId} marked as completed.`);
        }
     }

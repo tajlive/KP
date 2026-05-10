@@ -4,7 +4,8 @@ import { BRAND } from "@/lib/design/tokens";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { motion } from "framer-motion";
+import { m, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 interface Props {
   balance: number;
@@ -12,6 +13,59 @@ interface Props {
   ctaText?: string;
   ctaLink?: string;
   sessionMode?: "paper" | "live";
+}
+
+/** Animated counter that smoothly counts up to the target value */
+function AnimatedBalance({
+  value,
+  locale,
+}: {
+  value: number;
+  locale: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const prevValue = useRef(0);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const from = prevValue.current;
+    const to = value;
+    prevValue.current = value;
+
+    const formatter = new Intl.NumberFormat(
+      locale === "no" ? "nb-NO" : "en-US",
+      {
+        style: "currency",
+        currency: "NOK",
+        maximumFractionDigits: 0,
+      }
+    );
+
+    // Skip animation if it's the initial render (from = 0)
+    if (from === 0 && to > 0) {
+      node.textContent = formatter.format(to);
+      return;
+    }
+
+    const duration = 600; // ms
+    const start = performance.now();
+
+    function step(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = from + (to - from) * eased;
+      if (node) node.textContent = formatter.format(Math.round(current));
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }, [value, locale]);
+
+  return <span ref={ref} />;
 }
 
 export function SimplifiedHero({
@@ -25,26 +79,47 @@ export function SimplifiedHero({
   const isPaper = sessionMode === "paper";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
+    <m.div
+      initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="py-8 md:py-12 text-center"
+      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="relative py-8 md:py-12 text-center"
     >
+      {/* Background glow — subtle radial gradient */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] rounded-full blur-[100px] opacity-20 ${
+            isPaper ? "bg-blue-500" : "bg-emerald-500"
+          }`}
+        />
+      </div>
+
       {/* Session mode badge */}
-      <div className="flex justify-center mb-4">
+      <m.div
+        className="flex justify-center mb-5"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+      >
         <span
-          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase ${
+          className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase backdrop-blur-sm ${
             isPaper
-              ? "bg-blue-500/15 text-blue-400 border border-blue-500/25"
-              : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
+              ? "bg-blue-500/12 text-blue-500 dark:text-blue-400 border border-blue-500/20"
+              : "bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
           }`}
         >
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${
-              isPaper ? "bg-blue-400" : "bg-emerald-400"
-            }`}
-          />
+          <span className="relative flex h-2 w-2">
+            <span
+              className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${
+                isPaper ? "bg-blue-400" : "bg-emerald-400"
+              }`}
+            />
+            <span
+              className={`relative inline-flex rounded-full h-2 w-2 ${
+                isPaper ? "bg-blue-500" : "bg-emerald-500"
+              }`}
+            />
+          </span>
           {isPaper
             ? locale === "no"
               ? "Øvingsmodus"
@@ -53,39 +128,52 @@ export function SimplifiedHero({
               ? "Live-modus"
               : "Live Mode"}
         </span>
-      </div>
+      </m.div>
 
-      {/* Balance */}
-      <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
-        {new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
-          style: "currency",
-          currency: "NOK",
-          maximumFractionDigits: 0,
-        }).format(balance)}
-      </div>
+      {/* Balance — animated counter */}
+      <m.div
+        className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white tracking-tight tabular-nums"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.4 }}
+      >
+        <AnimatedBalance value={balance} locale={locale} />
+      </m.div>
 
       {/* Change percent */}
-      <div
-        className={`text-base md:text-lg mt-2 font-medium ${
-          changePct >= 0 ? "text-emerald-400" : "text-rose-400"
+      <m.div
+        className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-sm sm:text-base font-semibold tabular-nums ${
+          changePct >= 0
+            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+            : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
         }`}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25, duration: 0.4 }}
       >
+        {changePct > 0 ? "↑" : changePct < 0 ? "↓" : "→"}
         {changePct > 0 ? "+" : ""}
         {changePct.toFixed(2)}%
-        <span className="text-slate-500 text-sm ml-1 font-normal">
+        <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal ml-0.5">
           {locale === "no" ? "siste endring" : "latest change"}
         </span>
-      </div>
+      </m.div>
 
       {/* CTA */}
-      <Link href={ctaLink ?? `/${locale}/dashboard/trade?mode=paper`}>
-        <Button
-          asChild
-          className={`${BRAND.gradient} mt-5 px-8 py-5 text-base md:text-lg font-semibold rounded-xl`}
-        >
-          <span>{ctaText ?? (locale === "no" ? "Start trading" : "Start trading")}</span>
-        </Button>
-      </Link>
-    </motion.div>
+      <m.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35, duration: 0.4 }}
+      >
+        <Link href={ctaLink ?? `/${locale}/dashboard/trade?mode=paper`}>
+          <Button
+            asChild
+            className={`${BRAND.gradient} mt-6 px-8 py-5 text-base md:text-lg font-semibold rounded-xl shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200`}
+          >
+            <span>{ctaText ?? (locale === "no" ? "Start trading" : "Start trading")}</span>
+          </Button>
+        </Link>
+      </m.div>
+    </m.div>
   );
 }
