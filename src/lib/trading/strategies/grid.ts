@@ -20,6 +20,7 @@ export interface GridConfig {
   grid_levels?: number;
   levels?: number;
   volatility_adjust?: boolean;
+  stop_loss_pct?: number;
 }
 
 export class GridBotStrategy implements StrategyEngine {
@@ -88,6 +89,27 @@ export class GridBotStrategy implements StrategyEngine {
 
     const levels = cfg.grid_levels ?? cfg.levels ?? storedGrid?.levels ?? 10;
     const gridSize = (upper - lower) / levels;
+
+    // Stop-Loss / Kill Switch Logic
+    // If price drops X% below the lower grid bound, liquidate to prevent catastrophic loss.
+    const stopLossPct = cfg.stop_loss_pct ?? -10; // Default 10% below lower bound
+    const hardStopLossPrice = lower * (1 + stopLossPct / 100);
+
+    if (currentPrice < hardStopLossPrice) {
+      if (session.open_position) {
+        return {
+          action: "sell",
+          indicators: { stop_loss_triggered: true, regime, stop_loss: stopLossPct, grid_disabled: true },
+          reason: `CRITICAL: Stop-Loss triggered. Price ($${currentPrice.toFixed(2)}) fell ${Math.abs(stopLossPct)}% below grid lower bound ($${lower.toFixed(2)}). Liquidating position.`,
+        };
+      } else {
+        return {
+          action: "hold",
+          indicators: { stop_loss_triggered: true, regime, grid_disabled: true },
+          reason: `Grid disabled: Price ($${currentPrice.toFixed(2)}) is below hard stop-loss level ($${hardStopLossPrice.toFixed(2)}).`,
+        };
+      }
+    }
 
     // If we shifted the grid, we must re-buy to enter the new grid
     if (gridShifted && !session.open_position) {

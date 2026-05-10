@@ -32,7 +32,10 @@ export interface UserStats {
   currentCapital: number;
   startingCapital: number;
   winningTrades: number;
+  recentSessions?: any[];
 }
+
+import { PaperTradingList } from "@/features/paper-trading/PaperTradingList";
 
 /* ------------------------------------------------------------------ */
 /*  Progress indicator (onboarding)                                    */
@@ -109,7 +112,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
 /* ------------------------------------------------------------------ */
 /*  Onboarded state — few trades, learning                             */
 /* ------------------------------------------------------------------ */
-function OnboardedView({ stats, userName, preferredTradingMode }: { stats: UserStats | null; userName?: string | null; preferredTradingMode: "paper" | "live" }) {
+function OnboardedView({ userId, stats, userName, preferredTradingMode }: { userId: string; stats: UserStats | null; userName?: string | null; preferredTradingMode: "paper" | "live" }) {
   const locale = useLocale();
   const isNo = locale === "no";
   const isLive = preferredTradingMode === "live";
@@ -145,7 +148,7 @@ function OnboardedView({ stats, userName, preferredTradingMode }: { stats: UserS
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="space-y-5"
+      className="space-y-8"
     >
       <div className="space-y-1">
         <h2 className="text-xl font-semibold text-white">
@@ -165,6 +168,20 @@ function OnboardedView({ stats, userName, preferredTradingMode }: { stats: UserS
       {stats && (
         <>
           <StatsGrid stats={displayStats} />
+          
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-white">
+              {isNo ? "Dine aktive sesjoner" : "Your active sessions"}
+            </h3>
+            <PaperTradingList 
+              sessions={stats.recentSessions || []} 
+              balance={stats.currentCapital} 
+              locale={locale}
+              userId={userId}
+              sessionMode={preferredTradingMode}
+            />
+          </div>
+
           <AITip
             winRate={stats.winRate}
             totalPnl={stats.totalPnl}
@@ -295,7 +312,7 @@ export function AdaptiveDashboard({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <OnboardedView stats={stats} userName={userName} preferredTradingMode={preferredTradingMode} />
+          <OnboardedView userId={userId} stats={stats} userName={userName} preferredTradingMode={preferredTradingMode} />
         </motion.div>
       )}
 

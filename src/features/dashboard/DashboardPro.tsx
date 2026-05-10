@@ -33,6 +33,8 @@ import { FeatureGate } from "@/lib/feature-flags";
 // Adaptive state machine
 import { computeUserState, type UserState } from "@/hooks/useUserState";
 
+import { PaperTradingList } from "@/features/paper-trading/PaperTradingList";
+
 interface UserStats {
   totalTrades: number;
   winRate: number;
@@ -40,6 +42,8 @@ interface UserStats {
   currentCapital: number;
   startingCapital: number;
   winningTrades?: number;
+  sessionCount?: number;
+  recentSessions?: any[];
 }
 
 import type { DashboardCmsData } from "./DashboardContent";
@@ -123,6 +127,8 @@ export function DashboardPro({
     currentCapital: 0,
     startingCapital: 0,
     winningTrades: 0,
+    sessionCount: 0,
+    recentSessions: [],
   };
 
   const totalReturn =
@@ -138,6 +144,7 @@ export function DashboardPro({
     // signupDays proxy: anta 0 hvis ingen trades, ellers 7+ (de har kommet forbi onboarding)
     signupDays: effectiveStats.totalTrades === 0 ? 0 : 7,
     totalPnlPct: totalReturn,
+    sessionCount: effectiveStats.sessionCount || 0,
   });
 
   const statItems = [
@@ -221,6 +228,30 @@ export function DashboardPro({
           <div className="lg:col-span-2 space-y-6">
             {/* Portfolio Chart — vis for alle, men tom for nye brukere */}
             <PortfolioChart userId={userId} mode={preferredTradingMode} />
+
+            {/* Active Sessions List — Added to fix visibility issue */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  {locale === "no" ? "Dine sesjoner" : "Your sessions"}
+                </h3>
+                {(effectiveStats.sessionCount || 0) > 5 && (
+                  <Link 
+                    href={`/${locale}/paper-trading`} 
+                    className="text-sm text-emerald-600 hover:text-emerald-500 font-medium transition-colors"
+                  >
+                    {locale === "no" ? "Se alle" : "See all"}
+                  </Link>
+                )}
+              </div>
+              <PaperTradingList 
+                sessions={effectiveStats.recentSessions || []} 
+                balance={effectiveStats.currentCapital} 
+                locale={locale}
+                userId={userId}
+                sessionMode={preferredTradingMode}
+              />
+            </div>
 
             {/* Stats Grid — skjult for helt nye brukere */}
             {userState !== "NyBruker" && (
