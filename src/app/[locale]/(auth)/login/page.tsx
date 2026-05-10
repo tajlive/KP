@@ -1,36 +1,56 @@
 "use client";
 
 /**
- * LOGIN PAGE - Forenklet
+ * LOGIN PAGE - Client-side auth
  * 
- * - Epost + passord skjema (server action)
- * - Google OAuth knapp
- * - Link til register og glemt passord
+ * Bruker Supabase client-side auth direkte for å unngå
+ * UnrecognizedActionError som oppstår med Server Actions
+ * under Vercel deploy-overganger.
  */
 
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { signInWithEmail } from "@/lib/auth/new/auth-actions";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/utils";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 
 export default function LoginPage() {
   const locale = useLocale();
   const t = useTranslations("auth");
+  const router = useRouter();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setLoading(true);
     setError("");
     
-    const result = await signInWithEmail(formData);
-    
-    if (result?.error) {
-      setError(result.error);
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const supabase = createClient();
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return;
+      }
+
+      // Successful login — redirect client-side
+      router.push(`/${locale}/dashboard`);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Innlogging feilet");
       setLoading(false);
     }
-    // Hvis success, redirect skjer automatisk fra server action
   }
 
   async function handleGoogleLogin() {
@@ -75,7 +95,7 @@ export default function LoginPage() {
           )}
 
           {/* Email Login Form */}
-          <form action={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">
                 {t("emailLabel")}
