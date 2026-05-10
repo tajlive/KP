@@ -54,11 +54,38 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
       try {
         const [walletsRes, configRes] = await Promise.all([
           supabase.from("wallets").select("*").eq("user_id", userId),
-          (supabase as any).from("portfolio_rebalance_configs").select("*").eq("user_id", userId).single(),
+          (supabase as any).from("portfolio_rebalance_configs").select("*").eq("user_id", userId).maybeSingle(),
         ]);
 
         if (walletsRes.data) setWallets(walletsRes.data);
-        if (configRes.data) setConfig(configRes.data);
+        
+        if (configRes.data) {
+          setConfig(configRes.data);
+        } else {
+          // Create default config if missing
+          const defaultConfig = {
+            user_id: userId,
+            is_active: false,
+            threshold_percent: 5,
+            target_allocations: {
+              "BTC": 0.50,
+              "ETH": 0.30,
+              "SOL": 0.10,
+              "BNB": 0.05,
+              "XRP": 0.05
+            }
+          };
+          
+          const { data: newConfig, error: insertError } = await (supabase as any)
+            .from("portfolio_rebalance_configs")
+            .insert(defaultConfig)
+            .select()
+            .single();
+            
+          if (!insertError && newConfig) {
+            setConfig(newConfig);
+          }
+        }
       } catch (err) {
         console.error("Error fetching portfolio data", err);
       } finally {
@@ -78,6 +105,8 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
     
     if (!error) {
       setConfig({ ...config, is_active: newStatus });
+    } else {
+      console.error("Failed to toggle autopilot", error);
     }
   };
 
