@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useLocale, useTranslations } from "next-intl";
 import { Info, Wallet } from "lucide-react";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
 interface TopPair {
   pair: string;
@@ -53,31 +54,33 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
   if (loading) return <Skeleton />;
   if (!data || data.length === 0) return <EmptyState noDataText={t("noData")} />;
 
-  // Sort by absolute PnL contribution and take top 6, group rest as "Other"
-  const sorted = [...data].sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl));
-  const top = sorted.slice(0, 6);
-  const rest = sorted.slice(6);
+  const { chartData, totalValue } = React.useMemo(() => {
+    const sorted = [...data].sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl));
+    const top = sorted.slice(0, 6);
+    const rest = sorted.slice(6);
 
-  const chartData = [
-    ...top.map((item) => ({
-      name: item.pair,
-      value: Math.abs(item.pnl),
-      pnl: item.pnl,
-      trades: item.trades,
-    })),
-    ...(rest.length > 0
-      ? [
-          {
-            name: t("other"),
-            value: rest.reduce((sum, r) => sum + Math.abs(r.pnl), 0),
-            pnl: rest.reduce((sum, r) => sum + r.pnl, 0),
-            trades: rest.reduce((sum, r) => sum + r.trades, 0),
-          },
-        ]
-      : []),
-  ];
+    const generatedData = [
+      ...top.map((item) => ({
+        name: item.pair,
+        value: Math.abs(item.pnl),
+        pnl: item.pnl,
+        trades: item.trades,
+      })),
+      ...(rest.length > 0
+        ? [
+            {
+              name: t("other"),
+              value: rest.reduce((sum, r) => sum + Math.abs(r.pnl), 0),
+              pnl: rest.reduce((sum, r) => sum + r.pnl, 0),
+              trades: rest.reduce((sum, r) => sum + r.trades, 0),
+            },
+          ]
+        : []),
+    ];
 
-  const totalPnl = chartData.reduce((sum, d) => sum + d.pnl, 0);
+    const val = generatedData.reduce((sum, d) => sum + d.value, 0);
+    return { chartData: generatedData, totalValue: val };
+  }, [data, t]);
 
   const CustomTooltip = ({
     active,
@@ -131,14 +134,11 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
         </div>
         <div className="flex items-center gap-1.5">
           <Wallet className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-          <span
-            className={`text-sm font-bold ${
-              totalPnl >= 0 ? "text-emerald-400" : "text-red-400"
-            }`}
-          >
-            {totalPnl >= 0 ? "+" : ""}
-            {totalPnl.toLocaleString()} NOK
-          </span>
+          <AnimatedNumber 
+            value={totalValue} 
+            formatFn={(val) => `${val.toLocaleString("no-NO", { maximumFractionDigits: 2 })} NOK`}
+            className="text-sm font-bold text-slate-700 dark:text-slate-300"
+          />
         </div>
       </div>
 
@@ -203,16 +203,11 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
                   />
                   <span className="text-slate-600 dark:text-slate-300 text-xs">{item.name}</span>
                 </div>
-                <div className="text-right">
-                  <span
-                    className={`text-xs font-medium ${
-                      item.pnl >= 0 ? "text-emerald-400" : "text-red-400"
-                    }`}
-                  >
-                    {item.pnl >= 0 ? "+" : ""}
-                    {item.pnl.toLocaleString()}
+                <div className="text-right flex items-center justify-end gap-2">
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    {item.value.toLocaleString()} NOK
                   </span>
-                  <span className="text-xs text-slate-600 ml-1.5">
+                  <span className="text-xs text-slate-500 font-medium bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                     {percentage.toFixed(0)}%
                   </span>
                 </div>
