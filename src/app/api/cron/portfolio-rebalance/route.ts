@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,8 +78,9 @@ export async function POST(req: NextRequest) {
         symbolsToFetch.delete("USDT");
         symbolsToFetch.delete("NOK");
 
-        // 3. Fetch Prices
+        // 3. Fetch Prices & NOK rate
         const prices = await fetchCurrentPrices(Array.from(symbolsToFetch));
+        const usdtNokRate = await getUsdtToNokRateAsync(supabase);
 
         // 4. Calculate total portfolio value and current allocations
         let totalValueUsdt = 0;
@@ -86,10 +88,12 @@ export async function POST(req: NextRequest) {
         
         for (const wallet of wallets || []) {
           const currency = wallet.currency;
-          const balance = wallet.balance;
+          const balance = Number(wallet.balance);
           
           if (currency === "NOK") {
-            // In a real app we'd convert NOK to USDT, but let's assume portfolio is crypto-only for now
+            const valueUsdt = balance / usdtNokRate;
+            currentValuesUsdt["NOK"] = valueUsdt;
+            totalValueUsdt += valueUsdt;
             continue; 
           }
 
@@ -100,7 +104,10 @@ export async function POST(req: NextRequest) {
           totalValueUsdt += valueUsdt;
         }
 
-        if (totalValueUsdt === 0) continue; // Nothing to rebalance
+        if (totalValueUsdt === 0) {
+          logger.info(`Total value is 0 for user ${userId}, skipping rebalance.`);
+          continue;
+        }
 
         const currentAllocations: Record<string, number> = {};
         let needsRebalance = false;
