@@ -21,11 +21,12 @@ async function fetchPrice(symbol: string): Promise<number> {
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeaderRaw = req.headers.get("authorization")?.replace("Bearer ", "");
+    const authHeader = req.headers.get("authorization") || "";
+    const cronSecret = authHeader.replace("Bearer ", "").trim();
     const isDev = process.env.NODE_ENV === "development";
-    const cronSecret = process.env.CRON_SECRET;
+    const expectedSecret = process.env.CRON_SECRET?.replace(/['"]/g, "").trim();
 
-    if (!isDev && cronSecret && authHeaderRaw !== cronSecret.trim()) {
+    if (!isDev && cronSecret !== expectedSecret) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
