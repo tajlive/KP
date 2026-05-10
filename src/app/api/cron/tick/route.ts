@@ -309,7 +309,7 @@ async function processSession(
         await db.from("trading_sessions")
           .update({ strategy_config: newStrategyConfig } as never)
           .eq("id", session.id);
-        console.log(`[Tick] Updated grid config for session ${session.id} (Trailing Up: upper=${newUpper}, lower=${newLower})`);
+        console.info(`[Tick] Updated grid config for session ${session.id} (Trailing Up: upper=${newUpper}, lower=${newLower})`);
       } catch (err: any) {
         console.error(`[Tick] Failed to persist new grid config for ${session.id}`, err);
       }
