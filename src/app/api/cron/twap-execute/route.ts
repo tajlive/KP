@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -95,13 +96,15 @@ export async function POST(req: NextRequest) {
              .from("wallets")
              .select("*")
              .eq("user_id", order.user_id)
-             .in("currency", [order.symbol, "USDT"]);
+             .in("currency", [order.symbol, "USDT", "NOK"]);
 
            const assetWallet = wallets?.find(w => w.currency === order.symbol);
            const usdtWallet = wallets?.find(w => w.currency === "USDT");
+           const nokWallet = wallets?.find(w => w.currency === "NOK");
 
-           let assetBalance = assetWallet?.balance || 0;
-           let usdtBalance = usdtWallet?.balance || 0;
+           let assetBalance = assetWallet?.balance ? Number(assetWallet.balance) : 0;
+           let usdtBalance = usdtWallet?.balance ? Number(usdtWallet.balance) : 0;
+           let nokBalance = nokWallet?.balance ? Number(nokWallet.balance) : 0;
 
            if (order.side === "buy") {
               if (usdtBalance >= executeUsdt) {
@@ -109,8 +112,18 @@ export async function POST(req: NextRequest) {
                  assetBalance += quantity;
                  executionSuccess = true;
               } else {
-                 logger.warn(`Insufficient USDT to buy ${order.symbol}`);
-                 // Skip chunk this time
+                 // Fallback: check NOK balance
+                 const rate = await getUsdtToNokRateAsync(supabase);
+                 const costNok = executeUsdt * rate;
+                 
+                 if (nokBalance >= costNok) {
+                   nokBalance -= costNok;
+                   assetBalance += quantity;
+                   executionSuccess = true;
+                   logger.info(`Used ${costNok.toFixed(2)} NOK for ${order.symbol} buy (Rate: ${rate})`);
+                 } else {
+                   logger.warn(`Insufficient USDT and NOK to buy ${order.symbol}`);
+                 }
               }
            } else {
               if (assetBalance >= quantity) {
@@ -144,6 +157,11 @@ export async function POST(req: NextRequest) {
                  await supabase.from("wallets").update({ balance: usdtBalance }).eq("id", usdtWallet.id);
               } else {
                  await supabase.from("wallets").insert({ user_id: order.user_id, currency: "USDT", balance: usdtBalance });
+              }
+
+              // Update NOK wallet if used
+              if (nokWallet) {
+                 await supabase.from("wallets").update({ balance: nokBalance }).eq("id", nokWallet.id);
               }
            }
         }
