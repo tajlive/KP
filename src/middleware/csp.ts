@@ -83,7 +83,6 @@ export const cspMiddleware: MiddlewareFn = (
     "default-src": ["'self'"],
     "script-src": [
       "'self'",
-      ...(nonce ? [`'nonce-${nonce}'`] : []),
       "'unsafe-inline'",
       ...(isDev ? ["'unsafe-eval'"] : []),
       "https://vuxbjlykgmzskxbclquf.supabase.co",
@@ -94,7 +93,6 @@ export const cspMiddleware: MiddlewareFn = (
     ],
     "style-src": [
       "'self'",
-      ...(nonce ? [`'nonce-${nonce}'`] : []),
       "'unsafe-inline'",
     ],
     "img-src": [
@@ -176,12 +174,12 @@ export function generateCSPMetaContent(nonce: string): string {
     "default-src": ["'self'"],
     "script-src": [
       "'self'",
-      `'nonce-${nonce}'`,
+      "'unsafe-inline'",
       ...(isDev ? ["'unsafe-eval'"] : []),
       "https://vuxbjlykgmzskxbclquf.supabase.co",
       "https://*.tradingview.com",
     ],
-    "style-src": ["'self'", `'nonce-${nonce}'`],
+    "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": [
       "'self'",
       "blob:",
