@@ -75,8 +75,34 @@ export class GridBotStrategy implements StrategyEngine {
       lower = mid - halfRange;
     }
 
+    // Trailing Up logic - shifts the grid upwards if price breaks out above upper bound
+    // This captures gains in bull markets and prevents premature grid exits.
+    const trailingUp = (session.strategy_config as Record<string, unknown>)?.trailing_up !== false;
+    let gridShifted = false;
+    if (trailingUp && currentPrice > upper) {
+      const shift = currentPrice - upper;
+      upper += shift;
+      lower += shift;
+      gridShifted = true;
+    }
+
     const levels = cfg.grid_levels ?? cfg.levels ?? storedGrid?.levels ?? 10;
     const gridSize = (upper - lower) / levels;
+
+    // If we shifted the grid, we must re-buy to enter the new grid
+    if (gridShifted && !session.open_position) {
+      return {
+        action: "buy",
+        positionSize: 1 / levels, // enter with 1 level of position
+        indicators: {
+          new_grid_upper: upper,
+          new_grid_lower: lower,
+          regime,
+          trailing_up_triggered: true
+        },
+        reason: `Trailing Up: Grid shifted up to capture bull run. Re-entering at $${currentPrice.toFixed(0)}`,
+      };
+    }
 
     if (currentPrice > upper || currentPrice < lower) {
       return {
@@ -120,7 +146,12 @@ export class GridBotStrategy implements StrategyEngine {
 
     return {
       action: "hold",
-      indicators: { grid_level: currentLevel, regime },
+      indicators: { 
+        grid_level: currentLevel, 
+        regime,
+        ...(gridShifted ? { new_grid_upper: upper, new_grid_lower: lower } : {})
+      },
+      reason: gridShifted ? `Trailing Up: Grid shifted up to capture bull run.` : undefined,
     };
   }
 }
