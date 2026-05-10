@@ -189,9 +189,6 @@ export default async function PortfolioPage({ params }: PageProps) {
     // PRIMARY: Total capital from all trading sessions (matches /dashboard)
     // SECONDARY: Wallet balance as "available cash" (tilgjengelig)
     const hasSessions = sessions && sessions.length > 0;
-    const hasWallets = wallets && wallets.length > 0;
-    const walletBalance = hasWallets ? Number(wallets![0].balance ?? 0) : 0;
-
     const displayAssets: Array<{
       id: string;
       currency: string;
@@ -210,13 +207,18 @@ export default async function PortfolioPage({ params }: PageProps) {
       });
     }
 
-    if (hasWallets && walletBalance > 0) {
-      displayAssets.push({
-        type: "wallet",
-        id: wallets![0].id,
-        currency: wallets![0].currency,
-        balance: walletBalance,
-        label: t("available"),
+    if (wallets && wallets.length > 0) {
+      wallets!.forEach(wallet => {
+        const balance = Number(wallet.balance ?? 0);
+        if (balance > 0) {
+          displayAssets.push({
+            type: "wallet",
+            id: wallet.id,
+            currency: wallet.currency,
+            balance: balance,
+            label: wallet.currency === "NOK" ? t("available") : t("holding"),
+          });
+        }
       });
     }
 

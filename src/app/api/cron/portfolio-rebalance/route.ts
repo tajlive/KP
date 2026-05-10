@@ -38,8 +38,10 @@ async function fetchCurrentPrices(symbols: string[]): Promise<Record<string, num
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const cronSecret = req.headers.get("authorization")?.replace("Bearer ", "");
+    const isDev = process.env.NODE_ENV === "development";
+
+    if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

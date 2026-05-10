@@ -111,10 +111,10 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
   };
 
   const currentData = wallets
-    .filter(w => w.currency !== "USDT" && w.currency !== "NOK")
+    .filter(w => w.currency !== "USDT" && w.currency !== "NOK" && Number(w.balance) > 0)
     .map(w => ({
       name: w.currency,
-      value: w.balance
+      value: Number(w.balance)
     }));
 
   const targetData = config ? Object.entries(config.target_allocations).map(([currency, weight]) => ({
