@@ -63,3 +63,89 @@
 {"subject":"ChatWidgetLoader","predicate":"location","object":"src/shared/providers/ClientSideProviders.tsx","validFrom":"2026-05-08T12:54:06.700Z"}
 {"subject":"ChatWidgetLoader","predicate":"rendered in","object":"root layout — global for all pages","validFrom":"2026-05-08T12:54:06.700Z"}
 {"subject":"ChatWidget","predicate":"hidden by","object":"commenting out JSX in ClientSideProviders","validFrom":"2026-05-08T12:54:06.700Z"}
+{"subject":"referral system","predicate":"had bug","object":"'3 tickets this month' checked total count instead of monthly count","validFrom":"2026-05-08T13:28:40.557Z"}
+{"subject":"referral system","predicate":"had bug","object":"trigger set 'account_created' which violated DB CHECK constraint","validFrom":"2026-05-08T13:28:40.557Z"}
+{"subject":"referral system","predicate":"had bug","object":"referrer_reward_months/points columns were never updated","validFrom":"2026-05-08T13:28:40.558Z"}
+{"subject":"referral system","predicate":"fixed in","object":"commit feb960c81 — 2026-05-07","validFrom":"2026-05-08T13:28:40.558Z"}
+{"subject":"referral_tracking","predicate":"DB constraint status values","object":"pending, signed_up, trial_completed, converted, expired","validFrom":"2026-05-08T13:28:40.558Z"}
+{"subject":"referral_tracking trigger","predicate":"now sets status to","object":"'signed_up' (was 'account_created')","validFrom":"2026-05-08T13:28:40.561Z"}
+{"subject":"referral API GET","predicate":"filters count by","object":"created_at >= start of current month","validFrom":"2026-05-08T13:28:40.562Z"}
+{"subject":"referral API GET","predicate":"returns","object":"referrer_reward_months in ticket data","validFrom":"2026-05-08T13:28:40.562Z"}
+{"subject":"referral UI","predicate":"shows","object":"actual earned reward months (not hardcoded 499kr)","validFrom":"2026-05-08T13:28:40.562Z"}
+{"subject":"GoldenTicket","predicate":"receives locale via","object":"prop chain: page.tsx → ReferralDashboard → GoldenTicket","validFrom":"2026-05-08T13:28:40.562Z"}
+{"subject":"GoldenTicket","predicate":"removed","object":"document.documentElement.lang (unreliable)","validFrom":"2026-05-08T13:28:40.562Z"}
+{"subject":"referral_tracking","predicate":"new index","object":"idx_referral_tracking_monthly (referrer_user_id, created_at)","validFrom":"2026-05-08T13:28:40.563Z"}
+{"subject":"referral_tracking","predicate":"new index","object":"idx_referral_tracking_referred_status (referred_user_id, status)","validFrom":"2026-05-08T13:28:40.563Z"}
+{"subject":"referral-system","predicate":"migration_run","object":"20260507000000_fix_referral_status_and_rewards.sql — status signed_up, 2 indexes, trigger on auth.users","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"supabase-db-push","predicate":"method","object":"exec_sql RPC for DDL + supabase db query --db-url for auth.users trigger (direct connection required)","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"supabase-migration","predicate":"fix_applied","object":"20260507041802_ai_autopilot_configs.sql — added DROP POLICY IF EXISTS before CREATE POLICY for idempotency","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"supabase-migration","predicate":"fix_applied","object":"999_fix_materialized_view.sql — leaderboard drop wrapped in DO/EXECUTE/EXCEPTION block","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"RiskMetricsPanel","predicate":"fixed","object":"fetch error handling — now checks r.ok and handles data.ok === false","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"api-trading-analytics","predicate":"fixed","object":"tradeRowSchema uses z.coerce.number() for realized_pnl and total_value (Supabase numeric-as-string)","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"api-trading-analytics","predicate":"improved","object":"validation error logging with flatten() details","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"api-trading-analytics","predicate":"fixed_v2","object":"tradeRowSchema: z.coerce.number().nullish().transform() — håndterer både null, undefined, og strings fra Supabase","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"zod-coerce","predicate":"gotcha","object":"z.coerce.number().nullable() feiler på undefined (gir NaN) — bruk .nullish().transform(v => v ?? null)","validFrom":"2026-05-07T03:33:52.280243+02:00"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"9 trading agents with regime-based weights","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"auto-pause circuit breaker (3 days negative expectancy)","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"tick fallback to ensemble when signals stale","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"multi-timeframe filter (1h+4h)","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"professional metrics (expectancy, sharpe, profit factor)","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"deployed_to","object":"production (Vercel + Supabase)","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"ai-engine-cron","predicate":"schedule","object":"*/15 * * * *","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"ensemble-v2","predicate":"consensus_threshold","object":"55/45","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"ensemble-v2","predicate":"agents_count","object":"9","created":"2026-05-09T05:38:16.575Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"9 trading agents with regime-based weights","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"auto-pause circuit breaker (3 days negative expectancy)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"tick fallback to ensemble when signals stale","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"multi-timeframe filter (1h+4h)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"professional metrics (expectancy, sharpe, profit factor)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"expectancy-based position sizing guardrail","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"ATR-based trailing stop (2x ATR)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"volume quality filter (>5M USDT 24h)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"Fear & Greed sentiment agent","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"Grid trading agent for sideways markets","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"includes","object":"Hurst Exponent agent for regime detection","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"autopilot-optimization-2026-05-09","predicate":"deployed_to","object":"production (Vercel + Supabase)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"ai-engine-cron","predicate":"schedule","object":"*/15 * * * * (was hourly)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"tick-cron","predicate":"schedule","object":"*/5 * * * *","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"rebalance-cron","predicate":"schedule","object":"0 6 * * * UTC","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"ensemble-v2","predicate":"consensus_threshold","object":"55/45 (was 65/35)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"ensemble-v2","predicate":"agents_count","object":"9","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"ensemble-v2","predicate":"signal_max_age","object":"4 hours (was 2 hours)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"position-sizing","predicate":"max_per_trade","object":"10% (was 15%)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"position-sizing","predicate":"max_daily_trades","object":"20 (was 10)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"kelly-criterion","predicate":"confidence_filter","object":"50 (was 60)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"trailing-stop","predicate":"method","object":"2x ATR (was fixed 2.5%)","created":"2026-05-09T05:40:57.115Z"}
+{"subject":"landing-page","predicate":"uses","object":"ISR revalidate=60","validFrom":"2026-05-09T13:13:13.310Z"}
+{"subject":"landing-page","predicate":"uses","object":"lazyOnload PlausibleScript","validFrom":"2026-05-09T13:13:13.311Z"}
+{"subject":"swarm-orchestrator","predicate":"has","object":"86 passed 0 blocked 4 warnings","validFrom":"2026-05-09T13:13:13.311Z"}
+{"subject":"playwright","predicate":"has","object":"smoke-webkit Desktop Safari project","validFrom":"2026-05-09T13:13:13.311Z"}
+{"subject":"kimi-cli","predicate":"upgraded_to","object":"v1.41.0","validFrom":"2026-05-09T13:13:13.312Z"}
+{"subject":"commit-99f071d67","predicate":"deployed_to","object":"vercel-production","validFrom":"2026-05-09T13:13:13.313Z"}
+{"subject":"landing-page","predicate":"uses","object":"BelowFoldSections Client Component wrapper with ssr:false","validFrom":"2026-05-09T13:56:37.402Z"}
+{"subject":"vitest.config.ts","predicate":"fixed","object":"removed deprecated esbuild block, using build.target instead","validFrom":"2026-05-09T13:56:37.403Z"}
+{"subject":"vercel","predicate":"upgraded_to","object":"53.3.1 (moved from deps to devDeps)","validFrom":"2026-05-09T13:56:37.404Z"}
+{"subject":"npm audit","predicate":"blocked_on","object":"upstream: Vercel @vercel/* transitive deps, Perplexity MCP @modelcontextprotocol/sdk","validFrom":"2026-05-09T13:56:37.404Z"}
+{"subject":"commit-070e2e62a","predicate":"deployed_to","object":"vercel-production","validFrom":"2026-05-09T13:56:37.405Z"}
+{"subject":"commit-7ea1c0f26","predicate":"deployed_to","object":"vercel-production","validFrom":"2026-05-09T13:56:37.407Z"}
+{"subject":"below-fold-sections","predicate":"uses","object":"ssr:false via next/dynamic in Client Component","validFrom":"2026-05-09T14:15:02.918Z"}
+{"subject":"below-fold-sections","predicate":"wraps","object":"DemoWidget, LeaderboardPreview, CoursePreview, ThreeSteps, FeaturesBentoGrid, FinalCTASection","validFrom":"2026-05-09T14:15:02.918Z"}
+{"subject":"lighthouse-mobile","predicate":"improved_from","object":"53 to 60 (local build)","validFrom":"2026-05-09T14:15:02.920Z"}
+{"subject":"lighthouse-mobile","predicate":"tbt_reduced","object":"1450ms to 610ms (-58%)","validFrom":"2026-05-09T14:15:02.920Z"}
+{"subject":"lighthouse-mobile","predicate":"fcp_reduced","object":"3.1s to 1.7s (-45%)","validFrom":"2026-05-09T14:15:02.920Z"}
+{"subject":"lighthouse-desktop","predicate":"score","object":"93 (after changes)","validFrom":"2026-05-09T14:15:02.920Z"}
+{"subject":"vitest","predicate":"uses","object":"build.target instead of deprecated esbuild.target","validFrom":"2026-05-09T14:15:02.920Z"}
+{"subject":"vercel","predicate":"moved_from","object":"dependencies to devDependencies","validFrom":"2026-05-09T14:15:02.921Z"}
+{"subject":"swarm-orchestrator","predicate":"upgraded_to","object":"v3.0","validFrom":"2026-05-09T14:31:41.193Z"}
+{"subject":"swarm-orchestrator","predicate":"uses","object":"Promise.all parallel agent execution","validFrom":"2026-05-09T14:31:41.194Z"}
+{"subject":"swarm-orchestrator","predicate":"has","object":"PerformanceAgent (Next.js render strategies, lazy loading, image priority)","validFrom":"2026-05-09T14:31:41.194Z"}
+{"subject":"swarm-orchestrator","predicate":"uses","object":"delta analysis — suppresses identical warnings from previous runs","validFrom":"2026-05-09T14:31:41.194Z"}
+{"subject":"swarm-orchestrator","predicate":"uses","object":"enhanced complexity scoring (nesting depth, import count, JSX tags)","validFrom":"2026-05-09T14:31:41.194Z"}
+{"subject":"swarm-orchestrator","predicate":"uses","object":"EXCLUDE_PATTERNS for auto-generated files","validFrom":"2026-05-09T14:31:41.194Z"}
+{"subject":"swarm-orchestrator","predicate":"outputs","object":"auto-fix suggestions (💡) from agents","validFrom":"2026-05-09T14:31:41.194Z"}
+{"subject":"commit-5670a3a23","predicate":"deployed_to","object":"vercel-production","validFrom":"2026-05-09T14:31:41.195Z"}
+{"subject":"auto-trader","predicate":"fixed","object":"signal validity extended from 5min to 15min","validFrom":"2026-05-09T17:52:51.150Z"}
+{"subject":"ai-engine","predicate":"generates","object":"signals every 15 minutes","validFrom":"2026-05-09T17:52:51.151Z"}
+{"subject":"auto-trade-cron","predicate":"runs","object":"every 10 minutes","validFrom":"2026-05-09T17:52:51.151Z"}
+{"subject":"tomarnejensen@gmail.com","predicate":"has","object":"4 active paper trading sessions","validFrom":"2026-05-09T17:52:51.155Z"}
+{"subject":"ai_decision_log","predicate":"produced","object":"302 signals in 24h but 0 trades due to 5min expiry","validFrom":"2026-05-09T17:52:51.155Z"}

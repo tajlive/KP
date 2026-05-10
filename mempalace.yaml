@@ -1,112 +1,76 @@
 wing: klarpakke
-version: "2.1-fts5"
-
-# MemPalace bruker SQLite FTS5 for fulltext-søk (ChromaDB fallback for embeddings)
-storage:
-  mode: raw
-  search_backend: sqlite-fts5
-  aaak_compression: true
-
-# Rom-konfigurasjon med prioriteringer (11 rom etter konsolidering)
 rooms:
-  # HIGH PRIORITY - Kritisk kunnskap
-  - name: critical_decisions
-    description: ADR-er og arkitektur-beslutninger
-    priority: high
-    retention: permanent
-    sources:
-      - docs/adr/*.md
-      - docs/*DECISION*.md
-
-  - name: error_patterns
-    description: Feil og løsninger
-    priority: high
-    retention: permanent
-    sources:
-      - .knowledge/errors/*.md
-      - src/**/*.ts {TODO,FIXME,HACK}
-
-  - name: auth_system
-    description: Auth-mønstre og fixes
-    priority: high
-    retention: 2years
-    sources:
-      - docs/auth-storage.md
-      - AUTH-ISSUE-DIAGNOSIS*.md
-
-  # MEDIUM PRIORITY - Teknisk gjeld
-  - name: tech_debt
-    description: TYPE_DEBT og refaktoreringsbehov
-    priority: medium
-    retention: 1year
-    sources:
-      - src/lib/supabase/TYPE_DEBT.md
-      - docs/TYPE-DEBT-ROADMAP*.md
-
-  - name: api_contracts
-    description: API-dokumentasjon
-    priority: medium
-    retention: 1year
-    sources:
-      - docs/api-routes.md
-      - src/app/api/**/*.ts
-
-  # STANDARD PRIORITY - Prosjektinfo
-  - name: project_status
-    description: Statusrapporter og runbooks
-    priority: standard
-    retention: 6months
-    sources:
-      - PROJECT_STATUS.md
-      - PRODUCTION-READINESS*.md
-      - runbook.md
-
-  - name: operations
-    description: Agent ops, debug-analysis, monitoring
-    priority: standard
-    retention: 1year
-    sources:
-      - .agent/ops/*.md
-      - docs/monitoring/*.md
-
-  - name: ux_engineering
-    description: UX/UI audit, design system, i18n
-    priority: standard
-    retention: 1year
-    sources:
-      - docs/ux/*.md
-      - .knowledge/i18n/*.md
-
-  - name: infrastructure
-    description: Deploy pipeline, DNS, Vercel, Cloudflare
-    priority: standard
-    retention: 1year
-    sources:
-      - docs/deployment/*.md
-      - .knowledge/deployment/*.md
-
-  - name: kimi_sessions
-    description: KIMI diary entries
-    priority: standard
-    retention: 1year
-    auto_populate: true
-
-  # LOW PRIORITY - Arkiv
-  - name: archive
-    description: Gamle rapporter og logs
-    priority: low
-    retention: 3months
-
-search:
-  fallback_to_grep: true
-  grep_options: "-r -i -n --include='*.md' --include='*.ts' --include='*.tsx'"
-  max_results: 10
-
-knowledge_graph:
-  enabled: true
-  auto_extract_relations: true
-
-diary:
-  enabled: true
-  format: aaak
-  auto_write_on_task_complete: true
+- name: production_evidence
+  description: Files from production-evidence/
+- name: allure_results
+  description: Files from allure-results/
+- name: archive_root_garbage
+  description: Files from archive_root_garbage/
+- name: watchdog_reports
+  description: Files from watchdog-reports/
+- name: messages
+  description: Files from messages/
+- name: allure_report
+  description: Files from allure-report/
+- name: memory
+  description: Files from memory/
+- name: archive
+  description: Files from archive/
+- name: configuration
+  description: Files from config/
+- name: project.inlang
+  description: Files from project.inlang/
+- name: launch
+  description: Files from launch/
+- name: documentation
+  description: Files from docs/
+- name: playwright
+  description: Files from playwright/
+- name: supabase
+  description: Files from supabase/
+- name: frontend
+  description: Files from components/
+- name: debug_videos
+  description: Files from debug-videos/
+- name: public
+  description: Files from public/
+- name: logs
+  description: Files from logs/
+- name: audit
+  description: Files from audit/
+- name: test_reports
+  description: Files from test-reports/
+- name: scripts
+  description: Files from scripts/
+- name: lib
+  description: Files from lib/
+- name: prompts
+  description: Files from prompts/
+- name: playwright_report
+  description: Files from playwright-report/
+- name: test_results
+  description: Files from test-results/
+- name: e2e
+  description: Files from e2e/
+- name: data
+  description: Files from data/
+- name: design
+  description: Files from assets/
+- name: reports
+  description: Files from reports/
+- name: archive_docs
+  description: Files from archive-docs/
+- name: src
+  description: Files from src/
+- name: sql
+  description: Files from sql/
+- name: planning
+  description: Files from specs/
+- name: backend
+  description: Files from db/
+- name: costs
+  description: Files from pricing/
+- name: testing
+  description: Files from tests/
+- name: general
+  description: Files that don't fit other rooms

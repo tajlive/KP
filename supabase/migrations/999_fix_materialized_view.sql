@@ -9,8 +9,22 @@
 -- MIGRATION: Fiks trading tables (idempotent - kan kjøres flere ganger)
 -- ============================================================================
 
--- 1. DROP leaderboard (hvis finnes)
-DROP TABLE IF EXISTS leaderboard CASCADE;
+-- 1. DROP leaderboard (hvis finnes - legacy, kan være view, matview, eller table)
+DO $$ BEGIN
+  EXECUTE 'DROP VIEW IF EXISTS leaderboard CASCADE';
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'leaderboard view removal was not successful (expected if not a view): %', SQLERRM;
+END $$;
+DO $$ BEGIN
+  EXECUTE 'DROP TABLE IF EXISTS leaderboard CASCADE';
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'leaderboard table removal was not successful (expected if not a table): %', SQLERRM;
+END $$;
+DO $$ BEGIN
+  EXECUTE 'DROP MATERIALIZED VIEW IF EXISTS leaderboard CASCADE';
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'leaderboard matview removal failed: %', SQLERRM;
+END $$;
 
 -- 2. USER_PROFILES - Legg til manglende kolonner hvis tabellen eksisterer
 DO $$
@@ -35,7 +49,7 @@ BEGIN
     END IF;
   ELSE
     -- Opprett tabellen
-    CREATE TABLE user_profiles (
+    CREATE TABLE IF NOT EXISTS user_profiles (
       id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
       display_name TEXT NOT NULL DEFAULT 'Trader',
       avatar_url TEXT,
@@ -56,7 +70,7 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'trading_sessions') THEN
-    CREATE TABLE trading_sessions (
+    CREATE TABLE IF NOT EXISTS trading_sessions (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
       mode TEXT NOT NULL DEFAULT 'paper',
@@ -79,7 +93,7 @@ BEGIN
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     
-    CREATE UNIQUE INDEX idx_unique_active_session ON trading_sessions (user_id, trading_pair) WHERE status = 'active';
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_session ON trading_sessions (user_id, trading_pair) WHERE status = 'active';
   END IF;
 END $$;
 
@@ -87,7 +101,7 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'trades') THEN
-    CREATE TABLE trades (
+    CREATE TABLE IF NOT EXISTS trades (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       session_id UUID NOT NULL REFERENCES trading_sessions(id),
       user_id UUID NOT NULL REFERENCES auth.users(id),
@@ -110,9 +124,9 @@ BEGIN
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     
-    CREATE UNIQUE INDEX idx_trades_idempotency ON trades (idempotency_key);
-    CREATE INDEX idx_trades_session ON trades (session_id, executed_at DESC);
-    CREATE INDEX idx_trades_user ON trades (user_id, executed_at DESC);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_trades_idempotency ON trades (idempotency_key);
+    CREATE INDEX IF NOT EXISTS idx_trades_session ON trades (session_id, executed_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_trades_user ON trades (user_id, executed_at DESC);
   END IF;
 END $$;
 
@@ -120,7 +134,7 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'copy_trading_follows') THEN
-    CREATE TABLE copy_trading_follows (
+    CREATE TABLE IF NOT EXISTS copy_trading_follows (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       follower_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
       leader_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -134,7 +148,7 @@ BEGIN
       CONSTRAINT no_self_follow CHECK (follower_id != leader_id)
     );
     
-    CREATE UNIQUE INDEX idx_follow_unique ON copy_trading_follows (follower_id, leader_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_follow_unique ON copy_trading_follows (follower_id, leader_id);
   END IF;
 END $$;
 
@@ -142,7 +156,7 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'copy_trade_queue') THEN
-    CREATE TABLE copy_trade_queue (
+    CREATE TABLE IF NOT EXISTS copy_trade_queue (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       leader_trade_id UUID NOT NULL REFERENCES trades(id),
       follower_id UUID NOT NULL REFERENCES auth.users(id),
@@ -159,7 +173,7 @@ BEGIN
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     
-    CREATE INDEX idx_copy_queue_pending ON copy_trade_queue (created_at) WHERE status = 'pending';
+    CREATE INDEX IF NOT EXISTS idx_copy_queue_pending ON copy_trade_queue (created_at) WHERE status = 'pending';
   END IF;
 END $$;
 
@@ -181,7 +195,7 @@ BEGIN
     END IF;
   ELSE
     -- Opprett tabellen fra bunnen
-    CREATE TABLE notification_queue (
+    CREATE TABLE IF NOT EXISTS notification_queue (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       user_id UUID NOT NULL REFERENCES auth.users(id),
       type TEXT NOT NULL,

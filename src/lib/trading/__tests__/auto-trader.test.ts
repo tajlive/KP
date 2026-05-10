@@ -37,7 +37,7 @@ describe('AutoTrader', () => {
         id: 'sig-2',
         symbol: 'BTC',
         action: 'buy',
-        confidence: 60, // Below 70 threshold for medium risk
+        confidence: 59, // Below 60 threshold for medium risk
         price: 900000,
         reasoning: 'Weak signal',
         created_at: new Date().toISOString(),
@@ -121,7 +121,7 @@ describe('AutoTrader', () => {
   });
 
   describe('risk levels', () => {
-    it('low risk should require 80+ confidence', async () => {
+    it('low risk should require 75+ confidence', async () => {
       const lowRiskConfig = { ...mockConfig, risk_level: 'low' as const };
       const trader = new AutoTrader(lowRiskConfig);
       
@@ -129,7 +129,7 @@ describe('AutoTrader', () => {
         id: 'sig-7',
         symbol: 'BTC',
         action: 'buy',
-        confidence: 79,
+        confidence: 74,
         price: 900000,
         reasoning: 'Borderline',
         created_at: new Date().toISOString(),

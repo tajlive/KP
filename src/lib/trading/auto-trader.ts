@@ -23,9 +23,9 @@ export class AutoTrader {
   async shouldExecute(signal: TradingSignal): Promise<boolean> {
     // Check confidence threshold based on risk level
     const minConfidence = {
-      low: 80,
-      medium: 70,
-      high: 60,
+      low: 75,
+      medium: 60,
+      high: 50,
     }[this.config.risk_level];
 
     if (signal.confidence < minConfidence) {
@@ -127,7 +127,7 @@ export async function runAutoTradingCycle(supabase?: Supa): Promise<{
     }
 
     // Get recent trading signals
-    const signals = await getRecentTradingSignals(20, 70);
+    const signals = await getRecentTradingSignals(50, 60);
 
     if (signals.length === 0) {
       return results;

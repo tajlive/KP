@@ -54,24 +54,28 @@ CREATE INDEX IF NOT EXISTS idx_ai_autopilot_started_at ON public.ai_autopilot_co
 
 ALTER TABLE public.ai_autopilot_configs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "ai_autopilot_select_own" ON public.ai_autopilot_configs;
 CREATE POLICY "ai_autopilot_select_own"
   ON public.ai_autopilot_configs
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "ai_autopilot_insert_own" ON public.ai_autopilot_configs;
 CREATE POLICY "ai_autopilot_insert_own"
   ON public.ai_autopilot_configs
   FOR INSERT
   TO authenticated
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "ai_autopilot_update_own" ON public.ai_autopilot_configs;
 CREATE POLICY "ai_autopilot_update_own"
   ON public.ai_autopilot_configs
   FOR UPDATE
   TO authenticated
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "ai_autopilot_delete_own" ON public.ai_autopilot_configs;
 CREATE POLICY "ai_autopilot_delete_own"
   ON public.ai_autopilot_configs
   FOR DELETE
@@ -79,6 +83,7 @@ CREATE POLICY "ai_autopilot_delete_own"
   USING (user_id = auth.uid());
 
 -- Service role får full tilgang (for cron-jobs og server actions)
+DROP POLICY IF EXISTS "ai_autopilot_service_all" ON public.ai_autopilot_configs;
 CREATE POLICY "ai_autopilot_service_all"
   ON public.ai_autopilot_configs
   FOR ALL
