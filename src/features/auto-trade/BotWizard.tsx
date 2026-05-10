@@ -118,6 +118,7 @@ export function BotWizard({
     Icon: React.ElementType;
     tier: string;
     recommended?: boolean;
+    backtestStats?: { label: string; value: string; positive: boolean };
   }[] = [
     {
       id: "dca",
@@ -133,6 +134,7 @@ export function BotWizard({
       description: t("strategyTrendDesc"),
       Icon: TrendingUp,
       tier: "bachelor",
+      backtestStats: { label: "5-års Alpha (ETH)", value: "+23.4%", positive: true },
     },
     {
       id: "grid",
@@ -140,6 +142,7 @@ export function BotWizard({
       description: t("strategyGridDesc"),
       Icon: Grid3X3,
       tier: "bachelor",
+      backtestStats: { label: "5-års Alpha (BTC)", value: "+6.7%", positive: true },
     },
     {
       id: "multi",
@@ -378,7 +381,7 @@ export function BotWizard({
                     e.stopPropagation();
                     if (!locked) setStrategy(s.id);
                   }}
-                  className={`relative z-10 text-left bg-white dark:bg-slate-900 rounded-xl p-5 transition-all touch-manipulation ${
+                  className={`group relative z-10 text-left bg-white dark:bg-slate-900 rounded-xl p-5 transition-all touch-manipulation ${
                     locked
                       ? "opacity-60 cursor-not-allowed"
                       : "cursor-pointer hover:border-[#0052FF]/50"
@@ -411,6 +414,24 @@ export function BotWizard({
                   <span className="text-xs text-[#5E6478] dark:text-slate-400 leading-relaxed block">
                     {s.description}
                   </span>
+                  {s.backtestStats && (
+                    <div className={`mt-3 inline-flex flex-col gap-0.5 rounded-lg px-2.5 py-1.5 border w-full text-left transition-colors ${
+                      s.backtestStats.positive 
+                        ? "bg-[#DCFCE7]/50 dark:bg-green-900/20 border-[#16A34A]/20 dark:border-green-800/30 group-hover:border-[#16A34A]/40" 
+                        : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30"
+                    }`}>
+                      <span className={`text-[9px] font-bold uppercase tracking-wider ${
+                        s.backtestStats.positive ? "text-[#16A34A] dark:text-green-500" : "text-red-600 dark:text-red-400"
+                      }`}>
+                        {s.backtestStats.label}
+                      </span>
+                      <span className={`text-sm font-black ${
+                        s.backtestStats.positive ? "text-[#15803D] dark:text-green-400" : "text-red-700 dark:text-red-300"
+                      }`}>
+                        {s.backtestStats.value}
+                      </span>
+                    </div>
+                  )}
                 </button>
               );
             })}
