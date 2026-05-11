@@ -1,12 +1,13 @@
+"use client";
 import { cn } from "@/lib/utils";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
 interface ConfidenceBadgeProps {
   value: number;
 }
 
-export async function ConfidenceBadge({ value }: ConfidenceBadgeProps) {
-  const t = await getTranslations("trading.signalFeed");
+export function ConfidenceBadge({ value }: ConfidenceBadgeProps) {
+  const t = useTranslations("trading.signalFeed");
   let colorClass = "text-kp-text-muted";
   if (value >= 80) colorClass = "text-kp-success";
   else if (value >= 60) colorClass = "text-kp-warning";

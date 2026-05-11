@@ -6,7 +6,7 @@
 | 87 | next.config.mjs |
 | 81 | src/middleware.ts |
 | 53 | src/app/[locale]/layout.tsx |
-| 47 | src/app/api/cron/tick/route.ts |
+| 49 | src/app/api/cron/tick/route.ts |
 | 44 | src/app/[locale]/page.tsx |
 | 37 | src/app/[locale]/dashboard/page.tsx |
 | 30 | src/components/trading/UnifiedTradingDashboard.tsx |
@@ -16,9 +16,9 @@
 | 26 | src/types/supabase-generated.ts |
 | 26 | src/lib/supabase/client.ts |
 | 26 | src/components/dashboard/DashboardSidebar.tsx |
+| 25 | src/features/dashboard/DashboardPro.tsx |
 | 23 | src/lib/supabase/paper-trading.ts |
 | 22 | src/lib/supabase/server.ts |
-| 22 | src/features/dashboard/DashboardPro.tsx |
 | 21 | src/lib/trading-api.ts |
 | 20 | src/lib/auto-trading/binance-executor.ts |
 | 20 | playwright.config.ts |

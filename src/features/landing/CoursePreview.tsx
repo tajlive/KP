@@ -1,13 +1,15 @@
-import { getLocale, getTranslations } from "next-intl/server";
+"use client";
+
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { BookOpen, BarChart3, Target } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 const courseIcons = [BookOpen, BarChart3, Target];
 
-export async function CoursePreview() {
-  const locale = await getLocale();
-  const t = await getTranslations("coursePreview");
+export function CoursePreview() {
+  const locale = useLocale();
+  const t = useTranslations("coursePreview");
   const kursHref = hrefWithLocale(locale, "/kurs");
 
   const courses = [
