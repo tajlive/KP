@@ -55,19 +55,28 @@
   "team": {
     "title": "Meet the Team",
     "tom": {
+      "name": "Tom Jensen",
+      "initials": "TJ",
       "role": "Founder & CEO",
       "bio": "Tom Arne has been trading crypto since 2017 and is passionate about teaching others."
     },
     "partners": {
-      "title": "Our Partners"
+      "title": "Our Partners",
+      "supabase": "Supabase (database and auth)",
+      "vercel": "Vercel (hosting and deployment)",
+      "binance": "Binance (trading API)"
     }
   },
   "contact": {
     "title": "Contact Us",
     "subtitle": "We'd love to hear from you",
-    "email": "hei@klarpakke.no",
-    "org": "Klarpakke AS",
-    "location": "Oslo, Norway"
+    "email": "Email",
+    "emailValue": "support@klarpakke.no",
+    "org": "Org. No.",
+    "orgNumber": "929 003 292",
+    "orgName": "Klarpakke AS",
+    "location": "Location",
+    "locationValue": "Norway"
   },
   "cta": {
     "title": "Ready to Start Learning?",

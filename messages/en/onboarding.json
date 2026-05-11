@@ -266,5 +266,65 @@
       "loading": "Starting...",
       "cta": "Open my dashboard"
     }
+  },
+  "welcomePage": {
+    "hero": {
+      "title": "Welcome to",
+      "highlight": "Klarpakke University",
+      "subtitle": "You are now part of Norway's first crypto university. Together we will build the best trading education for Norwegians."
+    },
+    "benefits": {
+      "title": "What you get in the beta",
+      "subtitle": "As one of the first 100 students, you get exclusive benefits",
+      "items": {
+        "paperMoney": {
+          "title": "Paper Money",
+          "desc": "Practice with 100,000 NOK in play money – completely risk-free"
+        },
+        "journal": {
+          "title": "Trading Journal",
+          "desc": "Systematic logging of trades to build good habits"
+        },
+        "influence": {
+          "title": "Direct Influence",
+          "desc": "Your feedback shapes the course – you're helping build Norway's best trading education"
+        },
+        "kltPoints": {
+          "title": "KLT Points (Early Adopter)",
+          "desc": "Beta students get extra points that can be used for future courses and tools"
+        }
+      }
+    },
+    "steps": {
+      "title": "What happens now?",
+      "items": {
+        "checkStatus": {
+          "title": "Check your status",
+          "desc": "Confirm you're registered and see your student number",
+          "action": "Check status"
+        },
+        "dashboard": {
+          "title": "See dashboard",
+          "desc": "Explore trading and strategies",
+          "action": "See dashboard"
+        },
+        "wait": {
+          "title": "Wait for start",
+          "desc": "February 15, 2026 we start! You'll get more info by email"
+        }
+      }
+    },
+    "safety": {
+      "title": "Paper money at the start",
+      "desc": "In the beta period, we only use paper money. This means you can practice and learn without risking real money. The focus is on building knowledge and good habits before you eventually move to real trading."
+    },
+    "cta": {
+      "title": "Ready to start?",
+      "subtitle": "Check that you're registered and look forward to the start on February 15!",
+      "button": "Check your status now"
+    },
+    "footer": {
+      "questions": "Questions? Contact us at"
+    }
   }
 }

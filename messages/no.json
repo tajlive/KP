@@ -185,6 +185,11 @@
     "changeToAdmin": "Endre til Admin"
   },
   "auth": {
+    "verify": {
+      "title": "Verifiserer e-post...",
+      "noToken": "Ingen verifikasjonstoken funnet",
+      "tokenLabel": "Token: {token}"
+    },
     "title": "Studentportal",
     "signIn": "Logg inn",
     "signInDescription": "Velg din foretrukne innloggingsmetode",
@@ -371,6 +376,11 @@
       "hours": "{n} timer siden"
     },
     "dashboard": {
+      "error": {
+        "title": "Noe gikk galt",
+        "unexpectedError": "En uventet feil oppstod i dashboard",
+        "errorCode": "Feilkode: {code}"
+      },
       "title": "Auto Trading Dashboard",
       "subtitle": "Administrer dine automatiserte handelsstrategier",
       "newStrategy": "Ny Strategi",
@@ -2628,20 +2638,55 @@
       "preferences": "Preferanser"
     },
     "profile": {
-      "title": "Profilinformasjon",
-      "fullName": "Fullt navn",
-      "email": "E-post",
-      "bio": "Bio",
-      "avatar": "Profilbilde",
-      "uploadAvatar": "Last opp bilde",
-      "changePassword": "Endre passord",
-      "save": "Lagre endringer",
-      "saved": "Endringer lagret!",
-      "error": "Kunne ikke lagre endringer",
-      "fullNamePlaceholder": "Skriv inn ditt fulle navn",
-      "avatarPlaceholder": "https://eksempel.com/bilde.jpg",
-      "namePlaceholder": "Navn",
-      "avatarUrlPlaceholder": "URL til profilbilde"
+      "title": "Min Konto",
+      "subtitle": "Administrer profilen din, lommebok og innstillinger",
+      "tabs": {
+        "profile": "Profil",
+        "wallet": "Lommebok",
+        "settings": "Innstillinger",
+        "notifications": "Varsler"
+      },
+      "sections": {
+        "title": "Profilinformasjon",
+        "fullName": "Fullt navn",
+        "email": "E-post",
+        "bio": "Bio",
+        "avatar": "Profilbilde",
+        "uploadAvatar": "Last opp bilde",
+        "changePassword": "Endre passord",
+        "save": "Lagre endringer",
+        "saved": "Endringer lagret!",
+        "error": "Kunne ikke lagre endringer",
+        "fullNamePlaceholder": "Skriv inn ditt fulle navn",
+        "avatarPlaceholder": "https://eksempel.com/bilde.jpg",
+        "namePlaceholder": "Navn",
+        "avatarUrlPlaceholder": "URL til profilbilde",
+        "loading": "Laster...",
+        "loadingProfile": "Laster profil...",
+        "noProfileFound": "Ingen profil funnet. Lag en profil ved å fylle ut feltene under."
+      },
+      "riskLevel": "Risikonivå",
+      "riskOptions": {
+        "safe": "Trygg",
+        "normal": "Normal",
+        "advanced": "Avansert"
+      },
+      "saveProfile": "Opprett profil",
+      "savingProfile": "Lagrer...",
+      "myProfile": "Min Profil",
+      "daysStreak": "{count} dager streak!",
+      "streakDescription": "Fortsett å logge inn daglig for å holde streaken din.",
+      "yourSubscription": "Ditt abonnement",
+      "includedInSubscription": "Inkludert i ditt abonnement",
+      "moreFeatures": "+{count} flere funksjoner",
+      "badges": "Badges",
+      "earnedCount": "{earned}/{total} opptjent",
+      "noBadgesYet": "Du har ingen badges ennå. Fullfør et kurs for å få din første!",
+      "earnedAt": "Opptjent {date}",
+      "finishTrack": "Fullfør \"{track}\"",
+      "settings": "Innstillinger",
+      "deleteProfile": "Slett profil",
+      "profile": "Profil"
     },
     "api": {
       "title": "API Innstillinger",

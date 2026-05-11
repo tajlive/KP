@@ -55,19 +55,28 @@
   "team": {
     "title": "Møt teamet",
     "tom": {
+      "name": "Tom Jensen",
+      "initials": "TJ",
       "role": "Grunnlegger & CEO",
       "bio": "Tom Arne har handlet krypto siden 2017 og brenner for å lære andre."
     },
     "partners": {
-      "title": "Våre partnere"
+      "title": "Våre partnere",
+      "supabase": "Supabase (database og auth)",
+      "vercel": "Vercel (hosting og deployment)",
+      "binance": "Binance (trading API)"
     }
   },
   "contact": {
     "title": "Kontakt oss",
     "subtitle": "Vi vil gjerne høre fra deg",
-    "email": "hei@klarpakke.no",
-    "org": "Klarpakke AS",
-    "location": "Oslo, Norge"
+    "email": "E-post",
+    "emailValue": "support@klarpakke.no",
+    "org": "Org. nr",
+    "orgNumber": "929 003 292",
+    "orgName": "Klarpakke AS",
+    "location": "Lokasjon",
+    "locationValue": "Norge"
   },
   "cta": {
     "title": "Klar til å begynne å lære?",

@@ -31,6 +31,7 @@ export function KpiCardsSection({
           label={t("kpi.totalPnl")}
           value={formatDisplay(totalPnl)}
           positive={pnlPositive}
+          index={0}
         />
         <KpiCard
           icon={BarChart3}
@@ -45,12 +46,14 @@ export function KpiCardsSection({
               ? true
               : data.aggregates.winRateRealizedPct >= 50
           }
+          index={1}
         />
         <KpiCard
           icon={Activity}
           label={t("kpi.trades")}
           value={String(data.tradeCount)}
           positive
+          index={2}
         />
         <KpiCard
           icon={ArrowUpRight}
@@ -61,6 +64,7 @@ export function KpiCardsSection({
               : "—"
           }
           positive
+          index={3}
         />
       </section>
 

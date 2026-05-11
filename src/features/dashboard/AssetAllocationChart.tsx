@@ -51,10 +51,9 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
   const [showInfo, setShowInfo] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  if (loading) return <Skeleton />;
-  if (!data || data.length === 0) return <EmptyState noDataText={t("noData")} />;
-
   const { chartData, totalValue } = React.useMemo(() => {
+    if (!data || data.length === 0) return { chartData: [], totalValue: 0 };
+
     const sorted = [...data].sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl));
     const top = sorted.slice(0, 6);
     const rest = sorted.slice(6);
@@ -81,6 +80,9 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
     const val = generatedData.reduce((sum, d) => sum + d.value, 0);
     return { chartData: generatedData, totalValue: val };
   }, [data, t]);
+
+  if (loading) return <Skeleton />;
+  if (!data || data.length === 0) return <EmptyState noDataText={t("noData")} />;
 
   const CustomTooltip = ({
     active,

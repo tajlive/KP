@@ -185,6 +185,11 @@
     "changeToAdmin": "Change to Admin"
   },
   "auth": {
+    "verify": {
+      "title": "Verifying email...",
+      "noToken": "No verification token found",
+      "tokenLabel": "Token: {token}"
+    },
     "title": "Student Portal",
     "signIn": "Log in",
     "signInDescription": "Choose your preferred login method",
@@ -371,6 +376,11 @@
       "hours": "{n} hours ago"
     },
     "dashboard": {
+      "error": {
+        "title": "Something went wrong",
+        "unexpectedError": "An unexpected error occurred in the dashboard",
+        "errorCode": "Error code: {code}"
+      },
       "title": "Auto Trading Dashboard",
       "subtitle": "Manage your automated trading strategies",
       "newStrategy": "New Strategy",
@@ -2628,20 +2638,54 @@
       "preferences": "Preferences"
     },
     "profile": {
-      "title": "Profile Information",
-      "fullName": "Full name",
-      "email": "Email",
-      "bio": "Bio",
-      "avatar": "Profile picture",
-      "uploadAvatar": "Upload picture",
-      "changePassword": "Change password",
-      "save": "Save changes",
-      "saved": "Changes saved!",
-      "error": "Could not save changes",
-      "fullNamePlaceholder": "Enter your full name",
-      "avatarPlaceholder": "https://example.com/image.jpg",
-      "namePlaceholder": "Name",
-      "avatarUrlPlaceholder": "Profile picture URL"
+      "title": "My Account",
+      "subtitle": "Manage your profile, wallet and settings",
+      "tabs": {
+        "profile": "Profile",
+        "wallet": "Wallet",
+        "settings": "Settings",
+        "notifications": "Notifications"
+      },
+      "sections": {
+        "title": "Profile Information",
+        "fullName": "Full Name",
+        "email": "Email",
+        "bio": "Bio",
+        "avatar": "Profile Picture",
+        "uploadAvatar": "Upload Image",
+        "changePassword": "Change Password",
+        "save": "Save Changes",
+        "saved": "Changes saved!",
+        "error": "Could not save changes",
+        "fullNamePlaceholder": "Enter your full name",
+        "avatarPlaceholder": "https://example.com/image.jpg",
+        "namePlaceholder": "Name",
+        "avatarUrlPlaceholder": "Profile picture URL",
+        "loading": "Loading...",
+        "loadingProfile": "Loading profile...",
+        "noProfileFound": "No profile found. Create a profile by filling out the fields below."
+      },
+      "riskLevel": "Risk Level",
+      "riskOptions": {
+        "safe": "Safe",
+        "normal": "Normal",
+        "advanced": "Advanced"
+      },
+      "saveProfile": "Create Profile",
+      "savingProfile": "Saving...",
+      "myProfile": "My Profile",
+      "daysStreak": "{count} day streak!",
+      "streakDescription": "Keep logging in daily to maintain your streak.",
+      "yourSubscription": "Your Subscription",
+      "includedInSubscription": "Included in your subscription",
+      "moreFeatures": "+{count} more features",
+      "badges": "Badges",
+      "earnedCount": "{earned}/{total} earned",
+      "noBadgesYet": "You don't have any badges yet. Complete a course to get your first one!",
+      "earnedAt": "Earned {date}",
+      "finishTrack": "Complete \"{track}\"",
+      "settings": "Settings",
+      "deleteProfile": "Delete Profile"
     },
     "api": {
       "title": "API Settings",

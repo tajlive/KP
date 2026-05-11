@@ -181,6 +181,8 @@ const eslintConfig = [
       "**/coverage/**",
       "**/*.d.ts",
       "**/*.config.js",
+      "**/scratch/**",
+      "**/scripts/**",
       // Ikke ignorer eslint.config.mjs: Next.js build (runLintCheck) bruker
       // calculateConfigForFile på den filen; hvis den er ignorert, ser den ikke @next/next og viser advarsel.
       "**/next.config.mjs",
