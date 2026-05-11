@@ -266,5 +266,65 @@
       "loading": "Starter...",
       "cta": "Åpne mitt dashboard"
     }
+  },
+  "welcomePage": {
+    "hero": {
+      "title": "Velkommen til",
+      "highlight": "Klarpakke Universitet",
+      "subtitle": "Du er nå en del av Norges første krypto-universitet. Sammen skal vi bygge den beste trading-utdanningen for nordmenn."
+    },
+    "benefits": {
+      "title": "Hva du får i betaen",
+      "subtitle": "Som en av de første 100 studentene får du eksklusive fordeler",
+      "items": {
+        "paperMoney": {
+          "title": "Lekepenger",
+          "desc": "Øv med 100 000 kr i lekepenger – helt risikofritt"
+        },
+        "journal": {
+          "title": "Trading Journal",
+          "desc": "Systematisk logging av trades for å bygge gode vaner"
+        },
+        "influence": {
+          "title": "Direkte påvirkning",
+          "desc": "Din feedback formater kurset – du er med på å bygge Norges beste trading-utdanning"
+        },
+        "kltPoints": {
+          "title": "KLT-poeng (Early Adopter)",
+          "desc": "Beta-studenter får ekstra poeng som kan brukes på fremtidige kurs og verktøy"
+        }
+      }
+    },
+    "steps": {
+      "title": "Hva skjer nå?",
+      "items": {
+        "checkStatus": {
+          "title": "Sjekk din status",
+          "desc": "Bekreft at du er registrert og se ditt studentnummer",
+          "action": "Sjekk status"
+        },
+        "dashboard": {
+          "title": "Se dashboard",
+          "desc": "Utforsk trading og strategier",
+          "action": "Se dashboard"
+        },
+        "wait": {
+          "title": "Vent på oppstart",
+          "desc": "15. februar 2026 starter vi! Du får mer info på e-post"
+        }
+      }
+    },
+    "safety": {
+      "title": "Lekepenger i starten",
+      "desc": "I beta-perioden bruker vi kun lekepenger. Dette betyr at du kan øve og lære uten å risikere ekte penger. Fokuset er på å bygge kunnskap og gode vaner før du eventuelt går over til ekte trading."
+    },
+    "cta": {
+      "title": "Klar til å starte?",
+      "subtitle": "Sjekk at du er registrert og se frem til oppstart 15. februar!",
+      "button": "Sjekk din status nå"
+    },
+    "footer": {
+      "questions": "Spørsmål? Kontakt oss på"
+    }
   }
 }

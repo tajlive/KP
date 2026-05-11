@@ -82,15 +82,15 @@ export default function PriserClient() {
       <div className="bg-blue-600 py-4">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-white text-xs sm:text-sm font-medium px-2">
-            <span>Student</span>
+            <span>{tStudy("tiers.student.name")}</span>
             <span aria-hidden>→</span>
-            <span>Bachelor</span>
+            <span>{tStudy("tiers.bachelor.name")}</span>
             <span aria-hidden>→</span>
-            <span>Master</span>
+            <span>{tStudy("tiers.master.name")}</span>
             <span aria-hidden>→</span>
-            <span>PhD</span>
+            <span>{tStudy("tiers.phd.name")}</span>
             <span aria-hidden>→</span>
-            <span>Professor</span>
+            <span>{tStudy("tiers.professor.name")}</span>
           </div>
         </div>
       </div>
@@ -191,19 +191,19 @@ export default function PriserClient() {
                     {t("comparison.feature")}
                   </th>
                   <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                    Student
+                    {tStudy("tiers.student.name")}
                   </th>
                   <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                    Bachelor
+                    {tStudy("tiers.bachelor.name")}
                   </th>
                   <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                    Master
+                    {tStudy("tiers.master.name")}
                   </th>
                   <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                    PhD
+                    {tStudy("tiers.phd.name")}
                   </th>
                   <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                    Professor
+                    {tStudy("tiers.professor.name")}
                   </th>
                 </tr>
               </thead>

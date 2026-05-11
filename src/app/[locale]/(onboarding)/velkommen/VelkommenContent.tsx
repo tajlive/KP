@@ -18,63 +18,64 @@ import {
   Shield,
 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { BRAND } from "@/lib/design/tokens";
-
-const BETA_BENEFITS = [
-  {
-    icon: Wallet,
-    title: "Lekepenger",
-    description: "Øv med 100 000 kr i lekepenger – helt risikofritt",
-  },
-  {
-    icon: BookOpen,
-    title: "Trading Journal",
-    description: "Systematisk logging av trades for å bygge gode vaner",
-  },
-  {
-    icon: Target,
-    title: "Direkte påvirkning",
-    description:
-      "Din feedback formater kurset – du er med på å bygge Norges beste trading-utdanning",
-  },
-  {
-    icon: Sparkles,
-    title: "KLT-poeng (Early Adopter)",
-    description:
-      "Beta-studenter får ekstra poeng som kan brukes på fremtidige kurs og verktøy",
-  },
-];
-
-const WHAT_HAPPENS_NOW = [
-  {
-    step: "1",
-    title: "Sjekk din status",
-    description: "Bekreft at du er registrert og se ditt studentnummer",
-    action: "Sjekk status",
-    href: "/LOCALE/innlogging",
-    primary: true,
-  },
-  {
-    step: "2",
-    title: "Se dashboard",
-    description: "Utforsk trading og strategier",
-    action: "Se dashboard",
-    href: "/LOCALE/dashboard",
-    primary: false,
-  },
-  {
-    step: "3",
-    title: "Vent på oppstart",
-    description: "15. februar 2026 starter vi! Du får mer info på e-post",
-    action: null,
-    href: null,
-    primary: false,
-  },
-];
 
 export function VelkommenContent() {
   const params = useParams();
   const locale = (params?.locale as string) || "no";
+  const t = useTranslations("onboarding.welcomePage");
+
+  const BETA_BENEFITS = [
+    {
+      icon: Wallet,
+      title: t("benefits.items.paperMoney.title"),
+      description: t("benefits.items.paperMoney.desc"),
+    },
+    {
+      icon: BookOpen,
+      title: t("benefits.items.journal.title"),
+      description: t("benefits.items.journal.desc"),
+    },
+    {
+      icon: Target,
+      title: t("benefits.items.influence.title"),
+      description: t("benefits.items.influence.desc"),
+    },
+    {
+      icon: Sparkles,
+      title: t("benefits.items.kltPoints.title"),
+      description: t("benefits.items.kltPoints.desc"),
+    },
+  ];
+
+  const WHAT_HAPPENS_NOW = [
+    {
+      step: "1",
+      title: t("steps.items.checkStatus.title"),
+      description: t("steps.items.checkStatus.desc"),
+      action: t("steps.items.checkStatus.action"),
+      href: "/LOCALE/innlogging",
+      primary: true,
+    },
+    {
+      step: "2",
+      title: t("steps.items.dashboard.title"),
+      description: t("steps.items.dashboard.desc"),
+      action: t("steps.items.dashboard.action"),
+      href: "/LOCALE/dashboard",
+      primary: false,
+    },
+    {
+      step: "3",
+      title: t("steps.items.wait.title"),
+      description: t("steps.items.wait.desc"),
+      action: null,
+      href: null,
+      primary: false,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Hero */}
@@ -85,15 +86,14 @@ export function VelkommenContent() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-            Velkommen til{" "}
+            {t("hero.title")}{" "}
             <span className="bg-linear-to-r from-blue-400 via-emerald-400 to-pink-400 bg-clip-text text-transparent">
-              Klarpakke Universitet
+              {t("hero.highlight")}
             </span>
           </h1>
 
           <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
-            Du er nå en del av Norges første krypto-universitet. Sammen skal vi
-            bygge den beste trading-utdanningen for nordmenn.
+            {t("hero.subtitle")}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -103,7 +103,7 @@ export function VelkommenContent() {
               asChild
             >
               <a href={`/${locale}/innlogging`}>
-                Sjekk din status
+                {t("steps.items.checkStatus.action")}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </a>
             </Button>
@@ -114,7 +114,7 @@ export function VelkommenContent() {
               className="border-slate-600 text-slate-300 hover:bg-slate-800"
               asChild
             >
-              <a href={`/${locale}/dashboard`}>Se dashboard</a>
+              <a href={`/${locale}/dashboard`}>{t("steps.items.dashboard.action")}</a>
             </Button>
           </div>
         </div>
@@ -124,7 +124,7 @@ export function VelkommenContent() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800/50">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-white text-center mb-12">
-            Hva skjer nå?
+            {t("steps.title")}
           </h2>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -176,10 +176,10 @@ export function VelkommenContent() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Hva du får i betaen
+              {t("benefits.title")}
             </h2>
             <p className="text-slate-400">
-              Som en av de første 100 studentene får du eksklusive fordeler
+              {t("benefits.subtitle")}
             </p>
           </div>
 
@@ -224,13 +224,10 @@ export function VelkommenContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-amber-400 mb-2">
-                    Lekepenger i starten
+                    {t("safety.title")}
                   </h3>
                   <p className="text-amber-300/80 text-sm leading-relaxed">
-                    I beta-perioden bruker vi kun lekepenger. Dette betyr at du
-                    kan øve og lære uten å risikere ekte penger. Fokuset er på å
-                    bygge kunnskap og gode vaner før du eventuelt går over til
-                    ekte trading.
+                    {t("safety.desc")}
                   </p>
                 </div>
               </div>
@@ -243,10 +240,10 @@ export function VelkommenContent() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800/50">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-white mb-4">
-            Klar til å starte?
+            {t("cta.title")}
           </h2>
           <p className="text-slate-400 mb-8">
-            Sjekk at du er registrert og se frem til oppstart 15. februar!
+            {t("cta.subtitle")}
           </p>
           <Button
             size="lg"
@@ -254,7 +251,7 @@ export function VelkommenContent() {
             asChild
           >
             <a href={`/${locale}/innlogging`}>
-              Sjekk din status nå
+              {t("cta.button")}
               <ArrowRight className="w-5 h-5 ml-2" />
             </a>
           </Button>
@@ -265,12 +262,12 @@ export function VelkommenContent() {
       <footer className="py-8 px-4 border-t border-slate-800/50">
         <div className="max-w-4xl mx-auto text-center text-slate-500 text-sm">
           <p>
-            Spørsmål? Kontakt oss på{" "}
+            {t("footer.questions")}{" "}
             <a
-              href="mailto:post@klarpakke.no"
+              href="mailto:support@klarpakke.no"
               className="text-blue-400 hover:text-blue-300"
             >
-              post@klarpakke.no
+              support@klarpakke.no
             </a>
           </p>
         </div>

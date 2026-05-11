@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { ProfileTab } from "@/features/profile/ProfileTab";
 import { WalletTab } from "@/features/profile/WalletTab";
@@ -16,20 +16,22 @@ interface ProfilePageClientProps {
   initialTab?: string;
 }
 
-const TAB_CONFIG: { value: TabValue; label: string; icon: React.ReactNode }[] = [
-  { value: "profile", label: "Profil", icon: <User className="w-4 h-4" /> },
-  { value: "wallet", label: "Lommebok", icon: <Wallet className="w-4 h-4" /> },
-  { value: "settings", label: "Innstillinger", icon: <Settings className="w-4 h-4" /> },
-  { value: "notifications", label: "Varsler", icon: <Bell className="w-4 h-4" /> },
-];
 
 export function ProfilePageClient({ initialTab }: ProfilePageClientProps) {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("profile");
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabValue>(
     (initialTab as TabValue) || "profile"
   );
+
+  const TAB_CONFIG: { value: TabValue; label: string; icon: React.ReactNode }[] = [
+    { value: "profile", label: t("tabs.profile"), icon: <User className="w-4 h-4" /> },
+    { value: "wallet", label: t("tabs.wallet"), icon: <Wallet className="w-4 h-4" /> },
+    { value: "settings", label: t("tabs.settings"), icon: <Settings className="w-4 h-4" /> },
+    { value: "notifications", label: t("tabs.notifications"), icon: <Bell className="w-4 h-4" /> },
+  ];
 
   const handleTabChange = (value: string) => {
     const tab = value as TabValue;
@@ -45,9 +47,9 @@ export function ProfilePageClient({ initialTab }: ProfilePageClientProps) {
     <div className="min-h-screen bg-kp-bg-primary py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-kp-text-primary">Min Konto</h1>
+          <h1 className="text-2xl font-bold text-kp-text-primary">{t("title")}</h1>
           <p className="text-kp-text-muted text-sm mt-1">
-            Administrer profilen din, lommebok og innstillinger
+            {t("subtitle")}
           </p>
         </div>
 

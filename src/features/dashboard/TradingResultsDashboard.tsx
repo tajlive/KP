@@ -13,9 +13,11 @@ import {
   History,
   RefreshCw,
   BarChart3,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -27,7 +29,13 @@ const TradingResultsCharts = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-96 w-full animate-pulse rounded-xl bg-muted/50" />
+      <div className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="h-80 lg:col-span-2 animate-pulse rounded-2xl bg-slate-800/40" />
+          <div className="h-80 animate-pulse rounded-2xl bg-slate-800/40" />
+        </div>
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-800/40" />
+      </div>
     ),
   }
 );
@@ -92,6 +100,9 @@ export default function TradingResultsDashboard() {
 
   const load = useCallback(async () => {
     try {
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate(5); // Subtle click feedback
+      }
       setError(null);
       const res = await fetch("/api/user/trading-analytics", {
         credentials: "include",
@@ -160,6 +171,11 @@ export default function TradingResultsDashboard() {
 
   const exportCsv = useCallback(() => {
     if (!data || data.tradeCount === 0) return;
+    
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(50); // Stronger feedback for export
+    }
+
     const rows = [
       [
         "generated_at",
@@ -191,142 +207,172 @@ export default function TradingResultsDashboard() {
   }, [data]);
 
   return (
-    <PremiumTradingShell className="relative pb-16">
+    <PremiumTradingShell className="relative pb-24">
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-[#0052FF]/15 blur-3xl"
+        className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-[#0052FF]/10 blur-3xl opacity-50"
       />
-      <PremiumTradingHero
-        eyebrow={t("eyebrow")}
-        title={t("title")}
-        subtitle={t("subtitle")}
-        chips={
-          <>
-            <span className="rounded-full border border-slate-300 bg-white/80 px-2.5 py-1 text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-              {t("kpi.trades")}: {sampleTrades}
+      
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <PremiumTradingHero
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          subtitle={t("subtitle")}
+          chips={
+            <>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 shadow-sm">
+                {t("kpi.trades")}: {sampleTrades}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 shadow-sm">
+                {t("outcome.unknown")}:{" "}
+                {Math.max(0, sampleTrades - knownPnlCount)}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0052FF]/40 bg-[#0052FF]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#0047E0] dark:text-[#9CC4FF] shadow-sm">
+                {t("intervalHint")}
+              </span>
+            </>
+          }
+          actions={
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={exportCsv}
+                disabled={!data || data.tradeCount === 0}
+                className={`group inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-[#0052FF]/40 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
+              >
+                <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                {t("exportCsv")}
+              </button>
+              <button
+                type="button"
+                onClick={() => void load()}
+                className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-[#0052FF]/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : "transition-transform group-hover:rotate-180 duration-500"}`}
+                />
+                {t("refresh")}
+              </button>
+              <Link
+                href={hrefWithLocale(locale, "/handelshistorikk")}
+                className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-[#0052FF]/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
+              >
+                <History className="h-4 w-4" />
+                {t("openHistory")}
+              </Link>
+            </div>
+          }
+        />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <PremiumStatusBanner>
+          <div
+            className="flex flex-wrap items-center gap-4 text-xs font-medium"
+            role="status"
+            aria-live="polite"
+          >
+            <Clock className="h-4 w-4 text-[#0052FF]" />
+            <span className="text-slate-300">
+              {lastFetch
+                ? t("lastUpdated", {
+                    time: lastFetch.toLocaleString(
+                      locale === "no" ? "no-NO" : "en-GB",
+                    ),
+                  })
+                : t("notYetLoaded")}
             </span>
-            <span className="rounded-full border border-slate-300 bg-white/80 px-2.5 py-1 text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-              {t("outcome.unknown")}:{" "}
-              {Math.max(0, sampleTrades - knownPnlCount)}
-            </span>
-            <span className="rounded-full border border-[#0052FF]/40 bg-[#0052FF]/10 px-2.5 py-1 text-[#0047E0] dark:text-[#9CC4FF]">
-              {t("intervalHint")}
-            </span>
-          </>
-        }
-        actions={
-          <>
-            <button
-              type="button"
-              onClick={exportCsv}
-              disabled={!data || data.tradeCount === 0}
-              className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-[#0052FF]/40 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
-            >
-              <Download className="h-4 w-4" />
-              {t("exportCsv")}
-            </button>
-            <button
-              type="button"
-              onClick={() => void load()}
-              className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-[#0052FF]/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+            <span className="hidden sm:inline text-slate-700">·</span>
+            <span className="text-slate-500 italic">{t("intervalHint")}</span>
+          </div>
+        </PremiumStatusBanner>
+      </motion.div>
+
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="rounded-2xl border border-rose-500/30 bg-rose-950/20 px-4 py-4 text-sm text-rose-200 backdrop-blur-md flex items-start gap-3"
+            role="alert"
+          >
+            <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-rose-400">{t("errorTitle")}</p>
+              <p className="mt-1 opacity-80">{error}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="space-y-8">
+        {loading && !data ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-32 animate-pulse rounded-2xl bg-slate-900/80 border border-slate-800"
               />
-              {t("refresh")}
-            </button>
+            ))}
+          </div>
+        ) : null}
+
+        {data && data.tradeCount === 0 && !loading ? (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-800 bg-slate-900/20 px-6 py-20 text-center backdrop-blur-sm"
+          >
+            <div className="rounded-full bg-slate-900 p-6 border border-slate-800 mb-6">
+              <BarChart3 className="h-12 w-12 text-slate-600" />
+            </div>
+            <h3 className="text-xl font-bold text-white">
+              {t("empty.noTradesTitle")}
+            </h3>
+            <p className="mt-3 max-w-sm text-sm text-slate-500 leading-relaxed">
+              {t("empty.noTradesDesc")}
+            </p>
             <Link
               href={hrefWithLocale(locale, "/handelshistorikk")}
-              className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-[#0052FF]/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
+              className={`mt-8 inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 px-6 py-3 text-sm font-bold text-slate-200 transition-all hover:bg-slate-700 hover:border-slate-600 ${BRAND.focusRing}`}
             >
               <History className="h-4 w-4" />
               {t("openHistory")}
             </Link>
-          </>
-        }
-      />
+          </motion.div>
+        ) : null}
 
-      <PremiumStatusBanner>
-        <div
-          className="flex flex-wrap items-center gap-4"
-          role="status"
-          aria-live="polite"
-        >
-          <Clock className="h-4 w-4 text-[#0052FF]" />
-          <span>
-            {lastFetch
-              ? t("lastUpdated", {
-                  time: lastFetch.toLocaleString(
-                    locale === "no" ? "no-NO" : "en-GB",
-                  ),
-                })
-              : t("notYetLoaded")}
-          </span>
-          <span className="hidden sm:inline">·</span>
-          <span className="text-slate-500">{t("intervalHint")}</span>
-        </div>
-      </PremiumStatusBanner>
-
-      {error && (
-        <div
-          className="rounded-2xl border border-red-500/30 bg-red-950/40 px-4 py-4 text-sm text-red-200"
-          role="alert"
-        >
-          <p className="font-semibold">{t("errorTitle")}</p>
-          <p className="mt-1 opacity-80">{error}</p>
-        </div>
-      )}
-
-      {loading && !data ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-28 animate-pulse rounded-2xl bg-slate-800/80"
+        {data && data.tradeCount > 0 ? (
+          <>
+            <KpiCardsSection
+              data={data}
+              totalPnl={totalPnl}
+              pnlPositive={pnlPositive}
+              formatDisplay={formatDisplay}
+              t={t}
             />
-          ))}
-        </div>
-      ) : null}
 
-      {data && data.tradeCount === 0 && !loading ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
-          <BarChart3 className="h-10 w-10 text-slate-600" />
-          <h3 className="mt-4 text-lg font-semibold text-slate-300">
-            {t("empty.noTradesTitle")}
-          </h3>
-          <p className="mt-2 max-w-sm text-sm text-slate-500">
-            {t("empty.noTradesDesc")}
-          </p>
-          <Link
-            href={hrefWithLocale(locale, "/handelshistorikk")}
-            className={`mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700 ${BRAND.focusRing}`}
-          >
-            <History className="h-4 w-4" />
-            {t("openHistory")}
-          </Link>
-        </div>
-      ) : null}
-
-      {data && data.tradeCount > 0 ? (
-        <>
-          <KpiCardsSection
-            data={data}
-            totalPnl={totalPnl}
-            pnlPositive={pnlPositive}
-            formatDisplay={formatDisplay}
-            t={t}
-          />
-
-          <TradingResultsCharts
-            data={data}
-            cumChart={cumChart}
-            dailyTail={dailyTail}
-            pairsChartDesc={pairsChartDesc}
-            formatDisplay={formatDisplay}
-          />
-        </>
-      ) : null}
+            <TradingResultsCharts
+              data={data}
+              cumChart={cumChart}
+              dailyTail={dailyTail}
+              pairsChartDesc={pairsChartDesc}
+              formatDisplay={formatDisplay}
+            />
+          </>
+        ) : null}
+      </div>
     </PremiumTradingShell>
   );
 }
+
 

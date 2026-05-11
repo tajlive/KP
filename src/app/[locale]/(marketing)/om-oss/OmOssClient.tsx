@@ -163,11 +163,11 @@ export default async function OmOssClient() {
           <div className="bg-white rounded-xl p-8 shadow-sm border border-slate-200 mb-6">
             <div className="flex items-start gap-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
-                <span className="text-2xl font-bold text-blue-600">TJ</span>
+                <span className="text-2xl font-bold text-blue-600">{t("team.tom.initials")}</span>
               </div>
               <div>
                 <h3 className="font-fraunces text-2xl font-bold text-slate-900 mb-1">
-                  Tom Jensen
+                  {t("team.tom.name")}
                 </h3>
                 <p className="font-lexend text-blue-600 font-semibold mb-4">
                   {t("team.tom.role")}
@@ -186,15 +186,15 @@ export default async function OmOssClient() {
             <ul className="font-lexend text-slate-600 space-y-2">
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                Supabase (database og auth)
+                {t("team.partners.supabase")}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                Vercel (hosting og deployment)
+                {t("team.partners.vercel")}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                Binance (trading API)
+                {t("team.partners.binance")}
               </li>
             </ul>
           </div>
@@ -216,8 +216,8 @@ export default async function OmOssClient() {
                 <Mail className="w-6 h-6" />
               </div>
               <h3 className="font-fraunces font-bold text-slate-900 mb-2">{t("contact.email")}</h3>
-              <a href="mailto:support@klarpakke.no" className="font-lexend text-blue-600 hover:underline">
-                support@klarpakke.no
+              <a href={`mailto:${t("contact.emailValue")}`} className="font-lexend text-blue-600 hover:underline">
+                {t("contact.emailValue")}
               </a>
             </div>
             <div className="bg-white p-6 rounded-xl border border-slate-200 text-center">
@@ -225,15 +225,15 @@ export default async function OmOssClient() {
                 <Landmark className="w-6 h-6" />
               </div>
               <h3 className="font-fraunces font-bold text-slate-900 mb-2">{t("contact.org")}</h3>
-              <p className="font-lexend text-slate-600">929 003 292</p>
-              <p className="font-lexend text-xs text-slate-400 mt-1">Klarpakke AS</p>
+              <p className="font-lexend text-slate-600">{t("contact.orgNumber")}</p>
+              <p className="font-lexend text-xs text-slate-400 mt-1">{t("contact.orgName")}</p>
             </div>
             <div className="bg-white p-6 rounded-xl border border-slate-200 text-center">
               <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-4">
                 <MapPin className="w-6 h-6" />
               </div>
               <h3 className="font-fraunces font-bold text-slate-900 mb-2">{t("contact.location")}</h3>
-              <p className="font-lexend text-slate-600">Norge</p>
+              <p className="font-lexend text-slate-600">{t("contact.locationValue")}</p>
             </div>
           </div>
         </section>

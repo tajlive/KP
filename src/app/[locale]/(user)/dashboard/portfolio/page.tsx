@@ -103,7 +103,9 @@ export default async function PortfolioPage({ params }: PageProps) {
         .eq("user_id", user.id)
         .maybeSingle();
       if (!error) rebalanceConfig = data;
-    } catch (e) {}
+    } catch (e) {
+      // Ignore if rebalance config is missing
+    }
 
     // Query 2: Portfolios (latest only)
     try {

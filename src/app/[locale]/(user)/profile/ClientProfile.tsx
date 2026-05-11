@@ -16,6 +16,7 @@ import {
   User,
   Zap,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   GamificationProvider,
   useGamification,
@@ -52,6 +53,7 @@ const TIER_COLORS: Record<TierSlug, string> = {
 };
 
 function ProfileContent() {
+  const t = useTranslations("profile");
   const router = useRouter();
   const pathname = usePathname();
   const [authChecked, setAuthChecked] = useState(false);
@@ -135,7 +137,7 @@ function ProfileContent() {
 
   if (!authChecked) {
     return (
-      <div className="max-w-2xl mx-auto p-6 text-slate-400">Laster...</div>
+      <div className="max-w-2xl mx-auto p-6 text-slate-400">{t("loading")}</div>
     );
   }
 
@@ -146,7 +148,7 @@ function ProfileContent() {
   if (loading)
     return (
       <div className="max-w-2xl mx-auto p-6 text-slate-400">
-        Laster profil...
+        {t("loadingProfile")}
       </div>
     );
 
@@ -154,18 +156,18 @@ function ProfileContent() {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold mb-4 text-white">Profil</h1>
+          <h1 className="text-2xl font-semibold mb-4 text-white">{t("profile")}</h1>
           <p className="text-slate-400">
-            Ingen profil funnet. Lag en profil ved å fylle ut feltene under.
+            {t("noProfileFound")}
           </p>
           <div className="mt-4">
             <label htmlFor="fullName" className="text-sm text-slate-300">
-              Navn
+              {t("fullName")}
             </label>
             <input
               id="fullName"
-              title="Fullt navn"
-              placeholder="Skriv inn ditt fulle navn"
+              title={t("fullName")}
+              placeholder={t("fullNamePlaceholder")}
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -173,12 +175,12 @@ function ProfileContent() {
               htmlFor="avatarUrl"
               className="text-sm mt-3 block text-slate-300"
             >
-              Avatar URL
+              {t("avatar")}
             </label>
             <input
               id="avatarUrl"
-              title="Avatar URL"
-              placeholder="https://eksempel.com/bilde.jpg"
+              title={t("avatar")}
+              placeholder={t("avatarPlaceholder")}
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setAvatarUrl(e.target.value)}
             />
@@ -186,17 +188,17 @@ function ProfileContent() {
               htmlFor="riskLevel"
               className="text-sm mt-3 block text-slate-300"
             >
-              Risikonivå
+              {t("riskLevel")}
             </label>
             <select
               id="riskLevel"
-              title="Velg risikonivå"
+              title={t("riskLevel")}
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setRisk(e.target.value)}
             >
-              <option value="safe">Trygg</option>
-              <option value="normal">Normal</option>
-              <option value="advanced">Avansert</option>
+              <option value="safe">{t("riskOptions.safe")}</option>
+              <option value="normal">{t("riskOptions.normal")}</option>
+              <option value="advanced">{t("riskOptions.advanced")}</option>
             </select>
             <button
               className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
@@ -208,7 +210,7 @@ function ProfileContent() {
                 })
               }
             >
-              {saving ? "Lagrer..." : "Opprett profil"}
+              {saving ? t("savingProfile") : t("saveProfile")}
             </button>
             {error && <div className="text-red-400 mt-2">{error}</div>}
           </div>
@@ -233,7 +235,7 @@ function ProfileContent() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between"
       >
-        <h1 className="text-2xl font-bold text-white">Min Profil</h1>
+        <h1 className="text-2xl font-bold text-white">{t("myProfile")}</h1>
         <XPBar />
       </motion.div>
 
@@ -248,10 +250,10 @@ function ProfileContent() {
           <Flame className="w-6 h-6 text-orange-400 fill-orange-500 animate-pulse" />
           <div>
             <p className="text-sm font-bold text-orange-300">
-              {gamState.current_streak} dager streak!
+              {t("daysStreak", { count: gamState.current_streak })}
             </p>
             <p className="text-xs text-orange-400/70">
-              Fortsett å logge inn daglig for å holde streaken din.
+              {t("streakDescription")}
             </p>
           </div>
         </motion.div>
@@ -271,7 +273,7 @@ function ProfileContent() {
             {TIER_ICONS[currentTier]}
           </div>
           <div>
-            <p className="text-sm font-medium text-white/70">Ditt abonnement</p>
+            <p className="text-sm font-medium text-white/70">{t("yourSubscription")}</p>
             <p className="text-lg font-bold text-white">
               {TIER_LABELS[currentTier]}
               {!tierLoading && tierData && tierData.priceNOK > 0 && (
@@ -284,7 +286,7 @@ function ProfileContent() {
         </div>
         <div className="p-5">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-            Inkludert i ditt abonnement
+            {t("includedInSubscription")}
           </p>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {tierFeatures.slice(0, 6).map((feature, i) => (
@@ -299,7 +301,7 @@ function ProfileContent() {
           </ul>
           {tierFeatures.length > 6 && (
             <p className="text-xs text-slate-500 mt-2">
-              +{tierFeatures.length - 6} flere funksjoner
+              {t("moreFeatures", { count: tierFeatures.length - 6 })}
             </p>
           )}
         </div>
@@ -325,9 +327,9 @@ function ProfileContent() {
       >
         <div className="flex items-center gap-2 mb-4">
           <Award className="w-5 h-5 text-yellow-400" />
-          <h2 className="text-lg font-bold text-white">Badges</h2>
+          <h2 className="text-lg font-bold text-white">{t("badges")}</h2>
           <span className="ml-auto text-xs text-slate-500">
-            {earnedBadges.length}/{LEARNING_TRACKS.length} opptjent
+            {t("earnedCount", { earned: earnedBadges.length, total: LEARNING_TRACKS.length })}
           </span>
         </div>
 
@@ -338,7 +340,7 @@ function ProfileContent() {
               <Award className="w-7 h-7 text-slate-600" />
             </div>
             <p className="text-sm text-slate-500">
-              Du har ingen badges ennå. Fullfør et kurs for å få din første!
+              {t("noBadgesYet")}
             </p>
           </div>
         ) : (
@@ -361,8 +363,7 @@ function ProfileContent() {
                   </p>
                   {badge.earnedAt && (
                     <p className="text-[10px] text-slate-500 mt-0.5">
-                      Opptjent{" "}
-                      {new Date(badge.earnedAt).toLocaleDateString("no-NO")}
+                      {t("earnedAt", { date: new Date(badge.earnedAt).toLocaleDateString(locale === "no" ? "no-NO" : "en-GB") })}
                     </p>
                   )}
                 </div>
@@ -386,7 +387,7 @@ function ProfileContent() {
                     {track.badgeDescription}
                   </p>
                   <p className="text-[10px] text-slate-600 mt-0.5">
-                    Fullfør &quot;{track.title}&quot;
+                    {t("finishTrack", { track: track.title })}
                   </p>
                 </div>
               </div>
@@ -404,17 +405,17 @@ function ProfileContent() {
       >
         <div className="flex items-center gap-2 mb-2">
           <User className="w-5 h-5 text-slate-400" />
-          <h2 className="text-lg font-bold text-white">Innstillinger</h2>
+          <h2 className="text-lg font-bold text-white">{t("settings")}</h2>
         </div>
 
         <div>
           <label htmlFor="profileName" className="text-sm text-slate-300">
-            Navn
+            {t("fullName")}
           </label>
           <input
             id="profileName"
-            title="Ditt navn"
-            placeholder="Navn"
+            title={t("fullName")}
+            placeholder={t("namePlaceholder")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.full_name ?? ""}
             onBlur={(e) => patch({ full_name: e.target.value })}
@@ -423,12 +424,12 @@ function ProfileContent() {
 
         <div>
           <label htmlFor="profileAvatar" className="text-sm text-slate-300">
-            Avatar URL
+            {t("avatar")}
           </label>
           <input
             id="profileAvatar"
-            title="Profilbilde URL"
-            placeholder="URL til profilbilde"
+            title={t("avatar")}
+            placeholder={t("avatarUrlPlaceholder")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.avatar_url ?? ""}
             onBlur={(e) => patch({ avatar_url: e.target.value })}
@@ -437,18 +438,18 @@ function ProfileContent() {
 
         <div>
           <label htmlFor="profileRisk" className="text-sm text-slate-300">
-            Risikonivå
+            {t("riskLevel")}
           </label>
           <select
             id="profileRisk"
-            title="Risikopreferanse"
+            title={t("riskLevel")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.risk_preference ?? "normal"}
             onChange={(e) => patch({ risk_preference: e.target.value })}
           >
-            <option value="safe">Trygg</option>
-            <option value="normal">Normal</option>
-            <option value="advanced">Avansert</option>
+            <option value="safe">{t("riskOptions.safe")}</option>
+            <option value="normal">{t("riskOptions.normal")}</option>
+            <option value="advanced">{t("riskOptions.advanced")}</option>
           </select>
         </div>
 
@@ -460,7 +461,7 @@ function ProfileContent() {
               location.reload();
             }}
           >
-            Slett profil
+            {t("deleteProfile")}
           </button>
         </div>
 
