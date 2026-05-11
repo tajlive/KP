@@ -26,7 +26,8 @@ const triggerConfetti = async () => {
   });
 };
 
-function CheckmarkSVG() {
+function CheckmarkSVG({ isPriority }: { isPriority?: boolean }) {
+  const color = isPriority ? "#f59e0b" : "#2563eb"; // amber-500 or blue-600
   return (
     <svg
       viewBox="0 0 52 52"
@@ -38,7 +39,7 @@ function CheckmarkSVG() {
         cx="26"
         cy="26"
         r="24"
-        stroke="#2563eb"
+        stroke={color}
         strokeWidth="2.5"
         fill="none"
         initial={{ pathLength: 0 }}
@@ -47,7 +48,7 @@ function CheckmarkSVG() {
       />
       <m.path
         d="M14 26l8 8 16-16"
-        stroke="#2563eb"
+        stroke={color}
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -62,7 +63,7 @@ function CheckmarkSVG() {
 
 export function OnboardingStep3() {
   const t = useTranslations("onboarding");
-  const { completeOnboarding, isLoading, riskLevel } = useOnboardingStore();
+  const { completeOnboarding, isLoading, riskLevel, isPriority } = useOnboardingStore();
   const router = useRouter();
   const [showButton, setShowButton] = useState(false);
 
@@ -106,10 +107,22 @@ export function OnboardingStep3() {
             damping: 20,
             delay: 0.1,
           }}
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-[#2563eb]/10"
+          className={`flex h-20 w-20 items-center justify-center rounded-full ${isPriority ? 'bg-amber-500/10' : 'bg-[#2563eb]/10'}`}
         >
-          <CheckmarkSVG />
+          <CheckmarkSVG isPriority={isPriority} />
         </m.div>
+
+        {isPriority && (
+          <m.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[10px] font-bold text-amber-500 uppercase tracking-widest shadow-lg shadow-amber-500/5"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            Priority Setup Complete
+          </m.div>
+        )}
 
         <m.div
           initial={{ opacity: 0, y: 20 }}

@@ -15,6 +15,7 @@ interface PersonalizedGreetingProps {
   userName?: string | null;
   totalPnl?: number;
   winRate?: number;
+  isPriority?: boolean;
 }
 
 function getTimeOfDay(): "morning" | "day" | "evening" | "night" {
@@ -26,7 +27,7 @@ function getTimeOfDay(): "morning" | "day" | "evening" | "night" {
 }
 
 function getGreeting(timeOfDay: string, t: (key: string) => string): string {
-  return t(`greeting.${timeOfDay}`);
+  return t(timeOfDay);
 }
 
 const timeIcons = {
@@ -94,9 +95,9 @@ function getPerformanceMessage(
   return null;
 }
 
-export function PersonalizedGreeting({ userName, totalPnl, winRate }: PersonalizedGreetingProps) {
+export function PersonalizedGreeting({ userName, totalPnl, winRate, isPriority }: PersonalizedGreetingProps) {
   const locale = useLocale();
-  const t = useTranslations("dashboard");
+  const t = useTranslations("dashboard.greeting");
   const [mounted, setMounted] = useState(false);
   const timeOfDay = getTimeOfDay();
   const market = useMarketContext();
@@ -137,6 +138,16 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
                 {getGreeting(timeOfDay, t)}
                 {userName ? `, ${userName}` : ""}
               </h2>
+              {isPriority && (
+                <m.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-[10px] font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1"
+                >
+                  <Sunrise className="w-3 h-3" />
+                  VIP
+                </m.div>
+              )}
             </div>
 
             <div className="flex items-center gap-2 flex-wrap pl-[46px]">

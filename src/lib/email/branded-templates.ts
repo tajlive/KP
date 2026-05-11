@@ -117,4 +117,26 @@ export const BrandedTemplates = {
   `,
       `Ny utmerkelse: ${achievementName}`,
     ),
+
+  // 5. Priority User Invitation
+  priorityInvitation: (name: string) =>
+    wrapInBaseTemplate(
+      `
+    <div class="badge" style="background-color: #ede9fe; color: #6d28d9;">Eksklusiv Invitasjon</div>
+    <h1>Velkommen til Klarpakke VIP, ${name}! ✨</h1>
+    <p>Vi er stolte av å invitere deg til vår mest eksklusive gruppe med tradere.</p>
+    <p>Som en prioritert bruker vil du få tilgang til våre mest avanserte verktøy, personlig overvåkning av dine trades, og direkte tilgang til våre nye algoritmer før alle andre.</p>
+    <div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; border: 1px dashed #cbd5e1; margin: 24px 0;">
+      <h3 style="margin-bottom: 12px; color: #6d28d9;">Dine VIP-fordeler:</h3>
+      <ul style="padding-left: 20px; margin: 0; color: #475569;">
+        <li><strong>100% Prioritert overvåkning:</strong> AI-monitoren vår følger dine trades i sanntid.</li>
+        <li><strong>Early Access:</strong> Test nye funksjoner 2 uker før lansering.</li>
+        <li><strong>Bonus:</strong> Vi har satt inn 5 000 KLT tokens på din konto som velkomstgave.</li>
+      </ul>
+    </div>
+    <p>Vi gleder oss til å se din reise mot økonomisk frihet.</p>
+    <a href="https://www.klarpakke.no/no/dashboard" class="button">Gå til ditt VIP-dashboard</a>
+  `,
+      "Din personlige invitasjon til Klarpakke VIP",
+    ),
 };

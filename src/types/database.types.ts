@@ -256,61 +256,85 @@ export type Database = {
       }
       ai_autopilot_configs: {
         Row: {
+          avg_loss_nok: number | null
+          avg_win_nok: number | null
           capital_per_pair: Json | null
+          consecutive_losses: number | null
           created_at: string | null
           detected_regime: string | null
+          expectancy: number | null
           id: string
           last_rebalance_at: string | null
           max_drawdown_pct: number | null
           max_pairs: number
+          negative_expectancy_since: string | null
+          profit_factor: number | null
           risk_appetite: string
           selected_pairs: Json | null
           selected_strategy: string | null
+          sharpe_ratio: number | null
           started_at: string | null
           status: string
           total_capital_nok: number
           total_pnl_nok: number | null
           total_pnl_pct: number | null
+          total_trades_count: number | null
           updated_at: string | null
           user_id: string
           win_rate: number | null
         }
         Insert: {
+          avg_loss_nok?: number | null
+          avg_win_nok?: number | null
           capital_per_pair?: Json | null
+          consecutive_losses?: number | null
           created_at?: string | null
           detected_regime?: string | null
+          expectancy?: number | null
           id?: string
           last_rebalance_at?: string | null
           max_drawdown_pct?: number | null
           max_pairs?: number
+          negative_expectancy_since?: string | null
+          profit_factor?: number | null
           risk_appetite: string
           selected_pairs?: Json | null
           selected_strategy?: string | null
+          sharpe_ratio?: number | null
           started_at?: string | null
           status?: string
           total_capital_nok?: number
           total_pnl_nok?: number | null
           total_pnl_pct?: number | null
+          total_trades_count?: number | null
           updated_at?: string | null
           user_id: string
           win_rate?: number | null
         }
         Update: {
+          avg_loss_nok?: number | null
+          avg_win_nok?: number | null
           capital_per_pair?: Json | null
+          consecutive_losses?: number | null
           created_at?: string | null
           detected_regime?: string | null
+          expectancy?: number | null
           id?: string
           last_rebalance_at?: string | null
           max_drawdown_pct?: number | null
           max_pairs?: number
+          negative_expectancy_since?: string | null
+          profit_factor?: number | null
           risk_appetite?: string
           selected_pairs?: Json | null
           selected_strategy?: string | null
+          sharpe_ratio?: number | null
           started_at?: string | null
           status?: string
           total_capital_nok?: number
           total_pnl_nok?: number | null
           total_pnl_pct?: number | null
+          total_trades_count?: number | null
           updated_at?: string | null
           user_id?: string
           win_rate?: number | null
@@ -655,13 +679,6 @@ export type Database = {
           winning_trades?: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "archived_trade_summaries_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
           {
             foreignKeyName: "archived_trade_summaries_user_id_fkey"
             columns: ["user_id"]
@@ -1331,13 +1348,6 @@ export type Database = {
             foreignKeyName: "auto_trading_sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "auto_trading_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -1601,6 +1611,36 @@ export type Database = {
           schemaname?: unknown
           tablename?: unknown
           with_check?: string | null
+        }
+        Relationships: []
+      }
+      balance_sync_audit: {
+        Row: {
+          check_type: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          resolved_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          check_type: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          resolved_at?: string | null
+          status: string
+          user_id: string
+        }
+        Update: {
+          check_type?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          resolved_at?: string | null
+          status?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2121,6 +2161,7 @@ export type Database = {
           is_paper_trade: boolean | null
           last_ai_adjustment_at: string | null
           max_position_size_percent: number | null
+          status: string
           stop_loss_percent: number | null
           strategy_type: string
           take_profit_percent: number | null
@@ -2138,6 +2179,7 @@ export type Database = {
           is_paper_trade?: boolean | null
           last_ai_adjustment_at?: string | null
           max_position_size_percent?: number | null
+          status?: string
           stop_loss_percent?: number | null
           strategy_type?: string
           take_profit_percent?: number | null
@@ -2155,6 +2197,7 @@ export type Database = {
           is_paper_trade?: boolean | null
           last_ai_adjustment_at?: string | null
           max_position_size_percent?: number | null
+          status?: string
           stop_loss_percent?: number | null
           strategy_type?: string
           take_profit_percent?: number | null
@@ -2511,22 +2554,8 @@ export type Database = {
             foreignKeyName: "copy_trade_queue_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "copy_trade_queue_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "copy_trade_queue_leader_id_fkey"
-            columns: ["leader_id"]
-            isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "copy_trade_queue_leader_id_fkey"
@@ -2620,22 +2649,8 @@ export type Database = {
             foreignKeyName: "copy_trading_follows_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "copy_trading_follows_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "copy_trading_follows_leader_id_fkey"
-            columns: ["leader_id"]
-            isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "copy_trading_follows_leader_id_fkey"
@@ -4271,13 +4286,6 @@ export type Database = {
             foreignKeyName: "notification_queue_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "notification_queue_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -4870,6 +4878,125 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      portfolio_rebalance_configs: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          target_allocations: Json
+          threshold_percent: number
+          twap_duration_hours: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          target_allocations?: Json
+          threshold_percent?: number
+          twap_duration_hours?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          target_allocations?: Json
+          threshold_percent?: number
+          twap_duration_hours?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_rebalance_events: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_allocations: Json
+          id: string
+          status: string
+          target_allocations: Json
+          trigger_reason: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_allocations: Json
+          id?: string
+          status?: string
+          target_allocations: Json
+          trigger_reason?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_allocations?: Json
+          id?: string
+          status?: string
+          target_allocations?: Json
+          trigger_reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_rebalance_orders: {
+        Row: {
+          amount_usdt: number
+          created_at: string
+          event_id: string
+          executed_amount_usdt: number
+          executed_chunks: number
+          id: string
+          side: string
+          status: string
+          symbol: string
+          twap_chunks: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_usdt: number
+          created_at?: string
+          event_id: string
+          executed_amount_usdt?: number
+          executed_chunks?: number
+          id?: string
+          side: string
+          status?: string
+          symbol: string
+          twap_chunks: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_usdt?: number
+          created_at?: string
+          event_id?: string
+          executed_amount_usdt?: number
+          executed_chunks?: number
+          id?: string
+          side?: string
+          status?: string
+          symbol?: string
+          twap_chunks?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_rebalance_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_rebalance_events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       portfolio_summary: {
         Row: {
@@ -5902,13 +6029,6 @@ export type Database = {
             foreignKeyName: "strategy_reviews_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "strategy_reviews_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -6256,6 +6376,18 @@ export type Database = {
           status?: string
           stderr?: string | null
           stdout?: string | null
+        }
+        Relationships: []
+      }
+      test_kimi_exec: {
+        Row: {
+          id: number
+        }
+        Insert: {
+          id: number
+        }
+        Update: {
+          id?: number
         }
         Relationships: []
       }
@@ -6765,13 +6897,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "trading_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
-          },
           {
             foreignKeyName: "trading_logs_user_id_fkey"
             columns: ["user_id"]
@@ -7960,6 +8085,7 @@ export type Database = {
           full_name: string | null
           google_id: string | null
           id: string
+          is_priority: boolean | null
           live_phase: string
           locale: string | null
           microsoft_id: string | null
@@ -8000,6 +8126,7 @@ export type Database = {
           full_name?: string | null
           google_id?: string | null
           id?: string
+          is_priority?: boolean | null
           live_phase?: string
           locale?: string | null
           microsoft_id?: string | null
@@ -8040,6 +8167,7 @@ export type Database = {
           full_name?: string | null
           google_id?: string | null
           id?: string
+          is_priority?: boolean | null
           live_phase?: string
           locale?: string | null
           microsoft_id?: string | null
@@ -8574,20 +8702,6 @@ export type Database = {
         }
         Relationships: []
       }
-      leaderboard: {
-        Row: {
-          created_at: string | null
-          current_capital: number | null
-          display_name: string | null
-          roi_percent: number | null
-          starting_capital: number | null
-          tier: Database["public"]["Enums"]["subscription_tier"] | null
-          total_pnl: number | null
-          trade_count: number | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
       signup_funnel_stats: {
         Row: {
           conversion_rate: number | null
@@ -8622,6 +8736,7 @@ export type Database = {
           created_at: string | null
           currency: string | null
           current_capital: number | null
+          current_capital_nok: number | null
           daily_loss_limit_pct: number | null
           followers_count: number | null
           id: string | null
@@ -8635,6 +8750,7 @@ export type Database = {
           mode: string | null
           open_position: Json | null
           started_at: string | null
+          starting_capital_nok: number | null
           status: string | null
           stop_loss_pct: number | null
           stopped_at: string | null
@@ -8655,6 +8771,7 @@ export type Database = {
           created_at?: string | null
           currency?: never
           current_capital?: number | null
+          current_capital_nok?: number | null
           daily_loss_limit_pct?: never
           followers_count?: never
           id?: string | null
@@ -8668,6 +8785,7 @@ export type Database = {
           mode?: string | null
           open_position?: Json | null
           started_at?: string | null
+          starting_capital_nok?: number | null
           status?: string | null
           stop_loss_pct?: never
           stopped_at?: string | null
@@ -8688,6 +8806,7 @@ export type Database = {
           created_at?: string | null
           currency?: never
           current_capital?: number | null
+          current_capital_nok?: number | null
           daily_loss_limit_pct?: never
           followers_count?: never
           id?: string | null
@@ -8701,6 +8820,7 @@ export type Database = {
           mode?: string | null
           open_position?: Json | null
           started_at?: string | null
+          starting_capital_nok?: number | null
           status?: string | null
           stop_loss_pct?: never
           stopped_at?: string | null
@@ -8978,6 +9098,17 @@ export type Database = {
         }[]
       }
       get_avg_onboarding_time: { Args: never; Returns: string }
+      get_balance_sync_audit: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          check_type: string
+          created_at: string
+          details: Json
+          id: string
+          resolved_at: string
+          status: string
+        }[]
+      }
       get_cron_jobs_status: {
         Args: never
         Returns: {
@@ -9252,6 +9383,9 @@ export type Database = {
       is_bot_healthy: { Args: { p_bot_id: string }; Returns: boolean }
       is_service_role: { Args: never; Returns: boolean }
       is_trading_allowed: { Args: never; Returns: boolean }
+      klarpakke_hourly_autopilot_health: { Args: never; Returns: undefined }
+      klarpakke_hourly_balance_sync: { Args: never; Returns: undefined }
+      klarpakke_hourly_consistency_check: { Args: never; Returns: undefined }
       klarpakke_trigger_cron: { Args: { path: string }; Returns: undefined }
       level_norsk: { Args: { lvl: string }; Returns: string }
       log_backtest_telemetry: {

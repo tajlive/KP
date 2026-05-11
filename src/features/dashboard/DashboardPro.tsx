@@ -61,6 +61,7 @@ interface DashboardProProps {
   onboardingCompleted?: boolean;
   userName?: string;
   cmsData?: DashboardCmsData | null;
+  isPriority?: boolean;
 }
 
 function StatSkeleton() {
@@ -117,6 +118,7 @@ export function DashboardPro({
   onboardingCompleted = false,
   userName,
   cmsData,
+  isPriority = false,
 }: DashboardProProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.dashboardPro");
@@ -183,6 +185,7 @@ export function DashboardPro({
           userName={userName}
           totalPnl={effectiveStats.totalPnl}
           winRate={effectiveStats.winRate}
+          isPriority={isPriority}
         />
 
         {/* Hero - Simplified balance */}

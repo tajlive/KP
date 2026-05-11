@@ -24,6 +24,7 @@ interface AdaptiveDashboardProps {
   errorMessage?: string;
   onRetry?: () => void;
   cmsData?: DashboardCmsData | null;
+  isPriority?: boolean;
 }
 
 export interface UserStats {
@@ -209,6 +210,7 @@ function ActiveTraderView({
   errorMessage,
   onRetry,
   cmsData,
+  isPriority,
 }: Omit<AdaptiveDashboardProps, "userState" | "userName"> & { userName?: string | null }) {
   // Delegate to the existing rich DashboardPro for active traders
   return (
@@ -221,6 +223,7 @@ function ActiveTraderView({
       errorMessage={errorMessage}
       onRetry={onRetry}
       cmsData={cmsData}
+      isPriority={isPriority}
     />
   );
 }
@@ -291,6 +294,7 @@ export function AdaptiveDashboard({
   errorMessage,
   onRetry,
   cmsData,
+  isPriority = false,
 }: AdaptiveDashboardProps) {
   return (
     <AnimatePresence mode="wait">
@@ -335,6 +339,7 @@ export function AdaptiveDashboard({
             errorMessage={errorMessage}
             onRetry={onRetry}
             cmsData={cmsData}
+            isPriority={isPriority}
           />
         </m.div>
       )}
@@ -356,6 +361,7 @@ export function AdaptiveDashboard({
             errorMessage={errorMessage}
             onRetry={onRetry}
             cmsData={cmsData}
+            isPriority={isPriority}
           />
         </m.div>
       )}

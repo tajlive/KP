@@ -38,7 +38,8 @@ BEGIN
       s.starting_capital_nok,
       s.total_trades,
       s.winning_trades,
-      s.losing_trades
+      s.losing_trades,
+      s.total_pnl
     FROM trading_sessions s
     WHERE s.user_id = p_user_id
       AND s.mode::text = p_mode
@@ -54,8 +55,8 @@ BEGIN
         THEN COALESCE(SUM(ms.current_capital_nok), 0) / COUNT(*)
         ELSE 0
       END AS avg_session_capital,
-      -- P&L from capital diff is always accurate (current_capital is updated by trigger)
-      COALESCE(SUM(ms.current_capital_nok - ms.starting_capital_nok), 0) AS total_pnl,
+      -- P&L from session.total_pnl tracks realized gains correctly
+      COALESCE(SUM(ms.total_pnl), 0) AS total_pnl,
       COALESCE(SUM(ms.total_trades), 0) AS total_trades,
       COALESCE(SUM(ms.winning_trades), 0) AS winning_trades,
       COALESCE(SUM(ms.losing_trades), 0) AS losing_trades

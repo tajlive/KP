@@ -34,6 +34,8 @@ import {
   DesktopPositionList,
 } from "./MobilePositionList";
 
+import { VolatilitetFaktaBanner, TaalmodighetFaktaBanner, DiversifiseringFaktaBanner, MatematikkFaktaBanner } from "@/features/learning/FaktaBanner";
+
 /** Code-split: PremiumSignalRow + framer-motion + signal-fetch */
 function MarketDeskSignalSkeleton() {
   return (
@@ -116,6 +118,7 @@ interface PortfolioDashboardProps {
   trades: Trade[];
   activeSession: ActiveSession | null;
   trialEndsAt?: string | null;
+  isPriority?: boolean;
 }
 
 function normalizeTradeSymbol(trade: Trade): string {
@@ -187,6 +190,7 @@ export default function PortfolioDashboard({
   trialEndsAt,
   trades,
   activeSession,
+  isPriority = false,
 }: PortfolioDashboardProps) {
   const no = locale === "no";
   const t = useTranslations("dashboard");
@@ -413,6 +417,11 @@ export default function PortfolioDashboard({
         hasTrades={liveTrades.length > 0}
       />
 
+      <VolatilitetFaktaBanner className="animate-fade-in-up stagger-1" />
+      <TaalmodighetFaktaBanner className="animate-fade-in-up stagger-1" />
+      <DiversifiseringFaktaBanner className="animate-fade-in-up stagger-1" />
+      <MatematikkFaktaBanner className="animate-fade-in-up stagger-1" />
+
       <div
         className="rounded-xl border border-[#E2E5EC] dark:border-slate-700/80 bg-[#F8FAFF] dark:bg-slate-900/40 px-4 py-3"
         data-testid="dashboard-home-overview"
@@ -475,15 +484,23 @@ export default function PortfolioDashboard({
         <p className="text-sm font-medium text-white/70 uppercase tracking-wider">
           {t("portfolioHero.balanceLabel")}
         </p>
-        <p
-          className="text-3xl sm:text-4xl font-bold mt-1"
-          style={{
-            fontVariantNumeric: "tabular-nums",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          {formatNOK(displayBalance)}
-        </p>
+        <div className="flex items-center gap-3">
+          <p
+            className="text-3xl sm:text-4xl font-bold mt-1"
+            style={{
+              fontVariantNumeric: "tabular-nums",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {formatNOK(displayBalance)}
+          </p>
+          {isPriority && (
+            <div className="mt-1 flex items-center gap-1.5 bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full shadow-lg">
+              <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">VIP Priority</span>
+            </div>
+          )}
+        </div>
         <div className="mt-3">
           <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1.5">
             {t("portfolioHero.periodLabel")}
