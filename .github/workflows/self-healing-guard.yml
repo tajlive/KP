@@ -19,7 +19,9 @@
 name: 🛡️ Self-Healing Guard
 
 on:
-  # Kjører kun etter vellykket deploy til main, eller manuelt
+  schedule:
+    - cron: '0 * * * *' # Hver time
+  # Kjører også etter vellykket deploy til main, eller manuelt
   workflow_run:
     workflows: ["🚀 Deploy"]
     types: [completed]
@@ -268,6 +270,12 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run diagnose:signals-traders || echo "Diagnose completed"
+
+      - name: Antigravity Deep Health Monitor
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/monitor/antigravity-deep-health.mjs
 
   # ═════════════════════════════════════════════════════════════════════════════
   # JOB 5: Emergency Rollback (Conditional)

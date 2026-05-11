@@ -261,6 +261,7 @@
     "signals:deploy:pipeline": "npm run db:push:all:yes && npm run signals:deploy:edge && npm run signals:invoke && npm run signals:health",
     "diagnose:signals-traders": "node scripts/diagnose-signals-traders.mjs",
     "diagnose:user-trades": "node scripts/diagnose-user-trades.mjs",
+    "antigravity:monitor": "node scripts/monitor/antigravity-deep-health.mjs",
     "health:api": "node scripts/health-check.mjs api",
     "health:supabase": "node scripts/health-check.mjs supabase",
     "health:signals": "node scripts/health-check.mjs signals",
