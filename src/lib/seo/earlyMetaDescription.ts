@@ -1,5 +1,3 @@
-import { getTranslations } from "next-intl/server";
-
 type ValidLocale = "no" | "en" | "th" | "zh";
 
 function normalizePath(strippedPath: string): string {
@@ -26,6 +24,7 @@ export async function getEarlyMetaDescription(
   locale: ValidLocale,
   strippedPath: string,
 ): Promise<string> {
+  const { getTranslations } = await import("next-intl/server");
   const path = normalizePath(strippedPath);
 
   if (path === "/") {

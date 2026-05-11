@@ -2685,7 +2685,8 @@
       "earnedAt": "Earned {date}",
       "finishTrack": "Complete \"{track}\"",
       "settings": "Settings",
-      "deleteProfile": "Delete Profile"
+      "deleteProfile": "Delete Profile",
+      "profile": "Profile"
     },
     "api": {
       "title": "API Settings",
