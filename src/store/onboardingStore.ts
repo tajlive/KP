@@ -21,6 +21,8 @@ interface OnboardingState {
   isComplete: boolean;
   isLoading: boolean;
   direction: number;
+  isPriority: boolean;
+  setIsPriority: (isPriority: boolean) => void;
   goToStep: (step: OnboardingStep) => void;
   /** Set UI risk level (safe/balanced/aggressive) */
   setRiskLevel: (level: UIRiskLevel) => void;
@@ -40,6 +42,8 @@ export const useOnboardingStore = create<OnboardingState>()(
       isComplete: false,
       isLoading: false,
       direction: 1,
+      isPriority: false,
+      setIsPriority: (isPriority) => set({ isPriority }),
       goToStep: (step) => {
         const currentStep = get().step;
         set({

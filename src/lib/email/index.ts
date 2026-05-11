@@ -49,7 +49,8 @@ export type EmailType =
   | "password_reset"
   | "email_verification"
   | "marketing"
-  | "circuit_breaker";
+  | "circuit_breaker"
+  | "priority_invitation";
 
 // Email preferences mapping
 interface EmailPreferences {
@@ -613,6 +614,27 @@ const templates = {
       "Bekreft din email-adresse for Klarpakke",
     ),
   }),
+  priorityInvitation: (name: string) => ({
+    subject: "Din personlige invitasjon til Klarpakke VIP ✨",
+    html: wrapEmail(
+      `
+      <div class="badge badge-info">Eksklusiv Invitasjon</div>
+      <h2>Velkommen til Klarpakke VIP, ${name}!</h2>
+      <p>Vi er stolte av å invitere deg til vår mest eksklusive gruppe med tradere.</p>
+      <div class="stats">
+        <p><strong>💎 Dine VIP-fordeler:</strong></p>
+        <ul style="padding-left: 20px;">
+          <li><strong>100% Prioritert overvåkning:</strong> AI-monitoren følger dine trades.</li>
+          <li><strong>Early Access:</strong> Test nye funksjoner før alle andre.</li>
+          <li><strong>Bonus:</strong> 5 000 KLT tokens velkomstgave.</li>
+        </ul>
+      </div>
+      <p>Vi gleder oss til å se din reise mot økonomisk frihet.</p>
+      <a href="https://www.klarpakke.no/no/dashboard" class="button">Gå til ditt VIP-dashboard</a>
+    `,
+      "Din personlige invitasjon til Klarpakke VIP - Bli med nå!",
+    ),
+  }),
 };
 
 // ============================================================================
@@ -742,6 +764,9 @@ export async function sendTemplatedEmail(
           (data.name as string) || user.name,
           data.verifyUrl as string,
         );
+        break;
+      case "priority_invitation":
+        email = templates.priorityInvitation((data.name as string) || user.name);
         break;
       default:
         return { success: false, error: "Unknown email type" };

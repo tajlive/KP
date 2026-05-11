@@ -37,6 +37,7 @@ export interface DashboardContentProps {
   cmsData?: DashboardCmsData | null;
   /** Server-side fetched metrics — when provided, skips client-side fetch */
   metrics?: DashboardMetrics | null;
+  isPriority?: boolean;
 }
 
 export function DashboardContent({
@@ -47,6 +48,7 @@ export function DashboardContent({
   signupDays,
   cmsData,
   metrics: serverMetrics,
+  isPriority = false,
 }: DashboardContentProps) {
   const {
     data: clientData,
@@ -103,6 +105,7 @@ export function DashboardContent({
             errorMessage={error?.message}
             onRetry={refetch}
             cmsData={cmsData}
+            isPriority={isPriority}
           />
         </div>
 

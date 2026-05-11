@@ -203,6 +203,50 @@ export const COMMON_QUIZZES = {
     correctIndex: 0,
     explanation: 'HODL stammer fra en stavefeil i et foruminnlegg. Det betyr å holde på kryptoen sin gjennom oppganger og nedturer, i stedet for å prøve å time markedet.',
   },
+  volatilitet: {
+    question: 'Hvordan forholder Klarpakke seg til at markedet går opp og ned?',
+    options: [
+      'Vi prøver å stoppe alle svingninger',
+      'Vi aksepterer svingninger som en fakta, og bruker strategier for å hente ut de beste resultatene over tid',
+      'Vi trading bare når det går opp',
+      'Vi lover at det aldri går ned',
+    ],
+    correctIndex: 1,
+    explanation: 'Markedet vil alltid svinge – det er en fundamental fakta. Vår oppgave er ikke å fjerne svingningene, men å bruke disiplinerte, faktabaserte strategier for å navigere i dem og sikre de beste resultatene for småsparere over tid.',
+  },
+  taalmodighet: {
+    question: 'Hva er den viktigste egenskapen for å lykkes som småsparer over tid?',
+    options: [
+      'Å handle raskt når prisen svinger',
+      'Tålmodighet – å la de matematiske strategiene jobbe over tid',
+      'Å sjekke mobilen hvert 5. minutt',
+      'Å bytte strategi ofte',
+    ],
+    correctIndex: 1,
+    explanation: 'Fakta er enkel: Med tålmodighet tjener du penger. Trading er et maraton, ikke en sprint. De som lar algoritmene jobbe disiplinert over uker og måneder, i stedet for å reagere på daglige svingninger, er de som sitter igjen med de beste resultatene.',
+  },
+  diversifisering_fakta: {
+    question: 'Hvorfor sier vi at man ikke bør legge alle eggene i én kurv?',
+    options: [
+      'Fordi kurven kan bli for tung',
+      'For å redusere risikoen hvis én enkelt investering faller i verdi',
+      'For å betale mindre i gebyrer',
+      'Det er bare et gammelt ordtak uten betydning i dag',
+    ],
+    correctIndex: 1,
+    explanation: 'Fakta: Diversifisering er din beste beskyttelse. Ved å spre investeringene dine, sikrer du at porteføljen din tåler at enkelte prosjekter går dårlig, så lenge helheten beveger seg i riktig retning.',
+  },
+  matematikk_fakta: {
+    question: 'Hvorfor bruker vi matematiske algoritmer i stedet for å handle manuelt?',
+    options: [
+      'For å gjøre det mer komplisert',
+      'For å fjerne følelser som frykt og grådighet, og følge objektive fakta',
+      'Fordi vi liker roboter bedre enn mennesker',
+      'Det er ingen forskjell på resultatene',
+    ],
+    correctIndex: 1,
+    explanation: 'Fakta: Følelser er småsparerens største fiende. Frykt gjør at man selger for tidlig, og grådighet gjør at man kjøper for sent. Matematikk har ingen følelser – den følger planen uansett hva som skjer i nyhetene.',
+  },
 };
 
 // Enkel komponent for å vise en av de vanlige quizzene

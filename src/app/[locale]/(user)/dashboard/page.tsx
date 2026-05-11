@@ -79,7 +79,7 @@ export default async function DashboardPage({
 
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, onboarding_step, display_name, created_at")
+      .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, onboarding_step, display_name, created_at, is_priority")
       .eq("id", user.id)
       .single();
 
@@ -111,6 +111,7 @@ export default async function DashboardPage({
           signupDays={profile?.created_at ? Math.max(1, Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24))) : 1}
           cmsData={cmsData}
           metrics={metrics}
+          isPriority={profile?.is_priority ?? false}
         />
       </div>
     );

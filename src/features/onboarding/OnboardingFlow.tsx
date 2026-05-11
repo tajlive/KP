@@ -33,7 +33,7 @@ const transition = {
 };
 
 export function OnboardingFlow() {
-  const { step, isComplete, direction, goToStep, skipToApp } =
+  const { step, isComplete, direction, goToStep, skipToApp, setIsPriority } =
     useOnboardingStore();
 
   useEffect(() => {
@@ -43,8 +43,20 @@ export function OnboardingFlow() {
         const supabase = getSupabaseClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        if (user?.user_metadata?.onboarding_complete) {
-          skipToApp();
+        if (user) {
+          const { data: profile } = await supabase
+            .from("user_profiles")
+            .select("onboarding_completed, is_priority")
+            .eq("id", user.id)
+            .single();
+
+          if (profile?.is_priority) {
+            setIsPriority(true);
+          }
+
+          if (profile?.onboarding_completed) {
+            skipToApp();
+          }
         }
       } catch {
         // Silent fail

@@ -34,7 +34,7 @@ interface OnboardingStep1Props {
 
 export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
   const t = useTranslations("onboarding");
-  const { skipToApp } = useOnboardingStore();
+  const { skipToApp, isPriority } = useOnboardingStore();
 
   const handleNext = () => {
     navigator.vibrate?.(10);
@@ -54,13 +54,25 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
       animate="visible"
     >
       <div className="flex flex-col gap-6 pt-8">
-        <m.div variants={itemVariants} className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2563eb]">
-            <span className="text-sm font-bold text-white">K</span>
+        <m.div variants={itemVariants} className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2563eb]">
+              <span className="text-sm font-bold text-white">K</span>
+            </div>
+            <span className="text-lg font-semibold tracking-tight text-white">
+              Klarpakke
+            </span>
           </div>
-          <span className="text-lg font-semibold tracking-tight text-white">
-            Klarpakke
-          </span>
+          {isPriority && (
+            <m.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[10px] font-bold text-amber-500 uppercase tracking-widest shadow-lg shadow-amber-500/5"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              VIP Priority Welcome
+            </m.div>
+          )}
         </m.div>
 
         <m.div variants={itemVariants} className="flex flex-col gap-3">

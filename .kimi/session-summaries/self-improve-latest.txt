@@ -1,6 +1,4 @@
-🧠 Analyserer siste økt: [Routing] Auto-capture: page.tsx, AuthHashHandler....
-🧠 1 gjentatte oppgaver — vurder automatisering:
-ℹ️   "[frontend] auto-capture: diary..." → 2 ganger
+🧠 Analyserer siste økt: Created and sent premium VIP invitation to hanne.n...
 ℹ️ Agent-effektivitet (siste 10):
-ℹ️   default: 100% GO, 3.0/5 avg
+ℹ️   default: 89% GO, 3.0/5 avg
 ✅ Ingen problemer identifisert — keep it up! 🚀
