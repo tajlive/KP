@@ -64,6 +64,38 @@ async function checkAnomalies() {
     anomalies.push({ type: 'STUCK_REBALANCE', eventId: e.id, userId: e.user_id, createdAt: e.created_at });
   });
 
+  // 4. Priority User Monitoring (Hanne Nilsen)
+  const priorityEmail = 'hanne.nilsen@outlook.com';
+  const { data: priorityUser } = await supabase
+    .from('user_profiles')
+    .select('id, email, is_priority')
+    .eq('email', priorityEmail)
+    .single();
+
+  if (priorityUser) {
+    // If user exists, ensure they are marked as priority
+    if (!priorityUser.is_priority) {
+      await supabase.from('user_profiles').update({ is_priority: true }).eq('id', priorityUser.id);
+    }
+
+    // Check for failed trades in the last 24h for this user
+    const { data: failedTrades } = await supabase
+      .from('trades')
+      .select('id, symbol, side, status, created_at')
+      .eq('user_id', priorityUser.id)
+      .eq('status', 'FAILED')
+      .gt('created_at', new Date(Date.now() - 86400000).toISOString());
+
+    if (failedTrades && failedTrades.length > 0) {
+      anomalies.push({ 
+        type: 'PRIORITY_USER_FAILURE', 
+        email: priorityEmail, 
+        count: failedTrades.length, 
+        trades: failedTrades 
+      });
+    }
+  }
+
   return anomalies;
 }
 
