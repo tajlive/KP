@@ -93,6 +93,61 @@ function fetchMemPalaceBrief(query) {
   }
 }
 
+function fetchGitDiffMemPalaceContext(modifiedFiles) {
+  if (!modifiedFiles || modifiedFiles.length === 0) return null;
+  const contexts = [];
+  // Group files by domain for smarter queries
+  const domainPatterns = {
+    trading: /trading|auto-trading|bot|strategy|binance/,
+    auth: /auth|oauth|session|middleware/,
+    database: /migration|supabase|postgres/,
+    frontend: /components|page\.tsx|layout/,
+    api: /app\/api/,
+  };
+  const domains = new Set();
+  for (const f of modifiedFiles) {
+    for (const [domain, pattern] of Object.entries(domainPatterns)) {
+      if (pattern.test(f)) domains.add(domain);
+    }
+  }
+  for (const domain of domains) {
+    try {
+      const result = execSync(
+        `node "${KP_DIR}/scripts/mempalace-search.mjs" "${domain}" 2>&1 | head -20`,
+        { cwd: KP_DIR, encoding: 'utf8', timeout: 3000 }
+      );
+      if (result && result.trim()) {
+        contexts.push(`### ${domain}\n${result.trim()}`);
+      }
+    } catch { /* ignore */ }
+  }
+  return contexts.length ? contexts.join('\n\n') : null;
+}
+
+function checkPreviousSession(modifiedFiles) {
+  try {
+    const sessionDir = resolve(KP_DIR, '.kimi/session-summaries');
+    if (!existsSync(sessionDir)) return null;
+    const files = execSync(`ls -1t "${sessionDir}" | grep -v current-session | head -10`, { encoding: 'utf8' }).trim().split('\n').filter(Boolean);
+    if (!files.length) return null;
+
+    // Look for sessions with overlapping modified files and WIP/NO-GO status
+    for (const f of files) {
+      const path = resolve(sessionDir, f);
+      try {
+        const content = readFileSync(path, 'utf-8');
+        const hasWip = /status.*WIP|status.*NO-GO/i.test(content);
+        if (!hasWip) continue;
+        const fileMatch = modifiedFiles.some(mf => content.includes(mf));
+        if (fileMatch) {
+          return { file: f, content: content.slice(0, 800) + (content.length > 800 ? '\n... [truncated]' : '') };
+        }
+      } catch { /* ignore */ }
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
 function detectMcpProfile() {
   // Sjekk hvilken profil som er aktiv
   try {
@@ -166,6 +221,19 @@ function runPreSession(prompt, forcedAgent) {
     if (git.modified.length > 5) log('   ', `  ... and ${git.modified.length - 5} more`);
   }
 
+  // Git-diff MemPalace context injection
+  let diffContext = null;
+  if (git.modified.length > 0) {
+    log('🧠', 'Fetching MemPalace context for modified files...');
+    diffContext = fetchGitDiffMemPalaceContext(git.modified);
+  }
+
+  // Session resumption check
+  const previousSession = checkPreviousSession(git.modified);
+  if (previousSession) {
+    log('⏮️', `Previous WIP session found: ${previousSession.file}`);
+  }
+
   // Skriv session-kontekst til fil
   const sessionDir = resolve(KP_DIR, '.kimi/session-summaries');
   if (!existsSync(sessionDir)) mkdirSync(sessionDir, { recursive: true });
@@ -190,12 +258,16 @@ ${prompt || '(auto-detected from git)'}
 - Commit: ${git.lastCommit}
 - Modified: ${git.modified.length} files
 
+${diffContext ? `## 🏛️ MemPalace Context (from modified files)\n${diffContext}\n` : ''}
+${previousSession ? `## ⏮️ Previous Session (WIP/NO-GO)\n\`\`\`\n${previousSession.content}\n\`\`\`\n` : ''}
+
 ## 📝 Instructions
 1. MemPalace search already attempted — results above
 2. Use agent: ${agent.yaml}
 3. Self-correct after >30 lines
 4. Memory sync after task
 5. End with status block
+${previousSession ? '6. ⏮️ Previous session was WIP/NO-GO — consider continuing from where it left off' : ''}
 
 ## 💡 Quick Reference
 - MCP switch: kimi-mcp ${targetMcp}

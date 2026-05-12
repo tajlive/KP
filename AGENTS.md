@@ -497,7 +497,7 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-## ⚡ KIMI CLI v1.41.0 Optimaliseringer (2026-05-09)
+## ⚡ KIMI CLI v1.42.0 Optimaliseringer (2026-05-12)
 
 ### Kontekst-tuning
 ```toml
@@ -536,7 +536,7 @@ merge_all_available_skills = true     # auto-aktiver skills
 
 ### Rask diagnose
 ```bash
-kimi --version                    # skal vise 1.41.0
+kimi --version                    # skal vise 1.42.0
 kimi mcp list                     # sjekk at mempalace er grønn
 npm run mempalace:status          # eller: node scripts/mempalace-search.mjs "test"
 ```

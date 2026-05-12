@@ -135,7 +135,79 @@ ${hotFiles.split('\n').filter(Boolean).map(line => {
   }
 }
 
-// 4. Lagre viktige scripts
+// 4. Detecter arkitektoniske endringer og generer ADR-stubs
+async function detectArchitecturalChanges() {
+  console.log('🏗️  Sjekker for arkitektoniske endringer...');
+
+  const ADR_DOMAINS = [
+    { name: 'Middleware/Routing', pattern: 'src/middleware.ts|src/app/\\[locale\\]/.*middleware|next.config', threshold: 3 },
+    { name: 'i18n', pattern: 'messages/.*\\.json|src/i18n|next-intl', threshold: 5 },
+    { name: 'Trading Engine', pattern: 'src/lib/trading/|src/lib/auto-trading/|supabase/migrations/.*trading|supabase/migrations/.*bot|supabase/migrations/.*cron', threshold: 3 },
+    { name: 'Database Schema', pattern: 'supabase/migrations/.*\\.sql', threshold: 5 },
+    { name: 'Auth/Security', pattern: 'src/lib/auth/|src/app/api/auth|src/middleware.*auth', threshold: 3 },
+    { name: 'UI/Design System', pattern: 'src/components/.*\\.tsx|tailwind.config|src/app/globals\\.css', threshold: 5 },
+  ];
+
+  const since = new Date();
+  since.setDate(since.getDate() - 14);
+  const sinceStr = since.toISOString().split('T')[0];
+
+  for (const domain of ADR_DOMAINS) {
+    try {
+      const result = execSync(
+        `git log --since="${sinceStr}" --name-only --pretty=format: | grep -E "${domain.pattern}" | sort | uniq | wc -l`,
+        { encoding: 'utf-8', cwd: '/Users/taj/klarpakke' }
+      ).trim();
+      const count = parseInt(result, 10) || 0;
+
+      if (count >= domain.threshold) {
+        const slug = domain.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const filename = `ADR-${new Date().toISOString().split('T')[0]}-${slug}-auto-stub.md`;
+        const filepath = `${DECISIONS_DIR}/${filename}`;
+
+        // Sjekk om det allerede finnes en ny ADR for dette domenet
+        const existing = execSync(
+          `ls -1 "${DECISIONS_DIR}" | grep -i "${slug}" | grep "$(date +%Y-%m)" | head -1 || true`,
+          { encoding: 'utf-8' }
+        ).trim();
+
+        if (existing) {
+          console.log(`   ℹ️  ${domain.name}: ${count} endringer, ADR finnes allerede (${existing})`);
+          continue;
+        }
+
+        const content = `# ADR: ${domain.name} Changes — ${new Date().toISOString().split('T')[0]}
+
+## Kontekst
+Det har vært ${count} endringer i **${domain.name}** de siste 14 dagene.
+Dette indikerer en betydelig arkitektonisk endring.
+
+## Endringer (auto-detect)
+<!-- TODO: List konkrete endringer -->
+- Se git log: \`git log --since="${sinceStr}" --oneline -- "${domain.pattern}"\`
+
+## Beslutning
+<!-- TODO: Dokumenter bevisst arkitekturvalg -->
+
+## Konsekvenser
+<!-- TODO: Hva påvirker dette? -->
+
+## Relatert
+- Auto-generert av knowledge-miner.mjs
+- Mønster: \`${domain.pattern}\`
+`;
+        await writeFile(filepath, content);
+        console.log(`   📝 ADR-stub generert: ${filename} (${count} endringer i ${domain.name})`);
+      } else {
+        console.log(`   ℹ️  ${domain.name}: ${count} endringer (under threshold ${domain.threshold})`);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+}
+
+// 5. Lagre viktige scripts
 async function documentScripts() {
   console.log('📜 Dokumenterer viktige scripts...');
   
@@ -182,6 +254,7 @@ async function main() {
   await extractTodos();
   await extractDecisions();
   await analyzePatterns();
+  await detectArchitecturalChanges();
   await documentScripts();
   
   console.log('\n✅ Knowledge mining fullført!');

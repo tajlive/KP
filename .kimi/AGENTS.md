@@ -204,10 +204,10 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-05-06 | v2.8-medium/full for KIMI CLI v1.41.0 + k2.6 | Auto-Maintenance & Quality Gates
+> Oppdatert: 2026-05-06 | v2.8-medium/full for KIMI CLI v1.42.0 + k2.6 | Auto-Maintenance & Quality Gates
 
-### KIMI CLI v1.41.0 + k2.6 endringer (påvirker oss)
-- **`max_steps_per_turn` økt til 1000** — KIMI kan kjøre lengre oppgaver uten avbrudd (v1.40.0: 500→1000, v1.41.0: zip-plugin + clipboard SSH)
+### KIMI CLI v1.42.0 + k2.6 endringer (påvirker oss)
+- **`max_steps_per_turn` økt til 1000** — KIMI kan kjøre lengre oppgaver uten avbrudd (v1.40.0: 500→1000, v1.41.0: zip-plugin + clipboard SSH, v1.42.0: ytterligere forbedringer)
 - **`reserved_context_size` = 40000** — optimalisert margin (ned fra 60000, deretter 45000)
 - **`compaction_trigger_ratio` = 0.94** — enda mindre frekvent komprimering (opp fra 0.92)
 - **`tool_call_timeout_ms` = 120000** — tilstrekkelig for MemPalace FTS-indeksering
@@ -242,7 +242,7 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
    - `search` — Advanced search in trades/users via Supabase FTS
    - `cost` — Vercel/Supabase cost monitoring (estimates + usage)
 
-### MemPalace v3.2.0 — KIMI CLI v1.41.0-kompatibel
+### MemPalace v3.3.0 — KIMI CLI v1.42.0-kompatibel
 - **Ping/heartbeat-støtte**: Svarer på MCP `ping`-forespørsler
 - **Graceful shutdown**: Fanger SIGTERM/SIGINT, flusher KG til disk
 - **Robust transport**: Forbedret JSON-parse feilhåndtering
@@ -285,7 +285,7 @@ kimi
 
 ## MemPalace — Prosjektminne v3.3.0 SUPERKIMI (KIMI CLI v1.41.0 + k2.6)
 
-> Oppdatert: 2026-05-04 | MemPalace MCP v3.3.0 | TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 78+ entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.41.0-optimalisert
+> Oppdatert: 2026-05-04 | MemPalace MCP v3.3.0 | TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 78+ entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.42.0-optimalisert
 
 ### Rask verifisering
 ```bash
@@ -302,7 +302,7 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 ```
 
 ### MemPalace MCP v3.2.0 — Endringer fra v3.1.1
-- **KIMI CLI v1.41.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
+- **KIMI CLI v1.42.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
 - **Robust transport**: Forbedret JSON-parse feilhåndtering — logger ikke kræsj
 - **Graceful shutdown**: SIGTERM/SIGINT fanger og flusher KG til disk
 - **FIX: MCP protocol compliance** — Tool results wrappes i `content: [{type: "text", text: ...}]` array

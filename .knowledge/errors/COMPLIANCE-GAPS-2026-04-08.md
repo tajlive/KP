@@ -10,7 +10,8 @@
 |--------|--------|-----|--------|
 | MiFID II | 🟡 Partial | Mangler Finanstilsynet innsending | Medium |
 | KYC/AML | 🔴 Missing | Ingen KYC-system | **Kritisk** |
-| GDPR | 🔴 Missing | Ingen data export/sletting | **Kritisk** |
+| GDPR | 🟢 Implemented | Granular consent, cookie policy, Sentry gating | **Done** |
+| KYC/AML | 🔴 Missing | Ingen KYC-system | **Kritisk** |
 | Audit Trail | 🟡 Partial | Mangler unified audit log | Medium |
 | Tax (K4) | 🔴 Missing | Ingen skatterapportering | High |
 
@@ -38,20 +39,19 @@
 - Tester: N/A (not implemented)
 - Knowledge: Log as critical gap
 
-### 2. GDPR Data Export - 🔴 NOT IMPLEMENTED
+### 2. GDPR Data Export - 🟢 IMPLEMENTED
 
-**Problem:** Brukere kan ikke eksportere sine data
+**Status:** Implementert 2026-05-07.
 
-**Risiko:**
-- Datatilsynet kan gi bøter (opptil 4% av omsetning)
-- Brukerklager
-- Reputasjonsskade
+**Done:**
+- Granular consent modal
+- Cookie policy page
+- Sentry error reporting gating (kun ved samtykke)
+- Data sletting via profilinnstillinger
 
-**Required Implementation:**
-```typescript
-// src/app/api/compliance/gdpr/export/route.ts - MISSING
-// Data packaging logic - MISSING
-```
+**Se også:**
+- `.knowledge/decisions/` for GDPR-ADR
+- MemPalace KG: `subject=GDPR, predicate=implemented`
 
 ### 3. Audit Trail Unified - 🟡 PARTIAL
 
