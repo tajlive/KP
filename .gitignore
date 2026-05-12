@@ -263,3 +263,4 @@ config/perplexity-local-mcp.json
 .cloudflare/
 .wrangler/
 .dev.vars
+backups/
