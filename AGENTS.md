@@ -412,6 +412,26 @@ Trading: Edge Functions eller Supabase scheduler
 Auth: @supabase/ssr (ikke auth-helpers-nextjs)
 ```
 
+### Supabase ↔ Vercel — ALDRI bruk REST API fra Serverless (2026-05-12)
+
+> **Regel:** Fra Vercel Serverless Functions skal du ALLTID bruke Postgres pooler (`pg` + `POSTGRES_URL`), ALDRI `@supabase/supabase-js` REST API for health checks eller tidskritiske operasjoner.
+>
+> **Hvorfor:** PostgREST har cold starts (5-20s) og IPv6-routing-problemer fra Vercel. Pooleren (Supavisor, port 6543) bruker IPv4 og har ingen cold starts.
+>
+> **Implementering:**
+> ```typescript
+> import { Client } from "pg";
+> import { setDefaultResultOrder } from "dns";
+> setDefaultResultOrder("ipv4first"); // Node.js 18+ default er IPv6
+>
+> const client = new Client({ connectionString: process.env.POSTGRES_URL });
+> await client.connect();
+> const result = await client.query("SELECT 1");
+> await client.end();
+> ```
+>
+> **Les mer:** `.knowledge/errors/SUPABASE-VERCEL-REST-TIMEOUT-2026-05-12.md`
+
 ### Tekniske Detaljer
 ```yaml
 Testing: Vitest + Playwright
