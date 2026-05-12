@@ -118,6 +118,10 @@
       "description": "Aktiver lead architect agent for Klarpakke",
       "command": "kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml"
     },
+    "super": {
+      "description": "Aktiver super-agent med full smart-launch + pre-session kontekst + post-session analyse",
+      "command": "kimi --agent-file .kimi/agents/klarpakke-super-agent.yaml"
+    },
     "sanity": {
       "description": "Aktiver Sanity-spesialisert agent for Klarpakke",
       "command": "kimi --agent-file .kimi/agents/sanity-agent.yaml"

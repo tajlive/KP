@@ -61,7 +61,44 @@
       "security": ["security", "analyzer", "tester", "knowledge"],
       "architect": ["architect", "analyzer", "knowledge"],
       "review": ["analyzer", "architect", "tester", "security", "knowledge"]
-    }
+    },
+    "routing_rules": [
+      {
+        "id": "trading",
+        "name": "Trading Engine",
+        "agent": "klarpakke-trading-engine-agent.yaml",
+        "file_patterns": ["src/lib/trading/", "src/lib/auto-trading/", "supabase/migrations/.*trading", "supabase/migrations/.*bot", "supabase/migrations/.*cron"],
+        "trigger": "git-diff-match"
+      },
+      {
+        "id": "database",
+        "name": "Database",
+        "agent": "klarpakke-database-agent.yaml",
+        "file_patterns": ["supabase/migrations/.*\\.sql", "src/lib/supabase/"],
+        "trigger": "git-diff-match"
+      },
+      {
+        "id": "performance",
+        "name": "Performance",
+        "agent": "klarpakke-performance-agent.yaml",
+        "file_patterns": ["src/app/.*page\\.tsx", "src/components/.*\\.tsx", "next.config", "tailwind.config"],
+        "trigger": "git-diff-match"
+      },
+      {
+        "id": "auth",
+        "name": "Auth & Security",
+        "agent": "auth-agent.yaml",
+        "file_patterns": ["src/lib/auth/", "src/app/api/auth", "src/middleware.*auth", "src/app/.*login", "src/app/.*register"],
+        "trigger": "git-diff-match"
+      },
+      {
+        "id": "cms",
+        "name": "Sanity CMS",
+        "agent": "sanity-agent.yaml",
+        "file_patterns": ["src/sanity/", "sanity.config", "src/app/api/webhooks/sanity"],
+        "trigger": "git-diff-match"
+      }
+    ]
   },
   "quality_gates": {
     "min_test_coverage": 80,
