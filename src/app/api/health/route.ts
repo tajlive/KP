@@ -292,12 +292,39 @@ function checkEnvironment(): CheckResult {
   return { status: "ok" };
 }
 
+// Wrapper to enforce per-check timeout (prevents one slow check from killing the whole endpoint)
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+    ),
+  ]).catch(() => fallback);
+}
+
 export async function GET() {
+  // Run all checks in parallel with individual 3s timeouts
+  const [database, tradingSignals, kv, environment] = await Promise.all([
+    withTimeout(checkDatabase(), 3000, {
+      status: "error" as const,
+      message: "Check timed out after 3000ms",
+    }),
+    withTimeout(checkTradingSignals(), 3000, {
+      status: "error" as const,
+      message: "Check timed out after 3000ms",
+    }),
+    withTimeout(checkKV(), 3000, {
+      status: "warning" as const,
+      message: "Check timed out after 3000ms",
+    }),
+    Promise.resolve(checkEnvironment()),
+  ]);
+
   const checks = {
-    database: await checkDatabase(),
-    tradingSignals: await checkTradingSignals(),
-    kv: await checkKV(),
-    environment: checkEnvironment(),
+    database,
+    tradingSignals,
+    kv,
+    environment,
   };
 
   // Determine overall status
