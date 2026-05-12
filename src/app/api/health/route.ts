@@ -40,7 +40,12 @@ async function getPostgresClient(): Promise<Client> {
   if (!connectionString) {
     throw new Error("Missing POSTGRES_URL or DATABASE_URL");
   }
-  const client = new Client({ connectionString });
+  // Supavisor pooler uses AWS-managed certs; Node.js may not trust the CA.
+  // For internal health checks from Vercel, we accept the cert chain.
+  const client = new Client({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+  });
   await client.connect();
   return client;
 }
