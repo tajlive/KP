@@ -34,16 +34,29 @@ const startTime = Date.now();
 const CACHE_KEY = "health:latest";
 const CACHE_TTL_SECONDS = 30;
 
+function parsePgUrl(urlString: string) {
+  const url = new URL(urlString);
+  return {
+    host: url.hostname,
+    port: parseInt(url.port) || 6543,
+    database: decodeURIComponent(url.pathname.slice(1)),
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+  };
+}
+
 async function getPostgresClient(): Promise<Client> {
   const connectionString =
     process.env.POSTGRES_URL || process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("Missing POSTGRES_URL or DATABASE_URL");
   }
-  // Supavisor pooler uses AWS-managed certs; Node.js may not trust the CA.
-  // For internal health checks from Vercel, we accept the cert chain.
+  // Parse connection string manually to avoid pg overriding ssl settings
+  // from sslmode=require in the URL. Supavisor pooler uses AWS-managed
+  // certs that Node.js may not trust — we accept them for health checks.
+  const parsed = parsePgUrl(connectionString);
   const client = new Client({
-    connectionString,
+    ...parsed,
     ssl: { rejectUnauthorized: false },
   });
   await client.connect();
