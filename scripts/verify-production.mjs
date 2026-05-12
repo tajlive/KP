@@ -135,7 +135,10 @@ async function testUrl(url, expectedStatus = 200, followRedirects = true) {
   try {
     const response = await fetch(url, {
       redirect: followRedirects ? "follow" : "manual",
-      headers: { "User-Agent": "Klarpakke-Verify/1.0" },
+      headers: {
+        "User-Agent": "Klarpakke-Verify/1.0",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+      },
       timeout: 10000,
     });
     const duration = performance.now() - start;
