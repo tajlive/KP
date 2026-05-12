@@ -6,6 +6,8 @@ import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+export const runtime = 'edge';
+
 export default function CheckoutLayout({
   children,
 }: {

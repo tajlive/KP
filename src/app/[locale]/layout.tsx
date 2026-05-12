@@ -22,6 +22,7 @@ import { RootProviders } from "@/app/providers/RootProviders";
 import { Outfit, Geist } from "next/font/google";
 import "../globals.css";
 
+
 /**
  * MARKETING LAYOUT - Optimized for Performance
  *

@@ -2,6 +2,8 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import CopyTradingDashboard from "@/features/copy-trading/CopyTradingDashboard";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Kopier Trading | Klarpakke",

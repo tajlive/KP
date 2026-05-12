@@ -66,9 +66,11 @@ const nextConfig = {
         : false,
   },
 
-  // Image optimization (Vercel håndterer dette automatisk)
+  // Image optimization
+  // Vercel: unoptimized=false (Vercel håndterer automatisk)
+  // Cloudflare: unoptimized=true (Cloudflare Pages støtter ikke next/image)
   images: {
-    unoptimized: false, // La Vercel optimalisere bilder
+    unoptimized: process.env.CLOUDFLARE_PAGES === '1' || false,
     minimumCacheTTL: 2592000, // 30 dager cache
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -324,7 +326,9 @@ const nextConfig = {
 
   // Generate build ID to bust caches
   generateBuildId: async () => {
-    return process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || Date.now().toString();
+    return process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) || 
+           process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
+           Date.now().toString();
   },
 
   // Headers (optimized for security and performance)
@@ -400,11 +404,11 @@ const nextConfig = {
 // Kjør upload kun på Vercel (VERCEL=1) der bygg er kanonisk for prod.
 // GitHub Actions kjører `npm run build` uten VERCEL — da hoppes upload over (samme som lokal `next build`).
 // Tving av/på: SENTRY_UPLOAD_SOURCE_MAPS=true|false
-// Sentry source maps: Upload only on Vercel builds (VERCEL=1)
-// GitHub Actions skips upload (no VERCEL env)
+// Sentry source maps: Upload on Vercel eller Cloudflare builds
 // Override: SENTRY_UPLOAD_SOURCE_MAPS=true|false
 const sentryShouldUpload = process.env.SENTRY_UPLOAD_SOURCE_MAPS === 'true' || 
-  (process.env.VERCEL === '1' && process.env.SENTRY_UPLOAD_SOURCE_MAPS !== 'false');
+  ((process.env.VERCEL === '1' || process.env.CF_PAGES === '1') && 
+   process.env.SENTRY_UPLOAD_SOURCE_MAPS !== 'false');
 
 const sentryWebpackPluginOptions = {
   silent: true,

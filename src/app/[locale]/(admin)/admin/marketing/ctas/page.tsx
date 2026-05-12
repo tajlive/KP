@@ -12,6 +12,8 @@ import { AccessDenied } from "@/shared/ui/AccessDenied";
 import { createServerClient } from "@/lib/supabase/server";
 import { CtaAnalyticsDashboard } from "./CtaAnalyticsDashboard";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {

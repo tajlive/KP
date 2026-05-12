@@ -5,7 +5,7 @@ import { useRealtime } from "@/hooks/use-realtime";
 import type {
   DashboardMetricsSuccessResponse,
   DashboardMetricsErrorResponse,
-} from "@/app/api/dashboard/metrics/route";
+} from "@/types/api";
 
 export type DashboardMode = "paper" | "live";
 export type SessionScope = "all" | "active" | "active_and_completed";

@@ -6,8 +6,10 @@ import { HelpClient } from './HelpClient';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
+export const runtime = 'edge';
 
-export const revalidate = 86400; // 24 hours
+
+export const dynamic = "force-dynamic"; // Was: revalidate = 86400
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;

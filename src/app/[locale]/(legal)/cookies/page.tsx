@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import ClientCookies from "./ClientCookies";
 
+export const runtime = 'edge';
+
 export const revalidate = 86400;
 
 export async function generateMetadata({

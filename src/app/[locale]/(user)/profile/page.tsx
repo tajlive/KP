@@ -5,6 +5,8 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { ProfilePageClient } from "./ProfilePageClient";
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: "Profil - Klarpakke",
   description: "Din profil, lommebok og innstillinger",

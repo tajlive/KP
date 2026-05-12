@@ -7,6 +7,8 @@ import { Button } from "@/shared/ui/button";
 import { Bot, Clock, Shield, BookOpen, TrendingUp, Award } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
+export const runtime = 'edge';
+
 const EXPERIENCE_OPTIONS = [
   { value: "beginner", icon: BookOpen, color: "text-green-600" },
   { value: "intermediate", icon: TrendingUp, color: "text-blue-600" },

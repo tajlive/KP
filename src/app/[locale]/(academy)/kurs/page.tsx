@@ -13,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { getTranslations } from "next-intl/server";
 
+export const runtime = 'edge';
+
 interface PageProps {
   params: Promise<{ locale: string }>;
 }

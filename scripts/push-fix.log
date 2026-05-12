@@ -1,0 +1,28 @@
+Found '/Users/taj/klarpakke/.nvmrc' with version <24>
+Now using node v24.14.0 (npm v11.9.0)
+[STARTED] Backing up original state...
+[COMPLETED] Backed up original state in git stash (9eeab574f)
+[STARTED] Running tasks for staged files...
+[STARTED] package.json — 3 files
+[STARTED] *.{js,jsx,ts,tsx} — 1 file
+[STARTED] *.{json,md} — 0 files
+[SKIPPED] *.{json,md} — no files
+[STARTED] eslint --fix
+[COMPLETED] eslint --fix
+[STARTED] prettier --write
+[COMPLETED] prettier --write
+[COMPLETED] *.{js,jsx,ts,tsx} — 1 file
+[COMPLETED] package.json — 3 files
+[COMPLETED] Running tasks for staged files...
+[STARTED] Applying modifications from tasks...
+[COMPLETED] Applying modifications from tasks...
+[STARTED] Cleaning up temporary files...
+[COMPLETED] Cleaning up temporary files...
+
+> klarpakke-universitet@1.0.0 lint
+> eslint . --max-warnings 0
+
+
+> klarpakke-universitet@1.0.0 type-check
+> tsc --noEmit
+

@@ -7,6 +7,8 @@ export const dynamic = "force-dynamic";
 
 import DashboardClientLayout from "./DashboardClientLayout";
 
+export const runtime = 'edge';
+
 export default function DashboardLayout({
   children,
 }: {

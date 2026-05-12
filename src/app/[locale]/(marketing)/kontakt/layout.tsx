@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
+export const runtime = 'edge';
+
 export async function generateMetadata({ 
   params 
 }: { 

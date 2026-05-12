@@ -14,6 +14,8 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { formatNOK } from "@/lib/format/currency";
 
+export const runtime = 'edge';
+
 interface PageProps {
   params: Promise<{ locale: string }>;
 }

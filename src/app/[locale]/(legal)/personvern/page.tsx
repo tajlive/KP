@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import ClientPersonvern from "./ClientPersonvern";
 
+export const runtime = 'edge';
+
 export const revalidate = 86400; // 24 hours
 
 export async function generateMetadata({ 

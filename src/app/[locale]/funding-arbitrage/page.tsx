@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import FundingArbitrageDashboard from '@/features/funding/FundingArbitrageDashboard';
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: 'Funding Arbitrage | Klarpakke',
   description: 'Analyseverktøy for funding rate arbitrage. Historiske tall, ingen garanti for fremtidig avkastning.',

@@ -11,6 +11,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { OAuthDebugClient } from "./OAuthDebugClient";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {

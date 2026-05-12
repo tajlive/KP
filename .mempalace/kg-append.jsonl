@@ -149,3 +149,20 @@
 {"subject":"auto-trade-cron","predicate":"runs","object":"every 10 minutes","validFrom":"2026-05-09T17:52:51.151Z"}
 {"subject":"tomarnejensen@gmail.com","predicate":"has","object":"4 active paper trading sessions","validFrom":"2026-05-09T17:52:51.155Z"}
 {"subject":"ai_decision_log","predicate":"produced","object":"302 signals in 24h but 0 trades due to 5min expiry","validFrom":"2026-05-09T17:52:51.155Z"}
+{"subject":"vercel-supabase","predicate":"uses","object":"supavisor-pooler-port-6543","validFrom":"2026-05-12T11:00:00.000Z"}
+{"subject":"api-health","predicate":"avoid","object":"supabase-rest-api-from-vercel-serverless","validFrom":"2026-05-12T11:00:00.000Z"}
+{"subject":"supabase-rest","predicate":"known-issue","object":"postgrest-cold-start-1-20s-from-vercel","validFrom":"2026-05-12T11:00:00.000Z"}
+{"subject":"node-js-18","predicate":"requires","object":"dns-ipv4first-for-supabase","validFrom":"2026-05-12T11:00:00.000Z"}
+{"subject":"api-health","predicate":"fixed-by","object":"pg-pooler-ipv4-redis-cache","validFrom":"2026-05-12T11:00:00.000Z"}
+{"subject":"klarpakke","predicate":"migrating_from","object":"vercel","validFrom":"2026-05-12"}
+{"subject":"klarpakke","predicate":"migrating_to","object":"cloudflare-pages-supabase","validFrom":"2026-05-12"}
+{"subject":"migration","predicate":"baseline_tests","object":"939-passed-7-skipped","validFrom":"2026-05-12"}
+{"subject":"migration","predicate":"backup_tag","object":"migration-start-20260512","validFrom":"2026-05-12"}
+{"subject":"migration","predicate":"api_routes_count","object":"160","validFrom":"2026-05-12"}
+{"subject":"migration","predicate":"vercel_dependencies","object":"@vercel/analytics,@vercel/edge-config,@vercel/speed-insights,vercel-cli","validFrom":"2026-05-12"}
+{"subject":"cloudflare-pages","predicate":"build_status","object":"success-2026-05-12","validFrom":"2026-05-12"}
+{"subject":"cloudflare-pages","predicate":"build_size","object":"393MB","validFrom":"2026-05-12"}
+{"subject":"cloudflare-pages","predicate":"workers_created","object":"6","validFrom":"2026-05-12"}
+{"subject":"cloudflare-pages","predicate":"edge_runtime_files","object":"120","validFrom":"2026-05-12"}
+{"subject":"migration","predicate":"phase_1_2_3","object":"completed","validFrom":"2026-05-12"}
+{"subject":"migration","predicate":"remaining","object":"api-routes-restore,stripe-webhook,testing,dns-switch","validFrom":"2026-05-12"}

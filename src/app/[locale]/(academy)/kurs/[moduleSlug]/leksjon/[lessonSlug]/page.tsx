@@ -11,6 +11,8 @@ import { markLessonComplete } from "@/lib/courses/actions";
 import ReactMarkdown from "react-markdown";
 import { getTranslations } from "next-intl/server";
 
+export const runtime = 'edge';
+
 interface PageProps {
   params: Promise<{
     locale: string;

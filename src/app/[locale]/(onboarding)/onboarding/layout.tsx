@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Logo } from "@/shared/ui/Logo";
 
+export const runtime = 'edge';
+
 // Krever Supabase env; unngå statisk generering ved build
 export const dynamic = "force-dynamic";
 

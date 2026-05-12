@@ -7,6 +7,8 @@ import { getTranslations } from "next-intl/server";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 
 // Fallback UI for når datahenting feiler (brukervennlig med oversatt tekst)

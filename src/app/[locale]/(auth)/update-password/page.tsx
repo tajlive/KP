@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { updatePassword } from "@/lib/auth/new/auth-actions";
 
+export const runtime = 'edge';
+
 export default function UpdatePasswordPage() {
   const router = useRouter();
   const locale = useLocale();

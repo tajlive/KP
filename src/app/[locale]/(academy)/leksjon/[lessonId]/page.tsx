@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
+export const runtime = 'edge';
+
 interface PageProps {
   params: Promise<{ locale: string; lessonId: string }>;
 }

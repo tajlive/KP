@@ -5,6 +5,8 @@ import { Text } from "@coinbase/cds-web/typography";
 import { Card } from "@coinbase/cds-web/cards";
 import { Button } from "@coinbase/cds-web/buttons";
 
+export const runtime = 'edge';
+
 export default function CdsTestPage() {
   return (
     <Box className="min-h-screen bg-kp-bg-secondary px-4 py-8">

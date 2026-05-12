@@ -8,8 +8,10 @@ import { KLTTeaser } from "@/features/landing/KLTTeaser";
 import { StickyCTA } from "@/features/landing/StickyCTA";
 import { ScrollReveal } from "@/features/landing/ScrollReveal";
 
+export const runtime = 'edge';
+
 // ISR: Revalidate every 60s, Sanity webhook invalidates on content change
-export const revalidate = 60;
+export const dynamic = "force-dynamic"; // Was: revalidate = 60 (ISR not supported on Cloudflare)
 
 export async function generateMetadata({
   params,

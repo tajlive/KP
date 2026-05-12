@@ -9,6 +9,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AmbientGlow } from "@/shared/ui/AmbientGlow";
 
+export const runtime = 'edge';
+
 export default function CopyTradingLayout({
   children,
 }: {

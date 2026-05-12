@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import ClientAdminSessions from "./ClientAdminSessions";
 
+export const runtime = 'edge';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Admin Sessions | Klarpakke`,

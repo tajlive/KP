@@ -13,6 +13,17 @@
     "build": "NODE_OPTIONS=\"--max-old-space-size=2816\" next build",
     "build:local": "SKIP_LINT_IN_BUILD=true next build",
     "start": "next start",
+    
+    "── CLOUDFLARE ──": "echo 'Cloudflare Pages + Workers commands'",
+    "cf:build": "node scripts/cf-pre-build.mjs && npx @cloudflare/next-on-pages && node scripts/cf-post-build.mjs",
+    "cf:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
+    "cf:deploy": "npx wrangler pages deploy .vercel/output/static",
+    "cf:deploy:staging": "npx wrangler pages deploy .vercel/output/static --branch=staging",
+    "workers:dev": "npx wrangler dev",
+    "workers:deploy": "npx wrangler deploy",
+    "kv:create": "npx wrangler kv:namespace create CACHE && npx wrangler kv:namespace create SESSIONS",
+    "r2:create": "npx wrangler r2 bucket create klarpakke-exports",
+    "d1:create": "npx wrangler d1 create klarpakke-edge",
     "lint": "eslint . --max-warnings 300 --cache",
     "lint:gate": "eslint . --max-warnings 100 --cache",
     "lint:fix": "eslint . --fix --cache",
@@ -226,6 +237,7 @@
     "test:auth:prod": "playwright test tests/e2e/auth.spec.ts --config=playwright.config.prod.ts",
     "preview": "wrangler pages dev .open-next/worker",
     "vercel-build": "npm run build",
+    "[DEPRECATED]": "Vercel scripts - will be removed after migration",
     "db:ship": "./scripts/db-ship.sh",
     "db:apply:trading-core": "node scripts/supabase-query-linked.mjs supabase/migrations/20260325080000_ensure_public_trades_and_risk_daily_loss.sql supabase/migrations/20260325120000_ensure_trading_sessions_triggers_search_path.sql",
     "db:push": "supabase db push --linked",
@@ -454,6 +466,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",
+    "@cloudflare/next-on-pages": "^1.13.16",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.20.0",
     "@lhci/cli": "^0.15.1",
@@ -520,7 +533,8 @@
     "typescript": "^6.0.3",
     "vercel": "^53.3.1",
     "vite": "^8.0.10",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "wrangler": "^4.90.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

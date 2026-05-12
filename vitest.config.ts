@@ -31,6 +31,7 @@ export default defineConfig({
       "e2e/**", 
       "**/*.d.ts",
       "**/p0-*.test.ts", // P0-tester krever DB, kjøres separat
+      "src/api-vercel-backup/**", // API routes backup (migrert to Workers)
     ],
     
     // Retry for flaky tester i CI

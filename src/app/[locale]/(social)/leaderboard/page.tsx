@@ -1,5 +1,7 @@
 import CompetitionClient from "@/features/leaderboard/CompetitionClient";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 
 interface PageProps {

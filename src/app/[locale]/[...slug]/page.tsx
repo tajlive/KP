@@ -4,6 +4,8 @@ import { PortableText } from '@/components/portable-text/PortableText';
 import { safeFetch } from '@/lib/sanity/client';
 import { pageBySlugQuery } from '@/lib/sanity/queries';
 
+export const runtime = 'edge';
+
 interface PageDocument {
   _id: string;
   title: string;
@@ -17,7 +19,7 @@ interface DynamicPageProps {
   params: Promise<{ locale: string; slug: string[] }>;
 }
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic"; // Was: revalidate = 3600 (ISR not supported on Cloudflare)
 
 export async function generateMetadata({ params }: DynamicPageProps): Promise<Metadata> {
   const { locale, slug } = await params;

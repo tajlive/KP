@@ -2,6 +2,8 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { ReferralDashboard } from "@/features/referral/ReferralDashboard";
 
+export const runtime = 'edge';
+
 export const metadata = {
   title: "Golden Ticket | Klarpakke",
   description: "Tjen gratis Master-tier ved å invitere venner.",

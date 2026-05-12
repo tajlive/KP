@@ -17,6 +17,8 @@ import { Badge } from "@/shared/ui/badge";
 import { Progress } from "@/shared/ui/progress";
 import { getTranslations } from "next-intl/server";
 
+export const runtime = 'edge';
+
 interface PageProps {
   params: Promise<{ locale: string; moduleSlug: string }>;
 }

@@ -257,3 +257,9 @@ config/perplexity-local-mcp.json
 .mempalace/kimi_sessions/
 # Swarm auto-genererte rapporter
 .knowledge/session/
+
+# ── Cloudflare ──
+.open-next/
+.cloudflare/
+.wrangler/
+.dev.vars

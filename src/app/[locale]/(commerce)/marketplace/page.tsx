@@ -2,6 +2,8 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { requireAuth } from "@/lib/auth-guard";
 import MarketplaceClient from "@/features/marketplace/MarketplaceClient";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Strategi Marked | Klarpakke",

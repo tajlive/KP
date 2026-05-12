@@ -17,6 +17,8 @@ import { AccessDenied } from "@/shared/ui/AccessDenied";
 import { createServerClient } from "@/lib/supabase/server";
 import { HealthDashboardClient } from "./HealthDashboardClient";
 
+export const runtime = 'edge';
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 

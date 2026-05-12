@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import Studio from './Studio'
 
+export const runtime = 'edge';
+
 export { metadata, viewport }
 
 export default async function StudioPage() {

@@ -5,6 +5,8 @@
 import { Suspense } from 'react'
 import { getTranslations } from 'next-intl/server'
 
+export const runtime = 'edge';
+
 export const dynamic = 'force-static'
 
 async function VerifyContent({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
