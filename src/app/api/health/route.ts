@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { Client } from "pg";
+import { setDefaultResultOrder } from "dns";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
-import {
-  DATA_SOURCE_THRESHOLDS,
-  getTradingFeedState,
-} from "@/lib/trading/data-source-state";
 import { NextResponse } from "next/server";
+
+// Force IPv4 to avoid known Vercel↔Supabase IPv6 routing issues
+setDefaultResultOrder("ipv4first");
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -20,6 +20,7 @@ interface HealthCheck {
     environment: CheckResult;
   };
   uptime: number;
+  cached?: boolean;
 }
 
 interface CheckResult {
@@ -30,179 +31,90 @@ interface CheckResult {
 }
 
 const startTime = Date.now();
+const CACHE_KEY = "health:latest";
+const CACHE_TTL_SECONDS = 30;
+
+async function getPostgresClient(): Promise<Client> {
+  const connectionString =
+    process.env.POSTGRES_URL || process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("Missing POSTGRES_URL or DATABASE_URL");
+  }
+  const client = new Client({ connectionString });
+  await client.connect();
+  return client;
+}
 
 async function checkDatabase(): Promise<CheckResult> {
   const start = Date.now();
+  let client: Client | null = null;
   try {
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("user_profiles")
-      .select("id")
-      .limit(1);
-
-    if (error) {
-      return {
-        status: "error",
-        latency: Date.now() - start,
-        message: error.message,
-      };
-    }
-
+    client = await getPostgresClient();
+    const result = await client.query("SELECT 1 AS health");
+    const ok = result.rows.length > 0 && result.rows[0].health === 1;
+    await client.end();
     return {
-      status: "ok",
+      status: ok ? "ok" : "error",
       latency: Date.now() - start,
+      message: ok ? undefined : "Unexpected query result",
     };
   } catch (err) {
+    if (client) {
+      try { await client.end(); } catch { /* ignore */ }
+    }
     return {
       status: "error",
       latency: Date.now() - start,
-      message: err instanceof Error ? err.message : "Unknown error",
+      message: err instanceof Error ? err.message : "Unknown DB error",
     };
   }
 }
 
-/**
- * Signal-feed health: prefer `bot_health` heartbeat for `signal-engine`.
- * New rows in `trading_signals` are only inserted on BUY/SELL — long gaps are
- * normal when strategies are HOLD. Cron still updates `last_heartbeat` each run.
- */
 async function checkTradingSignals(): Promise<CheckResult> {
   const start = Date.now();
-  const staleMinutes = Number(
-    process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES ??
-      DATA_SOURCE_THRESHOLDS.staleMinutes,
-  );
-  const criticalMinutes = DATA_SOURCE_THRESHOLDS.criticalMinutes;
-  const incidentMinutes = DATA_SOURCE_THRESHOLDS.incidentMinutes;
+  let client: Client | null = null;
+  const staleMinutes = Number(process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES ?? 15);
+  const criticalMinutes = 60;
+  const incidentMinutes = 120;
 
   try {
-    const supabase = createClient();
+    client = await getPostgresClient();
+    const result = await client.query(
+      `SELECT last_heartbeat, updated_at, status, last_error
+       FROM bot_health
+       WHERE bot_name = 'signal-engine'
+       LIMIT 1`
+    );
+    await client.end();
 
-    const { data: botRow, error: botErr } = await supabase
-      .from("bot_health")
-      .select("last_heartbeat, updated_at, status, last_error")
-      .eq("bot_name", "signal-engine")
-      .maybeSingle();
-
+    const botRow = result.rows[0];
     const heartbeatAt = botRow?.last_heartbeat ?? botRow?.updated_at ?? null;
 
-    if (!botErr && botRow && heartbeatAt) {
-      const hbAgeMin = (Date.now() - new Date(heartbeatAt).getTime()) / 60000;
-
-      if (botRow.status === "error") {
-        return {
-          status: "error",
-          latency: Date.now() - start,
-          message:
-            botRow.last_error?.slice(0, 200) ?? "signal-engine status error",
-        };
-      }
-
-      if (hbAgeMin > staleMinutes) {
-        const feedStateHint = getTradingFeedState({
-          hasError: false,
-          usesFallback: false,
-          latestSignalAgeMinutes: null,
-        });
-        return {
-          status: "warning",
-          latency: Date.now() - start,
-          message: `Signal engine heartbeat stale (${Math.round(hbAgeMin)}m old)`,
-          details: {
-            feedStateHint,
-            engineHeartbeatAgeMinutes: Number(hbAgeMin.toFixed(2)),
-            latestSignalAgeMinutes: null,
-            staleThresholdMinutes: staleMinutes,
-            criticalThresholdMinutes: criticalMinutes,
-            incidentThresholdMinutes: incidentMinutes,
-          },
-        };
-      }
-
-      const { data: feedRow } = await supabase
-        .from("trading_signals")
-        .select("created_at")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let message: string | undefined;
-      let latestSignalAgeMinutes: number | null = null;
-      let holdLikely = false;
-      if (feedRow?.created_at) {
-        const feedAgeMin =
-          (Date.now() - new Date(feedRow.created_at).getTime()) / 60000;
-        latestSignalAgeMinutes = Number(feedAgeMin.toFixed(2));
-        if (feedAgeMin > staleMinutes) {
-          holdLikely = true;
-          message = `Engine OK; latest feed row ${Math.round(feedAgeMin)}m old (normal during HOLD)`;
-        }
-      } else {
-        message = "Engine OK; no rows in trading_signals yet";
-      }
-
-      const feedStateHint = getTradingFeedState({
-        hasError: false,
-        usesFallback: false,
-        latestSignalAgeMinutes,
-      });
-
-      return {
-        status: "ok",
-        latency: Date.now() - start,
-        message,
-        details: {
-          feedStateHint,
-          holdLikely,
-          engineHeartbeatAgeMinutes: Number(hbAgeMin.toFixed(2)),
-          latestSignalAgeMinutes,
-          staleThresholdMinutes: staleMinutes,
-          criticalThresholdMinutes: criticalMinutes,
-          incidentThresholdMinutes: incidentMinutes,
-        },
-      };
-    }
-
-    // Fallback: no bot_health row yet (legacy) — infer from trading_signals only
-    const { data, error } = await supabase
-      .from("trading_signals")
-      .select("created_at")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
+    if (botRow?.status === "error") {
       return {
         status: "error",
         latency: Date.now() - start,
-        message: error.message,
+        message: botRow.last_error?.slice(0, 200) ?? "signal-engine status error",
       };
     }
 
-    if (!data?.created_at) {
+    if (!heartbeatAt) {
       return {
         status: "warning",
         latency: Date.now() - start,
-        message: "No trading signals and no signal-engine heartbeat",
+        message: "No signal-engine heartbeat row found",
       };
     }
 
-    const ageMinutes =
-      (Date.now() - new Date(data.created_at).getTime()) / 60000;
-    if (ageMinutes > staleMinutes) {
-      const roundedAge = Number(ageMinutes.toFixed(2));
+    const hbAgeMin = (Date.now() - new Date(heartbeatAt).getTime()) / 60000;
+
+    if (hbAgeMin > staleMinutes) {
       return {
         status: "warning",
         latency: Date.now() - start,
-        message: `Latest signal is stale (${Math.round(ageMinutes)}m old); no bot_health for signal-engine`,
+        message: `Signal engine heartbeat stale (${Math.round(hbAgeMin)}m old)`,
         details: {
-          feedStateHint: getTradingFeedState({
-            hasError: false,
-            usesFallback: false,
-            latestSignalAgeMinutes: roundedAge,
-          }),
-          engineHeartbeatAgeMinutes: null,
-          latestSignalAgeMinutes: roundedAge,
+          engineHeartbeatAgeMinutes: Number(hbAgeMin.toFixed(2)),
           staleThresholdMinutes: staleMinutes,
           criticalThresholdMinutes: criticalMinutes,
           incidentThresholdMinutes: incidentMinutes,
@@ -213,24 +125,22 @@ async function checkTradingSignals(): Promise<CheckResult> {
     return {
       status: "ok",
       latency: Date.now() - start,
+      message: `Heartbeat ${Math.round(hbAgeMin)}m old`,
       details: {
-        feedStateHint: getTradingFeedState({
-          hasError: false,
-          usesFallback: false,
-          latestSignalAgeMinutes: Number(ageMinutes.toFixed(2)),
-        }),
-        engineHeartbeatAgeMinutes: null,
-        latestSignalAgeMinutes: Number(ageMinutes.toFixed(2)),
+        engineHeartbeatAgeMinutes: Number(hbAgeMin.toFixed(2)),
         staleThresholdMinutes: staleMinutes,
         criticalThresholdMinutes: criticalMinutes,
         incidentThresholdMinutes: incidentMinutes,
       },
     };
   } catch (err) {
+    if (client) {
+      try { await client.end(); } catch { /* ignore */ }
+    }
     return {
       status: "error",
       latency: Date.now() - start,
-      message: err instanceof Error ? err.message : "Unknown error",
+      message: err instanceof Error ? err.message : "Unknown trading check error",
     };
   }
 }
@@ -278,6 +188,7 @@ function checkEnvironment(): CheckResult {
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
+    "POSTGRES_URL",
   ];
 
   const missing = requiredVars.filter((v) => !process.env[v]);
@@ -292,7 +203,6 @@ function checkEnvironment(): CheckResult {
   return { status: "ok" };
 }
 
-// Wrapper to enforce per-check timeout (prevents one slow check from killing the whole endpoint)
 function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([
     promise,
@@ -303,6 +213,28 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
 }
 
 export async function GET() {
+  const start = Date.now();
+
+  // Try cache first
+  let cached: HealthCheck | null = null;
+  if (isRedisRestConfigured()) {
+    try {
+      const redis = getRedisRest();
+      const raw = await redis?.get<string>(CACHE_KEY);
+      if (raw) {
+        cached = JSON.parse(raw);
+      }
+    } catch { /* ignore cache errors */ }
+  }
+
+  // Return cached result immediately if fresh (< 25s old to avoid edge case)
+  if (cached && Date.now() - new Date(cached.timestamp).getTime() < 25_000) {
+    return NextResponse.json(
+      { ...cached, cached: true },
+      { status: cached.status === "unhealthy" ? 503 : 200 }
+    );
+  }
+
   // Run all checks in parallel with individual 3s timeouts
   const [database, tradingSignals, kv, environment] = await Promise.all([
     withTimeout(checkDatabase(), 3000, {
@@ -327,7 +259,6 @@ export async function GET() {
     environment,
   };
 
-  // Determine overall status
   const hasError = Object.values(checks).some((c) => c.status === "error");
   const hasWarning = Object.values(checks).some((c) => c.status === "warning");
 
@@ -342,6 +273,16 @@ export async function GET() {
   };
 
   const statusCode = status === "unhealthy" ? 503 : 200;
+
+  // Cache result in Redis/Vercel KV
+  if (isRedisRestConfigured()) {
+    try {
+      const redis = getRedisRest();
+      await redis?.set(CACHE_KEY, JSON.stringify(health), {
+        ex: CACHE_TTL_SECONDS,
+      });
+    } catch { /* ignore cache write errors */ }
+  }
 
   return NextResponse.json(health, {
     status: statusCode,
