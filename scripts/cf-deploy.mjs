@@ -145,6 +145,71 @@ async function handleLeads(request, env) {
   }
 }
 
+async function handleSentry(request, env) {
+  if (request.method !== 'POST') {
+    return new Response(null, { status: 405 });
+  }
+
+  try {
+    const envelope = await request.text();
+    const headerLine = envelope.split('\n')[0];
+    const header = JSON.parse(headerLine);
+
+    if (!header.dsn) {
+      return jsonResponse({ error: 'No DSN found in envelope' }, 400);
+    }
+
+    const dsn = new URL(header.dsn);
+    const projectId = dsn.pathname.replace('/', '');
+    const url = 'https://' + dsn.host + '/api/' + projectId + '/envelope/';
+
+    const res = await fetch(url, {
+      method: 'POST',
+      body: envelope,
+      headers: { 'Content-Type': 'application/x-sentry-envelope' },
+    });
+
+    return new Response(null, { status: res.status });
+  } catch (err) {
+    console.error('[Sentry Tunnel Error]:', err);
+    return jsonResponse({ error: 'Internal Server Error' }, 500);
+  }
+}
+
+async function handleAnalytics(request, env) {
+  if (request.method === 'GET') {
+    return jsonResponse({ status: 'ok' });
+  }
+
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405);
+  }
+
+  try {
+    const body = await request.json();
+    const { session_id, user_id, event_type, event_name, page_path } = body || {};
+
+    if (env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      try {
+        const supabase = await getSupabase(env);
+        await supabase.from('analytics_events').insert({
+          user_id: user_id ?? null,
+          session_id: session_id ?? null,
+          event_type: event_type ?? 'page_view',
+          event_name: event_name ?? page_path ?? 'unknown',
+        });
+      } catch (dbError) {
+        console.warn('[analytics] DB insert failed (best-effort):', dbError);
+      }
+    }
+
+    return jsonResponse({ success: true });
+  } catch (error) {
+    // Fail silently — analytics should never block UI
+    return jsonResponse({ received: true });
+  }
+}
+
 // ===== MAIN WORKER =====
 
 export default {
@@ -165,11 +230,29 @@ export default {
     if (path === '/api/leads') {
       return handleLeads(request, env);
     }
+    if (path === '/api/sentry') {
+      return handleSentry(request, env);
+    }
+    if (path === '/api/analytics') {
+      return handleAnalytics(request, env);
+    }
 
     // Try to serve from static assets
     try {
       const assetResponse = await env.ASSETS.fetch(request);
       if (assetResponse.status !== 404) {
+        // Add cache headers for static assets (Cloudflare CDN optimization)
+        const path = url.pathname;
+        if (path.startsWith('/_next/static/') || path.startsWith('/images/') || path.startsWith('/fonts/') || path.startsWith('/brand/') || path.startsWith('/icons/') || path.endsWith('.svg') || path.endsWith('.png') || path.endsWith('.webp') || path.endsWith('.ico') || path.endsWith('.woff2') || path.endsWith('.ttf')) {
+          const newHeaders = new Headers(assetResponse.headers);
+          newHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
+          newHeaders.set('CF-Cache-Status', 'HIT');
+          return new Response(assetResponse.body, {
+            status: assetResponse.status,
+            statusText: assetResponse.statusText,
+            headers: newHeaders,
+          });
+        }
         return assetResponse;
       }
     } catch {
@@ -225,14 +308,24 @@ console.log('☁️  Cloudflare Pages Deploy\n');
 console.log('🔨 Step 1: Building for Cloudflare...');
 execSync('npm run cf:build', { stdio: 'inherit' });
 
-// Step 2: Replace _worker.js with lightweight proxy
-console.log('🔧 Step 2: Replacing next-on-pages Worker with lightweight proxy...');
+// Step 2: Remove next-on-pages functions (555MB+) and replace Worker
+console.log('🔧 Step 2: Removing next-on-pages functions & replacing Worker...');
+const FUNCTIONS_DIR = '.vercel/output/functions';
+const DIAGNOSTICS_DIR = '.vercel/output/diagnostics';
+if (existsSync(FUNCTIONS_DIR)) {
+  rmSync(FUNCTIONS_DIR, { recursive: true, force: true });
+  console.log('   ✓ Removed .vercel/output/functions/ (next-on-pages bundle)');
+}
+if (existsSync(DIAGNOSTICS_DIR)) {
+  rmSync(DIAGNOSTICS_DIR, { recursive: true, force: true });
+  console.log('   ✓ Removed .vercel/output/diagnostics/');
+}
 if (existsSync(WORKER_DIR)) {
   rmSync(WORKER_DIR, { recursive: true, force: true });
 }
 mkdirSync(WORKER_DIR, { recursive: true });
 writeFileSync(join(WORKER_DIR, 'index.js'), WORKER_CODE);
-console.log('   ✓ Worker replaced');
+console.log('   ✓ Custom proxy Worker written');
 
 // Step 3: Deploy
 console.log('🚀 Step 3: Deploying to Cloudflare Pages...');
@@ -243,7 +336,7 @@ if (!token) {
   console.error('❌ CLOUDFLARE_API_TOKEN is not set');
   process.exit(1);
 }
-execSync(`npx wrangler pages deploy ${BUILD_DIR}${branchFlag}`, { 
+execSync(`npx wrangler pages deploy ${BUILD_DIR}${branchFlag} --skip-caching`, { 
   stdio: 'inherit',
   env: { ...process.env, CLOUDFLARE_API_TOKEN: token }
 });
