@@ -9,6 +9,8 @@ COPY . .
 ENV FLY_IO=1
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=3072"
+ENV TURBOPACK=0
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN rm -rf .next && npm run prebuild && NODE_OPTIONS="--max-old-space-size=3072" npx next build
 
 FROM node:24-slim AS runner
