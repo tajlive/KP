@@ -302,6 +302,8 @@ export default {
 const BUILD_DIR = '.vercel/output/static';
 const WORKER_DIR = join(BUILD_DIR, '_worker.js');
 
+const ROUTES_JSON = '{"version":1,"include":["/*"],"exclude":[]}';
+
 console.log('☁️  Cloudflare Pages Deploy\n');
 
 // Step 1: Build
@@ -325,7 +327,9 @@ if (existsSync(WORKER_DIR)) {
 }
 mkdirSync(WORKER_DIR, { recursive: true });
 writeFileSync(join(WORKER_DIR, 'index.js'), WORKER_CODE);
+writeFileSync(join(BUILD_DIR, '_routes.json'), ROUTES_JSON);
 console.log('   ✓ Custom proxy Worker written');
+console.log('   ✓ _routes.json updated (all routes → Worker)');
 
 // Step 3: Deploy
 console.log('🚀 Step 3: Deploying to Cloudflare Pages...');
