@@ -19,9 +19,9 @@ primary_region = 'arn'
   HOSTNAME = '0.0.0.0'
 
 [[vm]]
-  memory = '2gb'
-  cpu_kind = 'shared'
-  cpus = 1
+  memory = '4gb'
+  cpu_kind = 'performance'
+  cpus = 2
 
 # Secrets (set via `fly secrets set`):
 #   NEXT_PUBLIC_SUPABASE_URL

@@ -8,7 +8,7 @@ RUN npm config set legacy-peer-deps true && npm ci --ignore-scripts
 COPY . .
 ENV FLY_IO=1
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=1536"
+ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN rm -rf .next && npm run prebuild && NODE_OPTIONS="--max-old-space-size=1536" npx next build
 
 FROM node:24-slim AS runner
