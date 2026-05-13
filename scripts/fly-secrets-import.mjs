@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Fly.io Secrets Import Script (Batched)
+ * Fly.io Secrets Import Script
  * 
- * Reads .env.local and imports secrets to Fly.io app in batches.
+ * Reads .env.local and imports secrets to Fly.io app using 'flyctl secrets import'.
+ * This uses stdin (file-based) instead of CLI args, avoiding command length limits.
  * Usage: node scripts/fly-secrets-import.mjs [--dry-run]
  * 
  * Requires: flyctl login + flyctl app exists
@@ -14,7 +15,6 @@ import { join } from 'path';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const APP_NAME = 'klarpakke';
-const BATCH_SIZE = 10; // Import secrets in batches to avoid command length limits
 
 // Secrets that should NOT be imported (public vars, build-time only)
 const SKIP_KEYS = [
@@ -53,15 +53,6 @@ function parseEnvFile(path) {
   return secrets;
 }
 
-function chunkObject(obj, size) {
-  const entries = Object.entries(obj);
-  const chunks = [];
-  for (let i = 0; i < entries.length; i += size) {
-    chunks.push(Object.fromEntries(entries.slice(i, i + size)));
-  }
-  return chunks;
-}
-
 function main() {
   const envPath = join(process.cwd(), '.env.local');
   let secrets;
@@ -86,6 +77,17 @@ function main() {
     }
   }
 
+  // Build .env format content for flyctl secrets import
+  const envContent = Object.entries(toImport)
+    .map(([key, value]) => {
+      // Escape values that contain newlines or special chars
+      if (value.includes('\n') || value.includes('"')) {
+        return `${key}=${JSON.stringify(value)}`;
+      }
+      return `${key}=${value}`;
+    })
+    .join('\n');
+
   if (DRY_RUN) {
     console.log('🔍 DRY RUN — Secrets that would be imported:');
     for (const key of Object.keys(toImport).sort()) {
@@ -98,29 +100,17 @@ function main() {
     return;
   }
 
-  // Import in batches
-  const batches = chunkObject(toImport, BATCH_SIZE);
-  console.log(`🚀 Importing secrets in ${batches.length} batches...\n`);
-
-  for (let i = 0; i < batches.length; i++) {
-    const batch = batches[i];
-    const batchKeys = Object.keys(batch);
-    const args = Object.entries(batch)
-      .map(([key, value]) => `${key}=${value}`)
-      .join(' ');
-
-    try {
-      const cmd = `flyctl secrets set ${args} --app ${APP_NAME}`;
-      console.log(`📤 Batch ${i + 1}/${batches.length}: ${batchKeys.length} secrets (${batchKeys.slice(0, 3).join(', ')}${batchKeys.length > 3 ? '...' : ''})`);
-      execSync(cmd, { stdio: 'inherit' });
-      console.log(`✅ Batch ${i + 1} imported\n`);
-    } catch (err) {
-      console.error(`\n❌ Batch ${i + 1} failed:`, err.message);
-      process.exit(1);
-    }
+  try {
+    console.log('🚀 Importing secrets via flyctl secrets import...');
+    // Use echo + pipe to feed env content to flyctl secrets import
+    // This avoids command length limits entirely
+    const cmd = `printf '%s' ${JSON.stringify(envContent)} | flyctl secrets import --app ${APP_NAME}`;
+    execSync(cmd, { stdio: 'inherit', shell: '/bin/bash' });
+    console.log('\n✅ Secrets imported successfully!');
+  } catch (err) {
+    console.error('\n❌ Failed to import secrets:', err.message);
+    process.exit(1);
   }
-
-  console.log('✅ All secrets imported successfully!');
 }
 
 main();
