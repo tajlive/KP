@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Fly.io Secrets Import Script
+ * Fly.io Secrets Import Script (Batched)
  * 
- * Reads .env.local and imports secrets to Fly.io app.
+ * Reads .env.local and imports secrets to Fly.io app in batches.
  * Usage: node scripts/fly-secrets-import.mjs [--dry-run]
  * 
  * Requires: flyctl login + flyctl app exists
@@ -14,6 +14,7 @@ import { join } from 'path';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const APP_NAME = 'klarpakke';
+const BATCH_SIZE = 10; // Import secrets in batches to avoid command length limits
 
 // Secrets that should NOT be imported (public vars, build-time only)
 const SKIP_KEYS = [
@@ -52,6 +53,15 @@ function parseEnvFile(path) {
   return secrets;
 }
 
+function chunkObject(obj, size) {
+  const entries = Object.entries(obj);
+  const chunks = [];
+  for (let i = 0; i < entries.length; i += size) {
+    chunks.push(Object.fromEntries(entries.slice(i, i + size)));
+  }
+  return chunks;
+}
+
 function main() {
   const envPath = join(process.cwd(), '.env.local');
   let secrets;
@@ -88,20 +98,29 @@ function main() {
     return;
   }
 
-  // Build flyctl secrets set command
-  const args = Object.entries(toImport)
-    .map(([key, value]) => `${key}=${value}`)
-    .join(' ');
+  // Import in batches
+  const batches = chunkObject(toImport, BATCH_SIZE);
+  console.log(`🚀 Importing secrets in ${batches.length} batches...\n`);
 
-  try {
-    const cmd = `flyctl secrets set ${args} --app ${APP_NAME}`;
-    console.log('🚀 Importing secrets to Fly.io...');
-    execSync(cmd, { stdio: 'inherit' });
-    console.log('\n✅ Secrets imported successfully!');
-  } catch (err) {
-    console.error('\n❌ Failed to import secrets:', err.message);
-    process.exit(1);
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i];
+    const batchKeys = Object.keys(batch);
+    const args = Object.entries(batch)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(' ');
+
+    try {
+      const cmd = `flyctl secrets set ${args} --app ${APP_NAME}`;
+      console.log(`📤 Batch ${i + 1}/${batches.length}: ${batchKeys.length} secrets (${batchKeys.slice(0, 3).join(', ')}${batchKeys.length > 3 ? '...' : ''})`);
+      execSync(cmd, { stdio: 'inherit' });
+      console.log(`✅ Batch ${i + 1} imported\n`);
+    } catch (err) {
+      console.error(`\n❌ Batch ${i + 1} failed:`, err.message);
+      process.exit(1);
+    }
   }
+
+  console.log('✅ All secrets imported successfully!');
 }
 
 main();
