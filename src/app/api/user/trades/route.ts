@@ -7,6 +7,7 @@ import {
   meTradesSuccessSchema,
 } from "@/lib/trading/me-trades-api";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_LIMIT = 200;

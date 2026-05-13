@@ -19,7 +19,7 @@ function buildWorkerCode(robotsTxt, sitemapXml) {
  * Cloudflare Pages Worker — Static assets + API routes + Vercel proxy
  */
 
-const VERCEL_FALLBACK = 'https://klarpakke.vercel.app';
+const FLY_FALLBACK = 'https://klarpakke.fly.dev';
 
 function jsonResponse(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -285,7 +285,7 @@ export default {
     }
 
     // Proxy to Vercel
-    const targetBase = env.VERCEL_APP_URL || VERCEL_FALLBACK;
+    const targetBase = env.VERCEL_APP_URL || FLY_FALLBACK;
     const target = new URL(path + url.search, targetBase);
 
     const headers = new Headers(request.headers);

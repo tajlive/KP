@@ -2,6 +2,8 @@ import { createServerClient, createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 function getAuthUser(request: NextRequest) {
   const response = NextResponse.next();
   const supabase = createServerClient(request, response);

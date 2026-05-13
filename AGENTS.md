@@ -1,9 +1,10 @@
 # 🤖 KIMI + MemPalace Master Guide
 
 **Prosjekt:** Klarpakke - AI Trading Platform  
-**Stack:** Next.js 15, React 19, TypeScript 5.9, Supabase, Vercel  
+**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Fly.io, Cloudflare  
 **Status:** Production (www.klarpakke.no)  
-**Node:** 24.x (se `.nvmrc`)
+**Node:** 24.x (se `.nvmrc`)  
+**Hosting:** Fly.io (Docker) + Cloudflare DNS/CDN
 
 ---
 
@@ -22,6 +23,9 @@ npm run oauth:check
 # Test & bygg
 npm run test:unit && npm run build
 
+# Deploy til Fly.io
+npm run fly:deploy
+
 # Commit & push
 git add -A && git commit -m "type: beskrivelse" && git push origin main
 ```
@@ -38,7 +42,7 @@ kimi test            # npm run test:unit
 kimi test:e2e        # npm run test:e2e:critical:chromium
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
-kimi deploy          # npm run deploy:prod
+kimi deploy          # npm run fly:deploy
 
 # Pipeline (NYTT)
 kimi ci              # npm run lint:gate && npm run test:unit
@@ -52,6 +56,78 @@ kimi depcheck        # node scripts/dependency-report.mjs
 kimi coverage        # node scripts/coverage-report.mjs
 kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 ```
+
+---
+
+## 🚀 Fly.io Hosting
+
+> **Status:** Migrated from Vercel to Fly.io (Docker + Cloudflare DNS/CDN)
+> **App:** `klarpakke` | **Region:** `arn` (Stockholm) | **URL:** https://klarpakke.fly.dev
+
+### Arkitektur
+```
+User → Cloudflare DNS (klarpakke.no) → Cloudflare CDN/Proxy → Fly.io (Docker)
+                                       ↓
+                              DDoS + SSL + Caching
+```
+
+### Setup (én gang)
+```bash
+# 1. Install flyctl
+brew install flyctl          # macOS
+curl -L https://fly.io/install.sh | sh  # Linux
+
+# 2. Logg inn
+fly auth login
+
+# 3. Opprett app (hvis ikke eksisterer)
+fly apps create klarpakke
+
+# 4. Sett secrets fra .env.local
+npm run fly:secrets:import   # eller: flyctl secrets import --app klarpakke < .env.local
+
+# 5. Deploy
+npm run fly:deploy
+```
+
+### Deploy-kommandoer
+```bash
+npm run fly:deploy           # Deploy via GitHub Actions (remote build)
+npm run fly:deploy:local     # Deploy fra lokal maskin
+npm run fly:status           # Sjekk app-status
+npm run fly:logs             # Se logs
+npm run fly:secrets:import   # Importer secrets fra .env.local
+```
+
+### DNS (Cloudflare)
+| Record | Type | Target | Proxy |
+|--------|------|--------|-------|
+| `www.klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
+| `klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
+
+### GitHub Actions
+Workflow: `.github/workflows/deploy-fly.yml`
+Trigger: Push til `main` eller manuell dispatch.
+Krever secret: `FLY_API_TOKEN` (fra `fly tokens create deploy -x 999999h`)
+
+### Hvorfor Fly.io?
+- ✅ Full Next.js App Router-støtte (Node.js, ikke Edge)
+- ✅ Ingen bundle-size grense (Vercel/Workers: 25-50MB)
+- ✅ Docker-basert — enkel, forutsigbar
+- ✅ Gratis tier: 3 shared-cpu-1x VMs + custom domains
+- ✅ Cloudflare DNS/CDN foran gir caching + DDoS-beskyttelse
+- ✅ Emigrert fra Vercel: total uavhengighet
+
+### Vercel → Fly.io endringer
+| Før (Vercel) | Etter (Fly.io) |
+|-------------|---------------|
+| `output: undefined` | `output: 'standalone'` |
+| `images.unoptimized: false` | `images.unoptimized: true` (når `FLY_IO=1`) |
+| `vercel --prod` | `flyctl deploy --remote-only` |
+| `node:crypto` Edge-feil | Fikset med `runtime = 'nodejs'` på API routes |
+| `x-robots-tag: noindex` | Fjernet (ingen Vercel preview-proxy) |
+
+---
 
 ### Lead Architect Agent (Anbefalt for alle større oppgaver)
 ```bash

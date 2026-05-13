@@ -7,6 +7,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
+export const runtime = "nodejs";
+
 const WEBHOOK_PROVIDERS = ["stripe", "resend", "github"] as const;
 type WebhookProvider = (typeof WEBHOOK_PROVIDERS)[number];
 

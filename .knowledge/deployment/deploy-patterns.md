@@ -1,9 +1,9 @@
 # Deployment Knowledge
 
-## Vercel Deploy Flow
-1. `git push origin main` → Vercel auto-deploy (~2-3 min)
-2. Pre-commit hooks: Secrets → AST verify → tsc → Supabase Column Guard
-3. Vercel kjører `npm run build` → Next.js 15 produksjonsbygg
+## Fly.io Deploy Flow
+1. `git push origin main` → GitHub Actions → Fly.io deploy (~3-5 min)
+2. Fly.io bygger Docker image remote (ikke lokalt)
+3. Cloudflare DNS peker til `klarpakke.fly.dev`
 
 ## Pre-commit Gates (i rekkefølge)
 1. **Secrets scan** — sjekker at ingen API-nøkler er staged
@@ -14,13 +14,17 @@
 ## Viktige Deploys
 | Dato | Commit | Hva |
 |------|--------|-----|
-| 2026-04-13 | `7aea451` | Sonar caching + TopAIInsightsRow |
-| 2026-04-13 | `89b474a` | paperBot i18n + unique constraint fix |
-| 2026-04-13 | `3bb4034` | Auth SSR-migrering + Frankenstein-UI fix |
+| 2026-05-12 | — | Migrated from Vercel to Fly.io |
 
 ## Rollback
-- `scripts/rollback-deployment.sh` — rollback siste Vercel deploy
-- `scripts/rollback.sh` — full rollback-prosedyre
+- `flyctl deploy --image <previous-image>` — rollback til forrige image
+- `scripts/rollback-deployment.sh` — legacy Vercel rollback (arkivert)
+
+## DNS (Cloudflare)
+| Record | Type | Target | Proxy |
+|--------|------|--------|-------|
+| `www.klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
+| `klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
 
 ## Cron
 - **Source of truth:** Supabase (IKKE Vercel cron)

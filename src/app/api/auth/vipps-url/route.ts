@@ -3,6 +3,7 @@ import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const VIPPS_PKCE_COOKIE = "vipps_pkce_verifier";

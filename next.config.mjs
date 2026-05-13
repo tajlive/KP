@@ -25,8 +25,8 @@ const nextConfig = {
     pagesBufferLength: 5,
   },
   
-  // distDir removed to let Vercel handle output correctly
-  // output removed - use default for Vercel App Router
+  // distDir: 'dist',
+  output: 'standalone', // Required for Docker/Node.js hosting (Fly.io, etc.)
 
   // Performance optimizations
   compress: true,
@@ -70,7 +70,7 @@ const nextConfig = {
   // Vercel: unoptimized=false (Vercel håndterer automatisk)
   // Cloudflare: unoptimized=true (Cloudflare Pages støtter ikke next/image)
   images: {
-    unoptimized: process.env.CLOUDFLARE_PAGES === '1' || false,
+    unoptimized: process.env.CLOUDFLARE_PAGES === '1' || process.env.FLY_IO === '1' || false,
     minimumCacheTTL: 2592000, // 30 dager cache
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

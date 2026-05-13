@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
 import { createHmac } from 'crypto';
 
+export const runtime = 'nodejs';
+
 const secret = process.env.SANITY_WEBHOOK_SECRET;
 const SIGNATURE_HEADER_NAME = 'sanity-webhook-signature';
 
