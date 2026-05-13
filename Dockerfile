@@ -9,7 +9,7 @@ COPY . .
 ENV FLY_IO=1
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=1536"
-RUN rm -rf .next && npm run build
+RUN rm -rf .next && NODE_OPTIONS="--max-old-space-size=1536" npm run build
 
 FROM node:24-slim AS runner
 WORKDIR /app
