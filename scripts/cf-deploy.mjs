@@ -9,10 +9,12 @@
  */
 
 import { execSync } from 'child_process';
-import { cpSync, rmSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { cpSync, rmSync, existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-const WORKER_CODE = `
+// Worker base code — robots.txt/sitemap.xml injected post-build
+function buildWorkerCode(robotsTxt, sitemapXml) {
+  return `
 /**
  * Cloudflare Pages Worker — Static assets + API routes + Vercel proxy
  */
@@ -212,10 +214,33 @@ async function handleAnalytics(request, env) {
 
 // ===== MAIN WORKER =====
 
+const ROBOTS_TXT = ${JSON.stringify(robotsTxt)};
+const SITEMAP_XML = ${JSON.stringify(sitemapXml)};
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // Serve robots.txt and sitemap.xml directly (bypasses env.ASSETS issues)
+    if (path === '/robots.txt') {
+      return new Response(ROBOTS_TXT, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
+    }
+    if (path === '/sitemap.xml') {
+      return new Response(SITEMAP_XML, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/xml; charset=utf-8',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
+    }
 
     // Check migrated API routes first
     if (path === '/api/fx/usdt-nok') {
@@ -298,6 +323,7 @@ export default {
   },
 };
 `;
+}
 
 const BUILD_DIR = '.vercel/output/static';
 const WORKER_DIR = join(BUILD_DIR, '_worker.js');
@@ -322,6 +348,19 @@ if (existsSync(DIAGNOSTICS_DIR)) {
   rmSync(DIAGNOSTICS_DIR, { recursive: true, force: true });
   console.log('   ✓ Removed .vercel/output/diagnostics/');
 }
+// Read built robots.txt and sitemap.xml for inline serving
+let robotsTxt = '';
+let sitemapXml = '';
+try {
+  robotsTxt = readFileSync(join(BUILD_DIR, 'robots.txt'), 'utf8');
+  sitemapXml = readFileSync(join(BUILD_DIR, 'sitemap.xml'), 'utf8');
+  console.log('   ✓ Read robots.txt (' + robotsTxt.length + ' chars) and sitemap.xml (' + sitemapXml.length + ' chars)');
+} catch (e) {
+  console.warn('   ⚠ Could not read robots.txt/sitemap.xml:', e.message);
+}
+
+const WORKER_CODE = buildWorkerCode(robotsTxt, sitemapXml);
+
 if (existsSync(WORKER_DIR)) {
   rmSync(WORKER_DIR, { recursive: true, force: true });
 }

@@ -1,0 +1,179 @@
+# ============================================================================
+# E2E + LIGHTHOUSE CI/CD — Post-deploy kvalitetsgate
+# Trigges etter Cloudflare Pages deploy for å verifisere produksjonskvalitet
+# ============================================================================
+name: 🎯 E2E + Lighthouse
+
+on:
+  workflow_run:
+    workflows: ["☁️ Deploy to Cloudflare Pages"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL to test (default: production)"
+        required: false
+        default: "https://www.klarpakke.no"
+
+concurrency:
+  group: e2e-lighthouse-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # E2E Smoke Tests — Kritiske flyter på tvers av nettlesere
+  # ──────────────────────────────────────────────────────────────────────────
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium firefox webkit
+
+      - name: Determine target URL
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "url=${{ github.event.inputs.url }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=https://www.klarpakke.no" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🎭 Run E2E smoke tests
+        run: npx playwright test --project=smoke-chromium --project=smoke-webkit
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ steps.target.outputs.url }}
+
+      - name: 🎭 Run critical path tests
+        run: npx playwright test --project=critical-chromium --project=critical-firefox
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ steps.target.outputs.url }}
+        continue-on-error: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Lighthouse — Performance, SEO, Accessibility, Best Practices
+  # ──────────────────────────────────────────────────────────────────────────
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
+
+    strategy:
+      matrix:
+        include:
+          - url: "/no/"
+            preset: "desktop"
+          - url: "/no/priser"
+            preset: "desktop"
+          - url: "/no/login"
+            preset: "desktop"
+          - url: "/no/"
+            preset: "mobile"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install Lighthouse
+        run: npm ci --prefer-offline --legacy-peer-deps
+
+      - name: Determine target URL
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            BASE="${{ github.event.inputs.url }}"
+          else
+            BASE="https://www.klarpakke.no"
+          fi
+          echo "url=${BASE}${{ matrix.url }}" >> $GITHUB_OUTPUT
+          echo "Testing: ${BASE}${{ matrix.url }} (${{ matrix.preset }})"
+
+      - name: 🔦 Run Lighthouse (${{ matrix.preset }})
+        run: |
+          npx lighthouse "${{ steps.target.outputs.url }}" \
+            --preset=${{ matrix.preset }} \
+            --output=json \
+            --output=html \
+            --output-path=./lighthouse-report-${{ matrix.preset }}-$(echo "${{ matrix.url }}" | tr '/' '_') \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --no-enable-error-reporting
+        continue-on-error: true
+
+      - name: Extract scores
+        id: scores
+        run: |
+          REPORT=$(ls lighthouse-report-*.json 2>/dev/null | head -1)
+          if [ -f "$REPORT" ]; then
+            node -e "
+              const r = require('./$REPORT');
+              const c = r.categories;
+              const fmt = (s) => Math.round((s || 0) * 100);
+              console.log('PERFORMANCE=' + fmt(c.performance?.score));
+              console.log('ACCESSIBILITY=' + fmt(c.accessibility?.score));
+              console.log('BEST_PRACTICES=' + fmt(c['best-practices']?.score));
+              console.log('SEO=' + fmt(c.seo?.score));
+            " >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-${{ matrix.preset }}-$(echo "${{ matrix.url }}" | tr '/' '_')-${{ github.run_id }}
+          path: lighthouse-report-*
+          retention-days: 14
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Summary — Post resultater til GitHub Step Summary
+  # ──────────────────────────────────────────────────────────────────────────
+  summary:
+    runs-on: ubuntu-latest
+    needs: [e2e-smoke, lighthouse]
+    if: always()
+
+    steps:
+      - name: 📊 Generate summary
+        run: |
+          echo "## 🎯 E2E + Lighthouse Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Smoke | ${{ needs.e2e-smoke.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅ Pass' || needs.lighthouse.result == 'failure' && '⚠️ Partial' || '⏭️ Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 [View Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 [View Lighthouse Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
