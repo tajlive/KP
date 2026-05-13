@@ -13,7 +13,6 @@
     "build": "NODE_OPTIONS=\"--max-old-space-size=2816\" next build",
     "build:local": "SKIP_LINT_IN_BUILD=true next build",
     "start": "next start",
-    
     "── FLY.IO ──": "echo 'Fly.io deployment commands'",
     "fly:deploy": "flyctl deploy --remote-only",
     "fly:deploy:local": "flyctl deploy",
@@ -21,7 +20,7 @@
     "fly:logs": "flyctl logs",
     "fly:secrets:import": "node scripts/fly-secrets-import.mjs",
     "── CLOUDFLARE ──": "echo 'Cloudflare Pages + Workers commands (legacy)'",
-    "cf:build": "node scripts/cf-pre-build.mjs && npx @cloudflare/next-on-pages && node scripts/cf-post-build.mjs",
+    "cf:build": "echo 'Deprecated: Cloudflare Pages build removed. Use fly:deploy instead.'",
     "cf:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
     "cf:deploy": "node scripts/cf-deploy.mjs",
     "cf:deploy:staging": "node scripts/cf-deploy.mjs staging",
@@ -308,7 +307,6 @@
     "vercel:env:development": "npx vercel env pull .env.local --environment=development --yes",
     "vercel:env:push": "node scripts/vercel-sync-env.mjs --env-file .env.local --target production --target preview",
     "vercel:env:push:prod": "node scripts/vercel-sync-env.mjs --env-file .env.local --target production",
-    "vercel:deploy": "npx vercel --prod --archive=tgz",
     "vercel:validate": "node scripts/vercel-validate.mjs",
     "vercel:optimize": "node scripts/vercel-optimize.mjs",
     "vercel:insights": "npx vercel insights",
@@ -475,7 +473,6 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.20.0",
     "@lhci/cli": "^0.15.1",
