@@ -1,12 +1,12 @@
 # ============================================================================
 # E2E + LIGHTHOUSE CI/CD — Post-deploy kvalitetsgate
-# Trigges etter Cloudflare Pages deploy for å verifisere produksjonskvalitet
+# Trigges etter Fly.io deploy for å verifisere produksjonskvalitet
 # ============================================================================
 name: 🎯 E2E + Lighthouse
 
 on:
   workflow_run:
-    workflows: ["☁️ Deploy to Cloudflare Pages"]
+    workflows: ["Deploy to Fly.io"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
