@@ -23,13 +23,26 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: Install dependencies
+        run: |
+          npm config set legacy-peer-deps true
+          npm ci --ignore-scripts
+
+      - name: Build Next.js app
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          NEXT_TELEMETRY_DISABLED: "1"
+          TURBOPACK: "0"
+          FLY_IO: "1"
+        run: npm run build
+
       - name: Setup Fly.io CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: flyctl deploy --remote-only --build-arg NODE_OPTIONS="--max-old-space-size=4096"
+        run: flyctl deploy --remote-only
 
       - name: Verify deployment
         env:
