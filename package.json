@@ -103,6 +103,7 @@
     "prebuild": "npm run i18n:validate",
     "predeploy": "npm run type-check && npm run build",
     "── VERCEL (deprecated) ──": "echo 'Vercel commands - migrating to Fly.io'",
+    "── VERCEL (deprecated — migrated to Fly.io) ──": "echo 'Vercel scripts kept for reference only'",
     "vercel:deploy": "npx vercel --prod --archive=tgz",
     "vercel:preview": "npx vercel --archive=tgz",
     "test": "vitest run",

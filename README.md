@@ -27,7 +27,7 @@ Dette verifiserer:
 ### Test mot preview
 
 ```bash
-BASE_URL=https://klarpakke-preview.vercel.app npm run verify:prod
+BASE_URL=https://klarpakke.fly.dev npm run verify:prod
 ```
 
 ### Trading Auth Architecture

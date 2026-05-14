@@ -315,8 +315,8 @@ cat .kimi/PROJECT_CONTEXT.md
 1. `git add -A`
 2. `git commit -m "type: beskrivelse"`
 3. `git push origin main`
-4. Vent på Vercel deployment (~2-3 min)
-5. Verifiser i produksjon
+4. Vent på Fly.io deploy (~2-3 min)
+5. Verifiser i produksjon: `npm run verify:prod`
 
 ---
 
