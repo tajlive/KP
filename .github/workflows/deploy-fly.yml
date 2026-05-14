@@ -34,6 +34,7 @@ jobs:
           NEXT_TELEMETRY_DISABLED: "1"
           TURBOPACK: "0"
           FLY_IO: "1"
+          NEXT_PUBLIC_APP_URL: "https://www.klarpakke.no"
         run: npm run build
 
       - name: Setup Fly.io CLI
@@ -50,4 +51,5 @@ jobs:
         run: |
           sleep 10
           flyctl status --app klarpakke
-          curl -sf https://klarpakke.fly.dev/no/health || echo "Health check not available"
+          curl -sf https://klarpakke.fly.dev/no/ || echo "Fly.dev health check not available"
+          curl -sf https://www.klarpakke.no/no/ || echo "Custom domain not available"
