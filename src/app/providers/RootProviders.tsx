@@ -2,6 +2,10 @@
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/shared/theme";
 import { NextIntlClientProvider } from "next-intl";
+
+// Build stamp to bust client bundle cache on deploy
+// eslint-disable-next-line no-console
+if (typeof window !== "undefined") console.log("[Klarpakke] Build:", "2026-05-14-i18n-fix");
 import { CdsProvider } from "@/app/providers/CdsProvider";
 import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
 import { MarketingProviders } from "@/shared/providers/MarketingProviders";
