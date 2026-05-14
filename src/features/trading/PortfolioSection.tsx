@@ -1,5 +1,7 @@
+"use client";
+
 import { BarChart3, DollarSign, TrendingUp, Wallet } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
 interface Portfolio {
   total_value: number;
@@ -13,11 +15,11 @@ interface PortfolioSectionProps {
   formatNOK: (v: number) => string;
 }
 
-export async function PortfolioSection({
+export function PortfolioSection({
   portfolio,
   formatNOK,
 }: PortfolioSectionProps) {
-  const t = await getTranslations("dashboard");
+  const t = useTranslations("dashboard");
 
   if (!portfolio) {
     return (

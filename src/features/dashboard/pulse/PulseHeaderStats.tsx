@@ -1,6 +1,8 @@
+"use client";
+
 import { PulseMode } from "@/types/pulse";
 import { Activity, TrendingDown, TrendingUp } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
 interface PulseHeaderStatsProps {
   portfolioValue: number;
@@ -10,14 +12,14 @@ interface PulseHeaderStatsProps {
   isConnected: boolean;
 }
 
-export async function PulseHeaderStats({
+export function PulseHeaderStats({
   portfolioValue,
   dailyChangeNok,
   dailyChangePct,
   mode,
   isConnected,
 }: PulseHeaderStatsProps) {
-  const t = await getTranslations("dashboard.pulse");
+  const t = useTranslations("dashboard.pulse");
   const isProfit = dailyChangeNok >= 0;
 
   const formatCurrency = (value: number) => {
