@@ -3,7 +3,12 @@ node_modules
 npm-debug.log*
 
 # Next.js build output
-.next
+# Exclude .next contents but allow standalone + static for Fly.io deployment
+.next/*
+!.next/standalone
+!.next/standalone/**
+!.next/static
+!.next/static/**
 dist
 
 # Vercel
