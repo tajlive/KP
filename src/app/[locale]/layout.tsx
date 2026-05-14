@@ -195,6 +195,36 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {process.env.NEXT_PUBLIC_GSC_VERIFICATION ? (
           <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GSC_VERIFICATION} />
         ) : null}
+        {/* KRITISK: Avregistrer gamle service workers FØR React hydrerer */}
+        <Script
+          id="sw-killer"
+          strategy="beforeInteractive"
+          nonce={cspNonce}
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+  if (!('serviceWorker' in navigator)) return;
+  var killed = false;
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    for (var i = 0; i < regs.length; i++) {
+      var r = regs[i];
+      var scope = r.scope || '';
+      if (scope.indexOf('klarpakke') !== -1 || scope.indexOf('localhost') !== -1 || scope === '' || scope === '/') {
+        r.unregister();
+        killed = true;
+        console.warn('[Klarpakke] Avregistrerte gammel service worker:', scope);
+      }
+    }
+    if (killed && typeof caches !== 'undefined') {
+      caches.keys().then(function(names){
+        for (var j = 0; j < names.length; j++) {
+          caches.delete(names[j]);
+        }
+      });
+    }
+  });
+})();`,
+          }}
+        />
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <Script
           id="supabase-auth-cleaner"
