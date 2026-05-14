@@ -9,6 +9,7 @@ ENV HOSTNAME=0.0.0.0
 COPY --chown=nextjs:nextjs .next/standalone ./
 COPY --chown=nextjs:nextjs .next/static ./.next/static
 COPY --chown=nextjs:nextjs public ./public
+COPY --chown=nextjs:nextjs messages ./messages
 USER nextjs
 EXPOSE 3000
 CMD ["node", "server.js"]

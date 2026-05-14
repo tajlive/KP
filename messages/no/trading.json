@@ -155,6 +155,10 @@
     "ai_copy": {
       "name": "AI Copy-trade",
       "description": "Signal-fusjon (flere indikatorer) inntil dedikert copy-motor er på plass. Høy aktivitet — egen risiko."
+    },
+    "ensemble_ai": {
+      "name": "Ensemble AI",
+      "description": "Kombinerer flere AI-modeller for å ta de beste beslutningene basert på markedsdata, sentiment og teknisk analyse."
     }
   },
   "recentTradesMixedModesHint": "Inkl. paper og live — porteføljen over følger valgt modus.",

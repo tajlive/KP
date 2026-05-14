@@ -33,6 +33,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       footer,
       auth,
       dashboard,
+      gamification,
       trading,
       account,
       marketplace,
@@ -76,6 +77,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/dashboard.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/dashboard.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/gamification.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/gamification.json").then((m) => m.default)),
       import(`../messages/${validLocale}/trading.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/trading.json").then((m) => m.default)),
@@ -157,6 +161,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       footer,
       auth,
       dashboard,
+      gamification,
       trading,
       account,
       marketplace,

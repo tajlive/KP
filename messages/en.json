@@ -1534,7 +1534,11 @@
       "pausedLC": "paused",
       "stoppedLC": "stopped"
     },
-    "error": "An error occurred. Please try again later."
+    "error": {
+      "title": "An error occurred",
+      "unexpectedError": "An unexpected error occurred",
+      "errorCode": "Error code: {{code}}"
+    }
   },
   "footer": {
     "product": "Product",

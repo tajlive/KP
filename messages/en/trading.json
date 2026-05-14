@@ -155,6 +155,10 @@
     "ai_copy": {
       "name": "AI Copy-trade",
       "description": "Signal fusion (multiple indicators) until a dedicated copy engine ships. High activity — your risk."
+    },
+    "ensemble_ai": {
+      "name": "Ensemble AI",
+      "description": "Combines multiple AI models to make the best decisions based on market data, sentiment, and technical analysis."
     }
   },
   "recentTradesMixedModesHint": "Includes paper and live — the portfolio above follows your selected mode.",

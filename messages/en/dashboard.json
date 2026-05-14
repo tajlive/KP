@@ -408,6 +408,11 @@
     "retry": "Try again",
     "contactSupport": "Contact support if the problem persists"
   },
+  "error": {
+    "title": "An error occurred",
+    "unexpectedError": "An unexpected error occurred",
+    "errorCode": "Error code: {{code}}"
+  },
   "tabs": {
     "home": "Home",
     "learn": "Learn",

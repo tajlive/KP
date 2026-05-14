@@ -1534,7 +1534,11 @@
       "pausedLC": "pausete",
       "stoppedLC": "stoppete"
     },
-    "error": "Det oppstod en feil. Prøv igjen senere."
+    "error": {
+      "title": "Det oppstod en feil",
+      "unexpectedError": "En uventet feil oppstod",
+      "errorCode": "Feilkode: {{code}}"
+    }
   },
   "footer": {
     "product": "Produkt",

@@ -470,6 +470,11 @@
     "retry": "Prøv igjen",
     "contactSupport": "Kontakt support hvis problemet vedvarer"
   },
+  "error": {
+    "title": "Det oppstod en feil",
+    "unexpectedError": "En uventet feil oppstod",
+    "errorCode": "Feilkode: {{code}}"
+  },
   "bots": {
     "modeLive": "Ekte",
     "modePaper": "Øving"
