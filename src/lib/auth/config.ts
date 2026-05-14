@@ -32,7 +32,12 @@ export function getAppUrl(): string {
     return sanitizeUrl(process.env.NEXT_PUBLIC_APP_URL);
   }
 
-  // 3. Vercel Preview deployments
+  // 3. Fly.io app URL
+  if (process.env.NEXT_PUBLIC_FLY_APP_URL) {
+    return sanitizeUrl(process.env.NEXT_PUBLIC_FLY_APP_URL);
+  }
+
+  // 4. Vercel Preview deployments (legacy)
   if (process.env.NEXT_PUBLIC_VERCEL_URL) {
     return sanitizeUrl(`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`);
   }

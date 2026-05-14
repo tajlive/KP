@@ -36,24 +36,6 @@ jobs:
           echo "Node: $(node -v)"
           echo "npm: $(npm -v)"
 
-      - name: Validate Vercel config
-        run: |
-          # Check if vercel.json is valid JSON
-          if ! jq empty vercel.json 2>/dev/null; then
-            echo "::error::vercel.json is not valid JSON"
-            exit 1
-          fi
-          echo "✅ vercel.json is valid JSON"
-          
-          # Check required fields
-          if ! jq -e '.buildCommand' vercel.json >/dev/null; then
-            echo "::warning::buildCommand not set in vercel.json"
-          fi
-          if ! jq -e '.regions' vercel.json >/dev/null; then
-            echo "::warning::regions not set in vercel.json"
-          fi
-          echo "✅ vercel.json validation complete"
-
       - name: Install dependencies
         run: npm ci --prefer-offline --legacy-peer-deps
 
