@@ -1,4 +1,4 @@
-# SIST OPPDATERT: 2026-04-10 - Vercel optimalisering
+# SIST OPPDATERT: 2026-05-14 - Migrated to Fly.io
 # ============================================================================
 # PR CHECK — Kjører på alle PR + push til main
 # ============================================================================
@@ -44,7 +44,7 @@ jobs:
         with:
           path: |
             .next/cache
-          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs', 'vercel.json') }}
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
           restore-keys: |
             next-${{ runner.os }}-
 
@@ -106,7 +106,7 @@ jobs:
         with:
           path: |
             .next/cache
-          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs', 'vercel.json') }}
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
           restore-keys: |
             next-${{ runner.os }}-
 

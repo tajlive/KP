@@ -164,17 +164,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Wait for Vercel deployment
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: wait-for-vercel
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 300
-          environment: production
-
       - name: Verify deployment health
         run: |
-          DEPLOY_URL="${{ steps.wait-for-vercel.outputs.url }}"
+          DEPLOY_URL="https://www.klarpakke.no"
           echo "Checking health at $DEPLOY_URL/api/health"
           
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/api/health" || echo "000")
@@ -188,7 +180,7 @@ jobs:
 
       - name: Test OAuth endpoints
         run: |
-          DEPLOY_URL="${{ steps.wait-for-vercel.outputs.url }}"
+          DEPLOY_URL="https://www.klarpakke.no"
           
           # Test that login page loads
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/no/login" || echo "000")
