@@ -1,9 +1,32 @@
 # 🌐 Custom Domain Setup - klarpakke.no
 
+> ⚠️ **MIGRERT TIL FLY.IO (2026-05-14)**  
+> Tidligere target var Cloudflare Pages (`klarpakke-trading.pages.dev`).  
+> Nåværende setup: **Fly.io** (`klarpakke.fly.dev`) via Cloudflare DNS (proxied).
+
 **Domain:** klarpakke.no  
-**Target:** Cloudflare Pages (klarpakke-trading.pages.dev)  
-**SSL:** Automatic (Cloudflare Universal SSL)  
+**Target:** Fly.io (`klarpakke.fly.dev`)  
+**SSL:** Let's Encrypt (managed by Fly.io) + Cloudflare Universal SSL  
 **Estimated time:** 5-10 minutes
+
+---
+
+## 🗺️ Arkitektur (Gjeldende)
+
+```
+Bruker → Cloudflare Proxy (CDN/DDoS) → Fly.io Edge (TLS termination)
+                                      → Fly.io App (klarpakke)
+                                      → Region: arn (Stockholm)
+```
+
+**DNS-konfigurasjon:**
+| Type | Name | Target | Proxy |
+|---|---|---|---|
+| A | `@` | `66.241.125.203` | 🟠 Orange |
+| AAAA | `@` | `2a09:8280:1::115:823c:0` | 🟠 Orange |
+| CNAME | `www` | `ro0w9zm.klarpakke.fly.dev` | 🟠 Orange |
+
+**Redirect:** `klarpakke.no` → `www.klarpakke.no` (301)
 
 ---
 
@@ -140,17 +163,35 @@ The script will:
 ### Test All URLs:
 
 ```bash
-# Test root domain
+# Test root domain (should redirect to www)
 curl -I https://klarpakke.no
-# Expected: HTTP/2 200
+# Expected: HTTP/2 301 → https://www.klarpakke.no/
 
 # Test www subdomain
 curl -I https://www.klarpakke.no
-# Expected: HTTP/2 200 or 301 redirect
+# Expected: HTTP/2 200
 
 # Test HTTP redirect
 curl -I http://klarpakke.no
 # Expected: 301 redirect to https://
+
+# Verify Fly.io origin response
+curl -I https://klarpakke.fly.dev/no/
+# Expected: HTTP/2 200
+```
+
+### Fly.io Certificate Status:
+
+```bash
+# Check certificate validation
+flyctl certs check klarpakke.no --app klarpakke
+flyctl certs check www.klarpakke.no --app klarpakke
+
+# List all certificates
+flyctl certs list --app klarpakke
+
+# Check app status
+flyctl status --app klarpakke
 ```
 
 ### Browser Tests:
@@ -166,11 +207,17 @@ curl -I http://klarpakke.no
 ### DNS Verification:
 
 ```bash
-# Check CNAME record
-dig klarpakke.no CNAME +short
-# Expected: klarpakke-trading.pages.dev
+# Check A record (returns Cloudflare edge IPs when proxied)
+dig klarpakke.no A +short
 
-# Check SSL certificate
+# Check AAAA record
+dig klarpakke.no AAAA +short
+
+# Check www CNAME
+dig www.klarpakke.no CNAME +short
+# Expected: ro0w9zm.klarpakke.fly.dev
+
+# Check SSL certificate (Fly.io Let's Encrypt)
 openssl s_client -connect klarpakke.no:443 -servername klarpakke.no < /dev/null 2>/dev/null | openssl x509 -noout -dates
 # Should show valid dates
 ```
@@ -290,18 +337,25 @@ Sitemap: https://klarpakke.no/sitemap.xml
 ```bash
 # Check current DNS
 dig klarpakke.no +short
+dig www.klarpakke.no CNAME +short
 
 # Check SSL certificate
 curl -vI https://klarpakke.no 2>&1 | grep -i ssl
 
-# Test from different location
-curl -H "Host: klarpakke.no" https://klarpakke-trading.pages.dev
-
 # Verify HTTP → HTTPS redirect
 curl -I http://klarpakke.no | grep -i location
 
-# Check response time
-curl -o /dev/null -s -w 'Total: %{time_total}s\n' https://klarpakke.no
+# Check response time via custom domain
+curl -o /dev/null -s -w 'Total: %{time_total}s\n' https://www.klarpakke.no
+
+# Check response time via Fly.io directly
+curl -o /dev/null -s -w 'Total: %{time_total}s\n' https://klarpakke.fly.dev/no/
+
+# Fly.io logs
+flyctl logs --app klarpakke
+
+# Fly.io deploy (from GitHub Actions)
+# See: .github/workflows/deploy-fly.yml
 ```
 
 ---
@@ -336,6 +390,41 @@ curl -o /dev/null -s -w 'Total: %{time_total}s\n' https://klarpakke.no
 
 ---
 
-**Status:** Ready for setup  
-**Estimated time:** 5-10 minutes  
-**Next:** Follow Method 1 (Cloudflare Dashboard)
+## 🏗️ Build & Deploy Pipeline (Fly.io)
+
+**Arkitektur:** GitHub Actions pre-build + runtime-only Dockerfile
+
+```yaml
+# .github/workflows/deploy-fly.yml
+1. GitHub Actions runner: npm ci + npm run build (4096MB heap)
+2. Dockerfile: kopierer .next/standalone (runtime-only)
+3. flyctl deploy --remote-only (sender pre-built image)
+4. Verifiserer: klarpakke.fly.dev + www.klarpakke.no
+```
+
+**Viktige env-variabler i build:**
+- `NEXT_PUBLIC_APP_URL=https://www.klarpakke.no`
+- `NODE_OPTIONS=--max-old-space-size=4096`
+- `TURBOPACK=0`
+- `FLY_IO=1`
+
+**VM-konfigurasjon (fly.toml):**
+- Memory: 4GB
+- CPU: performance, 2 cores
+- Region: arn (Stockholm)
+- Auto-stop: enabled (scales to zero)
+
+---
+
+## 📜 Historikk
+
+| Dato | Endring |
+|---|---|
+| 2026-02-20 | Opprinnelig setup: Cloudflare Pages |
+| 2026-05-14 | **Migrert til Fly.io** — GitHub Actions pre-build + runtime Dockerfile |
+
+---
+
+**Status:** ✅ Active on Fly.io  
+**Primary domain:** https://www.klarpakke.no  
+**Fly.io domain:** https://klarpakke.fly.dev
