@@ -1,6 +1,6 @@
 {
   "name": "Klarpakke Swarm",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Multi-agent swarm for world-class quality",
   "platform": "darwin-arm64",
   "swarm": {
@@ -63,6 +63,13 @@
       "review": ["analyzer", "architect", "tester", "security", "knowledge"]
     },
     "routing_rules": [
+      {
+        "id": "deploy",
+        "name": "Deploy & Infrastructure",
+        "agent": "klarpakke-architect-agent.yaml",
+        "file_patterns": ["fly.toml", "scripts/fly-*.mjs", "scripts/cf-*.mjs", "scripts/cloudflare-*.mjs", ".github/workflows/deploy-*.yml", "next.config.*"],
+        "trigger": "git-diff-match"
+      },
       {
         "id": "trading",
         "name": "Trading Engine",

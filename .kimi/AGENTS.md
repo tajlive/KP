@@ -10,7 +10,7 @@ Dette er det øverste prinsippet for alle agenter i Klarpakke. Det overstyrer «
 1. **pg_cron / Supabase** — DB-nære operasjoner (priser, outbox, MIFID-export)
 2. **GitHub Actions** — CI/CD, health checks, secret-sync, cron-verifisering
 3. **npm scripts** — lokale devops-oppgaver (verify, lint, deploy, db:push)
-4. **Vercel Crons** — kun for operasjoner som krever Next.js-runtime
+4. **Vercel Crons (legacy)** — beholdes for bakoverkompatibilitet. Nytt: pg_cron + Fly.io for alle operasjoner
 5. **KIMI-agenter** — orchestrering, kodeendringer, analyse
 
 ### Hva som alltid skal automatiseres
@@ -53,7 +53,7 @@ Når innholdet faktisk er til stede etter kolonet, skal du:
 ```bash
 npm run cron:verify
 ```
-Exit 0 = alt OK. Exit 1 = inaktive jobs ELLER HTTP 401/500 fra Vercel.
+Exit 0 = alt OK. Exit 1 = inaktive jobs ELLER HTTP 401/500 fra app-URL (Fly.io/Vercel).
 
 ### Kontinuerlig overvåking
 ```bash
@@ -82,7 +82,7 @@ WHERE created > NOW() - INTERVAL '2 hours' GROUP BY status_code;
 - Migrasjonsfiler:
   - `supabase/migrations/20260418_migrate_crons_to_pg_cron.sql` (opprettet jobs)
   - `supabase/migrations/20260420_harden_cron_with_vault.sql` (Vault + fallback)
-- pg_net 0.19.5 sender HTTP POST til Vercel per job
+- pg_net 0.19.5 sender HTTP POST til app-URL (Fly.io/Vercel) per job
 - SSL fix: `rejectUnauthorized: false` i pg-klienten
 - REST fix: `/rpc/exec_sql` (ikke `execute_sql`)
 
@@ -240,7 +240,7 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
    - `cron` — pg_cron job management (list, toggle, logs via Supabase SQL)
    - `featureflag` — DB-driven feature toggles (list, toggle, create)
    - `search` — Advanced search in trades/users via Supabase FTS
-   - `cost` — Vercel/Supabase cost monitoring (estimates + usage)
+   - `cost` — Fly.io/Supabase cost monitoring (estimates + usage)
 
 ### MemPalace v3.3.0 — KIMI CLI v1.42.0-kompatibel
 - **Ping/heartbeat-støtte**: Svarer på MCP `ping`-forespørsler
@@ -303,9 +303,38 @@ kimi
 >
 > **Les mer:** `.knowledge/errors/SUPABASE-VERCEL-REST-TIMEOUT-2026-05-12.md`
 
+## 💰 Token-optimalisering (pålagt for alle agenter)
+
+> **Regel:** Hver økt skal bruke minst mulig tokens uten å ofre kvalitet.
+
+### Hierarki (alltid i denne rekkefølgen)
+1. **`search()` / `kg_query()`** — billigst (~200-500 tokens), gir 80% av svaret
+2. **`recent_context(hours=48)`** — sjekk om noen allerede har gjort jobben
+3. **`Grep` / `Glob`** — finn riktig fil + linjenummer (~50 tokens)
+4. **`ReadFile(line_offset, n_lines)`** — kun nødvendige linjer (~50-200 tokens)
+5. **`StrReplaceFile` / `WriteFile`** — gjør endringen
+6. **`Shell` (lint/test)** — valider
+
+### Forbudt (token-sløsing)
+- ❌ Lese hele filer uten `line_offset`
+- ❌ Lese `node_modules/`, `.next/`, `dist/`, `build/`
+- ❌ 5 separate `kg_add()` i stedet for én `kg_batch()`
+- ❌ Lange forklaringer brukeren ikke ba om
+- ❌ `full` MCP-profil for frontend-oppgaver
+
+### Kvotient-mål
+| Økt-type | Maks tokens | Teknikk |
+|----------|-------------|---------|
+| Research (kun lesing) | 5k | MemPalace + Grep |
+| Bugfix (<5 filer) | 10k | Targeted ReadFile |
+| Feature (<10 filer) | 20k | Batch-verktøy |
+| Refactor (>10 filer) | 30k | Swarm-delegering |
+
+---
+
 ## MemPalace — Prosjektminne v3.3.0 SUPERKIMI (KIMI CLI v1.41.0 + k2.6)
 
-> Oppdatert: 2026-05-04 | MemPalace MCP v3.3.0 | TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 78+ entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.42.0-optimalisert
+> Oppdatert: 2026-05-14 | MemPalace MCP v3.3.0 | TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 202+ entities, 200+ facts | Alle agenter integrert | KIMI CLI v1.42.0-optimalisert
 
 ### Rask verifisering
 ```bash
@@ -514,7 +543,8 @@ kimi inspect       # Visuelt galleri av alle sider
 | `auth-system` | 7 | OAuth, session, refresh-token, RLS, singleton client |
 | `trading-engine` | 15 | Strategier, risk, PnL, unified schema, paper/live/copy |
 | `supabase-db` | 7 | Postgres 15, pg_cron, pg_net, Vault, RLS |
-| `vercel-hosting` | 5 | fra1, static export, GitHub Actions CI |
+| `fly.io-hosting` | 5 | arn, Docker, Cloudflare CDN, GitHub Actions CI |
+| `vercel-hosting` | 5 | **legacy** — fra1, static export ( beholdes for historikk ) |
 | `sanity-cms` | 6 | projectId 63qn23si, /studio, webhook cache invalidation |
 | `nextjs-framework` | 6 | v15, React 19, TS 5.9 strict, app-router i18n |
 | `cron-system` | 6 | 14 jobs, pg_cron primary, Vault secrets |
@@ -548,7 +578,7 @@ kimi inspect       # Visuelt galleri av alle sider
 | pg SSL self-signed cert | `ssl: { rejectUnauthorized: false }` i pg.Client | 2026-04-18 |
 | REST exec_sql 404 | Funksjonen heter `exec_sql`, ikke `execute_sql` | 2026-04-18 |
 | ALTER DATABASE postgres | Permission denied i Supabase — bruk Vault i stedet | 2026-04-18 |
-| Vercel Crons følger ikke redirects | Pek crons direkte til `/api/v1/cron/*`, ikke redirect-paths | 2026-04-18 |
+| ~~Vercel Crons følger ikke redirects~~ | **LØST** — pg_cron brukes nå direkte. Gammel note: pek direkte til `/api/v1/cron/*` | 2026-04-18 |
 
 ---
 

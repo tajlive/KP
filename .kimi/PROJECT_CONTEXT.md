@@ -10,7 +10,7 @@
 | | |
 |---|---|
 | **Navn** | Klarpakke — AI Trading Platform |
-| **Stack** | Next.js 15, React 19, TypeScript 5.9 (strict), Supabase, Vercel |
+| **Stack** | Next.js 15, React 19, TypeScript 5.9 (strict), Supabase, Fly.io (legacy: Vercel) |
 | **Node** | 24.x |
 | **URL** | www.klarpakke.no |
 | **i18n** | next-intl, no + en (no-base fallback) |
@@ -60,10 +60,15 @@
 - REST: `/rpc/exec_sql` (IKKE `execute_sql`)
 - **FORBUDT:** `ALTER DATABASE postgres` i Supabase (permission denied)
 
-### Hosting (Vercel)
+### Hosting (Fly.io + Cloudflare)
+- **Fly.io** — Docker, region `arn`, full Next.js App Router-støtte
+- **Cloudflare** — DNS (klarpakke.no), CDN, DDoS, SSL proxy
+- GitHub Actions CI/CD → `flyctl deploy --remote-only`
+
+### Hosting Legacy (Vercel)
+- **Status:** Sekundær / fallback
 - Region: fra1
-- Static export (ikke serverless for alt)
-- GitHub Actions CI/CD
+- Brukes for: analytics, edge-config, speed-insights, preview-URLer
 
 ### CMS (Sanity)
 - projectId: `63qn23si`
@@ -138,7 +143,7 @@ npm run deploy:prod
 | pg SSL self-signed cert | `ssl: { rejectUnauthorized: false }` |
 | REST exec_sql 404 | Funksjonen heter `exec_sql`, ikke `execute_sql` |
 | ALTER DATABASE postgres | Permission denied — bruk Vault i stedet |
-| Vercel Crons følger ikke redirects | Pek direkte til `/api/v1/cron/*` |
+| ~~Vercel Crons følger ikke redirects~~ | **LØST** — pg_cron brukes nå direkte |
 | ChromaDB segfault på M1 | **FJERNET** — bruk MemPalace v3.1.1 |
 | MemPalace M1 timeout | **LØST** — zero-dep in-memory FTS |
 | .next/types cache stale | `rm -rf .next` før `tsc --noEmit` |
@@ -178,7 +183,7 @@ npm run deploy:prod
 1. `git add -A`
 2. `git commit -m "type: beskrivelse"`
 3. `git push origin main`
-4. Vent på Vercel deployment (~2-3 min)
+4. Vent på Fly.io deployment (~2-3 min)
 5. Verifiser i produksjon
 
 ---

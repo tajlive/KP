@@ -104,6 +104,8 @@ Additional Redirect URLs:
   https://www.klarpakke.no/en/callback
   https://www.klarpakke.no/th/callback
   https://www.klarpakke.no/zh/callback
-  https://*.vercel.app/no/callback
+  https://klarpakke.fly.dev/no/callback        # Fly.io staging/default URL
   http://localhost:3000/no/callback
+  # Legacy (fjernes etter full migrering):
+  # https://*.vercel.app/no/callback
 ```

@@ -5,8 +5,9 @@ import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+// Vercel Analytics/SpeedInsights removed — now on Fly.io
+// import { Analytics } from "@vercel/analytics/react";
+// import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AmbientGlow } from "@/shared/ui/AmbientGlow";
 
 export const runtime = 'edge';
@@ -27,12 +28,7 @@ export default function CopyTradingLayout({
                 <CopyTradingSubAppHeader />
                 <main className="flex-1">{children}</main>
               </div>
-              {process.env.VERCEL && (
-                <>
-                  <Analytics />
-                  {process.env.NODE_ENV !== "production" && <SpeedInsights />}
-                </>
-              )}
+
             </TradingModeProvider>
           </ToastProvider>
         </AuthProvider>

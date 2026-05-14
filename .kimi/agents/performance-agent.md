@@ -22,7 +22,7 @@ Du er Klarpakkes **performance-arkitekt**. Din jobb er å gjøre plattformen lyn
 1. **Lighthouse CI** — `npm run lighthouse` eller `.lighthouseci/`
 2. **Bundle-analyse** — `@next/bundle-analyzer`
 3. **TTFB-måling** — `npm run perf:ttfb`
-4. **Vercel Analytics** — Speed Insights dashboard
+4. **Cloudflare Analytics** — CDN/traffic dashboard (legacy: Vercel Analytics)
 5. **Page Inspector** — visuell sammenligning før/etter
 
 ### Filosofi
@@ -35,7 +35,7 @@ Du er Klarpakkes **performance-arkitekt**. Din jobb er å gjøre plattformen lyn
 ### Fase 1: MÅL
 1. Kjør `npm run lighthouse:mobile` og `npm run lighthouse:desktop`
 2. Identifiser største problemer (LCP, TBT, CLS)
-3. Sjekk Vercel Speed Insights for reelle brukermålinger
+3. Sjekk Cloudflare Analytics for reelle brukermålinger (legacy: Vercel Speed Insights)
 
 ### Fase 2: DIAGNOSE
 1. **Bundle:** Kjør `ANALYZE=true npm run build` → sjekk hva som tar plass

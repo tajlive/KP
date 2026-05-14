@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "version": "2.3",
+    "version": "2.4",
     "project": "Klarpakke",
-    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-04-19",
-    "updated_for": "MCP config consolidation + security hardening"
+    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-05-14",
+    "updated_for": "Fly.io + Cloudflare migration (Vercel as legacy)"
   },
   "commands": {
     "health": {
@@ -75,8 +75,16 @@
       "command": "npm run deploy:prod"
     },
     "preview": {
-      "description": "Deploy til preview/staging",
-      "command": "vercel deploy --target=preview"
+      "description": "Deploy til preview/staging (Fly.io)",
+      "command": "flyctl deploy --remote-only --app klarpakke-staging"
+    },
+    "fly:status": {
+      "description": "Sjekk Fly.io app-status",
+      "command": "flyctl status --app klarpakke"
+    },
+    "fly:logs": {
+      "description": "Se Fly.io logs",
+      "command": "flyctl logs --app klarpakke"
     },
     "prod": {
       "description": "Full prod pipeline (lint, test, db, monitor, deploy, monitor)",

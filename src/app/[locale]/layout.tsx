@@ -14,8 +14,9 @@ import {
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+// Vercel Analytics/SpeedInsights removed — now on Fly.io (legacy import kept for rollback)
+// import { Analytics } from "@vercel/analytics/react";
+// import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { RootProviders } from "@/app/providers/RootProviders";
@@ -277,8 +278,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           {children}
         </RootProviders>
         <PlausibleScript />
-        <Analytics />
-        <SpeedInsights />
+        {/* Analytics/SpeedInsights disabled on Fly.io — use Cloudflare Analytics */}
+        {/* <Analytics /> */}
+        {/* <SpeedInsights /> */}
         <SanityLiveWrapper />
       </body>
     </html>

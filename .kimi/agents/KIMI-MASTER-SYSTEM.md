@@ -175,6 +175,20 @@ IF auth / api / db changes:
 
 ---
 
+## 💰 TOKEN SPARING — Obligatorisk for hver økt
+
+**Hver token koster. Tenk før du leser.**
+
+1. **MemPalace først** — `search()` + `kg_query()` koster ~500 tokens vs. `ReadFile` × 5 = ~5000 tokens
+2. **`Grep` før `ReadFile`** — finn riktig fil + linjenummer først. Aldri les hele filer.
+3. **Targeted `ReadFile`** — bruk ALLTID `line_offset` + `n_lines`. Maks 50 linjer per kall.
+4. **Batch-verktøy** — `kg_batch()` i stedet for 5 × `kg_add()`. Én `StrReplaceFile` med liste i stedet for 5 enkelt-kall.
+5. **Korte prompts** — ett spørsmål = ett svar. Unngå å be om forklaringer du ikke trenger.
+6. **Unngå `node_modules`, `.next`, build-output** — aldri les disse.
+7. **MCP-profile matching** — ikke last `full` når `minimal` er nok.
+
+---
+
 ## ⚠️ ABSOLUTE RULES (Breaking = Production Down)
 
 1. **OAuth:** ALLTID `getCallbackUrl()` — aldri hardkode `/auth/callback`
@@ -198,7 +212,8 @@ IF auth / api / db changes:
 | Database | migration, sql, table, trigger, index, schema | `klarpakke-architect-agent.yaml` |
 | Frontend | ui, component, react, tailwind, page, chart | `klarpakke-ux-ui-agent.yaml` |
 | API | endpoint, route, handler, middleware, webhook | `klarpakke-architect-agent.yaml` |
-| Deploy | vercel, ci, build, env, domain, ssl | `klarpakke-architect-agent.yaml` |
+| Deploy | fly.io, cloudflare, docker, ci, build, env, domain, ssl | `klarpakke-architect-agent.yaml` |
+| Deploy (legacy) | vercel | `klarpakke-architect-agent.yaml` |
 | Testing | test, e2e, vitest, playwright, coverage | `klarpakke-qa-agent.yaml` |
 | CMS | sanity, schema, groq, studio, content | `sanity-agent.yaml` |
 | Mobile | pwa, responsive, ios, android, lighthouse | `mobile-check-agent.yaml` |

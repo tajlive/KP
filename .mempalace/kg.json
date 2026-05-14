@@ -271,6 +271,16 @@
       "predicate": "tests",
       "object": "679-passed",
       "validFrom": "2026-04-22T01:36:06.378Z"
+    },
+    {
+      "predicate": "pipeline",
+      "object": "github-actions-fly.io",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "docker",
+      "object": "node-24-slim-standalone",
+      "validFrom": "2026-05-12"
     }
   ],
   "supabase-db": [
@@ -796,6 +806,10 @@
       "predicate": "cache_health",
       "object": "LRU-operational-0-current-session",
       "validFrom": "2026-04-29T13:00:00.000Z"
+    },
+    {
+      "predicate": "cost_vs_readfile",
+      "object": "10x-cheaper"
     }
   ],
   "mobile-ui": [
@@ -1307,6 +1321,101 @@
       "predicate": "analysis_report",
       "object": "ENTERPRISE-UI-ANALYSIS-2026-04-26",
       "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "migrating_from",
+      "object": "vercel",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "migrating_to",
+      "object": "cloudflare-pages-supabase",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "deployed-on",
+      "object": "fly.io",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "uses-build-strategy",
+      "object": "github-actions-pre-build-runtime-dockerfile",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "custom-domain",
+      "object": "www.klarpakke.no",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "custom-domain",
+      "object": "klarpakke.no",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "dns-provider",
+      "object": "cloudflare",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "tls-certificate",
+      "object": "lets-encrypt-rsa-ecdsa",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "fly-app-name",
+      "object": "klarpakke",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "fly-region",
+      "object": "arn-stockholm",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "dns-apex",
+      "object": "A-66.241.125.203-AAAA-2a09:8280:1::115:823c:0",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "dns-www",
+      "object": "CNAME-ro0w9zm.klarpakke.fly.dev",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "cloudflare-proxy",
+      "object": "enabled-orange-cloud",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "redirect",
+      "object": "apex-to-www-301",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "next-public-app-url",
+      "object": "https://www.klarpakke.no",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "hosted_on",
+      "object": "fly.io",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "cdn",
+      "object": "cloudflare",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "legacy_hosting",
+      "object": "vercel",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "dns",
+      "object": "cloudflare-klarpakke.no",
+      "validFrom": "2026-05-12"
     }
   ],
   "dashboard": [
@@ -1591,6 +1700,14 @@
       "predicate": "upgraded_to",
       "object": "v1.41.0",
       "validFrom": "2026-05-09T13:13:13.312Z"
+    },
+    {
+      "predicate": "token_budget",
+      "object": "262k-total-40k-reserved"
+    },
+    {
+      "predicate": "optimal_working_memory",
+      "object": "222k-tokens"
     }
   ],
   "enterprise-2026": [
@@ -3617,6 +3734,166 @@
       "predicate": "runs",
       "object": "every 10 minutes",
       "validFrom": "2026-05-09T17:52:51.151Z"
+    }
+  ],
+  "vercel-supabase": [
+    {
+      "predicate": "uses",
+      "object": "supavisor-pooler-port-6543",
+      "validFrom": "2026-05-12T11:00:00.000Z"
+    }
+  ],
+  "api-health": [
+    {
+      "predicate": "avoid",
+      "object": "supabase-rest-api-from-vercel-serverless",
+      "validFrom": "2026-05-12T11:00:00.000Z"
+    },
+    {
+      "predicate": "fixed-by",
+      "object": "pg-pooler-ipv4-redis-cache",
+      "validFrom": "2026-05-12T11:00:00.000Z"
+    }
+  ],
+  "supabase-rest": [
+    {
+      "predicate": "known-issue",
+      "object": "postgrest-cold-start-1-20s-from-vercel",
+      "validFrom": "2026-05-12T11:00:00.000Z"
+    }
+  ],
+  "node-js-18": [
+    {
+      "predicate": "requires",
+      "object": "dns-ipv4first-for-supabase",
+      "validFrom": "2026-05-12T11:00:00.000Z"
+    }
+  ],
+  "migration": [
+    {
+      "predicate": "baseline_tests",
+      "object": "939-passed-7-skipped",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "backup_tag",
+      "object": "migration-start-20260512",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "api_routes_count",
+      "object": "160",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "vercel_dependencies",
+      "object": "@vercel/analytics,@vercel/edge-config,@vercel/speed-insights,vercel-cli",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "phase_1_2_3",
+      "object": "completed",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "remaining",
+      "object": "api-routes-restore,stripe-webhook,testing,dns-switch",
+      "validFrom": "2026-05-12"
+    }
+  ],
+  "cloudflare-pages": [
+    {
+      "predicate": "build_status",
+      "object": "success-2026-05-12",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "build_size",
+      "object": "393MB",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "workers_created",
+      "object": "6",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "edge_runtime_files",
+      "object": "120",
+      "validFrom": "2026-05-12"
+    }
+  ],
+  "fly.io-deploy": [
+    {
+      "predicate": "build-runtime",
+      "object": "node-24-slim-standalone",
+      "validFrom": "2026-05-14"
+    },
+    {
+      "predicate": "memory",
+      "object": "4gb-performance-cpu-2-cores",
+      "validFrom": "2026-05-14"
+    }
+  ],
+  "github-actions": [
+    {
+      "predicate": "build-heap",
+      "object": "4096mb-max-old-space-size",
+      "validFrom": "2026-05-14"
+    }
+  ],
+  "fly.io": [
+    {
+      "predicate": "region",
+      "object": "arn",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "app",
+      "object": "klarpakke",
+      "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "url",
+      "object": "https://klarpakke.fly.dev",
+      "validFrom": "2026-05-12"
+    }
+  ],
+  "cloudflare": [
+    {
+      "predicate": "role",
+      "object": "dns-cdn-proxy",
+      "validFrom": "2026-05-12"
+    }
+  ],
+  "token-sparing": [
+    {
+      "predicate": "rule_1",
+      "object": "mempalace-before-readfile"
+    },
+    {
+      "predicate": "rule_2",
+      "object": "grep-before-readfile"
+    },
+    {
+      "predicate": "rule_3",
+      "object": "line_offset-always"
+    },
+    {
+      "predicate": "rule_4",
+      "object": "batch-tools"
+    },
+    {
+      "predicate": "forbidden",
+      "object": "read-whole-files"
+    },
+    {
+      "predicate": "forbidden",
+      "object": "read-node_modules"
+    },
+    {
+      "predicate": "forbidden",
+      "object": "separate-kg_add-instead-of-kg_batch"
     }
   ]
 }

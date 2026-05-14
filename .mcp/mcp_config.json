@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "2.6-minimal",
+    "version": "2.7-minimal",
     "lastOptimized": "2026-04-22",
-    "for": "KIMI CLI v1.38.0 + k2.6",
+    "for": "KIMI CLI v1.42.0 + k2.6",
     "description": "MINIMAL MCP-konfigurasjon — 7 raske servere. Mempalace v3 (zero-dep) inkludert for prosjektkunnskap.",
     "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote). Mempalace v3 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt."
   },
@@ -38,9 +38,9 @@
       "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"]
     },
     "mempalace": {
-      "description": "MemPalace MCP v3.1 — prosjektkunnskap, KG, diary (zero-dep, k2.6-optimalisert)",
+      "description": "MemPalace MCP v3.3 — prosjektkunnskap, KG, diary (zero-dep, TF-IDF + bigram + cross-lingual, k2.6-optimalisert)",
       "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v2.mjs"]
+      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
     }
   }
 }

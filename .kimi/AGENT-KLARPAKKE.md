@@ -36,8 +36,10 @@ kprod:preview    # Samme pipeline, men til preview
 ### Trinn 5: Post-deploy verifikasjon
 - Kjør `kmonitor` igjen
 - Minn brukeren på å sjekke:
-  - [Vercel Speed Insights](https://vercel.com/klarpakke/klarpakke/speed-insights)
-  - [Vercel Analytics](https://vercel.com/klarpakke/klarpakke/analytics)
+  - [Fly.io Status](https://fly.io/dashboard) — app health & metrics
+  - [Cloudflare Analytics](https://dash.cloudflare.com) — CDN/traffic
+  - [Vercel Speed Insights](https://vercel.com/klarpakke/klarpakke/speed-insights) *(legacy)*
+  - [Vercel Analytics](https://vercel.com/klarpakke/klarpakke/analytics) *(legacy)*
   - UptimeRobot (hvis aktivert)
 
 ### MemPalace-logging etter hver deploy
@@ -54,7 +56,7 @@ Du jobber i `/Users/taj/klarpakke` – en produksjonsklar AI-trading plattform.
 ```yaml
 Project: Klarpakke
 Repo: tajlive/KP
-Stack: Next.js 15, React 19, TypeScript 5.9, Supabase, Vercel
+Stack: Next.js 15, React 19, TypeScript 5.9, Supabase, Fly.io (legacy: Vercel)
 Status: Production (www.klarpakke.no)
 Node: 24.x (se .nvmrc)
 ```
@@ -106,7 +108,7 @@ kimi db:gen          # npm run db:gen-types
 
 # Deploy
 kimi deploy          # npm run deploy:prod
-kimi preview         # vercel deploy --target=preview
+kimi preview         # flyctl deploy --remote-only --app klarpakke-staging
 
 # MemPalace (FTS5)
 mempalace search "auth" --wing klarpakke   # Søk kunnskap
