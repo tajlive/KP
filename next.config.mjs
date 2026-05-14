@@ -327,6 +327,8 @@ const nextConfig = {
   // Generate build ID to bust caches
   generateBuildId: async () => {
     return process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) || 
+           process.env.FLY_ALLOC_ID?.slice(0, 7) ||
+           process.env.GITHUB_SHA?.slice(0, 7) ||
            process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
            Date.now().toString();
   },
@@ -404,10 +406,10 @@ const nextConfig = {
 // Kjør upload kun på Vercel (VERCEL=1) der bygg er kanonisk for prod.
 // GitHub Actions kjører `npm run build` uten VERCEL — da hoppes upload over (samme som lokal `next build`).
 // Tving av/på: SENTRY_UPLOAD_SOURCE_MAPS=true|false
-// Sentry source maps: Upload on Vercel eller Cloudflare builds
+// Sentry source maps: Upload on Fly.io, Vercel eller Cloudflare builds
 // Override: SENTRY_UPLOAD_SOURCE_MAPS=true|false
 const sentryShouldUpload = process.env.SENTRY_UPLOAD_SOURCE_MAPS === 'true' || 
-  ((process.env.VERCEL === '1' || process.env.CF_PAGES === '1') && 
+  ((process.env.FLY_IO === '1' || process.env.VERCEL === '1' || process.env.CF_PAGES === '1') && 
    process.env.SENTRY_UPLOAD_SOURCE_MAPS !== 'false');
 
 const sentryWebpackPluginOptions = {

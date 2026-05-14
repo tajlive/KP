@@ -6,7 +6,7 @@
 # - Auto-repair av testbrukere
 # - Auto-restart av signal-engine
 # - Auto-fix av DB drift
-# - Vercel rollback ved total failure
+# - Emergency rollback notification (Fly.io deploy history used for rollback)
 # - Linear + Slack notifikasjoner
 #
 # Triggers:
@@ -305,17 +305,19 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Attempt Vercel Rollback
+      - name: 🚨 Emergency Rollback Alert
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
           LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
-          echo "🚨 EMERGENCY ROLLBACK INITIATED"
-          node scripts/vercel-rollback-guard.mjs --force || echo "Rollback may have failed - manual intervention required"
+          echo "🚨 EMERGENCY ROLLBACK REQUIRED"
+          echo "Manual rollback: flyctl deploy --app klarpakke --image <previous-image>"
+          echo "Or revert the last commit and push to trigger a new deploy."
+          # TODO: Add automatic Fly.io rollback when releases API is stable
+          # flyctl releases list --app klarpakke
+          # flyctl deploy --app klarpakke --image <previous-image>
 
   # ═════════════════════════════════════════════════════════════════════════════
   # JOB 6: Sync Notifications

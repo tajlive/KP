@@ -285,7 +285,11 @@ export async function GET() {
   const health: HealthCheck = {
     status,
     timestamp: new Date().toISOString(),
-    version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || "unknown",
+    version:
+      process.env.FLY_ALLOC_ID?.slice(0, 7) ||
+      process.env.GITHUB_SHA?.slice(0, 7) ||
+      process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ||
+      "unknown",
     checks,
     uptime: Math.floor((Date.now() - startTime) / 1000),
   };

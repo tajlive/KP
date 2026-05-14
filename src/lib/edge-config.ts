@@ -1,4 +1,8 @@
-import { get } from '@vercel/edge-config';
+/**
+ * Edge Config stub — migrert fra Vercel Edge Config til Supabase/Redis.
+ * Feature flags leses nå fra Redis eller Supabase (se src/lib/flags.ts).
+ * @vercel/edge-config er avinstallert.
+ */
 
 export type EdgeFeatureFlags = {
   tradingV3?: boolean;
@@ -11,19 +15,11 @@ export type EdgeFeatureFlags = {
 };
 
 export async function getEdgeFlags(): Promise<EdgeFeatureFlags> {
-  try {
-    const flags = await get<EdgeFeatureFlags>('featureFlags');
-    return flags ?? {};
-  } catch {
-    return {};
-  }
+  // TODO: Les fra Redis/Supabase etter behov
+  return {};
 }
 
 export async function isMaintenanceMode(): Promise<boolean> {
-  try {
-    const value = await get<boolean>('maintenanceMode');
-    return value ?? false;
-  } catch {
-    return false;
-  }
+  // TODO: Les fra Redis/Supabase etter behov
+  return false;
 }

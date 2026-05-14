@@ -1,17 +1,17 @@
 /**
  * Cloudflare Pages Function — API Fallback Proxy
  * 
- * ALL /api/* routes proxy to Vercel during migration.
- * This ensures zero downtime while converting API routes individually.
+ * /api/* routes proxy to Fly.io app during migration.
+ * Primary traffic now goes directly to Fly.io; this is a legacy fallback.
  */
 
 export interface Env {
-  VERCEL_APP_URL: string;
+  FLY_APP_URL: string;
 }
 
 export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const url = new URL(request.url);
-  const targetBase = env.VERCEL_APP_URL || 'https://klarpakke.vercel.app';
+  const targetBase = env.FLY_APP_URL || 'https://klarpakke.fly.dev';
   const target = `${targetBase}${url.pathname}${url.search}`;
 
   // Clone headers and add Cloudflare proxy marker
@@ -28,7 +28,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
 
     // Clone response so we can modify headers
     const newHeaders = new Headers(response.headers);
-    newHeaders.set('X-Proxy-Status', 'cloudflare-vercel-fallback');
+    newHeaders.set('X-Proxy-Status', 'cloudflare-flyio-fallback');
 
     return new Response(response.body, {
       status: response.status,

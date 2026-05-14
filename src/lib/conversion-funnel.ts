@@ -6,7 +6,7 @@
 
 
 import { trackEvent } from '@/lib/analytics';
-import { track } from '@vercel/analytics/react';
+// Vercel Analytics removed — bruker kun Plausible (trackEvent) nå
 
 export const FUNNEL_STEPS = [
   'landing_view',
@@ -35,7 +35,4 @@ export function trackFunnelStep(
 
   // Plausible (via analytics.ts)
   trackEvent(step, props);
-
-  // Vercel Analytics
-  track(step, metadata ?? {});
 }

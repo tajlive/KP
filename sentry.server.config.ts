@@ -8,7 +8,10 @@ Sentry.init({
 
   // Environment and release tracking
   environment: process.env.NODE_ENV,
-  release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+  release:
+    process.env.FLY_ALLOC_ID ||
+    process.env.GITHUB_SHA ||
+    process.env.VERCEL_GIT_COMMIT_SHA,
 
   // Performance monitoring
   tracesSampleRate: 0.1, // 10% of transactions

@@ -5,7 +5,7 @@
  * 
  * Bruker Supabase client-side auth direkte for å unngå
  * UnrecognizedActionError som oppstår med Server Actions
- * under Vercel deploy-overganger.
+ * under deploy-overganger (migrert fra Vercel til Fly.io).
  */
 
 import { useState } from "react";
