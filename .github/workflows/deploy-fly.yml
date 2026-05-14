@@ -29,11 +29,11 @@ jobs:
       - name: Deploy to Fly.io
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: flyctl deploy --remote-only --build-arg NODE_OPTIONS="--max-old-space-size=4096"
+        run: flyctl deploy --remote-only --build-memory 4096 --build-arg NODE_OPTIONS="--max-old-space-size=4096"
 
       - name: Verify deployment
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           sleep 10
           flyctl status --app klarpakke
