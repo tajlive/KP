@@ -173,6 +173,7 @@ export async function POST(req: NextRequest) {
               }
 
               if (sessionId) {
+                const rate = await getUsdtToNokRateAsync(supabase);
                 await supabase.from("trades").insert({
                   session_id: sessionId,
                   user_id: order.user_id,
@@ -180,8 +181,8 @@ export async function POST(req: NextRequest) {
                   trading_pair: `${order.symbol}/USDT`,
                   side: order.side,
                   quantity,
-                  price,
-                  total_value: executeUsdt,
+                  price: price * rate,
+                  total_value: executeUsdt * rate,
                   status: "filled",
                   mode: "paper",
                   executed_at: new Date().toISOString(),

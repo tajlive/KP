@@ -138,12 +138,12 @@ export default function CalculatorPage() {
       const text = `
 Kalkuleringsresultat - Klarpakke
 ================================
-Startbeløp: ${formatNOK(startSum, { locale, style: "decimal" })} kr
+Startbeløp: ${formatNOK(startSum, { locale, style: "decimal" })} NOK
 Daglig avkastning: ${formatPercent(dailyPercent)}%
 Tid: 1 år
 
-Resultat etter 1 år: ${formatNOK(Math.round(finalBalance), { locale, style: "decimal" })} kr
-Total avkastning: +${formatNOK(Math.round(totalProfit), { locale, style: "decimal" })} kr (+${formatPercent(totalReturn)}%)
+Resultat etter 1 år: ${formatNOK(Math.round(finalBalance), { locale, style: "decimal" })} NOK
+Total avkastning: +${formatNOK(Math.round(totalProfit), { locale, style: "decimal" })} NOK (+${formatPercent(totalReturn)}%)
 
 VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele investeringen.
       `.trim();

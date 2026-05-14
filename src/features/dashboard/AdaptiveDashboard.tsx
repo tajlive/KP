@@ -131,7 +131,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
         },
         {
           label: isNo ? "Win Rate" : "Win Rate",
-          value: `${stats.winRate}%`,
+          value: `${Math.round(stats.winRate * 100)}%`,
           subtext: isNo ? "Av totalt" : "Of total",
           trend: stats.winRate >= 50 ? ("up" as const) : ("down" as const),
           icon: TrendingUp,

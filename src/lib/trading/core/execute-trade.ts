@@ -347,7 +347,10 @@ async function executeTradeWithLock(
         trading_pair: request.symbol,
         side: request.side,
         quantity: execResult.executedQuantity,
-        price: execResult.executedPrice,
+        price:
+          request.mode === "paper"
+            ? usdtToNok(execResult.executedPrice, rate ?? undefined)
+            : execResult.executedPrice,
         total_value:
           request.mode === "paper"
             ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)

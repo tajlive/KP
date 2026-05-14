@@ -241,9 +241,9 @@ export default function BotStatusDashboard({
   // pnlToday/Week/Month still use trade-effective-pnl for time-bounded calculations.
   const rawWinRate =
     dashboardMetrics?.winRate != null
-      ? dashboardMetrics.winRate
+      ? dashboardMetrics.winRate // 0-1
       : portfolio?.win_rate != null
-        ? portfolio.win_rate
+        ? portfolio.win_rate / 100 // 0-100 → 0-1
         : null;
   const winRate = rawWinRate != null ? rawWinRate * 100 : null;
 

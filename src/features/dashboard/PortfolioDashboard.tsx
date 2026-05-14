@@ -346,6 +346,10 @@ export default function PortfolioDashboard({
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
     return (liveCoins.find((c) => c.symbol === key)?.price ?? 0) * usdtNokRate;
   };
+  const usdtPriceForSymbol = (sym: string) => {
+    const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
+    return liveCoins.find((c) => c.symbol === key)?.price ?? 0;
+  };
   const gradientForSymbol = (sym: string) => {
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
     return COIN_GRADIENTS[key] ?? "from-gray-400 to-gray-500";
@@ -363,10 +367,19 @@ export default function PortfolioDashboard({
       0,
     );
     // Unrealized: current value of open positions minus cost basis
+    // pos.value may be USDT (old trades) or NOK (new trades after backend fix).
+    // We detect the unit by comparing with current USDT price.
     const unrealizedPnl = positionList.reduce((sum, pos) => {
-      const price = priceForSymbol(pos.symbol);
-      const currentValue = pos.qty * price;
-      return sum + (currentValue - pos.value);
+      const priceNok = priceForSymbol(pos.symbol);
+      const priceUsdt = usdtPriceForSymbol(pos.symbol);
+      const currentValueUsdt = pos.qty * priceUsdt;
+      const currentValueNok = pos.qty * priceNok;
+      // If pos.value is close to currentValueUsdt, it's in USDT; otherwise NOK
+      const isValueInUsdt =
+        pos.value > 0 &&
+        Math.abs(pos.value - currentValueUsdt) < Math.max(pos.value, currentValueUsdt) * 0.5;
+      const posValueNok = isValueInUsdt ? pos.value * usdtNokRate : pos.value;
+      return sum + (currentValueNok - posValueNok);
     }, 0);
     return {
       totalBuyValue,

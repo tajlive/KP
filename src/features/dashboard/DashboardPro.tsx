@@ -163,7 +163,7 @@ export function DashboardPro({
     },
     {
       label: t("stats.winRate"),
-      value: `${effectiveStats.winRate}%`,
+      value: `${Math.round(effectiveStats.winRate * 100)}%`,
       subtext: t("stats.winRateSub", { totalTrades: effectiveStats.totalTrades }),
       trend: effectiveStats.winRate >= 50 ? ("up" as const) : ("down" as const),
       icon: Target,

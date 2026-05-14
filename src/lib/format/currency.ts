@@ -23,7 +23,7 @@ export function formatNOK(
     locale = "no-NO",
     showSign = false,
     style = "currency",
-    fractionDigits = 0,
+    fractionDigits = 2,
   } = opts;
 
   if (showSign) {

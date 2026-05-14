@@ -671,6 +671,9 @@ async function processSession(
   // Calculate realized P&L for sell trades using FIFO cost basis
   let realizedPnl: number | undefined;
   let updatedLedgerState: LedgerState | null = null;
+  const isPaperMode = session.mode === "paper";
+  const usdtNokRateForPnl = isPaperMode ? getUsdtToNokRate() : undefined;
+
   if (signal.action === "sell" && session.open_position) {
     // Build FIFO ledger: use lots if available, otherwise migrate from legacy
     const ledger: LedgerState = session.open_position.lots
@@ -681,23 +684,32 @@ async function processSession(
     const matchedQty = Math.min(quantity, positionQty);
     if (matchedQty > 0) {
       try {
-        const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
+        // For paper, convert Binance USDT price to NOK so FIFO cost basis matches
+        const fifoPrice = isPaperMode ? usdtToNok(currentPrice, usdtNokRateForPnl) : currentPrice;
+        const sellResult = sellFIFO(ledger, matchedQty, fifoPrice);
         realizedPnl = sellResult.realizedPnl;
         updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
       } catch {
         // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
         const entryPrice = session.open_position.entry_price;
-        realizedPnl = Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
+        const fifoCurrentPrice = isPaperMode ? usdtToNok(currentPrice, usdtNokRateForPnl) : currentPrice;
+        realizedPnl = Math.round((fifoCurrentPrice - entryPrice) * matchedQty * 100) / 100;
       }
     }
   }
 
   // Execute trade
-  // For live mode, use Binance actuals; for paper, use simulated
+  // For live mode, use Binance actuals; for paper, convert to NOK so capital math works
   const finalExecutedPrice = liveResult ? liveResult.executedPrice : executedPrice;
   const finalFee = liveResult ? liveResult.fee : mul(mul(quantity, executedPrice), 0.001);
   const totalValue = mul(quantity, finalExecutedPrice);
   const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
+
+  const rate = getUsdtToNokRate();
+  const nokPrice = isPaperMode ? usdtToNok(finalExecutedPrice, rate) : finalExecutedPrice;
+  const nokTotalValue = isPaperMode ? usdtToNok(totalValue, rate) : totalValue;
+  const nokFee = isPaperMode ? usdtToNok(finalFee, rate) : finalFee;
+  const nokRealizedPnl = isPaperMode && realizedPnl != null ? usdtToNok(realizedPnl, rate) : realizedPnl;
 
   const { data: trade, error: tradeError } = await db
     .from("trades")
@@ -711,11 +723,11 @@ async function processSession(
       side: signal.action as TradeSide,
       order_type: "market",
       quantity,
-      price: finalExecutedPrice,
-      total_value: totalValue,
-      fee: finalFee,
+      price: nokPrice,
+      total_value: nokTotalValue,
+      fee: nokFee,
       status: "filled",
-      realized_pnl: realizedPnl,
+      realized_pnl: nokRealizedPnl,
       binance_order_id: liveResult?.binanceOrderId ?? null,
       strategy_signal: {
         ...signal.indicators,
@@ -779,8 +791,10 @@ async function processSession(
         : createLedger("long");
 
     // For live trades, use actual Binance executed price as cost basis
+    // For paper, store cost basis in NOK to match trade values
     const entryPriceForLot = liveResult ? liveResult.executedPrice : executedPrice;
-    const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
+    const lotPrice = isPaperMode ? usdtToNok(entryPriceForLot, rate) : entryPriceForLot;
+    const updatedLedger = addLot(ledger, quantity, lotPrice);
     const legacyPos = toLegacyPosition(updatedLedger);
 
     if (legacyPos) {
@@ -789,7 +803,7 @@ async function processSession(
         .update({
           open_position: {
             ...legacyPos,
-            highest_price: session.open_position?.highest_price ?? entryPriceForLot,
+            highest_price: session.open_position?.highest_price ?? lotPrice,
           },
         } as never)
         .eq("id", session.id);
