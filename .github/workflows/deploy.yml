@@ -6,7 +6,10 @@
 name: 🚀 Deploy
 
 on:
-  # Auto-deploy: kun når pr-check er successful på main
+  # Auto-deploy: push til main (direkte eller via merge)
+  push:
+    branches: [main]
+  # Fallback: når pr-check er successful på main
   workflow_run:
     workflows: ["✅ PR Check"]
     types: [completed]
@@ -44,7 +47,7 @@ jobs:
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
     env:
-      IS_PRODUCTION: ${{ github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production') }}
+      IS_PRODUCTION: ${{ github.event_name == 'push' || github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production') }}
 
     steps:
       - name: Resolve deploy ref (Plan B)
