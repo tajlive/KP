@@ -1533,7 +1533,8 @@
       "activeLC": "aktive",
       "pausedLC": "pausete",
       "stoppedLC": "stoppete"
-    }
+    },
+    "error": "Det oppstod en feil. Prøv igjen senere."
   },
   "footer": {
     "product": "Produkt",
@@ -1552,7 +1553,7 @@
       "contact": "Kontakt",
       "privacy": "Personvern",
       "terms": "Vilkår",
-     "cookies": "Cookies"
+      "cookies": "Cookies"
     }
   },
   "gamification": {
@@ -1572,7 +1573,10 @@
       "completed": "Fullførte leksjoner",
       "accuracy": "Handlingsnøyaktighet",
       "lessonsAvailable": "Tilgjengelige leksjoner"
-    }
+    },
+    "monthlyPrize": "Månedlig konkurranse med paper trading",
+    "monthlyCompetitionOngoing": "pågår",
+    "daysLeft": "dager igjen"
   },
   "helpPage": {
     "title": "Hjelp & Support",
@@ -3224,6 +3228,10 @@
       "ai_copy": {
         "name": "AI Copy",
         "description": "Kopierer topp-tradere filtrert av AI."
+      },
+      "ensemble_ai": {
+        "name": "Ensemble AI",
+        "description": "Kombinerer flere AI-modeller for å ta de beste beslutningene basert på markedsdata, sentiment og teknisk analyse."
       }
     },
     "balance": "Saldo",

@@ -1533,7 +1533,8 @@
       "activeLC": "active",
       "pausedLC": "paused",
       "stoppedLC": "stopped"
-    }
+    },
+    "error": "An error occurred. Please try again later."
   },
   "footer": {
     "product": "Product",
@@ -1552,7 +1553,7 @@
       "contact": "Contact",
       "privacy": "Privacy",
       "terms": "Terms",
-     "cookies": "Cookies"
+      "cookies": "Cookies"
     }
   },
   "gamification": {
@@ -1572,7 +1573,10 @@
       "completed": "Completed lessons",
       "accuracy": "Trade accuracy",
       "lessonsAvailable": "Lessons available"
-    }
+    },
+    "monthlyPrize": "Monthly paper trading competition",
+    "monthlyCompetitionOngoing": "ongoing",
+    "daysLeft": "days left"
   },
   "helpPage": {
     "title": "Help & Support",
@@ -3240,6 +3244,10 @@
       "ai_copy": {
         "name": "AI Copy",
         "description": "Copies top traders filtered by AI."
+      },
+      "ensemble_ai": {
+        "name": "Ensemble AI",
+        "description": "Combines multiple AI models to make the best decisions based on market data, sentiment, and technical analysis."
       }
     },
     "selectStrategy": "Select Strategy",

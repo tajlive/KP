@@ -1,1 +1,8 @@
 
+{"subject":"klarpakke","predicate":"deploy_pipeline","object":"github-actions-flyio","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"flyio","predicate":"secrets","object":"POSTGRES_URL-NEXT_PUBLIC_SUPABASE_URL-NEXT_PUBLIC_SUPABASE_ANON_KEY-SUPABASE_SERVICE_ROLE_KEY-DATABASE_URL","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"supabase-vault","predicate":"has_secret","object":"FLY_APP_URL","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"klarpakke_trigger_cron","predicate":"prefers","object":"FLY_APP_URL over VERCEL_APP_URL","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"vercel","predicate":"status","object":"fully_migrated_from","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"cloudflare-pages","predicate":"status","object":"workflows_disabled","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"health_endpoint","predicate":"version_source","object":"FLY_ALLOC_ID","validFrom":"2026-05-14T12:00:00Z"}

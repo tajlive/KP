@@ -11,7 +11,7 @@ import {
   Flag,
   Landmark,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 const values = [
@@ -41,8 +41,8 @@ const values = [
   },
 ];
 
-export default async function OmOssClient() {
-  const t = await getTranslations("about");
+export default function OmOssClient() {
+  const t = useTranslations("about");
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
