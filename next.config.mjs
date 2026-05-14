@@ -241,18 +241,18 @@ const nextConfig = {
       // Route consolidation redirects (2026)
       // Fjernet - håndteres av i18n middleware (linje 20 i i18n.ts)
       // { source: "/innlogging", destination: "/login", permanent: true },
-      // { source: "/:locale/innlogging", destination: "/:locale/login", permanent: true },
+      // { source: "/:locale(no|en)/innlogging", destination: "/:locale(no|en)/login", permanent: true },
       { source: "/signup", destination: "/register", permanent: true },
-      { source: "/:locale/signup", destination: "/:locale/register", permanent: true },
+      { source: "/:locale(no|en)/signup", destination: "/:locale(no|en)/register", permanent: true },
       { source: "/autotrade", destination: "/no/dashboard/auto-trade", permanent: true },
-      { source: "/:locale/autotrade", destination: "/:locale/dashboard/auto-trade", permanent: true },
+      { source: "/:locale(no|en)/autotrade", destination: "/:locale(no|en)/dashboard/auto-trade", permanent: true },
       // Trading route unification: canonical /handel
       { source: "/paper-trading", destination: "/handel", permanent: true },
-      { source: "/:locale/paper-trading", destination: "/:locale/handel", permanent: true },
+      { source: "/:locale(no|en)/paper-trading", destination: "/:locale(no|en)/handel", permanent: true },
       { source: "/paper-trading/:path*", destination: "/handel", permanent: true },
-      { source: "/:locale/paper-trading/:path*", destination: "/:locale/handel", permanent: true },
+      { source: "/:locale(no|en)/paper-trading/:path*", destination: "/:locale(no|en)/handel", permanent: true },
       { source: "/live-trading", destination: "/handel?mode=live", permanent: true },
-      { source: "/:locale/live-trading", destination: "/:locale/handel?mode=live", permanent: true },
+      { source: "/:locale(no|en)/live-trading", destination: "/:locale(no|en)/handel?mode=live", permanent: true },
 
       // Legacy English root URLs → actual Norwegian pages (localePrefix: "always")
       { source: "/pricing", destination: "/no/priser", permanent: true },
@@ -268,7 +268,7 @@ const nextConfig = {
       { source: "/blog/:path*", destination: "/no", permanent: false },
       // Typo: Norwegian "dashbord" → correct path "dashboard"
       { source: "/dashbord", destination: "/no/dashboard", permanent: true },
-      { source: "/:locale/dashbord", destination: "/:locale/dashboard", permanent: true },
+      { source: "/:locale(no|en)/dashbord", destination: "/:locale(no|en)/dashboard", permanent: true },
       { source: "/marketplace", destination: "/no/marketplace", permanent: true },
       // /settings handled by proxy → /profile?tab=settings (linje 91)
       // Fallback if proxy is bypassed:
@@ -279,48 +279,48 @@ const nextConfig = {
       
       // Route unification: /dashboard/auto-handel replaces /dashboard/auto-trade
       { source: "/dashboard/auto-trade", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale/dashboard/auto-trade", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      { source: "/:locale(no|en)/dashboard/auto-trade", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
       { source: "/dashboard/auto-trade/:path*", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale/dashboard/auto-trade/:path*", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      { source: "/:locale(no|en)/dashboard/auto-trade/:path*", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
       // Legacy auto-trade paths → dashboard/auto-handel (direct, no chain)
       { source: "/auto-trade", destination: "/no/dashboard/auto-handel", permanent: true },
       { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-handel", permanent: true },
       // Autopilot → auto-handel canonical
       { source: "/dashboard/autopilot", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale/dashboard/autopilot", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      { source: "/:locale(no|en)/dashboard/autopilot", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
       { source: "/dashboard/autopilot/:path*", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale/dashboard/autopilot/:path*", destination: "/:locale/dashboard/auto-handel", permanent: true },
+      { source: "/:locale(no|en)/dashboard/autopilot/:path*", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
       // Handelshistorikk → dashboard/historikk canonical
       { source: "/handelshistorikk", destination: "/dashboard/historikk", permanent: true },
-      { source: "/:locale/handelshistorikk", destination: "/:locale/dashboard/historikk", permanent: true },
+      { source: "/:locale(no|en)/handelshistorikk", destination: "/:locale(no|en)/dashboard/historikk", permanent: true },
       // /auto-trading and /auto-trading-ai handled by proxy CANONICAL_REDIRECTS
       // (proxy runs first → /dashboard/auto-trade). No need to duplicate here.
 
       // Consolidated routes
       { source: "/admin-dashboard", destination: "/admin", permanent: true },
-      { source: "/:locale/admin-dashboard", destination: "/:locale/admin", permanent: true },
+      { source: "/:locale(no|en)/admin-dashboard", destination: "/:locale(no|en)/admin", permanent: true },
       { source: "/leaderboard-preview", destination: "/leaderboard", permanent: true },
-      { source: "/:locale/leaderboard-preview", destination: "/:locale/leaderboard", permanent: true },
+      { source: "/:locale(no|en)/leaderboard-preview", destination: "/:locale(no|en)/leaderboard", permanent: true },
       { source: "/super-admin", destination: "/admin", permanent: true },
-      { source: "/:locale/super-admin", destination: "/:locale/admin", permanent: true },
+      { source: "/:locale(no|en)/super-admin", destination: "/:locale(no|en)/admin", permanent: true },
       
       // Deleted routes → redirect to appropriate pages
       { source: "/beta-testing", destination: "/no/dashboard", permanent: true },
-      { source: "/:locale/beta-testing", destination: "/:locale/dashboard", permanent: true },
+      { source: "/:locale(no|en)/beta-testing", destination: "/:locale(no|en)/dashboard", permanent: true },
       { source: "/signals", destination: "/dashboard", permanent: true },
-      { source: "/:locale/signals", destination: "/:locale/dashboard", permanent: true },
+      { source: "/:locale(no|en)/signals", destination: "/:locale(no|en)/dashboard", permanent: true },
       { source: "/simulator", destination: "/no/paper-trading", permanent: true },
       
       // API v1 Consolidation (Script 04 - Phase 1)
       // Webhooks/github — no direct route.ts exists, keep redirect
       { source: "/api/webhooks/github/:path*", destination: "/api/v1/webhooks/github/:path*", permanent: true },
-      { source: "/:locale/simulator", destination: "/:locale/paper-trading", permanent: true },
-      { source: "/:locale/settings", destination: "/:locale/profile?tab=settings", permanent: true },
-      { source: "/:locale/om", destination: "/:locale/om-oss", permanent: true },
+      { source: "/:locale(no|en)/simulator", destination: "/:locale(no|en)/paper-trading", permanent: true },
+      { source: "/:locale(no|en)/settings", destination: "/:locale(no|en)/profile?tab=settings", permanent: true },
+      { source: "/:locale(no|en)/om", destination: "/:locale(no|en)/om-oss", permanent: true },
       { source: "/konto", destination: "/no/profile?tab=wallet", permanent: true },
-      { source: "/:locale/konto", destination: "/:locale/profile?tab=wallet", permanent: true },
+      { source: "/:locale(no|en)/konto", destination: "/:locale(no|en)/profile?tab=wallet", permanent: true },
       { source: "/innstillinger", destination: "/no/profile?tab=settings", permanent: true },
-      { source: "/:locale/innstillinger", destination: "/:locale/profile?tab=settings", permanent: true },
+      { source: "/:locale(no|en)/innstillinger", destination: "/:locale(no|en)/profile?tab=settings", permanent: true },
     ];
   },
 
