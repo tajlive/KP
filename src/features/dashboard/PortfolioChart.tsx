@@ -65,6 +65,11 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
   const [changePercent, setChangePercent] = useState(0);
   const [startingValue, setStartingValue] = useState(100000);
   const [hasData, setHasData] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchPortfolioData = async () => {
     setLoading(true);
@@ -327,6 +332,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       </div>
 
       <div className="h-[250px]">
+        {mounted ? (
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -363,6 +369,9 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
             />
           </AreaChart>
         </ResponsiveContainer>
+        ) : (
+          <div className="h-full w-full bg-gray-100/5 dark:bg-white/[0.03] animate-pulse rounded-xl" />
+        )}
       </div>
     </m.div>
   );

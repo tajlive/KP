@@ -8,6 +8,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { Wallet, ShieldCheck, Zap, History, TrendingUp, Info, AlertCircle, CheckCircle2, Activity, ArrowRight, RefreshCcw, BarChart3 } from "lucide-react";
 import { SURFACE, BRAND, RADIUS, BRAND_COLOR } from "@/lib/design/tokens";
 import { useRealtimeStore } from "@/store/realtime-store";
+import { useClientOnly } from "@/lib/hooks/useClientOnly";
 import { PriceAggregator } from "@/lib/realtime";
 
 interface WalletData {
@@ -54,6 +55,7 @@ const BACKTEST_DATA = [
 ];
 
 export function SmartPortfolioDashboard({ userId }: { userId: string }) {
+  const isClient = useClientOnly();
   const t = useTranslations("Dashboard");
   const [wallets, setWallets] = useState<WalletData[]>([]);
   const [config, setConfig] = useState<RebalanceConfig | null>(null);
@@ -62,6 +64,11 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
   const [showBacktest, setShowBacktest] = useState(false);
   const [healthScore, setHealthScore] = useState(100);
   const [currentAllocations, setCurrentAllocations] = useState<Record<string, number>>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const supabase = createClient();
 
@@ -349,38 +356,44 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 </h3>
                 {currentAllocationData.length > 0 ? (
                   <div className="h-72">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={currentAllocationData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={75}
-                          outerRadius={95}
-                          paddingAngle={8}
-                          dataKey="value"
-                          stroke="none"
-                        >
-                          {currentAllocationData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: 'rgba(10, 11, 13, 0.95)', 
-                            border: '1px solid rgba(255,255,255,0.1)', 
-                            borderRadius: '16px',
-                            backdropFilter: 'blur(10px)',
-                            padding: '12px'
-                          }}
-                          itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: 'bold' }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-6">
-                      <span className="text-gray-500 text-xs uppercase font-bold tracking-widest">Totalt</span>
-                      <span className="text-2xl font-black text-white">{currentAllocationData.length} Assets</span>
-                    </div>
+                    {mounted ? (
+                      <>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={currentAllocationData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={75}
+                              outerRadius={95}
+                              paddingAngle={8}
+                              dataKey="value"
+                              stroke="none"
+                            >
+                              {currentAllocationData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'rgba(10, 11, 13, 0.95)', 
+                                border: '1px solid rgba(255,255,255,0.1)', 
+                                borderRadius: '16px',
+                                backdropFilter: 'blur(10px)',
+                                padding: '12px'
+                              }}
+                              itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: 'bold' }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-6">
+                          <span className="text-gray-500 text-xs uppercase font-bold tracking-widest">Totalt</span>
+                          <span className="text-2xl font-black text-white">{currentAllocationData.length} Assets</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="h-full w-full bg-white/5 animate-pulse rounded-xl" />
+                    )}
                   </div>
                 ) : (
                   <div className="h-72 flex flex-col items-center justify-center text-gray-500 gap-3">
@@ -403,39 +416,45 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 </h3>
                 {targetData.length > 0 ? (
                   <div className="h-72">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={targetData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={75}
-                          outerRadius={95}
-                          paddingAngle={8}
-                          dataKey="value"
-                          stroke="none"
-                        >
-                          {targetData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value: any) => [`${value}%`, 'Målvekt']}
-                          contentStyle={{ 
-                            backgroundColor: 'rgba(10, 11, 13, 0.95)', 
-                            border: '1px solid rgba(255,255,255,0.1)', 
-                            borderRadius: '16px',
-                            backdropFilter: 'blur(10px)',
-                            padding: '12px'
-                          }}
-                          itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: 'bold' }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-6">
-                      <span className="text-brand-500/50 text-xs uppercase font-bold tracking-widest">Markedsvektet</span>
-                      <span className="text-2xl font-black text-white">Index Mode</span>
-                    </div>
+                    {mounted ? (
+                      <>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={targetData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={75}
+                              outerRadius={95}
+                              paddingAngle={8}
+                              dataKey="value"
+                              stroke="none"
+                            >
+                              {targetData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              formatter={(value: any) => [`${value}%`, 'Målvekt']}
+                              contentStyle={{ 
+                                backgroundColor: 'rgba(10, 11, 13, 0.95)', 
+                                border: '1px solid rgba(255,255,255,0.1)', 
+                                borderRadius: '16px',
+                                backdropFilter: 'blur(10px)',
+                                padding: '12px'
+                              }}
+                              itemStyle={{ color: '#fff', fontSize: '14px', fontWeight: 'bold' }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-6">
+                          <span className="text-brand-500/50 text-xs uppercase font-bold tracking-widest">Markedsvektet</span>
+                          <span className="text-2xl font-black text-white">Index Mode</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="h-full w-full bg-white/5 animate-pulse rounded-xl" />
+                    )}
                   </div>
                 ) : (
                   <div className="h-72 flex items-center justify-center text-gray-500">
@@ -471,8 +490,9 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 </div>
 
                 <div className="h-80 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={BACKTEST_DATA}>
+                  {mounted ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={BACKTEST_DATA}>
                       <defs>
                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#0052FF" stopOpacity={0.3}/>
@@ -511,6 +531,9 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                       />
                     </AreaChart>
                   </ResponsiveContainer>
+                ) : (
+                  <div className="h-full w-full bg-white/5 animate-pulse rounded-xl" />
+                )}
                 </div>
               </div>
 
@@ -676,7 +699,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
               </div>
               <div>
                 <span className="block text-[10px] text-gray-500 uppercase font-bold">Sist Oppdatert</span>
-                <span className="text-sm font-semibold text-gray-300">{new Date().toLocaleTimeString()}</span>
+                <span className="text-sm font-semibold text-gray-300">{isClient ? new Date().toLocaleTimeString() : "--:--:--"}</span>
               </div>
             </div>
           </div>

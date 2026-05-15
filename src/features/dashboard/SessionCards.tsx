@@ -189,7 +189,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
                       {session.strategy_id} ·{" "}
                       <span className="flex items-center gap-1 inline-flex">
                         <Calendar className="w-3 h-3" />
-                        {formatShortDate(session.created_at)}
+                        <span suppressHydrationWarning>{formatShortDate(session.created_at)}</span>
                       </span>
                     </p>
                   </div>
@@ -198,7 +198,7 @@ export function SessionCards({ sessions, locale }: SessionCardsProps) {
                 {/* Right: capital + PnL */}
                 <div className="text-right shrink-0">
                   <p className="font-bold text-slate-900 dark:text-white text-lg">
-                    {formatNOK(session.current_capital_nok)}
+                    <span suppressHydrationWarning>{formatNOK(session.current_capital_nok)}</span>
                   </p>
                   <div className="flex items-center justify-end gap-1">
                     {isProfitable ? (
