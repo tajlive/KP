@@ -1,0 +1,98 @@
+# ═══════════════════════════════════════════════════════════════
+# KLARPAKKE — Balance Drift Monitor
+# Runs every hour, checks balance sync across tables, alerts Slack
+# ═══════════════════════════════════════════════════════════════
+
+name: ⚖️ Balance Drift Monitor
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:
+
+concurrency:
+  group: balance-drift-monitor
+  cancel-in-progress: false
+
+env:
+  APP_URL: https://www.klarpakke.no
+  CRON_SECRET: ${{ secrets.CRON_SECRET }}
+  SLACK_WEBHOOK: ${{ secrets.SLACK_OPS_WEBHOOK_URL }}
+
+jobs:
+  check-balance-drift:
+    name: Check Balance Sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Run Balance Drift Check
+        id: drift
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 \
+            --retry 2 \
+            "$APP_URL/api/cron/balance-drift-check")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Balance drift check failed (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+          DRIFT_COUNT=$(echo "$BODY" | jq -r '.driftCount // 0')
+          CHECKED=$(echo "$BODY" | jq -r '.checked // 0')
+
+          echo "drift_count=$DRIFT_COUNT" >> $GITHUB_OUTPUT
+          echo "checked=$CHECKED" >> $GITHUB_OUTPUT
+
+          if [ "$DRIFT_COUNT" -gt 0 ]; then
+            echo "🚨 Found $DRIFT_COUNT user(s) with balance drift"
+            exit 1
+          fi
+
+          echo "✅ All $CHECKED user(s) in sync"
+
+      - name: Log to Summary
+        if: always()
+        run: |
+          echo "## ⚖️ Balance Drift Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Checked Users | ${{ steps.drift.outputs.checked }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Drift Count | ${{ steps.drift.outputs.drift_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| HTTP Code | ${{ steps.drift.outputs.http_code }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "```json" >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.drift.outputs.body }}' | jq . >> $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMMARY
+
+      - name: Slack Alert on Failure
+        if: failure()
+        run: |
+          curl -X POST "$SLACK_WEBHOOK" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "channel": "#ops",
+              "username": "Balance Drift Monitor",
+              "icon_emoji": ":rotating_light:",
+              "attachments": [{
+                "color": "danger",
+                "title": "🚨 Balance Drift Check FAILED",
+                "text": "Balance sync check failed or drift detected.",
+                "fields": [
+                  {"title": "Checked Users", "value": "'"${{ steps.drift.outputs.checked }}"'", "short": true},
+                  {"title": "Drift Count", "value": "'"${{ steps.drift.outputs.drift_count }}"'", "short": true},
+                  {"title": "HTTP Code", "value": "'"${{ steps.drift.outputs.http_code }}"'", "short": true}
+                ],
+                "footer": "Klarpakke Balance Drift Monitor",
+                "ts": '$(date +%s)'
+              }]
+            }'
