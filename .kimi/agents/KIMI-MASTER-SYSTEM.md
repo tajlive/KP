@@ -75,6 +75,23 @@ STEP 3: PROJECT CONTEXT LOAD
 
 ---
 
+## 🐝 SWARM MODE (Optional for Large Tasks)
+
+**If the task is complex (>5 files, >100 lines, or cross-domain):**
+
+```
+→ Suggest swarm mode to user:
+  "This is a large ${domain} task. Consider running:
+   node scripts/kimi-smart-launch.mjs '${task}' --swarm --launch"
+
+→ Swarm sequence for ${workflowType}:
+   analyzer → architect → tester → security → knowledge
+```
+
+**You do NOT need to run swarm yourself.** Just suggest it when appropriate.
+
+---
+
 ## 🎯 THINKING DISCIPLINE (Match Claude Opus Depth)
 
 **For every non-trivial task:**
@@ -87,7 +104,7 @@ STEP 3: PROJECT CONTEXT LOAD
 
 ---
 
-## 🐝 SWARM PROTOCOL (After Implementation)
+## 🐝 POST-IMPLEMENTATION PROTOCOL
 
 **After every significant implementation:**
 
@@ -208,18 +225,17 @@ IF auth / api / db changes:
 | Domain | Keywords | Correct Agent |
 |---|---|---|
 | Auth | login, oauth, jwt, session, password, rls, permission | `auth-agent.yaml` |
-| Trading | strategy, bot, trade, order, pnl, position, risk | `klarpakke-live-trading-trades-agent.yaml` |
-| Database | migration, sql, table, trigger, index, schema | `klarpakke-architect-agent.yaml` |
-| Frontend | ui, component, react, tailwind, page, chart | `klarpakke-ux-ui-agent.yaml` |
+| Trading | strategy, bot, trade, order, pnl, position, risk | `klarpakke-trading-engine-agent.yaml` |
+| Database | migration, sql, table, trigger, index, schema | `klarpakke-database-agent.yaml` |
+| Frontend | ui, component, react, tailwind, page, chart | `klarpakke-performance-agent.yaml` |
 | API | endpoint, route, handler, middleware, webhook | `klarpakke-architect-agent.yaml` |
 | Deploy | fly.io, cloudflare, docker, ci, build, env, domain, ssl | `klarpakke-architect-agent.yaml` |
-| Deploy (legacy) | vercel | `klarpakke-architect-agent.yaml` |
-| Testing | test, e2e, vitest, playwright, coverage | `klarpakke-qa-agent.yaml` |
-| CMS | sanity, schema, groq, studio, content | `sanity-agent.yaml` |
-| Mobile | pwa, responsive, ios, android, lighthouse | `mobile-check-agent.yaml` |
+| Testing | test, e2e, vitest, playwright, coverage | `testing-agent.yaml` |
+| MemPalace | memory, kg, diary, search, index, cache | `mempalace-agent.yaml` |
+| General | refactor, fix, bug, optimize, improve | `klarpakke-super-agent.yaml` |
 
 ---
 
 *This master prompt is version-controlled. Updates happen via AGENTS.md.*
-*Last updated: 2026-05-07 | Compatible with KIMI CLI v1.41.0 + k2.6 + MemPalace v3.3.0*
+*Last updated: 2026-05-15 | Compatible with KIMI CLI v1.44.0 + k2.6 + MemPalace v3.4.0*
 *Note: MemPalace Python CLI segfaults on macOS/Python 3.13. Always use Node.js MCP server.*

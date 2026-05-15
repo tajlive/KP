@@ -56,7 +56,7 @@ describe("getUserBalance", () => {
     expect(result!.isSynced).toBe(true);
   });
 
-  it("detects drift when sources differ", async () => {
+  it("detects drift when sources differ significantly", async () => {
     const supabase = createMockSupabase(
       {
         current_capital_nok: 95000,
@@ -65,7 +65,7 @@ describe("getUserBalance", () => {
         total_trades: 5,
         strategy_id: null,
       },
-      { paper_balance: 100000 }, // drift
+      { paper_balance: 100000 }, // drift: 5000 NOK = 5.26% > 0.1%
       { balance: 95000 },
       { current_balance: 95000 }
     );
@@ -73,6 +73,25 @@ describe("getUserBalance", () => {
     const result = await getUserBalance(supabase, "user-1");
     expect(result).not.toBeNull();
     expect(result!.isSynced).toBe(false);
+  });
+
+  it("allows small relative drift (<0.1%)", async () => {
+    const supabase = createMockSupabase(
+      {
+        current_capital_nok: 100000,
+        starting_capital_nok: 100000,
+        total_pnl: 0,
+        total_trades: 5,
+        strategy_id: null,
+      },
+      { paper_balance: 100050 }, // 0.05% drift < 0.1% threshold
+      { balance: 100000 },
+      { current_balance: 100000 }
+    );
+
+    const result = await getUserBalance(supabase, "user-1");
+    expect(result).not.toBeNull();
+    expect(result!.isSynced).toBe(true);
   });
 
   it("handles missing wallet and portfolio gracefully", async () => {
@@ -117,8 +136,8 @@ describe("getUserBalance", () => {
 });
 
 describe("getDisplayBalance", () => {
-  it("returns default capital when balance is null", () => {
-    expect(getDisplayBalance(null)).toBe(100000);
+  it("returns 0 when balance is null (no active session)", () => {
+    expect(getDisplayBalance(null)).toBe(0);
   });
 
   it("returns session capital when balance exists", () => {

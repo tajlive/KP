@@ -264,3 +264,4 @@ config/perplexity-local-mcp.json
 .wrangler/
 .dev.vars
 backups/
+.DS_Store

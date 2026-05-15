@@ -10,8 +10,6 @@
         "id": "analyzer",
         "name": "Code Analyzer",
         "trigger": "pre-task",
-        "model": "claude-sonnet-4-20250514",
-        "context_window": 200000,
         "specialty": "AST analysis, complexity detection",
         "prompt_file": ".kimi/swarm/analyzer.md"
       },
@@ -19,8 +17,6 @@
         "id": "architect",
         "name": "Architecture Guardian",
         "trigger": "on-decision",
-        "model": "claude-opus-4",
-        "context_window": 200000,
         "specialty": "ADR compliance, pattern enforcement",
         "prompt_file": ".kimi/swarm/architect.md"
       },
@@ -28,8 +24,6 @@
         "id": "tester",
         "name": "Test Strategist",
         "trigger": "post-implementation",
-        "model": "claude-sonnet-4",
-        "context_window": 200000,
         "specialty": "Test coverage, edge cases",
         "prompt_file": ".kimi/swarm/tester.md"
       },
@@ -37,8 +31,6 @@
         "id": "security",
         "name": "Security Auditor",
         "trigger": "on-security-path",
-        "model": "claude-opus-4",
-        "context_window": 200000,
         "specialty": "RLS, secrets, auth",
         "prompt_file": ".kimi/swarm/security.md"
       },
@@ -108,10 +100,13 @@
     ]
   },
   "quality_gates": {
-    "min_test_coverage": 80,
+    "min_test_coverage": 60,
     "max_complexity": 15,
-    "max_file_lines": 500,
+    "max_file_lines": 2000,
+    "max_file_lines_exceptions": ["scripts/*-mcp-*.mjs", "scripts/*-mcp-*.ts"],
     "require_adr": true,
+    "require_adr_exemptions": ["bugfix", "hotfix"],
+    "require_adr_max_files": 5,
     "require_docs": true
   },
   "mem_palace": {

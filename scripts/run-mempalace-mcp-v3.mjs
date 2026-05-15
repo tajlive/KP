@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 /**
- * 🏛️ MemPalace MCP Server v3.3.0 — SUPERKIMI Optimalisert
+ * 🏛️ MemPalace MCP Server v3.4.0 — SUPERKIMI Optimalisert
+ *
+ * Fikser i v3.4.0:
+ * - Atomic writes: index-cache og KG compaction skrives atomisk (tmp + rename)
+ * - KG backup: kg.json sikkerhetskopieres før compaction
+ * - File watcher: 2s debounce, kun Knowledge/Handoffs/Docs
+ * - Økt cacheSize 500 og maxResultChars 2500 for k2.6
+ * - Diary chunking: lange diary-linjer splittes i sub-docs
+ * - Graceful shutdown med timeout
  *
  * Fikser i v3.3.0 (SuperKIMI):
  * - Bigram index: frase-match-scoring for fler-ords-søk ("KIMI CLI" > "KIMI" + "CLI")
@@ -21,14 +29,14 @@
  * - Ekte semantic_search med KG-basert synonym-ekspansjon
  * - Auto-reindex basert på mtime
  *
- * Versjon: 3.3.0
- * Dato: 2026-05-04
- * For: KIMI CLI v1.40.0, k2.6, macOS ARM64
+ * Versjon: 3.4.0
+ * Dato: 2026-05-15
+ * For: KIMI CLI v1.44.0, k2.6, macOS ARM64
  */
 
 import {
   readFileSync, existsSync, readdirSync, statSync,
-  writeFileSync, mkdirSync, appendFileSync, watch, unlinkSync
+  writeFileSync, mkdirSync, appendFileSync, watch, unlinkSync, renameSync
 } from 'fs';
 import { resolve, join, dirname, relative, basename } from 'path';
 import { fileURLToPath } from 'url';
@@ -40,14 +48,16 @@ const root = resolve(__dirname, '..');
 
 // ─── KONFIGURASJON ───
 const CONFIG = {
-  version: '3.3.0',
+  version: '3.4.0',
   wing: 'klarpakke',
-  cacheSize: 300,           // økt fra 200
-  maxResultChars: 1500,
+  cacheSize: 500,           // økt fra 300
+  maxResultChars: 2500,     // økt fra 1500 — bedre kontekst per treff
   batchSize: 50,
   kgBatchSize: 100,
   indexCachePath: '.mempalace/index-cache-v3.json',
-  enableFileWatcher: false,  // Skrudd av for raskere MCP-oppstart
+  enableFileWatcher: true,   // PÅ med smart debounce
+  fileWatcherPaths: ['.knowledge', '.mempalace/handoffs', 'docs'], // kun disse paths
+  fileWatcherDebounceMs: 2000, // 2s debounce for å unngå reindex-storm
   indexPaths: [
     { path: '.knowledge', label: 'Knowledge', types: ['md', 'txt'] },
     { path: '.kimi', label: 'Diary', include: ['diary.jsonl'] },
@@ -212,8 +222,17 @@ function gracefulShutdown(signal) {
   if (isShuttingDown) return;
   isShuttingDown = true;
   log('info', `${signal} received, flushing KG + index cache...`);
+  let flushed = false;
+  const timeout = setTimeout(() => {
+    if (!flushed) {
+      log('warn', 'Shutdown timeout reached, forcing exit');
+      process.exit(1);
+    }
+  }, 5000);
   try { saveKG(kgData); } catch { /* ignore */ }
   try { saveIndexCache(); } catch { /* ignore */ }
+  flushed = true;
+  clearTimeout(timeout);
   process.exit(0);
 }
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
@@ -347,7 +366,10 @@ function loadKG() {
 function saveKG(data) {
   const dir = resolve(root, '.mempalace');
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(resolve(dir, 'kg.json'), JSON.stringify(data, null, 2));
+  const kgPath = resolve(dir, 'kg.json');
+  const tmpPath = kgPath + '.tmp';
+  writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+  renameSync(tmpPath, kgPath);
 }
 
 function appendKGFact(subject, predicate, object, validFrom) {
@@ -384,6 +406,13 @@ function loadKGWithAppend() {
 
 function compactKG() {
   const merged = loadKGWithAppend();
+  const kgPath = resolve(root, '.mempalace/kg.json');
+  const bakPath = kgPath + '.bak';
+  try {
+    if (existsSync(kgPath)) {
+      writeFileSync(bakPath, readFileSync(kgPath, 'utf8'));
+    }
+  } catch { /* ignore */ }
   saveKG(merged);
   const appendPath = resolve(root, '.mempalace/kg-append.jsonl');
   try {
@@ -411,6 +440,7 @@ function extractEntities(text) {
 // ─── INDEX CACHE (Persistens) ─── NY
 function saveIndexCache() {
   const cachePath = resolve(root, CONFIG.indexCachePath) + '.gz';
+  const tmpPath = cachePath + '.tmp';
   const dir = dirname(cachePath);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
@@ -442,7 +472,8 @@ function saveIndexCache() {
   };
   const json = JSON.stringify(cacheData);
   const compressed = gzipSync(json, { level: 6 });
-  writeFileSync(cachePath, compressed);
+  writeFileSync(tmpPath, compressed);
+  renameSync(tmpPath, cachePath);
   log('info', `Index cache saved: ${cachePath} (${(json.length / 1024).toFixed(1)}KB → ${(compressed.length / 1024).toFixed(1)}KB gzipped)`);
 }
 
@@ -535,19 +566,16 @@ function addToInvertedIndex(doc) {
 // ─── FILE WATCHER ─── NY
 function setupFileWatchers() {
   if (!CONFIG.enableFileWatcher) return;
-  for (const target of CONFIG.indexPaths) {
-    const basePath = resolve(root, target.path);
-    if (!existsSync(basePath)) continue;
+  const watchPaths = (CONFIG.fileWatcherPaths || []).map(p => resolve(root, p)).filter(p => existsSync(p));
+  for (const basePath of watchPaths) {
     try {
       const w = watch(basePath, { recursive: true }, (eventType, filename) => {
         if (!filename) return;
-        const fullPath = join(basePath, filename);
-        log('info', `File ${eventType}: ${filename}, triggering incremental reindex`);
-        // Debounced reindex
+        log('info', `File ${eventType}: ${filename}, scheduling incremental reindex`);
         if (w._reindexTimer) clearTimeout(w._reindexTimer);
         w._reindexTimer = setTimeout(() => {
           incrementalReindex();
-        }, 500);
+        }, CONFIG.fileWatcherDebounceMs || 2000);
       });
       watchers.push(w);
     } catch (e) {
@@ -1146,6 +1174,16 @@ function readDiary(agent, lastN = 10) {
   } catch { return []; }
 }
 
+function chunkDiaryLine(line, baseId, maxLen = 800) {
+  // Split long diary lines into multiple sub-docs for better snippet precision
+  if (line.length <= maxLen) return [line];
+  const chunks = [];
+  for (let i = 0; i < line.length; i += maxLen) {
+    chunks.push(line.slice(i, i + maxLen));
+  }
+  return chunks;
+}
+
 function writeDiary(agent, entry) {
   const diaryPath = resolve(root, '.kimi/diary.jsonl');
   const dir = dirname(diaryPath);
@@ -1172,21 +1210,26 @@ function writeDiary(agent, entry) {
   }
 
   cache.clear();
-  const diaryDoc = {
-    id: `.kimi/diary.jsonl#${Date.now()}`,
-    path: '.kimi/diary.jsonl',
-    label: 'Diary',
-    content: entry.task || '',
-    raw: record,
-    type: 'diary',
-    isRecent: true,
-    isCritical: false,
-    date: new Date().toISOString(),
-    metadata: { type: entry.type, task: entry.task, agent, status: entry.status }
-  };
-  indexedDocs.push(diaryDoc);
-  docById.set(diaryDoc.id, diaryDoc);
-  addToInvertedIndex(diaryDoc);
+  const baseId = Date.now();
+  const content = entry.task || '';
+  const chunks = chunkDiaryLine(content, baseId, 800);
+  chunks.forEach((chunk, idx) => {
+    const diaryDoc = {
+      id: `.kimi/diary.jsonl#${baseId}-${idx}`,
+      path: '.kimi/diary.jsonl',
+      label: 'Diary',
+      content: chunk,
+      raw: record,
+      type: 'diary',
+      isRecent: true,
+      isCritical: false,
+      date: new Date().toISOString(),
+      metadata: { type: entry.type, task: entry.task, agent, status: entry.status }
+    };
+    indexedDocs.push(diaryDoc);
+    docById.set(diaryDoc.id, diaryDoc);
+    addToInvertedIndex(diaryDoc);
+  });
 
   return { success: true };
 }
@@ -1419,7 +1462,9 @@ class MempalaceMCP {
           role: 'user',
           content: {
             type: 'text',
-            text: `🧠 SUPERKIMI MODUS AKTIVERT\n\nDu kjører med:\n- 262k kontekst (k2.6)\n- 750 steps per turn\n- Ralph Loop (self-improvement, max 2 iterasjoner)\n- MemPalace v3.3.0 (TF-IDF + Bigram + Cross-lingual)\n- 78 KG entities, 671 docs\n\nTenke-disiplin:\n1. Les før du skriver — Grep > ReadFile\n2. Tenk steg-for-steg — forklar plan før handling\n3. Selv-verifiser — "Bryter dette regler?"\n4. Post-change verify — kjør run-all.mjs ved >3 filer\n5. Kontekst-bevissthet — 262k tokens, vær selektiv\n\nAutomatiser alt som kan automatiseres.`
+            text: `🧠 SUPERKIMI MODUS AKTIVERT\n\nDu kjører med:\n- 262k kontekst (k2.6)\n- 750 steps per turn\n- Ralph Loop (self-improvement, max 3 iterasjoner)
+- MemPalace v3.4.0 (TF-IDF + Bigram + Cross-lingual + Atomic writes)
+- ${Object.keys(kgData).length} KG entities, ${indexedDocs.length} docs\n\nTenke-disiplin:\n1. Les før du skriver — Grep > ReadFile\n2. Tenk steg-for-steg — forklar plan før handling\n3. Selv-verifiser — "Bryter dette regler?"\n4. Post-change verify — kjør run-all.mjs ved >3 filer\n5. Kontekst-bevissthet — 262k tokens, vær selektiv\n\nAutomatiser alt som kan automatiseres.`
           }
         }];
       }

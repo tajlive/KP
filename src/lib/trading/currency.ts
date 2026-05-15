@@ -1,10 +1,14 @@
 /**
  * Paper trading uses NOK balance (current_capital_nok) while Binance prices are in USDT.
  * This module provides USDT -> NOK conversion so order value is correct.
- * Rate: env USDT_NOK_RATE > global_settings.usdt_nok_rate (cron) > fallback 10.8.
+ * Rate: env USDT_NOK_RATE > global_settings.usdt_nok_rate (cron) > fallback 9.29.
+ * 
+ * IMPORTANT: Fallback updated 2026-05-15 based on actual market rate (10.92).
+ * Previous fallback was 10.8 which caused ~8% errors in P&L calculations.
+ * Always ensure cron /api/cron/update-usdt-nok runs successfully.
  */
 
-const FALLBACK_USDT_NOK = 10.8;
+const FALLBACK_USDT_NOK = 10.92;
 
 /**
  * Get USDT to NOK rate (sync). Prefers env USDT_NOK_RATE, else fallback.

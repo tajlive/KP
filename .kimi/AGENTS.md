@@ -204,13 +204,14 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-05-06 | v2.8-medium/full for KIMI CLI v1.42.0 + k2.6 | Auto-Maintenance & Quality Gates
+> Oppdatert: 2026-05-15 | v2.9 for KIMI CLI v1.44.0 + k2.6 | MemPalace v3.4.0 + Smart Launch v2.1 + Self-Improve v1.5
 
-### KIMI CLI v1.42.0 + k2.6 endringer (påvirker oss)
-- **`max_steps_per_turn` økt til 1000** — KIMI kan kjøre lengre oppgaver uten avbrudd (v1.40.0: 500→1000, v1.41.0: zip-plugin + clipboard SSH, v1.42.0: ytterligere forbedringer)
-- **`reserved_context_size` = 40000** — optimalisert margin (ned fra 60000, deretter 45000)
-- **`compaction_trigger_ratio` = 0.94** — enda mindre frekvent komprimering (opp fra 0.92)
-- **`tool_call_timeout_ms` = 120000** — tilstrekkelig for MemPalace FTS-indeksering
+### KIMI CLI v1.44.0 + k2.6 endringer (påvirker oss)
+- **`max_steps_per_turn` økt til 1000** — KIMI kan kjøre lengre oppgaver uten avbrudd
+- **`max_ralph_iterations` = 3** — økt fra 2 for bedre self-improvement loop
+- **`reserved_context_size` = 35000** — frigir 5k tokens til MemPalace + kode (ned fra 40000)
+- **`compaction_trigger_ratio` = 0.92** — mer kontekst bevart i lange økter (ned fra 0.94)
+- **`tool_call_timeout_ms` = 180000** — 3 min for store MemPalace index-operasjoner (opp fra 120s)
 - **`merge_all_available_skills` = true** — auto-aktiverer prosjekt-skills
 - **MCP startup er asynkron** med progress indicators — raskere shell-oppstart
 - **`--quiet` flagg** bekreftet for stdin-piping
@@ -242,14 +243,20 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
    - `search` — Advanced search in trades/users via Supabase FTS
    - `cost` — Fly.io/Supabase cost monitoring (estimates + usage)
 
-### MemPalace v3.3.0 — KIMI CLI v1.42.0-kompatibel
+### MemPalace v3.4.0 — KIMI CLI v1.44.0-kompatibel
+- **Atomic writes**: Index-cache og KG compaction skrives atomisk (tmp + rename)
+- **KG backup**: `kg.json.bak` opprettes før compaction
+- **Økt cache**: 500 LRU entries (fra 300)
+- **Økt snippets**: 2500 chars per resultat (fra 1500)
+- **File watcher**: PÅ med 2s debounce, kun Knowledge/Handoffs/Docs
+- **Diary chunking**: Lange linjer (>800 chars) splittes i sub-docs
+- **Graceful shutdown**: 5s timeout før force-exit
 - **Ping/heartbeat-støtte**: Svarer på MCP `ping`-forespørsler
-- **Graceful shutdown**: Fanger SIGTERM/SIGINT, flusher KG til disk
 - **Robust transport**: Forbedret JSON-parse feilhåndtering
 - **Zero-dep**: Ingen eksterne avhengigheter — <1s oppstart
 - **Inverted index**: O(1) token-lookup (tidligere O(n) lineær scan)
 - **MCP Resources**: `mempalace://document/{path}` og `mempalace://kg/{entity}`
-- **MCP Prompts**: `pre_task`, `post_task`, `agent_auth`, `agent_architect`
+- **MCP Prompts**: `pre_task`, `post_task`, `agent_auth`, `agent_architect`, `superkimi_boost`
 - **Incremental KG**: Append-only writes med auto-compact ved 50KB
 - **Ekte semantic search**: KG-basert synonym-ekspansjon
 
@@ -332,9 +339,9 @@ kimi
 
 ---
 
-## MemPalace — Prosjektminne v3.3.0 SUPERKIMI (KIMI CLI v1.41.0 + k2.6)
+## MemPalace — Prosjektminne v3.4.0 SUPERKIMI (KIMI CLI v1.44.0 + k2.6)
 
-> Oppdatert: 2026-05-14 | MemPalace MCP v3.3.0 | TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 202+ entities, 200+ facts | Alle agenter integrert | KIMI CLI v1.42.0-optimalisert
+> Oppdatert: 2026-05-15 | MemPalace MCP v3.4.0 | Atomic writes + KG backup + TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 204+ entities, 692+ facts | Alle agenter integrert | KIMI CLI v1.44.0-optimalisert
 
 ### Rask verifisering
 ```bash
@@ -350,26 +357,32 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 # eller: kimi mempalace  (hvis alias konfigurert)
 ```
 
-### MemPalace MCP v3.2.0 — Endringer fra v3.1.1
-- **KIMI CLI v1.42.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
+### MemPalace MCP v3.4.0 — Endringer fra v3.3.0
+- **Atomic writes**: `saveIndexCache()` skriver til `.tmp` før `renameSync` — forhindrer korrupt cache
+- **KG backup**: `compactKG()` kopierer `kg.json` til `kg.json.bak` før overskriving
+- **Økt cache**: LRU 500 entries (fra 300) — bedre hit-rate i lange økter
+- **Økt snippets**: 2500 chars per resultat (fra 1500) — utnytter 262k kontekst bedre
+- **File watcher**: PÅ med 2s debounce (fra 500ms), begrenset til 3 paths
+- **Diary chunking**: `writeDiary()` splitter linjer >800 chars i flere sub-docs
+- **Graceful shutdown timeout**: 5s timeout på SIGTERM/SIGINT før force-exit
+- **KIMI CLI v1.44.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
 - **Robust transport**: Forbedret JSON-parse feilhåndtering — logger ikke kræsj
-- **Graceful shutdown**: SIGTERM/SIGINT fanger og flusher KG til disk
 - **FIX: MCP protocol compliance** — Tool results wrappes i `content: [{type: "text", text: ...}]` array
 - **FIX: Diary newline-håndtering** — Sikrer korrekt JSONL-format ved append
-- **OPT: Inverted index** — O(1) token lookup via `Map<token, Set<docId>>`. 662 docs indeksert på ~200ms
+- **OPT: Inverted index** — O(1) token lookup via `Map<token, Set<docId>>`. ~490 docs indeksert på ~200ms
 - **OPT: Incremental KG** — Append-only `kg-append.jsonl` med auto-compact ved 50KB threshold
 - **OPT: Auto-reindex** — Sjekker mtime, reindexerer kun endrede filer
 - **OPT: KG deduplisering** — `kgAdd()` og `kgBatch()` sjekker for duplikater før lagring
 - **OPT: Semantic search** — KG-basert synonym-ekspansjon (auth→oauth/session/login/rls)
 - **OPT: Cache invalidation** — `writeDiary()` trigger `cache.clear()` for fresh indeks
 - **NEW: MCP Resources** — `mempalace://document/{path}` og `mempalace://kg/{entity}`
-- **NEW: MCP Prompts** — `pre_task`, `post_task`, `agent_auth`, `agent_architect`
+- **NEW: MCP Prompts** — `pre_task`, `post_task`, `agent_auth`, `agent_architect`, `superkimi_boost`
 - **NEW: MCP Logging** — `logging` capability, stderr-basert
 - **Zero-dependency**: Ingen ChromaDB, ingen M1-timeout — <1s oppstart
 - **In-memory FTS**: Bygger inverted indeks ved startup (async, ikke-blokkerende)
-- **LRU-cache**: 200 entries (økt fra 100)
+- **LRU-cache**: 500 entries (økt fra 300)
 - **12 verktøy**: `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
-- **k2.6-optimalisert**: Batch-operasjoner, 1500 chars snippets, 262k kontekst-utnyttelse
+- **k2.6-optimalisert**: Batch-operasjoner, 2500 chars snippets, 262k kontekst-utnyttelse
 
 ### Agent: `mempalace`
 YAML: `.kimi/agents/mempalace-agent.yaml`  
@@ -380,6 +393,36 @@ Spesialisert på:
 - KG-vedlikehold og batch-operasjoner
 - Memory hygiene (deduplisering, TTL)
 - Cross-domain linking (auth ↔ trading ↔ deploy)
+
+### Agent-roster (8 aktive, 8 deprecated)
+
+**Aktive agenter** (under `.kimi/agents/`):
+| Alias | YAML | MD | Domene |
+|-------|------|-----|--------|
+| `kimi auth` | `auth-agent.yaml` | `klarpakke-auth-agent.md` | 🔐 Auth & Security |
+| `kimi trading` | `klarpakke-trading-engine-agent.yaml` | `klarpakke-trading-engine-agent.md` | 📈 Trading Engine |
+| `kimi database` | `klarpakke-database-agent.yaml` | `klarpakke-database-agent.md` | 🗄️ Database & Schema |
+| `kimi frontend` | `klarpakke-performance-agent.yaml` | `klarpakke-performance-agent.md` | 🎨 Frontend & UI |
+| `kimi architect` | `klarpakke-architect-agent.yaml` | `klarpakke-architect-agent.md` | 🚀 Deploy & Arkitektur |
+| `kimi testing` | `testing-agent.yaml` | `testing-agent.md` | 🧪 Testing & QA |
+| `kimi mempalace` | `mempalace-agent.yaml` | `mempalace-agent.md` | 🏛️ Memory & KG |
+| `kimi super` | `klarpakke-super-agent.yaml` | `KIMI-MASTER-SYSTEM.md` | 🤖 General/Catch-all |
+
+**Deprecated** (flyttet til `.kimi/agents/deprecated/`): auto-optimizer, mobile-check, sanity, security, super-auditor, super-editor, verify, performance-duplikat.
+
+### Swarm Workflow (opt-in)
+
+Konfigurasjon: `.kimi/swarm-config.json` v2.2  
+Smart Launch: `node scripts/kimi-smart-launch.mjs <task> --swarm [--launch]`
+
+**Workflows:**
+| Type | Sekvens | Når |
+|------|---------|-----|
+| feature | analyzer → architect → tester → security → knowledge | Nye funksjoner |
+| bugfix | analyzer → tester → security → knowledge | Feilretting |
+| refactor | analyzer → architect → tester → knowledge | Omstrukturering |
+
+**KIMI-kompatible modeller:** Swarm-agenter arver `default_model` fra `~/.kimi/config.toml` (ikke Claude-spesifikke).
 
 ### Verify Agent — Post-Change Verification
 

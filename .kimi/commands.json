@@ -1,22 +1,30 @@
 {
   "_meta": {
-    "version": "2.4",
+    "version": "2.5",
     "project": "Klarpakke",
-    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-05-14",
-    "updated_for": "Fly.io + Cloudflare migration (Vercel as legacy)"
+    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-05-15",
+    "updated_for": "KIMI CLI v1.44.0 + MemPalace v3.4.0 + Agent roster 8"
   },
   "commands": {
     "health": {
       "description": "Sjekk produksjonshelse",
       "command": "npm run health:prod:gate"
     },
-    "verify": {
-      "description": "Aktiver post-change verify agent",
-      "command": "kimi --agent-file .kimi/agents/verify-agent.yaml"
+    "trading": {
+      "description": "Aktiver trading engine agent",
+      "command": "kimi --agent-file .kimi/agents/klarpakke-trading-engine-agent.yaml"
     },
-    "editor": {
-      "description": "Aktiver super-editor agent (CMS + kode-redigering)",
-      "command": "kimi --agent-file .kimi/agents/super-editor-agent.yaml"
+    "database": {
+      "description": "Aktiver database & schema agent",
+      "command": "kimi --agent-file .kimi/agents/klarpakke-database-agent.yaml"
+    },
+    "frontend": {
+      "description": "Aktiver frontend & performance agent",
+      "command": "kimi --agent-file .kimi/agents/klarpakke-performance-agent.yaml"
+    },
+    "testing": {
+      "description": "Aktiver testing & QA agent",
+      "command": "kimi --agent-file .kimi/agents/testing-agent.yaml"
     },
     "status": {
       "description": "Git status + prosjektstatus",
@@ -118,10 +126,6 @@
       "description": "Aktiver auth-spesialisert KIMI-agent med full MCP",
       "command": "kimi --agent-file .kimi/agents/auth-agent.yaml"
     },
-    "mobile": {
-      "description": "Aktiver mobil-sjekk agent for Klarpakke",
-      "command": "kimi --agent-file .kimi/agents/mobile-check-agent.yaml"
-    },
     "architect": {
       "description": "Aktiver lead architect agent for Klarpakke",
       "command": "kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml"
@@ -129,10 +133,6 @@
     "super": {
       "description": "Aktiver super-agent med full smart-launch + pre-session kontekst + post-session analyse",
       "command": "kimi --agent-file .kimi/agents/klarpakke-super-agent.yaml"
-    },
-    "sanity": {
-      "description": "Aktiver Sanity-spesialisert agent for Klarpakke",
-      "command": "kimi --agent-file .kimi/agents/sanity-agent.yaml"
     },
     "sanity:token": {
       "description": "Hjelp til å generere Sanity API-tokens",

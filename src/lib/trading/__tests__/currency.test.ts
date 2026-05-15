@@ -5,7 +5,7 @@ import {
   usdtToNok,
 } from "../currency";
 
-const FALLBACK = 10.8;
+const FALLBACK = 10.92;
 
 describe("Currency Module", () => {
   let originalEnv: string | undefined;
@@ -120,6 +120,31 @@ describe("Currency Module", () => {
 
     it("handles negative amount", () => {
       expect(usdtToNok(-50)).toBe(-50 * FALLBACK);
+    });
+  });
+
+  describe("Fallback rate health", () => {
+    it("fallback is within reasonable bounds (8–15 NOK/USD)", () => {
+      // This test catches stale fallback values
+      expect(FALLBACK).toBeGreaterThanOrEqual(8);
+      expect(FALLBACK).toBeLessThanOrEqual(15);
+    });
+
+    it("DB rate is preferred over fallback", async () => {
+      const mockSupabase = {
+        from: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({
+                data: { usdt_nok_rate: 11.5 },
+              }),
+            }),
+          }),
+        }),
+      };
+      const result = await getUsdtToNokRateAsync(mockSupabase as unknown as Parameters<typeof getUsdtToNokRateAsync>[0]);
+      expect(result).toBe(11.5);
+      expect(result).not.toBe(FALLBACK);
     });
   });
 });

@@ -93,7 +93,12 @@ export async function getUserBalance(
 
   const isSynced =
     values.length === 0 ||
-    values.every((v) => Math.abs(v - sessionCapital) < 1);
+    values.every((v) => {
+      const diff = Math.abs(v - sessionCapital);
+      // Relative threshold: 0.1% of session capital, with minimum 1 NOK
+      const threshold = Math.max(sessionCapital * 0.001, 1);
+      return diff < threshold;
+    });
 
   return {
     sessionCapitalNok: sessionCapital,
@@ -113,6 +118,6 @@ export async function getUserBalance(
  * Prefer this over raw table queries in pages.
  */
 export function getDisplayBalance(balance: UserBalance | null): number {
-  if (!balance) return 100000; // default paper capital
+  if (!balance) return 0; // No active session — show 0 instead of misleading default
   return balance.sessionCapitalNok;
 }

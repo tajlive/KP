@@ -339,45 +339,50 @@ async function executeTradeWithLock(
     const nowIso = new Date().toISOString();
     const idempotencyKey = `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
 
+    const tradeInsert: Database["public"]["Tables"]["trades"]["Insert"] & {
+      usdt_nok_rate?: number;
+    } = {
+      session_id: session.id,
+      user_id: request.userId,
+      trading_pair: request.symbol,
+      side: request.side,
+      quantity: execResult.executedQuantity,
+      price:
+        request.mode === "paper"
+          ? usdtToNok(execResult.executedPrice, rate ?? undefined)
+          : execResult.executedPrice,
+      total_value:
+        request.mode === "paper"
+          ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
+          : execResult.executedQuantity * execResult.executedPrice,
+      fee:
+        request.mode === "live"
+          ? execResult.fee
+          : usdtToNok(execResult.fee || 0, rate ?? undefined),
+      status: "filled",
+      mode: request.mode,
+      order_type: request.orderType,
+      realized_pnl: realizedPnl,
+      binance_order_id:
+        request.mode === "live" ? execResult.orderId ?? null : null,
+      idempotency_key: idempotencyKey,
+      usdt_nok_rate: rate,
+      executed_at: execResult.timestamp.toISOString(),
+      created_at: nowIso,
+      strategy_signal: request.signalContext
+        ? {
+            ...request.signalContext.indicators,
+            action: request.signalContext.action,
+            confidence: request.signalContext.confidence,
+            regime: request.signalContext.regime,
+            reason: request.signalContext.reason,
+          }
+        : null,
+    };
+
     const { data: trade, error: tradeError } = await supabase
       .from("trades")
-      .insert({
-        session_id: session.id,
-        user_id: request.userId,
-        trading_pair: request.symbol,
-        side: request.side,
-        quantity: execResult.executedQuantity,
-        price:
-          request.mode === "paper"
-            ? usdtToNok(execResult.executedPrice, rate ?? undefined)
-            : execResult.executedPrice,
-        total_value:
-          request.mode === "paper"
-            ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
-            : execResult.executedQuantity * execResult.executedPrice,
-        fee:
-          request.mode === "live"
-            ? execResult.fee
-            : usdtToNok(execResult.fee || 0, rate ?? undefined),
-        status: "filled",
-        mode: request.mode,
-        order_type: request.orderType,
-        realized_pnl: realizedPnl,
-        binance_order_id:
-          request.mode === "live" ? execResult.orderId ?? null : null,
-        idempotency_key: idempotencyKey,
-        executed_at: execResult.timestamp.toISOString(),
-        created_at: nowIso,
-        strategy_signal: request.signalContext
-          ? {
-              ...request.signalContext.indicators,
-              action: request.signalContext.action,
-              confidence: request.signalContext.confidence,
-              regime: request.signalContext.regime,
-              reason: request.signalContext.reason,
-            }
-          : null,
-      })
+      .insert(tradeInsert as any)
       .select()
       .single();
 

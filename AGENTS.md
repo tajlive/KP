@@ -593,46 +593,85 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-## ⚡ KIMI CLI v1.42.0 Optimaliseringer (2026-05-12)
+## ⚡ KIMI CLI v1.44.0 Optimaliseringer (2026-05-15)
 
 ### Kontekst-tuning
 ```toml
 max_steps_per_turn = 1000             # v1.40.0: 500→1000
 max_retries_per_step = 5              # økt fra 3 → mer robusthet
-max_ralph_iterations = 2              # NY — aktiverer self-improvement loop
-reserved_context_size = 40000         # ned fra 45000 → +5k arbeidsminne
-compaction_trigger_ratio = 0.94       # opp fra 0.92 → enda mindre komprimering
+max_ralph_iterations = 3              # økt fra 2 → bedre self-improvement
+reserved_context_size = 35000         # ned fra 40000 → +10k arbeidsminne
+compaction_trigger_ratio = 0.92       # ned fra 0.94 → mer kontekst bevart
 agent_task_timeout_s = 1800           # 30 min for lange oppgaver
-tool_call_timeout_ms = 120000         # 2 min — raskere fail
+tool_call_timeout_ms = 180000         # økt fra 120s → 3 min for store index-operasjoner
 merge_all_available_skills = true     # auto-aktiver skills
 ```
 
 ### Ralph Loop (Self-Improvement)
-> `max_ralph_iterations = 2` aktiverer KIMI CLI sin innebygde forbedrings-loop.
+> `max_ralph_iterations = 3` aktiverer KIMI CLI sin innebygde forbedrings-loop.
 > Modellen itererer på samme oppgave og forbedrer svaret til den outputter `<choice>STOP</choice>`
 > eller når iterasjonsgrensen nås. Tilsvarende Claude Code's `/ultrareview`.
 >
-> **Merk:** Øker latency med ~20-40%, men forbedrer kvaliteten på komplekse oppgaver betydelig.
+> **Merk:** Øker latency med ~30-50%, men forbedrer kvaliteten på komplekse oppgaver betydelig.
 
-### MemPalace v3.3.0 — SUPERKIMI Optimalisert
+### MemPalace v3.4.0 — SUPERKIMI Optimalisert
+- **Atomic writes:** Index-cache og KG compaction skrives atomisk (tmp + rename)
+- **KG backup:** `kg.json.bak` opprettes før compaction — gjenoppretting ved feil
+- **Økt cache:** 500 LRU entries (fra 300) for bedre hit-rate i lange økter
+- **Økt snippets:** 2500 chars per resultat (fra 1500) — bedre kontekst for k2.6
+- **File watcher:** PÅ med 2s debounce, kun for `.knowledge/`, `.mempalace/handoffs/`, `docs/`
+- **Diary chunking:** Lange diary-linjer (>800 chars) splittes i sub-docs for bedre presisjon
+- **Graceful shutdown:** 5s timeout — sikrer at cache og KG blir skrevet
 - **TF-IDF scoring:** Sjeldne tokens vektes høyere enn vanlige
 - **Bigram index:** "KIMI CLI" scorer høyere enn "KIMI" + "CLI" separat
 - **Cross-lingual:** 115 norsk↔engelsk mappings (søk på "optimalisering" finner "optimize")
 - **Stemming:** enkle norske/engelske regler (optimalisering → optimal)
-- **Index persistens:** <100ms oppstart fra `.mempalace/index-cache-v3.json`
-- **File watcher:** fs.watch for inkrementell reindex ved runtime-endringer
+- **Index persistens:** <100ms oppstart fra `.mempalace/index-cache-v3.json.gz`
 - **Forbedret auto_tag:** semantiske tags fra KG + expansions, ikke bare filnavn
 - **SUPERKIMI prompt:** `superkimi_boost` — aktiverer maksimal kontekst + tenke-disiplin
+
+### Smart Launch v2.1
+- **Git-basert boost:** Endrede filer booster riktig domain automatisk
+- **Large-diff detection:** >10 filer eller >200 linjer → auto-velger super-agent
+- **MCP-profil switch:** `--mcp=minimal|medium|full` flagg for manuell override
+
+### Self-Improve v1.5
+- **Utvidet vindu:** 30 entries (fra 10) + tidsbasert filtrering (48t)
+- **Auto-KG-sync:** NO-GO oppdages → automatisk `kg_add` med pattern-tag
+- **Weekly health dashboard:** `.kimi/session-summaries/weekly-health.md`
 
 ### MemPalace v3.1.1 — Aktiv bruk
 - **FØR oppgave:** `search()` + `recent_context(hours=48)` + `kg_query(entity=..., depth=2)`
 - **ETTER oppgave:** `kg_add()` / `kg_batch()` + `write_diary()` + `auto_tag()`
-- **Exit-hook:** `~/.kimi/hooks/mempalace-exit-save.sh` lagrer samtale ved avslutning
+- **Exit-hook:** `~/.kimi/hooks/mempalace-smart-exit.sh` — flush + self-improve + session-summary
 - **MCP-profiler:** `kimi-mcp minimal|medium|full` — bytt etter behov
+
+### Agent-roster (8 aktive)
+| Alias | Agent | Domene |
+|-------|-------|--------|
+| `kimi auth` | auth-agent.yaml | 🔐 Auth & Security |
+| `kimi trading` | klarpakke-trading-engine-agent.yaml | 📈 Trading Engine |
+| `kimi database` | klarpakke-database-agent.yaml | 🗄️ Database & Schema |
+| `kimi frontend` | klarpakke-performance-agent.yaml | 🎨 Frontend & UI |
+| `kimi architect` | klarpakke-architect-agent.yaml | 🚀 Deploy & Arkitektur |
+| `kimi testing` | testing-agent.yaml | 🧪 Testing & QA |
+| `kimi mempalace` | mempalace-agent.yaml | 🏛️ Memory & KG |
+| `kimi super` | klarpakke-super-agent.yaml | 🤖 General/Catch-all |
+
+**Deprecated:** 8 agenter flyttet til `.kimi/agents/deprecated/` (auto-optimizer, mobile-check, sanity, security, super-auditor, super-editor, verify, performance-duplikat).
+
+### Swarm Workflow (opt-in via `--swarm`)
+```bash
+node scripts/kimi-smart-launch.mjs "implement feature X" --swarm       # Generer brief
+node scripts/kimi-smart-launch.mjs "implement feature X" --swarm --launch  # Kjør med super-agent
+```
+- **feature:** analyzer → architect → tester → security → knowledge
+- **bugfix:** analyzer → tester → security → knowledge
+- **refactor:** analyzer → architect → tester → knowledge
 
 ### Rask diagnose
 ```bash
-kimi --version                    # skal vise 1.42.0
+kimi --version                    # skal vise 1.44.0
 kimi mcp list                     # sjekk at mempalace er grønn
 npm run mempalace:status          # eller: node scripts/mempalace-search.mjs "test"
 ```

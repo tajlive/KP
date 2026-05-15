@@ -445,28 +445,28 @@ function initializeStats(): PaperTradeStats {
 // STATISTICS CALCULATION
 // ============================================================================
 
-export function calculatePaperTradeStats(trades: PaperTrade[]): PaperTradeStats {
+export function calculatePaperTradeStats(trades: PaperTrade[], startingBalance = 100000): PaperTradeStats {
   const closedTrades = trades.filter(t => t.status === 'closed');
-  
+
   if (closedTrades.length === 0) {
     return initializeStats();
   }
 
   const winningTrades = closedTrades.filter(t => t.pnl > 0);
   const losingTrades = closedTrades.filter(t => t.pnl <= 0);
-  
+
   const totalPnl = closedTrades.reduce((sum, t) => sum + t.pnl, 0);
   const totalFees = closedTrades.reduce((sum, t) => sum + t.entryFee + (t.exitFee || 0), 0);
   const totalSlippage = closedTrades.reduce((sum, t) => sum + t.slippageCost, 0);
-  
+
   const grossProfit = winningTrades.reduce((sum, t) => sum + t.pnl, 0);
   const grossLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0));
-  
+
   // Calculate max drawdown
   let peak = 0;
   let maxDrawdown = 0;
   let runningPnl = 0;
-  
+
   for (const trade of closedTrades) {
     runningPnl += trade.pnl;
     peak = Math.max(peak, runningPnl);
@@ -474,18 +474,22 @@ export function calculatePaperTradeStats(trades: PaperTrade[]): PaperTradeStats 
     maxDrawdown = Math.max(maxDrawdown, drawdown);
   }
 
+  // Normalize startingBalance to a positive number to avoid division by zero
+  const effectiveStartingBalance = startingBalance > 0 ? startingBalance : 100000;
+  const rawWinRate = closedTrades.length > 0 ? winningTrades.length / closedTrades.length : 0;
+
   return {
     totalTrades: closedTrades.length,
     winningTrades: winningTrades.length,
     losingTrades: losingTrades.length,
-    winRate: closedTrades.length > 0 ? winningTrades.length / closedTrades.length : 0,
+    winRate: rawWinRate * 100, // Normalized to 0-100 scale (consistent with backtestEngine)
     totalPnl,
-    totalPnlPercent: 0, // Calculate based on starting balance
+    totalPnlPercent: (totalPnl / effectiveStartingBalance) * 100,
     avgWin: winningTrades.length > 0 ? grossProfit / winningTrades.length : 0,
     avgLoss: losingTrades.length > 0 ? grossLoss / losingTrades.length : 0,
     profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
     maxDrawdown,
-    maxDrawdownPercent: 0, // Calculate based on starting balance
+    maxDrawdownPercent: (maxDrawdown / effectiveStartingBalance) * 100,
     totalFees,
     totalSlippage,
   };

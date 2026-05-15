@@ -271,16 +271,6 @@
       "predicate": "tests",
       "object": "679-passed",
       "validFrom": "2026-04-22T01:36:06.378Z"
-    },
-    {
-      "predicate": "pipeline",
-      "object": "github-actions-fly.io",
-      "validFrom": "2026-05-12"
-    },
-    {
-      "predicate": "docker",
-      "object": "node-24-slim-standalone",
-      "validFrom": "2026-05-12"
     }
   ],
   "supabase-db": [
@@ -806,10 +796,6 @@
       "predicate": "cache_health",
       "object": "LRU-operational-0-current-session",
       "validFrom": "2026-04-29T13:00:00.000Z"
-    },
-    {
-      "predicate": "cost_vs_readfile",
-      "object": "10x-cheaper"
     }
   ],
   "mobile-ui": [
@@ -1398,24 +1384,9 @@
       "validFrom": "2026-05-14"
     },
     {
-      "predicate": "hosted_on",
-      "object": "fly.io",
-      "validFrom": "2026-05-12"
-    },
-    {
-      "predicate": "cdn",
-      "object": "cloudflare",
-      "validFrom": "2026-05-12"
-    },
-    {
-      "predicate": "legacy_hosting",
-      "object": "vercel",
-      "validFrom": "2026-05-12"
-    },
-    {
-      "predicate": "dns",
-      "object": "cloudflare-klarpakke.no",
-      "validFrom": "2026-05-12"
+      "predicate": "deploy_pipeline",
+      "object": "github-actions-flyio",
+      "validFrom": "2026-05-14T12:00:00Z"
     }
   ],
   "dashboard": [
@@ -1700,14 +1671,6 @@
       "predicate": "upgraded_to",
       "object": "v1.41.0",
       "validFrom": "2026-05-09T13:13:13.312Z"
-    },
-    {
-      "predicate": "token_budget",
-      "object": "262k-total-40k-reserved"
-    },
-    {
-      "predicate": "optimal_working_memory",
-      "object": "222k-tokens"
     }
   ],
   "enterprise-2026": [
@@ -3141,6 +3104,11 @@
       "predicate": "moved_from",
       "object": "dependencies to devDependencies",
       "validFrom": "2026-05-09T14:15:02.921Z"
+    },
+    {
+      "predicate": "status",
+      "object": "fully_migrated_from",
+      "validFrom": "2026-05-14T12:00:00Z"
     }
   ],
   "auth": [
@@ -3821,6 +3789,11 @@
       "predicate": "edge_runtime_files",
       "object": "120",
       "validFrom": "2026-05-12"
+    },
+    {
+      "predicate": "status",
+      "object": "workflows_disabled",
+      "validFrom": "2026-05-14T12:00:00Z"
     }
   ],
   "fly.io-deploy": [
@@ -3842,58 +3815,32 @@
       "validFrom": "2026-05-14"
     }
   ],
-  "fly.io": [
+  "flyio": [
     {
-      "predicate": "region",
-      "object": "arn",
-      "validFrom": "2026-05-12"
-    },
-    {
-      "predicate": "app",
-      "object": "klarpakke",
-      "validFrom": "2026-05-12"
-    },
-    {
-      "predicate": "url",
-      "object": "https://klarpakke.fly.dev",
-      "validFrom": "2026-05-12"
+      "predicate": "secrets",
+      "object": "POSTGRES_URL-NEXT_PUBLIC_SUPABASE_URL-NEXT_PUBLIC_SUPABASE_ANON_KEY-SUPABASE_SERVICE_ROLE_KEY-DATABASE_URL",
+      "validFrom": "2026-05-14T12:00:00Z"
     }
   ],
-  "cloudflare": [
+  "supabase-vault": [
     {
-      "predicate": "role",
-      "object": "dns-cdn-proxy",
-      "validFrom": "2026-05-12"
+      "predicate": "has_secret",
+      "object": "FLY_APP_URL",
+      "validFrom": "2026-05-14T12:00:00Z"
     }
   ],
-  "token-sparing": [
+  "klarpakke_trigger_cron": [
     {
-      "predicate": "rule_1",
-      "object": "mempalace-before-readfile"
-    },
+      "predicate": "prefers",
+      "object": "FLY_APP_URL over VERCEL_APP_URL",
+      "validFrom": "2026-05-14T12:00:00Z"
+    }
+  ],
+  "health_endpoint": [
     {
-      "predicate": "rule_2",
-      "object": "grep-before-readfile"
-    },
-    {
-      "predicate": "rule_3",
-      "object": "line_offset-always"
-    },
-    {
-      "predicate": "rule_4",
-      "object": "batch-tools"
-    },
-    {
-      "predicate": "forbidden",
-      "object": "read-whole-files"
-    },
-    {
-      "predicate": "forbidden",
-      "object": "read-node_modules"
-    },
-    {
-      "predicate": "forbidden",
-      "object": "separate-kg_add-instead-of-kg_batch"
+      "predicate": "version_source",
+      "object": "FLY_ALLOC_ID",
+      "validFrom": "2026-05-14T12:00:00Z"
     }
   ]
 }

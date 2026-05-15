@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 🏛️ MemPalace Status — v3.2.0
+ * 🏛️ MemPalace Status — v3.4.0
  * Viser MemPalace-status ved KIMI-oppstart.
  * Skriver session-fil, viser KG/diary-stats, MCP-servere.
  * Logger til .kimi/logs/mempalace.jsonl med phase: "start".
@@ -139,7 +139,7 @@ writeLog({
 
 // ─── PRINT ───
 console.log("");
-console.log("🏛️  MemPalace v3.2.0");
+console.log("🏛️  MemPalace v3.4.0");
 console.log("───────────────────────");
 console.log(`  Entities: ${entityCount}  |  Facts: ${factCount}`);
 console.log(`  KG:       ${kgSize.toLocaleString("no-NO")} bytes, saved ${kgAge}`);
