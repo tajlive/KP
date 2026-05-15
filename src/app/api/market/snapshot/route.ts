@@ -39,10 +39,9 @@ export async function GET() {
     );
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: "Binance API error", status: res.status },
-        { status: 502 }
-      );
+      // Binance returns 451/403/429 from cloud IPs — fall back gracefully
+      console.warn(`[market/snapshot] Binance non-OK: ${res.status}`);
+      throw new Error(`Binance ${res.status}`);
     }
 
     const rows = (await res.json()) as Array<{
@@ -79,7 +78,7 @@ export async function GET() {
     });
   } catch (err) {
     // Binance may block cloud IPs — return graceful fallback instead of 502
-    console.error("[market/snapshot] Binance fetch failed:", err);
+    console.error("[market/snapshot] Using fallback:", err);
     const fallback: MarketSnapshot = {
       assets: [
         { symbol: "Bitcoin", name: "Bitcoin", price: 105000, change24hPct: 2.5, high24h: 107000, low24h: 102000, volume24h: 35000000000 },
