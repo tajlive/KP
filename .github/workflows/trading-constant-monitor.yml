@@ -1,0 +1,97 @@
+# ═══════════════════════════════════════════════════════════════
+# KLARPAKKE — Constant Trading Monitor (All 7 Gaps)
+# Runs every 6 hours, covers TCA, backtest gap, fill rate,
+# signal decay, adverse selection, P&L attribution, market impact.
+# ═══════════════════════════════════════════════════════════════
+
+name: 🔬 Constant Trading Monitor
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+concurrency:
+  group: trading-constant-monitor
+  cancel-in-progress: false
+
+env:
+  APP_URL: https://www.klarpakke.no
+  CRON_SECRET: ${{ secrets.CRON_SECRET }}
+  SLACK_WEBHOOK: ${{ secrets.SLACK_OPS_WEBHOOK_URL }}
+
+jobs:
+  tca:
+    name: 1. TCA Dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/trading-tca" | jq .
+
+  backtest-gap:
+    name: 2. Backtest vs Live Gap
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/backtest-live-gap" | jq .
+
+  fill-rate:
+    name: 3. Fill Rate Monitor
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/fill-rate-monitor" | jq .
+
+  signal-decay:
+    name: 4. Signal Decay Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/signal-decay" | jq .
+
+  adverse-selection:
+    name: 5. Adverse Selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/adverse-selection" | jq .
+
+  pl-attribution:
+    name: 6. P&L Attribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/pl-attribution" | jq .
+
+  market-impact:
+    name: 7. Market Impact
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          curl -s -H "Authorization: Bearer $CRON_SECRET" \
+            --max-time 25 --retry 2 "$APP_URL/api/cron/market-impact" | jq .
+
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: [tca, backtest-gap, fill-rate, signal-decay, adverse-selection, pl-attribution, market-impact]
+    if: always()
+    steps:
+      - name: Log Summary
+        run: |
+          echo "## 🔬 Constant Trading Monitor" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All 7 checks completed." >> $GITHUB_STEP_SUMMARY
