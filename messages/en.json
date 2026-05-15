@@ -3684,5 +3684,115 @@
     "sortByPlaceholder": "Sort by",
     "reviewLabel": "Write your review",
     "reviewPlaceholder": "Write your review (optional)…"
+  },
+  "gapAnalysis": {
+    "title": "Trade Analysis",
+    "subtitle": "Understand what affects your results",
+    "whatIsThis": "What is this?",
+    "whatIsThisDesc": "We continuously analyze every trade to ensure you get the best possible results. Here you can see what we check and what it means for you.",
+    "gaps": {
+      "tca": {
+        "title": "Transaction Costs (TCA)",
+        "shortDesc": "How much does it cost to trade?",
+        "fullDesc": "We measure spread, slippage, and fees for every trade. The goal is to minimize hidden costs that eat into your returns.",
+        "metricSpread": "Spread",
+        "metricSpreadDesc": "The difference between buy and sell price. Lower is better.",
+        "metricSlippage": "Slippage",
+        "metricSlippageDesc": "The difference between expected and actual execution price. Occurs when the market moves before your order is filled.",
+        "metricLatency": "Latency",
+        "metricLatencyDesc": "Time from signal to executed trade. Faster is better.",
+        "alertTitle": "When are you alerted?",
+        "alertDesc": "You get an alert if slippage exceeds 20 basis points (0.2%) or costs exceed 0.5% of trade volume."
+      },
+      "backtestGap": {
+        "title": "Backtest vs Live",
+        "shortDesc": "Do the results match expectations?",
+        "fullDesc": "We compare your live results with backtest data to see if the strategy performs as expected. A large deviation may mean the market has changed, or execution conditions are worse than simulated.",
+        "metricGap": "Gap",
+        "metricGapDesc": "The difference between live return and backtest return in percent.",
+        "attribution": "Where does the deviation come from?",
+        "attributionSlippage": "Slippage: Order filled at a different price than expected.",
+        "attributionFees": "Fees: Exchange fees are higher than in simulation.",
+        "attributionLatency": "Latency: Delay between signal and trade.",
+        "attributionOther": "Other: Market changes, liquidity, or strategy degradation.",
+        "alertDesc": "You get an alert if deviation exceeds 20% for a strategy, or 10% on average."
+      },
+      "fillRate": {
+        "title": "Fill Rate",
+        "shortDesc": "Is the order completely filled?",
+        "fullDesc": "A 'partial fill' means only part of your order was executed. This can happen in volatile markets and costs you extra.",
+        "metricFillRate": "Fill Rate",
+        "metricFillRateDesc": "Percentage of order that was filled. 100% is ideal.",
+        "metricPartial": "Partial Fills",
+        "metricPartialDesc": "Number of trades that were not completely filled.",
+        "alertDesc": "You get an alert if fill rate drops below 95%."
+      },
+      "signalDecay": {
+        "title": "Signal Decay",
+        "shortDesc": "How quickly does the signal degrade?",
+        "fullDesc": "A trading signal is most valuable right after it occurs. The longer you wait to trade, the less valuable it becomes. We measure your accuracy based on how quickly you act.",
+        "bucketFast": "Under 100ms",
+        "bucketFastDesc": "Lightning fast — signal is still fresh.",
+        "bucketMedium": "100ms - 2s",
+        "bucketMediumDesc": "Good — signal still has high value.",
+        "bucketSlow": "Over 2s",
+        "bucketSlowDesc": "Slow — market may have moved.",
+        "alertDesc": "You get an alert if your accuracy drops below 50% or if more than 30% of trades take over 2 seconds."
+      },
+      "adverseSelection": {
+        "title": "Adverse Selection",
+        "shortDesc": "Are you trading on the wrong side?",
+        "fullDesc": "Adverse selection means you systematically trade the 'wrong way' — buying right before the price drops, or selling right before it rises. This may indicate other traders see information you don't.",
+        "metricToxic": "Toxic Flow Score",
+        "metricToxicDesc": "0-100 points. Higher means more trades went the 'wrong way'.",
+        "metricAdverse": "Adverse %",
+        "metricAdverseDesc": "Percentage of trades that went the wrong way.",
+        "alertDesc": "You get an alert if over 55% of trades show adverse selection."
+      },
+      "plAttribution": {
+        "title": "P&L Breakdown",
+        "shortDesc": "Where do your profits come from?",
+        "fullDesc": "We break down your return into four parts: your own skill (alpha), market movements (beta), currency effects (NOK/USDT), and execution quality (fees + slippage).",
+        "metricAlpha": "Alpha (Your Skill)",
+        "metricAlphaDesc": "Return from your strategy choices, independent of the market.",
+        "metricBeta": "Beta (The Market)",
+        "metricBetaDesc": "Return you get simply for being invested in the market.",
+        "metricCurrency": "Currency",
+        "metricCurrencyDesc": "How USDT/NOK rate changes affect your result.",
+        "metricExecution": "Execution",
+        "metricExecutionDesc": "Costs from fees and slippage. Negative means cost.",
+        "alertDesc": "You get an alert if execution costs eat more than 1% of returns."
+      },
+      "marketImpact": {
+        "title": "Market Impact",
+        "shortDesc": "Do your trades move the market?",
+        "fullDesc": "Very large positions can affect market price. We check if your trades are large enough to move the market.",
+        "metricRatio": "Impact Ratio",
+        "metricRatioDesc": "Your trade size divided by daily trading volume. Lower is better.",
+        "levelLow": "Low Impact",
+        "levelMedium": "Medium Impact",
+        "levelHigh": "High Impact",
+        "alertDesc": "You get an alert if a trade exceeds 0.1% of daily volume."
+      }
+    },
+    "status": {
+      "good": "Good",
+      "warning": "Warning",
+      "critical": "Critical",
+      "noData": "No data yet"
+    },
+    "actions": {
+      "whatToDo": "What can you do?",
+      "reduceSize": "Reduce position size",
+      "reduceSizeDesc": "Smaller trades = less slippage and better fill rates.",
+      "checkLatency": "Check internet/latency",
+      "checkLatencyDesc": "Faster connection = better execution.",
+      "reviewStrategy": "Review strategy",
+      "reviewStrategyDesc": "A large gap between backtest and live may mean the strategy needs updating.",
+      "changeVenue": "Change exchange",
+      "changeVenueDesc": "Some exchanges have better liquidity and lower fees.",
+      "contactSupport": "Contact support",
+      "contactSupportDesc": "If you see persistent issues, reach out to us."
+    }
   }
 }

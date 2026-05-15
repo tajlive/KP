@@ -3684,5 +3684,115 @@
     "sortByPlaceholder": "Sorter etter",
     "reviewLabel": "Skriv din anmeldelse",
     "reviewPlaceholder": "Skriv din anmeldelse (valgfritt)…"
+  },
+  "gapAnalysis": {
+    "title": "Handelsanalyse",
+    "subtitle": "Forstå hva som påvirker resultatene dine",
+    "whatIsThis": "Hva er dette?",
+    "whatIsThisDesc": "Vi analyserer hver handel kontinuerlig for å sikre at du får best mulig resultat. Her kan du se hva vi sjekker og hva det betyr for deg.",
+    "gaps": {
+      "tca": {
+        "title": "Transaksjonskostnader (TCA)",
+        "shortDesc": "Hvor mye koster det å handle?",
+        "fullDesc": "Vi måler spread, slippage og gebyrer for hver handel. Målet er å minimere usynlige kostnader som spiser avkastningen din.",
+        "metricSpread": "Spread",
+        "metricSpreadDesc": "Forskjellen mellom kjøps- og salgspris. Lavere er bedre.",
+        "metricSlippage": "Slippage",
+        "metricSlippageDesc": "Forskjellen mellom forventet og faktisk utføringspris. Oppstår når markedet beveger seg før ordren din fylles.",
+        "metricLatency": "Latency",
+        "metricLatencyDesc": "Tiden fra signal til utført handel. Raskere er bedre.",
+        "alertTitle": "Når varsles du?",
+        "alertDesc": "Du får varsel hvis slippage overstiger 20 basis points (0.2%) eller kostnader utgjør mer enn 0.5% av handelsvolumet."
+      },
+      "backtestGap": {
+        "title": "Backtest vs Live",
+        "shortDesc": "Stemmer resultatene med forventningene?",
+        "fullDesc": "Vi sammenligner dine live-resultater med backtest-data for å se om strategien presterer som forventet. Et stort avvik kan bety at markedet har endret seg, eller at eksekveringsforholdene er dårligere enn simulert.",
+        "metricGap": "Gap",
+        "metricGapDesc": "Forskjellen mellom live-avkastning og backtest-avkastning i prosent.",
+        "attribution": "Hvor kommer avviket fra?",
+        "attributionSlippage": "Slippage: Ordren fylles til en annen pris enn forventet.",
+        "attributionFees": "Gebyrer: Børsgebyrer er høyere enn i simuleringen.",
+        "attributionLatency": "Latency: Forsinkelse mellom signal og handel.",
+        "attributionOther": "Annet: Markedsendringer, likviditet, eller strategi-degradering.",
+        "alertDesc": "Du får varsel hvis avviket overstiger 20% for en strategi, eller 10% i gjennomsnitt."
+      },
+      "fillRate": {
+        "title": "Fyllingsgrad",
+        "shortDesc": "Blir ordren helt fylt?",
+        "fullDesc": "En 'delvis fylling' betyr at bare deler av ordren din ble utført. Dette kan skje i urolige markeder og koster deg ekstra.",
+        "metricFillRate": "Fyllingsgrad",
+        "metricFillRateDesc": "Prosentandel av ordren som ble fylt. 100% er ideelt.",
+        "metricPartial": "Delvise fyllinger",
+        "metricPartialDesc": "Antall handler som ikke ble fullstendig fylt.",
+        "alertDesc": "Du får varsel hvis fyllingsgraden faller under 95%."
+      },
+      "signalDecay": {
+        "title": "Signalforfall",
+        "shortDesc": "Hvor raskt blir signalet dårligere?",
+        "fullDesc": "Et trading-signal er mest verdt rett etter det oppstår. Jo lenger du venter med å handle, jo mindre verdt blir det. Vi måler nøyaktigheten din basert på hvor raskt du handler.",
+        "bucketFast": "Under 100ms",
+        "bucketFastDesc": "Lynrask — signalet er fortsatt ferskt.",
+        "bucketMedium": "100ms - 2s",
+        "bucketMediumDesc": "God — signalet har fortsatt høy verdi.",
+        "bucketSlow": "Over 2s",
+        "bucketSlowDesc": "Tregt — markedet kan ha beveget seg.",
+        "alertDesc": "Du får varsel hvis nøyaktigheten din faller under 50% eller hvis mer enn 30% av handler tar over 2 sekunder."
+      },
+      "adverseSelection": {
+        "title": "Ugunstig seleksjon",
+        "shortDesc": "Handler du på feil side av markedet?",
+        "fullDesc": "Ugunstig seleksjon betyr at du systematisk handler 'feil vei' — du kjøper rett før prisen faller, eller selger rett før den stiger. Dette kan tyde på at andre tradere ser informasjon du ikke ser.",
+        "metricToxic": "Toxic Flow Score",
+        "metricToxicDesc": "0-100 poeng. Høyere betyr at flere handler var 'feil vei'.",
+        "metricAdverse": "Ugunstig %",
+        "metricAdverseDesc": "Andel handler som gikk feil vei.",
+        "alertDesc": "Du får varsel hvis over 55% av handler viser ugunstig seleksjon."
+      },
+      "plAttribution": {
+        "title": "Gevinst/tap-oppsplitting",
+        "shortDesc": "Hvor kommer pengene dine fra?",
+        "fullDesc": "Vi deler opp avkastningen din i fire deler: din egen dyktighet (alpha), markedets bevegelser (beta), valutaeffekter (NOK/USDT), og eksekveringskvalitet (gebyrer + slippage).",
+        "metricAlpha": "Alpha (Din dyktighet)",
+        "metricAlphaDesc": "Avkastning som kommer fra dine strategivalg, uavhengig av markedet.",
+        "metricBeta": "Beta (Markedet)",
+        "metricBetaDesc": "Avkastning du får bare fordi du er investert i markedet.",
+        "metricCurrency": "Valuta",
+        "metricCurrencyDesc": "Hvordan endringer i USDT/NOK-kursen påvirker resultatet ditt.",
+        "metricExecution": "Eksekvering",
+        "metricExecutionDesc": "Kostnader fra gebyrer og slippage. Negativt betyr kostnad.",
+        "alertDesc": "Du får varsel hvis eksekveringskostnader spiser mer enn 1% av avkastningen."
+      },
+      "marketImpact": {
+        "title": "Markedspåvirkning",
+        "shortDesc": "Påvirker dine handler markedet?",
+        "fullDesc": "For store posisjoner kan påvirke markedsprisen. Vi sjekker om dine handler er store nok til å bevege markedet.",
+        "metricRatio": "Påvirkningsratio",
+        "metricRatioDesc": "Din handelsstørrelse delt på daglig handelsvolum. Lavere er bedre.",
+        "levelLow": "Lav påvirkning",
+        "levelMedium": "Middels påvirkning",
+        "levelHigh": "Høy påvirkning",
+        "alertDesc": "Du får varsel hvis en handel utgjør mer enn 0.1% av daglig volum."
+      }
+    },
+    "status": {
+      "good": "Bra",
+      "warning": "Advarsel",
+      "critical": "Kritisk",
+      "noData": "Ingen data ennå"
+    },
+    "actions": {
+      "whatToDo": "Hva kan du gjøre?",
+      "reduceSize": "Reduser posisjonsstørrelse",
+      "reduceSizeDesc": "Mindre handler = mindre slippage og bedre fyllingsgrad.",
+      "checkLatency": "Sjekk internett/latency",
+      "checkLatencyDesc": "Raskere tilkobling = bedre eksekvering.",
+      "reviewStrategy": "Gjennomgå strategi",
+      "reviewStrategyDesc": "Et stort avvik mellom backtest og live kan bety at strategien trenger oppdatering.",
+      "changeVenue": "Bytt børs",
+      "changeVenueDesc": "Noen børser har bedre likviditet og lavere gebyrer.",
+      "contactSupport": "Kontakt support",
+      "contactSupportDesc": "Hvis du ser vedvarende problemer, ta kontakt med oss."
+    }
   }
 }
