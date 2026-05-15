@@ -2,10 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const APP_ROUTES = ["/dashboard", "/admin", "/paper-trading"];
 
 function InlineFooter() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   return (
     <footer className="bg-slate-950 border-t border-white/5 py-8">
       <div className="max-w-6xl mx-auto px-4">
@@ -24,7 +28,7 @@ function InlineFooter() {
         <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-white/50">
           © {new Date().getFullYear()} Klarpakke AS. Org.no: 929003292 MVA.
           <span className="mx-2">·</span>
-          <span className="text-white/50" title="Sist oppdatert">{new Date().toLocaleDateString('no-NO')}</span>
+          <span suppressHydrationWarning className="text-white/50" title="Sist oppdatert">{mounted ? new Date().toLocaleDateString('no-NO') : '—'}</span>
         </div>
       </div>
     </footer>

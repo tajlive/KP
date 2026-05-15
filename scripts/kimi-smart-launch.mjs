@@ -33,8 +33,8 @@ const AGENTS = {
   api: { name: '🔌 API', yaml: 'klarpakke-architect-agent.yaml', mcp: 'medium' },
   deploy: { name: '🚀 Deploy', yaml: 'klarpakke-architect-agent.yaml', mcp: 'medium' },
   testing: { name: '🧪 Testing', yaml: 'testing-agent.yaml', mcp: 'medium' },
-  cms: { name: '📝 Sanity', yaml: 'sanity-agent.yaml', mcp: 'medium' },
-  mobile: { name: '📱 Mobile', yaml: 'mobile-check-agent.yaml', mcp: 'medium' },
+  cms: { name: '📝 Sanity', yaml: 'klarpakke-architect-agent.yaml', mcp: 'medium' },
+  mobile: { name: '📱 Mobile', yaml: 'klarpakke-performance-agent.yaml', mcp: 'medium' },
   general: { name: '🤖 Super', yaml: 'klarpakke-super-agent.yaml', mcp: 'auto' },
 };
 

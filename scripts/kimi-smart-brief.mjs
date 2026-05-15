@@ -24,7 +24,7 @@ const AGENTS = {
   },
   trading: {
     name: '📈 Trading Engine',
-    yaml: 'klarpakke-live-trading-trades-agent.yaml',
+    yaml: 'klarpakke-trading-engine-agent.yaml',
     weight: ['trading','trade','position','pnl','strategy','bot','order','market','asset','balance','wallet','cron','scheduler'],
   },
   database: {
@@ -34,7 +34,7 @@ const AGENTS = {
   },
   frontend: {
     name: '🎨 Frontend & UI',
-    yaml: 'klarpakke-ux-ui-agent.yaml',
+    yaml: 'klarpakke-performance-agent.yaml',
     weight: ['frontend','ui','component','react','nextjs','tailwind','css','page','layout','form','modal','chart','dashboard'],
   },
   api: {
@@ -49,17 +49,17 @@ const AGENTS = {
   },
   testing: {
     name: '🧪 Testing & QA',
-    yaml: 'klarpakke-qa-agent.yaml',
+    yaml: 'testing-agent.yaml',
     weight: ['test','testing','e2e','unit','vitest','playwright','spec','coverage','mock','assert'],
   },
   cms: {
     name: '📝 Sanity CMS',
-    yaml: 'sanity-agent.yaml',
+    yaml: 'klarpakke-architect-agent.yaml',
     weight: ['sanity','cms','content','schema','document','groq','studio','webhook','assist'],
   },
   mobile: {
     name: '📱 Mobile & PWA',
-    yaml: 'mobile-check-agent.yaml',
+    yaml: 'klarpakke-performance-agent.yaml',
     weight: ['mobile','pwa','responsive','ios','android','lighthouse','viewport','touch','sw'],
   },
   general: {

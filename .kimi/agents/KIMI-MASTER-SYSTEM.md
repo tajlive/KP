@@ -81,10 +81,10 @@ STEP 3: PROJECT CONTEXT LOAD
 
 ```
 → Suggest swarm mode to user:
-  "This is a large ${domain} task. Consider running:
-   node scripts/kimi-smart-launch.mjs '${task}' --swarm --launch"
+  "This is a large <domain> task. Consider running:
+   node scripts/kimi-smart-launch.mjs '<task>' --swarm --launch"
 
-→ Swarm sequence for ${workflowType}:
+→ Swarm sequence for <workflow_type>:
    analyzer → architect → tester → security → knowledge
 ```
 

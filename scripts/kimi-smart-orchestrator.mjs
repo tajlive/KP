@@ -32,8 +32,8 @@ const AGENTS = {
     color: '\x1b[35m'
   },
   trading: {
-    yaml: '.kimi/agents/klarpakke-live-trading-trades-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-live-trading-trades-agent.yaml',
+    yaml: '.kimi/agents/klarpakke-trading-engine-agent.yaml',
+    cmd: 'kimi --agent-file .kimi/agents/klarpakke-trading-engine-agent.yaml',
     patterns: ['trading', 'trade', 'position', 'pnl', 'strategy', 'bot', 'session', 'binance', 'order', 'portfolio', 'grid', 'dca'],
     mcp: 'medium',
     description: '📈 Trading Engine',
@@ -48,24 +48,24 @@ const AGENTS = {
     color: '\x1b[34m'
   },
   sanity: {
-    yaml: '.kimi/agents/sanity-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/sanity-agent.yaml',
+    yaml: '.kimi/agents/klarpakke-architect-agent.yaml',
+    cmd: 'kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml',
     patterns: ['sanity', 'cms', 'studio', 'groq', 'schema', 'document', 'webhook', 'content', 'portable text'],
     mcp: 'minimal',
     description: '📝 Sanity CMS',
     color: '\x1b[36m'
   },
   testing: {
-    yaml: '.kimi/agents/mobile-check-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/mobile-check-agent.yaml',
+    yaml: '.kimi/agents/klarpakke-performance-agent.yaml',
+    cmd: 'kimi --agent-file .kimi/agents/klarpakke-performance-agent.yaml',
     patterns: ['test', 'spec', 'e2e', 'playwright', 'vitest', 'lighthouse', 'a11y', 'accessibility', 'coverage', 'bug', 'feil'],
     mcp: 'medium',
     description: '🧪 Testing & QA',
     color: '\x1b[33m'
   },
   frontend: {
-    yaml: '.kimi/agents/klarpakke-ux-ui-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-ux-ui-agent.yaml',
+    yaml: '.kimi/agents/klarpakke-performance-agent.yaml',
+    cmd: 'kimi --agent-file .kimi/agents/klarpakke-performance-agent.yaml',
     patterns: ['component', 'tsx', 'page', 'layout', 'tailwind', 'css', 'ui', 'design', 'responsive', 'theme', 'hero', 'card'],
     mcp: 'minimal',
     description: '🎨 Frontend & UI',

@@ -7,10 +7,11 @@
  * - Eksplisitt exchangeCodeForSession (PKCE)
  * - Locale-aware redirect (bruker URL-path, ikke hardkodet /no)
  * - Error-redirect til /{locale}/login?error=... istedenfor inline feil
+ * - Client-only render guard for å unngå hydration mismatch (#418)
  */
 
-import { useEffect } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient, resetInvalidTokenGuard } from "@/lib/supabase/client";
 
 export const runtime = 'edge';
@@ -18,10 +19,16 @@ export const runtime = 'edge';
 // Module-level guard — survives React Strict Mode double-mounting
 const handledCodes = new Set<string>();
 
+function useMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted;
+}
+
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const mounted = useMounted();
 
   // Hent locale fra URL-path (/no/callback → 'no')
   const locale = pathname?.split("/")[1] || "no";
@@ -89,10 +96,14 @@ export default function AuthCallbackPage() {
     };
 
     handleCallback();
-   
   }, []);
 
-  // Alltid vis spinner (redirect skjer i useEffect)
+  // Render minimal placeholder during SSR/hydration to eliminate hydration mismatch
+  if (!mounted) {
+    return <div className="min-h-screen bg-slate-950" data-testid="auth-callback-loading" />;
+  }
+
+  // Full spinner vises først etter mount (unngår React #418)
   return (
     <div
       data-testid="auth-callback-loading"
@@ -100,8 +111,8 @@ export default function AuthCallbackPage() {
     >
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" />
-        <h1 suppressHydrationWarning className="text-xl font-bold text-white mb-2">Fullfører innlogging...</h1>
-        <p suppressHydrationWarning className="text-slate-400">Vennligst vent mens vi verifiserer din konto.</p>
+        <h1 className="text-xl font-bold text-white mb-2">Fullfører innlogging...</h1>
+        <p className="text-slate-400">Vennligst vent mens vi verifiserer din konto.</p>
       </div>
     </div>
   );

@@ -6,3 +6,15 @@
 {"subject":"vercel","predicate":"status","object":"fully_migrated_from","validFrom":"2026-05-14T12:00:00Z"}
 {"subject":"cloudflare-pages","predicate":"status","object":"workflows_disabled","validFrom":"2026-05-14T12:00:00Z"}
 {"subject":"health_endpoint","predicate":"version_source","object":"FLY_ALLOC_ID","validFrom":"2026-05-14T12:00:00Z"}
+{"subject":"SmartPortfolioDashboard","predicate":"uses","object":"useClientOnly for hydration-safe time rendering","validFrom":"2026-05-15T22:29:12.295Z"}
+{"subject":"SessionCards","predicate":"uses","object":"suppressHydrationWarning for locale-sensitive formatting","validFrom":"2026-05-15T22:29:12.295Z"}
+{"subject":"api/market/snapshot","predicate":"returns","object":"fallback data instead of 502 on Binance failure","validFrom":"2026-05-15T22:29:12.295Z"}
+{"subject":"PortfolioChart","predicate":"guards","object":"ResponsiveContainer with mounted state to prevent dimension warnings","validFrom":"2026-05-15T22:29:12.296Z"}
+{"subject":"ConditionalFooter","predicate":"uses","object":"mounted guard for toLocaleDateString hydration fix","validFrom":"2026-05-15T22:53:55.755Z"}
+{"subject":"LocaleMarketingShell","predicate":"hides marketing shell for","object":"/callback route","validFrom":"2026-05-15T22:53:55.757Z"}
+{"subject":"React hydration error #418","predicate":"fixed on page","object":"/no/callback","validFrom":"2026-05-15T22:53:55.759Z"}
+{"subject":"React hydration error #418","predicate":"root cause was","object":"ConditionalFooter new Date().toLocaleDateString('no-NO')","validFrom":"2026-05-15T22:53:55.759Z"}
+{"subject":"callback-page","predicate":"uses","object":"mounted-guard-for-ssr-placeholder","validFrom":"2026-05-15T23:07:16.986Z"}
+{"subject":"auth-hash-handler","predicate":"has","object":"render-time-callback-guard","validFrom":"2026-05-15T23:07:16.993Z"}
+{"subject":"react-418-callback","predicate":"fixed-by","object":"client-only-render-guard","validFrom":"2026-05-15T23:07:16.994Z"}
+{"subject":"callback-page","predicate":"removed","object":"useSearchParams-dead-variable","validFrom":"2026-05-15T23:07:16.994Z"}

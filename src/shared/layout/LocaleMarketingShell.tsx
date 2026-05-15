@@ -27,6 +27,7 @@ const STRIPPED_PATHS_HIDE_MARKETING: readonly string[] = [
   "/profile",
   "/quiz",
   "/innstillinger",
+  "/callback",
 ];
 
 function shouldHideMarketingShell(strippedPath: string): boolean {

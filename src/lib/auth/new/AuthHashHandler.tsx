@@ -2,16 +2,16 @@
 
 /**
  * AUTH HASH HANDLER
- * 
+ *
  * Håndterer tilfeller hvor Supabase redirecter til rot-URL
  * med access_token i hash (i stedet for å gå via /callback).
- * 
- * Dette skjer når Site URL i Supabase er satt til hovedsiden
- * i stedet for callback-ruten.
+ *
+ * SSR-safe: bruker IKKE useSearchParams() (som trigger hydration mismatch
+ * uten Suspense-boundary). Leser URL-parametere fra window.location i useEffect.
  */
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { localizedPathname } from "@/middleware/locale-path";
@@ -19,20 +19,34 @@ import { localizedPathname } from "@/middleware/locale-path";
 export function AuthHashHandler() {
   const router = useRouter();
   const locale = useLocale();
-  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Skip on callback page — callback/page.tsx handles PKCE exchange exclusively
+    setMounted(true);
+  }, []);
+
+  // Consistent SSR + hydration: return null until mounted.
+  // This guarantees identical output during SSR and initial client render,
+  // preventing hydration mismatch from usePathname() returning null on client.
+  if (!mounted) return null;
+
+  // After mount, skip entirely on callback page — callback/page.tsx handles PKCE exclusively
+  if (pathname?.includes("/callback")) return null;
+
+  useEffect(() => {
+    // Double-check via window.location (defensive)
     if (typeof window !== "undefined" && window.location.pathname.includes("/callback")) {
       return;
     }
 
-    // Sjekk for error i URL (f.eks. access_denied fra OAuth)
-    const urlError = searchParams.get("error");
-    const errorDescription = searchParams.get("error_description");
-    
+    // Read error from URL search params (client-only, avoids useSearchParams hydration issue)
+    const url = new URL(window.location.href);
+    const urlError = url.searchParams.get("error");
+    const errorDescription = url.searchParams.get("error_description");
+
     if (urlError) {
       console.error("[AuthHashHandler] OAuth error:", urlError, errorDescription);
       setError(errorDescription || "Autentisering ble avbrutt");
@@ -52,27 +66,22 @@ export function AuthHashHandler() {
 
       try {
         // Vent litt for å la Supabase klienten prosessere hash
-        // (detectSessionInUrl: true skal gjøre dette automatisk)
         await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Sjekk om session allerede er satt av detectSessionInUrl
+
+        // Sjekk om session allerede er satt
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         let session = initialSession;
         // Hvis fortsatt ingen session, prøv å parse hash manuelt
         if (!session && hash.includes("access_token=")) {
-          // Parse hash parameters
           const hashParams = new URLSearchParams(hash.substring(1));
           const accessToken = hashParams.get("access_token");
           const refreshToken = hashParams.get("refresh_token");
-          const expiresIn = hashParams.get("expires_in");
-          const tokenType = hashParams.get("token_type");
           if (accessToken) {
-            // Sett session manuelt
             const { data, error: setError } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken || "",
             });
-            
+
             if (setError) {
               console.error("[AuthHashHandler] setSession error:", setError);
             } else {
@@ -83,7 +92,6 @@ export function AuthHashHandler() {
 
         if (sessionError) {
           console.error("[AuthHashHandler] Session error:", sessionError);
-          // If refresh token is invalid, clear auth state and redirect to login
           if (sessionError.message?.includes("Invalid Refresh Token")) {
             await supabase.auth.signOut();
             router.replace(`/${locale}/login?error=session_expired`);
@@ -95,10 +103,7 @@ export function AuthHashHandler() {
         }
 
         if (session) {
-          // Fjern hash fra URL uten å trigge page reload
           window.history.replaceState(null, "", window.location.pathname);
-          
-          // Redirect til dashboard
           router.push(localizedPathname(locale, "/dashboard"));
           router.refresh();
         } else {
@@ -114,7 +119,7 @@ export function AuthHashHandler() {
     };
 
     handleAuthHash();
-  }, [router, searchParams]);
+  }, [router, locale]);
 
   // Vis error-state
   if (error) {
