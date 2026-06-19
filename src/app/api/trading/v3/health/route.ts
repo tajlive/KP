@@ -141,12 +141,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const checkStart = Date.now();
     const store = getRiskStateStore();
-    const testKey = `health:${Date.now()}`;
-    await store['redis'].set(testKey, 'ok', 10);
-    const value = await store['redis'].get(testKey);
-    
+    results.checks.redis.ok = await store.isHealthy();
     results.checks.redis.latency = Date.now() - checkStart;
-    results.checks.redis.ok = value === 'ok';
     
     if (!results.checks.redis.ok) {
       unhealthyReasons.push('Redis read/write failed');

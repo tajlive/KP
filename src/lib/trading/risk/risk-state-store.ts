@@ -5,21 +5,53 @@
  * - Redis: Hot state (fast reads/writes, TTL 24h)
  * - Supabase: Cold state (durability, recovery)
  * 
+ * Redis client selection (fail-closed in production):
+ * - If Redis REST is configured (UPSTASH_REDIS_REST_* or KV_REST_*): use real Upstash Redis
+ * - Else if NODE_ENV is 'test' or 'development': use MockRedis (in-memory, safe for local dev/tests)
+ * - Else (production without Redis): use FailClosedRedisClient which returns null on reads and
+ *   throws on writes, causing risk state recovery to fail and trades to be blocked.
+ * 
  * @module trading/risk
- * @version 3.0.1-p0
+ * @version 3.0.2-p0
  */
 
 import { createClient } from '@/lib/supabase/server';
+import { getRedisRest, isRedisRestConfigured } from '@/lib/redis-client';
+import { Redis } from '@upstash/redis';
 import { RiskState, RiskLimits, DEFAULT_RISK_LIMITS } from './risk-kernel';
 
-// Simple Redis client wrapper (would use ioredis or similar in production)
+// Simple Redis client wrapper used by RiskStateStore
 interface RedisClient {
   get(key: string): Promise<string | null>;
   set(key: string, value: string, ttl?: number): Promise<void>;
   del(key: string): Promise<void>;
 }
 
-// Mock Redis for development - replace with actual Redis client
+/**
+ * Upstash Redis (REST) adapter.
+ * Converts the @upstash/redis API to the internal RedisClient interface.
+ */
+class UpstashRedisClient implements RedisClient {
+  constructor(private readonly upstash: Redis) {}
+
+  async get(key: string): Promise<string | null> {
+    const value = await this.upstash.get<string>(key);
+    return value ?? null;
+  }
+
+  async set(key: string, value: string, ttl: number = 86400): Promise<void> {
+    await this.upstash.set(key, value, { ex: ttl });
+  }
+
+  async del(key: string): Promise<void> {
+    await this.upstash.del(key);
+  }
+}
+
+/**
+ * In-memory Redis for development and tests.
+ * NOTE: Not suitable for production - state is lost on redeploy/scale/crash.
+ */
 class MockRedis implements RedisClient {
   private store = new Map<string, { value: string; expiry: number }>();
   
@@ -42,6 +74,29 @@ class MockRedis implements RedisClient {
   }
 }
 
+/**
+ * Fail-closed Redis client used in production when Redis is not configured.
+ * 
+ * - Reads return null so that risk state recovery fails and trades are blocked.
+ * - Writes throw so that state cannot be persisted without durable storage.
+ * 
+ * This prevents trades from executing with in-memory-only guardrails in production.
+ */
+class FailClosedRedisClient implements RedisClient {
+  async get(key: string): Promise<string | null> {
+    console.warn(`[RiskStateStore] Redis unavailable: cannot get ${key}. Trading blocked.`);
+    return null;
+  }
+  
+  async set(key: string, _value: string, _ttl?: number): Promise<void> {
+    throw new Error(`Redis unavailable: cannot persist risk state for ${key}`);
+  }
+  
+  async del(key: string): Promise<void> {
+    throw new Error(`Redis unavailable: cannot delete risk state for ${key}`);
+  }
+}
+
 export interface PersistedRiskState {
   userId: string;
   state: RiskState;
@@ -61,15 +116,55 @@ export interface StateRecoveryResult {
 }
 
 /**
+ * Create the Redis client used for risk state.
+ * 
+ * Priority:
+ * 1. Real Upstash Redis if env vars are configured.
+ * 2. MockRedis for test/development environments.
+ * 3. FailClosedRedisClient for production without Redis config.
+ */
+export function createRiskRedisClient(): RedisClient {
+  if (isRedisRestConfigured()) {
+    const upstash = getRedisRest();
+    if (upstash) {
+      return new UpstashRedisClient(upstash);
+    }
+  }
+
+  const env = process.env.NODE_ENV;
+  if (env === 'test' || env === 'development') {
+    return new MockRedis();
+  }
+
+  return new FailClosedRedisClient();
+}
+
+/**
  * Risk State Store – Handles persistence of risk state
  */
 export class RiskStateStore {
-  private redis: RedisClient;
+  public readonly redis: RedisClient;
   private redisTtl = 86400; // 24 hours
   private stateVersion = 1;
   
   constructor(redis?: RedisClient) {
-    this.redis = redis || new MockRedis();
+    this.redis = redis ?? createRiskRedisClient();
+  }
+
+  /**
+   * Check whether the Redis backend is healthy.
+   * Returns false if Redis is not configured or writes fail.
+   */
+  async isHealthy(): Promise<boolean> {
+    try {
+      const testKey = `risk:health:${Date.now()}`;
+      await this.redis.set(testKey, 'ok', 10);
+      const value = await this.redis.get(testKey);
+      return value === 'ok';
+    } catch (error) {
+      console.error('[RiskStateStore] Health check failed:', error);
+      return false;
+    }
   }
   
   /**

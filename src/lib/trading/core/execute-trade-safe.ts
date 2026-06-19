@@ -625,7 +625,7 @@ async function executeTradeWithLock(
     // Step 1: Redis (fast)
     let redisOk = false;
     try {
-      await riskStore['redis'].set(redisKey, serialized, 86400);
+      await riskStore.redis.set(redisKey, serialized, 86400);
       redisOk = true;
       persistenceStatus = 'redis_ok';
     } catch (redisError) {
