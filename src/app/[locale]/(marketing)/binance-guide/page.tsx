@@ -5,7 +5,7 @@
 import { Metadata } from 'next'
 import { BinanceGuideContent } from './BinanceGuideContent'
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: 'Slik kommer du i gang med Binance - Klarpakke Universitet',

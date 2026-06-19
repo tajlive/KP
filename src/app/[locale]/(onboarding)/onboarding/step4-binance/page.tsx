@@ -8,7 +8,6 @@ import { Input } from "@/shared/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { Link2, SkipForward, Eye, EyeOff, Shield } from "lucide-react";
 
-export const runtime = 'edge';
 
 export default function OnboardingStep4() {
   const t = useTranslations("onboarding.step4");

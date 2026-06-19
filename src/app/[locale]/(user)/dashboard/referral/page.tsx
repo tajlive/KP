@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { ReferralDashboard } from "@/features/referral/ReferralDashboard";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const metadata = {
   title: "Golden Ticket | Klarpakke",

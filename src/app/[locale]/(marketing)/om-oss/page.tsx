@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import OmOssClient from "./OmOssClient";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function generateMetadata({
   params,

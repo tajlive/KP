@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { AssetDetailView } from "@/features/coinbase/AssetDetailView";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

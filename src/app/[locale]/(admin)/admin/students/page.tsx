@@ -1,7 +1,7 @@
 
 import ClientStudentsPage from "../ClientStudentsPage";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function StudentsPage() {
   return <ClientStudentsPage />;

@@ -1,7 +1,7 @@
 
 import ClientAdminSystem from "./ClientAdminSystem";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function Page() {
   return <ClientAdminSystem />;

@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/utils";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 
-export const runtime = 'edge';
 
 export default function LoginPage() {
   const locale = useLocale();

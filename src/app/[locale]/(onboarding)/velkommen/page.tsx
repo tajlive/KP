@@ -5,7 +5,7 @@
 import { Metadata } from 'next'
 import { VelkommenContent } from './VelkommenContent'
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: 'Velkommen - Klarpakke Universitet',

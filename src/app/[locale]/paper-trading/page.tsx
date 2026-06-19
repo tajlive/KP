@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { PaperTradingPageClient } from "@/features/paper-trading/PaperTradingPageClient";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 type SessionRow = {
   id: string;

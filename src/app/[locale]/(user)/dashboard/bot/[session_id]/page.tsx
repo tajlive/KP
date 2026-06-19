@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { BotDetailView } from "@/features/auto-trade/BotDetailView";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

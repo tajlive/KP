@@ -7,7 +7,6 @@ import { Button } from "@/shared/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
-export const runtime = 'edge';
 
 export default function OnboardingStep5() {
   const t = useTranslations("onboarding.step5");

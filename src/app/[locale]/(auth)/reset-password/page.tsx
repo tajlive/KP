@@ -11,7 +11,6 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { sendPasswordReset } from "@/lib/auth/new/auth-actions";
 
-export const runtime = 'edge';
 
 export default function ResetPasswordPage() {
   const locale = useLocale();

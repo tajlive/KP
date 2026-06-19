@@ -7,7 +7,7 @@ import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import Link from "next/link";
 import { Bot } from "lucide-react";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

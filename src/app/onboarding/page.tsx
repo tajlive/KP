@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/shared/ui/button";
 import { Check, Shield, ChevronRight } from "lucide-react";
 
-export const runtime = 'edge';
 
 function BankIdButton({ onClick }: { onClick?: () => void }) {
   return (

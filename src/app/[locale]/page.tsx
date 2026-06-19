@@ -8,7 +8,7 @@ import { KLTTeaser } from "@/features/landing/KLTTeaser";
 import { StickyCTA } from "@/features/landing/StickyCTA";
 import { ScrollReveal } from "@/features/landing/ScrollReveal";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // ISR: Revalidate every 60s, Sanity webhook invalidates on content change
 export const dynamic = "force-dynamic"; // Was: revalidate = 60 (ISR not supported on Cloudflare)

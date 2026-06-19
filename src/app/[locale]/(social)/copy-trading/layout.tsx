@@ -10,7 +10,7 @@ import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AmbientGlow } from "@/shared/ui/AmbientGlow";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function CopyTradingLayout({
   children,

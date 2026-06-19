@@ -3,7 +3,7 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { CopyTradingDiscoverClient } from "@/features/copy-trading/CopyTradingDiscoverClient";
 import { getTranslations } from "next-intl/server";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

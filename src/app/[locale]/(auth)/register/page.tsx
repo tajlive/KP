@@ -12,7 +12,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { signUpWithEmail } from "@/lib/auth/new/auth-actions";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 
-export const runtime = 'edge';
 
 export default function RegisterPage() {
   const locale = useLocale();

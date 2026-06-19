@@ -3,7 +3,7 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { Metadata } from "next";
 import { AutopilotLaunchPad } from "@/features/autopilot/AutopilotLaunchPad";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

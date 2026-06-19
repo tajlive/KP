@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { ProfilePageClient } from "./ProfilePageClient";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: "Profil - Klarpakke",

@@ -1,7 +1,7 @@
 
 import ClientMonetization from "./ClientMonetization";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function MonetizationPage() {
   return <ClientMonetization />;

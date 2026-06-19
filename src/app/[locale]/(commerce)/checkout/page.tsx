@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import ClientCheckout from "./ClientCheckout";
 import PlanCheckout from "./CheckoutContent";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: "Checkout | Klarpakke",

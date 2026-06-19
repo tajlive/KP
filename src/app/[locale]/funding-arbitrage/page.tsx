@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import FundingArbitrageDashboard from '@/features/funding/FundingArbitrageDashboard';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: 'Funding Arbitrage | Klarpakke',

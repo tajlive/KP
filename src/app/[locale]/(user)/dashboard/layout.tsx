@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 import DashboardClientLayout from "./DashboardClientLayout";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function DashboardLayout({
   children,

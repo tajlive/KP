@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import ClientAdminSessions from "./ClientAdminSessions";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

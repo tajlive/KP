@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { AutopilotLaunchPad } from "@/features/autopilot/AutopilotLaunchPad";
 import { AutopilotMonitor } from "@/features/autopilot/AutopilotMonitor";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

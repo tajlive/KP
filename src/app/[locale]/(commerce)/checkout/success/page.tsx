@@ -4,7 +4,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { TierSlug, TIERS } from '@/lib/pricing/tiers';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default async function CheckoutSuccessPage({
   params,

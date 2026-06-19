@@ -4,7 +4,7 @@ import { PortableText } from '@/components/portable-text/PortableText';
 import { safeFetch } from '@/lib/sanity/client';
 import { pageBySlugQuery } from '@/lib/sanity/queries';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 interface PageDocument {
   _id: string;

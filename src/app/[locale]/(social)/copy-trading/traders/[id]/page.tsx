@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 

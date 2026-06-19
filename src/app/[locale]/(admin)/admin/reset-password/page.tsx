@@ -1,7 +1,7 @@
 
 import ClientResetPassword from "./ClientResetPassword";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function Page() {
   return <ClientResetPassword />;

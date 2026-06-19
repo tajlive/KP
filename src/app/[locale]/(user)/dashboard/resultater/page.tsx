@@ -2,7 +2,7 @@ import TradingResultsDashboard from "@/features/dashboard/TradingResultsDashboar
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function generateMetadata({
   params,

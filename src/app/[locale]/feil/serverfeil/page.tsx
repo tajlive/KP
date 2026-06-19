@@ -1,7 +1,7 @@
 
 import ClientServerError from "./ClientServerError";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function ServerErrorPage() {
   return <ClientServerError />;

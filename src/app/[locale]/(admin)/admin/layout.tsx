@@ -25,7 +25,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export const runtime = 'edge';
 
 const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
 

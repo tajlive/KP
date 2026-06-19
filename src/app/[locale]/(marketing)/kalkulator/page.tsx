@@ -1,7 +1,7 @@
 
 import ClientKalkulator from "./ClientKalkulator";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function KalkulatorPage() {
   return <ClientKalkulator />;

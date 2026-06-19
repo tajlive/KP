@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
 

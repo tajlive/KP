@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Avoid prerender: kurs page uses Supabase server client; env vars may be missing at build.
 export const dynamic = 'force-dynamic';
