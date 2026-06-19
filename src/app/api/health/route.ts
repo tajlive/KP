@@ -42,6 +42,9 @@ function parsePgUrl(urlString: string) {
     database: decodeURIComponent(url.pathname.slice(1)),
     user: decodeURIComponent(url.username),
     password: decodeURIComponent(url.password),
+    // Supavisor pooler may require tenant identification via the
+    // `options=reference=<project-ref>` query parameter. Preserve it.
+    options: url.searchParams.get("options") || undefined,
   };
 }
 
