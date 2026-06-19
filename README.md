@@ -39,16 +39,37 @@ User-bound trading-ruter bruker `createServerClient(request, response)` for å s
 - Mode bestemmer kun execution-adapter (PaperExecutor vs BinanceExecutor)
 - Service-role (`createClient()`) er kun tillatt i cron/system-ruter og legacy wrappers
 
+### Hosting
+
+- **App:** `klarpakke` på [Fly.io](https://fly.io)
+- **Region:** `arn` (Stockholm)
+- **URL:** https://klarpakke.fly.dev
+- **Domene:** https://klarpakke.no / https://www.klarpakke.no (Cloudflare DNS + proxy)
+
 ### Deploy-sekvens
 
 ```bash
 # 1. Push til main
 git push origin main
 
-# 2. Vent på Vercel deploy
-# (auto-deploy fra main)
+# 2. Vent på GitHub Actions → Fly.io deploy
+#    Workflow: .github/workflows/deploy-fly.yml
 
 # 3. Verifiser produksjon
 npm run verify:prod
+```
+
+Manuell deploy fra lokal maskin (hvis nødvendig):
+
+```bash
+npm run fly:deploy
+```
+
+### Nyttig Fly.io-kommandoer
+
+```bash
+flyctl status --app klarpakke      # App-status
+flyctl logs --app klarpakke        # Se logs
+flyctl secrets list --app klarpakke # Secrets
 ```
 <!-- Deploy pipeline test: 2026-04-16T17:11:19+02:00 -->
