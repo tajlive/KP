@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/utils';
-import { encryptData, maskApiKey } from '@/lib/crypto/encrypt';
+import { maskApiKey } from '@/lib/utils/mask';
 import { getErrorMessage } from '@/lib/utils/error';
 import { Key, Check, X, AlertCircle, Loader2, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -116,10 +116,25 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
 
     setLoading(true);
     try {
-      const encryptedSecret = await encryptData(form.apiSecret);
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Ikke logget inn');
+
+      // Krypter API secret server-side; send aldri klartekst-secret til database
+      const encryptResponse = await fetch('/api/binance/encrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          apiKey: form.apiKey,
+          apiSecret: form.apiSecret,
+        }),
+      });
+
+      if (!encryptResponse.ok) {
+        const errorData = await encryptResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Kunne ikke kryptere API-nøkkel');
+      }
+
+      const { encryptedSecret } = await encryptResponse.json();
 
       const { error } = await supabase.from('api_keys').insert({
         user_id: user.id,

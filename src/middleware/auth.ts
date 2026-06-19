@@ -24,10 +24,10 @@ const PROTECTED_PATHS = [
   "/innstillinger",
   "/settings",
   "/admin",
-  "/onboarding",
   "/checkout",
   "/akademi",
   "/auto-trading",
+  "/paper-trading",
   "/konto",
   "/handelshistorikk",
   "/varsler",
@@ -64,7 +64,7 @@ export async function authMiddleware(
     const code = request.nextUrl.searchParams.get("code");
     const error = request.nextUrl.searchParams.get("error");
     const locale = parseLocalePath(pathname).locale;
-    
+
     // Log to Sentry in production if there's an error
     if (error && process.env.NODE_ENV === "production") {
       console.error(`[Auth Callback] OAuth error: ${error}`, {
@@ -73,7 +73,12 @@ export async function authMiddleware(
         referer: request.headers.get("referer"),
       });
     }
-    
+
+    return response;
+  }
+
+  // Skip API routes — they handle auth via 401/403 responses, not login redirects
+  if (strippedPath.startsWith("/api")) {
     return response;
   }
 
@@ -108,20 +113,26 @@ export async function authMiddleware(
   const isAuthPage = AUTH_PATHS.some(
     (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
   );
+  const isOnboardingPage = strippedPath.startsWith("/onboarding");
+  const locale = parseLocalePath(pathname).locale;
 
   // Authenticated users on auth pages -> dashboard
   if (user && isAuthPage) {
     return redirectNoCache(
-      new URL(
-        localizedPathname(parseLocalePath(pathname).locale, "/dashboard"),
-        request.url,
-      ),
+      new URL(localizedPathname(locale, "/dashboard"), request.url),
       302,
     );
   }
 
-  // Onboarding & tier gates for logged-in users on protected paths
-  if (isProtected && user) {
+  // Unauthenticated users on protected paths -> login (preserve intended URL)
+  if (isProtected && !user) {
+    const loginUrl = new URL(localizedPathname(locale, "/login"), request.url);
+    loginUrl.searchParams.set("next", pathname);
+    return redirectWithCookies(loginUrl, request, response);
+  }
+
+  // Onboarding & tier gates for logged-in users on protected paths or onboarding
+  if (user && (isProtected || isOnboardingPage)) {
     const onboardingResult = await handleOnboarding(request, response);
     if (onboardingResult) return onboardingResult;
   }
