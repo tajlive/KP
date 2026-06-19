@@ -4,16 +4,18 @@ import { i18nMiddleware } from "@/middleware/i18n";
 import { authMiddleware } from "@/middleware/auth";
 import { rateLimitMiddleware } from "@/middleware/rateLimit";
 import { cspMiddleware } from "@/middleware/csp";
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 
 /**
  * Next.js middleware chain — edge-layer for Klarpakke.
  *
  * Execution order (left → right):
- *   1. i18n   — locale routing, canonical redirects, duplicate-prefix fix
- *   2. auth   — session refresh, onboarding gates, tier gates (NO auth redirects —
- *               pages handle auth rendering via Guard-as-Render pattern)
- *   3. rateLimit — API rate limiting (Upstash Redis)
- *   4. csp    — Content-Security-Policy + security headers
+ *   1. removedPages — legacy route removal redirects
+ *   2. i18n         — locale routing, canonical redirects, duplicate-prefix fix
+ *   3. auth         — session refresh, onboarding gates, tier gates
+ *   4. rateLimit    — API rate limiting (Upstash Redis)
+ *   5. csp          — Content-Security-Policy (no cache side-effects)
+ *   6. cacheControl — selective no-store for sensitive routes
  *
  * If any step returns a terminal response (redirect, 429, etc.), the chain
  * stops immediately.
@@ -24,6 +26,7 @@ export default chain(
   authMiddleware,
   rateLimitMiddleware,
   cspMiddleware,
+  cacheControlMiddleware,
 );
 
 export const config = {

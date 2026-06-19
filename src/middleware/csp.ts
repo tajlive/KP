@@ -149,10 +149,11 @@ export const cspMiddleware: MiddlewareFn = (
   // Set CSP header on response
   res.headers.set("Content-Security-Policy", cspHeader);
 
-  // Prevent caching of HTML responses that contain CSP headers
-  // This ensures the nonce is always fresh and prevents stale CSP issues
-  res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
-  res.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
+  // NOTE: We intentionally do NOT set a global Cache-Control header here.
+  // CSP is independent of caching; adding no-store globally prevented
+  // Cloudflare from caching cacheable HTML (marketing/legal pages).
+  // Selective no-store for sensitive routes is handled by a dedicated
+  // cache-control middleware so auth/dashboard pages remain uncached.
 
   // Also set nonce in a custom header for client-side access (if needed)
   // This allows client components to access the nonce for inline scripts
