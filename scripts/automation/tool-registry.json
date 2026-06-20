@@ -1,0 +1,252 @@
+{
+  "$schema": "./tool-registry.schema.json",
+  "version": "1.0.0",
+  "description": "Unified registry of CLI scripts, npm scripts, MCP tools, and internal API endpoints available to the Automation Subagent.",
+  "tools": {
+    "npm:test:unit": {
+      "type": "npm",
+      "command": "npm run test:unit",
+      "description": "Run unit tests with Vitest",
+      "timeout": 300,
+      "env": [],
+      "secrets": []
+    },
+    "npm:test:e2e:critical:chromium": {
+      "type": "npm",
+      "command": "npm run test:e2e:critical:chromium",
+      "description": "Run critical E2E tests on Chromium",
+      "timeout": 600,
+      "env": [],
+      "secrets": []
+    },
+    "npm:test:e2e:prepare": {
+      "type": "npm",
+      "command": "npm run test:e2e:prepare",
+      "description": "Provision E2E test users",
+      "timeout": 120,
+      "env": [],
+      "secrets": []
+    },
+    "npm:build": {
+      "type": "npm",
+      "command": "npm run build",
+      "description": "Production build",
+      "timeout": 300,
+      "env": [],
+      "secrets": []
+    },
+    "npm:lint:gate": {
+      "type": "npm",
+      "command": "npm run lint:gate",
+      "description": "Lint gate",
+      "timeout": 300,
+      "env": [],
+      "secrets": []
+    },
+    "npm:type-check": {
+      "type": "npm",
+      "command": "npm run type-check",
+      "description": "TypeScript check",
+      "timeout": 300,
+      "env": [],
+      "secrets": []
+    },
+    "npm:deploy:coolify": {
+      "type": "npm",
+      "command": "npm run deploy:coolify",
+      "description": "Trigger Coolify deploy",
+      "timeout": 120,
+      "env": ["COOLIFY_DEPLOY_WEBHOOK", "COOLIFY_TOKEN"],
+      "secrets": ["COOLIFY_TOKEN"]
+    },
+    "npm:health:prod:gate": {
+      "type": "npm",
+      "command": "npm run health:prod:gate",
+      "description": "Production health gate",
+      "timeout": 120,
+      "env": ["HEALTH_URL"],
+      "secrets": []
+    },
+    "npm:vault:sync:env": {
+      "type": "npm",
+      "command": "npm run vault:sync:env",
+      "description": "Encrypt .env.local secrets to MemPalace KG",
+      "timeout": 60,
+      "env": ["KLARPAKKE_VAULT_KEY"],
+      "secrets": ["KLARPAKKE_VAULT_KEY"]
+    },
+    "npm:vault:sync:mempalace": {
+      "type": "npm",
+      "command": "npm run vault:sync:mempalace -- --force",
+      "description": "Restore MemPalace secrets to .env.local",
+      "timeout": 60,
+      "env": ["KLARPAKKE_VAULT_KEY"],
+      "secrets": ["KLARPAKKE_VAULT_KEY"]
+    },
+    "npm:vault:verify": {
+      "type": "npm",
+      "command": "npm run vault:verify",
+      "description": "Verify secrets vault round-trip",
+      "timeout": 60,
+      "env": ["KLARPAKKE_VAULT_KEY"],
+      "secrets": ["KLARPAKKE_VAULT_KEY"]
+    },
+    "npm:mcp:smoke": {
+      "type": "npm",
+      "command": "npm run mcp:smoke",
+      "description": "Test MCP server connectivity",
+      "timeout": 120,
+      "env": [],
+      "secrets": []
+    },
+    "cli:playwright:install:chromium": {
+      "type": "cli",
+      "command": "npx playwright install chromium",
+      "description": "Install Playwright Chromium browser binary",
+      "timeout": 300,
+      "env": [],
+      "secrets": []
+    },
+    "script:cloud-readiness": {
+      "type": "script",
+      "path": "scripts/cloud-readiness.mjs",
+      "args": ["--profile", "agent"],
+      "description": "Check cloud readiness for agent profile",
+      "timeout": 120,
+      "env": [],
+      "secrets": []
+    },
+    "script:health-check": {
+      "type": "script",
+      "path": "scripts/health-check.mjs",
+      "args": ["full"],
+      "description": "Run full local health check",
+      "timeout": 120,
+      "env": [],
+      "secrets": []
+    },
+    "script:verify-production": {
+      "type": "script",
+      "path": "scripts/verify-production.mjs",
+      "args": [],
+      "description": "Production smoke test",
+      "timeout": 120,
+      "env": [],
+      "secrets": []
+    },
+    "script:coolify-deploy": {
+      "type": "script",
+      "path": "scripts/coolify-deploy.mjs",
+      "args": [],
+      "description": "Trigger Coolify deploy",
+      "timeout": 120,
+      "env": ["COOLIFY_DEPLOY_WEBHOOK", "COOLIFY_TOKEN"],
+      "secrets": ["COOLIFY_TOKEN"]
+    },
+    "script:agent-bridge": {
+      "type": "script",
+      "path": "scripts/agent-bridge.mjs",
+      "args": ["status"],
+      "description": "Agent bridge status",
+      "timeout": 60,
+      "env": [],
+      "secrets": []
+    },
+    "mcp:mempalace:search": {
+      "type": "mcp",
+      "server": "mempalace",
+      "tool": "search",
+      "description": "Search MemPalace knowledge",
+      "timeout": 30,
+      "env": [],
+      "secrets": []
+    },
+    "mcp:mempalace:kg_query": {
+      "type": "mcp",
+      "server": "mempalace",
+      "tool": "kg_query",
+      "description": "Query MemPalace KG entity",
+      "timeout": 30,
+      "env": [],
+      "secrets": []
+    },
+    "mcp:mempalace:kg_add": {
+      "type": "mcp",
+      "server": "mempalace",
+      "tool": "kg_add",
+      "description": "Add fact to MemPalace KG",
+      "timeout": 30,
+      "env": [],
+      "secrets": []
+    },
+    "mcp:mempalace:write_diary": {
+      "type": "mcp",
+      "server": "mempalace",
+      "tool": "write_diary",
+      "description": "Write diary entry to MemPalace",
+      "timeout": 30,
+      "env": [],
+      "secrets": []
+    },
+    "mcp:supabase:execute_sql": {
+      "type": "mcp",
+      "server": "supabase-db",
+      "tool": "execute_sql",
+      "description": "Execute SQL against Supabase Postgres",
+      "timeout": 60,
+      "env": ["DATABASE_URL", "POSTGRES_URL"],
+      "secrets": ["DATABASE_URL", "POSTGRES_URL"]
+    },
+    "api:health": {
+      "type": "api",
+      "method": "GET",
+      "url": "{{NEXT_PUBLIC_APP_URL}}/api/health",
+      "description": "Health check against app",
+      "timeout": 30,
+      "env": ["NEXT_PUBLIC_APP_URL"],
+      "secrets": []
+    },
+    "api:cron:tick": {
+      "type": "api",
+      "method": "POST",
+      "url": "{{NEXT_PUBLIC_APP_URL}}/api/cron/tick",
+      "headers": {
+        "Authorization": "Bearer {{CRON_SECRET}}"
+      },
+      "description": "Trigger trading tick cron",
+      "timeout": 60,
+      "env": ["NEXT_PUBLIC_APP_URL", "CRON_SECRET"],
+      "secrets": ["CRON_SECRET"]
+    }
+  },
+  "workflows": {
+    "e2e-critical": {
+      "description": "Run critical E2E suite with environment setup",
+      "steps": [
+        "cli:playwright:install:chromium",
+        "npm:test:e2e:prepare",
+        "npm:test:e2e:critical:chromium"
+      ]
+    },
+    "ci-gate": {
+      "description": "Full CI-like gate",
+      "steps": [
+        "npm:lint:gate",
+        "npm:type-check",
+        "npm:test:unit",
+        "npm:build"
+      ]
+    },
+    "deploy-pipeline": {
+      "description": "Deploy pipeline with health check",
+      "steps": [
+        "npm:lint:gate",
+        "npm:type-check",
+        "npm:test:unit",
+        "npm:build",
+        "npm:deploy:coolify",
+        "npm:health:prod:gate"
+      ]
+    }
+  }
+}

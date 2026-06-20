@@ -1,0 +1,14 @@
+{
+  "taskId": "auto-vault-verify-001",
+  "name": "Verify secrets vault round-trip",
+  "tags": ["vault", "secrets", "verification"],
+  "contextQueries": ["vault", "secrets"],
+  "contextEntities": ["klarpakke-secrets-vault"],
+  "continueOnError": false,
+  "steps": ["npm:vault:verify"],
+  "questions": [
+    "Er du fornøyd med at vault-round-trip fungerer?",
+    "Skal jeg synkronisere .env.local til MemPalace nå?",
+    "Er det noen secrets du vil ekskludere fra automatisert sync?"
+  ]
+}

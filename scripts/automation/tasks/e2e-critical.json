@@ -1,0 +1,19 @@
+{
+  "taskId": "auto-e2e-critical-001",
+  "name": "Run critical E2E suite",
+  "description": "Install Playwright Chromium, provision test users, and run critical E2E tests.",
+  "tags": ["e2e", "playwright", "automation"],
+  "contextQueries": ["e2e", "playwright", "test users"],
+  "contextEntities": ["klarpakke-secrets-vault"],
+  "continueOnError": false,
+  "steps": [
+    "cli:playwright:install:chromium",
+    "npm:test:e2e:prepare",
+    "npm:test:e2e:critical:chromium"
+  ],
+  "questions": [
+    "Er du fornøyd med E2E-resultatene?",
+    "Skal jeg kjøre full E2E-suite (regression) neste gang, eller holde meg til critical?",
+    "Var det noen flakiness eller miljøissues jeg skal notere for fremtidige kjøringer?"
+  ]
+}
