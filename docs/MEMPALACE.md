@@ -158,6 +158,16 @@ CHANGELOG.md                    ← "Dagbok"
 
 ---
 
+## 🔌 SessionEnd Hook
+
+KIMI SessionEnd-hooken for dette prosjektet ligger i:
+
+```
+/Users/taj/klarpakke/.kimi/hooks/mempalace-smart-exit.sh
+```
+
+Den konfigureres i `~/.kimi/config.toml` under `[[hooks]]` / `event = "SessionEnd"`. Endringer i prosjekthooken vil derfor automatisk gjelde for alle sesjoner så lenge config peker på filen over.
+
 ## Vedlikehold
 - **Hver commit:** Oppdater relevant "rom"
 - **Hver uke:** Sjekk at lenker fungerer
