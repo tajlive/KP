@@ -28,15 +28,10 @@ export function AuthHashHandler() {
     setMounted(true);
   }, []);
 
-  // Consistent SSR + hydration: return null until mounted.
-  // This guarantees identical output during SSR and initial client render,
-  // preventing hydration mismatch from usePathname() returning null on client.
-  if (!mounted) return null;
-
-  // After mount, skip entirely on callback page — callback/page.tsx handles PKCE exclusively
-  if (pathname?.includes("/callback")) return null;
-
   useEffect(() => {
+    // Only run after mount and not on callback page
+    if (!mounted) return;
+    if (pathname?.includes("/callback")) return;
     // Double-check via window.location (defensive)
     if (typeof window !== "undefined" && window.location.pathname.includes("/callback")) {
       return;
@@ -119,7 +114,15 @@ export function AuthHashHandler() {
     };
 
     handleAuthHash();
-  }, [router, locale]);
+  }, [mounted, pathname, router, locale]);
+
+  // Consistent SSR + hydration: return null until mounted.
+  // This guarantees identical output during SSR and initial client render,
+  // preventing hydration mismatch from usePathname() returning null on client.
+  if (!mounted) return null;
+
+  // After mount, skip entirely on callback page — callback/page.tsx handles PKCE exclusively
+  if (pathname?.includes("/callback")) return null;
 
   // Vis error-state
   if (error) {
