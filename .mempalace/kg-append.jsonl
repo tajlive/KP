@@ -18,3 +18,9 @@
 {"subject":"auth-hash-handler","predicate":"has","object":"render-time-callback-guard","validFrom":"2026-05-15T23:07:16.993Z"}
 {"subject":"react-418-callback","predicate":"fixed-by","object":"client-only-render-guard","validFrom":"2026-05-15T23:07:16.994Z"}
 {"subject":"callback-page","predicate":"removed","object":"useSearchParams-dead-variable","validFrom":"2026-05-15T23:07:16.994Z"}
+{"subject":"klarpakke-stabilization","predicate":"merged-to-main","object":"stabilize/remove-platform-remnants","validFrom":"2026-06-20T15:36:33.388Z"}
+{"subject":"klarpakke-stabilization","predicate":"merged-to-main","object":"stabilize/architecture-docs","validFrom":"2026-06-20T15:36:33.392Z"}
+{"subject":"klarpakke-main","predicate":"verification","object":"lint-gate-pass-type-check-pass-test-unit-pass-build-pass","validFrom":"2026-06-20T15:36:33.395Z"}
+{"subject":"klarpakke-main","predicate":"deploy-status","object":"ready-not-deployed","validFrom":"2026-06-20T15:36:33.395Z"}
+{"subject":"klarpakke-migration-docs-tools","predicate":"status","object":"ready-as-doc-tool-pr","validFrom":"2026-06-20T15:36:33.397Z"}
+{"subject":"klarpakke-next-image-config","predicate":"fix","object":"removed-COOLIFY-from-unoptimized","validFrom":"2026-06-20T15:36:33.398Z"}

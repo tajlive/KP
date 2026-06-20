@@ -2695,6 +2695,11 @@
       "predicate": "has",
       "object": "hardcoded English text: Trading Sessions, win rate",
       "validFrom": "2026-05-06T09:07:15.826Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "suppressHydrationWarning for locale-sensitive formatting",
+      "validFrom": "2026-05-15T22:29:12.295Z"
     }
   ],
   "RestartTradingButton": [
@@ -3841,6 +3846,117 @@
       "predicate": "version_source",
       "object": "FLY_ALLOC_ID",
       "validFrom": "2026-05-14T12:00:00Z"
+    }
+  ],
+  "SmartPortfolioDashboard": [
+    {
+      "predicate": "uses",
+      "object": "useClientOnly for hydration-safe time rendering",
+      "validFrom": "2026-05-15T22:29:12.295Z"
+    }
+  ],
+  "api/market/snapshot": [
+    {
+      "predicate": "returns",
+      "object": "fallback data instead of 502 on Binance failure",
+      "validFrom": "2026-05-15T22:29:12.295Z"
+    }
+  ],
+  "PortfolioChart": [
+    {
+      "predicate": "guards",
+      "object": "ResponsiveContainer with mounted state to prevent dimension warnings",
+      "validFrom": "2026-05-15T22:29:12.296Z"
+    }
+  ],
+  "ConditionalFooter": [
+    {
+      "predicate": "uses",
+      "object": "mounted guard for toLocaleDateString hydration fix",
+      "validFrom": "2026-05-15T22:53:55.755Z"
+    }
+  ],
+  "LocaleMarketingShell": [
+    {
+      "predicate": "hides marketing shell for",
+      "object": "/callback route",
+      "validFrom": "2026-05-15T22:53:55.757Z"
+    }
+  ],
+  "React hydration error #418": [
+    {
+      "predicate": "fixed on page",
+      "object": "/no/callback",
+      "validFrom": "2026-05-15T22:53:55.759Z"
+    },
+    {
+      "predicate": "root cause was",
+      "object": "ConditionalFooter new Date().toLocaleDateString('no-NO')",
+      "validFrom": "2026-05-15T22:53:55.759Z"
+    }
+  ],
+  "callback-page": [
+    {
+      "predicate": "uses",
+      "object": "mounted-guard-for-ssr-placeholder",
+      "validFrom": "2026-05-15T23:07:16.986Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "useSearchParams-dead-variable",
+      "validFrom": "2026-05-15T23:07:16.994Z"
+    }
+  ],
+  "auth-hash-handler": [
+    {
+      "predicate": "has",
+      "object": "render-time-callback-guard",
+      "validFrom": "2026-05-15T23:07:16.993Z"
+    }
+  ],
+  "react-418-callback": [
+    {
+      "predicate": "fixed-by",
+      "object": "client-only-render-guard",
+      "validFrom": "2026-05-15T23:07:16.994Z"
+    }
+  ],
+  "klarpakke-stabilization": [
+    {
+      "predicate": "merged-to-main",
+      "object": "stabilize/remove-platform-remnants",
+      "validFrom": "2026-06-20T15:36:33.388Z"
+    },
+    {
+      "predicate": "merged-to-main",
+      "object": "stabilize/architecture-docs",
+      "validFrom": "2026-06-20T15:36:33.392Z"
+    }
+  ],
+  "klarpakke-main": [
+    {
+      "predicate": "verification",
+      "object": "lint-gate-pass-type-check-pass-test-unit-pass-build-pass",
+      "validFrom": "2026-06-20T15:36:33.395Z"
+    },
+    {
+      "predicate": "deploy-status",
+      "object": "ready-not-deployed",
+      "validFrom": "2026-06-20T15:36:33.395Z"
+    }
+  ],
+  "klarpakke-migration-docs-tools": [
+    {
+      "predicate": "status",
+      "object": "ready-as-doc-tool-pr",
+      "validFrom": "2026-06-20T15:36:33.397Z"
+    }
+  ],
+  "klarpakke-next-image-config": [
+    {
+      "predicate": "fix",
+      "object": "removed-COOLIFY-from-unoptimized",
+      "validFrom": "2026-06-20T15:36:33.398Z"
     }
   ]
 }
