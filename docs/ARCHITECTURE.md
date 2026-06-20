@@ -1,7 +1,7 @@
 # 🏗️ Klarpakke Systemarkitektur
 
-> **Sist oppdatert:** 21. mars 2026  
-> **Status:** Auto Trade i produksjon
+> **Sist oppdatert:** 20. juni 2026  
+> **Status:** Auto Trade i produksjon på Hetzner + Coolify
 
 ---
 
@@ -9,10 +9,12 @@
 
 Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk handel:
 
-1. **Frontend**: Next.js 15 (App Router) hostet på **Vercel**
+1. **Frontend**: Next.js 16 (App Router) hostet på **Hetzner VPS + Coolify**, med Cloudflare DNS/CDN/Proxy foran
 2. **Backend**: Supabase Edge Functions + Next.js API Routes
 3. **Database**: PostgreSQL med Row Level Security (RLS)
 4. **Scheduler**: **Supabase** (pg_cron / Supabase scheduler) som kilde for tidsplan — se [`docs/CRON-SOURCE-OF-TRUTH.md`](CRON-SOURCE-OF-TRUTH.md). App-ruter under `/api/cron/*` kalles med `CRON_SECRET`; Vercel Cron er ikke måltilstand som «motor» for grid/strategi.
+
+> **Migreringsstatus:** Plattformen er migrert fra Fly.io/Vercel/GitHub Actions til Hetzner VPS + Coolify + Woodpecker CI + GlitchTip. Enkelte kode- og dokumentasjonsrester ryddes fortsatt opp. Se `docs/SELF-HOSTED-SETUP.md` for detaljer.
 
 ---
 
@@ -26,8 +28,8 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
                                     │ HTTPS
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                             VERCEL PLATFORM                                  │
-│                    (klarpakke-universitet / us-central1)                     │
+│                        COOLIFY / HETZNER PLATFORM                            │
+│                         (www.klarpakke.no / Hetzner VPS)                     │
 │                                                                              │
 │  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐  │
 │  │   Next.js App       │  │   API Routes        │  │   Statiske filer    │  │
@@ -110,7 +112,7 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
 
 ## Komponent-detaljer
 
-### 1. Frontend Layer (Next.js 15)
+### 1. Frontend Layer (Next.js 16)
 
 #### App Router Struktur
 
@@ -135,7 +137,7 @@ src/app/
 
 #### Viktige Konfigurasjoner
 
-- **Output**: `standalone` (påkrevd for Cloud Run)
+- **Output**: `standalone` (påkrevd for Coolify / Docker)
 - **i18n**: next-intl + middleware; aktiv oversettelses-SoT **no + en** (`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`)
 - **Auth**: Supabase SSR med `getUser()`; session i cookies med `cookieEncoding: 'raw'`. Client: `createClient` fra `@/lib/utils`; server: `createServerClient` fra `@/lib/supabase/server`. Detaljer: [docs/auth-storage.md](auth-storage.md)
 
@@ -302,7 +304,7 @@ src/app/
 
 #### Lag 1: Nettverk
 
-- HTTPS kun (håndhevet av Cloud Run + Supabase)
+- HTTPS kun (håndhevet av Cloudflare + Coolify + Supabase)
 - CORS konfigurert i Edge Functions
 - Rate limiting i middleware.ts
 
@@ -343,16 +345,17 @@ src/app/
 
 | Komponent   | Teknologi                                                                          |
 | ----------- | ---------------------------------------------------------------------------------- |
-| Frontend    | Next.js 15, React, TypeScript, Tailwind CSS                                        |
-| Runtime     | Node.js 24.x (jfr. `engines` / Vercel)                                             |
-| Backend     | Supabase Edge Functions (Deno)                                                     |
+| Frontend    | Next.js 16, React 19, TypeScript 5.9, Tailwind CSS                                 |
+| Runtime     | Node.js 24.x (jfr. `engines` / Coolify)                                            |
+| Backend     | Supabase Edge Functions (Deno) + Next.js API Routes                                |
 | Database    | PostgreSQL 15 (Supabase)                                                           |
 | Auth        | Supabase Auth                                                                      |
 | Betaling    | Stripe                                                                             |
-| Hosting     | Vercel                                                                             |
+| Hosting     | Hetzner VPS + Coolify + Cloudflare DNS/CDN/Proxy                                   |
 | Scheduler   | Supabase pg_cron / scheduler → `/api/cron/*` (SoT: `docs/CRON-SOURCE-OF-TRUTH.md`) |
 | Trading API | Binance API                                                                        |
-| CI/CD       | GitHub Actions (sekundær)                                                          |
+| Error Tracking | GlitchTip (selv-hostet)                                                         |
+| CI/CD       | Woodpecker CI                                                                      |
 
 ---
 
@@ -360,17 +363,18 @@ src/app/
 
 ### Nåværende (MVP)
 
-- **Cloud Run**: Auto-scale 1-100 instanser
-- **Database**: Single instance (tilstrekkelig for <10k brukere)
+- **Coolify / Hetzner VPS**: Docker-basert deploy, manuell/skalert via Coolify UI
+- **Database**: Supabase PostgreSQL, single instance (tilstrekkelig for <10k brukere)
 - **Rate Limiting**: In-memory per instans
 - **Scheduler**: Supabase → `/api/cron/*` (se `docs/CRON-SOURCE-OF-TRUTH.md`)
+- **Error Tracking**: Selv-hostet GlitchTip (`docker-compose.glitchtip.yml`)
 
 ### Fremtidig (ved behov)
 
 1. **Database**: Connection pooling, read replicas
 2. **Caching**: Redis for hyppige queries
-3. **Rate Limiting**: Distribuert (Redis/Upstash)
-4. **Monitoring**: Real-time alerts, P99 latency tracking
+3. **Rate Limiting**: Distribuert (Redis)
+4. **Monitoring**: Real-time alerts via GlitchTip, P99 latency tracking
 
 ---
 
@@ -381,5 +385,5 @@ src/app/
 - [docs/CRON-SOURCE-OF-TRUTH.md](./CRON-SOURCE-OF-TRUTH.md) — tidsplanlegging
 - [.kimi/MASTER_PROMPT.md](../.kimi/MASTER_PROMPT.md) — AI-agent instruksjoner
 - [auto-trade.md](./auto-trade.md) — Auto Trade-detaljer
-- [infra-gcp.md](./infra-gcp.md) — GCP-infrastruktur
+- [docs/SELF-HOSTED-SETUP.md](./SELF-HOSTED-SETUP.md) — Hetzner + Coolify + Woodpecker + GlitchTip-oppsett
 - [auth-and-middleware.md](./auth-and-middleware.md) — Auth-oppsett
