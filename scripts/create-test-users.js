@@ -239,16 +239,33 @@ async function runCheckEnv() {
     }
   }
 
+  async function authProbe(key) {
+    const ac = new AbortController();
+    const to = setTimeout(() => ac.abort(), 12_000);
+    try {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+        signal: ac.signal,
+        headers: {
+          apikey: key,
+          Accept: "application/json",
+        },
+      });
+      return r.status;
+    } finally {
+      clearTimeout(to);
+    }
+  }
+
   if (anon) {
     try {
       const srStatus = await restProbe(SERVICE_ROLE_KEY);
       console.log(`  PostgREST med service_role: HTTP ${srStatus}`);
 
-      const anonStatus = await restProbe(anon);
-      console.log(`  PostgREST med anon: HTTP ${anonStatus}`);
+      const anonStatus = await authProbe(anon);
+      console.log(`  Auth/GoTrue med anon: HTTP ${anonStatus}`);
 
       if (anonStatus === 401) {
-        console.log("\n❌ PostgREST avviser anon-nøkkel (401).");
+        console.log("\n❌ GoTrue/Auth avviser anon-nøkkel (401).");
         if (srStatus !== 401 && srStatus < 500) {
           console.log(
             "   Service role fungerer mot samme URL → prosjektet er riktig; anon-strengen er sannsynligvis avkortet, utdatert eller feilkopiert.",
