@@ -36,9 +36,22 @@ steps:
   - name: deploy-to-coolify
     image: alpine/curl
     commands:
-      - echo "Triggering Coolify deploy..."
-      # Placeholder: bytt ut med Coolify webhook URL eller CLI-kommando.
-      # curl -X POST "${COOLIFY_DEPLOY_WEBHOOK}" -H "Authorization: Bearer ${COOLIFY_TOKEN}"
+      - |
+        set -eu
+        : "${COOLIFY_DEPLOY_WEBHOOK:?Missing Woodpecker secret: coolify_deploy_webhook}"
+        : "${COOLIFY_TOKEN:?Missing Woodpecker secret: coolify_token}"
+        echo "Triggering Coolify deploy for ${CI_COMMIT_SHA}..."
+        curl \
+          --fail-with-body \
+          --show-error \
+          --silent \
+          --max-time 30 \
+          --retry 2 \
+          --request POST \
+          --header "Authorization: Bearer ${COOLIFY_TOKEN}" \
+          "${COOLIFY_DEPLOY_WEBHOOK}"
+        echo
+        echo "Coolify accepted the deploy request."
     secrets:
       - coolify_deploy_webhook
       - coolify_token
@@ -46,17 +59,31 @@ steps:
   - name: health-check
     image: alpine/curl
     commands:
-      - echo "Waiting for production health..."
       - |
-        for i in $(seq 1 36); do
-          if curl -sfS -o /dev/null --max-time 15 "${NEXT_PUBLIC_APP_URL}/api/health"; then
-            echo "Health OK after ${i} attempt(s)"
+        set -eu
+        : "${NEXT_PUBLIC_APP_URL:?Missing Woodpecker secret: next_public_app_url}"
+        expected_commit="$(printf '%s' "${CI_COMMIT_SHA}" | cut -c1-7)"
+        health_url="${NEXT_PUBLIC_APP_URL%/}/api/health"
+        echo "Waiting for production commit ${expected_commit}..."
+
+        for i in $(seq 1 60); do
+          response="$(curl --fail --show-error --silent --max-time 15 \
+            -H 'Cache-Control: no-cache' \
+            "${health_url}?deploy=${expected_commit}&attempt=${i}" || true)"
+
+          if printf '%s' "${response}" | grep -Eq \
+            "\"status\":\"(healthy|degraded)\".*\"version\":\"${expected_commit}\""; then
+            echo "Production is running ${expected_commit} after ${i} attempt(s)."
             exit 0
           fi
-          echo "Attempt $i/36 — sleeping 10s"
+
+          current_version="$(printf '%s' "${response}" \
+            | sed -n 's/.*"version":"\([^"]*\)".*/\1/p')"
+          echo "Attempt ${i}/60 — current version: ${current_version:-unavailable}"
           sleep 10
         done
-        echo "Production health did not become ready in time"
+
+        echo "Production did not expose expected commit ${expected_commit} within 10 minutes."
         exit 1
     environment:
       NEXT_PUBLIC_APP_URL: "${NEXT_PUBLIC_APP_URL}"

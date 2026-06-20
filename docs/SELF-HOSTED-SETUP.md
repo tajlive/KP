@@ -59,6 +59,9 @@ Følg onboarding for å sette opp:
 3. Koble til Git-repoet: `https://github.com/tajlive/KP`.
 4. Branch: `main`.
 5. Build pack: `Dockerfile` eller `Nixpacks`.
+6. Under **Advanced**, aktiver **Include Source Commit in Build**. Dette eksponerer
+   `SOURCE_COMMIT` slik at deploy-pipelinen kan bekrefte at riktig commit faktisk
+   kjører i produksjon.
 
 ### Environment variables
 
@@ -215,7 +218,6 @@ npm run lint:gate && npm run type-check && npm run test:unit && npm run build
 
 ```bash
 # Se logs
-npm run fly:logs          # beholdes midlertidig
 docker logs -f klarpakke  # Coolify-app
 
 # Restart app

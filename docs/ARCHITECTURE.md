@@ -1,6 +1,6 @@
 # 🏗️ Klarpakke Systemarkitektur
 
-> **Sist oppdatert:** 20. juni 2026  
+> **Sist oppdatert:** 20. juni 2026
 > **Status:** Auto Trade i produksjon på Hetzner + Coolify
 
 ---

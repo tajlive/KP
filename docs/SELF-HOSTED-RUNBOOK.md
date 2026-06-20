@@ -370,6 +370,10 @@ COOLIFY_TOKEN
 - Coolify → Application → Webhook URL.
 - Coolify → API Tokens.
 
+Aktiver også **Application → Advanced → Include Source Commit in Build**.
+Klarpakkes `/api/health` eksponerer de første sju tegnene av `SOURCE_COMMIT`,
+og Woodpecker avviser deployen dersom produksjon fortsatt kjører en eldre commit.
+
 ### 6.5 Oppdater deploy-pipeline
 
 I repoet er `.woodpecker/deploy.yml` allerede laget. Du må fjerne kommentaren på Coolify-curl:
@@ -378,8 +382,14 @@ I repoet er `.woodpecker/deploy.yml` allerede laget. Du må fjerne kommentaren p
 - name: deploy-to-coolify
   image: alpine/curl
   commands:
-    - echo "Triggering Coolify deploy..."
-    - curl -X POST "${COOLIFY_DEPLOY_WEBHOOK}" -H "Authorization: Bearer ${COOLIFY_TOKEN}"
+    - |
+      set -eu
+      : "${COOLIFY_DEPLOY_WEBHOOK:?Missing coolify_deploy_webhook}"
+      : "${COOLIFY_TOKEN:?Missing coolify_token}"
+      curl --fail-with-body --show-error --silent --max-time 30 \
+        --request POST \
+        --header "Authorization: Bearer ${COOLIFY_TOKEN}" \
+        "${COOLIFY_DEPLOY_WEBHOOK}"
   secrets:
     - coolify_deploy_webhook
     - coolify_token
