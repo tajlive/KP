@@ -2,6 +2,8 @@
 
 This document inventories every environment variable / secret used by the Klarpakke project. It is the authoritative reference for the local secrets vault (`scripts/vault/`) which encrypts `.env.local` values and stores them in MemPalace KG under `secret:<NAME>`.
 
+For usage instructions (sync, restore, encrypt, decrypt, disaster recovery), see [`scripts/vault/README.md`](../scripts/vault/README.md).
+
 **Scope:**
 - Sources: `.env-templates/.env.local.example`, `.env-templates/.env.example`, `.env.production.template`, `.env.deploy.template`, `package.json` scripts, runtime code (`src/`, `scripts/`, `e2e/`), Woodpecker CI workflows, and the `env-checker.ts` specification.
 - Classification: `public` = `NEXT_PUBLIC_*` (exposed to the browser at build time); `server` = server-only secrets.

@@ -148,6 +148,7 @@
     "vault:decrypt": "node scripts/vault/decrypt-secret.mjs",
     "vault:sync:env": "node scripts/vault/sync-env-to-mempalace.mjs",
     "vault:sync:mempalace": "node scripts/vault/sync-mempalace-to-env.mjs",
+    "vault:verify": "node scripts/vault/verify-round-trip.mjs",
     "mcp:kimi": "tsx scripts/kimi-mcp-server.ts",
     "mcp:kimi:http": "TRANSPORT=http tsx scripts/kimi-mcp-server.ts",
     "mcp:kimi:proxy": "mcp-proxy --port 3100 --apiKey \"${MCP_API_KEY:-}\" -- tsx scripts/kimi-mcp-server.ts",
