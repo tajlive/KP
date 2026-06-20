@@ -228,6 +228,7 @@ public/favicon.png
 allure-report/
 allure-results/
 .env.bak
+.env.local.bak.*
 .env*.save
 .env.local.save
 *.bak
