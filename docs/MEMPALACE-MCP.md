@@ -1,219 +1,149 @@
-# 🏛️ Mempalace MCP System
-## Supermenneskelig KIMI-optimalisering
+# 🏛️ MemPalace MCP System
 
----
-
-## Hva Er Dette?
-
-**Mempalace MCP** (Model Context Protocol) er et system som gir KIMI supermenneskelig prosjektforståelse ved å:
-
-1. **Indeksere** hele kodebasen i realtid
-2. **Tilby** kontekst-berikede prompts
-3. **Predikere** problemer før de oppstår
-4. **Navigere** semantisk gjennom koden
+MemPalace MCP er Klarpakkes lokale prosjektkunnskapssystem for KIMI. Det gir KIMI
+tilgang til indeksert kunnskap, knowledge graph (KG) og dagbok via Model Context
+Protocol (MCP).
 
 ---
 
 ## Arkitektur
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    KIMI (Model)                              │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       │ Beriket prompt
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│           KIMI-Mempalace Bridge                              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │ Domain Det.  │  │ Symbol Index │  │ Issue Pred.  │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ HTTP API
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│           Mempalace MCP Server                               │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │ File Index   │  │ Type Index   │  │ Context Map  │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-└─────────────────────────────────────────────────────────────┘
+```text
+┌─────────────────────────────────────────────┐
+│ KIMI CLI                                    │
+│  └── leser ~/.kimi/mcp.json                 │
+│       └── mcpServers.mempalace              │
+└──────────────────┬──────────────────────────┘
+                   │ stdio (MCP)
+┌──────────────────▼──────────────────────────┐
+│ MemPalace MCP Server v3.4.0                 │
+│ scripts/run-mempalace-mcp-v3.mjs            │
+│                                             │
+│  • In-memory inverted index (TF-IDF)        │
+│  • Bigram-scoring for fraser                │
+│  • Cross-lingual norsk↔engelsk              │
+│  • Enkel stemming                           │
+│  • File watcher m/debounce                  │
+│  • Atomisk index/KG-skriving                │
+│  • Persistens til .mempalace/index-cache-v3 │
+└─────────────────────────────────────────────┘
 ```
 
----
-
-## Hurtigstart
-
-### 1. Start MCP Server
-```bash
-npm run mempalace:start
-# eller
-node scripts/start-mempalace-mcp.mjs
-```
-
-### 2. Test i Terminal
-```bash
-# Hent kontekst for auth
-curl http://localhost:3456/context?q=@auth
-
-# Finn definisjon av Trade
-curl http://localhost:3456/index?symbol=Trade
-
-# Prediker problemer i filer
-curl "http://localhost:3456/predict?files=src/lib/trading/core/execute-trade.ts"
-```
-
-### 3. Integrer med KIMI
-Når KIMI spør: *"Fix the trade execution bug"*
-
-Mempalace injiserer automatisk:
-```
-[Relevant files: src/lib/trading/core/execute-trade-safe.ts, ...]
-[Definitions found in: src/types/trading.ts, ...]
-[⚠️ CRITICAL: Uses "as any" - consider proper typing]
-```
-
----
-
-## Shortcuts (Kontekst-hurtigtaster)
-
-| Shortcut | Beskrivelse | Filer |
-|----------|-------------|-------|
-| `@auth` | Auth system | `src/lib/auth/`, `src/middleware.ts` |
-| `@trading` | Trading system | `src/lib/trading/`, `src/types/trading.ts` |
-| `@db` | Database | `supabase/`, `src/lib/supabase/` |
-| `@test` | Testing | `tests/`, `vitest.config.ts` |
-
----
-
-## API Endepunkter
-
-### GET /context?q=<query>
-Returnerer kontekst for en query.
-
-**Eksempel:**
-```json
-{
-  "type": "shortcut",
-  "description": "Trading system kontekst",
-  "files": ["src/lib/trading/core/execute-trade.ts", ...],
-  "docs": ["docs/architecture/TYPE-DEBT-ROADMAP-2026.md"]
-}
-```
-
-### GET /index?symbol=<name>
-Finner definisjon av et symbol.
-
-**Eksempel:**
-```json
-[
-  {
-    "file": "src/types/trading.ts",
-    "exports": ["Trade", "TradeStatus", ...],
-    "confidence": "high"
-  }
-]
-```
-
-### GET /predict?files=a,b,c
-Predikerer problemer i filer.
-
-**Eksempel:**
-```json
-[
-  {
-    "file": "src/lib/trading/core/execute-trade.ts",
-    "type": "typescript",
-    "severity": "warning",
-    "message": "Uses \"as any\" - consider proper typing",
-    "line": 42
-  }
-]
-```
-
----
-
-## Ytelse
-
-| Metrikk | Før | Etter | Forbedring |
-|---------|-----|-------|------------|
-| Kontekst-oppslag | 15s | 0.5s | **30x** |
-| Symbol-søk | O(n) | O(1) | **∞** |
-| Type-feil deteksjon | Manuel | Auto | **100%** |
-
----
-
-## Integrasjon med KIMI
-
-### Automatisk (Anbefalt)
-KIMI bruker Mempalace automatisk ved hver prompt:
-
-```javascript
-// KIMI intern prosess
-const bridge = new KIMIMempalaceBridge();
-const enriched = await bridge.enrichPrompt(userPrompt, {
-  modifiedFiles: ['src/lib/trading/core/new-feature.ts']
-});
-
-// KIMI får beriket prompt
-```
-
-### Manuel
-```bash
-node scripts/kimi-mempalace-bridge.mjs "Fix auth bug"
-```
+KIMI CLI starter MemPalace automatisk fra MCP-konfigurasjonen. Det er **ingen**
+selvstendig HTTP-server eller fast port.
 
 ---
 
 ## Konfigurasjon
 
-Rediger `.mcp/mempalace-mcp.json` for å tilpasse:
+MCP-konfigurasjonen ligger i:
+
+- Global: `~/.kimi/mcp.json`
+- Prosjekt: `.mcp/mcp_config.json`
+
+`mempalace`-oppføringen ser omtrent slik ut:
 
 ```json
 {
-  "shortcuts": {
-    "@mydomain": {
-      "description": "My domain",
-      "files": ["src/lib/mydomain/**/*.ts"],
-      "docs": ["docs/mydomain.md"]
-    }
+  "mempalace": {
+    "command": "node",
+    "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
   }
 }
+```
+
+Ved endringer i `args` må begge config-filene oppdateres.
+
+---
+
+## Hva som indekseres
+
+| Kilde | Type | Rom/label |
+|-------|------|-----------|
+| `.knowledge/` | Markdown/tekst | Knowledge |
+| `.kimi/diary.jsonl` | JSONL | Diary |
+| `.mempalace/handoffs/` | Markdown | Handoffs |
+| `.mempalace/plans/` | Markdown | Plans |
+| `docs/` | Markdown | Docs |
+| `memory/` | Markdown | Memory |
+
+Kritiske rom får høyere prioritet ved søk:
+
+- `critical_decisions`
+- `error_patterns`
+- `infrastructure`
+- `api_contracts`
+- `trading`
+
+---
+
+## MCP-verktøy
+
+| Verktøy | Beskrivelse |
+|---------|-------------|
+| `search` | TF-IDF + bigram-søk i kunnskap. Bruk FØRST. |
+| `semantic_search` | KG-basert semantisk søk med cross-lingual ekspansjon. |
+| `recent_context` | Hent nylig lagt til innhold (timer tilbake). |
+| `kg_query` | Spør knowledge graph om en entitet. |
+| `kg_add` | Legg til ett faktum i KG. |
+| `kg_batch` | Batch-legg til flere KG-fakta. |
+| `kg_find_path` | Finn sti mellom to entiteter i KG. |
+| `read_diary` | Les dagbok for en agent. |
+| `write_diary` | Skriv dagboksentry etter oppgave. |
+| `get_status` | Status for indeks, cache og KG. |
+| `get_room_info` | List eller beskriv et rom. |
+| `auto_tag` | Generer semantiske tags for tekst. |
+
+---
+
+## MCP-prompts
+
+| Prompt | Bruk |
+|--------|------|
+| `pre_task` | Kjør FØR en oppgave for å hente kontekst. |
+| `post_task` | Kjør ETTER en oppgave for å lagre oppsummering. |
+| `agent_auth` | Systemprompt for auth-agent. |
+| `agent_architect` | Systemprompt for architect-agent. |
+| `superkimi_boost` | Aktiver maksimal kontekst og tenke-disiplin. |
+
+---
+
+## Bruk
+
+### Fra KIMI
+KIMI kaller verktøyene direkte, for eksempel:
+
+```text
+Søk i MemPalace etter "auth callback pattern"
+```
+
+### Fra terminal
+```bash
+# Søk i kunnskap
+node scripts/mempalace-search.mjs "auth callback pattern"
+
+# Sjekk status
+npm run mempalace:status
+
+# Tving re-indeksering
+node scripts/mempalace-reindex.mjs
+
+# Seed kunnskap
+npm run mempalace:seed
 ```
 
 ---
 
 ## Feilsøking
 
-### Server starter ikke
-```bash
-# Sjekk om port er i bruk
-lsof -i :3456
-
-# Prøv annen port
-MEMPALACE_PORT=3457 node scripts/mempalace-mcp-server.mjs
-```
-
-### Ingen kontekst funnet
-```bash
-# Rebuild index
-curl http://localhost:3456/status
-# Restart server
-```
-
-### Treg respons
-- Øk `cache_ttl` i config
-- Reduser antall indekserte filer
-- Bruk `lazy_load_domains: true`
+| Problem | Løsning |
+|---------|---------|
+| MCP-server vises ikke | Sjekk `~/.kimi/mcp.json` og `.mcp/mcp_config.json` |
+| Gamle treff / manglende endringer | Kjør `node scripts/mempalace-reindex.mjs` |
+| File watcher slår ikke til | Start en ny KIMI-sesjon |
+| Treg første oppstart | Serveren bygger indeksen; senere lastes cache |
 
 ---
 
-## Roadmap
-
-- [ ] VS Code extension
-- [ ] WebSocket støtte
-- [ ] KI-drevet kontekst-prediksjon
-- [ ] Multi-prosjekt støtte
-
----
-
-**Mempalace MCP gjør KIMI til den smarteste kodearkitekten i rommet.** 🏛️✨
+**MemPalace MCP gir KIMI supermenneskelig prosjektforståelse — helt lokalt og
+uten HTTP-port.** 🏛️✨
