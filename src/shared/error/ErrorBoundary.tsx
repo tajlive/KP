@@ -1,6 +1,6 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
+import { captureException } from "@/lib/sentry";
 import { AlertTriangle } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
@@ -36,8 +36,8 @@ export class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    // Report to Sentry
-    Sentry.captureException(error, {
+    // Report to GlitchTip
+    captureException(error, {
       extra: {
         componentStack: errorInfo.componentStack,
         componentName,

@@ -1,54 +1,14 @@
 /**
  * Client-side monitoring for Klarpakke
- * Integrates with Sentry for error tracking and custom monitoring
+ * Minimal error tracking and performance observation uten Sentry-spesifikke features.
  */
 
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from '@/lib/sentry';
 
 export function initSentry(): void {
   if (typeof window === 'undefined') return;
-
-  Sentry.init({
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-    environment: process.env.NEXT_PUBLIC_APP_ENV ?? 'development',
-    release: process.env.NEXT_PUBLIC_APP_VERSION,
-    
-    // Low sample rate in production to avoid quota issues
-    tracesSampleRate: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 0.1 : 1.0,
-    
-    // Filter out noise
-    beforeSend(event) {
-      // Ignore Safari ResizeObserver noise
-      if (event.exception?.values?.[0]?.value?.includes('ResizeObserver')) {
-        return null;
-      }
-      
-      // Ignore network errors from Supabase Realtime reconnects
-      if (event.exception?.values?.[0]?.type === 'NetworkError' ||
-          event.exception?.values?.[0]?.value?.includes('aborted') ||
-          event.exception?.values?.[0]?.value?.includes('fetch')) {
-        return null;
-      }
-      
-      // Ignore expected auth errors and Supabase Auth recovery noise
-      if (event.exception?.values?.[0]?.value?.includes('JWT expired') ||
-          event.exception?.values?.[0]?.value?.includes('Invalid Refresh Token') ||
-          event.exception?.values?.[0]?.value?.includes('circuit breaker') ||
-          event.exception?.values?.[0]?.value?.includes('Lock broken')) {
-        return null;
-      }
-      
-      return event;
-    },
-    
-    integrations: [
-      Sentry.browserTracingIntegration(),
-    ],
-    
-    // Replay only on errors, not constantly
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1.0,
-  });
+  // GlitchTip/Sentry SDK init er nå håndtert av @/lib/sentry-wrapper.
+  // Ingen Sentry-spesifikke integrasjoner (browserTracingIntegration, replay) aktiveres lenger.
 }
 
 export function setUserContext(userId: string, email?: string): void {
@@ -148,6 +108,14 @@ function reportError(error: Omit<ErrorReport, 'url' | 'userAgent' | 'timestamp'>
     console.error('[Monitoring] Error:', report);
   }
 
+  // Send til GlitchTip-wrapper i produksjon (i stedet for død /api/monitoring-endepunkt)
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.captureException(
+      new Error(report.message || 'Unhandled monitoring error'),
+      { extra: { ...(report as unknown as Record<string, unknown>) } },
+    );
+  }
+
   queueReport(report);
 }
 
@@ -183,7 +151,8 @@ function queueReport(report: ErrorReport | MetricReport): void {
 }
 
 /**
- * Flush all queued reports to the server
+ * Flush all queued reports.
+ * Tidligere sendt til /api/monitoring; nå logges kun lokalt / til GlitchTip.
  */
 async function flushReports(): Promise<void> {
   if (reportQueue.length === 0) return;
@@ -191,27 +160,13 @@ async function flushReports(): Promise<void> {
   const reports = [...reportQueue];
   reportQueue.length = 0;
 
-  try {
-    // Use sendBeacon for reliability during page unload
-    if (navigator.sendBeacon) {
-      const blob = new Blob([JSON.stringify({ reports })], {
-        type: 'application/json',
-      });
-      navigator.sendBeacon('/api/monitoring', blob);
-    } else {
-      await fetch('/api/monitoring', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reports }),
-        keepalive: true,
-      });
-    }
-  } catch (e) {
-    // Silent fail - don't cause infinite error loops
-    if (process.env.NODE_ENV === 'development') {
-      console.error('[Monitoring] Failed to flush reports:', e);
-    }
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.log('[Monitoring] Flush:', reports);
   }
+
+  // GlitchTip-rapportering håndteres per-event i reportError for å unngå dobbelt-logging.
+  void reports;
 }
 
 /**

@@ -93,11 +93,6 @@ const ROUTES: RouteRule[] = [
   { path: "/admin/forgot-password", adminOptional: true },
   { path: "/admin/login", adminOptional: true },
   { path: "/admin", adminOptional: true },
-  {
-    path: "/dashboard/sentry-test",
-    mustBeAuthed: true,
-    allowClientError: true,
-  },
   { path: "/en/dashboard", mustBeAuthed: true },
   { path: "/en/priser" },
   { path: "/en/paper-trading", mustBeAuthed: true },

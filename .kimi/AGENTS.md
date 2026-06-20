@@ -8,21 +8,21 @@ Dette er det øverste prinsippet for alle agenter i Klarpakke. Det overstyrer «
 
 ### Automatiseringshierarki (prioritert rekkefølge)
 1. **pg_cron / Supabase** — DB-nære operasjoner (priser, outbox, MIFID-export)
-2. **GitHub Actions** — CI/CD, health checks, secret-sync, cron-verifisering
+2. **Woodpecker CI** — CI/CD, health checks, secret-sync, cron-verifisering (selv-hostet på Hetzner)
 3. **npm scripts** — lokale devops-oppgaver (verify, lint, deploy, db:push)
-4. **Vercel Crons (legacy)** — beholdes for bakoverkompatibilitet. Nytt: pg_cron + Fly.io for alle operasjoner
+4. **Vercel/Fly.io Crons (legacy)** — beholdes for bakoverkompatibilitet. Nytt: pg_cron + Hetzner/Coolify for alle operasjoner
 5. **KIMI-skills** — orchestrering, kodeendringer, analyse
 
 > **Skills-oppsett:** Aktive skills ligger i `.kimi/skills/` og lastes med `kimi --skills-dir .kimi/skills/klarpakke-<skill>`.
 
 ### Hva som alltid skal automatiseres
-- Alle helsesjekker → GitHub Actions schedule
+- Alle helsesjekker → Woodpecker CI schedule
 - Alle DB-migrasjoner → supabase db push i CI
-- Alle secret-synkroniseringer → `npm run secrets:sync:github`
+- Alle secret-synkroniseringer → Coolify/Woodpecker secrets (erstatter `npm run secrets:sync:github`)
 - Alle cron-jobs → pg_cron (ikke manuell SQL)
 - Alle type-genereringer → etter db push
 - Alle deploy-gates → lint + typecheck + test før merge
-- Alle monitoring-varsler → GitHub Actions + Sentry
+- Alle monitoring-varsler → Woodpecker CI + GlitchTip
 
 ---
 
@@ -55,15 +55,16 @@ Når innholdet faktisk er til stede etter kolonet, skal du:
 ```bash
 npm run cron:verify
 ```
-Exit 0 = alt OK. Exit 1 = inaktive jobs ELLER HTTP 401/500 fra app-URL (Fly.io/Vercel).
+Exit 0 = alt OK. Exit 1 = inaktive jobs ELLER HTTP 401/500 fra app-URL (Hetzner/Coolify).
 
 ### Kontinuerlig overvåking
 ```bash
 npm run cron:watch   # hvert 5. minutt i terminal
 ```
 
-### GitHub Actions
-Workflow: `.github/workflows/cron-verify.yml` — kjører hvert 30. minutt.
+### Woodpecker CI
+Workflow: `.woodpecker/cron-verify.yml` (opprettes ved behov) — kjører hvert 30. minutt.
+Arkivert GitHub Actions-workflow ligger i `.github/workflows/archived/cron-verify.yml`.
 Krever secrets: `SUPABASE_SERVICE_ROLE_KEY`, `POSTGRES_URL_NON_POOLING`,
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
@@ -84,7 +85,7 @@ WHERE created > NOW() - INTERVAL '2 hours' GROUP BY status_code;
 - Migrasjonsfiler:
   - `supabase/migrations/20260418_migrate_crons_to_pg_cron.sql` (opprettet jobs)
   - `supabase/migrations/20260420_harden_cron_with_vault.sql` (Vault + fallback)
-- pg_net 0.19.5 sender HTTP POST til app-URL (Fly.io/Vercel) per job
+- pg_net 0.19.5 sender HTTP POST til app-URL (Hetzner/Coolify) per job
 - SSL fix: `rejectUnauthorized: false` i pg-klienten
 - REST fix: `/rpc/exec_sql` (ikke `execute_sql`)
 
@@ -138,7 +139,7 @@ node scripts/validate-migrations.mjs supabase/migrations/20990101000000_min_fil.
 
 ### CI/Hook-integrasjon
 - **Pre-commit**: Kjører automatisk når `supabase/migrations/` endres
-- **GitHub Actions** (db.yml): Kjører på PR og push til main
+- **Woodpecker CI** (`.woodpecker/pr-check.yml`): Kjører på PR og push til main
 - **db-status-gate.mjs**: Kjøres etter validering i CI
 
 ### Retningslinjer
@@ -201,8 +202,9 @@ npm run sanity:deploy      # Deploy til klarpakke.sanity.studio
 5. Mismatch projectId/dataset → kjør `npm run sanity:guard`
 6. Content Agent viser "Studio action required" → aktiver manuelt i Sanity Manage
 
-### GitHub Actions
-Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + nightly.
+### Woodpecker CI
+Workflow: `.woodpecker/sanity-guard.yml` (opprettes ved behov) — trigger på Sanity-filer + nightly.
+Arkivert GitHub Actions-workflow ligger i `.github/workflows/archived/sanity-guard.yml`.
 
 ## MCP-optimalisering (KIMI Code CLI)
 
@@ -243,7 +245,7 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
    - `cron` — pg_cron job management (list, toggle, logs via Supabase SQL)
    - `featureflag` — DB-driven feature toggles (list, toggle, create)
    - `search` — Advanced search in trades/users via Supabase FTS
-   - `cost` — Fly.io/Supabase cost monitoring (estimates + usage)
+   - `cost` — Hetzner/Supabase cost monitoring (estimates + usage)
 
 ### MemPalace v3.4.0 — KIMI Code CLI 0.18.0-kompatibel
 - **Atomic writes**: Index-cache og KG compaction skrives atomisk (tmp + rename)
@@ -583,7 +585,7 @@ kimi super         # Full site audit / catch-all
 | `auth-system` | 7 | OAuth, session, refresh-token, RLS, singleton client |
 | `trading-engine` | 15 | Strategier, risk, PnL, unified schema, paper/live/copy |
 | `supabase-db` | 7 | Postgres 15, pg_cron, pg_net, Vault, RLS |
-| `fly.io-hosting` | 5 | arn, Docker, Cloudflare CDN, GitHub Actions CI |
+| `hetzner-coolify-hosting` | 5 | Hetzner VPS, Docker, Cloudflare CDN, Woodpecker CI |
 | `vercel-hosting` | 5 | **legacy** — fra1, static export ( beholdes for historikk ) |
 | `sanity-cms` | 6 | projectId 63qn23si, /studio, webhook cache invalidation |
 | `nextjs-framework` | 6 | v15, React 19, TS 5.9 strict, app-router i18n |
@@ -598,7 +600,7 @@ kimi super         # Full site audit / catch-all
 | `stripe-payments` | 2 | Checkout subscription, basic/pro/enterprise tiers |
 | `pwa-mobile` | 2 | Bottom tabs, Lighthouse audits |
 | `mifid-compliance` | 2 | Auto CSV export, pg_cron scheduled |
-| `deploy-pipeline` | 3 | Lint→typecheck→test→build, auto GitHub Actions |
+| `deploy-pipeline` | 3 | Lint→typecheck→test→build, Woodpecker CI |
 | `mempalace` | 5 | v3.2.0, inverted index, resources/prompts, 58+ entities |
 | `deployment` | 2 | www.klarpakke.no, 679 tests passed |
 
@@ -631,8 +633,8 @@ kimi super         # Full site audit / catch-all
 # Manuell sjekk
 node scripts/dependency-report.mjs
 
-# Auto-PR for minor/patch (kjøres ukentlig av GitHub Actions)
-# Se .github/workflows/dependency-check.yml
+# Auto-PR for minor/patch (kjøres ukentlig av Woodpecker CI)
+# Se .woodpecker/dependency-check.yml (opprettes ved behov) eller .github/workflows/archived/dependency-check.yml
 ```
 - **Schedule:** Mandag 07:00 CET
 - **Auto-PR:** Minor/patch oppdateringer som passerer `type-check + test:unit`
@@ -674,7 +676,7 @@ Inkluderer nå:
 node scripts/ai-health-report.mjs
 
 # CI — kjøres mandag 09:00
-# Se .github/workflows/ai-health-report.yml
+# Se .woodpecker/ai-health-report.yml (opprettes ved behov) / .github/workflows/archived/ai-health-report.yml
 ```
 
 ---
@@ -711,16 +713,20 @@ Sjekker endrede `.tsx`-filer for:
 - **Responsive:** Store pages har `md:` / `lg:` breakpoints
 - **Viewport:** Root layout har `min-h-screen` (ikke required per page)
 
-### CI Pipeline (GitHub Actions)
+### CI Pipeline (Woodpecker CI)
 
 ```
 PR Check ──► Test (smoke + critical + mobile) ──► Deploy ──► Verify
 ```
 
-**Nytt:** `test.yml` har nå `mobile` job som kjører på PR + push:
-- iPhone 13 (Safari, 390×844)
-- Pixel 5 (Chrome, 393×851)
-- E2E: `e2e/mobile/*`, `e2e/responsive/*`
+Workflows ligger i `.woodpecker/`:
+- `.woodpecker/pr-check.yml` — lint, type-check, test:unit, build
+- `.woodpecker/deploy.yml` — build + Coolify deploy trigger + health check
+
+**GitHub Actions er arkivert** i `.github/workflows/archived/`.
+
+**E2E mobile:** iPhone 13 (Safari, 390×844), Pixel 5 (Chrome, 393×851),
+`e2e/mobile/*`, `e2e/responsive/*`
 
 ### Post-deploy verify (mobil)
 

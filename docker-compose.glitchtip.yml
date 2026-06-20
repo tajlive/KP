@@ -1,0 +1,97 @@
+# GlitchTip — selv-hostet error tracking
+# Kompatibel med Sentry SDK. Kjør med: docker compose -f docker-compose.glitchtip.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${GLITCHTIP_POSTGRES_USER:-glitchtip}
+      POSTGRES_PASSWORD: ${GLITCHTIP_POSTGRES_PASSWORD:-change_me_in_env}
+      POSTGRES_DB: ${GLITCHTIP_POSTGRES_DB:-glitchtip}
+    volumes:
+      - glitchtip_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${GLITCHTIP_POSTGRES_USER:-glitchtip} -d ${GLITCHTIP_POSTGRES_DB:-glitchtip}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - glitchtip_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  web:
+    image: glitchtip/glitchtip:latest
+    ports:
+      - "${GLITCHTIP_PORT:-8080}:8080"
+    environment:
+      DATABASE_URL: postgres://${GLITCHTIP_POSTGRES_USER:-glitchtip}:${GLITCHTIP_POSTGRES_PASSWORD:-change_me_in_env}@postgres:5432/${GLITCHTIP_POSTGRES_DB:-glitchtip}
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-change_me_in_env}
+      PORT: 8080
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-}
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_DEFAULT_FROM_EMAIL:-noreply@example.com}
+      ENABLE_USER_REGISTRATION: ${GLITCHTIP_ENABLE_USER_REGISTRATION:-False}
+      # Optional: S3-compatible storage for event attachments
+      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      # AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      # AWS_S3_ENDPOINT_URL: ${AWS_S3_ENDPOINT_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/_health/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  worker:
+    image: glitchtip/glitchtip:latest
+    command: ./bin/run-celery.sh
+    environment:
+      DATABASE_URL: postgres://${GLITCHTIP_POSTGRES_USER:-glitchtip}:${GLITCHTIP_POSTGRES_PASSWORD:-change_me_in_env}@postgres:5432/${GLITCHTIP_POSTGRES_DB:-glitchtip}
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-change_me_in_env}
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-}
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_DEFAULT_FROM_EMAIL:-noreply@example.com}
+      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      # AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      # AWS_S3_ENDPOINT_URL: ${AWS_S3_ENDPOINT_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  beat:
+    image: glitchtip/glitchtip:latest
+    command: ./bin/run-celery-beat.sh
+    environment:
+      DATABASE_URL: postgres://${GLITCHTIP_POSTGRES_USER:-glitchtip}:${GLITCHTIP_POSTGRES_PASSWORD:-change_me_in_env}@postgres:5432/${GLITCHTIP_POSTGRES_DB:-glitchtip}
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-change_me_in_env}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  glitchtip_postgres_data:
+  glitchtip_redis_data:

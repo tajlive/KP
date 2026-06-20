@@ -13,7 +13,6 @@ const DRY_RUN = process.argv.includes("--dry-run");
 
 const files = [
   "src/app/api/cron/tick/route.ts",
-  "src/app/api/monitoring/route.ts",
   "src/hooks/usePageTracking.ts",
   "src/lib/analytics.ts",
   "src/lib/api-request-context.ts",

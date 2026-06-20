@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { Button } from '@/shared/ui/button'
 import { AlertTriangle } from 'lucide-react'
-import * as Sentry from '@sentry/nextjs'
+import { captureException } from '@/lib/sentry'
 
 // Global error must be named global-error.js/tsx and wrap html/body
 export default function GlobalError({
@@ -18,8 +18,8 @@ export default function GlobalError({
         console.error('Global Error - Digest:', (error as Error & { digest?: string }).digest)
         console.error('Root Layout Error:', error)
         
-        // Send to Sentry with extra context
-        Sentry.captureException(error, {
+        // Send to GlitchTip with extra context
+        captureException(error, {
             extra: {
                 digest: (error as Error & { digest?: string }).digest,
                 errorName: error.name,

@@ -39,8 +39,8 @@ const ALLOWLIST = [
   // Cron
   "CRON_SECRET",
   "CRON_API_KEY",
-  // Monitoring
-  "SENTRY_AUTH_TOKEN",
+  // Monitoring (GlitchTip)
+  "GLITCHTIP_DSN",
   // Services
   "RESEND_API_KEY",
   "STRIPE_SECRET_KEY",

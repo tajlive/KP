@@ -229,7 +229,10 @@ export function checkIdempotency(sql, _file) {
 // ─── I/O-HJELPERE (ikke testbare uten fs-mock) ───
 
 function getStagedMigrationFiles() {
-  const result = spawnSync('git', ['diff', '--cached', '--name-only', '--diff-filter=ACMR'], {
+  // Bruker ACM (Added/Copied/Modified) uten R (Renamed) for staged-sjekk.
+  // Renamede filer har ikke nødvendigvis endret innhold og source-filen finnes
+  // ikke lenger i working directory, så de valideres bedre som full scan.
+  const result = spawnSync('git', ['diff', '--cached', '--name-only', '--diff-filter=ACM'], {
     encoding: 'utf8',
   });
   return (result.stdout || '')

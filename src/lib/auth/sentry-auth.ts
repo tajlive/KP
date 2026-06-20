@@ -1,12 +1,17 @@
 /**
- * Sentry Auth Logging - Structured error tracking for authentication flows
+ * Auth Error Logging - Structured error tracking for authentication flows
  * 
  * Usage:
  *   import { logAuthError, logAuthEvent, AuthErrorCode } from '@/lib/auth/sentry-auth';
  *   logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, error, { userId: '123' });
  */
 
-import * as Sentry from "@sentry/nextjs";
+import {
+  captureException,
+  captureMessage,
+  setUser,
+  type SeverityLevel,
+} from "@/lib/sentry";
 
 export enum AuthErrorCode {
   // OAuth errors
@@ -69,7 +74,7 @@ interface AuthContext {
 }
 
 /**
- * Log an authentication error to Sentry with structured context
+ * Log an authentication error with structured context
  */
 export function logAuthError(
   code: AuthErrorCode,
@@ -80,12 +85,12 @@ export function logAuthError(
   const errorStack = error instanceof Error ? error.stack : undefined;
   
   // Create a synthetic error with the auth code
-  const sentryError = new Error(`[${code}] ${errorMessage}`);
+  const trackingError = new Error(`[${code}] ${errorMessage}`);
   if (errorStack) {
-    sentryError.stack = errorStack;
+    trackingError.stack = errorStack;
   }
   
-  Sentry.captureException(sentryError, {
+  captureException(trackingError, {
     tags: {
       auth_code: code,
       auth_provider: context.provider || "unknown",
@@ -105,13 +110,13 @@ export function logAuthError(
 }
 
 /**
- * Log an authentication event (non-error) to Sentry
+ * Log an authentication event (non-error)
  */
 export function logAuthEvent(
   event: AuthEvent,
   context: AuthContext = {},
 ): void {
-  Sentry.captureMessage(`Auth Event: ${event}`, {
+  captureMessage(`Auth Event: ${event}`, {
     level: "info",
     tags: {
       auth_event: event,
@@ -121,28 +126,27 @@ export function logAuthEvent(
     },
     extra: context,
   });
-  
 }
 
 /**
- * Set Sentry user context for authenticated users
+ * Set user context for authenticated users
  */
 export function setAuthUser(userId: string, email?: string): void {
-  Sentry.setUser({
+  setUser({
     id: userId,
     email: email || undefined,
   });
 }
 
 /**
- * Clear Sentry user context on logout
+ * Clear user context on logout
  */
 export function clearAuthUser(): void {
-  Sentry.setUser(null);
+  setUser(null);
 }
 
 /**
- * Wrap an async auth function with Sentry error tracking
+ * Wrap an async auth function with error tracking
  */
 export function withAuthTracking<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,

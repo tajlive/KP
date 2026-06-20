@@ -24,7 +24,7 @@ import {
 import { rateLimitMiddleware } from "@/lib/middleware/rate-limit";
 import { withCache, CACHE_TTL } from "@/lib/cache";
 import { cacheKeys } from "@/lib/cache";
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@/lib/sentry";
 import { z } from "zod";
 
 export const runtime = "nodejs";

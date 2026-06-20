@@ -1,10 +1,12 @@
 # 🤖 KIMI + MemPalace Master Guide
 
 **Prosjekt:** Klarpakke - AI Trading Platform  
-**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Fly.io, Cloudflare  
+**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Hetzner, Coolify, Cloudflare  
 **Status:** Production (www.klarpakke.no)  
 **Node:** 24.x (se `.nvmrc`)  
-**Hosting:** Fly.io (Docker) + Cloudflare DNS/CDN
+**Hosting:** Hetzner VPS + Coolify + Cloudflare DNS/CDN
+**CI/CD:** Woodpecker CI
+**Error Tracking:** Selv-hostet GlitchTip
 
 ---
 
@@ -23,10 +25,10 @@ npm run oauth:check
 # Test & bygg
 npm run test:unit && npm run build
 
-# Deploy til Fly.io
-npm run fly:deploy
+# Deploy (Coolify webhook/CLI — se docs/SELF-HOSTED-SETUP.md)
+npm run deploy:coolify
 
-# Commit & push
+# Commit & push (CI/CD kjører i Woodpecker)
 git add -A && git commit -m "type: beskrivelse" && git push origin main
 ```
 
@@ -42,7 +44,7 @@ kimi test            # npm run test:unit
 kimi test:e2e        # npm run test:e2e:critical:chromium
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
-kimi deploy          # npm run fly:deploy
+kimi deploy          # npm run deploy:coolify
 
 # Pipeline (NYTT)
 kimi ci              # npm run lint:gate && npm run test:unit
@@ -61,84 +63,81 @@ kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 
 ---
 
-## 🚀 Fly.io Hosting
+## 🚀 Hetzner + Coolify Hosting
 
-> **Status:** Migrated from Vercel to Fly.io (Docker + Cloudflare DNS/CDN)
-> **App:** `klarpakke` | **Region:** `arn` (Stockholm) | **URL:** https://klarpakke.fly.dev
+> **Status:** Migrert fra Fly.io til Hetzner VPS + Coolify (Docker + Cloudflare DNS/CDN)
+> **Server:** Hetzner Cloud VPS (anbefalt CPX31)  
+> **URL:** https://www.klarpakke.no  
+> **CI/CD:** Woodpecker CI  
+> **Error Tracking:** Selv-hostet GlitchTip
 
 ### Arkitektur
 ```
-User → Cloudflare DNS (klarpakke.no) → Cloudflare CDN/Proxy → Fly.io (Docker)
+User → Cloudflare DNS (klarpakke.no) → Cloudflare CDN/Proxy → Hetzner VPS (Coolify)
                                        ↓
                               DDoS + SSL + Caching
 ```
 
 ### Setup (én gang)
+Se detaljert guide i `docs/SELF-HOSTED-SETUP.md`. Kortversjon:
+
 ```bash
-# 1. Install flyctl
-brew install flyctl          # macOS
-curl -L https://fly.io/install.sh | sh  # Linux
+# 1. Provisioner Ubuntu 24.04 VPS på Hetzner
+# 2. Installer Docker
+# 3. Installer Coolify
+curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
 
-# 2. Logg inn
-fly auth login
+# 4. Konfigurer Next.js-app i Coolify UI
+#    - Git-repo: https://github.com/tajlive/KP
+#    - Domene: www.klarpakke.no
+#    - Env-variabler fra .env.local
 
-# 3. Opprett app (hvis ikke eksisterer)
-fly apps create klarpakke
+# 5. Start GlitchTip
+docker compose -f docker-compose.glitchtip.yml up -d
 
-# 4. Sett secrets fra .env.local
-npm run fly:secrets:import   # eller: flyctl secrets import --app klarpakke < .env.local
-
-# ⚠️ VIKTIG: POSTGRES_URL / DATABASE_URL i Fly.io secrets
-# Når du bruker Supabase Supavisor-pooleren må URL-en ALLTID inneholde
-# tenant-referansen som query-parameter:
-#
-#   ?options=reference%3Dpskhryjzkobytnfwucrb
-#
-# Uten denne får du feilen:
-#   "tenant/user postgres.<random-id> not found"
-# og /api/health vil returnere 503 i produksjon.
-# Scriptet `npm run fly:secrets:import --dry-run` validerer nå dette automatisk.
-
-# 5. Deploy
-npm run fly:deploy
+# 6. Konfigurer Woodpecker CI
+#    Se .woodpecker/pr-check.yml og .woodpecker/deploy.yml
 ```
 
 ### Deploy-kommandoer
 ```bash
-npm run fly:deploy           # Deploy via GitHub Actions (remote build)
-npm run fly:deploy:local     # Deploy fra lokal maskin
-npm run fly:status           # Sjekk app-status
-npm run fly:logs             # Se logs
-npm run fly:secrets:import   # Importer secrets fra .env.local
+npm run deploy:coolify       # Placeholder — trigger Coolify webhook/CLI
+npm run build                # Lokal bygg
+npm run lint:gate            # Lint-gate (kjøres i Woodpecker)
+npm run type-check           # Type-check (kjøres i Woodpecker)
 ```
 
 ### DNS (Cloudflare)
 | Record | Type | Target | Proxy |
 |--------|------|--------|-------|
-| `www.klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
-| `klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
+| `www.klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
+| `klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
+| `ci.klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
+| `glitchtip.klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
 
-### GitHub Actions
-Workflow: `.github/workflows/deploy-fly.yml`
-Trigger: Push til `main` eller manuell dispatch.
-Krever secret: `FLY_API_TOKEN` (fra `fly tokens create deploy -x 999999h`)
+### Woodpecker CI
+Workflows ligger i `.woodpecker/`:
+- `.woodpecker/pr-check.yml` — lint, type-check, test:unit, build
+- `.woodpecker/deploy.yml` — build, Supabase-migrasjoner, Coolify-deploy, health-check
 
-### Hvorfor Fly.io?
-- ✅ Full Next.js App Router-støtte (Node.js, ikke Edge)
-- ✅ Ingen bundle-size grense (Vercel/Workers: 25-50MB)
+Arkiverte GitHub Actions workflows ligger i `.github/workflows/archived/`.
+
+### Hvorfor Hetzner + Coolify?
+- ✅ Billigere enn managed PaaS (Fly.io/Vercel)
+- ✅ Full kontroll over server og byggemiljø
 - ✅ Docker-basert — enkel, forutsigbar
-- ✅ Gratis tier: 3 shared-cpu-1x VMs + custom domains
 - ✅ Cloudflare DNS/CDN foran gir caching + DDoS-beskyttelse
-- ✅ Emigrert fra Vercel: total uavhengighet
+- ✅ Woodpecker CI uten GitHub Actions-minutt-grenser
+- ✅ Selv-hostet GlitchTip uten Sentry-kvoter
 
-### Vercel → Fly.io endringer
-| Før (Vercel) | Etter (Fly.io) |
+### Fly.io → Hetzner/Coolify endringer
+| Før (Fly.io) | Etter (Hetzner + Coolify) |
 |-------------|---------------|
-| `output: undefined` | `output: 'standalone'` |
-| `images.unoptimized: false` | `images.unoptimized: true` (når `FLY_IO=1`) |
-| `vercel --prod` | `flyctl deploy --remote-only` |
-| `node:crypto` Edge-feil | Fikset med `runtime = 'nodejs'` på API routes |
-| `x-robots-tag: noindex` | Fjernet (ingen Vercel preview-proxy) |
+| `flyctl deploy` | Coolify webhook/CLI |
+| `FLY_IO=1` | `COOLIFY=1` (valgfri) |
+| `klarpakke.fly.dev` | `www.klarpakke.no` direkte på Hetzner-IP |
+| GitHub Actions CI/CD | Woodpecker CI |
+| Sentry SaaS | Selv-hostet GlitchTip |
 
 ---
 
@@ -328,7 +327,7 @@ cat .kimi/PROJECT_CONTEXT.md
 1. `git add -A`
 2. `git commit -m "type: beskrivelse"`
 3. `git push origin main`
-4. Vent på Fly.io deploy (~2-3 min)
+4. Vent på Coolify deploy (~2-3 min)
 5. Verifiser i produksjon: `npm run verify:prod`
 
 ---
@@ -360,7 +359,7 @@ cat .kimi/PROJECT_CONTEXT.md
 - **Hjelp / Leksjoner** kan bruke `revalidate = 3600`
 - **Catch-all** (`[...slug]`) skal bruke `revalidate = 60` ( Sanity webhook invaliderer )
 - **Regel:** Sider som endres oftere enn 1× i uken skal IKKE bruke ISR > 60s
-- **Deploy:** GitHub Actions kaller `/api/revalidate` etter hver deploy for å invalidere cache
+- **Deploy:** Woodpecker CI-kjede kaller `/api/revalidate` etter vellykket deploy for å invalidere cache
 - **Playwright smoke-test** kjøres etter deploy for å fange fantom-feil
 
 ### Agent Tenke-Disiplin (ALLTID)

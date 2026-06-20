@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { Button } from '@/shared/ui/button'
 import { FileWarning } from 'lucide-react'
-import * as Sentry from '@sentry/nextjs'
+import { captureException } from '@/lib/sentry'
 import { usePathname } from 'next/navigation'
 
 export default function Error({
@@ -22,7 +22,7 @@ export default function Error({
         console.error('Locale Error - Digest:', (error as Error & { digest?: string }).digest)
         console.error('Locale error:', error)
         
-        Sentry.captureException(error, {
+        captureException(error, {
             extra: {
                 digest: (error as Error & { digest?: string }).digest,
                 errorName: error.name,

@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/nextjs";
+import { captureException, withScope } from "@/lib/sentry";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -47,21 +47,21 @@ export async function sendCronSlackAlert(
 }
 
 /**
- * Capture cron error in Sentry and send Slack alert
+ * Capture cron error and send Slack alert
  */
 export function captureCronError(
   cronName: string,
   error: Error,
   metadata?: Record<string, unknown>
 ): void {
-  Sentry.withScope((scope) => {
+  withScope((scope) => {
     scope.setTag("cron_name", cronName);
     if (metadata) {
       Object.entries(metadata).forEach(([key, value]) => {
         scope.setExtra(key, value);
       });
     }
-    Sentry.captureException(error);
+    captureException(error);
   });
 
   // Fire-and-forget Slack alert
@@ -70,7 +70,7 @@ export function captureCronError(
 
 /**
  * Generate a deterministic idempotency key for trades.
- * Time is bucketed to prevent duplicates from Vercel cron retries.
+ * Time is bucketed to prevent duplicates from cron retries.
  */
 export function generateTradeIdempotencyKey(
   sessionId: string,

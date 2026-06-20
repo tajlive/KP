@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://vuxbjlykgmzskxbclquf.supabase.co';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://pskhryjzkobytnfwucrb.supabase.co';
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
     // SQL statements

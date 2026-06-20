@@ -9,7 +9,7 @@
 
 ## 🚀 Prod Deploy Pipeline (NY — ALLTID BRUK DETTE)
 
-Når brukeren skriver noe i retning av **"deploy prod"**, skal du **aldri** hoppe rett til `npm run deploy:prod`. Følg denne sekvensen slavisk:
+Når brukeren skriver noe i retning av **"deploy prod"**, skal du **aldri** hoppe rett til `npm run deploy:coolify`. Følg denne sekvensen slavisk:
 
 ### Trinn 1: Kvalitet
 ```bash
@@ -36,10 +36,9 @@ kprod:preview    # Samme pipeline, men til preview
 ### Trinn 5: Post-deploy verifikasjon
 - Kjør `kmonitor` igjen
 - Minn brukeren på å sjekke:
-  - [Fly.io Status](https://fly.io/dashboard) — app health & metrics
+  - [Coolify Dashboard](https://coolify.io/docs) — app health & metrics
   - [Cloudflare Analytics](https://dash.cloudflare.com) — CDN/traffic
-  - [Vercel Speed Insights](https://vercel.com/klarpakke/klarpakke/speed-insights) *(legacy)*
-  - [Vercel Analytics](https://vercel.com/klarpakke/klarpakke/analytics) *(legacy)*
+  - [GlitchTip](https://glitchtip.klarpakke.no) — error tracking
   - UptimeRobot (hvis aktivert)
 
 ### MemPalace-logging etter hver deploy
@@ -56,9 +55,12 @@ Du jobber i `/Users/taj/klarpakke` – en produksjonsklar AI-trading plattform.
 ```yaml
 Project: Klarpakke
 Repo: tajlive/KP
-Stack: Next.js 16, React 19, TypeScript 5.9, Supabase, Fly.io (legacy: Vercel)
+Stack: Next.js 16, React 19, TypeScript 5.9, Supabase, Hetzner + Coolify (legacy: Fly.io/Vercel)
 Status: Production (www.klarpakke.no)
 Node: 24.x (se .nvmrc)
+Hosting: Hetzner VPS + Coolify + Cloudflare DNS/CDN
+CI/CD: Woodpecker CI
+Error Tracking: Selv-hostet GlitchTip
 ```
 
 ---
@@ -109,8 +111,8 @@ kimi db:push         # npm run db:push
 kimi db:gen          # npm run db:gen-types
 
 # Deploy
-kimi deploy          # npm run deploy:prod
-kimi preview         # flyctl deploy --remote-only --app klarpakke-staging
+kimi deploy          # npm run deploy:coolify (Coolify webhook/CLI placeholder)
+kimi preview         # Coolify preview deploy
 
 # MemPalace (FTS5)
 mempalace search "auth" --wing klarpakke   # Søk kunnskap

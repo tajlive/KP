@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
+import { captureException, captureMessage } from "@/lib/sentry";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -72,7 +72,7 @@ export function PaperTradingCard() {
 
       if (!response.ok) {
         if (response.status >= 500) {
-          Sentry.captureMessage(`Paper trading balance fetch failed: ${response.status}`, "error");
+          captureMessage(`Paper trading balance fetch failed: ${response.status}`, "error");
         }
         throw new Error(`HTTP ${response.status}`);
       }
@@ -149,7 +149,7 @@ export function PaperTradingCard() {
 
       const errorMsg = error instanceof Error ? error.message : String(error);
 
-      Sentry.captureException(error, {
+      captureException(error, {
         tags: {
           component: "PaperTradingCard",
           endpoint: "dashboard/metrics?mode=paper",

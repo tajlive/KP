@@ -1,0 +1,52 @@
+# Woodpecker CI — PR Check
+# Kjører lint, type-check, unit-tester og build på hver PR.
+
+when:
+  - event: pull_request
+    branch: main
+
+steps:
+  - name: checkout
+    image: woodpeckerci/plugin-git
+    settings:
+      depth: 50
+
+  - name: runtime-info
+    image: node:24
+    commands:
+      - node -v
+      - npm -v
+
+  - name: install
+    image: node:24
+    commands:
+      - npm ci --prefer-offline --legacy-peer-deps
+
+  - name: type-check
+    image: node:24
+    commands:
+      - npm run type-check
+
+  - name: lint
+    image: node:24
+    commands:
+      - npm run lint:gate
+
+  - name: unit-tests
+    image: node:24
+    commands:
+      - npm run test:unit
+
+  - name: build
+    image: node:24
+    commands:
+      - npm run build
+    environment:
+      SKIP_LINT_IN_BUILD: "true"
+      NEXT_PUBLIC_SUPABASE_URL: "${NEXT_PUBLIC_SUPABASE_URL}"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}"
+      NEXT_PUBLIC_SANITY_PROJECT_ID: "${NEXT_PUBLIC_SANITY_PROJECT_ID}"
+      NEXT_PUBLIC_SANITY_DATASET: "${NEXT_PUBLIC_SANITY_DATASET}"
+      NEXT_PUBLIC_SANITY_API_VERSION: "${NEXT_PUBLIC_SANITY_API_VERSION}"
+      NEXT_TELEMETRY_DISABLED: "1"

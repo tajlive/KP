@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { captureException } from "@/lib/sentry";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -31,24 +32,10 @@ export default function Error({ error, reset }: ErrorProps) {
       typeof window !== "undefined" &&
       process.env.NODE_ENV === "production"
     ) {
-      fetch("/api/monitoring", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reports: [
-            {
-              type: "error",
-              level: "error",
-              message: msg,
-              digest,
-              stack,
-              url: window.location.href,
-              userAgent: navigator.userAgent,
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        }),
-      }).catch(() => {});
+      captureException(error, {
+        tags: { errorBoundary: "app-error" },
+        extra: { digest, stack, url: window.location.href },
+      });
     }
   }, [error]);
 

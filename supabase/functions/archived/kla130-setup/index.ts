@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     // Get credentials from environment
-    const projectRef = Deno.env.get('SUPABASE_PROJECT_REF') || 'vuxbjlykgmzskxbclquf';
+    const projectRef = Deno.env.get('SUPABASE_PROJECT_REF') || 'pskhryjzkobytnfwucrb';
     const password = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
     
     // Connect to database using SESSION pooler (port 5432)

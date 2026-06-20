@@ -1,4 +1,3 @@
-import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin({
   requestConfig: "./src/i18n.ts",
@@ -78,7 +77,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "vuxbjlykgmzskxbclquf.supabase.co",
+        hostname: "pskhryjzkobytnfwucrb.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
       {
@@ -402,50 +401,13 @@ const nextConfig = {
   },
 };
 
-// Sentry bundler-plugin: source map upload + release mot temp-mapper (ENOTEMPTY på macOS).
-// Kjør upload kun på Vercel (VERCEL=1) der bygg er kanonisk for prod.
-// GitHub Actions kjører `npm run build` uten VERCEL — da hoppes upload over (samme som lokal `next build`).
-// Tving av/på: SENTRY_UPLOAD_SOURCE_MAPS=true|false
-// Sentry source maps: Upload on Fly.io, Vercel eller Cloudflare builds
-// Override: SENTRY_UPLOAD_SOURCE_MAPS=true|false
-const sentryShouldUpload = process.env.SENTRY_UPLOAD_SOURCE_MAPS === 'true' || 
-  ((process.env.FLY_IO === '1' || process.env.VERCEL === '1' || process.env.CF_PAGES === '1') && 
-   process.env.SENTRY_UPLOAD_SOURCE_MAPS !== 'false');
-
-const sentryWebpackPluginOptions = {
-  silent: true,
-  org: "elbatt-chatbot",
-  project: "klarpakke-production",
-  sourcemaps: { disable: !sentryShouldUpload },
-  release: { create: sentryShouldUpload, finalize: sentryShouldUpload },
-  deploy: { env: sentryShouldUpload },
-  telemetry: false,
-  tunnelRoute: "/api/sentry",
-  hideSourceMaps: true,
-  widenClientFileUpload: true,
-  // NOTE: Do NOT add disableClientWebpackPlugin — it does not work in v8
-  // NOTE: Do NOT add autoInstrumentAppDirectory — causes build failures
-  bundleSizeOptimizations: {
-    excludeDebugStatements: true,
-    excludeReplayShadowDom: true,
-    excludeReplayIframe: true,
-    excludeReplayWorker: true,
-  },
-  // automaticVercelMonitors moved to webpack config (deprecated in sentryWebpackPluginOptions)
-};
-
 // Bundle Analyzer configuration
 import withBundleAnalyzer from "@next/bundle-analyzer";
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-// Export with NextIntl + Bundle Analyzer + Sentry
-// Note: Sentry client-side init is now controlled by sentry.client.config.ts
-// which skips initialization on marketing routes
-export default withSentryConfig(
-  withAnalyzer(withNextIntl(nextConfig)),
-  sentryWebpackPluginOptions,
-);
+// Export with NextIntl + Bundle Analyzer
+export default withAnalyzer(withNextIntl(nextConfig));
 // Trigger rebuild 1775646351
 // Deploy 1775648664

@@ -24,8 +24,8 @@ export const logger = {
     console.error('[Klarpakke ERROR]', ...args);
 
     // Send to error tracking service if configured
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      // Can integrate Sentry here
+    if (process.env.NEXT_PUBLIC_GLITCHTIP_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      // Can integrate GlitchTip/Sentry SDK here
     }
   },
 

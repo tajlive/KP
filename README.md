@@ -27,7 +27,7 @@ Dette verifiserer:
 ### Test mot preview
 
 ```bash
-BASE_URL=https://klarpakke.fly.dev npm run verify:prod
+BASE_URL=https://klarpakke.no npm run verify:prod
 ```
 
 ### Trading Auth Architecture
@@ -39,12 +39,16 @@ User-bound trading-ruter bruker `createServerClient(request, response)` for å s
 - Mode bestemmer kun execution-adapter (PaperExecutor vs BinanceExecutor)
 - Service-role (`createClient()`) er kun tillatt i cron/system-ruter og legacy wrappers
 
-### Hosting
+### Hosting (migrerer til selv-hostet)
 
-- **App:** `klarpakke` på [Fly.io](https://fly.io)
-- **Region:** `arn` (Stockholm)
-- **URL:** https://klarpakke.fly.dev
-- **Domene:** https://klarpakke.no / https://www.klarpakke.no (Cloudflare DNS + proxy)
+> **Status:** Migrering pågår fra Fly.io/Vercel/GitHub Actions til Hetzner + Coolify + Woodpecker CI.
+> Se [docs/SELF-HOSTED-SETUP.md](docs/SELF-HOSTED-SETUP.md) for detaljer.
+
+- **App:** Coolify på Hetzner VPS
+- **URL:** https://klarpakke.no / https://www.klarpakke.no (Cloudflare DNS)
+- **CI/CD:** Woodpecker CI (`.woodpecker/`)
+- **Error tracking:** GlitchTip (selv-hostet, Sentry SDK-kompatibel)
+- **Legacy:** Fly.io-oppsettet er arkivert i `.github/workflows/archived/`
 
 ### Deploy-sekvens
 
@@ -52,24 +56,23 @@ User-bound trading-ruter bruker `createServerClient(request, response)` for å s
 # 1. Push til main
 git push origin main
 
-# 2. Vent på GitHub Actions → Fly.io deploy
-#    Workflow: .github/workflows/deploy-fly.yml
+# 2. Vent på Woodpecker CI → Coolify deploy
+#    Konfigurasjon: .woodpecker/deploy.yml
 
 # 3. Verifiser produksjon
 npm run verify:prod
 ```
 
-Manuell deploy fra lokal maskin (hvis nødvendig):
+### Nyttige kommandoer
 
 ```bash
-npm run fly:deploy
-```
+# Coolify logg (på VPS)
+docker logs -f coolify
 
-### Nyttig Fly.io-kommandoer
+# Woodpecker logg (på VPS)
+docker logs -f woodpecker-server
 
-```bash
-flyctl status --app klarpakke      # App-status
-flyctl logs --app klarpakke        # Se logs
-flyctl secrets list --app klarpakke # Secrets
+# GlitchTip status
+docker compose -f docker-compose.glitchtip.yml ps
 ```
 <!-- Deploy pipeline test: 2026-04-16T17:11:19+02:00 -->

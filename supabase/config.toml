@@ -1,5 +1,5 @@
 # Supabase Configuration
-project_id = "vuxbjlykgmzskxbclquf"
+project_id = "pskhryjzkobytnfwucrb"
 
 # [api]
 # enabled = true
@@ -56,6 +56,22 @@ enabled = true
 verify_jwt = false  # Cron jobs don't use JWT
 
 [functions.sync-prices]
+enabled = true
+verify_jwt = false  # Cron jobs don't use JWT
+
+[functions.signal-engine]
+enabled = true
+verify_jwt = false
+
+[functions.strategy-runner]
+enabled = true
+verify_jwt = false
+
+[functions.cron-daily-analysis]
+enabled = true
+verify_jwt = false
+
+[functions.position-monitor]
 enabled = true
 verify_jwt = false
 

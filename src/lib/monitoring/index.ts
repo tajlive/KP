@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 export {
-  SENTRY_ALERT_RULES,
+  MONITORING_ALERT_RULES,
   sendMonitoringAlert,
   trackWebhookProcessing,
   trackHealthCheckFailure,

@@ -1,0 +1,64 @@
+# Woodpecker CI — Deploy
+# Bygger appen og trigger deploy til Coolify.
+
+when:
+  - event: push
+    branch: main
+
+steps:
+  - name: checkout
+    image: woodpeckerci/plugin-git
+    settings:
+      depth: 50
+
+  - name: install
+    image: node:24
+    commands:
+      - npm ci --prefer-offline --legacy-peer-deps
+
+  - name: build
+    image: node:24
+    commands:
+      - npm run build
+    environment:
+      SKIP_LINT_IN_BUILD: "true"
+      NEXT_PUBLIC_APP_URL: "${NEXT_PUBLIC_APP_URL}"
+      NEXT_PUBLIC_APP_VERSION: "${NEXT_PUBLIC_APP_VERSION}"
+      NEXT_PUBLIC_SUPABASE_URL: "${NEXT_PUBLIC_SUPABASE_URL}"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}"
+      NEXT_PUBLIC_SANITY_PROJECT_ID: "${NEXT_PUBLIC_SANITY_PROJECT_ID}"
+      NEXT_PUBLIC_SANITY_DATASET: "${NEXT_PUBLIC_SANITY_DATASET}"
+      NEXT_PUBLIC_SANITY_API_VERSION: "${NEXT_PUBLIC_SANITY_API_VERSION}"
+      NEXT_PUBLIC_GLITCHTIP_DSN: "${NEXT_PUBLIC_GLITCHTIP_DSN}"
+      NEXT_TELEMETRY_DISABLED: "1"
+
+  - name: deploy-to-coolify
+    image: alpine/curl
+    commands:
+      - echo "Triggering Coolify deploy..."
+      # Placeholder: bytt ut med Coolify webhook URL eller CLI-kommando.
+      # curl -X POST "${COOLIFY_DEPLOY_WEBHOOK}" -H "Authorization: Bearer ${COOLIFY_TOKEN}"
+    secrets:
+      - coolify_deploy_webhook
+      - coolify_token
+
+  - name: health-check
+    image: alpine/curl
+    commands:
+      - echo "Waiting for production health..."
+      - |
+        for i in $(seq 1 36); do
+          if curl -sfS -o /dev/null --max-time 15 "${NEXT_PUBLIC_APP_URL}/api/health"; then
+            echo "Health OK after ${i} attempt(s)"
+            exit 0
+          fi
+          echo "Attempt $i/36 — sleeping 10s"
+          sleep 10
+        done
+        echo "Production health did not become ready in time"
+        exit 1
+    environment:
+      NEXT_PUBLIC_APP_URL: "${NEXT_PUBLIC_APP_URL}"
+    when:
+      - status: success

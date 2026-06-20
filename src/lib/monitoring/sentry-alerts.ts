@@ -1,18 +1,17 @@
 // ═══════════════════════════════════════════════════════════════
-// KLARPAKKE — Sentry Alert Configuration
+// KLARPAKKE — Monitoring Alert Configuration (GlitchTip-kompatibel)
 // Alert-regler for produksjonsovervåkning
 // ═══════════════════════════════════════════════════════════════
 
-import * as Sentry from "@sentry/nextjs";
+import { captureException, captureMessage, withScope } from "@/lib/sentry";
 
 /**
- * Konfigurer Sentry alerts for produksjon
- * Må kopieres til Sentry Dashboard → Alerts → Create Alert
+ * Konfigurer overvåkingsregler for produksjon.
+ * Merk: Sentry-spesifikke query-syntakser er forenklet; tilpass til
+ * GlitchTip-dashboard etter migrering.
  */
-
-export const SENTRY_ALERT_RULES = {
+export const MONITORING_ALERT_RULES = {
   // 1. Health API Downtime Alert
-  // Alert hvis /api/health returnerer != 200 i mer enn 2 minutter
   healthApiDowntime: {
     name: "🩺 Health API Downtime",
     environment: "production",
@@ -33,7 +32,6 @@ export const SENTRY_ALERT_RULES = {
   },
 
   // 2. Stripe Webhook Failure Alert
-  // Alert hvis Stripe webhook feiler (5xx) mer enn 3 ganger på 5 min
   stripeWebhookFailures: {
     name: "💳 Stripe Webhook Failures",
     environment: "production",
@@ -54,7 +52,6 @@ export const SENTRY_ALERT_RULES = {
   },
 
   // 3. Edge Function Cold Start Alert
-  // Alert hvis Edge Function uptime < 60 sekunder (cold start varsel)
   edgeFunctionColdStart: {
     name: "❄️ Edge Function Cold Start",
     environment: "production",
@@ -74,8 +71,6 @@ export const SENTRY_ALERT_RULES = {
   },
 
   // 4. Auto Trade Failure Alert
-  // Alert hvis auto_trade_log har status='failed' > 10 rader siste time
-  // (Håndteres av DB trigger, men vi logger også til Sentry)
   autoTradeFailureAlert: {
     name: "🤖 Auto Trade Failures",
     environment: "production",
@@ -136,8 +131,11 @@ export const SENTRY_ALERT_RULES = {
   },
 };
 
+/** @deprecated Bruk MONITORING_ALERT_RULES. */
+export const SENTRY_ALERT_RULES = MONITORING_ALERT_RULES;
+
 /**
- * Send custom Sentry alert for monitoring events
+ * Send custom monitoring alert
  */
 export function sendMonitoringAlert(
   category: string,
@@ -145,18 +143,19 @@ export function sendMonitoringAlert(
   severity: "critical" | "warning" | "info" = "warning",
   metadata?: Record<string, unknown>
 ) {
-  Sentry.withScope((scope) => {
+  const level = severity === "critical" ? "error" : severity === "warning" ? "warning" : "info";
+  withScope((scope) => {
     scope.setTag("monitoring_category", category);
     scope.setTag("severity", severity);
-    scope.setLevel(severity === "critical" ? "fatal" : severity === "warning" ? "warning" : "info");
-    
+    scope.setLevel(level);
+
     if (metadata) {
       Object.entries(metadata).forEach(([key, value]) => {
         scope.setExtra(key, value);
       });
     }
-    
-    Sentry.captureMessage(`[${category.toUpperCase()}] ${message}`, severity === "critical" ? "fatal" : severity);
+
+    captureMessage(`[${category.toUpperCase()}] ${message}`, level);
   });
 }
 
@@ -168,23 +167,8 @@ export function trackWebhookProcessing(
   processingTimeMs: number,
   success: boolean
 ) {
-  // Log to Sentry for performance monitoring
-  Sentry.captureMessage(`Stripe webhook ${eventType} processed`, "info");
-  
-  // Add performance breadcrumb
-  Sentry.addBreadcrumb({
-    category: "webhook",
-    message: `${eventType} processed in ${processingTimeMs}ms`,
-    level: processingTimeMs > 3000 ? "warning" : "info",
-    data: {
-      event_type: eventType,
-      processing_time_ms: processingTimeMs,
-      success,
-      threshold_ms: 3000,
-    },
-  });
-  
-  // Alert if slow
+  captureMessage(`Stripe webhook ${eventType} processed`, "info");
+
   if (processingTimeMs > 3000) {
     sendMonitoringAlert(
       "webhook_performance",
@@ -199,12 +183,12 @@ export function trackWebhookProcessing(
  * Track health check failures
  */
 export function trackHealthCheckFailure(checkName: string, error: Error) {
-  Sentry.withScope((scope) => {
+  withScope((scope) => {
     scope.setTag("health_check", checkName);
     scope.setTag("monitoring_category", "health_check_failure");
-    Sentry.captureException(error);
+    captureException(error);
   });
-  
+
   sendMonitoringAlert(
     "health_check_failure",
     `Health check '${checkName}' failed: ${error.message}`,
