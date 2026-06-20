@@ -7,6 +7,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { calculateTCA, type TCAMetrics } from "@/lib/trading/tca";
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -15,9 +16,7 @@ const SLIPPAGE_ALERT_BPS = 20;
 const COST_ALERT_PCT = 0.15; // 0.15% of volume
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  const secret = process.env.CRON_SECRET;
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

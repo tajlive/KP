@@ -9,6 +9,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -28,9 +29,7 @@ interface BalanceDriftResult {
 }
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  const secret = process.env.CRON_SECRET;
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

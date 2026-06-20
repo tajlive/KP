@@ -34,6 +34,7 @@ import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-siz
 import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
 import { usdtToNok, getUsdtToNokRate, getUsdtToNokRateAsync } from "@/lib/trading/currency";
 import { runEnsembleForSymbol } from "@/lib/ai/ensemble-v2";
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -966,10 +967,7 @@ async function mirrorTradeToFollowers(
  */
 export async function GET(req: NextRequest) {
   // Auth check
-  const cronSecret = req.headers.get("authorization")?.replace("Bearer ", "");
-  const isDev = process.env.NODE_ENV === "development";
-
-  if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

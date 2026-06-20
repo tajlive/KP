@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyCronRequest } from "@/lib/auth/verify-cron";
+import { validateCronSecret } from "@/lib/auth/cron";
 import { getServiceRoleClient } from "@/lib/api-auth";
 import { DATA_SOURCE_THRESHOLDS } from "@/lib/trading/data-source-state";
 
@@ -7,8 +7,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const unauthorized = verifyCronRequest(req);
-  if (unauthorized) return unauthorized;
+  if (!validateCronSecret(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const staleThreshold =
     Number(process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES) ||

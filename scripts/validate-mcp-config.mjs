@@ -23,7 +23,7 @@ const configFiles = [
   { label: ".agent/mcp_config.json", path: resolve(root, ".agent/mcp_config.json") },
 ];
 
-const masterLabel = ".cursor/mcp.json";
+const masterLabel = ".mcp/mcp_config.json";
 const masterPath = resolve(root, masterLabel);
 
 function loadJson(label, filePath) {
@@ -57,11 +57,13 @@ function getRunnerScripts(config) {
     if (name.startsWith("_")) continue;
     const cmd = server.command;
     const args = server.args || [];
-    // Look for local wrapper scripts
+    // Look for local wrapper scripts (relative or absolute paths within repo)
     if (cmd === "node" || cmd === "npx") {
       for (const arg of args) {
-        if (typeof arg === "string" && arg.startsWith("scripts/run-")) {
-          runners.push(arg);
+        if (typeof arg === "string" && arg.includes("scripts/run-")) {
+          // Normalize absolute repo paths to relative for existence check
+          const relative = arg.replace(root + "/", "").replace(/^\//, "");
+          runners.push(relative);
         }
       }
     }
@@ -79,7 +81,13 @@ if (!mServers || typeof mServers !== "object") {
 
 // ─── Validate all configs exist and are valid JSON ───
 const loadedConfigs = [];
+let missingFiles = 0;
 for (const { label, path: p } of configFiles) {
+  if (!existsSync(p)) {
+    console.warn(`⚠️  ${label}: mangler fil — hoppes over`);
+    missingFiles++;
+    continue;
+  }
   const data = loadJson(label, p);
   loadedConfigs.push({ label, path: p, data });
 }
@@ -139,15 +147,16 @@ for (const runner of allRunners) {
 }
 
 // ─── Validate _meta.version on master ───
-if (!mServers._meta || mServers._meta.version !== "2.1") {
-  console.warn(`⚠️  Master config _meta.version er ikke 2.1 (fant: ${mServers._meta?.version || "mangler"})`);
+const expectedVersion = "2.9-minimal";
+if (!masterConfig._meta || masterConfig._meta.version !== expectedVersion) {
+  console.warn(`⚠️  Master config _meta.version er ikke ${expectedVersion} (fant: ${masterConfig._meta?.version || "mangler"})`);
 }
 
 // ─── Summary ───
 const totalFiles = loadedConfigs.length;
 const totalRunners = allRunners.size;
 
-console.log(`🔍 MCP Audit — ${totalFiles} config-filer sjekket, ${totalRunners} runner-scripts verifisert`);
+console.log(`🔍 MCP Audit — ${totalFiles} config-filer sjekket, ${missingFiles} manglet, ${totalRunners} runner-scripts verifisert`);
 
 if (syncErrors > 0 || runnerErrors > 0) {
   console.error(`\n❌ Audit FAILED — ${syncErrors} sync-feil, ${runnerErrors} runner-feil`);

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { validateCronSecret } from "@/lib/auth/cron";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
@@ -34,12 +35,7 @@ interface BinanceTicker {
  * Called by Vercel Cron or external scheduler
  */
 export async function GET(request: NextRequest) {
-  // Verify cron secret in production
-  const cronSecretRaw = request.headers.get("authorization")?.replace("Bearer ", "");
-  const isDev = process.env.NODE_ENV === "development";
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (!isDev && cronSecret && cronSecretRaw !== cronSecret.trim()) {
+  if (!validateCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

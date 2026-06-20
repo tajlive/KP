@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * 🧠 KIMI Smart Brief v1.1
+ * 🧠 KIMI Smart Brief v2.0 — KIMI Code 0.18.0
  *
  * Genererer et paste-ready pre-start brief for KIMI.
- * Klassifiserer intensjon, velger agent/MCP-profil,
+ * Klassifiserer intensjon, velger skill/MCP-profil,
  * henter MemPalace-kontekst, og outputter markdown.
  *
  * Bruk: node scripts/kimi-smart-brief.mjs "din oppgave her"
@@ -19,52 +19,52 @@ const root = process.cwd();
 const AGENTS = {
   auth: {
     name: '🔐 Auth & Security',
-    yaml: 'auth-agent.yaml',
+    skillsDir: 'klarpakke-auth',
     weight: ['auth','login','oauth','password','session','guard','jwt','permission','rls','mfa','security','csrf','xss','cookie'],
   },
   trading: {
     name: '📈 Trading Engine',
-    yaml: 'klarpakke-trading-engine-agent.yaml',
+    skillsDir: 'klarpakke-trading',
     weight: ['trading','trade','position','pnl','strategy','bot','order','market','asset','balance','wallet','cron','scheduler'],
   },
   database: {
     name: '🗄️ Database & Migrations',
-    yaml: 'klarpakke-architect-agent.yaml',
+    skillsDir: 'klarpakke-database',
     weight: ['database','migration','sql','supabase','postgres','table','index','trigger','function','rpc','view','schema','rls'],
   },
   frontend: {
     name: '🎨 Frontend & UI',
-    yaml: 'klarpakke-performance-agent.yaml',
+    skillsDir: 'klarpakke-performance',
     weight: ['frontend','ui','component','react','nextjs','tailwind','css','page','layout','form','modal','chart','dashboard'],
   },
   api: {
     name: '🔌 API & Backend',
-    yaml: 'klarpakke-architect-agent.yaml',
+    skillsDir: 'klarpakke-architect',
     weight: ['api','endpoint','route','handler','middleware','request','response','server','action','webhook','rpc'],
   },
   deploy: {
     name: '🚀 Deploy & DevOps',
-    yaml: 'klarpakke-architect-agent.yaml',
+    skillsDir: 'klarpakke-architect',
     weight: ['deploy','vercel','ci','github','action','workflow','build','env','secret','domain','ssl','monitor'],
   },
   testing: {
     name: '🧪 Testing & QA',
-    yaml: 'testing-agent.yaml',
+    skillsDir: 'klarpakke-testing',
     weight: ['test','testing','e2e','unit','vitest','playwright','spec','coverage','mock','assert'],
   },
   cms: {
     name: '📝 Sanity CMS',
-    yaml: 'klarpakke-architect-agent.yaml',
+    skillsDir: 'klarpakke-architect',
     weight: ['sanity','cms','content','schema','document','groq','studio','webhook','assist'],
   },
   mobile: {
     name: '📱 Mobile & PWA',
-    yaml: 'klarpakke-performance-agent.yaml',
+    skillsDir: 'klarpakke-performance',
     weight: ['mobile','pwa','responsive','ios','android','lighthouse','viewport','touch','sw'],
   },
   general: {
     name: '🤖 General (Architect)',
-    yaml: 'klarpakke-architect-agent.yaml',
+    skillsDir: 'klarpakke-architect',
     weight: ['refactor','fix','bug','error','clean','optimize','improve','update','remove','delete','add','create'],
   },
 };
@@ -148,18 +148,18 @@ function generateBrief(prompt) {
     if (mp) memContext = mp;
   } catch { /* ignore */ }
 
-  // Smart commands relevant for agent
+  // Smart commands relevant for skill
   const smartCommands = {
-    auth: ['kimi auth', 'npm run oauth:check'],
-    trading: ['npm run cron:verify', 'npm run db:status'],
-    database: ['npm run db:validate-migrations', 'npm run db:status'],
-    frontend: ['npm run lint', 'npm run type-check'],
-    api: ['npm run lint:gate', 'npm run test:unit'],
-    deploy: ['npm run deploy:prod', 'npm run health:prod:gate'],
-    testing: ['npm run test:unit', 'npm run test:e2e:critical:chromium'],
-    cms: ['npm run sanity:verify', 'npm run sanity:guard'],
-    mobile: ['npm run test:e2e:critical:chromium'],
-    general: ['npm run verify'],
+    auth: ['kimi --skills-dir .kimi/skills/klarpakke-auth', 'npm run oauth:check'],
+    trading: ['kimi --skills-dir .kimi/skills/klarpakke-trading', 'npm run cron:verify', 'npm run db:status'],
+    database: ['kimi --skills-dir .kimi/skills/klarpakke-database', 'npm run db:validate-migrations', 'npm run db:status'],
+    frontend: ['kimi --skills-dir .kimi/skills/klarpakke-performance', 'npm run lint', 'npm run type-check'],
+    api: ['kimi --skills-dir .kimi/skills/klarpakke-architect', 'npm run lint:gate', 'npm run test:unit'],
+    deploy: ['kimi --skills-dir .kimi/skills/klarpakke-architect', 'npm run deploy:prod', 'npm run health:prod:gate'],
+    testing: ['kimi --skills-dir .kimi/skills/klarpakke-testing', 'npm run test:unit', 'npm run test:e2e:critical:chromium'],
+    cms: ['kimi --skills-dir .kimi/skills/klarpakke-architect', 'npm run sanity:verify', 'npm run sanity:guard'],
+    mobile: ['kimi --skills-dir .kimi/skills/klarpakke-performance', 'npm run test:e2e:critical:chromium'],
+    general: ['kimi --skills-dir .kimi/skills/klarpakke-architect', 'npm run verify'],
   };
 
   const brief = `
@@ -168,16 +168,15 @@ function generateBrief(prompt) {
 ## 🎯 Oppgave
 ${prompt}
 
-## 🧠 Anbefalt Agent
+## 🧠 Anbefalt Skill
 **${agent.name}** (confidence: ${classification.confidence})
 \`\`\`bash
-kimi --agent-file .kimi/agents/${agent.yaml}
-# eller alias: kimi ${classification.agent}
+kimi --skills-dir .kimi/skills/${agent.skillsDir}
 \`\`\`
 ${classification.runnerUp ? `\nRunner-up: ${AGENTS[classification.runnerUp]?.name || classification.runnerUp}` : ''}
 
 ## ⚙️ MCP-Profil
-**${mcpProfile}** — bytt med: \`kimi-mcp ${mcpProfile}\`
+**${mcpProfile}** (styres av KIMI Code prosjektkonfigurasjon)
 
 ## 🔀 Git Kontekst
 - Branch: **${git.branch}**

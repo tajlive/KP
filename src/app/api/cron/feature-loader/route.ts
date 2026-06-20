@@ -4,6 +4,7 @@ import { captureCronError, captureCronSuccess } from '@/lib/cron/cron-helpers';
 import { calculateRSI, calculateMACD, calculateBollingerBands } from '@/lib/trading/indicators';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -71,10 +72,7 @@ function computeFeatures(prices: number[], volumes: number[]) {
 }
 
 export async function GET(req: NextRequest) {
-  const cronSecret = req.headers.get('authorization')?.replace('Bearer ', '');
-  const isDev = process.env.NODE_ENV === 'development';
-
-  if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

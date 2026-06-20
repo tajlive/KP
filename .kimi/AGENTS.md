@@ -1,4 +1,4 @@
-# AGENTS.md — Felles arbeidskontrakt for Klarpakke-agenter
+# AGENTS.md — Felles arbeidskontrakt for Klarpakke-skills
 
 ## 🤖 Grunnprinsipp: AUTOMATISER ALT
 
@@ -11,7 +11,9 @@ Dette er det øverste prinsippet for alle agenter i Klarpakke. Det overstyrer «
 2. **GitHub Actions** — CI/CD, health checks, secret-sync, cron-verifisering
 3. **npm scripts** — lokale devops-oppgaver (verify, lint, deploy, db:push)
 4. **Vercel Crons (legacy)** — beholdes for bakoverkompatibilitet. Nytt: pg_cron + Fly.io for alle operasjoner
-5. **KIMI-agenter** — orchestrering, kodeendringer, analyse
+5. **KIMI-skills** — orchestrering, kodeendringer, analyse
+
+> **Skills-oppsett:** Aktive skills ligger i `.kimi/skills/` og lastes med `kimi --skills-dir .kimi/skills/klarpakke-<skill>`.
 
 ### Hva som alltid skal automatiseres
 - Alle helsesjekker → GitHub Actions schedule
@@ -202,12 +204,12 @@ npm run sanity:deploy      # Deploy til klarpakke.sanity.studio
 ### GitHub Actions
 Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + nightly.
 
-## MCP-optimalisering (KIMI CLI)
+## MCP-optimalisering (KIMI Code CLI)
 
-> Oppdatert: 2026-05-15 | v2.9 for KIMI CLI v1.44.0 + k2.6 | MemPalace v3.4.0 + Smart Launch v2.1 + Self-Improve v1.5
+> Oppdatert: 2026-06-20 | v3.0 for KIMI Code CLI 0.18.0 + MemPalace v3.4.0 + Smart Launch v2.1 + Self-Improve v1.5
 
-### KIMI CLI v1.44.0 + k2.6 endringer (påvirker oss)
-- **`max_steps_per_turn` økt til 1000** — KIMI kan kjøre lengre oppgaver uten avbrudd
+### KIMI Code CLI 0.18.0 endringer (påvirker oss)
+- **`max_steps_per_turn` økt til 1000** — KIMI Code CLI kan kjøre lengre oppgaver uten avbrudd
 - **`max_ralph_iterations` = 3** — økt fra 2 for bedre self-improvement loop
 - **`reserved_context_size` = 35000** — frigir 5k tokens til MemPalace + kode (ned fra 40000)
 - **`compaction_trigger_ratio` = 0.92** — mer kontekst bevart i lange økter (ned fra 0.94)
@@ -243,7 +245,7 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
    - `search` — Advanced search in trades/users via Supabase FTS
    - `cost` — Fly.io/Supabase cost monitoring (estimates + usage)
 
-### MemPalace v3.4.0 — KIMI CLI v1.44.0-kompatibel
+### MemPalace v3.4.0 — KIMI Code CLI 0.18.0-kompatibel
 - **Atomic writes**: Index-cache og KG compaction skrives atomisk (tmp + rename)
 - **KG backup**: `kg.json.bak` opprettes før compaction
 - **Økt cache**: 500 LRU entries (fra 300)
@@ -264,10 +266,10 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
 ```
 Perplexity Desktop (MCP-klient)
   → KIMI MCP-server (run-kimi-mcp-simple.mjs)
-    → KIMI CLI (--quiet, stdin-piping)
+    → KIMI Code CLI (--quiet, stdin-piping)
       → Filoperasjoner, kode, analyse
 
-KIMI CLI (MCP-klient)
+KIMI Code CLI (MCP-klient)
   → Perplexity MCP-server (run-perplexity-mcp.mjs)
     → Perplexity API (PERPLEXITY_API_KEY)
       → Research, web-søk, reasoning
@@ -339,9 +341,9 @@ kimi
 
 ---
 
-## MemPalace — Prosjektminne v3.4.0 SUPERKIMI (KIMI CLI v1.44.0 + k2.6)
+## MemPalace — Prosjektminne v3.4.0 SUPERKIMI (KIMI Code CLI 0.18.0 + k2.6)
 
-> Oppdatert: 2026-05-15 | MemPalace MCP v3.4.0 | Atomic writes + KG backup + TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 204+ entities, 692+ facts | Alle agenter integrert | KIMI CLI v1.44.0-optimalisert
+> Oppdatert: 2026-06-20 | MemPalace MCP v3.4.0 | Atomic writes + KG backup + TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 204+ entities, 692+ facts | Alle skills integrert | KIMI Code CLI 0.18.0-optimalisert
 
 ### Rask verifisering
 ```bash
@@ -352,8 +354,8 @@ kimi
 # Søk i kunnskap
 node scripts/mempalace-search.mjs "auth pattern"
 
-# Agent-kommandoer
-kimi --agent-file .kimi/agents/mempalace-agent.yaml
+# Skill-kommandoer
+kimi --skills-dir .kimi/skills/klarpakke-mempalace
 # eller: kimi mempalace  (hvis alias konfigurert)
 ```
 
@@ -365,7 +367,7 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 - **File watcher**: PÅ med 2s debounce (fra 500ms), begrenset til 3 paths
 - **Diary chunking**: `writeDiary()` splitter linjer >800 chars i flere sub-docs
 - **Graceful shutdown timeout**: 5s timeout på SIGTERM/SIGINT før force-exit
-- **KIMI CLI v1.44.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
+- **KIMI Code CLI 0.18.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
 - **Robust transport**: Forbedret JSON-parse feilhåndtering — logger ikke kræsj
 - **FIX: MCP protocol compliance** — Tool results wrappes i `content: [{type: "text", text: ...}]` array
 - **FIX: Diary newline-håndtering** — Sikrer korrekt JSONL-format ved append
@@ -384,9 +386,8 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 - **12 verktøy**: `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
 - **k2.6-optimalisert**: Batch-operasjoner, 2500 chars snippets, 262k kontekst-utnyttelse
 
-### Agent: `mempalace`
-YAML: `.kimi/agents/mempalace-agent.yaml`  
-Prompt: `.kimi/agents/mempalace-agent.md`
+### Skill: `mempalace`
+Skill: `.kimi/skills/klarpakke-mempalace/SKILL.md`
 
 Spesialisert på:
 - Knowledge retrieval før alle oppgaver
@@ -394,19 +395,19 @@ Spesialisert på:
 - Memory hygiene (deduplisering, TTL)
 - Cross-domain linking (auth ↔ trading ↔ deploy)
 
-### Agent-roster (8 aktive, 8 deprecated)
+### Skill-roster (8 aktive, 8 deprecated)
 
-**Aktive agenter** (under `.kimi/agents/`):
-| Alias | YAML | MD | Domene |
-|-------|------|-----|--------|
-| `kimi auth` | `auth-agent.yaml` | `klarpakke-auth-agent.md` | 🔐 Auth & Security |
-| `kimi trading` | `klarpakke-trading-engine-agent.yaml` | `klarpakke-trading-engine-agent.md` | 📈 Trading Engine |
-| `kimi database` | `klarpakke-database-agent.yaml` | `klarpakke-database-agent.md` | 🗄️ Database & Schema |
-| `kimi frontend` | `klarpakke-performance-agent.yaml` | `klarpakke-performance-agent.md` | 🎨 Frontend & UI |
-| `kimi architect` | `klarpakke-architect-agent.yaml` | `klarpakke-architect-agent.md` | 🚀 Deploy & Arkitektur |
-| `kimi testing` | `testing-agent.yaml` | `testing-agent.md` | 🧪 Testing & QA |
-| `kimi mempalace` | `mempalace-agent.yaml` | `mempalace-agent.md` | 🏛️ Memory & KG |
-| `kimi super` | `klarpakke-super-agent.yaml` | `KIMI-MASTER-SYSTEM.md` | 🤖 General/Catch-all |
+**Aktive skills** ligger i `.kimi/skills/` og lastes med `--skills-dir`:
+| Alias | Skill-katalog | Domene |
+|-------|---------------|--------|
+| `kimi auth` | `.kimi/skills/klarpakke-auth` | 🔐 Auth & Security |
+| `kimi trading` | `.kimi/skills/klarpakke-trading` | 📈 Trading Engine |
+| `kimi database` | `.kimi/skills/klarpakke-database` | 🗄️ Database & Schema |
+| `kimi frontend` | `.kimi/skills/klarpakke-performance` | 🎨 Frontend & UI |
+| `kimi architect` | `.kimi/skills/klarpakke-architect` | 🚀 Deploy & Arkitektur |
+| `kimi testing` | `.kimi/skills/klarpakke-testing` | 🧪 Testing & QA |
+| `kimi mempalace` | `.kimi/skills/klarpakke-mempalace` | 🏛️ Memory & KG |
+| `kimi super` | `.kimi/skills/klarpakke-super` | 🤖 General/Catch-all |
 
 **Deprecated** (flyttet til `.kimi/agents/deprecated/`): auto-optimizer, mobile-check, sanity, security, super-auditor, super-editor, verify, performance-duplikat.
 
@@ -422,7 +423,7 @@ Smart Launch: `node scripts/kimi-smart-launch.mjs <task> --swarm [--launch]`
 | bugfix | analyzer → tester → security → knowledge | Feilretting |
 | refactor | analyzer → architect → tester → knowledge | Omstrukturering |
 
-**KIMI-kompatible modeller:** Swarm-agenter arver `default_model` fra `~/.kimi/config.toml` (ikke Claude-spesifikke).
+**KIMI-kompatible modeller:** Swarm-skills arver `default_model` fra `~/.kimi/config.toml` (ikke Claude-spesifikke).
 
 ### Verify Agent — Post-Change Verification
 
@@ -450,7 +451,7 @@ node scripts/verify/run-all.mjs             # Kjør ALT (claims + types + lint +
 
 **Aktivering:**
 ```bash
-kimi --agent-file .kimi/agents/verify-agent.yaml
+kimi --skills-dir .kimi/skills/klarpakke-testing
 # eller: kimi verify  (hvis alias konfigurert)
 ```
 
@@ -522,14 +523,14 @@ auto_tag()   # På audit-rapporten
 
 ### Swarm-delegering ved store funn
 Hvis >20 filer berøres:
-- **klarpakke-ux-ui-agent** → UI/UX fixes
-- **klarpakke-auth-agent** → Auth-rute fixes
-- **klarpakke-sanity-agent** → CMS-innhold fixes
-- **verify-agent** → Post-fix verifisering
+- **klarpakke-performance skill** → UI/UX fixes
+- **klarpakke-auth skill** → Auth-rute fixes
+- **klarpakke-super skill** → CMS-innhold fixes / koordinering
+- **klarpakke-testing skill** → Post-fix verifisering
 
 **Aktivering:**
 ```bash
-kimi --agent-file .kimi/agents/super-auditor-agent.yaml
+kimi --skills-dir .kimi/skills/klarpakke-super
 # eller: kimi audit  (hvis alias konfigurert)
 ```
 
@@ -545,38 +546,34 @@ kimi --agent-file .kimi/agents/super-auditor-agent.yaml
 
 **Notat:** `.mempalace/diary.jsonl` er konsolidert inn i `.kimi/diary.jsonl` (en kilde til sannhet).
 
-### Agenter med MemPalace-integrasjon (v3.2)
+### Skills med MemPalace-integrasjon (v3.2)
 
-Alle agenter er oppdatert til å bruke MemPalace MCP v3.2-verktøy med korrekte verktøynavn.
+Alle skills er oppdatert til å bruke MemPalace MCP v3.2-verktøy med korrekte verktøynavn.
 
-| Agent | YAML | Fokus | KG-entiteter |
+| Skill | Katalog | Fokus | KG-entiteter |
 |---|---|---|---|
-| **mempalace** | `.kimi/agents/mempalace-agent.yaml` | Memory-arkitektur, KG-vedlikehold | Alle domener |
-| **architect** | `.kimi/agents/klarpakke-architect-agent.yaml` | Full-stack arkitektur | `auth-system`, `trading-engine`, `deployment`, `infra` |
-| **auth** | `.kimi/agents/auth-agent.yaml` | OAuth, session, RLS | `auth-system`, `oauth`, `session`, `refresh-token`, `middleware` |
-| **sanity** | `.kimi/agents/sanity-agent.yaml` | CMS, schema, tokens | `sanity-cms`, `design-tokens`, `groq`, `studio`, `webhooks` |
-| **mobile** | `.kimi/agents/mobile-check-agent.yaml` | Mobil, PWA, Lighthouse | `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse` |
-| **super-editor** | `.kimi/agents/super-editor-agent.yaml` | CMS + kode-redigering, screenshots | `sanity-cms`, `design-tokens`, `studio`, `frontend`, `tailwind` |
-| **verify** | `.kimi/agents/verify-agent.yaml` | Post-change verification, redirect auditing, orphaned file detection | `routing`, `redirects`, `file-deletion` |
-| **super-auditor** | `.kimi/agents/super-auditor-agent.yaml` | Full site audit: routes, links, content, i18n, visuals, improvements | `site-health`, `routing`, `i18n-system`, `frontend`, `sanity-cms` |
-| **page-editor** | `.kimi/agents/page-editor-agent.yaml` | Visual editing with full page inspector gallery before/after | `frontend`, `design-tokens`, `sanity-cms` |
+| **mempalace** | `.kimi/skills/klarpakke-mempalace` | Memory-arkitektur, KG-vedlikehold | Alle domener |
+| **architect** | `.kimi/skills/klarpakke-architect` | Full-stack arkitektur | `auth-system`, `trading-engine`, `deployment`, `infra` |
+| **auth** | `.kimi/skills/klarpakke-auth` | OAuth, session, RLS | `auth-system`, `oauth`, `session`, `refresh-token`, `middleware` |
+| **sanity** | *(deprecated YAML-agent)* | CMS, schema, tokens | `sanity-cms`, `design-tokens`, `groq`, `studio`, `webhooks` |
+| **mobile** | *(deprecated YAML-agent)* | Mobil, PWA, Lighthouse | `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse` |
+| **super-editor** | *(deprecated YAML-agent)* | CMS + kode-redigering, screenshots | `sanity-cms`, `design-tokens`, `studio`, `frontend`, `tailwind` |
+| **verify** | `.kimi/skills/klarpakke-testing` | Post-change verification, redirect auditing, orphaned file detection | `routing`, `redirects`, `file-deletion` |
+| **super-auditor** | `.kimi/skills/klarpakke-super` | Full site audit: routes, links, content, i18n, visuals, improvements | `site-health`, `routing`, `i18n-system`, `frontend`, `sanity-cms` |
+| **page-editor** | *(deprecated YAML-agent)* | Visual editing with full page inspector gallery before/after | `frontend`, `design-tokens`, `sanity-cms` |
 
 **Aktivering:**
 ```bash
-kimi --agent-file .kimi/agents/<agent>-agent.yaml
+kimi --skills-dir .kimi/skills/klarpakke-<skill>
 # eller via alias (commands.json):
 kimi architect     # Lead architect
 kimi auth          # Auth-ekspert
-kimi sanity        # Sanity-ekspert
 kimi mempalace     # Memory-arkitekt
-kimi mobile        # Mobil-sjekk
-kimi editor        # Super-redaktør (CMS + kode)
-kimi verify        # Post-change verifisering
-kimi audit         # Full site audit (routes, links, content, i18n)
-kimi inspect       # Visuelt galleri av alle sider
+kimi testing       # Testing & QA (inkl. verify)
+kimi super         # Full site audit / catch-all
 ```
 
-**Felles MemPalace-protokoll for alle agenter:**
+**Felles MemPalace-protokoll for alle skills:**
 1. **FØR oppgave:** `search()` + `recent_context(hours=48)` + `kg_query(entity=..., depth=2)`
 2. **ETTER oppgave:** `kg_add()` / `kg_batch()` + `write_diary()` + `auto_tag()`
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyCronRequest } from "@/lib/auth/verify-cron";
+import { validateCronSecret } from "@/lib/auth/cron";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email/send";
 import { getDailySummaryEmail } from "@/lib/email/templates";
@@ -68,8 +68,9 @@ function sumActiveCapitalNok(
 }
 
 export async function GET(req: NextRequest) {
-  const authError = verifyCronRequest(req);
-  if (authError) return authError;
+  if (!validateCronSecret(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const supabase = createClient() as SupabaseClient<Database>;

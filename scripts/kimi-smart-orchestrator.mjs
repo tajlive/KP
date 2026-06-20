@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * 🤖 KIMI Smart Orchestrator v1.0
+ * 🤖 KIMI Smart Orchestrator v2.0 — KIMI Code 0.18.0
  *
- * Analyserer brukerens prompt, velger riktig agent/MCP-profil,
+ * Analyserer brukerens prompt, velger riktig skill/MCP-profil,
  * og genererer en "Smart Brief" som limes inn i KIMI ved oppstart.
  *
  * Bruk:
@@ -24,88 +24,72 @@ const home = process.env.HOME || '/Users/taj';
 // ─── KONFIGURASJON ───
 const AGENTS = {
   auth: {
-    yaml: '.kimi/agents/auth-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/auth-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-auth',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-auth',
     patterns: ['auth', 'oauth', 'session', 'login', 'password', 'jwt', 'rls', 'middleware', 'callback', 'supabase auth', 'signin', 'signup'],
     mcp: 'minimal',
     description: '🔐 Auth & Security',
     color: '\x1b[35m'
   },
   trading: {
-    yaml: '.kimi/agents/klarpakke-trading-engine-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-trading-engine-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-trading',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-trading',
     patterns: ['trading', 'trade', 'position', 'pnl', 'strategy', 'bot', 'session', 'binance', 'order', 'portfolio', 'grid', 'dca'],
     mcp: 'medium',
     description: '📈 Trading Engine',
     color: '\x1b[32m'
   },
   database: {
-    yaml: '.kimi/agents/klarpakke-architect-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-database',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-database',
     patterns: ['supabase', 'migration', 'schema', 'sql', 'rpc', 'table', 'index', 'trigger', 'database', 'postgres', 'column', 'function'],
     mcp: 'medium',
     description: '🗄️ Database & Schema',
     color: '\x1b[34m'
   },
   sanity: {
-    yaml: '.kimi/agents/klarpakke-architect-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-architect',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-architect',
     patterns: ['sanity', 'cms', 'studio', 'groq', 'schema', 'document', 'webhook', 'content', 'portable text'],
     mcp: 'minimal',
     description: '📝 Sanity CMS',
     color: '\x1b[36m'
   },
   testing: {
-    yaml: '.kimi/agents/klarpakke-performance-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-performance-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-testing',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-testing',
     patterns: ['test', 'spec', 'e2e', 'playwright', 'vitest', 'lighthouse', 'a11y', 'accessibility', 'coverage', 'bug', 'feil'],
     mcp: 'medium',
     description: '🧪 Testing & QA',
     color: '\x1b[33m'
   },
   frontend: {
-    yaml: '.kimi/agents/klarpakke-performance-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-performance-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-performance',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-performance',
     patterns: ['component', 'tsx', 'page', 'layout', 'tailwind', 'css', 'ui', 'design', 'responsive', 'theme', 'hero', 'card'],
     mcp: 'minimal',
     description: '🎨 Frontend & UI',
     color: '\x1b[35m'
   },
   deploy: {
-    yaml: '.kimi/agents/klarpakke-architect-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-architect',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-architect',
     patterns: ['deploy', 'vercel', 'github', 'action', 'workflow', 'ci', 'cd', 'production', 'build', 'pipeline'],
     mcp: 'medium',
     description: '🚀 Deploy & CI/CD',
     color: '\x1b[31m'
   },
   mempalace: {
-    yaml: '.kimi/agents/mempalace-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/mempalace-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-mempalace',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-mempalace',
     patterns: ['mempalace', 'memory', 'kg', 'knowledge', 'diary', 'context', 'search', 'index', 'cache', 'optimize'],
     mcp: 'minimal',
     description: '🏛️ MemPalace',
     color: '\x1b[36m'
   },
-  verify: {
-    yaml: '.kimi/agents/verify-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/verify-agent.yaml',
-    patterns: ['verify', 'redirect', 'orphan', 'stale', 'routing', 'claim', 'check', 'audit', 'lint', 'typecheck'],
-    mcp: 'minimal',
-    description: '✅ Verify',
-    color: '\x1b[32m'
-  },
-  auto_optimizer: {
-    yaml: '.kimi/agents/auto-optimizer-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/auto-optimizer-agent.yaml',
-    patterns: ['optimize', 'auto-optimizer', 'performance', 'health', 'monitor', 'drift', 'tune', 'cleanup'],
-    mcp: 'minimal',
-    description: '🤖 Auto-Optimizer',
-    color: '\x1b[33m'
-  },
   architect: {
-    yaml: '.kimi/agents/klarpakke-architect-agent.yaml',
-    cmd: 'kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml',
+    skillsDir: '.kimi/skills/klarpakke-architect',
+    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-architect',
     patterns: ['architect', 'design', 'adr', 'pattern', 'refactor', 'structure', 'api contract', 'modernize'],
     mcp: 'full',
     description: '🏗️ Lead Architect',
@@ -330,15 +314,10 @@ function main() {
 
   console.error(`\n✅ Brief lagret: .kimi/session-summaries/smart-context-latest.md`);
 
-  // Bytt MCP-profil
+  // Logg valgt MCP-profil (KIMI Code 0.18.0 bruker prosjektets MCP-konfigurasjon)
   const agent = AGENTS[classification.agent];
   if (agent?.mcp) {
-    try {
-      execSync(`kimi-mcp ${agent.mcp} 2>/dev/null || true`, { cwd: home, timeout: 5000 });
-      console.error(`✅ MCP-profil: ${agent.mcp}`);
-    } catch {
-      console.error(`⚠️ Kunne ikke bytte MCP-profil`);
-    }
+    console.error(`ℹ️ MCP-profil: ${agent.mcp} (styres av KIMI Code prosjektkonfigurasjon)`);
   }
 }
 

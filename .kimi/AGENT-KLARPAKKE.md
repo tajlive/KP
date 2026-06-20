@@ -1,8 +1,8 @@
 # KIMI Agent Guide for Klarpakke
 
-**Versjon:** 2.3  
-**Oppdatert:** 2026-04-22  
-**For:** KIMI CLI v1.38.0 + k2.6 i Klarpakke-prosjektet  
+**Versjon:** 2.4  
+**Oppdatert:** 2026-06-20  
+**For:** KIMI Code CLI 0.18.0 + k2.6 i Klarpakke-prosjektet  
 **Mål:** Maksimal automasjon, minimal friksjon
 
 ---
@@ -56,7 +56,7 @@ Du jobber i `/Users/taj/klarpakke` – en produksjonsklar AI-trading plattform.
 ```yaml
 Project: Klarpakke
 Repo: tajlive/KP
-Stack: Next.js 15, React 19, TypeScript 5.9, Supabase, Fly.io (legacy: Vercel)
+Stack: Next.js 16, React 19, TypeScript 5.9, Supabase, Fly.io (legacy: Vercel)
 Status: Production (www.klarpakke.no)
 Node: 24.x (se .nvmrc)
 ```
@@ -65,15 +65,17 @@ Node: 24.x (se .nvmrc)
 
 ## KIMI Superpowers (Bruk Disse!)
 
-### 0. Auth Agent (Ved auth/innloggingsoppgaver)
+> **Skills:** KIMI Code CLI bruker skills i `.kimi/skills/`. Last en skill med `kimi --skills-dir .kimi/skills/klarpakke-<skill>` (f.eks. `klarpakke-auth`, `klarpakke-trading`).
+
+### 0. Auth Skill (Ved auth/innloggingsoppgaver)
 Når du jobber med OAuth, passord-reset, sessions, eller auth-middleware:
 
 ```bash
-# Eksplisitt aktiver auth-agenten (KIMI CLI krever YAML agent-filer)
-kimi --agent-file .kimi/agents/auth-agent.yaml
+# Eksplisitt aktiver auth-skillen (KIMI Code CLI bruker --skills-dir)
+kimi --skills-dir .kimi/skills/klarpakke-auth
 ```
 
-**Husk:** `.kimi/agents/klarpakke-auth-agent.md` er KIMIs system prompt, men må lastes via `.kimi/agents/auth-agent.yaml`. Auth-regler i `AGENTS.md` injiseres alltid i default-agenten.
+**Husk:** `.kimi/skills/klarpakke-auth/SKILL.md` er KIMI Code CLIs system prompt for auth. Auth-regler i `AGENTS.md` injiseres alltid i default-agenten.
 
 ### 1. Automatisk Prosjekt-Kontekst
 KIMI leser automatisk:

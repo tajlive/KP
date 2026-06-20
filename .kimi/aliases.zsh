@@ -1,4 +1,4 @@
-# KIMI Aliaser for Zsh — v2.2 (2026-04-16)
+# KIMI Aliaser for Zsh — v3.0 (2026-06-20) — KIMI Code 0.18.0
 # Legg til i ~/.zshrc: source /Users/taj/klarpakke/.kimi/aliases.zsh
 
 # Prosjekt
@@ -27,7 +27,7 @@ alias kci='npm run lint:gate && npm run test:unit'
 alias kmonitor='curl -s https://www.klarpakke.no/api/health | jq -r ".status" || echo "unreachable"'
 
 # Architect mode (lead agent)
-alias karch='kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml'
+alias karch='kimi --skills-dir .kimi/skills/klarpakke-architect'
 alias kplan='bash .kimi/AGENT_ORCHESTRATOR.sh plan'
 alias kexec='bash .kimi/AGENT_ORCHESTRATOR.sh execute'
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateCronSecret } from "@/lib/auth/cron";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
@@ -64,19 +65,14 @@ async function isAssetVolatile(symbol: string): Promise<{ volatile: boolean, cha
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization") || "";
-    const cronSecret = authHeader.replace("Bearer ", "").trim();
-    const isDev = process.env.NODE_ENV === "development";
-    const expectedSecret = process.env.CRON_SECRET?.replace(/['"]/g, "").trim();
-
-    if (!isDev && cronSecret !== expectedSecret) {
+    if (!validateCronSecret(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const supabase = await createClient();
 
     // 1. Fetch active configs
-    const { data: configs, error: configError } = await (supabase as any)
+    const { data: configs, error: configError } = await (supabase as unknown as SupabaseClient)
       .from("portfolio_rebalance_configs")
       .select("*")
       .eq("is_active", true);
@@ -160,7 +156,7 @@ export async function POST(req: NextRequest) {
                 logger.warn(`Volatility brake triggered for ${asset} (${change.toFixed(2)}% move). Skipping rebalance for ${userId}.`);
                 
                 await createNotification(
-                   supabase as any,
+                   supabase,
                    userId,
                    "system_alert",
                    "Rebalansering utsatt",
@@ -184,7 +180,7 @@ export async function POST(req: NextRequest) {
           logger.info(`Triggering portfolio rebalance for ${userId}`, { reason: triggerReason });
 
           // Check if there is already an active rebalance event
-          const { data: existingEvents } = await (supabase as any)
+          const { data: existingEvents } = await (supabase as unknown as SupabaseClient)
             .from("portfolio_rebalance_events")
             .select("id")
             .eq("user_id", userId)
@@ -195,7 +191,7 @@ export async function POST(req: NextRequest) {
              continue;
           }
 
-          const { data: newEvent, error: eventInsertError } = await (supabase as any)
+          const { data: newEvent, error: eventInsertError } = await (supabase as unknown as SupabaseClient)
             .from("portfolio_rebalance_events")
             .insert({
               user_id: userId,
@@ -211,7 +207,7 @@ export async function POST(req: NextRequest) {
 
           // Notify user
           await createNotification(
-            supabase as any,
+            supabase,
             userId,
             "portfolio_rebalance_started",
             "Rebalansering startet",
@@ -244,14 +240,14 @@ export async function POST(req: NextRequest) {
           }
 
           if (ordersToInsert.length > 0) {
-            const { error: orderInsertError } = await (supabase as any)
+            const { error: orderInsertError } = await (supabase as unknown as SupabaseClient)
               .from("portfolio_rebalance_orders")
               .insert(ordersToInsert);
               
             if (orderInsertError) throw orderInsertError;
           } else {
              // If no orders were generated (e.g. only USDT difference or too small), mark completed
-             await (supabase as any)
+             await (supabase as unknown as SupabaseClient)
                 .from("portfolio_rebalance_events")
                 .update({ status: "completed", completed_at: new Date().toISOString() })
                 .eq("id", newEvent.id);

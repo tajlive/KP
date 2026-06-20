@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { validateCronSecret } from '@/lib/auth/cron';
 import { runAutoTradingCycle } from '@/lib/trading/auto-trader';
 import { createClient } from '@/lib/supabase/server';
 
@@ -6,11 +7,7 @@ export const runtime = 'nodejs';
 
 // Vercel Cron handler
 export async function GET(request: Request) {
-  // Verify the request is from Vercel Cron
-  const cronSecret = request.headers.get('authorization')?.replace('Bearer ', '');
-  const isDev = process.env.NODE_ENV === 'development';
-
-  if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
+  if (!validateCronSecret(request)) {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }

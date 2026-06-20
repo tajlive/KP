@@ -10,23 +10,17 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
-    // Verifiser CRON_SECRET for å beskytte mot uautorisert aksess
-    const authHeader = request.headers.get("authorization");
-    const expectedSecret = process.env.CRON_SECRET;
-
-    if (expectedSecret) {
-      const bearerToken = authHeader?.replace("Bearer ", "");
-      if (bearerToken !== expectedSecret) {
-        return NextResponse.json(
-          { ok: false, error: "Unauthorized" },
-          { status: 401 },
-        );
-      }
+    if (!validateCronSecret(request)) {
+      return NextResponse.json(
+        { ok: false, error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     const supabase = createClient();

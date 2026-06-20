@@ -3,7 +3,7 @@
     "version": "2.5",
     "project": "Klarpakke",
     "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-05-15",
-    "updated_for": "KIMI CLI v1.44.0 + MemPalace v3.4.0 + Agent roster 8"
+    "updated_for": "KIMI Code CLI 0.18.0 + MemPalace v3.4.0 + Skills roster 8"
   },
   "commands": {
     "health": {
@@ -11,20 +11,20 @@
       "command": "npm run health:prod:gate"
     },
     "trading": {
-      "description": "Aktiver trading engine agent",
-      "command": "kimi --agent-file .kimi/agents/klarpakke-trading-engine-agent.yaml"
+      "description": "Aktiver trading engine skill",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-trading"
     },
     "database": {
-      "description": "Aktiver database & schema agent",
-      "command": "kimi --agent-file .kimi/agents/klarpakke-database-agent.yaml"
+      "description": "Aktiver database & schema skill",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-database"
     },
     "frontend": {
-      "description": "Aktiver frontend & performance agent",
-      "command": "kimi --agent-file .kimi/agents/klarpakke-performance-agent.yaml"
+      "description": "Aktiver frontend & performance skill",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-performance"
     },
     "testing": {
-      "description": "Aktiver testing & QA agent",
-      "command": "kimi --agent-file .kimi/agents/testing-agent.yaml"
+      "description": "Aktiver testing & QA skill",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-testing"
     },
     "status": {
       "description": "Git status + prosjektstatus",
@@ -112,35 +112,35 @@
     },
     "mcp:check": {
       "description": "Verifiser alle MCP-tilkoblinger",
-      "command": "for s in filesystem mempalace perplexity supabase-db sanity github context7; do echo \"=== $s ===\"; kimi mcp test $s 2>&1 | tail -5; done"
+      "command": "node scripts/mcp-smoke-test.mjs"
     },
     "mcp:list": {
-      "description": "List aktive MCP-servere",
-      "command": "kimi mcp list"
+      "description": "List MCP-servere i repo-konfigurasjonen",
+      "command": "node --input-type=module -e \"import { readFileSync } from 'node:fs'; const cfg = JSON.parse(readFileSync('.mcp/mcp_config.json','utf8')); console.log(Object.keys(cfg.mcpServers || {}).join('\\\\n'))\""
     },
     "watchdog": {
       "description": "Kjør watchdog sjekk",
       "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
     },
     "auth": {
-      "description": "Aktiver auth-spesialisert KIMI-agent med full MCP",
-      "command": "kimi --agent-file .kimi/agents/auth-agent.yaml"
+      "description": "Aktiver auth-spesialisert KIMI-skill med full MCP",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-auth"
     },
     "architect": {
-      "description": "Aktiver lead architect agent for Klarpakke",
-      "command": "kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml"
+      "description": "Aktiver lead architect skill for Klarpakke",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-architect"
     },
     "super": {
-      "description": "Aktiver super-agent med full smart-launch + pre-session kontekst + post-session analyse",
-      "command": "kimi --agent-file .kimi/agents/klarpakke-super-agent.yaml"
+      "description": "Aktiver super-skill med full smart-launch + pre-session kontekst + post-session analyse",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-super"
     },
     "sanity:token": {
       "description": "Hjelp til å generere Sanity API-tokens",
       "command": "echo 'Generer tokens på: https://www.sanity.io/manage/project/63qn23si/api' && echo '1. Klikk Tokens → Add API token' && echo '2. Viewer role for read, Editor role for write' && echo '3. Kopier token til .env.local som SANITY_API_READ_TOKEN / SANITY_API_WRITE_TOKEN'"
     },
     "mempalace": {
-      "description": "Aktiver MemPalace memory-arkitekt agent (k2.6-optimalisert)",
-      "command": "kimi --agent-file .kimi/agents/mempalace-agent.yaml"
+      "description": "Aktiver MemPalace memory-arkitekt skill (k2.6-optimalisert)",
+      "command": "kimi --skills-dir .kimi/skills/klarpakke-mempalace"
     },
     "plan": {
       "description": "Lag en arkitekt-plan for en oppgave",

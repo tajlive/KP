@@ -259,7 +259,8 @@ async function main() {
   
   console.log('\n✅ Knowledge mining fullført!');
   console.log('📁 Resultater lagret i .knowledge/');
-  console.log('🏛️  Kjør nå: mempalace mine .knowledge --mode projects --wing klarpakke');
+  console.log('🏛️  Reindexer MemPalace: node scripts/mempalace-reindex.mjs');
+  console.log('   (Python CLI "mempalace mine" er deprecated — bruk Node.js MCP server.)');
 }
 
 main().catch(console.error);

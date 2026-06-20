@@ -4,6 +4,7 @@ import { runEnsembleForSymbol } from '@/lib/ai/ensemble-v2';
 import { captureCronError, captureCronSuccess } from '@/lib/cron/cron-helpers';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
+import { validateCronSecret } from "@/lib/auth/cron";
 
 // System user for AI-generated signals. All active auto-traders
 // read from ai_decision_log regardless of user_id, but FK requires a valid UUID.
@@ -82,10 +83,7 @@ const TOP_SYMBOLS = [
 ];
 
 export async function GET(req: NextRequest) {
-  const cronSecret = req.headers.get('authorization')?.replace('Bearer ', '');
-  const isDev = process.env.NODE_ENV === 'development';
-
-  if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

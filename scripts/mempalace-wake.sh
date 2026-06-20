@@ -1,10 +1,15 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# MEMPALACE WAKE - Laster L0+L1 kontekst for KIMI
+# MEMPALACE WAKE — Laster L0+L1 kontekst for KIMI via Node.js MCP-server v3.4.0
 # ═══════════════════════════════════════════════════════════════════════════════
 # Bruk: source ./scripts/mempalace-wake.sh
 #    eller: kimi -p "$(./scripts/mempalace-wake.sh)"
 # ═══════════════════════════════════════════════════════════════════════════════
+
+set -e
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 
 # L0: Identity (hvis finnes)
 if [ -f ~/.mempalace/identity.txt ]; then
@@ -18,35 +23,35 @@ echo "## L1 — KLARPAKKE CRITICAL FACTS"
 echo ""
 
 # Siste viktige hendelser fra memory/
-if [ -d /Users/taj/klarpakke/memory ]; then
+if [ -d "$ROOT/memory" ]; then
     echo "### Recent Decisions"
-    ls -t /Users/taj/klarpakke/memory/*.md 2>/dev/null | head -5 | while read f; do
+    ls -t "$ROOT/memory"/*.md 2>/dev/null | head -5 | while read f; do
         echo "- $(basename "$f"): $(head -1 "$f" | sed 's/^# //')"
     done
     echo ""
 fi
 
-# Hvis MemPalace er tilgjengelig, bruk wake-up
-if command -v mempalace &> /dev/null; then
-    # Prøv å få wake-up fra palace
-    WAKE_OUTPUT=$(mempalace wake-up 2>/dev/null || echo "")
-    if [ -n "$WAKE_OUTPUT" ]; then
-        echo "$WAKE_OUTPUT"
-    else
-        echo "### Active Projects"
-        echo "- Klarpakke (trading platform)"
-        echo ""
-        echo "### Key Context"
-        echo "- Stack: Next.js 15, Supabase, Vercel"
-        echo "- Auth: Google OAuth + Vipps"
-        echo "- Trading: Paper + Live modes"
-        echo "- Test: Playwright E2E + Vitest"
-    fi
+# Wake MemPalace Node.js MCP-server via status-script
+echo "### MemPalace Status"
+if [ -f "$ROOT/scripts/mempalace-status.mjs" ]; then
+    node "$ROOT/scripts/mempalace-status.mjs" 2>/dev/null || echo "⚠️  MemPalace status check failed"
 else
-    echo "### MemPalace not available"
-    echo "Install: pip install mempalace"
+    echo "⚠️  scripts/mempalace-status.mjs not found"
 fi
-
 echo ""
+
+# Key project context
+echo "### Key Context"
+echo "- Stack: Next.js 16, React 19, TypeScript 5.9, Supabase, Fly.io"
+echo "- Auth: Google OAuth + Vipps"
+echo "- Trading: Paper + Live modes"
+echo "- Test: Playwright E2E + Vitest"
+echo "- MemPalace: Node.js MCP v3.4.0 (zero-dep, TF-IDF + bigram + cross-lingual)"
+echo ""
+
 echo "## Usage"
-echo "Ask: 'What did we decide about X?' or 'Search for auth-migration'"
+echo "- MCP server: auto-started by KIMI via ~/.kimi/mcp.json -> scripts/run-mempalace-mcp-v3.mjs"
+echo "- Manual status: npm run mempalace:status"
+echo "- Search knowledge: node scripts/mempalace-search.mjs 'auth pattern'"
+echo "- Sync knowledge: npm run knowledge:sync"
+echo "- Ask: 'What did we decide about X?' or 'Search for auth-migration'"

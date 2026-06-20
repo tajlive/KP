@@ -10,6 +10,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import { validateCronSecret } from '@/lib/auth/cron';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,14 +67,10 @@ async function checkEndpoint(
 }
 
 export async function GET(request: Request): Promise<NextResponse> {
-  // Verify cron secret
-  const url = new URL(request.url);
-  const secret = url.searchParams.get('secret');
-  
-  if (secret !== process.env.CRON_SECRET) {
+  if (!validateCronSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://klarpakke.no';
   
   const results = await Promise.all([

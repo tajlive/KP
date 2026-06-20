@@ -3,16 +3,14 @@ import { createClient } from '@/lib/supabase/server';
 import { captureCronError, captureCronSuccess } from '@/lib/cron/cron-helpers';
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
-  const cronSecret = req.headers.get('authorization')?.replace('Bearer ', '');
-  const isDev = process.env.NODE_ENV === 'development';
-
-  if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

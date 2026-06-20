@@ -18,7 +18,7 @@ MODE="${1:-incr}"
 
 echo "🏛️  MemPalace Sync for Klarpakke"
 echo "   Mode: $MODE"
-echo "   Backend: Node.js MCP v3.3.0 (Python CLI deprecated)"
+echo "   Backend: Node.js MCP v3.4.0 (Python CLI deprecated)"
 echo ""
 
 cd "$PROJECT_DIR"

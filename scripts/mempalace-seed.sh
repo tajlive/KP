@@ -1,54 +1,59 @@
 #!/bin/bash
-# Seed MemPalace med kritisk prosjektkunnskap
+# Seed MemPalace med kritisk prosjektkunnskap via Node.js MCP-verktøy
 # Usage: ./scripts/mempalace-seed.sh
 
 set -e
 
-echo "🏛️ Seeding MemPalace..."
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 
-# Funksjon for å legge til drawer
-add_drawer() {
-    local wing="$1"
-    local room="$2"
-    local file="$3"
-    
-    if [ -f "$file" ]; then
-        echo "Adding: $file → $wing/$room"
-        # I praksis: kall mempalace MCP eller API
-        # mempalace_add_drawer --wing="$wing" --room="$room" --content="$(cat "$file")"
-    fi
-}
+echo "🏛️  Seeding MemPalace..."
 
-# 1. ADR-er → architecture room
-echo "📋 Processing ADRs..."
-for f in docs/adr/*.md; do
-    add_drawer "klarpakke" "architecture" "$f"
-done
-
-# 2. Type Debt → tech_debt room
-echo "📋 Processing Type Debt..."
-add_drawer "klarpakke" "tech_debt" "src/lib/supabase/TYPE_DEBT.md"
-
-# 3. Error patterns → error_patterns room
-echo "📋 Processing TODOs/FIXMEs..."
-if [ -f ".knowledge/current-todos.md" ]; then
-    add_drawer "klarpakke" "error_patterns" ".knowledge/current-todos.md"
+# 1. Mine kunnskap fra kodebasen (TODOs, ADRs, hot files, patterns)
+if [ -f "$ROOT/scripts/knowledge-miner.mjs" ]; then
+    echo "📋 Running knowledge miner..."
+    node "$ROOT/scripts/knowledge-miner.mjs"
+else
+    echo "⚠️  scripts/knowledge-miner.mjs not found — skipping knowledge mining"
 fi
 
-# 4. Critical decisions → critical_decisions room
-echo "📋 Processing decisions..."
-for f in docs/*DECISION*.md docs/adr/*.md; do
-    if [ -f "$f" ]; then
-        add_drawer "klarpakke" "critical_decisions" "$f"
-    fi
-done
+# 2. Rebuild MemPalace index if reindex script exists
+if [ -f "$ROOT/scripts/mempalace-reindex.mjs" ]; then
+    echo "🔄 Rebuilding MemPalace index..."
+    node "$ROOT/scripts/mempalace-reindex.mjs" || echo "⚠️  Reindex failed (non-fatal)"
+fi
 
-# 5. API documentation → api_contracts room
-echo "📋 Processing API docs..."
-add_drawer "klarpakke" "api_contracts" "docs/api-routes.md"
+# 3. Seed critical decisions into KG via MCP-compatible JS one-liner
+if [ -f "$ROOT/.mempalace/kg.json" ]; then
+    echo "🧠 Seeding knowledge graph..."
+    node -e "
+const fs = require('fs');
+const path = '$ROOT/.mempalace/kg.json';
+let kg = {};
+try { kg = JSON.parse(fs.readFileSync(path, 'utf8')); } catch {}
+const seeds = [
+  { subject: 'klarpakke-project', predicate: 'uses', object: 'mempalace-v3.4.0' },
+  { subject: 'mempalace', predicate: 'indexing', object: 'knowledge-miner' },
+  { subject: 'mempalace', predicate: 'source', object: 'docs/adr' },
+  { subject: 'mempalace', predicate: 'source', object: '.knowledge/errors' }
+];
+let added = 0;
+for (const s of seeds) {
+  kg[s.subject] = kg[s.subject] || [];
+  const exists = kg[s.subject].some(f => f.predicate === s.predicate && f.object === s.object);
+  if (!exists) {
+    kg[s.subject].push({ predicate: s.predicate, object: s.object, validFrom: new Date().toISOString() });
+    added++;
+  }
+}
+fs.writeFileSync(path, JSON.stringify(kg, null, 2));
+console.log('   ✅ Seeded ' + added + ' new KG facts');
+"
+fi
 
 echo "✅ Seeding complete!"
 echo ""
 echo "Next steps:"
-echo "1. Run: mempalace_status"
-echo "2. Test search: mempalace_search 'auth pattern'"
+echo "1. Run: npm run mempalace:status"
+echo "2. Test search: node scripts/mempalace-search.mjs 'auth pattern'"
+echo "3. Sync diary: ./scripts/mempalace-diary.sh write FEAT 'seeded knowledge' GO 4"

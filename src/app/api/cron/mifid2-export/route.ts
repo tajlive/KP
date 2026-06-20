@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCronSecret } from '@/lib/auth/cron';
 import { createClient } from '@/lib/supabase/server';
 import { getAuditStore } from '@/lib/trading/execution/audit-store';
 
@@ -24,8 +25,7 @@ interface Mifid2Report {
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${CRON_SECRET}`) {
+    if (!validateCronSecret(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

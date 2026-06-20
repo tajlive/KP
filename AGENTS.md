@@ -57,6 +57,8 @@ kimi coverage        # node scripts/coverage-report.mjs
 kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 ```
 
+> **Skills:** Aktive skills ligger i `.kimi/skills/` og lastes med `kimi --skills-dir .kimi/skills/klarpakke-<skill>` (f.eks. `klarpakke-auth`, `klarpakke-trading`).
+
 ---
 
 ## 🚀 Fly.io Hosting
@@ -85,6 +87,17 @@ fly apps create klarpakke
 
 # 4. Sett secrets fra .env.local
 npm run fly:secrets:import   # eller: flyctl secrets import --app klarpakke < .env.local
+
+# ⚠️ VIKTIG: POSTGRES_URL / DATABASE_URL i Fly.io secrets
+# Når du bruker Supabase Supavisor-pooleren må URL-en ALLTID inneholde
+# tenant-referansen som query-parameter:
+#
+#   ?options=reference%3Dpskhryjzkobytnfwucrb
+#
+# Uten denne får du feilen:
+#   "tenant/user postgres.<random-id> not found"
+# og /api/health vil returnere 503 i produksjon.
+# Scriptet `npm run fly:secrets:import --dry-run` validerer nå dette automatisk.
 
 # 5. Deploy
 npm run fly:deploy
@@ -129,29 +142,29 @@ Krever secret: `FLY_API_TOKEN` (fra `fly tokens create deploy -x 999999h`)
 
 ---
 
-### Lead Architect Agent (Anbefalt for alle større oppgaver)
+### Lead Architect Skill (Anbefalt for alle større oppgaver)
 ```bash
-# Aktiver lead architect agent — denne har full kontekst på Klarpakke
-kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml
+# Aktiver lead architect skill — denne har full kontekst på Klarpakke
+kimi --skills-dir .kimi/skills/klarpakke-architect
 
 # Eller bruk alias
-kimi architect       # Ekvivalent: kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml
+kimi architect       # Ekvivalent: kimi --skills-dir .kimi/skills/klarpakke-architect
 ```
 
-### Auth Agent (Eksplisitt aktivering)
+### Auth Skill (Eksplisitt aktivering)
 ```bash
-# Aktiver auth-spesialisert agent manuelt
-kimi --agent-file .kimi/agents/auth-agent.yaml
+# Aktiver auth-spesialisert skill manuelt
+kimi --skills-dir .kimi/skills/klarpakke-auth
 
 # Eller bruk alias (hvis konfigurert i .kimi/commands.json)
-kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yaml
+kimi auth            # Ekvivalent: kimi --skills-dir .kimi/skills/klarpakke-auth
 ```
 
 ---
 
 ## 🧠 KIMI Smart Orchestrator v2.0 (NYTT — 2026-05-04)
 
-> Komplett session-orkestrering: pre-session kontekst, auto-agent/MCP-valg,
+> Komplett session-orkestrering: pre-session kontekst, auto-skill/MCP-valg,
 > master system prompt injection, self-correction, og post-session analyse.
 
 ### Arkitektur
@@ -163,7 +176,7 @@ kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yam
 │  PRE-SESSION (kimi-smart-launch)                                    │
 │    ├── MemPalace: search + recent_context + kg_query                │
 │    ├── Git: branch, commits, modified files                         │
-│    ├── Klassifiser: 10 domener → riktig agent                       │
+│    ├── Klassifiser: 10 domener → riktig skill                       │
 │    ├── Velg: MCP-profil (minimal/medium/full)                       │
 │    └── Generer: paste-ready brief + session context                 │
 │                                                                      │
@@ -208,32 +221,32 @@ kimil --super --launch
 
 **Output:**
 - Domain detection (confidence score)
-- Anbefalt agent + MCP-profil
+- Anbefalt skill + MCP-profil
 - Git-kontekst (branch, commits, modified files)
 - MemPalace brief med kontekst
 - Session context lagret til `.kimi/session-summaries/current-session-context.md`
 
-### `kimi-super` — Super-Agent med Full Smart-Launch ⭐
+### `kimi-super` — Super-Skill med Full Smart-Launch ⭐
 ```bash
-# Start KIMI med super-agent + pre-session kontekst + post-session analyse
+# Start KIMI med super-skill + pre-session kontekst + post-session analyse
 kimi-super
 # Ekvivalent: kimi-smart-launch --super --launch
-# Inkluderer: MemPalace search → git-kontekst → agent-launch → self-improve
+# Inkluderer: MemPalace search → git-kontekst → skill-launch → self-improve
 ```
 
-**Prefer `kimi-super` over raw `kimi --agent-file`** — den gir deg:
+**Prefer `kimi-super` over raw `kimi --skills-dir .kimi/skills/klarpakke-super`** — den gir deg:
 - Pre-session MemPalace brief med kontekst
 - Git-kontekst (branch, commits, modified files)
 - Auto-detect domain + MCP profile
 - Post-session self-improve + verify-anbefalinger
 
-Super-agenten laster **KIMI-MASTER-SYSTEM.md** som inneholder:
+Super-skillen laster **`.kimi/skills/klarpakke-super/SKILL.md`** som inneholder:
 - **MANDATORY pre-task protocol:** MemPalace search + recent_context + kg_query
 - **MANDATORY self-correction:** Pause og verifiser etter >30 linjer
 - **MANDATORY memory sync:** kg_batch + write_diary + auto_tag etter hver oppgave
 - **MANDATORY status block:** GO/NO-GO/WIP med filer, validering, neste steg
 - **MCP profile auto-selection:** Anbefaler riktig profil for oppgaven
-- **Agent classification reference:** 10 domener med nøkkelord
+- **Skill classification reference:** 10 domener med nøkkelord
 
 ### `kimi-smart-brief` — Pre-start Brief
 ```bash
@@ -244,7 +257,7 @@ kimib "implementer mean reversion strategy"
 ```
 
 **Klassifiserer 10 domener:**
-| Agent | Domene-nøkkelord | MCP |
+| Skill | Domene-nøkkelord | MCP |
 |---|---|---|
 | 🔐 Auth & Security | auth, login, oauth, session, jwt, permission | medium |
 | 📈 Trading Engine | trading, strategy, bot, order, position, pnl | full |
@@ -264,7 +277,7 @@ kimi-self  # Analyserer diary.jsonl, gir anbefalinger
 Analyserer:
 - NO-GO mønstre → identifiserer gjentakende feil
 - Gjentatte oppgaver → foreslår automatisering
-- Agent-effektivitet → GO-rate og gjennomsnittsrating
+- Skill-effektivitet → GO-rate og gjennomsnittsrating
 - Lavt ratede økter → foreslår oppgave-brytning
 
 ### SessionEnd Hook v2.0
@@ -281,8 +294,8 @@ Hooken kjører automatisk ved SessionEnd:
 3. Git-diff → verify-anbefalinger
 4. Session-summary
 
-### Alle agenter er oppgradert
-Hver agent `.md` fil har nå en **MASTER SYSTEM header** som påminner om:
+### Alle skills er oppgradert
+Hver skill `SKILL.md` fil har nå en **MASTER SYSTEM header** som påminner om:
 - Pre-task MemPalace-protokoll
 - Self-correction etter >30 linjer
 - Memory sync etter hver oppgave
@@ -403,7 +416,7 @@ cat .kimi/PROJECT_CONTEXT.md
 
 ---
 
-## 👥 Swarm & Agenter
+## 👥 Swarm & Skills
 
 ### Swarm Config
 ```yaml
@@ -417,17 +430,18 @@ agents:
   - knowledge:    # Post-task MemPalace sync
 ```
 
-### Agent Roster (50+ agenter)
-Se `.agent/KLARPAKKE-AGENT-ROSTER.md` for full oversikt.
+### Skill- og agent-oversikt
+Aktive skills ligger i `.kimi/skills/` og lastes med `--skills-dir`. Se `.agent/KLARPAKKE-AGENT-ROSTER.md` for historisk oversikt over øvrige YAML-agenter.
 
-**Nøkkel-agenter:**
-- `klarpakke-ux-ui-agent` – UI/UX, tokens, i18n
-- `klarpakke-live-trading-trades-agent` – Trading, bevis
-- `klarpakke-research-agent` – Systematisk Perplexity Pro research før beslutninger
-- `klarpakke-auto-trade-strategy-research-agent` – Strategi-forskning
-- `performance-agent` – Lighthouse, bundle, TTFB, Server Components
-- `testing-agent` – Testdekning, Vitest, Playwright, mutation testing
-- `security-agent` – RLS, npm audit, auth-hardening, secrets
+**Nøkkel-skills (8 aktive):**
+- `.kimi/skills/klarpakke-auth` – Auth & Security
+- `.kimi/skills/klarpakke-trading` – Trading Engine
+- `.kimi/skills/klarpakke-database` – Database & Schema
+- `.kimi/skills/klarpakke-performance` – Frontend, UI/UX, Lighthouse, bundle, TTFB
+- `.kimi/skills/klarpakke-architect` – Deploy & Arkitektur
+- `.kimi/skills/klarpakke-testing` – Testing & QA
+- `.kimi/skills/klarpakke-mempalace` – Memory & KG
+- `.kimi/skills/klarpakke-super` – General/Catch-all
 
 ### Skills Auto-Aktivering
 Konfigurasjon: `.kimi/skills-activation.yaml`
@@ -588,12 +602,12 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-**Sist oppdatert:** 2026-05-06  
-**Versjon:** 2.8 (+Auto-Maintenance & Quality Gates: dependency-check.yml, coverage-report, client-component refactor, ai-health-report v1.1)
+**Sist oppdatert:** 2026-06-20  
+**Versjon:** 2.9 (+KIMI Code CLI 0.18.0 + skills-basert oppsett i `.kimi/skills/`)
 
 ---
 
-## ⚡ KIMI CLI v1.44.0 Optimaliseringer (2026-05-15)
+## ⚡ KIMI Code CLI 0.18.0 Optimaliseringer (2026-06-20)
 
 ### Kontekst-tuning
 ```toml
@@ -608,7 +622,7 @@ merge_all_available_skills = true     # auto-aktiver skills
 ```
 
 ### Ralph Loop (Self-Improvement)
-> `max_ralph_iterations = 3` aktiverer KIMI CLI sin innebygde forbedrings-loop.
+> `max_ralph_iterations = 3` aktiverer KIMI Code CLI sin innebygde forbedrings-loop.
 > Modellen itererer på samme oppgave og forbedrer svaret til den outputter `<choice>STOP</choice>`
 > eller når iterasjonsgrensen nås. Tilsvarende Claude Code's `/ultrareview`.
 >
@@ -632,7 +646,7 @@ merge_all_available_skills = true     # auto-aktiver skills
 
 ### Smart Launch v2.1
 - **Git-basert boost:** Endrede filer booster riktig domain automatisk
-- **Large-diff detection:** >10 filer eller >200 linjer → auto-velger super-agent
+- **Large-diff detection:** >10 filer eller >200 linjer → auto-velger super-skill
 - **MCP-profil switch:** `--mcp=minimal|medium|full` flagg for manuell override
 
 ### Self-Improve v1.5
@@ -646,24 +660,26 @@ merge_all_available_skills = true     # auto-aktiver skills
 - **Exit-hook:** `~/.kimi/hooks/mempalace-smart-exit.sh` — flush + self-improve + session-summary
 - **MCP-profiler:** `kimi-mcp minimal|medium|full` — bytt etter behov
 
-### Agent-roster (8 aktive)
-| Alias | Agent | Domene |
-|-------|-------|--------|
-| `kimi auth` | auth-agent.yaml | 🔐 Auth & Security |
-| `kimi trading` | klarpakke-trading-engine-agent.yaml | 📈 Trading Engine |
-| `kimi database` | klarpakke-database-agent.yaml | 🗄️ Database & Schema |
-| `kimi frontend` | klarpakke-performance-agent.yaml | 🎨 Frontend & UI |
-| `kimi architect` | klarpakke-architect-agent.yaml | 🚀 Deploy & Arkitektur |
-| `kimi testing` | testing-agent.yaml | 🧪 Testing & QA |
-| `kimi mempalace` | mempalace-agent.yaml | 🏛️ Memory & KG |
-| `kimi super` | klarpakke-super-agent.yaml | 🤖 General/Catch-all |
+### Skill-roster (8 aktive)
+Skills ligger i `.kimi/skills/` og lastes med `--skills-dir`:
 
-**Deprecated:** 8 agenter flyttet til `.kimi/agents/deprecated/` (auto-optimizer, mobile-check, sanity, security, super-auditor, super-editor, verify, performance-duplikat).
+| Alias | Skill-katalog | Domene |
+|-------|---------------|--------|
+| `kimi auth` | `.kimi/skills/klarpakke-auth` | 🔐 Auth & Security |
+| `kimi trading` | `.kimi/skills/klarpakke-trading` | 📈 Trading Engine |
+| `kimi database` | `.kimi/skills/klarpakke-database` | 🗄️ Database & Schema |
+| `kimi frontend` | `.kimi/skills/klarpakke-performance` | 🎨 Frontend & UI |
+| `kimi architect` | `.kimi/skills/klarpakke-architect` | 🚀 Deploy & Arkitektur |
+| `kimi testing` | `.kimi/skills/klarpakke-testing` | 🧪 Testing & QA |
+| `kimi mempalace` | `.kimi/skills/klarpakke-mempalace` | 🏛️ Memory & KG |
+| `kimi super` | `.kimi/skills/klarpakke-super` | 🤖 General/Catch-all |
+
+**Deprecated:** 8 YAML-agenter flyttet til `.kimi/agents/deprecated/` (auto-optimizer, mobile-check, sanity, security, super-auditor, super-editor, verify, performance-duplikat).
 
 ### Swarm Workflow (opt-in via `--swarm`)
 ```bash
 node scripts/kimi-smart-launch.mjs "implement feature X" --swarm       # Generer brief
-node scripts/kimi-smart-launch.mjs "implement feature X" --swarm --launch  # Kjør med super-agent
+node scripts/kimi-smart-launch.mjs "implement feature X" --swarm --launch  # Kjør med super-skill
 ```
 - **feature:** analyzer → architect → tester → security → knowledge
 - **bugfix:** analyzer → tester → security → knowledge
@@ -671,7 +687,8 @@ node scripts/kimi-smart-launch.mjs "implement feature X" --swarm --launch  # Kj�
 
 ### Rask diagnose
 ```bash
-kimi --version                    # skal vise 1.44.0
-kimi mcp list                     # sjekk at mempalace er grønn
+kimi --version                    # skal vise 0.18.0
+# Verifiser skills-oppsettet
+kimi --skills-dir .kimi/skills/klarpakke-mempalace   # aktiver MemPalace skill
 npm run mempalace:status          # eller: node scripts/mempalace-search.mjs "test"
 ```

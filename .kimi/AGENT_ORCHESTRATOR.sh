@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🤖 AGENT ORCHESTRATOR v2 — Real KIMI + Swarm + MemPalace Integration
+# 🤖 AGENT ORCHESTRATOR v3 — KIMI Code 0.18.0 + Skills + Swarm + MemPalace Integration
 # ═══════════════════════════════════════════════════════════════════════════════
 # Bruk: bash .kimi/AGENT_ORCHESTRATOR.sh <mode> [args]
 #
@@ -170,14 +170,14 @@ cmd_execute() {
     log "Kjører pre-execution checks..."
     npm run verify 2>/dev/null || warn "Verify had issues, continuing..."
 
-    # Invoke KIMI architect agent
-    kimi_label "Executing plan with architect agent..."
+    # Invoke KIMI architect skill
+    kimi_label "Executing plan with architect skill..."
     if command -v kimi >/dev/null 2>&1; then
         # Pass the plan file path as instruction to KIMI
-        kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml -- "Read and execute this plan: $plan_file"
+        kimi --skills-dir .kimi/skills/klarpakke-architect -- "Read and execute this plan: $plan_file"
     else
         warn "kimi CLI not found — manual execution required"
-        echo "Run: kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml -- \"Execute $plan_file\""
+        echo "Run: kimi --skills-dir .kimi/skills/klarpakke-architect -- \"Execute $plan_file\""
     fi
 
     # Post-execution swarm

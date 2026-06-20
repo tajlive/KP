@@ -5,6 +5,10 @@
  * Validates all required production environment variables
  * and generates .env.prod.example
  * 
+ * Loads .env and .env.local so the script works in local development
+ * without requiring variables to be exported to process.env first.
+ * In CI/production, variables in process.env take precedence.
+ * 
  * Usage:
  *   npx ts-node scripts/env-checker.ts
  *   npx ts-node scripts/env-checker.ts --generate
@@ -29,6 +33,7 @@ interface EnvVar {
   description: string;
   example: string;
   validate?: (value: string) => boolean;
+  fallback?: string;
 }
 
 interface CheckResult {
@@ -36,6 +41,43 @@ interface CheckResult {
   present: boolean;
   valid: boolean;
   message?: string;
+}
+
+function loadEnvFile(filePath: string): Record<string, string> {
+  const parsed: Record<string, string> = {};
+  if (!fs.existsSync(filePath)) return parsed;
+
+  const content = fs.readFileSync(filePath, "utf8");
+  for (const rawLine of content.split("\n")) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#") || !line.includes("=")) continue;
+    const eq = line.indexOf("=");
+    const key = line.slice(0, eq).trim();
+    let value = line.slice(eq + 1).trim();
+    if (!key) continue;
+    if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1).replace(/\\"/g, '"');
+    if (value.startsWith("'") && value.endsWith("'")) value = value.slice(1, -1).replace(/\\'/g, "'");
+    parsed[key] = value;
+  }
+
+  return parsed;
+}
+
+/** Load .env files into process.env, but never override existing env vars (CI/prod wins). */
+function loadEnvIntoProcess(): void {
+  const envFiles = [
+    path.join(process.cwd(), ".env"),
+    path.join(process.cwd(), ".env.local"),
+  ];
+
+  for (const filePath of envFiles) {
+    const parsed = loadEnvFile(filePath);
+    for (const [key, value] of Object.entries(parsed)) {
+      if (process.env[key] === undefined && value !== undefined) {
+        process.env[key] = value;
+      }
+    }
+  }
 }
 
 // Production environment variables specification
@@ -67,6 +109,35 @@ const PROD_ENV_VARS: EnvVar[] = [
     description: "Production application URL",
     example: "https://www.klarpakke.no",
     validate: (v) => v.startsWith("https://") && !v.endsWith("/"),
+  },
+  {
+    name: "POSTGRES_URL",
+    required: true,
+    description: "Supabase Postgres connection string (pooler). Falls back to DATABASE_URL if not set.",
+    example: "postgresql://postgres.[project]:[password]@aws-0-eu-north-1.pooler.supabase.com:6543/postgres",
+    validate: (v) => v.startsWith("postgres://") || v.startsWith("postgresql://"),
+    fallback: "DATABASE_URL",
+  },
+  {
+    name: "DATABASE_URL",
+    required: false,
+    description: "Fallback Postgres connection string (used when POSTGRES_URL is unset)",
+    example: "postgresql://postgres.[project]:[password]@aws-0-eu-north-1.pooler.supabase.com:6543/postgres",
+    validate: (v) => v.startsWith("postgres://") || v.startsWith("postgresql://"),
+  },
+  {
+    name: "UPSTASH_REDIS_REST_URL",
+    required: false,
+    description: "Upstash Redis REST URL (legacy alias: KV_REST_API_URL)",
+    example: "https://eu1-abc-123.upstash.io",
+    validate: (v) => v.startsWith("https://") && v.includes(".upstash.io"),
+  },
+  {
+    name: "UPSTASH_REDIS_REST_TOKEN",
+    required: false,
+    description: "Upstash Redis REST token (legacy alias: KV_REST_API_TOKEN)",
+    example: "AYPdASQg...",
+    validate: (v) => v.length > 20,
   },
   {
     name: "NEXT_PUBLIC_SENTRY_DSN",
@@ -103,13 +174,6 @@ const PROD_ENV_VARS: EnvVar[] = [
     example: "lin_api_xxx",
     validate: (v) => v.startsWith("lin_api_"),
   },
-  {
-    name: "VERCEL_TOKEN",
-    required: false,
-    description: "Vercel API token for deployments",
-    example: "vercel_token_xxx",
-    validate: (v) => v.length > 20,
-  },
 ];
 
 function log(message: string, level: "info" | "success" | "warning" | "error" = "info") {
@@ -119,12 +183,25 @@ function log(message: string, level: "info" | "success" | "warning" | "error" = 
     warning: YELLOW,
     error: RED,
   };
-  const prefix = level === "success" ? "✅ " : level === "error" ? "❌ " : level === "warning" ? "⚠️  " : "ℹ️  ";
+  const prefix = level === "success" ? "✅ " : level === "error" ? "❌ " : level === "warning" ? "⚠️  " : "ℹ️ ";
   console.log(`${colors[level]}${prefix}${message}${RESET}`);
 }
 
+function maskValue(value: string): string {
+  if (value.length > 10) {
+    return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
+  }
+  return "***";
+}
+
 function checkEnvVar(envVar: EnvVar): CheckResult {
-  const value = process.env[envVar.name];
+  let value = process.env[envVar.name];
+  let usedFallback = false;
+  
+  if (!value && envVar.fallback) {
+    value = process.env[envVar.fallback];
+    usedFallback = Boolean(value);
+  }
   
   if (!value) {
     return {
@@ -135,10 +212,8 @@ function checkEnvVar(envVar: EnvVar): CheckResult {
     };
   }
   
-  // Mask value for display
-  const masked = value.length > 10 
-    ? `${value.substring(0, 6)}...${value.substring(value.length - 4)}`
-    : "***";
+  const masked = maskValue(value);
+  const fallbackNote = usedFallback ? ` (resolved from ${envVar.fallback})` : "";
   
   if (envVar.validate) {
     const valid = envVar.validate(value);
@@ -146,7 +221,7 @@ function checkEnvVar(envVar: EnvVar): CheckResult {
       name: envVar.name,
       present: true,
       valid,
-      message: valid ? `Valid (${masked})` : `Invalid format (${masked})`,
+      message: valid ? `Valid (${masked})${fallbackNote}` : `Invalid format (${masked})${fallbackNote}`,
     };
   }
   
@@ -154,7 +229,7 @@ function checkEnvVar(envVar: EnvVar): CheckResult {
     name: envVar.name,
     present: true,
     valid: true,
-    message: `Set (${masked})`,
+    message: `Set (${masked})${fallbackNote}`,
   };
 }
 
@@ -222,7 +297,7 @@ function generateEnvExample(): string {
 
 function generateJsonConfig(): string {
   const config = {
-    version: "1.0.0",
+    version: "1.1.0",
     generated_at: new Date().toISOString(),
     variables: PROD_ENV_VARS.map(v => ({
       name: v.name,
@@ -240,10 +315,13 @@ async function main() {
   const strict = args.includes("--strict");
   const json = args.includes("--json");
   
+  // Load local .env files without overriding process.env (CI/prod wins).
+  loadEnvIntoProcess();
+  
   console.log(`
 ${BOLD}${BLUE}
 ╔══════════════════════════════════════════════════════════════╗
-║         KLARPAKKE ENVIRONMENT CHECKER v1.0                   ║
+║         KLARPAKKE ENVIRONMENT CHECKER v1.1                   ║
 ╚══════════════════════════════════════════════════════════════╝
 ${RESET}
 Mode: ${strict ? "STRICT" : "NORMAL"}
@@ -293,7 +371,7 @@ Total variables: ${total}
 Present: ${present}/${total}
 Valid: ${valid}/${total}
 Required missing: ${requiredMissing}
-Status: ${passed ? "${GREEN}PASSED" : "${RED}FAILED"}${RESET}
+Status: ${passed ? `${GREEN}PASSED` : `${RED}FAILED`}${RESET}
 `);
   
   if (!passed) {

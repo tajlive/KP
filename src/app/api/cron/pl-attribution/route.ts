@@ -1,13 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { calculatePLAttribution } from "@/lib/trading/pl-attribution";
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  const secret = process.env.CRON_SECRET;
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

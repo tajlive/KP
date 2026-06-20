@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateCronSecret } from "@/lib/auth/cron";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
@@ -23,19 +24,14 @@ async function fetchPrice(symbol: string): Promise<number> {
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization") || "";
-    const cronSecret = authHeader.replace("Bearer ", "").trim();
-    const isDev = process.env.NODE_ENV === "development";
-    const expectedSecret = process.env.CRON_SECRET?.replace(/['"]/g, "").trim();
-
-    if (!isDev && cronSecret !== expectedSecret) {
+    if (!validateCronSecret(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const supabase = await createClient();
 
     // 1. Fetch orders that are pending or partial
-    const { data: orders, error: ordersError } = await (supabase as any)
+    const { data: orders, error: ordersError } = await (supabase as unknown as SupabaseClient)
       .from("portfolio_rebalance_orders")
       .select("*")
       .in("status", ["pending", "partial"]);
@@ -60,7 +56,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (executeUsdt <= 0) {
-           await (supabase as any)
+           await (supabase as unknown as SupabaseClient)
               .from("portfolio_rebalance_orders")
               .update({ status: "completed", updated_at: new Date().toISOString() })
               .eq("id", order.id);
@@ -74,7 +70,7 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        let quantity = executeUsdt / price;
+        const quantity = executeUsdt / price;
 
         // Fetch user profile to check if live trading
         const { data: profile } = await supabase
@@ -201,7 +197,7 @@ export async function POST(req: NextRequest) {
           const newExecutedChunks = (order.executed_chunks || 0) + 1;
           const newStatus = newExecutedAmount >= order.amount_usdt * 0.99 || newExecutedChunks >= order.twap_chunks ? "completed" : "partial";
           
-          await (supabase as any)
+          await (supabase as unknown as SupabaseClient)
             .from("portfolio_rebalance_orders")
             .update({
               executed_amount_usdt: newExecutedAmount,
@@ -223,15 +219,15 @@ export async function POST(req: NextRequest) {
 
     // 2. Check if events are fully completed
     for (const eventId of Array.from(eventsToCheck)) {
-       const { data: eventOrders } = await (supabase as any)
+       const { data: eventOrders } = await (supabase as unknown as SupabaseClient)
           .from("portfolio_rebalance_orders")
           .select("status")
           .eq("event_id", eventId);
 
-       const allCompleted = eventOrders?.every((o: any) => o.status === "completed") || false;
+       const allCompleted = eventOrders?.every((o) => o.status === "completed") || false;
        
        if (allCompleted) {
-          const { data: updatedEvent } = await (supabase as any)
+          const { data: updatedEvent } = await (supabase as unknown as SupabaseClient)
              .from("portfolio_rebalance_events")
              .update({
                 status: "completed",
@@ -243,7 +239,7 @@ export async function POST(req: NextRequest) {
 
           if (updatedEvent) {
             await createNotification(
-              supabase as any,
+              supabase,
               updatedEvent.user_id,
               "portfolio_rebalance_completed",
               "Rebalansering fullført",
@@ -258,7 +254,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       processedOrders: orders.length,
-      orders: orders.map((o: any) => ({ id: o.id, tradeError: (o as any).tradeError }))
+      orders: orders.map((o) => ({ id: o.id, tradeError: (o as { tradeError?: unknown }).tradeError }))
     });
   } catch (error) {
     logger.error("TWAP Executor cron failed:", { error: (error as Error).message });

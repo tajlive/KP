@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 /**
- * 🚀 KIMI Smart Launch v2.1 — Complete Session Orchestrator
+ * 🚀 KIMI Smart Launch v3.0 — KIMI Code 0.18.0 Session Orchestrator
  *
  * One command to rule them all:
- *   - Pre-session: MemPalace context + agent classification + MCP selection
- *   - Launch: KIMI with optimal agent + MCP profile
+ *   - Pre-session: MemPalace context + skill classification
+ *   - Launch: KIMI with optimal skill directory
  *   - Post-session: Self-improve + MemPalace sync + verify recommendations
  *
  * Usage:
  *   node scripts/kimi-smart-launch.mjs              # Auto-detect from git
  *   node scripts/kimi-smart-launch.mjs "fix auth"   # One-shot with task
- *   node scripts/kimi-smart-launch.mjs --super      # Force super-agent (default)
- *   node scripts/kimi-smart-launch.mjs --architect  # Force architect
- *   node scripts/kimi-smart-launch.mjs --mcp=full   # Force MCP profile
+ *   node scripts/kimi-smart-launch.mjs --super      # Force super skill (default)
+ *   node scripts/kimi-smart-launch.mjs --architect  # Force architect skill
  */
 
 import { execSync, spawn } from 'child_process';
@@ -26,16 +25,16 @@ const KP_DIR = root.includes('klarpakke') ? root : '/Users/taj/klarpakke';
 
 // ─── CONFIG ───
 const AGENTS = {
-  auth: { name: '🔐 Auth', yaml: 'auth-agent.yaml', mcp: 'medium' },
-  trading: { name: '📈 Trading', yaml: 'klarpakke-trading-engine-agent.yaml', mcp: 'full' },
-  database: { name: '🗄️ Database', yaml: 'klarpakke-database-agent.yaml', mcp: 'full' },
-  frontend: { name: '🎨 Frontend', yaml: 'klarpakke-performance-agent.yaml', mcp: 'minimal' },
-  api: { name: '🔌 API', yaml: 'klarpakke-architect-agent.yaml', mcp: 'medium' },
-  deploy: { name: '🚀 Deploy', yaml: 'klarpakke-architect-agent.yaml', mcp: 'medium' },
-  testing: { name: '🧪 Testing', yaml: 'testing-agent.yaml', mcp: 'medium' },
-  cms: { name: '📝 Sanity', yaml: 'klarpakke-architect-agent.yaml', mcp: 'medium' },
-  mobile: { name: '📱 Mobile', yaml: 'klarpakke-performance-agent.yaml', mcp: 'medium' },
-  general: { name: '🤖 Super', yaml: 'klarpakke-super-agent.yaml', mcp: 'auto' },
+  auth: { name: '🔐 Auth', skillsDir: 'klarpakke-auth', mcp: 'medium' },
+  trading: { name: '📈 Trading', skillsDir: 'klarpakke-trading', mcp: 'full' },
+  database: { name: '🗄️ Database', skillsDir: 'klarpakke-database', mcp: 'full' },
+  frontend: { name: '🎨 Frontend', skillsDir: 'klarpakke-performance', mcp: 'minimal' },
+  api: { name: '🔌 API', skillsDir: 'klarpakke-architect', mcp: 'medium' },
+  deploy: { name: '🚀 Deploy', skillsDir: 'klarpakke-architect', mcp: 'medium' },
+  testing: { name: '🧪 Testing', skillsDir: 'klarpakke-testing', mcp: 'medium' },
+  cms: { name: '📝 Sanity', skillsDir: 'klarpakke-architect', mcp: 'medium' },
+  mobile: { name: '📱 Mobile', skillsDir: 'klarpakke-performance', mcp: 'medium' },
+  general: { name: '🤖 Super', skillsDir: 'klarpakke-super', mcp: 'auto' },
 };
 
 const KEYWORDS = {
@@ -202,7 +201,7 @@ function printBanner(text) {
 }
 
 function runPreSession(prompt, forcedAgent, forcedMcp) {
-  printBanner('🧠 KIMI SMART LAUNCH v2.1');
+  printBanner('🧠 KIMI SMART LAUNCH v3.0');
 
   const git = fetchGitContext();
   let classification, agent;
@@ -239,14 +238,9 @@ function runPreSession(prompt, forcedAgent, forcedMcp) {
   log('🧠', 'Fetching MemPalace context...');
   const brief = fetchMemPalaceBrief(prompt || git.lastCommit || 'general');
 
-  // Velg MCP-profil
-  const currentMcp = detectMcpProfile();
+  // Velg MCP-profil (informasjon; KIMI Code 0.18.0 bruker prosjektets MCP-konfigurasjon)
   const targetMcp = forcedMcp || agent.mcp;
-  log('⚙️', `MCP Profile: ${currentMcp} → target: ${targetMcp}`);
-
-  if (currentMcp !== targetMcp && targetMcp !== 'auto') {
-    log('⚠️', `Run: kimi-mcp ${targetMcp} (before starting KIMI)`);
-  }
+  log('⚙️', `Target MCP profile: ${targetMcp}`);
 
   // Git-kontekst
   log('🔀', `Branch: ${git.branch} | Last: ${git.lastCommit}`);
@@ -281,14 +275,13 @@ function runPreSession(prompt, forcedAgent, forcedMcp) {
 ## 🎯 Task
 ${prompt || '(auto-detected from git)'}
 
-## 🧠 Agent
+## 🧠 Skill
 - Domain: ${classification.domain}
-- Agent: ${agent.name}
-- File: .kimi/agents/${agent.yaml}
+- Skill: ${agent.name}
+- Skills dir: .kimi/skills/${agent.skillsDir}
 
 ## ⚙️ MCP
-- Current: ${currentMcp}
-- Target: ${targetMcp}
+- Profile: ${targetMcp} (managed by KIMI Code project config)
 
 ## 🔀 Git
 - Branch: ${git.branch}
@@ -300,14 +293,13 @@ ${previousSession ? `## ⏮️ Previous Session (WIP/NO-GO)\n\`\`\`\n${previousS
 
 ## 📝 Instructions
 1. MemPalace search already attempted — results above
-2. Use agent: ${agent.yaml}
+2. Use skills-dir: .kimi/skills/${agent.skillsDir}
 3. Self-correct after >30 lines
 4. Memory sync after task
 5. End with status block
 ${previousSession ? '6. ⏮️ Previous session was WIP/NO-GO — consider continuing from where it left off' : ''}
 
 ## 💡 Quick Reference
-- MCP switch: kimi-mcp ${targetMcp}
 - Verify: node scripts/verify/verify-claims.mjs
 - Swarm: npm run swarm:review
 `;
@@ -325,12 +317,12 @@ ${previousSession ? '6. ⏮️ Previous session was WIP/NO-GO — consider conti
   // Print instruksjoner for brukeren
   log('', '');
   log('🚀', 'READY TO LAUNCH KIMI');
-  log('   ', `Agent: ${agent.name} (.kimi/agents/${agent.yaml})`);
-  log('   ', `MCP:   ${targetMcp} (current: ${currentMcp})`);
+  log('   ', `Skill: ${agent.name} (.kimi/skills/${agent.skillsDir})`);
+  log('   ', `MCP:   ${targetMcp}`);
   log('   ', `Context saved to: ${sessionFile}`);
   log('', '');
   log('💡', 'Start KIMI with:');
-  log('   ', `kimi --agent-file .kimi/agents/${agent.yaml} --mcp-config-file ${getMcpConfigPath(targetMcp)}`);
+  log('   ', `kimi --skills-dir .kimi/skills/${agent.skillsDir}`);
   log('   ', '');
   log('💡', 'Or paste the brief above into your existing KIMI session.');
   log('', '');
@@ -463,14 +455,7 @@ After all steps:
 ## 💡 How to Use This Brief
 This is a multi-agent workflow. You can either:
 - **Option A:** Execute all steps yourself (recommended for speed)
-- **Option B:** Run each step as a separate KIMI session with the relevant agent YAML
-
-**Agent files:**
-${workflow.map(id => {
-  const a = agents.find(x => x.id === id);
-  const yaml = a ? `.kimi/agents/${a.prompt_file?.replace('.md', '.yaml') || id + '-agent.yaml'}` : `.kimi/agents/${id}-agent.yaml`;
-  return `- ${id}: ${yaml}`;
-}).join('\n')}
+- **Option B:** Run the relevant domain skill, e.g. \`kimi --skills-dir .kimi/skills/klarpakke-architect\`
 `;
 
   return brief;
@@ -498,27 +483,16 @@ function runSwarmWorkflow(prompt, forcedMcp) {
   log('', '=== END BRIEF ===');
   log('', '');
   log('💾', `Swarm brief saved to: ${swarmFile}`);
-  log('💡', 'Paste this brief into KIMI, or run individual agents:');
-
-  const workflow = swarmConfig?.swarm?.workflows?.[workflowType] || [];
-  for (const agentId of workflow) {
-    const agentDef = swarmConfig?.swarm?.agents?.find(a => a.id === agentId);
-    if (agentDef?.prompt_file) {
-      const yamlFile = agentDef.prompt_file.replace('.md', '.yaml');
-      log('   ', `kimi --agent-file .kimi/agents/${yamlFile}`);
-    }
-  }
+  log('💡', 'Paste this brief into KIMI, or run a relevant domain skill from .kimi/skills/klarpakke-*');
 
   return { swarmFile, workflowType };
 }
 
 function launchKimi(agent, mcpProfile, swarmMode = false, swarmFile = null) {
-  const agentPath = resolve(KP_DIR, '.kimi/agents', agent.yaml);
-  const mcpPath = getMcpConfigPath(mcpProfile);
+  const skillsDir = resolve(KP_DIR, '.kimi/skills', agent.skillsDir);
 
   const args = [
-    '--agent-file', agentPath,
-    '--mcp-config-file', mcpPath,
+    '--skills-dir', skillsDir,
     '--work-dir', KP_DIR,
   ];
 

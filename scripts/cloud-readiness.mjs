@@ -1,4 +1,25 @@
 #!/usr/bin/env node
+/**
+ * Cloud Readiness Checker
+ *
+ * Verifies that the environment has the secrets/tokens needed for a given
+ * automation profile. The project is hosted on Fly.io, so the primary
+ * deploy profile requires FLY_API_TOKEN. A legacy `vercel` profile is kept
+ * for backwards compatibility / migration scenarios.
+ *
+ * Loads .env, .env.local, .env.development.local, .env.production.local and
+ * .env.vercel so local development works without exporting everything to the
+ * shell. process.env always wins, so CI/production keeps working unchanged.
+ *
+ * Usage:
+ *   node scripts/cloud-readiness.mjs --profile preflight
+ *   node scripts/cloud-readiness.mjs --profile agent
+ *   node scripts/cloud-readiness.mjs --profile deploy
+ *   node scripts/cloud-readiness.mjs --profile manual-deploy --environment production
+ *   node scripts/cloud-readiness.mjs --profile vercel
+ *   node scripts/cloud-readiness.mjs --profile agent --export-github-env
+ */
+
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -69,14 +90,13 @@ function setResolvedVar(name, value, source) {
 
 const profiles = {
   /**
-   * Daglig lokal / automation:check — Linear + MCP; Vercel valgfri (deploy skjer ofte via CI).
+   * Daglig lokal / automation:check — Linear + MCP. Deploy skjer via CI på Fly.io,
+   * så Vercel-variabler er valgfrie/legacy.
    */
   preflight: {
     required: ["LINEAR_API_KEY"],
     optional: [
-      "VERCEL_TOKEN",
-      "VERCEL_ORG_ID",
-      "VERCEL_PROJECT_ID",
+      "FLY_API_TOKEN",
       "GITHUB_TOKEN",
       "SUPABASE_ACCESS_TOKEN",
       "SUPABASE_SERVICE_ROLE_KEY",
@@ -84,10 +104,18 @@ const profiles = {
       "RESEND_API_KEY",
       "STRIPE_SECRET_KEY",
       "SENTRY_AUTH_TOKEN",
+      // Legacy Vercel tokens — kept optional for transition period
+      "VERCEL_TOKEN",
+      "VERCEL_ORG_ID",
+      "VERCEL_PROJECT_ID",
     ],
   },
+  /**
+   * Agent-profil: alt som kreves for KIMI/automation-agenter. Fly.io er primær
+   * hosting, så FLY_API_TOKEN kreves. Vercel er valgfritt.
+   */
   agent: {
-    required: ["LINEAR_API_KEY", "VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
+    required: ["LINEAR_API_KEY", "FLY_API_TOKEN"],
     optional: [
       "GITHUB_TOKEN",
       "SUPABASE_ACCESS_TOKEN",
@@ -96,15 +124,34 @@ const profiles = {
       "RESEND_API_KEY",
       "STRIPE_SECRET_KEY",
       "SENTRY_AUTH_TOKEN",
+      // Legacy optional Vercel tokens
+      "VERCEL_TOKEN",
+      "VERCEL_ORG_ID",
+      "VERCEL_PROJECT_ID",
     ],
   },
+  /**
+   * Deploy-profil for Fly.io. Krever FLY_API_TOKEN (fra `fly tokens create deploy`).
+   */
   deploy: {
-    required: ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
+    required: ["FLY_API_TOKEN"],
     optional: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ZONE_ID"],
   },
+  /**
+   * Manuell deploy/prod-ops. Krever Fly-token; Supabase-tokens kreves i production
+   * for drift-operasjoner (db push, edge functions, osv.).
+   */
   "manual-deploy": {
-    required: ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
+    required: ["FLY_API_TOKEN"],
     optional: ["SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN"],
+  },
+  /**
+   * Legacy Vercel-profil for prosjekter som fortsatt deployes til Vercel,
+   * eller for migreringsscenarioer.
+   */
+  vercel: {
+    required: ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
+    optional: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ZONE_ID"],
   },
 };
 
@@ -189,7 +236,8 @@ async function main() {
     required.push("SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN");
   }
 
-  if (autoResolveVercel && required.some((name) => name.startsWith("VERCEL_"))) {
+  // Only auto-resolve Vercel IDs for the legacy vercel profile.
+  if (autoResolveVercel && profile === "vercel") {
     await resolveVercelContext();
   }
 

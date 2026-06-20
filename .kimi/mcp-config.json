@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "version": "2.9-minimal",
+    "lastOptimized": "2026-05-15",
+    "for": "KIMI CLI v1.44.0 + k2.6",
+    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere. MemPalace v3.4 (zero-dep, TF-IDF + bigram + cross-lingual) inkludert for prosjektkunnskap.",
+    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote). MemPalace v3.4 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt. All servers lokalt installert."
+  },
+  "mcpServers": {
+    "filesystem": {
+      "description": "Filesystem MCP — filoperasjoner i prosjektet",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"]
+    },
+    "supabase-db": {
+      "description": "Supabase Postgres MCP — SQL queries, tabeller, migrasjoner",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-supabase-mcp.mjs"]
+    },
+    "sanity": {
+      "description": "Sanity MCP v2 — CMS read + write (queries, documents, mutations)",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"]
+    },
+    "github": {
+      "description": "GitHub MCP — repo, issues, pull requests",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"]
+    },
+    "context7": {
+      "description": "Context7 MCP — bibliotekdokumentasjon",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-context7-mcp.mjs"]
+    },
+    "perplexity": {
+      "description": "Perplexity MCP — AI-søk og research",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"]
+    },
+    "mempalace": {
+      "description": "MemPalace MCP v3.4.0 — prosjektkunnskap, KG, diary (zero-dep, TF-IDF + bigram + cross-lingual + Atomic writes, SuperKIMI-optimalisert)",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
+    }
+  }
+}

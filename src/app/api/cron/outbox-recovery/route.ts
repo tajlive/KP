@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/server";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
 import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
+import { validateCronSecret } from "@/lib/auth/cron";
 import type { Json } from "@/types/database.types";
 
 export const runtime = "nodejs";
@@ -31,12 +32,8 @@ interface RecoveryResult {
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now();
-  
-  // Verify cron secret
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+
+  if (!validateCronSecret(request)) {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }

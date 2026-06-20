@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
 import { sendMonitoringAlert, trackHealthCheckFailure } from '@/lib/monitoring/sentry-alerts';
+import { validateCronSecret } from "@/lib/auth/cron";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,10 +12,7 @@ const JOBS = ['ai-engine', 'tick', 'feature-loader', 'ai-metrics'];
 const THRESHOLD_MINUTES = 70; // e.g. ai-engine runs hourly -> 70m is lenient
 
 export async function GET(req: NextRequest) {
-  const cronSecret = req.headers.get('authorization')?.replace('Bearer ', '');
-  const isDev = process.env.NODE_ENV === 'development';
-
-  if (!isDev && cronSecret !== process.env.CRON_SECRET?.trim()) {
+  if (!validateCronSecret(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

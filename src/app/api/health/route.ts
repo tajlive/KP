@@ -66,10 +66,41 @@ async function getPostgresClient(): Promise<Client> {
   return client;
 }
 
+function logConnectionDetails(connectionString: string) {
+  try {
+    const url = new URL(connectionString);
+    console.info(
+      `[Health] DB connection attempt: ${url.hostname}:${url.port || 5432}/${decodeURIComponent(url.pathname.slice(1))}`
+    );
+  } catch {
+    // ignore malformed URL in log
+  }
+}
+
+function formatDbError(err: unknown, connectionString?: string): string {
+  const base = err instanceof Error ? err.message : "Unknown DB error";
+  const isTenantError = /tenant|user.*not found/i.test(base);
+  const hasReference = connectionString
+    ? /options=reference(%3D|=)/i.test(connectionString)
+    : false;
+
+  if (isTenantError && !hasReference) {
+    return `${base} — Hint: Supavisor pooler URLs must include ?options=reference%3D<project-ref> (e.g. ?options=reference%3Dvuxbjlykgmzskxbclquf). Update POSTGRES_URL in Fly.io secrets.`;
+  }
+
+  return base;
+}
+
 async function checkDatabase(): Promise<CheckResult> {
   const start = Date.now();
   let client: Client | null = null;
+  const connectionString =
+    process.env.POSTGRES_URL || process.env.DATABASE_URL;
+
   try {
+    if (connectionString) {
+      logConnectionDetails(connectionString);
+    }
     client = await getPostgresClient();
     const result = await client.query("SELECT 1 AS health");
     const ok = result.rows.length > 0 && result.rows[0].health === 1;
@@ -86,7 +117,7 @@ async function checkDatabase(): Promise<CheckResult> {
     return {
       status: "error",
       latency: Date.now() - start,
-      message: err instanceof Error ? err.message : "Unknown DB error",
+      message: formatDbError(err, connectionString),
     };
   }
 }
@@ -219,6 +250,22 @@ function checkEnvironment(): CheckResult {
       status: "error",
       message: `Missing env vars: ${missing.join(", ")}`,
     };
+  }
+
+  if (process.env.FLY_IO === "1" && process.env.POSTGRES_URL) {
+    const url = process.env.POSTGRES_URL;
+    const looksLikePooler =
+      url.includes("pooler.supabase.com") || url.includes(":6543");
+    const hasReference = /options=reference(%3D|=)/i.test(url);
+
+    if (looksLikePooler && !hasReference) {
+      return {
+        status: "error",
+        message:
+          "POSTGRES_URL points to Supavisor pooler but is missing ?options=reference%3D<project-ref>. " +
+          "Update Fly.io secrets with the pooler URL from Supabase.",
+      };
+    }
   }
 
   return { status: "ok" };
