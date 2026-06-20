@@ -6,8 +6,8 @@ const withNextIntl = createNextIntlPlugin({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   
-  // VERCEL PRO OPTIMIZATIONS 2026-04-10
-  // Plan: Pro ($20/month) - 90min builds, 3008MB memory, 1TB bandwidth
+  // BUILD OPTIMIZATIONS 2026-04-10
+  // Tuned for Hetzner VPS + Coolify Docker builds
   
   // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
   // Helps when .env loading order or Edge/build context differs.
@@ -25,7 +25,7 @@ const nextConfig = {
   },
   
   // distDir: 'dist',
-  output: 'standalone', // Required for Docker/Node.js hosting (Fly.io, etc.)
+  output: 'standalone', // Required for Docker/Node.js hosting (Coolify/Hetzner)
 
   // Performance optimizations
   compress: true,
@@ -66,10 +66,10 @@ const nextConfig = {
   },
 
   // Image optimization
-  // Vercel: unoptimized=false (Vercel håndterer automatisk)
-  // Cloudflare: unoptimized=true (Cloudflare Pages støtter ikke next/image)
+  // Coolify/Hetzner: unoptimized=false (Docker-host håndterer next/image)
+  // Cloudflare Pages: unoptimized=true (Cloudflare Pages støtter ikke next/image)
   images: {
-    unoptimized: process.env.CLOUDFLARE_PAGES === '1' || process.env.FLY_IO === '1' || false,
+    unoptimized: process.env.CLOUDFLARE_PAGES === '1' || process.env.COOLIFY === '1' || false,
     minimumCacheTTL: 2592000, // 30 dager cache
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -325,10 +325,9 @@ const nextConfig = {
 
   // Generate build ID to bust caches
   generateBuildId: async () => {
-    return process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) || 
-           process.env.FLY_ALLOC_ID?.slice(0, 7) ||
+    return process.env.COOLIFY_COMMIT_SHA?.slice(0, 7) ||
+           process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) ||
            process.env.GITHUB_SHA?.slice(0, 7) ||
-           process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
            Date.now().toString();
   },
 
@@ -395,8 +394,7 @@ const nextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
         ],
       },
-      // NOTE: Cache-Control headers moved to vercel.json to avoid Next.js warning
-      // Vercel handles caching optimally via vercel.json config
+      // NOTE: Cache-Control headers handled by Cloudflare + Coolify reverse proxy
     ];
   },
 };

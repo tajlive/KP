@@ -252,7 +252,7 @@ function checkEnvironment(): CheckResult {
     };
   }
 
-  if (process.env.FLY_IO === "1" && process.env.POSTGRES_URL) {
+  if (process.env.POSTGRES_URL) {
     const url = process.env.POSTGRES_URL;
     const looksLikePooler =
       url.includes("pooler.supabase.com") || url.includes(":6543");
@@ -263,7 +263,7 @@ function checkEnvironment(): CheckResult {
         status: "error",
         message:
           "POSTGRES_URL points to Supavisor pooler but is missing ?options=reference%3D<project-ref>. " +
-          "Update Fly.io secrets with the pooler URL from Supabase.",
+          "Update Coolify env with the pooler URL from Supabase.",
       };
     }
   }

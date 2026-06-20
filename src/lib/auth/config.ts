@@ -13,8 +13,8 @@ export const isDevelopment = process.env.NODE_ENV === "development";
 const VALID_LOCALES = ["no", "en", "th", "zh"] as const;
 type ValidLocale = (typeof VALID_LOCALES)[number];
 
-// App URLs - uses NEXT_PUBLIC_APP_URL from Vercel dashboard.
-// Fallback to NEXT_PUBLIC_VERCEL_URL for Preview deployments if APP_URL is missing.
+// App URLs - uses NEXT_PUBLIC_APP_URL from Coolify env.
+// Legacy fallbacks for Vercel/Fly preview deployments are kept for rollback safety.
 
 /** Strip whitespace/newlines that can sneak in from env vars (prevents %250A in OAuth redirects) */
 function sanitizeUrl(url: string): string {

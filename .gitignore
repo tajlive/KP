@@ -57,9 +57,6 @@ lighthouse-*.report.html
 .env.test
 .env.production
 .env.*.local
-.env.vercel
-.env.vercel.*
-.env.vercel.production
 
 # =============================================================================
 # SUPABASE
@@ -77,11 +74,8 @@ mcp-server/node_modules/
 mcp-server/dist/
 
 # =============================================================================
-# VERCEL / CLOUDFLARE
+# CLOUDFLARE
 # =============================================================================
-.vercel/*
-!.vercel/project.json
-.vercel.json
 .wrangler/
 .dev.vars
 workers/.wrangler/
@@ -232,9 +226,7 @@ allure-results/
 .env*.save
 .env.local.save
 *.bak
-.vercel
 .env.local
-.sentryclirc
 lighthouse-landing.html
 
 # Personal one-off SQL (manual Dashboard only; may contain user email)
@@ -242,12 +234,8 @@ supabase/sql-scripts/grant-professor-tom-arne.sql
 
 # Storybook build output
 storybook-static
-.env.vercel
 .env.local.save
 config/perplexity-local-mcp.json
-
-# Vercel CLI env files
-.env.vercel-check
 .mempalace/index-cache*.json
 .mempalace/index-cache*.json.gz
 # KIMI Smart Orchestrator auto-generert kontekst\n.kimi/session-summaries/

@@ -26,8 +26,7 @@ import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
 import { ThemeProvider } from "@/shared/theme";
 import { QueryProvider } from "@/shared/providers/query-provider";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
-import { SentryInit } from "@/shared/providers/SentryInit";
-// Vercel Analytics/SpeedInsights removed — now on Fly.io
+// Analytics/SpeedInsights disabled on self-hosted stack
 // import { Analytics } from "@vercel/analytics/react";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 import { useAuth } from "@/lib/auth/new/AuthContext";
@@ -80,7 +79,6 @@ export default function DashboardClientLayout({
                   <TradeSuccessProvider>
                     <ProtectedRoute>
                       <OnboardingFlow />
-                    <SentryInit />
                     <div
                       className={`min-h-screen ${SURFACE.BG_LIGHT} flex flex-col`}
                       data-testid="dashboard-root"
@@ -99,7 +97,7 @@ export default function DashboardClientLayout({
                     </div>
                     </ProtectedRoute>
                   </TradeSuccessProvider>
-                  {/* Analytics/SpeedInsights disabled on Fly.io */}
+                  {/* Analytics/SpeedInsights disabled on self-hosted stack */}
                   {/* <Analytics /> */}
                   {/* <SpeedInsights /> */}
                 </TradingModeProvider>
