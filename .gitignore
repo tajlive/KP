@@ -207,6 +207,11 @@ assets/videos/
 assets/screenshots/
 
 # =============================================================================
+# VAULT BACKUPS (local secrets vault)
+# =============================================================================
+vault-backup/
+
+# =============================================================================
 # PROJECT SPECIFIC
 # =============================================================================
 klarpakke-mcp-server/.env
@@ -238,6 +243,8 @@ storybook-static
 config/perplexity-local-mcp.json
 .mempalace/index-cache*.json
 .mempalace/index-cache*.json.gz
+.mempalace/kg.json
+.mempalace/kg.json.bak
 # KIMI Smart Orchestrator auto-generert kontekst\n.kimi/session-summaries/
 
 # KIMI / MemPalace autogenererte rapporter

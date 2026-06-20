@@ -24,3 +24,8 @@
 {"subject":"klarpakke-main","predicate":"deploy-status","object":"ready-not-deployed","validFrom":"2026-06-20T15:36:33.395Z"}
 {"subject":"klarpakke-migration-docs-tools","predicate":"status","object":"ready-as-doc-tool-pr","validFrom":"2026-06-20T15:36:33.397Z"}
 {"subject":"klarpakke-next-image-config","predicate":"fix","object":"removed-COOLIFY-from-unoptimized","validFrom":"2026-06-20T15:36:33.398Z"}
+{"subject":"secrets-vault","predicate":"implemented","object":"local-secrets-vault-task-4","validFrom":"2026-06-20T21:36:26.961Z"}
+{"subject":"secrets-vault","predicate":"uses","object":"aes-256-gcm","validFrom":"2026-06-20T21:36:26.963Z"}
+{"subject":"secrets-vault","predicate":"stores","object":"mempalace-kg","validFrom":"2026-06-20T21:36:26.964Z"}
+{"subject":"secrets-vault","predicate":"location","object":"scripts/vault","validFrom":"2026-06-20T21:36:26.964Z"}
+{"subject":"secrets-vault","predicate":"master_key_env","object":"KLARPAKKE_VAULT_KEY","validFrom":"2026-06-20T21:36:26.964Z"}
