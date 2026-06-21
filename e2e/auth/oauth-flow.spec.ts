@@ -160,7 +160,7 @@ test.describe("OAuth Callback Page @auth", () => {
   test("callback page shows loading state", async ({ page, baseURL }) => {
     // Navigate directly to callback with token
     const mockToken = generateMockToken("google");
-    const callbackUrl = new URL("/auth/callback", baseURL || "http://localhost:3000");
+    const callbackUrl = new URL("/no/callback", baseURL || "http://localhost:3000");
     callbackUrl.hash = `#access_token=${mockToken.access_token}`;
     
     await page.goto(callbackUrl.toString());
@@ -171,7 +171,7 @@ test.describe("OAuth Callback Page @auth", () => {
 
   test("callback without token shows error", async ({ page, baseURL }) => {
     // Navigate to callback without token
-    await page.goto(`${baseURL || "http://localhost:3000"}/auth/callback`);
+    await page.goto(`${baseURL || "http://localhost:3000"}/no/callback`);
     
     // Verify error is shown
     await expect(page.getByTestId("auth-error")).toBeVisible({ timeout: 10000 });

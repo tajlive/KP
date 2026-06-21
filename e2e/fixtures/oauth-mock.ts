@@ -92,7 +92,7 @@ export async function simulateOAuthCallback(
   token: MockOAuthToken,
   baseUrl: string
 ): Promise<void> {
-  const callbackUrl = new URL("/auth/callback", baseUrl);
+  const callbackUrl = new URL("/no/callback", baseUrl);
   callbackUrl.hash = `#access_token=${token.access_token}&refresh_token=${token.refresh_token}&expires_in=${token.expires_in}&token_type=${token.token_type}`;
   
   await page.goto(callbackUrl.toString());
@@ -107,7 +107,7 @@ export async function simulateOAuthError(
   errorDescription: string,
   baseUrl: string
 ): Promise<void> {
-  const callbackUrl = new URL("/auth/callback", baseUrl);
+  const callbackUrl = new URL("/no/callback", baseUrl);
   callbackUrl.searchParams.set("error", error);
   callbackUrl.searchParams.set("error_description", errorDescription);
   
