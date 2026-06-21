@@ -136,7 +136,10 @@ async function main() {
   console.log(siteUrlOk ? "   ✅ Correct" : `   ❌ Expected: ${EXPECTED_SITE_URL}`);
 
   printSection("2. Redirect URLs");
-  const redirectUrls = normalizeUrlList(config.redirect_urls);
+  // Supabase Management API exposes redirect URLs as either `redirect_urls` (array)
+  // or `uri_allow_list` (comma-separated string) depending on project/config.
+  const rawRedirectUrls = config.redirect_urls ?? config.uri_allow_list;
+  const redirectUrls = normalizeUrlList(rawRedirectUrls);
   console.log("   Configured URLs:");
   if (redirectUrls.length === 0) {
     console.log("   (none)");
