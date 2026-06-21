@@ -63,6 +63,17 @@ function printSection(title) {
   console.log("=".repeat(title.length));
 }
 
+function formatSecret(secret) {
+  if (!secret) return "(not set)";
+  const visible = 4;
+  const masked = "*".repeat(Math.max(secret.length - visible, 0));
+  return `${masked}${secret.slice(-visible)} (${secret.length} chars)`;
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 async function main() {
   console.log("🔐 Klarpakke OAuth Production Config Check");
   console.log("This script reads Supabase Auth config via the Management API.");
@@ -152,22 +163,41 @@ async function main() {
     }
   }
 
-  printSection("3. Additional Checks");
+  printSection("3. Google OAuth Provider Configuration");
+  const googleEnabled = config.external_google_enabled === true;
+  const googleClientId = config.external_google_client_id || null;
+  const googleSecret = config.external_google_secret || null;
+  const googleEmailOptional = config.external_google_email_optional ?? null;
+
+  console.log(`   external_google_enabled:       ${config.external_google_enabled} ${googleEnabled ? "✅" : "❌"}`);
+  console.log(`   external_google_client_id:     ${googleClientId || "(not set)"} ${isNonEmptyString(googleClientId) ? "✅" : "❌"}`);
+  console.log(`   external_google_secret:        ${googleSecret ? `✅ set (${formatSecret(googleSecret)})` : "❌ not set"}`);
+  console.log(`   external_google_email_optional: ${googleEmailOptional ?? "(not set)"} (reported only)`);
+
+  const googleOk = googleEnabled && isNonEmptyString(googleClientId) && isNonEmptyString(googleSecret);
+  if (!googleOk) {
+    console.log("   ❌ Google OAuth provider is not fully configured.");
+  } else {
+    console.log("   ✅ Google OAuth provider appears fully configured.");
+  }
+
+  printSection("4. Additional Checks");
   const hasTrailingSlash = redirectUrls.some((u) => u.endsWith("/") && u !== "/");
   const hasQueryParams = redirectUrls.some((u) => u.includes("?"));
   console.log(`   Trailing slashes: ${hasTrailingSlash ? "❌ Found" : "✅ None"}`);
   console.log(`   Query parameters: ${hasQueryParams ? "❌ Found" : "✅ None"}`);
 
-  printSection("4. Recommendations");
-  if (siteUrlOk && missing.length === 0 && unexpected.length === 0 && !hasTrailingSlash && !hasQueryParams) {
-    console.log("   ✅ Supabase Auth redirect configuration looks correct.");
+  printSection("5. Recommendations");
+  if (siteUrlOk && missing.length === 0 && unexpected.length === 0 && !hasTrailingSlash && !hasQueryParams && googleOk) {
+    console.log("   ✅ Supabase Auth redirect and Google OAuth provider configuration looks correct.");
     console.log("   If login still fails, check:");
     console.log("     - Google Cloud Console → Authorized redirect URIs");
     console.log("     - Google OAuth consent screen publishing status / test users");
     console.log("     - Supabase Auth → External Auth → Google → Client ID/Secret");
   } else {
     console.log("   🛠️  Update Supabase Auth configuration:");
-    console.log("     https://supabase.com/dashboard/project/" + projectRef + "/auth/url-configuration");
+    console.log("     URL Configuration: https://supabase.com/dashboard/project/" + projectRef + "/auth/url-configuration");
+    console.log("     Providers:         https://supabase.com/dashboard/project/" + projectRef + "/auth/providers");
     if (!siteUrlOk) {
       console.log(`   - Set Site URL to: ${EXPECTED_SITE_URL}`);
     }
@@ -180,9 +210,13 @@ async function main() {
     if (hasTrailingSlash || hasQueryParams) {
       console.log("   - Ensure redirect URLs have no trailing slashes or query parameters.");
     }
+    if (!googleOk) {
+      console.log("   - Enable Google OAuth provider and set a valid Client ID and Secret.");
+      console.log("     Secret is never shown in full; verify it is configured in the dashboard.");
+    }
   }
 
-  const allOk = siteUrlOk && missing.length === 0 && unexpected.length === 0 && !hasTrailingSlash && !hasQueryParams;
+  const allOk = siteUrlOk && missing.length === 0 && unexpected.length === 0 && !hasTrailingSlash && !hasQueryParams && googleOk;
   console.log(`\n🏁 Result: ${allOk ? "✅ GO" : "❌ NO-GO"}\n`);
   process.exit(allOk ? 0 : 1);
 }
