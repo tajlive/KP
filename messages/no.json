@@ -2275,6 +2275,10 @@
   "paperTrading": {
     "title": "Lekepenger",
     "description": "Øv deg på trading uten risiko",
+    "workspaceHeader": {
+      "title": "Trading-arbeidsflate",
+      "subtitle": "Øv deg på trading med lekepenger"
+    },
     "balance": "Saldo",
     "newSession": "Ny trade",
     "tradingPair": "Handelspar",

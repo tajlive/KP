@@ -2275,6 +2275,10 @@
   "paperTrading": {
     "title": "Paper Trading",
     "description": "Practice trading without risk",
+    "workspaceHeader": {
+      "title": "Trading workspace",
+      "subtitle": "Practice trading with paper money"
+    },
     "balance": "Balance",
     "newSession": "New Trade",
     "tradingPair": "Trading Pair",

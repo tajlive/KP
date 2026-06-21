@@ -14,6 +14,8 @@ import {
 import type { TradingMode } from "@/lib/trading-api";
 import { useTranslations } from "next-intl";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { TradingModeProvider } from "@/context/TradingModeContext";
+import { ToastProvider } from "@/providers/ToastProvider";
 
 type SessionRow = {
   id: string;
@@ -65,7 +67,9 @@ export function PaperTradingPageClient({
   }, [initialMode]);
 
   return (
-    <div className={`min-h-screen ${SURFACE.BG_LIGHT} dark:bg-slate-950`}>
+    <ToastProvider>
+      <TradingModeProvider>
+        <div className={`min-h-screen ${SURFACE.BG_LIGHT} dark:bg-slate-950`}>
       {/* Tydelig UX: modus-banner kun på session-liste; dashboard har egen header */}
       {showSessionsList && (
         <div
@@ -161,6 +165,8 @@ export function PaperTradingPageClient({
           <UnifiedTradingDashboard initialMode={initialMode} />
         </div>
       )}
-    </div>
+        </div>
+      </TradingModeProvider>
+    </ToastProvider>
   );
 }

@@ -124,16 +124,25 @@ export interface StateRecoveryResult {
  * 3. FailClosedRedisClient for production without Redis config.
  */
 export function createRiskRedisClient(): RedisClient {
+  const env = process.env.NODE_ENV;
+
+  // I dev/test bruker vi alltid in-memory MockRedis for å unngå at ugyldige
+  // eller utilgjengelige Redis-credentials blokkerer trades (f.eks. e2e).
+  // I produksjon krever vi ekte Redis for fail-closed oppførsel.
+  if (env === 'test' || env === 'development') {
+    if (isRedisRestConfigured()) {
+      console.warn(
+        '[RiskStateStore] Redis er konfigurert, men ignoreres i dev/test. Bruker MockRedis.'
+      );
+    }
+    return new MockRedis();
+  }
+
   if (isRedisRestConfigured()) {
     const upstash = getRedisRest();
     if (upstash) {
       return new UpstashRedisClient(upstash);
     }
-  }
-
-  const env = process.env.NODE_ENV;
-  if (env === 'test' || env === 'development') {
-    return new MockRedis();
   }
 
   return new FailClosedRedisClient();

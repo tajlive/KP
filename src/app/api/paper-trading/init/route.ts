@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       return NextResponse.json(
-        { error: 'Ikke autentisert', code: 'UNAUTHORIZED' },
+        { error: 'Unauthorized', code: 'UNAUTHORIZED' },
         { status: 401 },
       );
     }
@@ -34,6 +34,9 @@ export async function POST(request: NextRequest) {
         created_at: session.created_at,
         starting_capital_nok: session.starting_capital_nok,
         current_capital_nok: session.current_capital_nok,
+        // Bakoverkompatibilitet for eldre e2e-tester
+        starting_balance: session.starting_capital_nok,
+        current_balance: session.current_capital_nok,
       },
     });
   } catch (err) {

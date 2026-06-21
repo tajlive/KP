@@ -111,7 +111,7 @@ test.describe("Critical: 10 Trades Flow @critical @trading @allure", () => {
               status: "rejected",
               reason: body.message || "Unknown",
             });
-            console.log(`⚠️ Trade ${i + 1} rejected:`, body.message);
+            console.log(`⚠️ Trade ${i + 1} rejected:`, JSON.stringify({ message: body.message, error: body.error, rejectionReason: body.rejectionReason, type: body.type }));
           }
         } else if (response.status() === 401) {
           test.fail(`Auth failed on trade ${i + 1}`);
