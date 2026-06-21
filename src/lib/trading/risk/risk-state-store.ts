@@ -16,8 +16,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { getRedisRest, isRedisRestConfigured } from '@/lib/redis-client';
-import { Redis } from '@upstash/redis';
+import { getRedisRest, isRedisRestConfigured, type RedisLike } from '@/lib/redis-client';
 import { RiskState, RiskLimits, DEFAULT_RISK_LIMITS } from './risk-kernel';
 
 // Simple Redis client wrapper used by RiskStateStore
@@ -32,7 +31,7 @@ interface RedisClient {
  * Converts the @upstash/redis API to the internal RedisClient interface.
  */
 class UpstashRedisClient implements RedisClient {
-  constructor(private readonly upstash: Redis) {}
+  constructor(private readonly upstash: RedisLike) {}
 
   async get(key: string): Promise<string | null> {
     const value = await this.upstash.get<string>(key);

@@ -24,9 +24,9 @@ function clearAuthState(): void {
   if (typeof window === 'undefined') return;
   // Clear all Supabase auth cookies
   const cookiesToClear = [
-    'sb-vuxbjlykgmzskxbclquf-auth-token',
-    'sb-vuxbjlykgmzskxbclquf-auth-token.0',
-    'sb-vuxbjlykgmzskxbclquf-auth-token.1',
+    'sb-pskhryjzkobytnfwucrb-auth-token',
+    'sb-pskhryjzkobytnfwucrb-auth-token.0',
+    'sb-pskhryjzkobytnfwucrb-auth-token.1',
     'sb-auth-token',
     'supabase-auth-token',
   ];
@@ -57,7 +57,7 @@ function clearAuthState(): void {
 
   // Clear localStorage auth items
   const localStorageKeys = [
-    'sb-vuxbjlykgmzskxbclquf-auth-token',
+    'sb-pskhryjzkobytnfwucrb-auth-token',
     'supabase.auth.token',
     'klarpakke-auth',
   ];

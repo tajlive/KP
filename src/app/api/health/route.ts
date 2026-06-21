@@ -1,10 +1,6 @@
-import { Client } from "pg";
-import { setDefaultResultOrder } from "dns";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
 import { NextResponse } from "next/server";
-
-// Force IPv4 to avoid known Vercel↔Supabase IPv6 routing issues
-setDefaultResultOrder("ipv4first");
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,113 +30,64 @@ const startTime = Date.now();
 const CACHE_KEY = "health:latest";
 const CACHE_TTL_SECONDS = 30;
 
-function parsePgUrl(urlString: string) {
-  const url = new URL(urlString);
-  return {
-    host: url.hostname,
-    port: parseInt(url.port) || 6543,
-    database: decodeURIComponent(url.pathname.slice(1)),
-    user: decodeURIComponent(url.username),
-    password: decodeURIComponent(url.password),
-    // Supavisor pooler may require tenant identification via the
-    // `options=reference=<project-ref>` query parameter. Preserve it.
-    options: url.searchParams.get("options") || undefined,
-  };
-}
+function getServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
-async function getPostgresClient(): Promise<Client> {
-  const connectionString =
-    process.env.POSTGRES_URL || process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error("Missing POSTGRES_URL or DATABASE_URL");
+  if (!url || !key) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
   }
-  // Parse connection string manually to avoid pg overriding ssl settings
-  // from sslmode=require in the URL. Supavisor pooler uses AWS-managed
-  // certs that Node.js may not trust — we accept them for health checks.
-  const parsed = parsePgUrl(connectionString);
-  const client = new Client({
-    ...parsed,
-    ssl: { rejectUnauthorized: false },
+
+  return createSupabaseClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
   });
-  await client.connect();
-  return client;
-}
-
-function logConnectionDetails(connectionString: string) {
-  try {
-    const url = new URL(connectionString);
-    console.info(
-      `[Health] DB connection attempt: ${url.hostname}:${url.port || 5432}/${decodeURIComponent(url.pathname.slice(1))}`
-    );
-  } catch {
-    // ignore malformed URL in log
-  }
-}
-
-function formatDbError(err: unknown, connectionString?: string): string {
-  const base = err instanceof Error ? err.message : "Unknown DB error";
-  const isTenantError = /tenant|user.*not found/i.test(base);
-  const hasReference = connectionString
-    ? /options=reference(%3D|=)/i.test(connectionString)
-    : false;
-
-  if (isTenantError && !hasReference) {
-    return `${base} — Hint: Supavisor pooler URLs must include ?options=reference%3D<project-ref> (e.g. ?options=reference%3Dvuxbjlykgmzskxbclquf). Update POSTGRES_URL in Fly.io secrets.`;
-  }
-
-  return base;
 }
 
 async function checkDatabase(): Promise<CheckResult> {
   const start = Date.now();
-  let client: Client | null = null;
-  const connectionString =
-    process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
   try {
-    if (connectionString) {
-      logConnectionDetails(connectionString);
+    const supabase = getServiceClient();
+    const { error } = await supabase
+      .from("bot_health")
+      .select("bot_name")
+      .limit(1);
+
+    if (error) {
+      throw error;
     }
-    client = await getPostgresClient();
-    const result = await client.query("SELECT 1 AS health");
-    const ok = result.rows.length > 0 && result.rows[0].health === 1;
-    await client.end();
+
     return {
-      status: ok ? "ok" : "error",
+      status: "ok",
       latency: Date.now() - start,
-      message: ok ? undefined : "Unexpected query result",
     };
   } catch (err) {
-    if (client) {
-      try { await client.end(); } catch { /* ignore */ }
-    }
+    console.error("[Health] checkDatabase error:", err);
     return {
       status: "error",
       latency: Date.now() - start,
-      message: formatDbError(err, connectionString),
+      message: err instanceof Error ? err.message : JSON.stringify(err),
     };
   }
 }
 
 async function checkTradingSignals(): Promise<CheckResult> {
   const start = Date.now();
-  let client: Client | null = null;
   const staleMinutes = Number(process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES ?? 15);
   const criticalMinutes = 60;
   const incidentMinutes = 120;
 
   try {
-    client = await getPostgresClient();
-    const result = await client.query(
-      `SELECT last_heartbeat, updated_at, status, last_error
-       FROM bot_health
-       WHERE bot_name = 'signal-engine'
-       LIMIT 1`
-    );
-    await client.end();
+    const supabase = getServiceClient();
+    const { data: botRow, error } = await supabase
+      .from("bot_health")
+      .select("last_heartbeat, updated_at, status, last_error")
+      .eq("bot_name", "signal-engine")
+      .maybeSingle();
 
-    const botRow = result.rows[0];
-    const heartbeatAt = botRow?.last_heartbeat ?? botRow?.updated_at ?? null;
+    if (error) {
+      throw error;
+    }
 
     if (botRow?.status === "error") {
       return {
@@ -149,6 +96,8 @@ async function checkTradingSignals(): Promise<CheckResult> {
         message: botRow.last_error?.slice(0, 200) ?? "signal-engine status error",
       };
     }
+
+    const heartbeatAt = botRow?.last_heartbeat ?? botRow?.updated_at ?? null;
 
     if (!heartbeatAt) {
       return {
@@ -186,13 +135,11 @@ async function checkTradingSignals(): Promise<CheckResult> {
       },
     };
   } catch (err) {
-    if (client) {
-      try { await client.end(); } catch { /* ignore */ }
-    }
+    console.error("[Health] checkTradingSignals error:", err);
     return {
       status: "error",
       latency: Date.now() - start,
-      message: err instanceof Error ? err.message : "Unknown trading check error",
+      message: err instanceof Error ? err.message : JSON.stringify(err),
     };
   }
 }
@@ -240,7 +187,6 @@ function checkEnvironment(): CheckResult {
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
-    "POSTGRES_URL",
   ];
 
   const missing = requiredVars.filter((v) => !process.env[v]);
@@ -250,22 +196,6 @@ function checkEnvironment(): CheckResult {
       status: "error",
       message: `Missing env vars: ${missing.join(", ")}`,
     };
-  }
-
-  if (process.env.POSTGRES_URL) {
-    const url = process.env.POSTGRES_URL;
-    const looksLikePooler =
-      url.includes("pooler.supabase.com") || url.includes(":6543");
-    const hasReference = /options=reference(%3D|=)/i.test(url);
-
-    if (looksLikePooler && !hasReference) {
-      return {
-        status: "error",
-        message:
-          "POSTGRES_URL points to Supavisor pooler but is missing ?options=reference%3D<project-ref>. " +
-          "Update Coolify env with the pooler URL from Supabase.",
-      };
-    }
   }
 
   return { status: "ok" };

@@ -5,7 +5,7 @@
 import { Suspense } from 'react'
 import { getTranslations } from 'next-intl/server'
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const dynamic = 'force-static'
 

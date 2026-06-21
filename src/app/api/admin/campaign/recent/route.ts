@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import { getErrorMessage } from '@/lib/utils/error';
 
 function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co';
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pskhryjzkobytnfwucrb.supabase.co';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   
   if (!key) {

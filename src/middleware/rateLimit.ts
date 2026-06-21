@@ -1,25 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
 
-let ratelimit: Ratelimit | null = null;
+let ratelimit: ReturnType<typeof createFixedWindowLimiter> | null = null;
+
+function createFixedWindowLimiter(windowSeconds: number, maxRequests: number) {
+  return {
+    async limit(identifier: string) {
+      const redis = getRedisRest();
+      if (!redis) {
+        // No Redis/KV available — allow the request
+        return { success: true, limit: maxRequests, remaining: maxRequests, reset: Date.now() + windowSeconds * 1000 };
+      }
+
+      const key = `ratelimit:${identifier}:${Math.floor(Date.now() / 1000 / windowSeconds)}`;
+      const pipeline = redis.pipeline();
+      pipeline.incr(key);
+      pipeline.expire(key, windowSeconds);
+      const results = await pipeline.exec<[number, number]>();
+      const count = results[0] ?? 1;
+      const reset = Math.floor((Math.floor(Date.now() / 1000 / windowSeconds) + 1) * windowSeconds);
+
+      return {
+        success: count <= maxRequests,
+        limit: maxRequests,
+        remaining: Math.max(0, maxRequests - count),
+        reset,
+      };
+    },
+  };
+}
 
 function getRateLimit() {
   if (ratelimit) return ratelimit;
 
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!url || !token) {
+  if (!isRedisRestConfigured()) {
     return null;
   }
 
-  ratelimit = new Ratelimit({
-    redis: new Redis({ url, token }),
-    limiter: Ratelimit.fixedWindow(100, "1 m"),
-    analytics: true,
-  });
-
+  ratelimit = createFixedWindowLimiter(60, 100);
   return ratelimit;
 }
 
@@ -43,7 +61,7 @@ export async function rateLimitMiddleware(
 
   const limiter = getRateLimit();
   if (!limiter) {
-    // Upstash not configured — skip rate limiting (common in local dev)
+    // Redis/KV not configured — skip rate limiting (common in local dev)
     return response;
   }
 

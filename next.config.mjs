@@ -51,6 +51,28 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 
+  // Include Cloudflare workerd-specific files for OpenNext build
+  outputFileTracingIncludes: {
+    "**/*": [
+      "./node_modules/pg-cloudflare/dist/**",
+      "./node_modules/pg-cloudflare/esm/**",
+      "./node_modules/xxhash-wasm/workerd/**",
+      "./node_modules/xxhash-wasm/esm/**",
+      "./node_modules/xxhash-wasm/cjs/**",
+    ],
+  },
+  outputFileTracingExcludes: {
+    "**/*": [
+      "./node_modules/opik/**",
+      "./node_modules/boxen/**",
+      "./node_modules/ora/**",
+      "./node_modules/log-symbols/**",
+      "./node_modules/widest-line/**",
+      "./node_modules/ansi-align/**",
+      "./node_modules/cli-spinners/**",
+    ],
+  },
+
   // React Compiler - Automatic memoization (Next.js 16 stable)
   // Tidligere i experimental, nå top-level
   reactCompiler: true,

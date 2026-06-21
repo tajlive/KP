@@ -96,7 +96,7 @@ class UpstashRedisCache implements CacheProvider {
     const redis = getRedisRest();
     if (!redis) return;
     try {
-      await redis.flushall();
+      await redis.flushall?.();
     } catch (error) {
       console.error("Redis cache clear error:", error);
     }

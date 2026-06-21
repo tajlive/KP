@@ -233,7 +233,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           dangerouslySetInnerHTML={{
             __html: `(function(){
   try {
-    var PROJECT = 'vuxbjlykgmzskxbclquf';
+    var PROJECT = 'pskhryjzkobytnfwucrb';
     var keys = Object.keys(localStorage);
     var toDelete = [];
     for (var i = 0; i < keys.length; i++) {

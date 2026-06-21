@@ -1,0 +1,3395 @@
+Warming up Next.js dev server: /no/dashboard (http://localhost:3000/no/dashboard)
+  → 307 in 10ms
+
+Running 82 tests using 1 worker
+
+[1A[2K(node:74196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/82] [setup] › e2e/auth.setup.ts:142:1 › authenticate via login
+[1A[2K[setup] › e2e/auth.setup.ts:142:1 › authenticate via login
+🔐 Signing in via login form (SSR cookies)…
+
+[1A[2K🔐 Supabase token response: HTTP 200
+
+[1A[2K✅ Login form complete (forsøk 1/3, authenticated: true), URL: http://localhost:3000/no/dashboard
+
+[1A[2K(node:74218) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74218) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[2/82] [critical-chromium] › e2e/critical/10-trades-prod.spec.ts:11:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully
+[1A[2K[critical-chromium] › e2e/critical/10-trades-prod.spec.ts:11:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully
+🔄 Logger inn...
+
+[1A[2K✅ Allerede innlogget (setup-state)
+
+[1A[2K🔄 Initialiserer paper trading...
+
+[1A[2K   Init: [33m200[39m {"success":true,"session":{"id":"66590202-290f-4f0e-9076-f8fe7369cb50","created_at":"2026-06-21T01:0
+
+[1A[2K🔄 Kjører 10 handler...
+
+[1A[2K   1/10 buy BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   2/10 buy ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   3/10 sell BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   4/10 buy SOLUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   5/10 buy ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   6/10 buy BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   7/10 sell ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   8/10 sell SOLUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   9/10 buy BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   10/10 buy ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K
+📊 0/10 OK, 10 skipped, 0 feil
+
+[1A[2K(node:74302) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74302) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[3/82] (retries) [critical-chromium] › e2e/critical/10-trades-prod.spec.ts:11:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully (retry #1)
+[1A[2K🔄 Logger inn...
+
+[1A[2K✅ Allerede innlogget (setup-state)
+
+[1A[2K🔄 Initialiserer paper trading...
+
+[1A[2K   Init: [33m200[39m {"success":true,"session":{"id":"66590202-290f-4f0e-9076-f8fe7369cb50","created_at":"2026-06-21T01:0
+
+[1A[2K🔄 Kjører 10 handler...
+
+[1A[2K   1/10 buy BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   2/10 buy ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   3/10 sell BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   4/10 buy SOLUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   5/10 buy ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   6/10 buy BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   7/10 sell ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   8/10 sell SOLUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   9/10 buy BTCUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K   10/10 buy ETHUSDT... 
+
+[1A[2K⚠️ rejected
+
+[1A[2K
+📊 0/10 OK, 10 skipped, 0 feil
+
+[1A[2K  1) [critical-chromium] › e2e/critical/10-trades-prod.spec.ts:11:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: >= [32m5[39m
+    Received:    [31m0[39m
+
+      91 |
+      92 |     expect(results.failed).toBe(0);
+    > 93 |     expect(results.successful).toBeGreaterThanOrEqual(5);
+         |                                ^
+      94 |     console.log("🎉 FULLFØRT!");
+      95 |   });
+      96 | });
+        at /Users/taj/klarpakke/e2e/critical/10-trades-prod.spec.ts:93:32
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: >= [32m5[39m
+    Received:    [31m0[39m
+
+      91 |
+      92 |     expect(results.failed).toBe(0);
+    > 93 |     expect(results.successful).toBeGreaterThanOrEqual(5);
+         |                                ^
+      94 |     console.log("🎉 FULLFØRT!");
+      95 |   });
+      96 | });
+        at /Users/taj/klarpakke/e2e/critical/10-trades-prod.spec.ts:93:32
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium-retry1/error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-10-trades-prod-Cr-7305a-0-paper-trades-successfully-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74359) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74359) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[4/82] [critical-chromium] › e2e/critical/10-trades.spec.ts:23:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully
+[1A[2K[critical-chromium] › e2e/critical/10-trades.spec.ts:23:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully
+🔄 Initializing paper trading session...
+
+[1A[2K✅ Paper trading session initialized
+
+[1A[2K🔄 Executing trade 1/10: buy BTCUSDT for 100 NOK
+
+[1A[2K⚠️ Trade 1 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 2/10: buy ETHUSDT for 150 NOK
+
+[1A[2K⚠️ Trade 2 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 3/10: sell BTCUSDT for 50 NOK
+
+[1A[2K⚠️ Trade 3 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 4/10: buy SOLUSDT for 200 NOK
+
+[1A[2K⚠️ Trade 4 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 5/10: buy ETHUSDT for 100 NOK
+
+[1A[2K⚠️ Trade 5 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 6/10: buy BTCUSDT for 120 NOK
+
+[1A[2K⚠️ Trade 6 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 7/10: sell ETHUSDT for 75 NOK
+
+[1A[2K⚠️ Trade 7 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 8/10: sell SOLUSDT for 100 NOK
+
+[1A[2K⚠️ Trade 8 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 9/10: buy BTCUSDT for 180 NOK
+
+[1A[2K⚠️ Trade 9 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 10/10: buy ETHUSDT for 90 NOK
+
+[1A[2K⚠️ Trade 10 rejected: [90mundefined[39m
+
+[1A[2K
+📊 Trade Summary:
+
+[1A[2K   Successful: 0/10
+
+[1A[2K   Skipped: 10/10
+
+[1A[2K   Failed: 0/10
+
+[1A[2K(node:74409) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74409) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[5/82] (retries) [critical-chromium] › e2e/critical/10-trades.spec.ts:23:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully (retry #1)
+[1A[2K🔄 Initializing paper trading session...
+
+[1A[2K✅ Paper trading session initialized
+
+[1A[2K🔄 Executing trade 1/10: buy BTCUSDT for 100 NOK
+
+[1A[2K⚠️ Trade 1 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 2/10: buy ETHUSDT for 150 NOK
+
+[1A[2K⚠️ Trade 2 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 3/10: sell BTCUSDT for 50 NOK
+
+[1A[2K⚠️ Trade 3 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 4/10: buy SOLUSDT for 200 NOK
+
+[1A[2K⚠️ Trade 4 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 5/10: buy ETHUSDT for 100 NOK
+
+[1A[2K⚠️ Trade 5 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 6/10: buy BTCUSDT for 120 NOK
+
+[1A[2K⚠️ Trade 6 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 7/10: sell ETHUSDT for 75 NOK
+
+[1A[2K⚠️ Trade 7 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 8/10: sell SOLUSDT for 100 NOK
+
+[1A[2K⚠️ Trade 8 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 9/10: buy BTCUSDT for 180 NOK
+
+[1A[2K⚠️ Trade 9 rejected: [90mundefined[39m
+
+[1A[2K🔄 Executing trade 10/10: buy ETHUSDT for 90 NOK
+
+[1A[2K⚠️ Trade 10 rejected: [90mundefined[39m
+
+[1A[2K
+📊 Trade Summary:
+
+[1A[2K   Successful: 0/10
+
+[1A[2K   Skipped: 10/10
+
+[1A[2K   Failed: 0/10
+
+[1A[2K  2) [critical-chromium] › e2e/critical/10-trades.spec.ts:23:3 › Critical: 10 Trades Flow @critical @trading @allure › execute 10 paper trades successfully 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: >= [32m7[39m
+    Received:    [31m0[39m
+
+      152 |
+      153 |     // Expect at least 7 successful trades (some may fail due to balance/risk limits)
+    > 154 |     expect(results.successful).toBeGreaterThanOrEqual(7);
+          |                                ^
+      155 |     expect(results.failed).toBe(0);
+      156 |
+      157 |     // Step 4: Verify trades appear in history
+        at /Users/taj/klarpakke/e2e/critical/10-trades.spec.ts:154:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: >= [32m7[39m
+    Received:    [31m0[39m
+
+      152 |
+      153 |     // Expect at least 7 successful trades (some may fail due to balance/risk limits)
+    > 154 |     expect(results.successful).toBeGreaterThanOrEqual(7);
+          |                                ^
+      155 |     expect(results.failed).toBe(0);
+      156 |
+      157 |     // Step 4: Verify trades appear in history
+        at /Users/taj/klarpakke/e2e/critical/10-trades.spec.ts:154:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-10-trades-Critica-f5984-0-paper-trades-successfully-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[6/82] [critical-chromium] › e2e/critical/admin-smoke.spec.ts:13:3 › Critical: Admin @critical @auth › uten innlogging sendes man bort fra /admin (default locale)
+[1A[2K[7/82] [critical-chromium] › e2e/critical/admin-smoke.spec.ts:50:3 › Critical: Admin @critical @auth › innlogget allowlisted bruker ser admin-analytics
+[1A[2K[8/82] [critical-chromium] › e2e/critical/auth.spec.ts:47:3 › Critical: Authentication @critical @auth › protected routes redirect to login when unauthenticated
+[1A[2K[9/82] [critical-chromium] › e2e/critical/auth.spec.ts:67:3 › Critical: Authentication @critical @auth › dashboard loads for authenticated user
+[1A[2K[critical-chromium] › e2e/critical/auth.spec.ts:67:3 › Critical: Authentication @critical @auth › dashboard loads for authenticated user
+✅ Dashboard has content (no data-testid)
+
+[1A[2K[10/82] [critical-chromium] › e2e/critical/auth.spec.ts:113:3 › Critical: Authentication @critical @auth › API returns 401 for unauthenticated requests
+[1A[2K(node:74514) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74514) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[11/82] (retries) [critical-chromium] › e2e/critical/auth.spec.ts:113:3 › Critical: Authentication @critical @auth › API returns 401 for unauthenticated requests (retry #1)
+[1A[2K  3) [critical-chromium] › e2e/critical/auth.spec.ts:113:3 › Critical: Authentication @critical @auth › API returns 401 for unauthenticated requests 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m"Unauthorized"[39m
+    Received: [31m"Ikke autentisert"[39m
+
+      134 |     if (status === 401) {
+      135 |       const body = await response.json();
+    > 136 |       expect(body.error).toBe("Unauthorized");
+          |                          ^
+      137 |     } else {
+      138 |       console.log("⚠️ API returned 500 - may be a server issue");
+      139 |     }
+        at /Users/taj/klarpakke/e2e/critical/auth.spec.ts:136:26
+
+    Error Context: test-results/critical-auth-Critical-Aut-6ab1e-or-unauthenticated-requests-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m"Unauthorized"[39m
+    Received: [31m"Ikke autentisert"[39m
+
+      134 |     if (status === 401) {
+      135 |       const body = await response.json();
+    > 136 |       expect(body.error).toBe("Unauthorized");
+          |                          ^
+      137 |     } else {
+      138 |       console.log("⚠️ API returned 500 - may be a server issue");
+      139 |     }
+        at /Users/taj/klarpakke/e2e/critical/auth.spec.ts:136:26
+
+    Error Context: test-results/critical-auth-Critical-Aut-6ab1e-or-unauthenticated-requests-critical-chromium-retry1/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Aut-6ab1e-or-unauthenticated-requests-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-auth-Critical-Aut-6ab1e-or-unauthenticated-requests-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74515) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74515) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[12/82] [critical-chromium] › e2e/critical/auth.spec.ts:142:3 › Critical: Authentication @critical @auth › API accepts authenticated requests
+[1A[2K(node:74523) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74523) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[13/82] (retries) [critical-chromium] › e2e/critical/auth.spec.ts:142:3 › Critical: Authentication @critical @auth › API accepts authenticated requests (retry #1)
+[1A[2K  4) [critical-chromium] › e2e/critical/auth.spec.ts:142:3 › Critical: Authentication @critical @auth › API accepts authenticated requests 
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      166 |
+      167 |     if (response.status() === 200) {
+    > 168 |       const json = await response.json();
+          |                    ^
+      169 |       expect(json.balance).toBeDefined();
+      170 |       console.log("✅ API returned balance:", json.balance.current);
+      171 |     } else if (response.status() === 401) {
+        at /Users/taj/klarpakke/e2e/critical/auth.spec.ts:168:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      166 |
+      167 |     if (response.status() === 200) {
+    > 168 |       const json = await response.json();
+          |                    ^
+      169 |       expect(json.balance).toBeDefined();
+      170 |       console.log("✅ API returned balance:", json.balance.current);
+      171 |     } else if (response.status() === 401) {
+        at /Users/taj/klarpakke/e2e/critical/auth.spec.ts:168:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-auth-Critical-Aut-e7de5-epts-authenticated-requests-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[14/82] [critical-chromium] › e2e/critical/auth.spec.ts:180:3 › Critical: Core Navigation @critical › user can navigate between main sections
+[1A[2K[critical-chromium] › e2e/critical/auth.spec.ts:180:3 › Critical: Core Navigation @critical › user can navigate between main sections
+✅ dashboard shell: a[href]=9, role=link=9, root=1, nav=1
+
+[1A[2K[15/82] [critical-chromium] › e2e/critical/auth.spec.ts:221:3 › Critical: Core Navigation @critical › no critical console errors on dashboard
+[1A[2K[critical-chromium] › e2e/critical/auth.spec.ts:221:3 › Critical: Core Navigation @critical › no critical console errors on dashboard
+Non-critical console errors: [33m8[39m
+
+[1A[2K[16/82] [critical-chromium] › e2e/critical/auth.spec.ts:256:3 › Critical: Core Navigation @critical › login page structure is correct
+[1A[2K[critical-chromium] › e2e/critical/auth.spec.ts:256:3 › Critical: Core Navigation @critical › login page structure is correct
+✅ Login page loaded with [33m9[39m buttons
+
+[1A[2K[17/82] [critical-chromium] › e2e/critical/auth.spec.ts:287:3 › Critical: Logged-in user guest-auth redirect @critical @auth › redirects away from signup and innlogging when session exists
+[1A[2K[18/82] [critical-chromium] › e2e/critical/auth.spec.ts:303:3 › Critical: Logged-in user guest-auth redirect @critical @auth › respects safe next param when already authenticated
+[1A[2K(node:74582) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74582) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[19/82] (retries) [critical-chromium] › e2e/critical/auth.spec.ts:303:3 › Critical: Logged-in user guest-auth redirect @critical @auth › respects safe next param when already authenticated (retry #1)
+[1A[2K  5) [critical-chromium] › e2e/critical/auth.spec.ts:303:3 › Critical: Logged-in user guest-auth redirect @critical @auth › respects safe next param when already authenticated 
+
+    TimeoutError: page.waitForURL: Timeout 25000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+      navigated to "http://localhost:3000/no/profile?tab=wallet"
+    ============================================================
+
+      311 |     });
+      312 |
+    > 313 |     await page.waitForURL(
+          |                ^
+      314 |       (url) =>
+      315 |         url.pathname.includes("/konto") || url.pathname.includes("/dashboard"),
+      316 |       {
+        at /Users/taj/klarpakke/e2e/critical/auth.spec.ts:313:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForURL: Timeout 25000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+      311 |     });
+      312 |
+    > 313 |     await page.waitForURL(
+          |                ^
+      314 |       (url) =>
+      315 |         url.pathname.includes("/konto") || url.pathname.includes("/dashboard"),
+      316 |       {
+        at /Users/taj/klarpakke/e2e/critical/auth.spec.ts:313:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-auth-Critical-Log-d8c56--when-already-authenticated-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[20/82] [critical-chromium] › e2e/critical/auth.spec.ts:326:3 › Critical: Guest auth pages (no session) @critical @auth › unauthenticated user can still open signup
+[1A[2K[21/82] [critical-chromium] › e2e/critical/copy-trading-flow.spec.ts:13:3 › Critical: Copy trading @critical @copyTrading › discover API: 200 og minst én leder
+[1A[2K[22/82] [critical-chromium] › e2e/critical/copy-trading-flow.spec.ts:67:3 › Critical: Copy trading @critical @copyTrading › discover UI: synlig leader-kort
+[1A[2K[23/82] [critical-chromium] › e2e/critical/course-module.spec.ts:40:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should load module overview and display 5 lessons
+[1A[2K(node:74693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[24/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:40:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should load module overview and display 5 lessons (retry #1)
+[1A[2K  6) [critical-chromium] › e2e/critical/course-module.spec.ts:40:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should load module overview and display 5 lessons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })[22m
+
+
+      17 |     timeout: 90_000,
+      18 |   });
+    > 19 |   await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+         |                                                                   ^
+      20 |     timeout: 45_000,
+      21 |   });
+      22 |   await page.waitForLoadState("networkidle").catch(() => {});
+        at waitForModuleOverviewShell (/Users/taj/klarpakke/e2e/critical/course-module.spec.ts:19:67)
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:37:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })[22m
+
+
+      17 |     timeout: 90_000,
+      18 |   });
+    > 19 |   await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+         |                                                                   ^
+      20 |     timeout: 45_000,
+      21 |   });
+      22 |   await page.waitForLoadState("networkidle").catch(() => {});
+        at waitForModuleOverviewShell (/Users/taj/klarpakke/e2e/critical/course-module.spec.ts:19:67)
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:37:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-11b1e-rview-and-display-5-lessons-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[25/82] [critical-chromium] › e2e/critical/course-module.spec.ts:57:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should show module metadata correctly
+[1A[2K(node:74775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[26/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:57:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should show module metadata correctly (retry #1)
+[1A[2K  7) [critical-chromium] › e2e/critical/course-module.spec.ts:57:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should show module metadata correctly 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })[22m
+
+
+      17 |     timeout: 90_000,
+      18 |   });
+    > 19 |   await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+         |                                                                   ^
+      20 |     timeout: 45_000,
+      21 |   });
+      22 |   await page.waitForLoadState("networkidle").catch(() => {});
+        at waitForModuleOverviewShell (/Users/taj/klarpakke/e2e/critical/course-module.spec.ts:19:67)
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:37:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })[22m
+
+
+      17 |     timeout: 90_000,
+      18 |   });
+    > 19 |   await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+         |                                                                   ^
+      20 |     timeout: 45_000,
+      21 |   });
+      22 |   await page.waitForLoadState("networkidle").catch(() => {});
+        at waitForModuleOverviewShell (/Users/taj/klarpakke/e2e/critical/course-module.spec.ts:19:67)
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:37:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-b4e7b-w-module-metadata-correctly-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[27/82] [critical-chromium] › e2e/critical/course-module.spec.ts:76:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should navigate to first lesson
+[1A[2K(node:74874) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74874) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[28/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:76:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should navigate to first lesson (retry #1)
+[1A[2K  8) [critical-chromium] › e2e/critical/course-module.spec.ts:76:5 › Course Module - Hvorfor Priser Beveger Seg › Module Overview Page › should navigate to first lesson 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })[22m
+
+
+      17 |     timeout: 90_000,
+      18 |   });
+    > 19 |   await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+         |                                                                   ^
+      20 |     timeout: 45_000,
+      21 |   });
+      22 |   await page.waitForLoadState("networkidle").catch(() => {});
+        at waitForModuleOverviewShell (/Users/taj/klarpakke/e2e/critical/course-module.spec.ts:19:67)
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:37:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Hvorfor Priser Beveger Seg|Why Prices Move/i })[22m
+
+
+      17 |     timeout: 90_000,
+      18 |   });
+    > 19 |   await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+         |                                                                   ^
+      20 |     timeout: 45_000,
+      21 |   });
+      22 |   await page.waitForLoadState("networkidle").catch(() => {});
+        at waitForModuleOverviewShell (/Users/taj/klarpakke/e2e/critical/course-module.spec.ts:19:67)
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:37:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-430b2-ld-navigate-to-first-lesson-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74909) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74909) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[29/82] [critical-chromium] › e2e/critical/course-module.spec.ts:102:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should display lesson content with markdown
+[1A[2K(node:74944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[30/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:102:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should display lesson content with markdown (retry #1)
+[1A[2K  9) [critical-chromium] › e2e/critical/course-module.spec.ts:102:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should display lesson content with markdown 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+       96 |         timeout: 90_000,
+       97 |       });
+    >  98 |       await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
+          |                                         ^
+       99 |       await page.waitForLoadState("networkidle").catch(() => {});
+      100 |     });
+      101 |
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:98:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+       96 |         timeout: 90_000,
+       97 |       });
+    >  98 |       await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
+          |                                         ^
+       99 |       await page.waitForLoadState("networkidle").catch(() => {});
+      100 |     });
+      101 |
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:98:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-95421-esson-content-with-markdown-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:74991) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:74991) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[31/82] [critical-chromium] › e2e/critical/course-module.spec.ts:114:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should display quiz section or login prompt
+[1A[2K(node:75028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[32/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:114:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should display quiz section or login prompt (retry #1)
+[1A[2K  10) [critical-chromium] › e2e/critical/course-module.spec.ts:114:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should display quiz section or login prompt 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+       96 |         timeout: 90_000,
+       97 |       });
+    >  98 |       await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
+          |                                         ^
+       99 |       await page.waitForLoadState("networkidle").catch(() => {});
+      100 |     });
+      101 |
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:98:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+       96 |         timeout: 90_000,
+       97 |       });
+    >  98 |       await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
+          |                                         ^
+       99 |       await page.waitForLoadState("networkidle").catch(() => {});
+      100 |     });
+      101 |
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:98:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-40a79-uiz-section-or-login-prompt-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[33/82] [critical-chromium] › e2e/critical/course-module.spec.ts:136:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should navigate between lessons
+[1A[2K(node:75128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[34/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:136:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should navigate between lessons (retry #1)
+[1A[2K  11) [critical-chromium] › e2e/critical/course-module.spec.ts:136:5 › Course Module - Hvorfor Priser Beveger Seg › Lesson Page › should navigate between lessons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+       96 |         timeout: 90_000,
+       97 |       });
+    >  98 |       await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
+          |                                         ^
+       99 |       await page.waitForLoadState("networkidle").catch(() => {});
+      100 |     });
+      101 |
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:98:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 45000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 45000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+       96 |         timeout: 90_000,
+       97 |       });
+    >  98 |       await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
+          |                                         ^
+       99 |       await page.waitForLoadState("networkidle").catch(() => {});
+      100 |     });
+      101 |
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:98:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-d10be-ld-navigate-between-lessons-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[35/82] [critical-chromium] › e2e/critical/course-module.spec.ts:163:5 › Course Module - Hvorfor Priser Beveger Seg › Progress Tracking › should show login prompt for unauthenticated users
+[1A[2K(node:75192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[36/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:163:5 › Course Module - Hvorfor Priser Beveger Seg › Progress Tracking › should show login prompt for unauthenticated users (retry #1)
+[1A[2K  12) [critical-chromium] › e2e/critical/course-module.spec.ts:163:5 › Course Module - Hvorfor Priser Beveger Seg › Progress Tracking › should show login prompt for unauthenticated users 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('course-module-login-prompt')
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 20000ms[22m
+    [2m  - waiting for getByTestId('course-module-login-prompt')[22m
+
+
+      178 |         // Navbar ligger ofte inne i <main> — ikke bruk bred getByRole her (strict mode).
+      179 |         const prompt = page.getByTestId("course-module-login-prompt");
+    > 180 |         await expect(prompt).toBeVisible({ timeout: 20_000 });
+          |                              ^
+      181 |         await expect(
+      182 |           prompt.getByText(
+      183 |             /Logg inn for å spore fremgang|Log in to track progress/i,
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:180:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-8f802-t-for-unauthenticated-users-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-8f802-t-for-unauthenticated-users-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('course-module-login-prompt')
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 20000ms[22m
+    [2m  - waiting for getByTestId('course-module-login-prompt')[22m
+
+
+      178 |         // Navbar ligger ofte inne i <main> — ikke bruk bred getByRole her (strict mode).
+      179 |         const prompt = page.getByTestId("course-module-login-prompt");
+    > 180 |         await expect(prompt).toBeVisible({ timeout: 20_000 });
+          |                              ^
+      181 |         await expect(
+      182 |           prompt.getByText(
+      183 |             /Logg inn for å spore fremgang|Log in to track progress/i,
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:180:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-8f802-t-for-unauthenticated-users-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-8f802-t-for-unauthenticated-users-critical-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-8f802-t-for-unauthenticated-users-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-8f802-t-for-unauthenticated-users-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75219) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75219) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[37/82] [critical-chromium] › e2e/critical/course-module.spec.ts:200:5 › Course Module - Hvorfor Priser Beveger Seg › Mobile Responsiveness › should display lesson content on mobile
+[1A[2K(node:75233) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75233) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[38/82] (retries) [critical-chromium] › e2e/critical/course-module.spec.ts:200:5 › Course Module - Hvorfor Priser Beveger Seg › Mobile Responsiveness › should display lesson content on mobile (retry #1)
+[1A[2K  13) [critical-chromium] › e2e/critical/course-module.spec.ts:200:5 › Course Module - Hvorfor Priser Beveger Seg › Mobile Responsiveness › should display lesson content on mobile 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 12000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 12000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+      204 |       });
+      205 |
+    > 206 |       await expect(firstLessonH1(page)).toBeVisible();
+          |                                         ^
+      207 |
+      208 |       const content = page.locator("main").first();
+      209 |       const box = await content.boundingBox();
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:206:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()
+    Expected: visible
+    Timeout: 12000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 12000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Tilbud og Etterspørsel|Supply and Demand/i, level: 1 }).first()[22m
+
+
+      204 |       });
+      205 |
+    > 206 |       await expect(firstLessonH1(page)).toBeVisible();
+          |                                         ^
+      207 |
+      208 |       const content = page.locator("main").first();
+      209 |       const box = await content.boundingBox();
+        at /Users/taj/klarpakke/e2e/critical/course-module.spec.ts:206:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-course-module-Cou-a6d1e-ay-lesson-content-on-mobile-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[39/82] [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:27:3 › Critical: DashboardPro @critical › dashboard laster med nøkkelkomponenter
+[1A[2K(node:75258) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75258) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[40/82] (retries) [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:27:3 › Critical: DashboardPro @critical › dashboard laster med nøkkelkomponenter (retry #1)
+[1A[2K  14) [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:27:3 › Critical: DashboardPro @critical › dashboard laster med nøkkelkomponenter 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      40 |     const heroText = page.getByText(/Øvingsmodus|Live-modus|Din portefølje/).first();
+      41 |     const heroVisible = await heroText.isVisible().catch(() => false);
+    > 42 |     expect(heroVisible).toBe(true);
+         |                         ^
+      43 |
+      44 |     // SmartActions: minst én CTA er synlig
+      45 |     const smartActions = page.locator("a[href*='dashboard']").first();
+        at /Users/taj/klarpakke/e2e/critical/dashboard-pro.spec.ts:42:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      40 |     const heroText = page.getByText(/Øvingsmodus|Live-modus|Din portefølje/).first();
+      41 |     const heroVisible = await heroText.isVisible().catch(() => false);
+    > 42 |     expect(heroVisible).toBe(true);
+         |                         ^
+      43 |
+      44 |     // SmartActions: minst én CTA er synlig
+      45 |     const smartActions = page.locator("a[href*='dashboard']").first();
+        at /Users/taj/klarpakke/e2e/critical/dashboard-pro.spec.ts:42:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-dashboard-pro-Cri-9da93-aster-med-nøkkelkomponenter-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[41/82] [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:50:3 › Critical: DashboardPro @critical › AutoTradingConfigCard er synlig og interaktiv
+[1A[2K(node:75280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[42/82] (retries) [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:50:3 › Critical: DashboardPro @critical › AutoTradingConfigCard er synlig og interaktiv (retry #1)
+[1A[2K  15) [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:50:3 › Critical: DashboardPro @critical › AutoTradingConfigCard er synlig og interaktiv 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      61 |     const card = page.locator("text=Auto-Trading").first();
+      62 |     const cardVisible = await card.isVisible().catch(() => false);
+    > 63 |     expect(cardVisible).toBe(true);
+         |                         ^
+      64 |
+      65 |     // Toggle switch finnes
+      66 |     const toggle = page.locator('button[role="switch"]').first();
+        at /Users/taj/klarpakke/e2e/critical/dashboard-pro.spec.ts:63:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      61 |     const card = page.locator("text=Auto-Trading").first();
+      62 |     const cardVisible = await card.isVisible().catch(() => false);
+    > 63 |     expect(cardVisible).toBe(true);
+         |                         ^
+      64 |
+      65 |     // Toggle switch finnes
+      66 |     const toggle = page.locator('button[role="switch"]').first();
+        at /Users/taj/klarpakke/e2e/critical/dashboard-pro.spec.ts:63:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-dashboard-pro-Cri-84c69-ard-er-synlig-og-interaktiv-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[43/82] [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:77:3 › Critical: DashboardPro @critical › GetStartedCard vises for nye brukere
+[1A[2K[44/82] [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:105:3 › Critical: DashboardPro @critical › AdvancedAnalyticsSection kan ekspanderes
+[1A[2K[45/82] [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:132:3 › Critical: DashboardPro @critical › AIInsightCard finnes for aktive tradere
+[1A[2K[46/82] [critical-chromium] › e2e/critical/dashboard-pro.spec.ts:160:3 › Critical: DashboardPro @critical › NLQ Chat-knapp finnes for PowerUser
+[1A[2K[47/82] [critical-chromium] › e2e/critical/dashboard-ux-automation.spec.ts:15:3 › Critical: dashboard UX @critical › auto-trade (desktop): ingen kritiske axe-brudd
+[1A[2K[48/82] [critical-chromium] › e2e/critical/dashboard-ux-automation.spec.ts:38:3 › Critical: auto-trade wizard mobil @critical › steg 2: beløp-felt synlig; steg 3: Start bot synlig
+[1A[2K[49/82] [critical-chromium] › e2e/critical/dashboard.spec.ts:10:3 › Critical: Dashboard @critical › dashboard root element exists
+[1A[2K[critical-chromium] › e2e/critical/dashboard.spec.ts:10:3 › Critical: Dashboard @critical › dashboard root element exists
+✅ Dashboard root element found
+
+[1A[2K[50/82] [critical-chromium] › e2e/critical/dashboard.spec.ts:47:3 › Critical: Dashboard @critical › WebSocket connections attempt to connect
+[1A[2K[critical-chromium] › e2e/critical/dashboard.spec.ts:47:3 › Critical: Dashboard @critical › WebSocket connections attempt to connect
+🔌 WebSocket: wss://pskhryjzkobytnfwucrb.supabase.co/realtime/v1/websocket?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyeWp6a29ieXRuZnd1Y3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzI4NTcsImV4cCI6MjA5NzQ0ODg1N30.SAcjagaGKL_m8wk-wmu12PplGMCKVhdeMFHMkAdwUgI&vsn=2.0.0
+
+[1A[2K✅ Supabase Realtime WebSocket detected
+
+[1A[2K[51/82] [critical-chromium] › e2e/critical/dashboard.spec.ts:72:3 › Critical: Dashboard @critical › no critical console errors
+[1A[2K[52/82] [critical-chromium] › e2e/critical/dashboard.spec.ts:99:3 › Critical: Dashboard @critical › page is responsive
+[1A[2K[critical-chromium] › e2e/critical/dashboard.spec.ts:99:3 › Critical: Dashboard @critical › page is responsive
+✅ Dashboard is responsive
+
+[1A[2K[53/82] [critical-chromium] › e2e/critical/dashboard.spec.ts:121:3 › Critical: API Endpoints @critical › health endpoint responds
+[1A[2K[critical-chromium] › e2e/critical/dashboard.spec.ts:121:3 › Critical: API Endpoints @critical › health endpoint responds
+✅ Health API: degraded
+
+[1A[2K[54/82] [critical-chromium] › e2e/critical/dashboard.spec.ts:141:3 › Critical: API Endpoints @critical › paper trading endpoints require auth
+[1A[2K[critical-chromium] › e2e/critical/dashboard.spec.ts:141:3 › Critical: API Endpoints @critical › paper trading endpoints require auth
+⚠️ Paper trading API timeout or error, skipping: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoContain[2m([22m[32mexpected[39m[2m) // indexOf[22m
+
+Expected value: [32m200[39m
+Received array: [31m[401, 500][39m
+
+[1A[2K[55/82] [critical-chromium] › e2e/critical/happy-path.spec.ts:25:3 › Klarpakke Happy Path › dashboard laster
+[1A[2K(node:75366) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75366) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[56/82] (retries) [critical-chromium] › e2e/critical/happy-path.spec.ts:25:3 › Klarpakke Happy Path › dashboard laster (retry #1)
+[1A[2K  16) [critical-chromium] › e2e/critical/happy-path.spec.ts:25:3 › Klarpakke Happy Path › dashboard laster 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText(/Øvingsmodus|Din portefølje/).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText(/Øvingsmodus|Din portefølje/).first()[22m
+
+
+      32 |     await expect(
+      33 |       page.getByText(/Øvingsmodus|Din portefølje/).first()
+    > 34 |     ).toBeVisible({ timeout: 5000 });
+         |       ^
+      35 |   });
+      36 |
+      37 |   test('paper-trade side laster og viser konfig-kort', async ({ page }) => {
+        at /Users/taj/klarpakke/e2e/critical/happy-path.spec.ts:34:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText(/Øvingsmodus|Din portefølje/).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText(/Øvingsmodus|Din portefølje/).first()[22m
+
+
+      32 |     await expect(
+      33 |       page.getByText(/Øvingsmodus|Din portefølje/).first()
+    > 34 |     ).toBeVisible({ timeout: 5000 });
+         |       ^
+      35 |   });
+      36 |
+      37 |   test('paper-trade side laster og viser konfig-kort', async ({ page }) => {
+        at /Users/taj/klarpakke/e2e/critical/happy-path.spec.ts:34:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-happy-path-Klarpakke-Happy-Path-dashboard-laster-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75382) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75382) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[57/82] [critical-chromium] › e2e/critical/happy-path.spec.ts:37:3 › Klarpakke Happy Path › paper-trade side laster og viser konfig-kort
+[1A[2K(node:75390) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75390) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[58/82] (retries) [critical-chromium] › e2e/critical/happy-path.spec.ts:37:3 › Klarpakke Happy Path › paper-trade side laster og viser konfig-kort (retry #1)
+[1A[2K  17) [critical-chromium] › e2e/critical/happy-path.spec.ts:37:3 › Klarpakke Happy Path › paper-trade side laster og viser konfig-kort 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('Lekepenger').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText('Lekepenger').first()[22m
+
+
+      43 |     await expect(
+      44 |       page.getByText('Lekepenger').first()
+    > 45 |     ).toBeVisible({ timeout: 5000 });
+         |       ^
+      46 |   });
+      47 |
+      48 |   test('auto-trade side: wizard for trading-bot vises', async ({ page }) => {
+        at /Users/taj/klarpakke/e2e/critical/happy-path.spec.ts:45:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('Lekepenger').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText('Lekepenger').first()[22m
+
+
+      43 |     await expect(
+      44 |       page.getByText('Lekepenger').first()
+    > 45 |     ).toBeVisible({ timeout: 5000 });
+         |       ^
+      46 |   });
+      47 |
+      48 |   test('auto-trade side: wizard for trading-bot vises', async ({ page }) => {
+        at /Users/taj/klarpakke/e2e/critical/happy-path.spec.ts:45:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-happy-path-Klarpa-9831e-laster-og-viser-konfig-kort-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75409) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75409) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[59/82] [critical-chromium] › e2e/critical/happy-path.spec.ts:48:3 › Klarpakke Happy Path › auto-trade side: wizard for trading-bot vises
+[1A[2K[60/82] [critical-chromium] › e2e/critical/happy-path.spec.ts:66:3 › Klarpakke Happy Path › scroll fungerer pa mobil (iOS-fix)
+[1A[2K[61/82] [critical-chromium] › e2e/critical/paper-trading.spec.ts:32:3 › Critical: Paper Trading Flow @critical @papertrading › paper trading card displays balance
+[1A[2K[critical-chromium] › e2e/critical/paper-trading.spec.ts:32:3 › Critical: Paper Trading Flow @critical @papertrading › paper trading card displays balance
+✅ Paper trading workspace header visible
+
+[1A[2K[62/82] [critical-chromium] › e2e/critical/paper-trading.spec.ts:86:3 › Critical: Paper Trading Flow @critical @papertrading › paper trading API returns valid structure
+[1A[2K(node:75431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[63/82] (retries) [critical-chromium] › e2e/critical/paper-trading.spec.ts:86:3 › Critical: Paper Trading Flow @critical @papertrading › paper trading API returns valid structure (retry #1)
+[1A[2K  18) [critical-chromium] › e2e/critical/paper-trading.spec.ts:86:3 › Critical: Paper Trading Flow @critical @papertrading › paper trading API returns valid structure 
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      101 |
+      102 |     if (response.status() === 200) {
+    > 103 |       const json = await response.json();
+          |                    ^
+      104 |
+      105 |       // Verify response structure
+      106 |       expect(json.balance).toBeDefined();
+        at /Users/taj/klarpakke/e2e/critical/paper-trading.spec.ts:103:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      101 |
+      102 |     if (response.status() === 200) {
+    > 103 |       const json = await response.json();
+          |                    ^
+      104 |
+      105 |       // Verify response structure
+      106 |       expect(json.balance).toBeDefined();
+        at /Users/taj/klarpakke/e2e/critical/paper-trading.spec.ts:103:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-paper-trading-Cri-cea3b-API-returns-valid-structure-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75445) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75445) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[64/82] [critical-chromium] › e2e/critical/paper-trading.spec.ts:120:3 › Critical: Paper Trading Flow @critical @papertrading › can initialize paper trading session
+[1A[2K(node:75453) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75453) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[65/82] (retries) [critical-chromium] › e2e/critical/paper-trading.spec.ts:120:3 › Critical: Paper Trading Flow @critical @papertrading › can initialize paper trading session (retry #1)
+[1A[2K  19) [critical-chromium] › e2e/critical/paper-trading.spec.ts:120:3 › Critical: Paper Trading Flow @critical @papertrading › can initialize paper trading session 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m100000[39m
+    Received: [31mundefined[39m
+
+      134 |       const json = await initResponse.json();
+      135 |       expect(json.success).toBe(true);
+    > 136 |       expect(json.session.starting_balance).toBe(100000);
+          |                                             ^
+      137 |       console.log("✅ Paper trading initialized with 100k NOK");
+      138 |     } else if (initResponse.status() === 401) {
+      139 |       console.log("⚠️ Auth required for paper trading init");
+        at /Users/taj/klarpakke/e2e/critical/paper-trading.spec.ts:136:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m100000[39m
+    Received: [31mundefined[39m
+
+      134 |       const json = await initResponse.json();
+      135 |       expect(json.success).toBe(true);
+    > 136 |       expect(json.session.starting_balance).toBe(100000);
+          |                                             ^
+      137 |       console.log("✅ Paper trading initialized with 100k NOK");
+      138 |     } else if (initResponse.status() === 401) {
+      139 |       console.log("⚠️ Auth required for paper trading init");
+        at /Users/taj/klarpakke/e2e/critical/paper-trading.spec.ts:136:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-paper-trading-Cri-351dd-alize-paper-trading-session-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[66/82] [critical-chromium] › e2e/critical/paper-trading.spec.ts:146:3 › Critical: Paper Trading Flow @critical @papertrading › portfolio section displays metrics
+[1A[2K[critical-chromium] › e2e/critical/paper-trading.spec.ts:146:3 › Critical: Paper Trading Flow @critical @papertrading › portfolio section displays metrics
+✅ Paper trading workspace header visible (portfolio section not rendered)
+
+[1A[2K[67/82] [critical-chromium] › e2e/critical/paper-trading.spec.ts:193:3 › Critical: Paper Trading Flow @critical @papertrading › trade history API returns valid data
+[1A[2K(node:75474) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75474) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[68/82] (retries) [critical-chromium] › e2e/critical/paper-trading.spec.ts:193:3 › Critical: Paper Trading Flow @critical @papertrading › trade history API returns valid data (retry #1)
+[1A[2K  20) [critical-chromium] › e2e/critical/paper-trading.spec.ts:193:3 › Critical: Paper Trading Flow @critical @papertrading › trade history API returns valid data 
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      217 |
+      218 |     if (response.status() === 200) {
+    > 219 |       const json = await response.json();
+          |                    ^
+      220 |       expect(json.recentTrades).toBeDefined();
+      221 |       expect(Array.isArray(json.recentTrades)).toBe(true);
+      222 |       console.log(
+        at /Users/taj/klarpakke/e2e/critical/paper-trading.spec.ts:219:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      217 |
+      218 |     if (response.status() === 200) {
+    > 219 |       const json = await response.json();
+          |                    ^
+      220 |       expect(json.recentTrades).toBeDefined();
+      221 |       expect(Array.isArray(json.recentTrades)).toBe(true);
+      222 |       console.log(
+        at /Users/taj/klarpakke/e2e/critical/paper-trading.spec.ts:219:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-paper-trading-Cri-e3870-tory-API-returns-valid-data-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[69/82] [critical-chromium] › e2e/critical/paper-trading.spec.ts:235:3 › Critical: Paper Trading Flow @critical @papertrading › paper execute returns session_id and trade row visible on session page
+[1A[2K[critical-chromium] › e2e/critical/paper-trading.spec.ts:235:3 › Critical: Paper Trading Flow @critical @papertrading › paper execute returns session_id and trade row visible on session page
+⚠️ Paper execute rejected (balance/risk?): {
+  success: [33mfalse[39m,
+  error: [32m'Another trade is being processed for this symbol. Please wait and try again.'[39m,
+  rejectionReason: [32m'CONCURRENT_TRADE_BLOCKED'[39m,
+  type: [32m'TRADE_REJECTED'[39m
+}
+
+[1A[2K[70/82] [critical-chromium] › e2e/critical/risk-validation.spec.ts:22:3 › Risk Validation @critical @risk › viser korrekt risikonivå i dashboard
+[1A[2K(node:75529) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75529) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[71/82] (retries) [critical-chromium] › e2e/critical/risk-validation.spec.ts:22:3 › Risk Validation @critical @risk › viser korrekt risikonivå i dashboard (retry #1)
+[1A[2K  21) [critical-chromium] › e2e/critical/risk-validation.spec.ts:22:3 › Risk Validation @critical @risk › viser korrekt risikonivå i dashboard 
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-risk-validation-R-6b350-rekt-risikonivå-i-dashboard-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75557) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75557) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[72/82] [critical-chromium] › e2e/critical/risk-validation.spec.ts:41:3 › Risk Validation @critical @risk › tillater trade på 1500 NOK (innenfor 2% = 2000 NOK)
+[1A[2K(node:75585) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75585) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[73/82] (retries) [critical-chromium] › e2e/critical/risk-validation.spec.ts:41:3 › Risk Validation @critical @risk › tillater trade på 1500 NOK (innenfor 2% = 2000 NOK) (retry #1)
+[1A[2K  22) [critical-chromium] › e2e/critical/risk-validation.spec.ts:41:3 › Risk Validation @critical @risk › tillater trade på 1500 NOK (innenfor 2% = 2000 NOK) 
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-risk-validation-R-912a0-00-NOK-innenfor-2-2000-NOK--critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[74/82] [critical-chromium] › e2e/critical/risk-validation.spec.ts:84:3 › Risk Validation @critical @risk › blokkerer trade på 5000 NOK (over 2% = 2000 NOK)
+[1A[2K(node:75653) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75653) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[75/82] (retries) [critical-chromium] › e2e/critical/risk-validation.spec.ts:84:3 › Risk Validation @critical @risk › blokkerer trade på 5000 NOK (over 2% = 2000 NOK) (retry #1)
+[1A[2K  23) [critical-chromium] › e2e/critical/risk-validation.spec.ts:84:3 › Risk Validation @critical @risk › blokkerer trade på 5000 NOK (over 2% = 2000 NOK) 
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-risk-validation-R-c66a7-å-5000-NOK-over-2-2000-NOK--critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[76/82] [critical-chromium] › e2e/critical/risk-validation.spec.ts:125:3 › Risk Validation @critical @risk › portefølje viser korrekt saldo etter trade
+[1A[2K(node:75717) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75717) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[77/82] (retries) [critical-chromium] › e2e/critical/risk-validation.spec.ts:125:3 › Risk Validation @critical @risk › portefølje viser korrekt saldo etter trade (retry #1)
+[1A[2K  24) [critical-chromium] › e2e/critical/risk-validation.spec.ts:125:3 › Risk Validation @critical @risk › portefølje viser korrekt saldo etter trade 
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-risk-validation-R-91289-r-korrekt-saldo-etter-trade-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[78/82] [critical-chromium] › e2e/critical/risk-validation.spec.ts:141:3 › Risk Validation @critical @risk › konsistent state etter refresh
+[1A[2K(node:75775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[79/82] (retries) [critical-chromium] › e2e/critical/risk-validation.spec.ts:141:3 › Risk Validation @critical @risk › konsistent state etter refresh (retry #1)
+[1A[2K  25) [critical-chromium] › e2e/critical/risk-validation.spec.ts:141:3 › Risk Validation @critical @risk › konsistent state etter refresh 
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-risk-validation-R-d26aa-sistent-state-etter-refresh-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75806) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75806) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[80/82] [critical-chromium] › e2e/critical/risk-validation.spec.ts:167:3 › Risk Validation @critical @risk › api returnerer 401 uten auth
+[1A[2K(node:75835) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75835) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[81/82] (retries) [critical-chromium] › e2e/critical/risk-validation.spec.ts:167:3 › Risk Validation @critical @risk › api returnerer 401 uten auth (retry #1)
+[1A[2K  26) [critical-chromium] › e2e/critical/risk-validation.spec.ts:167:3 › Risk Validation @critical @risk › api returnerer 401 uten auth 
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[type="email"]').first() to be visible[22m
+
+
+       at helpers/auth.ts:133
+
+      131 |   const submitButton = page.locator('button[type="submit"]').first();
+      132 |
+    > 133 |   await emailInput.waitFor({ state: "visible", timeout });
+          |                    ^
+      134 |
+      135 |   await emailInput.fill(email);
+      136 |   await passwordInput.fill(password);
+        at loginWithCredentials (/Users/taj/klarpakke/e2e/helpers/auth.ts:133:20)
+        at /Users/taj/klarpakke/e2e/critical/risk-validation.spec.ts:19:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-risk-validation-R-08a8f-pi-returnerer-401-uten-auth-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75858) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75858) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[82/82] [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:30:3 › Trading flow and tier-gate @critical › Landing: Handle/paper-trading CTA går til paper-trading eller innlogging
+[1A[2K(node:75906) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75906) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[83/82] (retries) [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:30:3 › Trading flow and tier-gate @critical › Landing: Handle/paper-trading CTA går til paper-trading eller innlogging (retry #1)
+[1A[2K  27) [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:30:3 › Trading flow and tier-gate @critical › Landing: Handle/paper-trading CTA går til paper-trading eller innlogging 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('a[href="/paper-trading"], a[href="/no/paper-trading"], a[href="/en/paper-trading"]').first()[22m
+    [2m    - locator resolved to <a href="/paper-trading" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Trade</a>[22m
+    [2m  - attempting click action[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m  - element was detached from the DOM, retrying[22m
+    [2m    - locator resolved to <a href="/paper-trading" class="inline-flex items-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-[#0052FF]/30 transition-all duration-200">…</a>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="w-full h-32 sm:h-40 flex items-center justify-center">…</div> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <div class="w-full h-32 sm:h-40 flex items-center justify-center">…</div> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m  3 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <polyline fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,80 12.17391304347826,70.0407336229946 24.34782608695652,62.23679812834236 36.52173913043478,55.32482453208562 48.69565217391304,50.45997660427808 60.869565217391305,56.9961564171124 73.04347826086956,74.34115975935819 85.21739130434783,50.71221173128322 97.39130434782608,55.57121072860988 109.56521739130436,54.5988260360963 121.73913043478261,57.00492981283451 133.91304347826087,75.8172835895…></polyline> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  3 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <polyline fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,80 12.17391304347826,70.0407336229946 24.34782608695652,62.23679812834236 36.52173913043478,55.32482453208562 48.69565217391304,50.45997660427808 60.869565217391305,56.9961564171124 73.04347826086956,74.34115975935819 85.21739130434783,50.71221173128322 97.39130434782608,55.57121072860988 109.56521739130436,54.5988260360963 121.73913043478261,57.00492981283451 133.91304347826087,75.8172835895…></polyline> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  5 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <path fill="url(#demoGrad)" d="M0,80 L0,73.85634782222307 L12.17391304347826,65.55646890239166 L24.34782608695652,58.20523643957656 L36.52173913043478,53.031225353520725 L48.69565217391304,59.98278217788792 L60.869565217391305,78.43006787154377 L73.04347826086956,53.29949013029977 L85.21739130434783,58.46728058385101 L97.39130434782608,57.43310042989013 L109.56521739130436,59.99211312664566 L121.73913043478261,80 L133.91304347826087,37.068304766559606 L146.08695652173913,20.728258333981373 L158.2608…></path> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  4 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <path fill="url(#demoGrad)" d="M0,80 L0,65.55646890239166 L12.17391304347826,58.20523643957656 L24.34782608695652,53.031225353520725 L36.52173913043478,59.98278217788792 L48.69565217391304,78.43006787154377 L60.869565217391305,53.29949013029977 L73.04347826086956,58.46728058385101 L85.21739130434783,57.43310042989013 L97.39130434782608,59.99211312664566 L109.56521739130436,80 L121.73913043478261,37.068304766559606 L133.91304347826087,20.728258333981373 L146.08695652173913,30.504759894693848 L158.260…></path> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <path fill="url(#demoGrad)" d="M0,80 L0,65.55646890239166 L12.17391304347826,58.20523643957656 L24.34782608695652,53.031225353520725 L36.52173913043478,59.98278217788792 L48.69565217391304,78.43006787154377 L60.869565217391305,53.29949013029977 L73.04347826086956,58.46728058385101 L85.21739130434783,57.43310042989013 L97.39130434782608,59.99211312664566 L109.56521739130436,80 L121.73913043478261,37.068304766559606 L133.91304347826087,20.728258333981373 L146.08695652173913,30.504759894693848 L158.260…></path> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      46 |         waitUntil: "domcontentloaded",
+      47 |       }),
+    > 48 |       paperLink.click({ noWaitAfter: true }),
+         |                 ^
+      49 |     ]);
+      50 |   });
+      51 |
+        at /Users/taj/klarpakke/e2e/critical/trading-flow-tier-gate.spec.ts:48:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('a[href="/paper-trading"], a[href="/no/paper-trading"], a[href="/en/paper-trading"]').first()[22m
+    [2m    - locator resolved to <a href="/paper-trading" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Trade</a>[22m
+    [2m  - attempting click action[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m  - element was detached from the DOM, retrying[22m
+    [2m    - locator resolved to <a href="/paper-trading" class="inline-flex items-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-[#0052FF]/30 transition-all duration-200">…</a>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="w-full h-32 sm:h-40 flex items-center justify-center">…</div> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  3 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <polyline fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,80 12.17391304347826,70.0407336229946 24.34782608695652,62.23679812834236 36.52173913043478,55.32482453208562 48.69565217391304,50.45997660427808 60.869565217391305,56.9961564171124 73.04347826086956,74.34115975935819 85.21739130434783,50.71221173128322 97.39130434782608,55.57121072860988 109.56521739130436,54.5988260360963 121.73913043478261,57.00492981283451 133.91304347826087,75.8172835895…></polyline> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  3 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <polyline fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,80 12.17391304347826,70.0407336229946 24.34782608695652,62.23679812834236 36.52173913043478,55.32482453208562 48.69565217391304,50.45997660427808 60.869565217391305,56.9961564171124 73.04347826086956,74.34115975935819 85.21739130434783,50.71221173128322 97.39130434782608,55.57121072860988 109.56521739130436,54.5988260360963 121.73913043478261,57.00492981283451 133.91304347826087,75.8172835895…></polyline> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  5 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <path fill="url(#demoGrad)" d="M0,80 L0,73.85634782222307 L12.17391304347826,65.55646890239166 L24.34782608695652,58.20523643957656 L36.52173913043478,53.031225353520725 L48.69565217391304,59.98278217788792 L60.869565217391305,78.43006787154377 L73.04347826086956,53.29949013029977 L85.21739130434783,58.46728058385101 L97.39130434782608,57.43310042989013 L109.56521739130436,59.99211312664566 L121.73913043478261,80 L133.91304347826087,37.068304766559606 L146.08695652173913,20.728258333981373 L158.2608…></path> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  4 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <path fill="url(#demoGrad)" d="M0,80 L0,65.55646890239166 L12.17391304347826,58.20523643957656 L24.34782608695652,53.031225353520725 L36.52173913043478,59.98278217788792 L48.69565217391304,78.43006787154377 L60.869565217391305,53.29949013029977 L73.04347826086956,58.46728058385101 L85.21739130434783,57.43310042989013 L97.39130434782608,59.99211312664566 L109.56521739130436,80 L121.73913043478261,37.068304766559606 L133.91304347826087,20.728258333981373 L146.08695652173913,30.504759894693848 L158.260…></path> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not stable[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <a href="/dashboard/portfolio" class="text-sm font-medium text-[#5E6478] hover:text-[#1A1D26] transition-colors">Portefølje</a> from <nav aria-label="Hovednavigasjon" data-testid="site-navigation" class="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">…</nav> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <path fill="url(#demoGrad)" d="M0,80 L0,65.55646890239166 L12.17391304347826,58.20523643957656 L24.34782608695652,53.031225353520725 L36.52173913043478,59.98278217788792 L48.69565217391304,78.43006787154377 L60.869565217391305,53.29949013029977 L73.04347826086956,58.46728058385101 L85.21739130434783,57.43310042989013 L97.39130434782608,59.99211312664566 L109.56521739130436,80 L121.73913043478261,37.068304766559606 L133.91304347826087,20.728258333981373 L146.08695652173913,30.504759894693848 L158.260…></path> from <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 hover:border-[#0052FF]/25">…</div> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      46 |         waitUntil: "domcontentloaded",
+      47 |       }),
+    > 48 |       paperLink.click({ noWaitAfter: true }),
+         |                 ^
+      49 |     ]);
+      50 |   });
+      51 |
+        at /Users/taj/klarpakke/e2e/critical/trading-flow-tier-gate.spec.ts:48:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-trading-flow-tier-77885-er-trading-eller-innlogging-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:75955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:75955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[84/82] [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:52:3 › Trading flow and tier-gate @critical › Paper-trading side: ingen lenker til /live-trading/ eller /beta/
+[1A[2K[85/82] [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:69:3 › Trading flow and tier-gate @critical › /beta omdirigeres til dashboard
+[1A[2K[86/82] [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:82:3 › Trading flow and tier-gate @critical › /beta/live-trading omdirigeres til paper-trading, login eller upgrade
+[1A[2K(node:76025) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76025) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[87/82] (retries) [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:82:3 › Trading flow and tier-gate @critical › /beta/live-trading omdirigeres til paper-trading, login eller upgrade (retry #1)
+[1A[2K  28) [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:82:3 › Trading flow and tier-gate @critical › /beta/live-trading omdirigeres til paper-trading, login eller upgrade 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/([a-z]{2}\/)?(paper-trading\?mode=live|(innlogging|login)\?next=.*paper-trading.*mode=live|priser\?upgrade=true)/[39m
+    Received string:  [31m"http://localhost:3000/no/handel?mode=live"[39m
+    Timeout: 10000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 10000ms[22m
+    [2m    14 × unexpected value "http://localhost:3000/no/handel?mode=live"[22m
+
+
+      84 |   }) => {
+      85 |     await page.goto("/no/beta/live-trading", { waitUntil: "domcontentloaded" });
+    > 86 |     await expect(page).toHaveURL(
+         |                        ^
+      87 |       /\/([a-z]{2}\/)?(paper-trading\?mode=live|(innlogging|login)\?next=.*paper-trading.*mode=live|priser\?upgrade=true)/,
+      88 |       {
+      89 |         timeout: 10000,
+        at /Users/taj/klarpakke/e2e/critical/trading-flow-tier-gate.spec.ts:86:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/([a-z]{2}\/)?(paper-trading\?mode=live|(innlogging|login)\?next=.*paper-trading.*mode=live|priser\?upgrade=true)/[39m
+    Received string:  [31m"http://localhost:3000/no/handel?mode=live"[39m
+    Timeout: 10000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 10000ms[22m
+    [2m    14 × unexpected value "http://localhost:3000/no/handel?mode=live"[22m
+
+
+      84 |   }) => {
+      85 |     await page.goto("/no/beta/live-trading", { waitUntil: "domcontentloaded" });
+    > 86 |     await expect(page).toHaveURL(
+         |                        ^
+      87 |       /\/([a-z]{2}\/)?(paper-trading\?mode=live|(innlogging|login)\?next=.*paper-trading.*mode=live|priser\?upgrade=true)/,
+      88 |       {
+      89 |         timeout: 10000,
+        at /Users/taj/klarpakke/e2e/critical/trading-flow-tier-gate.spec.ts:86:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-trading-flow-tier-e84f1-trading-login-eller-upgrade-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76082) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76082) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[88/82] [critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:94:3 › Trading flow and tier-gate @critical › Paper-trading med view=sessions: Mine sesjoner og Tilbake-lenker synlige
+[1A[2K[critical-chromium] › e2e/critical/trading-flow-tier-gate.spec.ts:94:3 › Trading flow and tier-gate @critical › Paper-trading med view=sessions: Mine sesjoner og Tilbake-lenker synlige
+✅ Guest teaser visible when sessions view is gated
+
+[1A[2K[89/82] [critical-chromium] › e2e/critical/trading-integrity-sync.spec.ts:9:3 › Critical: Trading integrity sync @critical @integrity › manual trades sync control visible on dashboard
+[1A[2K[90/82] [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:19:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › offentlig markedspris (Binance-sti) returnerer gyldig struktur
+[1A[2K(node:76115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[91/82] (retries) [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:19:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › offentlig markedspris (Binance-sti) returnerer gyldig struktur (retry #1)
+[1A[2K  29) [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:19:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › offentlig markedspris (Binance-sti) returnerer gyldig struktur 
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      40 |     }
+      41 |
+    > 42 |     const json = await response.json();
+         |                  ^
+      43 |     expect(json.symbol).toMatch(/BTCUSDT/i);
+      44 |     expect(typeof json.price).toBe("number");
+      45 |     expect(json.price).toBeGreaterThan(0);
+        at /Users/taj/klarpakke/e2e/critical/trading-signals-saldo.spec.ts:42:18
+
+    Error Context: test-results/critical-trading-signals-s-d7ae7--returnerer-gyldig-struktur-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      40 |     }
+      41 |
+    > 42 |     const json = await response.json();
+         |                  ^
+      43 |     expect(json.symbol).toMatch(/BTCUSDT/i);
+      44 |     expect(typeof json.price).toBe("number");
+      45 |     expect(json.price).toBeGreaterThan(0);
+        at /Users/taj/klarpakke/e2e/critical/trading-signals-saldo.spec.ts:42:18
+
+    Error Context: test-results/critical-trading-signals-s-d7ae7--returnerer-gyldig-struktur-critical-chromium-retry1/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-trading-signals-s-d7ae7--returnerer-gyldig-struktur-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-trading-signals-s-d7ae7--returnerer-gyldig-struktur-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[92/82] [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:49:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › trading mode + sessions + bot-status krever innlogging
+[1A[2K[93/82] [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:80:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › innlogget: trading mode (paper/live) og sesjoner svarer strukturert
+[1A[2K[94/82] [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:128:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › innlogget: opprettelse av trading-session feiler ikke på manglende user_profiles
+[1A[2K[95/82] [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:175:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › innlogget: bot-status returnerer PnL, handler og signal-felter
+[1A[2K[96/82] [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:228:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › innlogget: paper saldo-API struktur når sesjon finnes
+[1A[2K(node:76170) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76170) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[97/82] (retries) [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:228:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › innlogget: paper saldo-API struktur når sesjon finnes (retry #1)
+[1A[2K  30) [critical-chromium] › e2e/critical/trading-signals-saldo.spec.ts:228:3 › Critical: Trading signals, live/paper, saldo @critical @papertrading › innlogget: paper saldo-API struktur når sesjon finnes 
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      267 |
+      268 |     if (balanceRes.status() === 200) {
+    > 269 |       const body = await balanceRes.json();
+          |                    ^
+      270 |       expect(body.balance).toBeDefined();
+      271 |       expect(typeof body.balance.current).toBe("number");
+      272 |       expect(typeof body.balance.starting).toBe("number");
+        at /Users/taj/klarpakke/e2e/critical/trading-signals-saldo.spec.ts:269:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+      267 |
+      268 |     if (balanceRes.status() === 200) {
+    > 269 |       const body = await balanceRes.json();
+          |                    ^
+      270 |       expect(body.balance).toBeDefined();
+      271 |       expect(typeof body.balance.current).toBe("number");
+      272 |       expect(typeof body.balance.starting).toBe("number");
+        at /Users/taj/klarpakke/e2e/critical/trading-signals-saldo.spec.ts:269:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-trading-signals-s-8e8a8--struktur-når-sesjon-finnes-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76201) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76201) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[98/82] [critical-chromium] › e2e/critical/user-flows.spec.ts:19:5 › Critical User Flows @critical @user-flows › Signup Flow › landing to signup flow
+[1A[2K(node:76223) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76223) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[99/82] (retries) [critical-chromium] › e2e/critical/user-flows.spec.ts:19:5 › Critical User Flows @critical @user-flows › Signup Flow › landing to signup flow (retry #1)
+[1A[2K  31) [critical-chromium] › e2e/critical/user-flows.spec.ts:19:5 › Critical User Flows @critical @user-flows › Signup Flow › landing to signup flow 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('hero-cta-signup')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByTestId('hero-cta-signup')[22m
+
+
+      28 |       // Click primary CTA
+      29 |       const primaryCta = page.getByTestId("hero-cta-signup");
+    > 30 |       await expect(primaryCta).toBeVisible({ timeout: 10000 });
+         |                                ^
+      31 |       await primaryCta.click();
+      32 |
+      33 |       // Should navigate to signup
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:30:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no", waiting until "domcontentloaded"[22m
+
+
+      19 |     test("landing to signup flow", async ({ page }) => {
+      20 |       // Start at landing page
+    > 21 |       await page.goto("/no", { waitUntil: "domcontentloaded" });
+         |                  ^
+      22 |       
+      23 |       // Verify landing page loaded
+      24 |       await expect(page.getByRole("heading", { level: 1 })).toBeVisible({
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:21:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-user-flows-Critic-189f6-Flow-landing-to-signup-flow-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76231) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76231) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[100/82] [critical-chromium] › e2e/critical/user-flows.spec.ts:46:5 › Critical User Flows @critical @user-flows › Signup Flow › signup form validation
+[1A[2K(node:76239) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76239) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[101/82] (retries) [critical-chromium] › e2e/critical/user-flows.spec.ts:46:5 › Critical User Flows @critical @user-flows › Signup Flow › signup form validation (retry #1)
+[1A[2K  32) [critical-chromium] › e2e/critical/user-flows.spec.ts:46:5 › Critical User Flows @critical @user-flows › Signup Flow › signup form validation 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no/signup
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no/signup", waiting until "domcontentloaded"[22m
+
+
+      45 |
+      46 |     test("signup form validation", async ({ page }) => {
+    > 47 |       await page.goto("/no/signup", { waitUntil: "domcontentloaded" });
+         |                  ^
+      48 |
+      49 |       // Try submitting empty form
+      50 |       const submitButton = page.locator('button[type="submit"]').first();
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:47:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no/signup
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no/signup", waiting until "domcontentloaded"[22m
+
+
+      45 |
+      46 |     test("signup form validation", async ({ page }) => {
+    > 47 |       await page.goto("/no/signup", { waitUntil: "domcontentloaded" });
+         |                  ^
+      48 |
+      49 |       // Try submitting empty form
+      50 |       const submitButton = page.locator('button[type="submit"]').first();
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:47:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-user-flows-Critic-ba854-Flow-signup-form-validation-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76247) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76247) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[102/82] [critical-chromium] › e2e/critical/user-flows.spec.ts:71:5 › Critical User Flows @critical @user-flows › Login Flow › successful login redirects to dashboard
+[1A[2K(node:76255) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76255) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[103/82] (retries) [critical-chromium] › e2e/critical/user-flows.spec.ts:71:5 › Critical User Flows @critical @user-flows › Login Flow › successful login redirects to dashboard (retry #1)
+[1A[2K  33) [critical-chromium] › e2e/critical/user-flows.spec.ts:71:5 › Critical User Flows @critical @user-flows › Login Flow › successful login redirects to dashboard 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no/login
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no/login", waiting until "domcontentloaded"[22m
+
+
+       at helpers/auth.ts:74
+
+      72 |
+      73 |   // Navigate to login
+    > 74 |   await page.goto(loginUrl, { waitUntil: "domcontentloaded" });
+         |              ^
+      75 |
+      76 |   // Check if already logged in
+      77 |   const currentUrl = page.url();
+        at loginAsTestUser (/Users/taj/klarpakke/e2e/helpers/auth.ts:74:14)
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:73:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no/login
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no/login", waiting until "domcontentloaded"[22m
+
+
+       at helpers/auth.ts:74
+
+      72 |
+      73 |   // Navigate to login
+    > 74 |   await page.goto(loginUrl, { waitUntil: "domcontentloaded" });
+         |              ^
+      75 |
+      76 |   // Check if already logged in
+      77 |   const currentUrl = page.url();
+        at loginAsTestUser (/Users/taj/klarpakke/e2e/helpers/auth.ts:74:14)
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:73:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-user-flows-Critic-bd7bd-ogin-redirects-to-dashboard-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76265) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76265) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[104/82] [critical-chromium] › e2e/critical/user-flows.spec.ts:82:5 › Critical User Flows @critical @user-flows › Login Flow › login with invalid credentials shows error
+[1A[2K(node:76273) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76273) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[105/82] (retries) [critical-chromium] › e2e/critical/user-flows.spec.ts:82:5 › Critical User Flows @critical @user-flows › Login Flow › login with invalid credentials shows error (retry #1)
+[1A[2K  34) [critical-chromium] › e2e/critical/user-flows.spec.ts:82:5 › Critical User Flows @critical @user-flows › Login Flow › login with invalid credentials shows error 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no/innlogging
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no/innlogging", waiting until "domcontentloaded"[22m
+
+
+      81 |
+      82 |     test("login with invalid credentials shows error", async ({ page }) => {
+    > 83 |       await page.goto("/no/innlogging", { waitUntil: "domcontentloaded" });
+         |                  ^
+      84 |
+      85 |       // Fill in invalid credentials
+      86 |       const emailInput = page.locator('input[type="email"]').first();
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:83:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/no/innlogging
+    Call log:
+    [2m  - navigating to "http://localhost:3000/no/innlogging", waiting until "domcontentloaded"[22m
+
+
+      81 |
+      82 |     test("login with invalid credentials shows error", async ({ page }) => {
+    > 83 |       await page.goto("/no/innlogging", { waitUntil: "domcontentloaded" });
+         |                  ^
+      84 |
+      85 |       // Fill in invalid credentials
+      86 |       const emailInput = page.locator('input[type="email"]').first();
+        at /Users/taj/klarpakke/e2e/critical/user-flows.spec.ts:83:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/critical-user-flows-Critic-b2f46-lid-credentials-shows-error-critical-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K(node:76281) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76281) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[106/82] [critical-chromium] › e2e/critical/user-flows.spec.ts:102:5 › Critical User Flows @critical @user-flows › Login Flow › logout flow
+[1A[2K(node:76289) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:76289) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[107/82] (retries) [critical-chromium] › e2e/critical/user-flows.spec.ts:102:5 › Critical User Flows @critical @user-flows › Login Flow › logout flow (retry #1)

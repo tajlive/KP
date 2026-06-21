@@ -2,26 +2,34 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimitMiddleware } from "./rateLimit";
 
-const mockLimit = vi.fn();
+const mockPipeline = {
+  incr: vi.fn().mockReturnThis(),
+  expire: vi.fn().mockReturnThis(),
+  exec: vi.fn(),
+};
 
-vi.mock("@upstash/ratelimit", () => ({
-  Ratelimit: class {
-    static fixedWindow = vi.fn(() => "fixedWindow");
-    constructor() {}
-    limit = mockLimit;
-  },
-}));
+const mockRedis = {
+  get: vi.fn(),
+  set: vi.fn(),
+  del: vi.fn(),
+  incr: vi.fn(),
+  expire: vi.fn(),
+  pexpire: vi.fn(),
+  pipeline: vi.fn(() => mockPipeline),
+};
 
-vi.mock("@upstash/redis", () => ({
-  Redis: class {
-    constructor() {}
-  },
+vi.mock("@/lib/redis-client", () => ({
+  getRedisRest: vi.fn(() => mockRedis),
+  isRedisRestConfigured: vi.fn(() => true),
 }));
 
 describe("rateLimitMiddleware", () => {
-  beforeEach(() => {
-    vi.unstubAllEnvs();
-    mockLimit.mockReset();
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const { isRedisRestConfigured } = await import("@/lib/redis-client");
+    vi.mocked(isRedisRestConfigured).mockReturnValue(true);
+    mockPipeline.incr.mockReturnThis();
+    mockPipeline.expire.mockReturnThis();
   });
 
   it("skips non-API routes", async () => {
@@ -29,9 +37,13 @@ describe("rateLimitMiddleware", () => {
     const res = NextResponse.next();
     const out = await rateLimitMiddleware(req, res);
     expect(out.status).toBe(200);
+    expect(mockRedis.pipeline).not.toHaveBeenCalled();
   });
 
-  it("skips when Upstash env is missing", async () => {
+  it("skips when Redis/KV is not configured", async () => {
+    const { isRedisRestConfigured } = await import("@/lib/redis-client");
+    vi.mocked(isRedisRestConfigured).mockReturnValue(false);
+
     const req = new NextRequest(new URL("http://localhost/api/test"));
     const res = NextResponse.next();
     const out = await rateLimitMiddleware(req, res);
@@ -39,15 +51,7 @@ describe("rateLimitMiddleware", () => {
   });
 
   it("returns 429 when rate limit exceeded", async () => {
-    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://test.upstash.io");
-    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "token");
-
-    mockLimit.mockResolvedValue({
-      success: false,
-      limit: 100,
-      remaining: 0,
-      reset: 1234567890,
-    });
+    mockPipeline.exec.mockResolvedValue([101, 1]);
 
     const req = new NextRequest(new URL("http://localhost/api/test"), {
       headers: { "x-forwarded-for": "1.2.3.4" },
@@ -61,15 +65,7 @@ describe("rateLimitMiddleware", () => {
   });
 
   it("adds rate limit headers when under limit", async () => {
-    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://test.upstash.io");
-    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "token");
-
-    mockLimit.mockResolvedValue({
-      success: true,
-      limit: 100,
-      remaining: 99,
-      reset: 1234567890,
-    });
+    mockPipeline.exec.mockResolvedValue([50, 1]);
 
     const req = new NextRequest(new URL("http://localhost/api/test"), {
       headers: { "x-forwarded-for": "1.2.3.4" },
@@ -78,6 +74,6 @@ describe("rateLimitMiddleware", () => {
     const out = await rateLimitMiddleware(req, res);
 
     expect(out.status).toBe(200);
-    expect(out.headers.get("X-RateLimit-Remaining")).toBe("99");
+    expect(out.headers.get("X-RateLimit-Remaining")).toBe("50");
   });
 });

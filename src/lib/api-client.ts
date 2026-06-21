@@ -54,7 +54,7 @@ function clearAllAuthCookies(): void {
 
   // Clear localStorage auth items
   const localStorageKeys = [
-    'sb-vuxbjlykgmzskxbclquf-auth-token',
+    'sb-pskhryjzkobytnfwucrb-auth-token',
     'supabase.auth.token',
     'klarpakke-auth',
     'progress-storage',

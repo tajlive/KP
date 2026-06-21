@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient, resetInvalidTokenGuard } from "@/lib/supabase/client";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Module-level guard — survives React Strict Mode double-mounting
 const handledCodes = new Set<string>();

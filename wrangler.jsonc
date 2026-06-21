@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "klarpakke",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "www.klarpakke.no/*",
+      "zone_id": "328d7de7e8e48308fd4f9d760da5b18f"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KV_KLARPAKKE",
+      "id": "36369d6957c14ef1a25e22dff65fdc79"
+    }
+  ]
+}

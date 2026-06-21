@@ -42,3 +42,19 @@
 {"subject":"db-automation","predicate":"provides","object":"scripts/automation/tools/db-query.mjs for running SQL files or raw queries","validFrom":"2026-06-21T00:12:15.140Z"}
 {"subject":"db-automation","predicate":"registered_tools","object":"db:query, db:list_auth_triggers, db:inspect_function, db:check_privileges, db:list_table_columns in tool-registry.json","validFrom":"2026-06-21T00:12:15.140Z"}
 {"subject":"db-automation","predicate":"connection_pattern","object":"Uses POSTGRES_URL parsed from .env.local with IPv4-first and ssl.rejectUnauthorized=false for Supavisor pooler","validFrom":"2026-06-21T00:12:15.140Z"}
+{"subject":"auth","predicate":"uses","object":"google-oauth-provider","validFrom":"2026-06-21T14:14:24.697Z"}
+{"subject":"supabase-auth","predicate":"has","object":"external_google_enabled:true","validFrom":"2026-06-21T14:14:24.697Z"}
+{"subject":"supabase-auth","predicate":"has","object":"site_url:https://www.klarpakke.no","validFrom":"2026-06-21T14:14:24.697Z"}
+{"subject":"supabase-auth","predicate":"has","object":"redirect_urls:no/en/th/zh-callback","validFrom":"2026-06-21T14:14:24.697Z"}
+{"subject":"auth","predicate":"managed_by","object":"scripts/enable-google-oauth-prod.mjs","validFrom":"2026-06-21T14:14:24.697Z"}
+{"subject":"klarpakke-production","predicate":"hosts-on","object":"cloudflare-workers","validFrom":"2026-06-21T16:05:19.314Z"}
+{"subject":"klarpakke-production","predicate":"uses-supabase-project","object":"pskhryjzkobytnfwucrb","validFrom":"2026-06-21T16:05:19.317Z"}
+{"subject":"klarpakke-deploy","predicate":"uses-adapter","object":"@opennextjs/cloudflare","validFrom":"2026-06-21T16:05:19.318Z"}
+{"subject":"klarpakke-dns","predicate":"www-cname","object":"klarpakke.tomarnejensen.workers.dev","validFrom":"2026-06-21T16:05:19.320Z"}
+{"subject":"klarpakke-oauth","predicate":"google-provider","object":"enabled-in-pskhryjzkobytnfwucrb","validFrom":"2026-06-21T16:05:19.322Z"}
+{"subject":"klarpakke-build","predicate":"production-env-file","object":".env.production.local","validFrom":"2026-06-21T16:05:19.323Z"}
+{"subject":"oauth","predicate":"uses","object":"OAUTH_CONFIG from src/lib/auth/config","validFrom":"2026-06-21T22:30:50.688Z"}
+{"subject":"oauth","predicate":"handled_by","object":"client-side googleAuth.ts not server actions","validFrom":"2026-06-21T22:30:50.690Z"}
+{"subject":"src/lib/auth/googleAuth.ts","predicate":"optimized","object":"removed type casts and duplicated URL sanitization","validFrom":"2026-06-21T22:30:50.691Z"}
+{"subject":"src/lib/auth/new/auth-actions.ts","predicate":"removed","object":"dead OAuth server actions that cannot set PKCE cookies","validFrom":"2026-06-21T22:30:50.691Z"}
+{"subject":"oauth tests","predicate":"updated","object":"locale-prefixed callback /no/callback","validFrom":"2026-06-21T22:30:50.691Z"}

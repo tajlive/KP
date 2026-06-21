@@ -8,7 +8,7 @@ import { getErrorMessage } from '@/lib/utils/error';
 
 // Get environment variables at runtime
 function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co';
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pskhryjzkobytnfwucrb.supabase.co';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   
   if (!key) {
