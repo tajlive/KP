@@ -123,6 +123,18 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
                 </div>
               ))}
             </div>
+
+            {/* Legal links for Google OAuth verification */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-kp-text-tertiary">
+              <span>{locale === 'en' ? 'By continuing you agree to our' : 'Ved å fortsette godtar du våre'}</span>
+              <a href={`/${locale}/vilkar`} className="underline hover:text-kp-text-primary transition-colors">
+                {locale === 'en' ? 'Terms' : 'vilkår'}
+              </a>
+              <span>{locale === 'en' ? 'and' : 'og'}</span>
+              <a href={`/${locale}/personvern`} className="underline hover:text-kp-text-primary transition-colors">
+                {locale === 'en' ? 'Privacy Policy' : 'personvernerklæring'}
+              </a>
+            </div>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { SURFACE } from "@/lib/design/tokens";
 import SanityHeroSection from "@/features/landing/SanityHeroSection";
 import SanityFAQSection from "@/features/landing/SanityFAQSection";
+import { AboutKlarpakkeSection } from "@/features/landing/AboutKlarpakkeSection";
 import { BelowFoldSections } from "@/features/landing/BelowFoldSections";
 
 import { KLTTeaser } from "@/features/landing/KLTTeaser";
@@ -44,6 +45,9 @@ export default async function HomePage({ params }: HomePageProps) {
         {/* Above-fold: Synchronous for LCP */}
         <SanityHeroSection locale={locale} />
         <KLTTeaser locale={locale} />
+
+        {/* About section: purpose + privacy/terms links for Google OAuth verification */}
+        <AboutKlarpakkeSection locale={locale} />
 
         {/* Below-fold: Lazy-loaded client-side only (ssr: false) */}
         <BelowFoldSections />
