@@ -99,9 +99,6 @@ Root causes found and fixed:
 
 Migrations:
 
-- `supabase/migrations/20260620235800_fix_auth_user_triggers.sql`
-- `supabase/migrations/20260621000000_fix_onboarding_kla158_risk_profile.sql`
-- `supabase/migrations/20260621000500_fix_create_default_user_data_fk.sql`
-- `supabase/migrations/20260621001000_set_auth_trigger_search_path.sql`
+- `supabase/migrations/20260621003000_squash_fix_auth_user_triggers.sql`
 
 Verification: `POST /auth/v1/admin/users` returned `200`, and the created user had rows in `user_settings`, `email_preferences`, `risk_profiles`, `paper_trading_sessions`, `trading_sessions`, `kltbalances`, `user_klt_balances`, `onboarding_progress`, and `user_notification_settings`.

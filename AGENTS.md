@@ -8,7 +8,7 @@
 **CI/CD:** Wrangler CLI / Cloudflare Pages (ikke Woodpecker/Coolify)
 **Error Tracking:** Selv-hostet GlitchTip
 
-> ⚠️ **Merk:** Eldre deler av denne filen refererer fortsatt til Hetzner + Coolify + Woodpecker CI. Det er utdatert. Nåværende sannhet for produksjon er: **Domeneshop → Cloudflare DNS/proxy → Cloudflare Workers (Wrangler) + Supabase**.
+> **Sist oppdatert:** 2026-06-21 — Produksjon: Domeneshop → Cloudflare DNS/proxy → Cloudflare Workers (Wrangler) + Supabase.
 
 ---
 
@@ -27,10 +27,11 @@ npm run oauth:check
 # Test & bygg
 npm run test:unit && npm run build
 
-# Deploy (Coolify webhook/CLI — se docs/SELF-HOSTED-SETUP.md)
-npm run deploy:coolify
+# Deploy til Cloudflare Pages (via Wrangler)
+node scripts/cf-deploy.mjs
+# eller direkte: npx wrangler pages deploy .vercel/output/static --project-name=<PROJECT>
 
-# Commit & push (CI/CD kjører i Woodpecker)
+# Commit & push (CI/CD kjører via Wrangler / Cloudflare Pages)
 git add -A && git commit -m "type: beskrivelse" && git push origin main
 ```
 
@@ -46,7 +47,7 @@ kimi test            # npm run test:unit
 kimi test:e2e        # npm run test:e2e:critical:chromium
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
-kimi deploy          # npm run deploy:coolify
+kimi deploy          # node scripts/cf-deploy.mjs
 
 # Pipeline (NYTT)
 kimi ci              # npm run lint:gate && npm run test:unit
@@ -67,7 +68,7 @@ kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 
 ## 🚀 Hosting — Domeneshop + Cloudflare + Wrangler (oppdatert)
 
-> **Status:** Produksjon kjører nå på Cloudflare Workers via Wrangler, ikke Hetzner/Coolify.
+> **Status:** Produksjon kjører på Cloudflare Workers via Wrangler.
 > **Domene:** Domeneshop (klarpakke.no / www.klarpakke.no)  
 > **DNS/CDN/Proxy:** Cloudflare  
 > **App-hosting:** Cloudflare Workers (OpenNext / Wrangler)  
@@ -86,65 +87,43 @@ User → Domeneshop domene → Cloudflare DNS → Cloudflare CDN/Proxy → Cloud
 ```
 
 ### Setup (én gang)
-Se detaljert guide i `docs/SELF-HOSTED-SETUP.md`. Kortversjon:
+> **Merk:** Eksakt provisionerings-steg avhenger av Cloudflare-konto og Pages-prosjekt. Se `docs/SELF-HOSTED-SETUP.md` for detaljer (hvis oppdatert), eller følg Wrangler-dokumentasjonen.
 
 ```bash
-# 1. Provisioner Ubuntu 24.04 VPS på Hetzner
-# 2. Installer Docker
-# 3. Installer Coolify
-curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+# 1. Logg inn i Cloudflare via Wrangler
+npx wrangler login
 
-# 4. Konfigurer Next.js-app i Coolify UI
-#    - Git-repo: https://github.com/tajlive/KP
-#    - Domene: www.klarpakke.no
-#    - Env-variabler fra .env.local
+# 2. Konfigurer Pages-prosjekt (f.eks. klarpakke) i Cloudflare Dashboard
+#    - Koble til Git-repo: https://github.com/tajlive/KP
+#    - Build-kommando: npm run build   (eller cf:build / next-on-pages)
+#    - Output-directory: .vercel/output/static   (eller out)
+#    - Env-variabler fra .env.local / Wrangler secrets
 
-# 5. Start GlitchTip
-docker compose -f docker-compose.glitchtip.yml up -d
+# 3. Konfigurer Domeneshop-domene til Cloudflare navneservere
+#    - Hent Cloudflare nameservers fra Cloudflare Dashboard
+#    - Oppdater hos Domeneshop
 
-# 6. Konfigurer Woodpecker CI
-#    Se .woodpecker/pr-check.yml og .woodpecker/deploy.yml
+# 4. (Valgfritt) Start selv-hostet GlitchTip
+#    docker compose -f docker-compose.glitchtip.yml up -d
 ```
 
 ### Deploy-kommandoer
 ```bash
-npm run deploy:coolify       # Placeholder — trigger Coolify webhook/CLI
-npm run build                # Lokal bygg
-npm run lint:gate            # Lint-gate (kjøres i Woodpecker)
-npm run type-check           # Type-check (kjøres i Woodpecker)
+node scripts/cf-deploy.mjs              # Full pipeline: bygg + custom Worker + deploy
+npx wrangler pages deploy .vercel/output/static --project-name=<PROJECT>   # Direkte deploy
+npm run build                           # Lokal bygg
+npm run lint:gate                       # Lint-gate (kjøres i CI)
+npm run type-check                      # Type-check (kjøres i CI)
 ```
 
 ### DNS (Cloudflare)
 | Record | Type | Target | Proxy |
 |--------|------|--------|-------|
-| `www.klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
-| `klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
-| `ci.klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
-| `glitchtip.klarpakke.no` | A | `<Hetzner-IP>` | ✅ |
+| `www.klarpakke.no` | CNAME | `<Pages/Workers target>` | ✅ |
+| `klarpakke.no` | CNAME | `<Pages/Workers target>` | ✅ |
+| `glitchtip.klarpakke.no` | A/AAAA/CNAME | `<GlitchTip-host>` | ✅ |
 
-### Woodpecker CI
-Workflows ligger i `.woodpecker/`:
-- `.woodpecker/pr-check.yml` — lint, type-check, test:unit, build
-- `.woodpecker/deploy.yml` — build, Supabase-migrasjoner, Coolify-deploy, health-check
-
-Arkiverte GitHub Actions workflows ligger i `.github/workflows/archived/`.
-
-### Hvorfor Hetzner + Coolify?
-- ✅ Billigere enn managed PaaS (Fly.io/Vercel)
-- ✅ Full kontroll over server og byggemiljø
-- ✅ Docker-basert — enkel, forutsigbar
-- ✅ Cloudflare DNS/CDN foran gir caching + DDoS-beskyttelse
-- ✅ Woodpecker CI uten GitHub Actions-minutt-grenser
-- ✅ Selv-hostet GlitchTip uten Sentry-kvoter
-
-### Fly.io → Hetzner/Coolify endringer
-| Før (Fly.io) | Etter (Hetzner + Coolify) |
-|-------------|---------------|
-| `flyctl deploy` | Coolify webhook/CLI |
-| `FLY_IO=1` | `COOLIFY=1` (valgfri) |
-| `klarpakke.fly.dev` | `www.klarpakke.no` direkte på Hetzner-IP |
-| GitHub Actions CI/CD | Woodpecker CI |
-| Sentry SaaS | Selv-hostet GlitchTip |
+> **Merk:** `ci.klarpakke.no` er ikke lenger i bruk. Cloudflare Pages/Workers håndterer CI/CD og hosting.
 
 ---
 
@@ -334,7 +313,7 @@ cat .kimi/PROJECT_CONTEXT.md
 1. `git add -A`
 2. `git commit -m "type: beskrivelse"`
 3. `git push origin main`
-4. Vent på Coolify deploy (~2-3 min)
+4. Vent på Cloudflare Pages deploy (~1-2 min)
 5. Verifiser i produksjon: `npm run verify:prod`
 
 ---
@@ -366,7 +345,7 @@ cat .kimi/PROJECT_CONTEXT.md
 - **Hjelp / Leksjoner** kan bruke `revalidate = 3600`
 - **Catch-all** (`[...slug]`) skal bruke `revalidate = 60` ( Sanity webhook invaliderer )
 - **Regel:** Sider som endres oftere enn 1× i uken skal IKKE bruke ISR > 60s
-- **Deploy:** Woodpecker CI-kjede kaller `/api/revalidate` etter vellykket deploy for å invalidere cache
+- **Deploy:** CI/CD eller manuell webhook kaller `/api/revalidate` etter vellykket deploy for å invalidere cache
 - **Playwright smoke-test** kjøres etter deploy for å fange fantom-feil
 
 ### Agent Tenke-Disiplin (ALLTID)
@@ -608,8 +587,8 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-**Sist oppdatert:** 2026-06-20  
-**Versjon:** 2.9 (+KIMI Code CLI 0.18.0 + skills-basert oppsett i `.kimi/skills/`)
+**Sist oppdatert:** 2026-06-21  
+**Versjon:** 2.9.1 (+KIMI Code CLI 0.18.0 + skills-basert oppsett i `.kimi/skills/`)
 
 ---
 

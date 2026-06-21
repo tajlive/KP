@@ -1,20 +1,19 @@
--- Idempotent remediation for auth.users INSERT 500 errors.
+-- Idempotent squash of four production remediation migrations:
+--   20260620235800_fix_auth_user_triggers.sql
+--   20260621000000_fix_onboarding_kla158_risk_profile.sql
+--   20260621000500_fix_create_default_user_data_fk.sql
+--   20260621001000_set_auth_trigger_search_path.sql
 --
--- Root cause:
---   1. Three auth trigger functions were SECURITY INVOKER. Auth inserts run as
---      supabase_auth_admin, which lacks INSERT on public tables.
---   2. handle_new_user_consolidated() inserted into public.user_settings using
---      the non-existent columns `locale` and `notifications_enabled`.
---
--- Fix:
---   * Recreate the three functions and set SECURITY DEFINER (via ALTER FUNCTION,
---     which is safe when the function is referenced by triggers).
---   * Recreate handle_new_user_consolidated() using the production columns
---     `user_id`, `theme`, `language`.
+-- Combined effect:
+--   * All 7 auth.users trigger functions run as SECURITY DEFINER.
+--   * All 7 functions are pinned to search_path = public, pg_temp.
+--   * handle_new_user_consolidated() inserts into public.user_settings (user_id, theme, language).
+--   * handle_new_user_onboarding_kla158() inserts into risk_profiles without the non-existent is_default column.
+--   * create_default_user_data() uses NEW.id for public.user_profiles.id to satisfy FK user_profiles_id_fkey.
 
 BEGIN;
 
--- 1. Make handle_new_user_email_prefs() run as its owner (postgres).
+-- 1. handle_new_user_email_prefs(): create email_preferences row for new users.
 CREATE OR REPLACE FUNCTION public.handle_new_user_email_prefs()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -28,8 +27,9 @@ END;
 $function$;
 
 ALTER FUNCTION public.handle_new_user_email_prefs() SECURITY DEFINER;
+ALTER FUNCTION public.handle_new_user_email_prefs() SET search_path = public, pg_temp;
 
--- 2. Make create_default_risk_profile() run as its owner (postgres).
+-- 2. create_default_risk_profile(): create a single default risk profile for new users.
 CREATE OR REPLACE FUNCTION public.create_default_risk_profile()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -43,14 +43,17 @@ END;
 $function$;
 
 ALTER FUNCTION public.create_default_risk_profile() SECURITY DEFINER;
+ALTER FUNCTION public.create_default_risk_profile() SET search_path = public, pg_temp;
 
--- 3. Make create_default_user_data() run as its owner (postgres).
+-- 3. create_default_user_data(): canonical user record, settings, notification settings,
+--    paper trading session, and default risk profiles. Uses NEW.id for user_profiles.id
+--    to satisfy FK user_profiles_id_fkey (id -> auth.users.id).
 CREATE OR REPLACE FUNCTION public.create_default_user_data()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
 DECLARE
-  new_id UUID := gen_random_uuid();
+  new_id UUID := NEW.id;
 BEGIN
   -- Create user_profiles (canonical user record)
   INSERT INTO public.user_profiles (
@@ -104,12 +107,13 @@ END;
 $function$;
 
 ALTER FUNCTION public.create_default_user_data() SECURITY DEFINER;
+ALTER FUNCTION public.create_default_user_data() SET search_path = public, pg_temp;
 
--- 4. Fix handle_new_user_consolidated() to match production user_settings columns.
+-- 4. handle_new_user_consolidated(): user settings, KLT balance, and referral handling.
+--    Inserts into public.user_settings using the production columns user_id, theme, language.
 CREATE OR REPLACE FUNCTION public.handle_new_user_consolidated()
  RETURNS trigger
  LANGUAGE plpgsql
- SECURITY DEFINER
 AS $function$
 DECLARE
   v_setting_id UUID;
@@ -165,5 +169,63 @@ BEGIN
   RETURN NEW;
 END;
 $function$;
+
+ALTER FUNCTION public.handle_new_user_consolidated() SECURITY DEFINER;
+ALTER FUNCTION public.handle_new_user_consolidated() SET search_path = public, pg_temp;
+
+-- 5. handle_new_user_klt(): give new users a 500 KLT welcome bonus.
+CREATE OR REPLACE FUNCTION public.handle_new_user_klt()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert 500 KLT welcome bonus
+    INSERT INTO public.kltbalances (userid, balance, total_earned)
+    VALUES (NEW.id, 500, 500)
+    ON CONFLICT (userid) DO NOTHING;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+ALTER FUNCTION public.handle_new_user_klt() SECURITY DEFINER;
+ALTER FUNCTION public.handle_new_user_klt() SET search_path = public, pg_temp;
+
+-- 6. handle_new_user_onboarding(): create onboarding_progress row for new users.
+CREATE OR REPLACE FUNCTION public.handle_new_user_onboarding()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.onboarding_progress (user_id)
+  VALUES (NEW.id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+ALTER FUNCTION public.handle_new_user_onboarding() SECURITY DEFINER;
+ALTER FUNCTION public.handle_new_user_onboarding() SET search_path = public, pg_temp;
+
+-- 7. handle_new_user_onboarding_kla158(): create paper trading session and default
+--    risk profiles. The production risk_profiles table has no is_default column.
+CREATE OR REPLACE FUNCTION public.handle_new_user_onboarding_kla158()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+  -- 1. Create default paper trading session
+  INSERT INTO paper_trading_sessions (user_id, starting_balance, current_balance, is_active)
+  VALUES (NEW.id, 100000, 100000, true)
+  ON CONFLICT DO NOTHING;
+
+  -- 2. Create default risk profiles (production table has no is_default column)
+  INSERT INTO risk_profiles (user_id, name, max_position_size_pct, stop_loss_pct, max_total_exposure_pct, is_active) VALUES
+    (NEW.id, 'forsiktig', 2.0, 3.0, 5.0, true),
+    (NEW.id, 'moderat', 5.0, 5.0, 15.0, false),
+    (NEW.id, 'aggressiv', 10.0, 10.0, 30.0, false)
+  ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
+END;
+$function$;
+
+ALTER FUNCTION public.handle_new_user_onboarding_kla158() SECURITY DEFINER;
+ALTER FUNCTION public.handle_new_user_onboarding_kla158() SET search_path = public, pg_temp;
 
 COMMIT;
