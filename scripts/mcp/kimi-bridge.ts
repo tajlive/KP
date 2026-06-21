@@ -269,6 +269,71 @@ const TOOLS = [
       required: [],
     },
   },
+  {
+    name: "kimi_oauth_check",
+    description:
+      "Sjekk produksjonskonfigurasjonen for OAuth (Supabase Auth URL + Google provider). Read-only.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        timeout: {
+          type: "number" as const,
+          description: "Timeout i ms (default: 60000)",
+        },
+        verbose: {
+          type: "boolean" as const,
+          description: "Returner fulle detaljer (default: false)",
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "kimi_oauth_fix",
+    description:
+      "Fiks produksjons-Supabase Auth URL-konfigurasjon (site_url + redirect_urls) automatisk.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        timeout: {
+          type: "number" as const,
+          description: "Timeout i ms (default: 60000)",
+        },
+        verbose: {
+          type: "boolean" as const,
+          description: "Returner fulle detaljer (default: false)",
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "kimi_oauth_enable_google",
+    description:
+      "Aktiver Google OAuth provider i produksjons-Supabase Auth. Krever Google Client ID og Client Secret.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        clientId: {
+          type: "string" as const,
+          description: "Google OAuth Client ID",
+        },
+        secret: {
+          type: "string" as const,
+          description: "Google OAuth Client Secret",
+        },
+        timeout: {
+          type: "number" as const,
+          description: "Timeout i ms (default: 60000)",
+        },
+        verbose: {
+          type: "boolean" as const,
+          description: "Returner fulle detaljer (default: false)",
+        },
+      },
+      required: ["clientId", "secret"],
+    },
+  },
 ];
 
 // ── HJELPERE ────────────────────────────────────────────────────────────────
@@ -388,6 +453,58 @@ async function runDbStatus(
     ok,
     command: "supabase migration list --linked",
     summary: ok ? "db:status OK" : `db:status FEIL (exit ${exitCode})`,
+    details: text,
+  };
+}
+
+async function runOauthCheck(timeoutMs = 60_000): Promise<StructuredResult> {
+  const { stdout, stderr, exitCode } = await runCommand(
+    "node",
+    ["scripts/check-oauth-prod.mjs"],
+    timeoutMs
+  );
+  const text = (stdout || stderr || "(ingen output)").trim();
+  const ok = exitCode === 0;
+  return {
+    ok,
+    command: "node scripts/check-oauth-prod.mjs",
+    summary: ok ? "oauth:check OK" : `oauth:check FEIL (exit ${exitCode})`,
+    details: text,
+  };
+}
+
+async function runOauthFix(timeoutMs = 60_000): Promise<StructuredResult> {
+  const { stdout, stderr, exitCode } = await runCommand(
+    "node",
+    ["scripts/fix-oauth-prod.mjs"],
+    timeoutMs
+  );
+  const text = (stdout || stderr || "(ingen output)").trim();
+  const ok = exitCode === 0;
+  return {
+    ok,
+    command: "node scripts/fix-oauth-prod.mjs",
+    summary: ok ? "oauth:fix OK" : `oauth:fix FEIL (exit ${exitCode})`,
+    details: text,
+  };
+}
+
+async function runOauthEnableGoogle(
+  clientId: string,
+  secret: string,
+  timeoutMs = 60_000
+): Promise<StructuredResult> {
+  const { stdout, stderr, exitCode } = await runCommand(
+    "node",
+    ["scripts/enable-google-oauth-prod.mjs", "--client-id", clientId, "--secret", secret],
+    timeoutMs
+  );
+  const text = (stdout || stderr || "(ingen output)").trim();
+  const ok = exitCode === 0;
+  return {
+    ok,
+    command: "node scripts/enable-google-oauth-prod.mjs --client-id *** --secret ***",
+    summary: ok ? "oauth:enable_google OK" : `oauth:enable_google FEIL (exit ${exitCode})`,
     details: text,
   };
 }
@@ -627,6 +744,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       dedupeHit = !!result.dedupe;
 
       if (result.ok) cache.set(key, result);
+      exitCode = result.ok ? 0 : 1;
+      break;
+    }
+
+    case "kimi_oauth_check": {
+      const execStart = Date.now();
+      result = await runOauthCheck(args.timeout);
+      execMs = Date.now() - execStart;
+      exitCode = result.ok ? 0 : 1;
+      break;
+    }
+
+    case "kimi_oauth_fix": {
+      const fixStart = Date.now();
+      result = await runOauthFix(args.timeout);
+      execMs = Date.now() - fixStart;
+      exitCode = result.ok ? 0 : 1;
+      break;
+    }
+
+    case "kimi_oauth_enable_google": {
+      const enableStart = Date.now();
+      result = await runOauthEnableGoogle(args.clientId, args.secret, args.timeout);
+      execMs = Date.now() - enableStart;
       exitCode = result.ok ? 0 : 1;
       break;
     }
