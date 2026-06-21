@@ -1,8 +1,9 @@
 /**
- * AUTH ACTIONS - Enkle, direkte Supabase kall
- * 
- * Ingen abstraksjoner, ingen kompleksitet.
- * Bare standard Supabase Auth API.
+ * AUTH ACTIONS - Server-side email/password actions
+ *
+ * OAuth sign-in is handled client-side in @/lib/auth/googleAuth because
+ * Next.js 15+ Server Actions cannot set the PKCE verifier cookie required
+ * by Supabase OAuth. Keep OAuth flows out of this file.
  */
 
 "use server";
@@ -62,63 +63,6 @@ export async function signOut() {
   const supabase = await createServerClient();
   await supabase.auth.signOut();
   redirect("/");
-}
-
-// ============================================
-// OAUTH AUTH
-// ============================================
-// ⚠️ WARNING: These OAuth server actions CANNOT set PKCE cookies in
-// Next.js 15+ because cookieStore.set() is read-only in RSC/Server Actions.
-// Use client-side functions from @/lib/auth/googleAuth instead.
-// See: Google login fix 2026-05-04
-// ============================================
-
-export async function signInWithGoogle() {
-  const supabase = await createServerClient();
-  const { getLocale } = await import("next-intl/server");
-  const locale = await getLocale();
-  
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: getCallbackUrl(locale),
-      queryParams: {
-        access_type: "offline",
-        prompt: "consent",
-      },
-      scopes: "openid email profile", // Kun basic scopes
-    },
-  });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  if (data.url) {
-    redirect(data.url);
-  }
-}
-
-export async function signInWithMicrosoft() {
-  const supabase = await createServerClient();
-  const { getLocale } = await import("next-intl/server");
-  const locale = await getLocale();
-  
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "azure",
-    options: {
-      redirectTo: getCallbackUrl(locale),
-      scopes: "email profile openid",
-    },
-  });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  if (data.url) {
-    redirect(data.url);
-  }
 }
 
 // ============================================

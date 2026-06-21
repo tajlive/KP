@@ -11,6 +11,9 @@ const mockSignInWithOAuth = vi.fn();
 const mockExchangeCodeForSession = vi.fn();
 const mockGetUser = vi.fn();
 
+// Production uses locale-prefixed OAuth callbacks (e.g. /no/callback)
+const TEST_CALLBACK_URL = "http://localhost:3000/no/callback";
+
 vi.mock("@/lib/supabase/client", () => ({
   createClient: vi.fn(() => ({
     auth: {
@@ -41,7 +44,7 @@ describe("OAuth Flow (Mock)", () => {
       const result = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:3000/callback",
+          redirectTo: TEST_CALLBACK_URL,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -53,7 +56,7 @@ describe("OAuth Flow (Mock)", () => {
       expect(mockSignInWithOAuth).toHaveBeenCalledWith({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:3000/callback",
+          redirectTo: TEST_CALLBACK_URL,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -82,7 +85,7 @@ describe("OAuth Flow (Mock)", () => {
       const result = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:3000/callback",
+          redirectTo: TEST_CALLBACK_URL,
         },
       });
 
@@ -217,7 +220,7 @@ describe("OAuth Flow (Mock)", () => {
         "https://www.klarpakke.no",
       ];
 
-      const redirectUrl = "http://localhost:3000/callback";
+      const redirectUrl = TEST_CALLBACK_URL;
       const url = new URL(redirectUrl);
 
       // Assert
