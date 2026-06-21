@@ -29,3 +29,16 @@
 {"subject":"secrets-vault","predicate":"stores","object":"mempalace-kg","validFrom":"2026-06-20T21:36:26.964Z"}
 {"subject":"secrets-vault","predicate":"location","object":"scripts/vault","validFrom":"2026-06-20T21:36:26.964Z"}
 {"subject":"secrets-vault","predicate":"master_key_env","object":"KLARPAKKE_VAULT_KEY","validFrom":"2026-06-20T21:36:26.964Z"}
+{"subject":"auth-user-creation","predicate":"failure_symptom","object":"POST /auth/v1/admin/users returned 500 Database error creating new user","validFrom":"2026-06-21T00:12:15.133Z"}
+{"subject":"auth-user-creation","predicate":"root_cause","object":"trigger functions SECURITY INVOKER as supabase_auth_admin lacks INSERT on public tables","validFrom":"2026-06-21T00:12:15.135Z"}
+{"subject":"auth-user-creation","predicate":"root_cause","object":"handle_new_user_consolidated used non-existent user_settings columns locale and notifications_enabled","validFrom":"2026-06-21T00:12:15.136Z"}
+{"subject":"auth-user-creation","predicate":"root_cause","object":"handle_new_user_onboarding_kla158 used non-existent risk_profiles column is_default","validFrom":"2026-06-21T00:12:15.136Z"}
+{"subject":"auth-user-creation","predicate":"root_cause","object":"create_default_user_data generated random UUID violating user_profiles_id_fkey","validFrom":"2026-06-21T00:12:15.136Z"}
+{"subject":"auth-user-creation","predicate":"root_cause","object":"trigger functions referenced public tables without public prefix and relied on caller search_path","validFrom":"2026-06-21T00:12:15.137Z"}
+{"subject":"auth-user-creation","predicate":"fixed_by","object":"migrations 20260620235800_fix_auth_user_triggers, 20260621000000_fix_onboarding_kla158_risk_profile, 20260621000500_fix_create_default_user_data_fk, 20260621001000_set_auth_trigger_search_path","validFrom":"2026-06-21T00:12:15.137Z"}
+{"subject":"auth-user-creation","predicate":"verification_status","object":"POST /auth/v1/admin/users returns 200 and creates related rows in public tables","validFrom":"2026-06-21T00:12:15.139Z"}
+{"subject":"db-automation","predicate":"provides","object":"scripts/automation/lib/db-client.mjs with getDbClient, withDbClient, queryDb","validFrom":"2026-06-21T00:12:15.139Z"}
+{"subject":"db-automation","predicate":"provides","object":"scripts/automation/lib/db-helpers.mjs with listAuthUserTriggers, getFunctionSource, hasTablePrivilege, listTableColumns, runSql","validFrom":"2026-06-21T00:12:15.139Z"}
+{"subject":"db-automation","predicate":"provides","object":"scripts/automation/tools/db-query.mjs for running SQL files or raw queries","validFrom":"2026-06-21T00:12:15.140Z"}
+{"subject":"db-automation","predicate":"registered_tools","object":"db:query, db:list_auth_triggers, db:inspect_function, db:check_privileges, db:list_table_columns in tool-registry.json","validFrom":"2026-06-21T00:12:15.140Z"}
+{"subject":"db-automation","predicate":"connection_pattern","object":"Uses POSTGRES_URL parsed from .env.local with IPv4-first and ssl.rejectUnauthorized=false for Supavisor pooler","validFrom":"2026-06-21T00:12:15.140Z"}

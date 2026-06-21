@@ -197,6 +197,51 @@
       "env": ["DATABASE_URL", "POSTGRES_URL"],
       "secrets": ["DATABASE_URL", "POSTGRES_URL"]
     },
+    "db:query": {
+      "type": "script",
+      "path": "scripts/automation/tools/db-query.mjs",
+      "args": [],
+      "description": "Run a SQL file (--file path) or raw query via direct pg",
+      "timeout": 120,
+      "env": ["POSTGRES_URL", "DATABASE_URL"],
+      "secrets": ["POSTGRES_URL"]
+    },
+    "db:list_auth_triggers": {
+      "type": "script",
+      "path": "scripts/automation/lib/db-helpers.mjs",
+      "args": ["list-auth-triggers"],
+      "description": "List triggers on auth.users with security-definer status",
+      "timeout": 60,
+      "env": ["POSTGRES_URL", "DATABASE_URL"],
+      "secrets": ["POSTGRES_URL"]
+    },
+    "db:inspect_function": {
+      "type": "script",
+      "path": "scripts/automation/lib/db-helpers.mjs",
+      "args": ["function-source", "public", "handle_new_user_consolidated"],
+      "description": "Print CREATE FUNCTION source for a function (override args: [function-source, schema, name])",
+      "timeout": 60,
+      "env": ["POSTGRES_URL", "DATABASE_URL"],
+      "secrets": ["POSTGRES_URL"]
+    },
+    "db:check_privileges": {
+      "type": "script",
+      "path": "scripts/automation/lib/db-helpers.mjs",
+      "args": ["check-privilege", "supabase_auth_admin", "public.user_settings", "INSERT"],
+      "description": "Check table privilege for a role (override args: [check-privilege, role, table, privilege])",
+      "timeout": 60,
+      "env": ["POSTGRES_URL", "DATABASE_URL"],
+      "secrets": ["POSTGRES_URL"]
+    },
+    "db:list_table_columns": {
+      "type": "script",
+      "path": "scripts/automation/lib/db-helpers.mjs",
+      "args": ["list-columns", "public", "user_settings"],
+      "description": "List columns for a table (override args: [list-columns, schema, table])",
+      "timeout": 60,
+      "env": ["POSTGRES_URL", "DATABASE_URL"],
+      "secrets": ["POSTGRES_URL"]
+    },
     "api:health": {
       "type": "api",
       "method": "GET",

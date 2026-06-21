@@ -28,19 +28,24 @@ The Automation Subagent is authorized to:
 
 ## 3. Current Blocker & Resolution Plan
 
-### Blocker: E2E user creation fails
+### Blocker: Auth user creation fails with 500
 
-`scripts/create-test-users.js --primary-only` fails with `Database error creating new user` because trigger `on_auth_user_created_kla158` references `public.paper_trading_sessions`, which does not exist in production project `pskhryjzkobytnfwucrb`.
+`POST /auth/v1/admin/users` returned `500 Database error creating new user` because several `auth.users` trigger functions could not complete.
 
-**Root cause:** Migration drift. Migrations exist locally but have not been applied to production in the correct order/state.
+**Root causes remediated:**
+
+1. Three trigger functions were `SECURITY INVOKER`; auth inserts run as `supabase_auth_admin`, which has no `INSERT` on public tables.
+2. `handle_new_user_consolidated()` inserted into `user_settings` using non-existent columns `locale` / `notifications_enabled`.
+3. `handle_new_user_onboarding_kla158()` inserted into `risk_profiles` using the non-existent column `is_default`.
+4. `create_default_user_data()` generated a random UUID for `user_profiles.id`, violating FK `user_profiles_id_fkey`.
+5. All functions referenced public tables without the `public.` prefix and relied on a search_path that `supabase_auth_admin` does not have.
 
 ### Resolution
 
-1. Generate a drift report comparing local migrations to production schema.
-2. Create a controlled remediation branch with **append-only** migrations that add missing objects (starting with `paper_trading_sessions`).
-3. Run the remediation against a shadow/clone database first if possible; otherwise apply directly with explicit rollback plan.
-4. After schema is consistent, create the E2E test user automatically.
-5. Run `npm run auto:e2e:critical`.
+1. ✅ Create append-only, idempotent migrations in `supabase/migrations/`.
+2. ✅ Apply migrations directly to production with verification after each step.
+3. ✅ Confirm `POST /auth/v1/admin/users` returns `200` and related rows are created.
+4. ⏳ Run `npm run auto:e2e:critical` (timed out on first attempt; needs a focused run).
 
 ## 4. Deliverables
 
@@ -49,10 +54,11 @@ The Automation Subagent is authorized to:
 | 1 | Unified automation framework (`scripts/automation/`) | ✅ Done |
 | 2 | Cloudflare repo deployed + secrets stored | ✅ Done |
 | 3 | Supabase PAT scope fixed, `.env.local` synced | ✅ Done |
-| 4 | Playwright Chromium installed | ⏳ Pending |
-| 5 | Migration drift remediated | ⏳ Pending |
-| 6 | E2E test user created | ⏳ Pending |
-| 7 | Critical E2E suite passing | ⏳ Pending |
+| 4 | DB/SQL automation utilities (`db-client`, `db-helpers`, registry tools) | ✅ Done |
+| 5 | Migration drift remediated | ✅ Done |
+| 6 | E2E test user created | ✅ Done |
+| 7 | Playwright Chromium installed | ✅ Done (cached) |
+| 8 | Critical E2E suite passing | ⏳ Pending (first run timed out) |
 
 ## 5. Acceptance Criteria
 

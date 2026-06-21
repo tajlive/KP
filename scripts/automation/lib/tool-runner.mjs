@@ -108,9 +108,10 @@ async function runCli(toolDef) {
   return runCommand(parts[0], parts.slice(1), toolDef.timeout);
 }
 
-async function runScript(toolDef) {
+async function runScript(toolDef, overrides = {}) {
   const scriptPath = resolve(ROOT, toolDef.path);
-  return runCommand(process.execPath, [scriptPath, ...(toolDef.args || [])], toolDef.timeout);
+  const extraArgs = overrides.args ?? toolDef.args ?? [];
+  return runCommand(process.execPath, [scriptPath, ...extraArgs], toolDef.timeout);
 }
 
 async function runMcp(toolDef) {
@@ -182,7 +183,7 @@ export async function runTool(toolName, overrides = {}) {
         result = await runCli(toolDef);
         break;
       case "script":
-        result = await runScript(toolDef);
+        result = await runScript(toolDef, overrides);
         break;
       case "mcp":
         result = await runMcp(toolDef);

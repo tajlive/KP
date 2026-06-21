@@ -1,12 +1,14 @@
 # 🤖 KIMI + MemPalace Master Guide
 
 **Prosjekt:** Klarpakke - AI Trading Platform  
-**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Hetzner, Coolify, Cloudflare  
+**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Cloudflare (DNS/CDN/Workers), Wrangler, Domeneshop  
 **Status:** Production (www.klarpakke.no)  
 **Node:** 24.x (se `.nvmrc`)  
-**Hosting:** Hetzner VPS + Coolify + Cloudflare DNS/CDN
-**CI/CD:** Woodpecker CI
+**Hosting:** Cloudflare Workers (Wrangler) + Cloudflare DNS/CDN + Domeneshop domene
+**CI/CD:** Wrangler CLI / Cloudflare Pages (ikke Woodpecker/Coolify)
 **Error Tracking:** Selv-hostet GlitchTip
+
+> ⚠️ **Merk:** Eldre deler av denne filen refererer fortsatt til Hetzner + Coolify + Woodpecker CI. Det er utdatert. Nåværende sannhet for produksjon er: **Domeneshop → Cloudflare DNS/proxy → Cloudflare Workers (Wrangler) + Supabase**.
 
 ---
 
@@ -63,19 +65,24 @@ kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 
 ---
 
-## 🚀 Hetzner + Coolify Hosting
+## 🚀 Hosting — Domeneshop + Cloudflare + Wrangler (oppdatert)
 
-> **Status:** Migrert fra Fly.io til Hetzner VPS + Coolify (Docker + Cloudflare DNS/CDN)
-> **Server:** Hetzner Cloud VPS (anbefalt CPX31)  
+> **Status:** Produksjon kjører nå på Cloudflare Workers via Wrangler, ikke Hetzner/Coolify.
+> **Domene:** Domeneshop (klarpakke.no / www.klarpakke.no)  
+> **DNS/CDN/Proxy:** Cloudflare  
+> **App-hosting:** Cloudflare Workers (OpenNext / Wrangler)  
+> **Database/Auth:** Supabase  
 > **URL:** https://www.klarpakke.no  
-> **CI/CD:** Woodpecker CI  
+> **CI/CD:** Wrangler CLI / Cloudflare Pages  
 > **Error Tracking:** Selv-hostet GlitchTip
 
 ### Arkitektur
 ```
-User → Cloudflare DNS (klarpakke.no) → Cloudflare CDN/Proxy → Hetzner VPS (Coolify)
+User → Domeneshop domene → Cloudflare DNS → Cloudflare CDN/Proxy → Cloudflare Workers (Wrangler)
                                        ↓
                               DDoS + SSL + Caching
+                                       ↓
+                              Supabase (Postgres/Auth)
 ```
 
 ### Setup (én gang)
