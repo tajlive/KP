@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/utils";
+import { buildAuthRedirect } from "@/lib/auth/redirects";
 import {
   CheckCircle2,
   CreditCard,
@@ -232,7 +233,7 @@ function PasswordSection() {
       if (!user?.email) return;
 
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: `${window.location.origin}/${locale}/update-password`,
+        redirectTo: buildAuthRedirect({ type: "password-reset", locale }),
       });
       if (error) throw error;
 

@@ -4,19 +4,36 @@
  * Run: node scripts/monitor/trading-metrics.mjs [hours] [--save=file.json]
  *
  * Captures trading metrics for 48h observation period.
+ *
+ * ⚠️  SECURITY: This script requires Supabase service-role credentials.
+ *     Set NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in your
+ *     environment (or in .env.local). Never hardcode secrets here.
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { config } from 'dotenv';
 import { writeFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const SUPABASE_URL = 'https://vuxbjlykgmzskxbclquf.supabase.co';
-const SUPABASE_KEY = 'SCRUBBED_SERVICE_ROLE_KEY';
+// Load .env.local if present, but do not override already-exported env vars.
+config({ path: '.env.local' });
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL)');
+  console.error('   SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
 
 const HOURS = process.argv[2] ? parseInt(process.argv[2]) : 24;
 const SAVE_ARG = process.argv.find(a => a.startsWith('--save='));

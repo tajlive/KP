@@ -1,11 +1,15 @@
 /**
  * Edge-safe pathname parsing for next-intl `localePrefix: 'as-needed'`.
- * Default locale (no) may omit the /no prefix; th/zh kept for legacy URLs.
+ * Active locales are derived from `src/i18n/config.ts`.
  */
 
-export const LOCALE_RE = /^(no|en|th|zh)$/;
-
+import { locales } from "@/i18n/config";
 import { routing } from "@/i18n/routing.config";
+import { sanitizePostAuthRedirect } from "@/lib/auth/sanitize-redirect";
+
+export const LOCALE_RE = new RegExp(`^(${locales.join("|")})$`);
+
+export { sanitizePostAuthRedirect };
 
 /**
  * Path for redirects with next-intl routing config.
@@ -37,41 +41,6 @@ export function parseLocalePath(pathname: string): {
     };
   }
   return { locale: "no", strippedPath: `/${segments.join("/")}` };
-}
-
-/** After login: only same-origin relative paths; never back to guest auth screens. */
-export function sanitizePostAuthRedirect(
-  rawNext: string | null,
-  locale: string,
-): string {
-  const fallback = localizedPathname(locale, "/dashboard");
-  if (rawNext == null || rawNext.trim() === "") return fallback;
-
-  let pathPart = rawNext.trim();
-
-  try {
-    if (pathPart.startsWith("http://") || pathPart.startsWith("https://")) {
-      const u = new URL(pathPart);
-      pathPart = u.pathname + (u.search || "");
-    }
-  } catch {
-    return fallback;
-  }
-
-  if (!pathPart.startsWith("/") || pathPart.startsWith("//")) return fallback;
-
-  const lower = pathPart.toLowerCase();
-  const authFragments = [
-    "/login",
-    "/register",
-    "/glemt-passord",
-    "/registrer",
-  ];
-  if (authFragments.some((f) => lower.includes(f))) return fallback;
-  if (lower.includes("/login") && !lower.includes("/admin/login"))
-    return fallback;
-
-  return pathPart;
 }
 
 const GUEST_AUTH_EXACT = new Set([

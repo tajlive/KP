@@ -3,7 +3,8 @@
  */
 
 import { createClient } from "@/lib/utils";
-import { getAppUrl, getCallbackUrl, OAUTH_CONFIG, SUPPORTED_PROVIDERS } from "./config";
+import { getCallbackUrl, OAUTH_CONFIG, SUPPORTED_PROVIDERS } from "./config";
+import { buildAuthRedirect } from "./redirects";
 
 // OAuth sign in with proper error handling
 export async function signInWithOAuth(
@@ -237,7 +238,7 @@ export async function resetPassword(
   const supabase = createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     email.toLowerCase().trim(),
-    { redirectTo: `${getAppUrl()}/${_locale}/update-password` },
+    { redirectTo: buildAuthRedirect({ type: "password-reset", locale: _locale }) },
   );
   return { error };
 }
@@ -266,7 +267,7 @@ export async function sendMagicLink(
   const { error } = await supabase.auth.signInWithOtp({
     email: email.toLowerCase().trim(),
     options: {
-      emailRedirectTo: getCallbackUrl(locale),
+      emailRedirectTo: buildAuthRedirect({ type: "oauth-callback", locale }),
     },
   });
 

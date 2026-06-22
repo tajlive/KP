@@ -1,4 +1,4 @@
-import { getCallbackUrl } from "@/lib/auth/config";
+import { buildAuthRedirect } from "@/lib/auth/redirects";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const redirectUri = getCallbackUrl(locale);
+  const redirectUri = buildAuthRedirect({ type: "oauth-callback", locale });
 
   const codeVerifier = base64UrlEncode(randomBytes(32));
   const codeChallenge = base64UrlEncode(

@@ -121,7 +121,7 @@ export function AuthHashHandler() {
   // preventing hydration mismatch from usePathname() returning null on client.
   if (!mounted) return null;
 
-  // After mount, skip entirely on callback page — callback/page.tsx handles PKCE exclusively
+  // After mount, skip entirely on callback page — the server-side /callback route handler handles PKCE exclusively
   if (pathname?.includes("/callback")) return null;
 
   // Vis error-state

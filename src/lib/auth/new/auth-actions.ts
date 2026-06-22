@@ -10,7 +10,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getAppUrl, getCallbackUrl } from "@/lib/auth/config";
+import { buildAuthRedirect } from "@/lib/auth/redirects";
 
 // ============================================
 // EMAIL/PASSWORD AUTH
@@ -48,7 +48,7 @@ export async function signUpWithEmail(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: getCallbackUrl(locale),
+      emailRedirectTo: buildAuthRedirect({ type: "oauth-callback", locale }),
     },
   });
 
@@ -77,7 +77,7 @@ export async function sendPasswordReset(formData: FormData) {
   const email = formData.get("email") as string;
   
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${getAppUrl()}/${locale}/update-password`,
+    redirectTo: buildAuthRedirect({ type: "password-reset", locale }),
   });
 
   if (error) {

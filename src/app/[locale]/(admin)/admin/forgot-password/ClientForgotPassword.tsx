@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Alert, AlertDescription } from '@/shared/ui/alert'
 import { Mail, AlertCircle, Loader2, CheckCircle, ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/utils'
-import { getAppUrl } from '@/lib/auth/config'
+import { buildAuthRedirect } from '@/lib/auth/redirects'
 
 export default function ForgotPasswordPage() {
   const locale = useLocale()
@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
     try {
       const supabase = createClient()
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${getAppUrl()}/${locale}/admin/reset-password`,
+        redirectTo: buildAuthRedirect({ type: 'admin-reset', locale }),
       })
 
       if (resetError) {

@@ -60,7 +60,7 @@ export async function authMiddleware(
 
   // Skip auth callback — route handler does its own PKCE exchange
   // But log for debugging OAuth issues
-  if (strippedPath.startsWith("/callback")) {
+  if (strippedPath === "/callback") {
     const code = request.nextUrl.searchParams.get("code");
     const error = request.nextUrl.searchParams.get("error");
     const locale = parseLocalePath(pathname).locale;

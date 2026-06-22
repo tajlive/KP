@@ -63,3 +63,14 @@
 {"subject":"cloudflare-secrets","predicate":"can-contain","object":"dotenvx-header-newline","validFrom":"2026-06-21T23:54:28.723Z"}
 {"subject":"health-check","predicate":"migrated-from","object":"pg-to-supabase-js","validFrom":"2026-06-21T23:54:28.724Z"}
 {"subject":"kv-adapter","predicate":"uses","object":"cloudflare-kv-binding","validFrom":"2026-06-21T23:54:28.725Z"}
+{"subject":"signal-engine-heartbeat","predicate":"written-by","object":"api-cron-signal-health-selfcheck","validFrom":"2026-06-22T00:20:56.646Z"}
+{"subject":"pg-cron-signal-engine-5min","predicate":"calls","object":"cloudflare-workers-selfcheck-route","validFrom":"2026-06-22T00:20:56.650Z"}
+{"subject":"bot_health","predicate":"requires-unique-constraint-on","object":"bot_name","validFrom":"2026-06-22T00:20:56.651Z"}
+{"subject":"supabase-edge-function-signal-engine","predicate":"cannot-write","object":"bot_health-in-production","validFrom":"2026-06-22T00:20:56.654Z"}
+{"subject":"cloudflare-workers","predicate":"use-fetch-based-client-for","object":"supabase","validFrom":"2026-06-22T00:20:56.654Z"}
+{"subject":"security-remediation","predicate":"deleted","object":"hardcoded-secret scripts: setup-all.sh, monitor-paper-trading.mjs, fix-auth-and-create-users.sh, debug-insert.ts, monitor/rollout-actions.mjs, debug-sessions.mjs, kla137-monitoring.mjs, fetch-paper-data.mjs, run-sql-rest.mjs, exec-sql-remote.mjs, debug-tick.ts, apply-kla130.mjs, seed_bots.cjs","validFrom":"2026-06-22T00:52:46.481Z"}
+{"subject":"security-remediation","predicate":"refactored","object":"scripts/monitor/trading-metrics.mjs to use environment variables","validFrom":"2026-06-22T00:52:46.483Z"}
+{"subject":"AGENTS.md","predicate":"strengthened","object":"rule: Never commit secrets. Use scripts/vault/ and docs/SECRETS-INVENTORY.md","validFrom":"2026-06-22T00:52:46.484Z"}
+{"subject":".gitignore","predicate":"updated","object":"added .env*.local, *.local.save, .claude/settings.local.json","validFrom":"2026-06-22T00:52:46.485Z"}
+{"subject":"git-history","predicate":"requires","object":"git filter-repo rewrite with --replace-text and --invert-paths","validFrom":"2026-06-22T00:52:46.485Z"}
+{"subject":"Supabase","predicate":"requires","object":"rotate service role key, PAT, DB password; update Cloudflare/Woodpecker secrets","validFrom":"2026-06-22T00:52:46.485Z"}

@@ -326,6 +326,13 @@ cat .kimi/PROJECT_CONTEXT.md
 | **Minimal endring** | Kun det som må til |
 | **Verifiser først** | Sjekk før endring |
 | **GO/NO-GO** | Alltid tydelig status |
+| **Never commit secrets** | Roter nøkler + `git filter-repo` rewrite. Bruk `scripts/vault/` og `docs/SECRETS-INVENTORY.md`. |
+
+### Secrets & Credentials (Aldri bryt)
+- **ALLTID** les secrets fra miljøvariabler; aldri hardkod i kildekode, scripts eller commits.
+- **ALLTID** lagre og roter hemmeligheter via `scripts/vault/` og dokumenter dem i `docs/SECRETS-INVENTORY.md`.
+- **FORBUDT** å sjekke inn `.env*.local`, backup-filer (`*.local.save`) eller IDE-config med credentials (f.eks. `.claude/settings.local.json`).
+- **ALLTID** kjør `npm run env:validate` etter endringer som berører secrets.
 
 ### OAuth Redirect URIs (Aldri bryt)
 - **ALLTID** bruk `getCallbackUrl()` fra `@/lib/auth/config` for OAuth `redirectTo`

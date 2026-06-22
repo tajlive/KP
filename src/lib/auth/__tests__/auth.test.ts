@@ -65,13 +65,36 @@ describe("Auth Configuration", () => {
       expect(typeof getAppUrl).toBe("function");
     });
 
-    it("should fallback to canonical URL when no public URL env (SSR)", async () => {
+    it("should fallback to canonical URL when no public URL env in production (SSR)", async () => {
+      await withServerEnv(async () => {
+        vi.resetModules();
+        process.env = { ...originalEnv };
+        process.env.NODE_ENV = "production";
+        delete process.env.NEXT_PUBLIC_APP_URL;
+        const { getAppUrl: getAppUrlFresh } = await import("../config");
+        expect(getAppUrlFresh()).toBe("https://www.klarpakke.no");
+      });
+    });
+
+    it("should fallback to development URL when no public URL env in development (SSR)", async () => {
       await withServerEnv(async () => {
         vi.resetModules();
         process.env = { ...originalEnv };
         process.env.NODE_ENV = "development";
         delete process.env.NEXT_PUBLIC_APP_URL;
-        delete process.env.NEXT_PUBLIC_VERCEL_URL;
+        const { getAppUrl: getAppUrlFresh } = await import("../config");
+        expect(getAppUrlFresh()).toBe("http://localhost:3000");
+      });
+    });
+
+    it("should reject disallowed production APP_URL and fall back to canonical (SSR)", async () => {
+      await withServerEnv(async () => {
+        vi.resetModules();
+        process.env = {
+          ...originalEnv,
+          NODE_ENV: "production",
+          NEXT_PUBLIC_APP_URL: "https://evil.com",
+        };
         const { getAppUrl: getAppUrlFresh } = await import("../config");
         expect(getAppUrlFresh()).toBe("https://www.klarpakke.no");
       });
@@ -139,7 +162,7 @@ describe("Auth Configuration", () => {
     it("should have all required providers", () => {
       expect(SUPPORTED_PROVIDERS.GOOGLE).toBe("google");
       expect(SUPPORTED_PROVIDERS.MICROSOFT).toBe("azure");
-      expect(SUPPORTED_PROVIDERS.LINKEDIN).toBe("linkedin");
+      expect(SUPPORTED_PROVIDERS.VIPPS).toBe("vipps");
     });
   });
 });

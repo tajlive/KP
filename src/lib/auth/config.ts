@@ -5,20 +5,47 @@
  * consistency across the application and prevent redirect_uri_mismatch errors.
  */
 
+import { locales, defaultLocale } from "@/i18n/config";
+
 // Environment detection
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDevelopment = process.env.NODE_ENV === "development";
 
-// Valid locales for type safety
-const VALID_LOCALES = ["no", "en", "th", "zh"] as const;
-type ValidLocale = (typeof VALID_LOCALES)[number];
+// Valid locales are derived from the i18n source of truth.
+export type ValidLocale = (typeof locales)[number];
+const VALID_LOCALE_SET = new Set<string>(locales);
 
-// App URLs - uses NEXT_PUBLIC_APP_URL from Coolify env.
-// Legacy fallbacks for Vercel/Fly preview deployments are kept for rollback safety.
+export function isValidLocale(locale: string): locale is ValidLocale {
+  return VALID_LOCALE_SET.has(locale);
+}
+
+// Canonical origins for auth redirects.
+const CANONICAL_APP_ORIGIN = "https://www.klarpakke.no";
+const DEVELOPMENT_APP_ORIGIN = "http://localhost:3000";
+const ALLOWED_APP_ORIGINS = new Set([
+  CANONICAL_APP_ORIGIN,
+  DEVELOPMENT_APP_ORIGIN,
+]);
 
 /** Strip whitespace/newlines that can sneak in from env vars (prevents %250A in OAuth redirects) */
 function sanitizeUrl(url: string): string {
   return url.trim().replace(/[\r\n]/g, "");
+}
+
+function safeOrigin(url: string): string {
+  try {
+    return new URL(sanitizeUrl(url)).origin;
+  } catch {
+    return isProduction ? CANONICAL_APP_ORIGIN : DEVELOPMENT_APP_ORIGIN;
+  }
+}
+
+export function getCanonicalAppOrigin(): string {
+  return CANONICAL_APP_ORIGIN;
+}
+
+export function getDevelopmentAppOrigin(): string {
+  return DEVELOPMENT_APP_ORIGIN;
 }
 
 export function getAppUrl(): string {
@@ -28,22 +55,20 @@ export function getAppUrl(): string {
   }
 
   // 2. Explicitly configured APP_URL (Production)
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return sanitizeUrl(process.env.NEXT_PUBLIC_APP_URL);
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (configured) {
+    const origin = safeOrigin(configured);
+    if (isProduction && !ALLOWED_APP_ORIGINS.has(origin)) {
+      console.warn(
+        `[auth/config] NEXT_PUBLIC_APP_URL origin ${origin} is not in the allowed list, falling back to ${CANONICAL_APP_ORIGIN}.`,
+      );
+      return CANONICAL_APP_ORIGIN;
+    }
+    return sanitizeUrl(configured);
   }
 
-  // 3. Fly.io app URL
-  if (process.env.NEXT_PUBLIC_FLY_APP_URL) {
-    return sanitizeUrl(process.env.NEXT_PUBLIC_FLY_APP_URL);
-  }
-
-  // 4. Vercel Preview deployments (legacy)
-  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-    return sanitizeUrl(`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`);
-  }
-
-  // 4. Default fallback
-  return "https://www.klarpakke.no";
+  // 3. Environment-specific fallback
+  return isProduction ? CANONICAL_APP_ORIGIN : DEVELOPMENT_APP_ORIGIN;
 }
 
 /**
@@ -55,13 +80,13 @@ export function getAppUrl(): string {
  *    returns https://www.klarpakke.no (no path suffix).
  *    Without this: /auth + /callback = /auth/callback (exchange_failed)
  *
- * 2. Validates locale against VALID_LOCALES to prevent /auth/callback
- *    when a user lands on /auth/innlogging (locale='auth' from next-intl).
+ * 2. Validates locale against the i18n source of truth to prevent invalid
+ *    locale segments from ending up in the callback path.
  *
  * 3. Never use window.location or request.headers for OAuth redirectTo —
  *    always use the canonical env var.
  */
-export function getCallbackUrl(locale: string = "no"): string {
+export function getCallbackUrl(locale: string = defaultLocale): string {
   const rawUrl = sanitizeUrl(getAppUrl());
 
   // Strip path, query, hash — keep only origin (protocol + hostname + port)
@@ -70,15 +95,10 @@ export function getCallbackUrl(locale: string = "no"): string {
   try {
     origin = new URL(rawUrl).origin;
   } catch {
-    // Fallback if URL parsing fails
-    origin = "https://www.klarpakke.no";
+    origin = CANONICAL_APP_ORIGIN;
   }
 
-  const safeLocale: ValidLocale = (VALID_LOCALES as readonly string[]).includes(
-    locale,
-  )
-    ? (locale as ValidLocale)
-    : "no";
+  const safeLocale: ValidLocale = isValidLocale(locale) ? locale : defaultLocale;
 
   return `${origin}/${safeLocale}/callback`;
 }
@@ -87,15 +107,13 @@ export function getCallbackUrl(locale: string = "no"): string {
 export const SUPPORTED_PROVIDERS = {
   GOOGLE: "google",
   MICROSOFT: "azure", // Supabase uses 'azure' for Microsoft
-  LINKEDIN: "linkedin", // Supabase Auth provider
   VIPPS: "vipps", // Custom OAuth flow via /api/auth/vipps-url + callback
 } as const;
 
-// Provider display names (Norwegian)
+// Provider display names
 export const PROVIDER_NAMES: { [key: string]: string } = {
   google: "Google",
   azure: "Microsoft",
-  linkedin: "LinkedIn",
   vipps: "Vipps",
   email: "E-post",
 };
@@ -113,19 +131,11 @@ export const OAUTH_CONFIG: Record<
     // Hvis vi ber om sensitive scopes (gmail, drive, etc.) uten godkjenning,
     // får brukeren "access_denied" eller "unverified app" advarsel
     scopes: "openid email profile",
-    queryParams: {
-      access_type: "offline",
-      prompt: "consent",
-    },
   },
   azure: {
     scopes: "email profile openid",
   },
-  linkedin: {
-    scopes: "openid email profile",
-  },
   // Vipps uses custom OAuth flow via Supabase Auth
-
 };
 
 // Error messages (Norwegian)
@@ -152,14 +162,6 @@ export function getAuthErrorMessage(errorCode: string | null): string {
     AUTH_ERRORS[errorCode] || "En ukjent feil oppstod. Vennligst prøv igjen."
   );
 }
-
-// Cookie configuration
-export const AUTH_COOKIE_OPTIONS = {
-  path: "/",
-  sameSite: "none" as const,
-  secure: true,
-  maxAge: 60 * 60 * 24 * 7, // 7 days
-};
 
 // Session configuration
 export const SESSION_CONFIG = {

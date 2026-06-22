@@ -18,6 +18,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { locales, defaultLocale } from "../src/i18n/config";
 
 // ─── Config ───────────────────────────────────────────────────────────────
 const SRC_DIR = path.resolve(process.cwd(), "src");
@@ -296,7 +297,6 @@ function applyFixes(issues: Issue[]): number {
 // ─── Copy-Paste Generator ─────────────────────────────────────────────────
 function generateCopyPaste(appUrl: string): GuardResult["copyPaste"] {
   const base = appUrl.replace(/\/$/, "");
-  const locales = ["no", "en", "th", "zh"];
 
   const origins = [base];
   if (base.includes("www.")) {
@@ -322,7 +322,7 @@ function generateCopyPaste(appUrl: string): GuardResult["copyPaste"] {
   const supabaseUrls = [
     "=== SUPABASE AUTH URL CONFIGURATION ===",
     "",
-    `Site URL: ${base}/no/callback`,
+    `Site URL: ${base}/${defaultLocale}/callback`,
     "",
     "Additional Redirect URLs:",
     ...redirectUris.map(u => `  ${u}`),
@@ -393,7 +393,7 @@ async function main() {
 
   // Cross-check remote config if available
   if (supabase?.reachable && supabase.redirectUrls) {
-    const expectedUris = ["no", "en", "th", "zh"].map(l => `${appUrl}/${l}/callback`);
+    const expectedUris = locales.map(l => `${appUrl}/${l}/callback`);
     for (const expected of expectedUris) {
       if (!supabase.redirectUrls!.some(u => u.replace(/\/$/, "") === expected)) {
         issues.push({

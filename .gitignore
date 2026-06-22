@@ -57,6 +57,11 @@ lighthouse-*.report.html
 .env.test
 .env.production
 .env.*.local
+.env.local.save
+*.local.save
+
+# IDE/local config that may contain secrets
+.claude/settings.local.json
 
 # =============================================================================
 # SUPABASE

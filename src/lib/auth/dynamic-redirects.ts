@@ -1,20 +1,21 @@
 /**
  * Dynamic Redirect URI Generator for OAuth Providers
- * 
+ *
  * Generates all locale-prefixed redirect URIs for Google Cloud Console
  * and other OAuth provider configurations.
- * 
+ *
  * Usage:
  *   import { getAllRedirectUris, getGoogleConsoleConfig } from '@/lib/auth/dynamic-redirects';
- *   
+ *
  *   // Copy-paste ready for Google Cloud Console
  *   console.log(getGoogleConsoleConfig());
  */
 
+import { locales, defaultLocale } from "@/i18n/config";
 import { getAppUrl } from "./config";
 
-export const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+export const SUPPORTED_LOCALES = locales;
+export type SupportedLocale = (typeof locales)[number];
 
 export interface RedirectUriConfig {
   locale: SupportedLocale;
@@ -40,11 +41,11 @@ function getBaseUrl(): string {
  * Generate all redirect URIs for auth callback
  */
 export function getAllRedirectUris(
-  path: string = "/callback"
+  path: string = "/callback",
 ): RedirectUriConfig[] {
   const baseUrl = getBaseUrl();
-  
-  return SUPPORTED_LOCALES.map((locale) => ({
+
+  return locales.map((locale) => ({
     locale,
     path: `/${locale}${path}`,
     fullUri: `${baseUrl}/${locale}${path}`,
@@ -57,24 +58,24 @@ export function getAllRedirectUris(
 export function getGoogleConsoleConfig(): GoogleConsoleConfig {
   const baseUrl = getBaseUrl();
   const origins = new Set<string>();
-  
+
   // Add main origin
   origins.add(baseUrl);
-  
+
   // Add www/non-www variant
   if (baseUrl.includes("www.")) {
     origins.add(baseUrl.replace("www.", ""));
   } else {
     origins.add(baseUrl.replace(/^(https?:\/\/)/, "$1www."));
   }
-  
+
   // Add localhost for development
   if (process.env.NODE_ENV === "development") {
     origins.add("http://localhost:3000");
   }
-  
-  const redirectUris = getAllRedirectUris("/callback").map(r => r.fullUri);
-  
+
+  const redirectUris = getAllRedirectUris("/callback").map((r) => r.fullUri);
+
   return {
     authorizedJavaScriptOrigins: Array.from(origins).sort(),
     authorizedRedirectUris: redirectUris,
@@ -93,15 +94,15 @@ export function getGoogleConsoleConfig(): GoogleConsoleConfig {
  */
 export function getGoogleConsoleCopyPaste(): string {
   const config = getGoogleConsoleConfig();
-  
+
   const lines: string[] = [
     "=== GOOGLE CLOUD CONSOLE OAUTH 2.0 CONFIG ===",
     "",
     "Authorized JavaScript origins:",
-    ...config.authorizedJavaScriptOrigins.map(o => `  ${o}`),
+    ...config.authorizedJavaScriptOrigins.map((o) => `  ${o}`),
     "",
     "Authorized redirect URIs:",
-    ...config.authorizedRedirectUris.map(u => `  ${u}`),
+    ...config.authorizedRedirectUris.map((u) => `  ${u}`),
     "",
     "NOTES:",
     ...config.notes,
@@ -109,9 +110,9 @@ export function getGoogleConsoleCopyPaste(): string {
     "=== SUPABASE AUTH CONFIG ===",
     `Site URL: ${getBaseUrl()}`,
     "Additional Redirect URLs:",
-    ...config.authorizedRedirectUris.map(u => `  ${u}`),
+    ...config.authorizedRedirectUris.map((u) => `  ${u}`),
   ];
-  
+
   return lines.join("\n");
 }
 
@@ -121,23 +122,25 @@ export function getGoogleConsoleCopyPaste(): string {
 export function isValidRedirectUri(uri: string): boolean {
   try {
     const url = new URL(uri);
-    
+
     // Must use HTTPS in production
     if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
       return false;
     }
-    
+
     // Must have locale prefix
-    const localeMatch = url.pathname.match(/^\/(no|en|th|zh)\/callback$/);
+    const localeMatch = url.pathname.match(
+      new RegExp(`^/(${locales.join("|")})/callback$`),
+    );
     if (!localeMatch) {
       return false;
     }
-    
+
     // Must not have trailing slash
     if (url.pathname.endsWith("/")) {
       return false;
     }
-    
+
     return true;
   } catch {
     return false;
@@ -147,7 +150,9 @@ export function isValidRedirectUri(uri: string): boolean {
 /**
  * Get the expected redirect URI for a specific locale
  */
-export function getRedirectUriForLocale(locale: SupportedLocale = "no"): string {
+export function getRedirectUriForLocale(
+  locale: SupportedLocale = defaultLocale,
+): string {
   const baseUrl = getBaseUrl();
   return `${baseUrl}/${locale}/callback`;
 }
@@ -157,31 +162,37 @@ export function getRedirectUriForLocale(locale: SupportedLocale = "no"): string 
  */
 export function detectRedirectMismatch(
   configuredUri: string,
-  expectedLocale: SupportedLocale = "no"
+  expectedLocale: SupportedLocale = defaultLocale,
 ): { isMismatch: boolean; reason?: string; suggestion?: string } {
   const expectedUri = getRedirectUriForLocale(expectedLocale);
-  
+
   if (configuredUri === expectedUri) {
     return { isMismatch: false };
   }
-  
+
   // Common mismatches
-  if (configuredUri.includes("/callback/") && !expectedUri.includes("/callback/")) {
+  if (
+    configuredUri.includes("/callback/") &&
+    !expectedUri.includes("/callback/")
+  ) {
     return {
       isMismatch: true,
       reason: "Trailing slash in callback path",
       suggestion: `Remove trailing slash: ${expectedUri}`,
     };
   }
-  
-  if (!configuredUri.includes(`/${expectedLocale}/`) && expectedUri.includes(`/${expectedLocale}/`)) {
+
+  if (
+    !configuredUri.includes(`/${expectedLocale}/`) &&
+    expectedUri.includes(`/${expectedLocale}/`)
+  ) {
     return {
       isMismatch: true,
       reason: `Missing locale prefix /${expectedLocale}/`,
       suggestion: `Add locale prefix: ${expectedUri}`,
     };
   }
-  
+
   if (configuredUri.startsWith("http:") && expectedUri.startsWith("https:")) {
     return {
       isMismatch: true,
@@ -189,7 +200,7 @@ export function detectRedirectMismatch(
       suggestion: `Use HTTPS: ${expectedUri}`,
     };
   }
-  
+
   return {
     isMismatch: true,
     reason: "URI mismatch detected",
