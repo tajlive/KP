@@ -24,6 +24,8 @@ Du er den dedikerte auth-eksperten for Klarpakke. Alle endringer i `src/lib/auth
 | Kommando | Hva den gjør |
 |----------|--------------|
 | `npm run oauth:check` | Sjekker konsistens i kode + env |
+| `npm run oauth:check -- --dry-run` | Viser diff mot Supabase, endrer ikke remote |
+| `npm run oauth:check -- --apply` | Oppdaterer Supabase Auth URL-config etter diff |
 | `npm run oauth:fix` | Auto-fikser kode-problemer |
 | `npm run oauth:tunnel <url>` | Bytter til tunnel-URL |
 | `npx tsx scripts/google-oauth-verifier.ts --copy-paste` | Viser Google Console config |
@@ -78,30 +80,17 @@ Etter endringer, dokumenter:
 
 Når brukeren endrer callback-oppsettet, gi dem dette:
 
-**Google Cloud Console** → APIs & Services → Credentials → OAuth 2.0 Client ID
-```
-Authorized JavaScript origins:
-  https://www.klarpakke.no
-  https://klarpakke.no
-
-Authorized redirect URIs:
-  https://www.klarpakke.no/no/callback
-  https://www.klarpakke.no/en/callback
-  https://www.klarpakke.no/th/callback
-  https://www.klarpakke.no/zh/callback
-```
-
 **Supabase Dashboard** → Authentication → URL Configuration
 ```
-Site URL: https://www.klarpakke.no/no/callback
+Site URL: https://www.klarpakke.no
 
 Additional Redirect URLs:
   https://www.klarpakke.no/no/callback
   https://www.klarpakke.no/en/callback
-  https://www.klarpakke.no/th/callback
-  https://www.klarpakke.no/zh/callback
-  https://klarpakke.fly.dev/no/callback        # Fly.io staging/default URL
   http://localhost:3000/no/callback
-  # Legacy (fjernes etter full migrering):
-  # https://*.vercel.app/no/callback
+```
+
+**Google Cloud Console / Microsoft Entra** → legg til Supabase provider callback under Authorized redirect URIs
+```
+https://<project-ref>.supabase.co/auth/v1/callback
 ```

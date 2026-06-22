@@ -7,25 +7,35 @@
  *   npx tsx scripts/oauth-guard.ts --fix     # Auto-fix code issues
  *   npx tsx scripts/oauth-guard.ts --json    # CI-friendly output
  *   npx tsx scripts/oauth-guard.ts --tunnel https://xxxx.trycloudflare.com
- *
- * What it checks:
- *   1. No hardcoded `/auth/callback` paths remain in source code
- *   2. All OAuth redirects use `/no/callback` or `getCallbackUrl()`
- *   3. Password recovery redirects go to `/no/update-password`
- *   4. Supabase Auth URL Configuration matches code (requires service key)
- *   5. Environment files have valid NEXT_PUBLIC_APP_URL (no trailing \n)
+ *   npx tsx scripts/oauth-guard.ts --dry-run # Show remote diff, do not change
+ *   npx tsx scripts/oauth-guard.ts --apply   # Apply remote diff to Supabase
+ *   npx tsx scripts/oauth-guard.ts --open    # Open Google Cloud Console
  */
 
 import * as fs from "fs";
 import * as path from "path";
+import { spawn } from "child_process";
 import { locales, defaultLocale } from "../src/i18n/config";
 
 // ─── Config ───────────────────────────────────────────────────────────────
 const SRC_DIR = path.resolve(process.cwd(), "src");
 const ENV_FILES = [".env.local", ".env.production", ".env"];
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  "https://vuxbjlykgmzskxbclquf.supabase.co";
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SNAPSHOT_DIR = path.resolve(process.cwd(), ".kimi/oauth-guard-snapshots");
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+const MANAGEMENT_API_BASE = "https://api.supabase.com/v1/projects";
+
+const CANONICAL_APP_URL = "https://www.klarpakke.no";
+const DEVELOPMENT_APP_ORIGIN = "http://localhost:3000";
+
+const DESIRED_SITE_URL = CANONICAL_APP_URL;
+const DESIRED_URI_ALLOW_LIST = [
+  ...locales.map((locale) => `${CANONICAL_APP_URL}/${locale}/callback`),
+  `${DEVELOPMENT_APP_ORIGIN}/${defaultLocale}/callback`,
+];
+
+const SENSITIVE_KEY_RE = /pass|secret|key|token|credential|smtp|apikey/i;
 
 // ─── Types ────────────────────────────────────────────────────────────────
 type IssueSeverity = "error" | "warning" | "info";
@@ -38,18 +48,38 @@ interface Issue {
   fix?: { old: string; new: string };
 }
 
+interface ManagementAuthConfig {
+  site_url?: string;
+  uri_allow_list?: string | string[];
+  [key: string]: unknown;
+}
+
+interface RemoteDiff {
+  siteUrlChanged: boolean;
+  added: string[];
+  removed: string[];
+}
+
+interface RemoteResult {
+  reachable: boolean;
+  projectRef?: string;
+  current?: ManagementAuthConfig;
+  desired?: { site_url: string; uri_allow_list: string[] };
+  diff?: RemoteDiff;
+  matchesDesired?: boolean;
+  issues: Issue[];
+  snapshotPath?: string;
+  applyError?: string;
+  verificationOk?: boolean;
+}
+
 interface GuardResult {
   ok: boolean;
   issues: Issue[];
-  supabase?: {
-    reachable: boolean;
-    siteUrl?: string;
-    redirectUrls?: string[];
-    googleEnabled?: boolean;
-  };
+  remote?: RemoteResult;
   copyPaste?: {
-    googleConsole: string;
     supabaseUrls: string;
+    providerConsole: string;
   };
 }
 
@@ -63,10 +93,6 @@ const C = {
   dim: "\x1b[2m",
   bold: "\x1b[1m",
 };
-
-function color(sev: IssueSeverity): string {
-  return sev === "error" ? C.red : sev === "warning" ? C.ylw : C.blu;
-}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 function* walkDir(dir: string): Generator<string> {
@@ -87,6 +113,45 @@ function readLines(file: string): string[] {
 
 function getRelative(file: string): string {
   return path.relative(process.cwd(), file);
+}
+
+function getProjectRef(): string | undefined {
+  if (!SUPABASE_URL) return undefined;
+  const match = SUPABASE_URL.match(/https?:\/\/([a-z0-9]{20})\.supabase\.co/i);
+  return match?.[1];
+}
+
+function parseUriAllowList(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === "string") {
+    return value
+      .split(/\r?\n|,/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function formatUriAllowList(list: string[]): string {
+  return list.join("\n");
+}
+
+function maskSecrets(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(maskSecrets);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      out[k] = SENSITIVE_KEY_RE.test(k) ? "***" : maskSecrets(v);
+    }
+    return out;
+  }
+  return value;
+}
+
+function nowTimestamp(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 }
 
 // ─── Scanners ─────────────────────────────────────────────────────────────
@@ -110,13 +175,12 @@ function scanCodeFiles(): Issue[] {
 
       // 1. Hardcoded /auth/callback in strings/URLs
       if (line.includes("/auth/callback") && !line.trim().startsWith("//") && !line.trim().startsWith("*")) {
-        // Determine best fix based on context
-        let suggestion = "Replace /auth/callback with /callback (e.g. /no/callback) or use getCallbackUrl()";
+        const suggestion = "Replace /auth/callback with /callback (e.g. /no/callback) or use getCallbackUrl()";
         let fixNew = line.replace(/\/auth\/callback/g, "/no/callback");
 
         if (rel.includes("dynamic-redirects") || rel.includes("diagnose") || rel.includes("OAuthDebug")) {
-          fixNew = line.replace(/"/g, "").includes("/auth/callback") 
-            ? line.replace(/"\/auth\/callback"/g, "\"/callback\"") 
+          fixNew = line.replace(/"/g, "").includes("/auth/callback")
+            ? line.replace(/"\/auth\/callback"/g, "\"/callback\"")
             : line.replace(/\/auth\/callback/g, "/callback");
         }
 
@@ -198,6 +262,7 @@ function scanEnvFiles(): Issue[] {
         });
       }
 
+      let validUrl = true;
       try {
         const url = new URL(value.replace(/^"|"$/g, ""));
         if (url.protocol !== "https:" && !value.includes("localhost")) {
@@ -210,6 +275,7 @@ function scanEnvFiles(): Issue[] {
           });
         }
       } catch {
+        validUrl = false;
         issues.push({
           file: envName,
           line: i + 1,
@@ -218,44 +284,290 @@ function scanEnvFiles(): Issue[] {
           suggestion: "Set a valid canonical URL like https://www.klarpakke.no",
         });
       }
+
+      if (validUrl) {
+        const isProdContext =
+          process.env.NODE_ENV === "production" || envName === ".env.production";
+        const cleanValue = value.replace(/^"|"$/g, "").replace(/\\n/g, "");
+        if (isProdContext && cleanValue !== CANONICAL_APP_URL && !cleanValue.includes("localhost")) {
+          issues.push({
+            file: envName,
+            line: i + 1,
+            severity: "error",
+            message: `NEXT_PUBLIC_APP_URL must be ${CANONICAL_APP_URL} in production`,
+            suggestion: `Set NEXT_PUBLIC_APP_URL=${CANONICAL_APP_URL}`,
+          });
+        }
+      }
     }
   }
 
   return issues;
 }
 
-// ─── Supabase Remote Check ────────────────────────────────────────────────
-async function checkSupabaseRemote(): Promise<GuardResult["supabase"]> {
-  if (!SUPABASE_SERVICE_KEY) return undefined;
-
+// ─── Supabase Management API ──────────────────────────────────────────────
+async function fetchAuthConfig(ref: string): Promise<{ ok: boolean; data?: ManagementAuthConfig; error?: string }> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/config`, {
+    const res = await fetch(`${MANAGEMENT_API_BASE}/${ref}/config/auth`, {
       headers: {
-        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_ACCESS_TOKEN}`,
         "Content-Type": "application/json",
       },
     });
 
     if (!res.ok) {
-      return { reachable: false };
+      return { ok: false, error: `GET ${res.status} ${res.statusText}` };
     }
 
-    const data = await res.json() as {
-      site_url?: string;
-      uri_allow_list?: string[];
-      external_providers?: Array<{ name: string; enabled: boolean }>;
-    };
+    const data = await res.json() as ManagementAuthConfig;
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+async function patchAuthConfig(
+  ref: string,
+  body: { site_url: string; uri_allow_list: string }
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${MANAGEMENT_API_BASE}/${ref}/config/auth`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${SUPABASE_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      return { ok: false, error: `PATCH ${res.status} ${res.statusText}${text ? ` — ${text}` : ""}` };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+function computeRemoteDiff(current: ManagementAuthConfig): RemoteDiff {
+  const currentSiteUrl = current.site_url ?? "";
+  const currentUris = new Set(parseUriAllowList(current.uri_allow_list));
+  const desiredUris = new Set(DESIRED_URI_ALLOW_LIST);
+
+  return {
+    siteUrlChanged: currentSiteUrl !== DESIRED_SITE_URL,
+    added: DESIRED_URI_ALLOW_LIST.filter((u) => !currentUris.has(u)),
+    removed: [...currentUris].filter((u) => !desiredUris.has(u)),
+  };
+}
+
+function providerIssues(config: ManagementAuthConfig): Issue[] {
+  const issues: Issue[] = [];
+  const providers: { enabledKey: string; clientIdKey: string; name: string }[] = [
+    { enabledKey: "external_google_enabled", clientIdKey: "external_google_client_id", name: "Google" },
+    { enabledKey: "external_azure_enabled", clientIdKey: "external_azure_client_id", name: "Microsoft" },
+  ];
+
+  for (const { enabledKey, clientIdKey, name } of providers) {
+    const enabled = config[enabledKey] === true;
+    const clientId = config[clientIdKey];
+    if (enabled && !clientId) {
+      issues.push({
+        file: "Supabase Auth Dashboard",
+        line: 0,
+        severity: "warning",
+        message: `${name} provider is enabled in Supabase but missing client_id`,
+        suggestion: `Configure ${name} client_id in Authentication → Providers`,
+      });
+    }
+  }
+
+  return issues;
+}
+
+function writeSnapshot(ref: string, current: ManagementAuthConfig): string {
+  fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
+  const fileName = `${nowTimestamp()}.json`;
+  const filePath = path.join(SNAPSHOT_DIR, fileName);
+
+  const snapshot = {
+    timestamp: new Date().toISOString(),
+    projectRef: ref,
+    desired: {
+      site_url: DESIRED_SITE_URL,
+      uri_allow_list: DESIRED_URI_ALLOW_LIST,
+    },
+    rollback: {
+      site_url: current.site_url ?? "",
+      uri_allow_list: parseUriAllowList(current.uri_allow_list),
+    },
+    current: maskSecrets(current),
+  };
+
+  fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2) + "\n", "utf-8");
+  return filePath;
+}
+
+async function checkRemote(requireEnv: boolean, apply: boolean): Promise<RemoteResult> {
+  const ref = getProjectRef();
+
+  if (!SUPABASE_URL || !ref || !SUPABASE_ACCESS_TOKEN) {
+    const missing = [
+      !SUPABASE_URL && "NEXT_PUBLIC_SUPABASE_URL",
+      !SUPABASE_ACCESS_TOKEN && "SUPABASE_ACCESS_TOKEN",
+    ].filter(Boolean);
+    const message = `Missing environment variable(s): ${missing.join(", ")}`;
+
+    if (requireEnv) {
+      return {
+        reachable: false,
+        issues: [{
+          file: "scripts/oauth-guard.ts",
+          line: 0,
+          severity: "error",
+          message,
+          suggestion: "Set the required variables and re-run the command",
+        }],
+      };
+    }
 
     return {
-      reachable: true,
-      siteUrl: data.site_url,
-      redirectUrls: data.uri_allow_list,
-      googleEnabled: data.external_providers?.find(p => p.name === "google")?.enabled ?? false,
+      reachable: false,
+      issues: [{
+        file: "scripts/oauth-guard.ts",
+        line: 0,
+        severity: "info",
+        message: `${message} — skipping remote Supabase check`,
+        suggestion: "Set the variables to enable remote config verification",
+      }],
     };
-  } catch {
-    return { reachable: false };
   }
+
+  const { ok, data, error } = await fetchAuthConfig(ref);
+  if (!ok || !data) {
+    return {
+      reachable: false,
+      projectRef: ref,
+      issues: [{
+        file: "Supabase Management API",
+        line: 0,
+        severity: requireEnv ? "error" : "warning",
+        message: `Could not read Supabase Auth config${error ? `: ${error}` : ""}`,
+        suggestion: "Verify your SUPABASE_ACCESS_TOKEN and project ref",
+      }],
+    };
+  }
+
+  const diff = computeRemoteDiff(data);
+  const matchesDesired = !diff.siteUrlChanged && diff.added.length === 0 && diff.removed.length === 0;
+  const issues: Issue[] = [...providerIssues(data)];
+
+  if (!matchesDesired && !apply) {
+    issues.push({
+      file: "Supabase Auth Dashboard",
+      line: 0,
+      severity: "warning",
+      message: "Supabase Auth URL configuration does not match desired values",
+      suggestion: "Run with --apply to update remote config, or --dry-run to preview",
+    });
+  }
+
+  let snapshotPath: string | undefined;
+  let applyError: string | undefined;
+  let verificationOk: boolean | undefined;
+
+  if (apply) {
+    snapshotPath = writeSnapshot(ref, data);
+    printDiff(diff, data);
+
+    console.log(`${C.blu}Applying changes to Supabase...${C.rst}\n`);
+    const patchBody = {
+      site_url: DESIRED_SITE_URL,
+      uri_allow_list: formatUriAllowList(DESIRED_URI_ALLOW_LIST),
+    };
+    const patch = await patchAuthConfig(ref, patchBody);
+
+    if (!patch.ok) {
+      applyError = patch.error;
+      issues.push({
+        file: "Supabase Management API",
+        line: 0,
+        severity: "error",
+        message: `Failed to apply config: ${patch.error}`,
+        suggestion: "Check the snapshot and retry, or revert manually",
+      });
+    } else {
+      console.log(`${C.grn}✓ PATCH succeeded${C.rst}\n`);
+      console.log(`${C.blu}Verifying...${C.rst}`);
+      const verify = await fetchAuthConfig(ref);
+      if (!verify.ok || !verify.data) {
+        verificationOk = false;
+        issues.push({
+          file: "Supabase Management API",
+          line: 0,
+          severity: "error",
+          message: `Could not verify config after apply${verify.error ? `: ${verify.error}` : ""}`,
+          suggestion: "Check the Supabase Dashboard manually",
+        });
+      } else {
+        const verifyDiff = computeRemoteDiff(verify.data);
+        verificationOk = !verifyDiff.siteUrlChanged && verifyDiff.added.length === 0 && verifyDiff.removed.length === 0;
+        if (!verificationOk) {
+          issues.push({
+            file: "Supabase Auth Dashboard",
+            line: 0,
+            severity: "error",
+            message: "Verification failed: remote config does not match desired values after apply",
+            suggestion: "Check the Supabase Dashboard and logs",
+          });
+        } else {
+          console.log(`${C.grn}✓ Verified${C.rst}\n`);
+        }
+      }
+    }
+
+    if (snapshotPath) {
+      console.log(`${C.dim}Snapshot saved to:${C.rst} ${snapshotPath}`);
+      console.log(`${C.ylw}Rollback:${C.rst} npx tsx scripts/oauth-guard.ts --rollback ${snapshotPath}\n`);
+    }
+  }
+
+  return {
+    reachable: true,
+    projectRef: ref,
+    current: data,
+    desired: { site_url: DESIRED_SITE_URL, uri_allow_list: DESIRED_URI_ALLOW_LIST },
+    diff,
+    matchesDesired,
+    issues,
+    snapshotPath,
+    applyError,
+    verificationOk,
+  };
+}
+
+function printDiff(diff: RemoteDiff, current: ManagementAuthConfig): void {
+  const currentSiteUrl = current.site_url ?? "";
+
+  console.log(`${C.blu}Remote configuration diff:${C.rst}\n`);
+  if (diff.siteUrlChanged) {
+    console.log(`  Site URL:`);
+    console.log(`    ${C.red}-${currentSiteUrl || "(empty)"}${C.rst}`);
+    console.log(`    ${C.grn}+${DESIRED_SITE_URL}${C.rst}`);
+  } else {
+    console.log(`  Site URL: ${C.grn}${currentSiteUrl}${C.rst} (no change)`);
+  }
+
+  console.log(`\n  Additional Redirect URLs:`);
+  if (diff.added.length === 0 && diff.removed.length === 0) {
+    console.log(`    ${C.grn}(no changes)${C.rst}`);
+  } else {
+    for (const u of diff.added) console.log(`    ${C.grn}+ ${u}${C.rst}`);
+    for (const u of diff.removed) console.log(`    ${C.red}- ${u}${C.rst}`);
+  }
+  console.log("");
 }
 
 // ─── Fix Engine ───────────────────────────────────────────────────────────
@@ -295,45 +607,34 @@ function applyFixes(issues: Issue[]): number {
 }
 
 // ─── Copy-Paste Generator ─────────────────────────────────────────────────
-function generateCopyPaste(appUrl: string): GuardResult["copyPaste"] {
-  const base = appUrl.replace(/\/$/, "");
-
-  const origins = [base];
-  if (base.includes("www.")) {
-    origins.push(base.replace("www.", ""));
-  } else {
-    origins.push(base.replace(/^(https?:\/\/)/, "$1www."));
-  }
-
-  const redirectUris = locales.map(l => `${base}/${l}/callback`);
-
-  const googleConsole = [
-    "=== GOOGLE CLOUD CONSOLE ===",
-    "",
-    "Authorized JavaScript origins:",
-    ...origins.map(o => `  ${o}`),
-    "",
-    "Authorized redirect URIs:",
-    ...redirectUris.map(u => `  ${u}`),
-    "",
-    "NOTE: URIs must match EXACTLY (no trailing slashes)",
-  ].join("\n");
+function generateCopyPaste(projectRef?: string): GuardResult["copyPaste"] {
+  const providerCallback = projectRef
+    ? `https://${projectRef}.supabase.co/auth/v1/callback`
+    : "https://<project-ref>.supabase.co/auth/v1/callback";
 
   const supabaseUrls = [
-    "=== SUPABASE AUTH URL CONFIGURATION ===",
+    "=== Supabase Auth URL Configuration ===",
     "",
-    `Site URL: ${base}/${defaultLocale}/callback`,
+    `Site URL: ${DESIRED_SITE_URL}`,
     "",
     "Additional Redirect URLs:",
-    ...redirectUris.map(u => `  ${u}`),
-    "  https://*.vercel.app/no/callback",
-    "  http://localhost:3000/no/callback",
+    ...DESIRED_URI_ALLOW_LIST.map((u) => `  ${u}`),
   ].join("\n");
 
-  return { googleConsole, supabaseUrls };
+  const providerConsole = [
+    "=== Google Cloud Console / Microsoft Entra ===",
+    "",
+    "Supabase provider callback (add to Authorized redirect URIs):",
+    `  ${providerCallback}`,
+    "",
+    "Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID",
+    "Microsoft Entra → App registrations → Authentication → Redirect URIs",
+  ].join("\n");
+
+  return { supabaseUrls, providerConsole };
 }
 
-// ─── Tunnel Updater ───────────────────────────────────────────────────────
+// ─── Tunnel Updater ────────────────────────────────────────────────────────
 function updateEnvForTunnel(tunnelUrl: string): void {
   const clean = tunnelUrl.replace(/\/$/, "");
   let updated = false;
@@ -361,13 +662,75 @@ function updateEnvForTunnel(tunnelUrl: string): void {
   }
 }
 
+// ─── Rollback ─────────────────────────────────────────────────────────────
+interface SnapshotFile {
+  projectRef: string;
+  rollback?: { site_url?: string; uri_allow_list?: string | string[] };
+}
+
+async function runRollback(snapshotPath: string): Promise<void> {
+  if (!fs.existsSync(snapshotPath)) {
+    console.error(`${C.red}Snapshot not found:${C.rst} ${snapshotPath}`);
+    process.exit(1);
+  }
+
+  let snapshot: SnapshotFile | undefined;
+  try {
+    snapshot = JSON.parse(fs.readFileSync(snapshotPath, "utf-8")) as SnapshotFile;
+  } catch {
+    console.error(`${C.red}Invalid snapshot file:${C.rst} ${snapshotPath}`);
+    process.exit(1);
+  }
+
+  if (!snapshot) {
+    console.error(`${C.red}Invalid snapshot file:${C.rst} ${snapshotPath}`);
+    process.exit(1);
+  }
+
+  if (!SUPABASE_ACCESS_TOKEN) {
+    console.error(`${C.red}SUPABASE_ACCESS_TOKEN is required for rollback${C.rst}`);
+    process.exit(1);
+  }
+
+  const ref = snapshot.projectRef;
+  const rollback = snapshot.rollback ?? {};
+  const body = {
+    site_url: rollback.site_url ?? "",
+    uri_allow_list: formatUriAllowList(parseUriAllowList(rollback.uri_allow_list)),
+  };
+
+  console.log(`${C.blu}Rolling back Supabase Auth config for ${ref}...${C.rst}\n`);
+  const result = await patchAuthConfig(ref, body);
+  if (!result.ok) {
+    console.error(`${C.red}Rollback failed:${C.rst} ${result.error}`);
+    process.exit(1);
+  }
+  console.log(`${C.grn}✓ Rollback applied${C.rst}`);
+  process.exit(0);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────
 async function main() {
   const args = process.argv.slice(2);
   const shouldFix = args.includes("--fix");
   const jsonOutput = args.includes("--json");
+  const dryRun = args.includes("--dry-run");
+  const apply = args.includes("--apply");
+  const openConsole = args.includes("--open");
+  const rollbackIdx = args.indexOf("--rollback");
+  const rollbackFile = rollbackIdx >= 0 ? args[rollbackIdx + 1] : undefined;
   const tunnelIdx = args.indexOf("--tunnel");
   const tunnelUrl = tunnelIdx >= 0 ? args[tunnelIdx + 1] : undefined;
+
+  if (dryRun && apply) {
+    console.error(`${C.red}--dry-run and --apply are mutually exclusive${C.rst}`);
+    process.exit(1);
+  }
+
+  if (rollbackFile) {
+    await runRollback(rollbackFile);
+    return;
+  }
 
   if (tunnelUrl) {
     updateEnvForTunnel(tunnelUrl);
@@ -375,55 +738,35 @@ async function main() {
 
   const codeIssues = scanCodeFiles();
   const envIssues = scanEnvFiles();
-  const issues = [...codeIssues, ...envIssues];
+  let issues = [...codeIssues, ...envIssues];
 
-  // Determine app URL for copy-paste
-  let appUrl = "https://www.klarpakke.no";
-  for (const envName of ENV_FILES) {
-    const envPath = path.resolve(process.cwd(), envName);
-    if (!fs.existsSync(envPath)) continue;
-    const match = fs.readFileSync(envPath, "utf-8").match(/NEXT_PUBLIC_APP_URL=(.+)/);
-    if (match) {
-      appUrl = match[1].trim().replace(/^"|"$/g, "").replace(/\\n/g, "");
-      break;
+  if (apply && issues.some((i) => i.severity === "error")) {
+    if (!jsonOutput) {
+      console.error(`${C.red}Aborting --apply because local code/env errors exist.${C.rst}`);
     }
+    if (!jsonOutput) printIssues(issues);
+    process.exit(1);
   }
 
-  const supabase = await checkSupabaseRemote();
+  const remote = await checkRemote(dryRun || apply, apply);
+  issues = [...issues, ...remote.issues];
 
-  // Cross-check remote config if available
-  if (supabase?.reachable && supabase.redirectUrls) {
-    const expectedUris = locales.map(l => `${appUrl}/${l}/callback`);
-    for (const expected of expectedUris) {
-      if (!supabase.redirectUrls!.some(u => u.replace(/\/$/, "") === expected)) {
-        issues.push({
-          file: "Supabase Auth Dashboard",
-          line: 0,
-          severity: "warning",
-          message: `Missing redirect URL in Supabase: ${expected}`,
-          suggestion: "Add it to Authentication → URL Configuration",
-        });
-      }
-    }
-  }
+  const errors = issues.filter((i) => i.severity === "error");
+  const remoteMismatch = remote.reachable && !remote.matchesDesired;
+  const ok = errors.length === 0 && !remoteMismatch;
 
   const result: GuardResult = {
-    ok: issues.filter(i => i.severity === "error").length === 0,
+    ok,
     issues,
-    supabase,
-    copyPaste: generateCopyPaste(appUrl),
+    remote,
+    copyPaste: generateCopyPaste(remote.projectRef),
   };
 
-  // Apply fixes
-  let fixedCount = 0;
-  if (shouldFix) {
-    fixedCount = applyFixes(issues);
-  }
+  const fixedCount = shouldFix ? applyFixes(issues) : 0;
 
-  // Output
   if (jsonOutput) {
-    console.log(JSON.stringify(result, null, 2));
-    process.exit(result.ok ? 0 : 1);
+    console.log(JSON.stringify(maskResultForJson(result), null, 2));
+    process.exit(ok ? 0 : 1);
   }
 
   // Pretty output
@@ -431,50 +774,87 @@ async function main() {
   console.log(`${C.bold}${C.blu}║           OAuth Guard — Redirect URI Consistency Check      ║${C.rst}`);
   console.log(`${C.bold}${C.blu}╚════════════════════════════════════════════════════════════╝${C.rst}\n`);
 
-  const errors = issues.filter(i => i.severity === "error");
-  const warnings = issues.filter(i => i.severity === "warning");
-
-  if (errors.length === 0 && warnings.length === 0) {
-    console.log(`${C.grn}✅ No OAuth redirect URI issues found!${C.rst}\n`);
-  } else {
-    if (errors.length > 0) {
-      console.log(`${C.red}❌ ${errors.length} error(s) found:${C.rst}\n`);
-      for (const issue of errors) {
-        console.log(`  ${C.red}●${C.rst} ${C.dim}${issue.file}:${issue.line}${C.rst}`);
-        console.log(`    ${issue.message}`);
-        console.log(`    ${C.ylw}→${C.rst} ${issue.suggestion}\n`);
-      }
-    }
-    if (warnings.length > 0) {
-      console.log(`${C.ylw}⚠️  ${warnings.length} warning(s):${C.rst}\n`);
-      for (const issue of warnings) {
-        console.log(`  ${C.ylw}●${C.rst} ${C.dim}${issue.file}:${issue.line}${C.rst}`);
-        console.log(`    ${issue.message}`);
-        console.log(`    ${C.ylw}→${C.rst} ${issue.suggestion}\n`);
-      }
-    }
-  }
+  printIssues(issues);
 
   if (shouldFix) {
     console.log(`${C.grn}Fixed ${fixedCount} line(s).${C.rst}\n`);
   }
 
-  if (supabase) {
-    console.log(`${C.blu}Supabase Auth:${C.rst} ${supabase.reachable ? (supabase.googleEnabled ? `${C.grn}✅ reachable, Google enabled` : `${C.ylw}⚠️ reachable, Google disabled`) : `${C.ylw}⚠️ unreachable (set SUPABASE_SERVICE_ROLE_KEY to check)`}${C.rst}\n`);
+  if (remote.reachable && remote.diff && !apply) {
+    printDiff(remote.diff, remote.current!);
   }
 
   if (result.copyPaste) {
     console.log(`${C.dim}────────────────────────────────────────────────────────────${C.rst}`);
-    console.log(result.copyPaste.googleConsole);
-    console.log("");
     console.log(result.copyPaste.supabaseUrls);
+    console.log("");
+    console.log(result.copyPaste.providerConsole);
     console.log(`${C.dim}────────────────────────────────────────────────────────────${C.rst}\n`);
   }
 
-  process.exit(result.ok ? 0 : 1);
+  if (openConsole) {
+    const url = "https://console.cloud.google.com/apis/credentials";
+    console.log(`${C.blu}Opening Google Cloud Console...${C.rst} ${url}\n`);
+    try {
+      spawn("open", [url], { stdio: "ignore", detached: true });
+    } catch {
+      // Ignore open failures
+    }
+  }
+
+  process.exit(ok ? 0 : 1);
 }
 
-main().catch(err => {
+function printIssues(issues: Issue[]): void {
+  const errors = issues.filter((i) => i.severity === "error");
+  const warnings = issues.filter((i) => i.severity === "warning");
+  const infos = issues.filter((i) => i.severity === "info");
+
+  if (errors.length === 0 && warnings.length === 0 && infos.length === 0) {
+    console.log(`${C.grn}✅ No OAuth redirect URI issues found!${C.rst}\n`);
+    return;
+  }
+
+  if (errors.length > 0) {
+    console.log(`${C.red}❌ ${errors.length} error(s) found:${C.rst}\n`);
+    for (const issue of errors) {
+      console.log(`  ${C.red}●${C.rst} ${C.dim}${issue.file}:${issue.line}${C.rst}`);
+      console.log(`    ${issue.message}`);
+      console.log(`    ${C.ylw}→${C.rst} ${issue.suggestion}\n`);
+    }
+  }
+
+  if (warnings.length > 0) {
+    console.log(`${C.ylw}⚠️  ${warnings.length} warning(s):${C.rst}\n`);
+    for (const issue of warnings) {
+      console.log(`  ${C.ylw}●${C.rst} ${C.dim}${issue.file}:${issue.line}${C.rst}`);
+      console.log(`    ${issue.message}`);
+      console.log(`    ${C.ylw}→${C.rst} ${issue.suggestion}\n`);
+    }
+  }
+
+  if (infos.length > 0) {
+    for (const issue of infos) {
+      console.log(`  ${C.blu}ℹ${C.rst} ${C.dim}${issue.file}:${issue.line}${C.rst}`);
+      console.log(`    ${issue.message}`);
+      console.log(`    ${C.ylw}→${C.rst} ${issue.suggestion}\n`);
+    }
+  }
+}
+
+function maskResultForJson(result: GuardResult): unknown {
+  return {
+    ...result,
+    remote: result.remote
+      ? {
+          ...result.remote,
+          current: result.remote.current ? maskSecrets(result.remote.current) : undefined,
+        }
+      : undefined,
+  };
+}
+
+main().catch((err) => {
   console.error(`${C.red}Fatal error:${C.rst}`, err);
   process.exit(1);
 });

@@ -1,30 +1,38 @@
-import { buildAuthRedirect } from "@/lib/auth/redirects";
+import { getCanonicalAppOrigin } from "@/lib/auth/config";
+import {
+  generateCodeChallenge,
+  generateCodeVerifier,
+  generateState,
+} from "@/lib/auth/crypto";
+import { sanitizePostAuthRedirect } from "@/lib/auth/sanitize-redirect";
+import { getRedisRest } from "@/lib/redis-client";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { NextRequest, NextResponse } from "next/server";
-import { createHash, randomBytes } from "crypto";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const VIPPS_PKCE_COOKIE = "vipps_pkce_verifier";
-const VIPPS_STATE_PREFIX = "vipps_";
-
-function base64UrlEncode(buf: Buffer): string {
-  return buf
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
+const VIPPS_PKCE_COOKIE = "__Host-vipps-pkce";
+const VIPPS_STATE_COOKIE = "__Host-vipps-state";
+const VIPPS_CALLBACK_PATH = "/api/auth/vipps-callback";
 
 /**
  * GET /api/auth/vipps-url?locale=no&next=/dashboard
- * Returns { url } and sets vipps_pkce_verifier cookie for callback.
+ * Returns { url } and sets __Host-vipps-pkce / __Host-vipps-state cookies.
  */
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const locale = url.searchParams.get("locale") || "no";
-  const next = url.searchParams.get("next") || "";
+  const next = url.searchParams.get("next");
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
+  const { allowed } = checkRateLimit(`vipps-url:${ip}`, 5, 60_000);
+  if (!allowed) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
 
   if (!shouldShowVippsForRequest(request.headers)) {
     return NextResponse.json(
@@ -46,20 +54,21 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const redirectUri = buildAuthRedirect({ type: "oauth-callback", locale });
+  const redirectUri = `${getCanonicalAppOrigin()}${VIPPS_CALLBACK_PATH}`;
 
-  const codeVerifier = base64UrlEncode(randomBytes(32));
-  const codeChallenge = base64UrlEncode(
-    createHash("sha256").update(codeVerifier).digest(),
-  );
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  const state = generateState();
 
-  const statePayload = {
-    next: next || `/${locale}/dashboard`,
-    nonce: base64UrlEncode(randomBytes(16)),
-  };
-  const state =
-    VIPPS_STATE_PREFIX +
-    base64UrlEncode(Buffer.from(JSON.stringify(statePayload), "utf8"));
+  // Store locale + optional post-auth path server-side instead of in state.
+  const redis = getRedisRest();
+  if (redis) {
+    const stateData: { locale: string; next?: string } = { locale };
+    if (next) {
+      stateData.next = sanitizePostAuthRedirect(next, locale);
+    }
+    await redis.set(`vipps:state:${state}`, stateData, { ex: 600 });
+  }
 
   const authUrl = new URL(
     `${baseUrl}/access-management-1.0/access/oauth2/auth`,
@@ -73,13 +82,15 @@ export async function GET(request: NextRequest) {
   authUrl.searchParams.set("code_challenge_method", "S256");
 
   const res = NextResponse.json({ url: authUrl.toString() });
-  res.cookies.set(VIPPS_PKCE_COOKIE, codeVerifier, {
+  const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "lax" as const,
     path: "/",
     maxAge: 600,
-  });
+  };
+  res.cookies.set(VIPPS_PKCE_COOKIE, codeVerifier, cookieOptions);
+  res.cookies.set(VIPPS_STATE_COOKIE, state, cookieOptions);
 
   return res;
 }

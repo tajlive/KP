@@ -153,6 +153,12 @@ export const AUTH_ERRORS: { [key: string]: string } = {
   vipps_missing_verifier: "Vipps-innlogging utløpt. Prøv igjen.",
   vipps_config: "Vipps er ikke konfigurert. Kontakt support.",
   vipps_userinfo: "Kunne ikke hente brukerinfo fra Vipps. Prøv igjen.",
+  vipps_email_not_verified: "E-postadressen fra Vipps er ikke bekreftet.",
+  vipps_email_exists:
+    "En konto med denne e-posten finnes allerede. Koble Vipps fra kontoinnstillingene.",
+  vipps_sub_linked_other:
+    "Vipps-kontoen er allerede koblet til en annen bruker.",
+  vipps_missing_params: "Ugyldig eller manglende Vipps-respons.",
 };
 
 // Get human-readable error message

@@ -74,3 +74,11 @@
 {"subject":".gitignore","predicate":"updated","object":"added .env*.local, *.local.save, .claude/settings.local.json","validFrom":"2026-06-22T00:52:46.485Z"}
 {"subject":"git-history","predicate":"requires","object":"git filter-repo rewrite with --replace-text and --invert-paths","validFrom":"2026-06-22T00:52:46.485Z"}
 {"subject":"Supabase","predicate":"requires","object":"rotate service role key, PAT, DB password; update Cloudflare/Woodpecker secrets","validFrom":"2026-06-22T00:52:46.485Z"}
+{"subject":"auth-system","predicate":"uses","object":"scripts/oauth-guard.ts","validFrom":"2026-06-22T01:34:19.550Z"}
+{"subject":"oauth-guard","predicate":"uses","object":"Supabase Management API","validFrom":"2026-06-22T01:34:19.551Z"}
+{"subject":"oauth-guard","predicate":"requires","object":"SUPABASE_ACCESS_TOKEN","validFrom":"2026-06-22T01:34:19.555Z"}
+{"subject":"oauth-guard","predicate":"configures","object":"site_url","validFrom":"2026-06-22T01:34:19.555Z"}
+{"subject":"oauth-guard","predicate":"configures","object":"uri_allow_list","validFrom":"2026-06-22T01:34:19.555Z"}
+{"subject":"oauth-guard","predicate":"supports","object":"--dry-run","validFrom":"2026-06-22T01:34:19.555Z"}
+{"subject":"oauth-guard","predicate":"supports","object":"--apply","validFrom":"2026-06-22T01:34:19.555Z"}
+{"subject":"oauth-guard","predicate":"supports","object":"--rollback","validFrom":"2026-06-22T01:34:19.555Z"}
