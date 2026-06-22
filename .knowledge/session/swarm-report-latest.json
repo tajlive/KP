@@ -1,48 +1,18 @@
 {
-  "workflow": "review",
+  "workflow": "security",
   "files": [
-    ".knowledge/patterns/hot-files.md",
-    ".knowledge/patterns/scripts-overview.md",
-    "supabase/migrations/20260507041802_ai_autopilot_configs.sql",
-    "supabase/migrations/999_fix_materialized_view.sql"
+    "src/middleware/auth.ts"
   ],
-  "timestamp": "2026-05-09T14:26:43.626Z",
+  "timestamp": "2026-06-22T02:01:12.952Z",
   "summary": {
-    "passes": 24,
+    "passes": 4,
     "warns": 0,
     "blocks": 0
   },
   "results": [
     {
-      "file": ".knowledge/patterns/hot-files.md",
+      "file": "src/middleware/auth.ts",
       "agents": [
-        {
-          "agent": "analyzer",
-          "complexity_score": 1,
-          "lines": 31,
-          "risks": [],
-          "suggestions": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "architect",
-          "adr_compliance": [
-            "KLA-91"
-          ],
-          "violations": [],
-          "boundary_check": "pass",
-          "approval": "proceed"
-        },
-        {
-          "agent": "tester",
-          "test_level": "P2",
-          "scenarios": [
-            "Basic functionality"
-          ],
-          "coverage_target": 80,
-          "has_test_file": false,
-          "approval": "proceed"
-        },
         {
           "agent": "security",
           "findings": [],
@@ -56,41 +26,11 @@
           "approval": "proceed"
         },
         {
-          "agent": "performance",
-          "findings": [],
-          "fixes": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "knowledge",
-          "files_created": [
-            "session/2026-05-09T14-26-43-620Z-hot-files-md.json"
-          ],
-          "patterns_identified": [],
-          "mem_palace_synced": false,
-          "wake_up_updated": false,
-          "approval": "proceed"
-        }
-      ]
-    },
-    {
-      "file": ".knowledge/patterns/scripts-overview.md",
-      "agents": [
-        {
           "agent": "analyzer",
-          "complexity_score": 1,
-          "lines": 35,
+          "complexity_score": 7,
+          "lines": 147,
           "risks": [],
           "suggestions": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "architect",
-          "adr_compliance": [
-            "KLA-91"
-          ],
-          "violations": [],
-          "boundary_check": "pass",
           "approval": "proceed"
         },
         {
@@ -104,147 +44,9 @@
           "approval": "proceed"
         },
         {
-          "agent": "security",
-          "findings": [],
-          "checked": [
-            "auth",
-            "api",
-            "db",
-            "trading",
-            "secrets"
-          ],
-          "approval": "proceed"
-        },
-        {
-          "agent": "performance",
-          "findings": [],
-          "fixes": [],
-          "approval": "proceed"
-        },
-        {
           "agent": "knowledge",
           "files_created": [
-            "session/2026-05-09T14-26-43-623Z-scripts-overview-md.json"
-          ],
-          "patterns_identified": [],
-          "mem_palace_synced": false,
-          "wake_up_updated": false,
-          "approval": "proceed"
-        }
-      ]
-    },
-    {
-      "file": "supabase/migrations/20260507041802_ai_autopilot_configs.sql",
-      "agents": [
-        {
-          "agent": "analyzer",
-          "complexity_score": 4,
-          "lines": 134,
-          "risks": [],
-          "suggestions": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "architect",
-          "adr_compliance": [
-            "KLA-91"
-          ],
-          "violations": [],
-          "boundary_check": "pass",
-          "approval": "proceed"
-        },
-        {
-          "agent": "tester",
-          "test_level": "P2",
-          "scenarios": [
-            "Basic functionality"
-          ],
-          "coverage_target": 80,
-          "has_test_file": false,
-          "approval": "proceed"
-        },
-        {
-          "agent": "security",
-          "findings": [],
-          "checked": [
-            "auth",
-            "api",
-            "db",
-            "trading",
-            "secrets"
-          ],
-          "approval": "proceed"
-        },
-        {
-          "agent": "performance",
-          "findings": [],
-          "fixes": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "knowledge",
-          "files_created": [
-            "session/2026-05-09T14-26-43-624Z-20260507041802_ai_autopilot_configs-sql.json"
-          ],
-          "patterns_identified": [],
-          "mem_palace_synced": false,
-          "wake_up_updated": false,
-          "approval": "proceed"
-        }
-      ]
-    },
-    {
-      "file": "supabase/migrations/999_fix_materialized_view.sql",
-      "agents": [
-        {
-          "agent": "analyzer",
-          "complexity_score": 6,
-          "lines": 257,
-          "risks": [],
-          "suggestions": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "architect",
-          "adr_compliance": [
-            "KLA-91"
-          ],
-          "violations": [],
-          "boundary_check": "pass",
-          "approval": "proceed"
-        },
-        {
-          "agent": "tester",
-          "test_level": "P2",
-          "scenarios": [
-            "Basic functionality"
-          ],
-          "coverage_target": 80,
-          "has_test_file": false,
-          "approval": "proceed"
-        },
-        {
-          "agent": "security",
-          "findings": [],
-          "checked": [
-            "auth",
-            "api",
-            "db",
-            "trading",
-            "secrets"
-          ],
-          "approval": "proceed"
-        },
-        {
-          "agent": "performance",
-          "findings": [],
-          "fixes": [],
-          "approval": "proceed"
-        },
-        {
-          "agent": "knowledge",
-          "files_created": [
-            "session/2026-05-09T14-26-43-625Z-999_fix_materialized_view-sql.json"
+            "session/2026-06-22T02-01-12-950Z-auth-ts.json"
           ],
           "patterns_identified": [],
           "mem_palace_synced": false,

@@ -1,4 +1,4 @@
-# Scripts Oversikt - 2026-05-11
+# Scripts Oversikt - 2026-06-22
 
 | Script | Beskrivelse |
 |--------|-------------|
@@ -9,7 +9,7 @@
 | ai-health-report.mjs | AI Health Report Generator v1.1 |
 | analyze-client-components.mjs | Analyze "use client" files to find TRUE candidates for Server Component conversi... |
 | analyze-oauth.ts | 🔍 Playwright OAuth Analysis Script |
-| apply-kla130.mjs | KLA-130: Apply KLT 500 bonus fix via Supabase REST API |
+| archive-old-sessions.mjs | 📦 Archive Old Session Snapshots |
 | audit-pages.ts | ${category} (${pages.length} pages)`); |
 | auth-debug-complete.sh | Farger |
 | auth-full-test.mjs | Full Auth Test Suite for Klarpakke |
@@ -17,15 +17,17 @@
 | auto-index-maintenance.mjs | 🔧 Automated Index Maintenance |
 | auto-optimizer-run.mjs | 🤖 Auto-Optimizer — Kontinuerlig system-overvåking og optimalisering |
 | automation-preflight.mjs | Preflight for maksimal lok automasjon (MCP/CLI-forutsetninger). |
-| autopilot-deploy.sh | ============================================================================= |
 | autopilot-local.sh | ============================================================================= |
 | backup-db.sh | ============================================================================= |
 | batch-commit.sh | ═══════════════════════════════════════════════════════════════════════════════ |
+| batch-migrate-workers.mjs | Batch-konverterer simple Next.js API routes til Cloudflare Workers |
 | beta-full-deploy-local.sh | Run the unified deploy script from package.json |
 | bootstrap-github-secrets.sh | bootstrap-github-secrets.sh |
 | build-knowledge-graph.sh | Build Knowledge Graph for Klarpakke |
 | build-performance.mjs | Build Performance Tracker v1.0 |
-| check-db-consistency.sh | ============================================================================= |
+| cf-deploy.mjs | Cloudflare Pages Deploy Script |
+| cf-post-build.mjs | Post-build script for Cloudflare Pages |
+| cf-pre-build.mjs | Pre-build script for Cloudflare Pages |
 
 ## Kategorier
 - **Deploy:** *deploy*, *vercel*, *prod*
