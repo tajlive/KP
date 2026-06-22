@@ -40,11 +40,12 @@ src/middleware/auth.ts              # Session middleware
 src/middleware/auth-guard.ts        # Route protection
 src/middleware/oauth.ts             # OAuth redirect middleware
 src/middleware/i18n.ts              # Locale routing (affects auth URLs)
-src/app/[locale]/(auth)/callback/page.tsx       # PKCE callback handler
+src/app/[locale]/callback/route.ts              # Server-side PKCE callback handler
 src/app/[locale]/(auth)/login/page.tsx          # Login page
 src/app/[locale]/(auth)/register/page.tsx       # Register page
 src/app/[locale]/(auth)/reset-password/page.tsx # Reset password
 src/app/[locale]/(auth)/update-password/page.tsx# Update password
+src/app/api/auth/vipps-callback/route.ts        # Vipps OAuth callback
 src/lib/supabase/client.ts          # Browser client (cookie config)
 scripts/oauth-guard.ts              # Automated consistency checker
 ```
