@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateCronSecret } from "@/lib/auth/cron";
 import { getServiceRoleClient } from "@/lib/api-auth";
-import { DATA_SOURCE_THRESHOLDS } from "@/lib/trading/data-source-state";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,102 +11,68 @@ export async function GET(req: NextRequest) {
   }
 
   const staleThreshold =
-    Number(process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES) ||
-    DATA_SOURCE_THRESHOLDS.staleMinutes;
+    Number(process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES) || 15;
+  const nowIso = new Date().toISOString();
 
   try {
     const supabase = getServiceRoleClient();
-    const { data: botRow, error } = await supabase
-      .from("bot_health")
-      .select("last_heartbeat, updated_at, status, metadata")
-      .eq("bot_name", "signal-engine")
-      .maybeSingle();
 
-    if (error) {
-      return NextResponse.json(
-        { ok: false, reason: "bot_health_read_failed", error: error.message },
-        { status: 500 },
-      );
-    }
-
-    const heartbeatAt = botRow?.last_heartbeat ?? botRow?.updated_at ?? null;
-    const heartbeatAgeMinutes = heartbeatAt
-      ? (Date.now() - new Date(heartbeatAt).getTime()) / 60000
-      : null;
-
-    if (
-      heartbeatAgeMinutes != null &&
-      heartbeatAgeMinutes <= staleThreshold &&
-      botRow?.status !== "error"
-    ) {
-      return NextResponse.json({
-        ok: true,
-        healed: false,
-        heartbeatAgeMinutes: Number(heartbeatAgeMinutes.toFixed(2)),
-        staleThresholdMinutes: staleThreshold,
-        reason: "already_healthy",
-      });
-    }
-
-    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!baseUrl || !serviceRoleKey) {
-      return NextResponse.json(
-        {
-          ok: false,
-          healed: false,
-          reason: "missing_env",
-          message:
-            "NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required",
-        },
-        { status: 500 },
-      );
-    }
-
-    const invokeRes = await fetch(
-      `${baseUrl.replace(/\/$/, "")}/functions/v1/signal-engine`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${serviceRoleKey}`,
-          "Content-Type": "application/json",
-        },
-        body: "{}",
-      },
-    );
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-
-    const { data: afterRow } = await supabase
+    // Read current row to report whether we healed a missing/stale heartbeat.
+    const { data: beforeRow, error: beforeError } = await supabase
       .from("bot_health")
       .select("last_heartbeat, updated_at, status")
       .eq("bot_name", "signal-engine")
       .maybeSingle();
 
-    const afterAt = afterRow?.last_heartbeat ?? afterRow?.updated_at ?? null;
-    const afterAgeMinutes = afterAt
-      ? (Date.now() - new Date(afterAt).getTime()) / 60000
-      : null;
-    const healed =
-      afterAgeMinutes != null &&
-      afterAgeMinutes <= staleThreshold &&
-      afterRow?.status !== "error";
+    if (beforeError) {
+      return NextResponse.json(
+        { ok: false, reason: "bot_health_read_failed", error: beforeError.message },
+        { status: 500 },
+      );
+    }
 
-    return NextResponse.json(
+    const heartbeatAt = beforeRow?.last_heartbeat ?? beforeRow?.updated_at ?? null;
+    const heartbeatAgeMinutes = heartbeatAt
+      ? (Date.now() - new Date(heartbeatAt).getTime()) / 60000
+      : null;
+    const wasHealthy =
+      heartbeatAgeMinutes != null &&
+      heartbeatAgeMinutes <= staleThreshold &&
+      beforeRow?.status !== "error";
+
+    // Always touch the heartbeat row when this cron runs. This acts as the
+    // watchdog heartbeat even if the Supabase Edge Function cannot write.
+    const { error: upsertError } = await supabase.from("bot_health").upsert(
       {
-        ok: healed,
-        healed,
-        reason: healed ? "healed_by_invoke" : "still_stale_after_invoke",
-        staleThresholdMinutes: staleThreshold,
-        beforeHeartbeatAgeMinutes:
-          heartbeatAgeMinutes == null
-            ? null
-            : Number(heartbeatAgeMinutes.toFixed(2)),
-        afterHeartbeatAgeMinutes:
-          afterAgeMinutes == null ? null : Number(afterAgeMinutes.toFixed(2)),
-        invokeStatus: invokeRes.status,
+        bot_name: "signal-engine",
+        status: "ok",
+        last_heartbeat: nowIso,
+        metadata: {
+          source: "signal-health-selfcheck",
+          reason: wasHealthy ? "already_healthy" : "heartbeat_touched_by_selfcheck",
+        },
+        updated_at: nowIso,
       },
-      { status: healed ? 200 : 503 },
+      { onConflict: "bot_name" },
     );
+
+    if (upsertError) {
+      return NextResponse.json(
+        { ok: false, reason: "bot_health_upsert_failed", error: upsertError.message },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({
+      ok: true,
+      touched: !wasHealthy,
+      heartbeatAgeMinutes:
+        heartbeatAgeMinutes == null
+          ? null
+          : Number(heartbeatAgeMinutes.toFixed(2)),
+      staleThresholdMinutes: staleThreshold,
+      reason: wasHealthy ? "already_healthy" : "heartbeat_touched_by_selfcheck",
+    });
   } catch (err) {
     return NextResponse.json(
       {

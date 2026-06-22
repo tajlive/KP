@@ -58,3 +58,8 @@
 {"subject":"src/lib/auth/googleAuth.ts","predicate":"optimized","object":"removed type casts and duplicated URL sanitization","validFrom":"2026-06-21T22:30:50.691Z"}
 {"subject":"src/lib/auth/new/auth-actions.ts","predicate":"removed","object":"dead OAuth server actions that cannot set PKCE cookies","validFrom":"2026-06-21T22:30:50.691Z"}
 {"subject":"oauth tests","predicate":"updated","object":"locale-prefixed callback /no/callback","validFrom":"2026-06-21T22:30:50.691Z"}
+{"subject":"production-health","predicate":"uses","object":"supabase-js-service-client","validFrom":"2026-06-21T23:54:28.719Z"}
+{"subject":"cloudflare-workers","predicate":"incompatible-with","object":"pg-direct-tcp","validFrom":"2026-06-21T23:54:28.722Z"}
+{"subject":"cloudflare-secrets","predicate":"can-contain","object":"dotenvx-header-newline","validFrom":"2026-06-21T23:54:28.723Z"}
+{"subject":"health-check","predicate":"migrated-from","object":"pg-to-supabase-js","validFrom":"2026-06-21T23:54:28.724Z"}
+{"subject":"kv-adapter","predicate":"uses","object":"cloudflare-kv-binding","validFrom":"2026-06-21T23:54:28.725Z"}

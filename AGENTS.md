@@ -507,6 +507,24 @@ Auth: @supabase/ssr (ikke auth-helpers-nextjs)
 >
 > **Les mer:** `.knowledge/errors/SUPABASE-VERCEL-REST-TIMEOUT-2026-05-12.md`
 
+### Supabase ↔ Cloudflare Workers — bruk fetch-basert klient (2026-06-22)
+
+> **Regel:** I Cloudflare Workers/Wrangler-runtime skal du **bruke `@supabase/supabase-js`** (eller annen fetch-basert klient), **ALDRI `pg` direkte**. `pg` bruker Node `net`/`tls` som ikke fungerer pålitelig i `workerd`, og ga "Connection terminated unexpectedly" / "Invalid URL string" i produksjon.
+>
+> **Hvorfor:** Workers har ingen native TCP-socket-støtte for `pg`. `@supabase/supabase-js` bruker `fetch` mot PostgREST og fungerer ut av boksen. PostgREST-coldstarts er akseptable fra Cloudflare (ikke samme IPv6-problem som Vercel).
+>
+> **Implementering:**
+> ```typescript
+> import { createClient } from "@supabase/supabase-js";
+>
+> const supabase = createClient(
+>   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+>   process.env.SUPABASE_SERVICE_ROLE_KEY!,
+>   { auth: { persistSession: false, autoRefreshToken: false } }
+> );
+> const { data, error } = await supabase.from("tabell").select("*").limit(1);
+> ```
+
 ### Tekniske Detaljer
 ```yaml
 Testing: Vitest + Playwright

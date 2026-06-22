@@ -228,16 +228,24 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const authHeader = req.headers.get("authorization") ?? "";
+    const bearerToken = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : "";
+    const customServiceKey = req.headers.get("x-service-role-key") ?? "";
     const serviceRoleKey =
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
-      Deno.env.get("SUPABASE_ANON_KEY") ??
-      "";
+      customServiceKey ||
+      bearerToken ||
+      (Deno.env.get("SERVICE_ROLE_KEY") ??
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
+        Deno.env.get("SUPABASE_ANON_KEY") ??
+        "");
 
     if (!supabaseUrl || !serviceRoleKey) {
       return new Response(
         JSON.stringify({
           error:
-            "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY/SUPABASE_ANON_KEY",
+            "Missing SUPABASE_URL or SERVICE_ROLE_KEY/SUPABASE_SERVICE_ROLE_KEY/SUPABASE_ANON_KEY/Authorization header",
         }),
         {
           status: 500,
@@ -246,13 +254,15 @@ Deno.serve(async (req) => {
       );
     }
 
-    supabase = createClient(supabaseUrl, serviceRoleKey);
+    supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false },
+    });
 
     const upsertHealth = async (
       status: "ok" | "warning" | "error",
       message: string,
       metadata: Record<string, unknown>,
-    ) => {
+    ): Promise<string | null> => {
       const { error: healthErr } = await supabase.from("bot_health").upsert(
         {
           bot_name: "signal-engine",
@@ -267,7 +277,11 @@ Deno.serve(async (req) => {
         },
         { onConflict: "bot_name" },
       );
-      if (healthErr) console.warn("bot_health upsert:", healthErr.message);
+      if (healthErr) {
+        console.warn("bot_health upsert:", healthErr.message);
+        return healthErr.message;
+      }
+      return null;
     };
 
     // Tidlig heartbeat: cron/timeout kan stoppe kjøring før siste upsert — da er feed fortsatt «fersk» nok til diagnose.
