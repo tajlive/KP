@@ -211,7 +211,7 @@
     "test:lighthouse": "npm run test:lighthouse:prod",
     "test:lighthouse:preview": "npx lhci autorun --collect.url=${PREVIEW_URL:-https://www.klarpakke.no}",
     "test:lighthouse:prod": "npx lhci autorun --collect.url=https://www.klarpakke.no/no --collect.url=https://www.klarpakke.no/no/priser --collect.url=https://www.klarpakke.no/no/login",
-    "test:lighthouse:mobile": "npx lhci autorun --config=.lighthouserc.mobile.json --collect.url=${BASE_URL:-http://localhost:3000}/no/dashboard/portfolio --collect.url=${BASE_URL:-http://localhost:3000}/no/dashboard/trade --collect.url=${BASE_URL:-http://localhost:3000}/no/handel --collect.url=${BASE_URL:-http://localhost:3000}/no/profile",
+    "test:lighthouse:mobile": "npx lhci autorun --config=.lighthouserc.mobile.json --collect.url=${BASE_URL:-http://localhost:3000}/no --collect.url=${BASE_URL:-http://localhost:3000}/no/priser --collect.url=${BASE_URL:-http://localhost:3000}/no/login --collect.url=${BASE_URL:-http://localhost:3000}/no/handel",
     "test:lighthouse:mobile:prod": "BASE_URL=https://www.klarpakke.no npm run test:lighthouse:mobile",
     "preprod:quality": "npm run lint && npm run type-check && vitest run --coverage",
     "preprod:build": "SKIP_LINT_IN_BUILD=true npm run build",

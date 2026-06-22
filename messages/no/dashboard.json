@@ -325,6 +325,9 @@
     "profile": "Profil"
   },
   "coinbase": {
+    "marketTitle": "Marked",
+    "marketSubtitle": "Oversikt over priser, top movers og handelsmuligheter.",
+    "goToTrade": "Gå til handel",
     "totalPortfolioValue": "Total porteføljeverdi",
     "portfolioPerformance": "Porteføljeutvikling",
     "buy": "Kjøp",

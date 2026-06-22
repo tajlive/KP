@@ -82,6 +82,21 @@ export async function authMiddleware(
     return response;
   }
 
+  // Auth decisions are only needed for protected, auth, onboarding and callback routes.
+  // Marketing/public pages skip the Supabase getUser() call to reduce TTFB.
+  const isProtected = PROTECTED_PATHS.some((p) => strippedPath.startsWith(p));
+  const isAuthPage = AUTH_PATHS.some(
+    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
+  );
+  const isOnboardingPage = strippedPath.startsWith("/onboarding");
+  const isGuestAuth = isGuestAuthRoute(strippedPath);
+  const locale = parseLocalePath(pathname).locale;
+
+  const needsUser = isProtected || isAuthPage || isGuestAuth || isOnboardingPage;
+  if (!needsUser) {
+    return response;
+  }
+
   // 1. Supabase session refresh (writes updated cookies to the passed response)
   // CRITICAL FIX: Use single Supabase client per request to avoid cookie/sync issues
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -99,22 +114,12 @@ export async function authMiddleware(
   } = await supabase.auth.getUser();
 
   // Logged-in users should not see guest auth pages
-  if (user && isGuestAuthRoute(strippedPath)) {
+  if (user && isGuestAuth) {
     const nextParam = request.nextUrl.searchParams.get("next");
-    const target = sanitizePostAuthRedirect(
-      nextParam,
-      parseLocalePath(pathname).locale,
-    );
+    const target = sanitizePostAuthRedirect(nextParam, locale);
     const dest = new URL(target, request.url);
     return redirectWithCookies(dest, request, response);
   }
-
-  const isProtected = PROTECTED_PATHS.some((p) => strippedPath.startsWith(p));
-  const isAuthPage = AUTH_PATHS.some(
-    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
-  );
-  const isOnboardingPage = strippedPath.startsWith("/onboarding");
-  const locale = parseLocalePath(pathname).locale;
 
   // Authenticated users on auth pages -> dashboard
   if (user && isAuthPage) {

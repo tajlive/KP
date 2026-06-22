@@ -79,10 +79,7 @@ const nextConfig = {
 
   // Disable Next.js dev indicator during E2E / Lighthouse runs
   // so it does not overlay the bottom navigation.
-  devIndicators: {
-    appIsrStatus: false,
-    buildActivity: false,
-  },
+  devIndicators: false,
 
   // Production optimizations
   compiler: {

@@ -154,7 +154,7 @@ async function handleSentry(request, env) {
 
   try {
     const envelope = await request.text();
-    const headerLine = envelope.split('\n')[0];
+    const headerLine = envelope.split('\\n')[0];
     const header = JSON.parse(headerLine);
 
     if (!header.dsn) {

@@ -421,6 +421,9 @@
     "profile": "Profile"
   },
   "coinbase": {
+    "marketTitle": "Market",
+    "marketSubtitle": "Prices, top movers and trading opportunities.",
+    "goToTrade": "Go to trade",
     "totalPortfolioValue": "Total portfolio value",
     "portfolioPerformance": "Portfolio performance",
     "buy": "Buy",
