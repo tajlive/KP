@@ -3193,6 +3193,36 @@ export type Database = {
         }
         Relationships: []
       }
+      external_auth_identities: {
+        Row: {
+          created_at: string
+          id: string
+          provider: string
+          provider_email: string | null
+          provider_subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider: string
+          provider_email?: string | null
+          provider_subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider?: string
+          provider_email?: string | null
+          provider_subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exchange_api_keys: {
         Row: {
           api_key_encrypted: string

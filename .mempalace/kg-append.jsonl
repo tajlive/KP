@@ -82,3 +82,12 @@
 {"subject":"oauth-guard","predicate":"supports","object":"--dry-run","validFrom":"2026-06-22T01:34:19.555Z"}
 {"subject":"oauth-guard","predicate":"supports","object":"--apply","validFrom":"2026-06-22T01:34:19.555Z"}
 {"subject":"oauth-guard","predicate":"supports","object":"--rollback","validFrom":"2026-06-22T01:34:19.555Z"}
+{"subject":"auth-system","predicate":"uses","object":"server-side-callback-route","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"auth-system","predicate":"replaces","object":"client-side-callback-page","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"auth-system","predicate":"uses","object":"central-redirect-policy","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"auth-system","predicate":"uses","object":"vipps-dedicated-callback","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"auth-system","predicate":"uses","object":"webcrypto-pkce-state","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"oauth-guard","predicate":"uses","object":"supabase-management-api","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"oauth-guard","predicate":"supports","object":"dry-run-apply-rollback","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"auth-system","predicate":"fixed","object":"exposed-secrets-in-git-history","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"auth-system","predicate":"depends_on","object":"cloudflare-workers-fetch-client","validFrom":"2026-06-22T03:00:00.000Z"}

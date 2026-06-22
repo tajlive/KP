@@ -134,6 +134,12 @@ export async function handleVippsCallback(
     [userinfo.given_name, userinfo.family_name].filter(Boolean).join(" ") ||
     "Vipps-bruker";
 
+  if (!vippsSub) {
+    return {
+      redirectUrl: `/${locale}/innlogging?error=vipps_userinfo`,
+    };
+  }
+
   if (userinfo.email_verified !== true || !email) {
     return {
       redirectUrl: `/${locale}/innlogging?error=vipps_email_not_verified`,
@@ -142,33 +148,26 @@ export async function handleVippsCallback(
 
   const supabase = createClient();
 
-  const { data: listData, error: listError } = await supabase.auth.admin.listUsers(
-    { page: 1, perPage: 1000 },
-  );
+  const { data: identity, error: identityError } = await supabase
+    .from("external_auth_identities")
+    .select("user_id, provider_email")
+    .eq("provider", "vipps")
+    .eq("provider_subject", vippsSub)
+    .maybeSingle();
 
-  if (listError) {
-    console.error("[Vipps] listUsers error:", listError);
+  if (identityError) {
+    console.error("[Vipps] identity lookup error:", identityError);
     return { redirectUrl: `/${locale}/innlogging?error=auth_failed` };
   }
 
-  const users = listData?.users ?? [];
-  const linkedUser = users.find(
-    (u) => u.user_metadata && u.user_metadata.vipps_sub === vippsSub,
-  );
-  const emailUser = users.find(
-    (u) => u.email?.toLowerCase() === email.toLowerCase(),
-  );
-
-  // Vipps sub already linked to another account.
-  if (linkedUser && emailUser && linkedUser.id !== emailUser.id) {
-    return {
-      redirectUrl: `/${locale}/innlogging?error=vipps_sub_linked_other`,
-    };
-  }
-
   // Existing user linked to this Vipps account.
-  if (linkedUser) {
-    const targetEmail = linkedUser.email;
+  if (identity) {
+    const { data: linkedUserData, error: linkedUserError } =
+      await supabase.auth.admin.getUserById(identity.user_id);
+    const targetEmail = linkedUserData?.user?.email;
+    if (linkedUserError) {
+      console.error("[Vipps] linked user lookup error:", linkedUserError);
+    }
     if (!targetEmail) {
       return { redirectUrl: `/${locale}/innlogging?error=auth_failed` };
     }
@@ -184,13 +183,6 @@ export async function handleVippsCallback(
     return { redirectUrl: appendNext(linkData.properties.action_link, nextPath) };
   }
 
-  // Email already exists but is not linked to this Vipps account.
-  if (emailUser) {
-    return {
-      redirectUrl: `/${locale}/innlogging?error=vipps_email_exists`,
-    };
-  }
-
   // Brand-new user: create account and fall back to magic-link bridge.
   console.warn(
     "[Vipps] Magic-link bridge used for new Vipps user. This fallback is deprecated.",
@@ -202,12 +194,16 @@ export async function handleVippsCallback(
       email_confirm: true,
       user_metadata: {
         full_name: fullName,
-        vipps_sub: vippsSub,
         phone_number: userinfo.phone_number ?? null,
       },
     });
 
   if (createError) {
+    if (/already registered|already exists|duplicate/i.test(createError.message)) {
+      return {
+        redirectUrl: `/${locale}/innlogging?error=vipps_email_exists`,
+      };
+    }
     console.error("[Vipps] createUser error:", createError);
     return {
       redirectUrl: `/${locale}/innlogging?error=auth_failed&detail=${encodeURIComponent(createError.message)}`,
@@ -217,6 +213,23 @@ export async function handleVippsCallback(
   const newEmail = createData?.user?.email;
   if (!newEmail) {
     return { redirectUrl: `/${locale}/innlogging?error=auth_failed` };
+  }
+
+  const { error: identityInsertError } = await supabase
+    .from("external_auth_identities")
+    .insert({
+      provider: "vipps",
+      provider_subject: vippsSub,
+      user_id: createData.user.id,
+      provider_email: email,
+    });
+
+  if (identityInsertError) {
+    console.error("[Vipps] identity insert error:", identityInsertError);
+    await supabase.auth.admin.deleteUser(createData.user.id);
+    return {
+      redirectUrl: `/${locale}/innlogging?error=vipps_sub_linked_other`,
+    };
   }
 
   const { data: linkData, error: linkError } =

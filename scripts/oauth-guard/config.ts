@@ -22,8 +22,14 @@ export const DEVELOPMENT_APP_ORIGIN = "http://localhost:3000";
 
 export const DESIRED_SITE_URL = CANONICAL_APP_URL;
 export const DESIRED_URI_ALLOW_LIST = [
-  ...locales.map((locale) => `${CANONICAL_APP_URL}/${locale}/callback`),
+  ...locales.flatMap((locale) => [
+    `${CANONICAL_APP_URL}/${locale}/callback`,
+    `${CANONICAL_APP_URL}/${locale}/update-password`,
+    `${CANONICAL_APP_URL}/${locale}/admin/reset-password`,
+  ]),
   `${DEVELOPMENT_APP_ORIGIN}/${defaultLocale}/callback`,
+  `${DEVELOPMENT_APP_ORIGIN}/${defaultLocale}/update-password`,
+  `${DEVELOPMENT_APP_ORIGIN}/${defaultLocale}/admin/reset-password`,
 ];
 
 export const SENSITIVE_KEY_RE = /pass|secret|key|token|credential|smtp|apikey/i;
@@ -58,7 +64,8 @@ export function parseUriAllowList(value: unknown): string[] {
 }
 
 export function formatUriAllowList(list: string[]): string {
-  return list.join("\n");
+  // Supabase Management API stores the allow-list as a comma-separated string.
+  return list.join(",");
 }
 
 export function maskSecrets(value: unknown): unknown {

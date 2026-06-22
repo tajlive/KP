@@ -4,7 +4,15 @@ import { GET } from "../route";
 
 const mockShouldShowVippsForRequest = vi.hoisted(() => vi.fn(() => true));
 const mockRedisSet = vi.hoisted(() => vi.fn());
-const mockGetRedisRest = vi.hoisted(() => vi.fn(() => ({ set: mockRedisSet })));
+const mockRedisIncr = vi.hoisted(() => vi.fn(async () => 1));
+const mockRedisPexpire = vi.hoisted(() => vi.fn(async () => 1));
+const mockGetRedisRest = vi.hoisted(() =>
+  vi.fn(() => ({
+    set: mockRedisSet,
+    incr: mockRedisIncr,
+    pexpire: mockRedisPexpire,
+  })),
+);
 
 vi.mock("@/lib/geo/vipps-region", () => ({
   shouldShowVippsForRequest: mockShouldShowVippsForRequest,
@@ -86,7 +94,7 @@ describe("GET /api/auth/vipps-url", () => {
 
     expect(mockRedisSet).toHaveBeenCalledWith(
       `vipps:state:${state}`,
-      { locale: "no", next: "/" },
+      { locale: "no", next: "/no/dashboard" },
       { ex: 600 },
     );
   });

@@ -6,7 +6,7 @@ import {
 } from "@/lib/auth/crypto";
 import { sanitizePostAuthRedirect } from "@/lib/auth/sanitize-redirect";
 import { getRedisRest } from "@/lib/redis-client";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkDistributedRateLimit } from "@/lib/rate-limit";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -29,7 +29,11 @@ export async function GET(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
-  const { allowed } = checkRateLimit(`vipps-url:${ip}`, 5, 60_000);
+  const { allowed } = await checkDistributedRateLimit(
+    `vipps-url:${ip}`,
+    5,
+    60_000,
+  );
   if (!allowed) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
@@ -62,13 +66,17 @@ export async function GET(request: NextRequest) {
 
   // Store locale + optional post-auth path server-side instead of in state.
   const redis = getRedisRest();
-  if (redis) {
-    const stateData: { locale: string; next?: string } = { locale };
-    if (next) {
-      stateData.next = sanitizePostAuthRedirect(next, locale);
-    }
-    await redis.set(`vipps:state:${state}`, stateData, { ex: 600 });
+  if (!redis) {
+    return NextResponse.json(
+      { error: "vipps_state_store_unavailable" },
+      { status: 503 },
+    );
   }
+  const stateData: { locale: string; next?: string } = { locale };
+  if (next) {
+    stateData.next = sanitizePostAuthRedirect(next, locale);
+  }
+  await redis.set(`vipps:state:${state}`, stateData, { ex: 600 });
 
   const authUrl = new URL(
     `${baseUrl}/access-management-1.0/access/oauth2/auth`,

@@ -1,19 +1,33 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleVippsCallback } from "../vipps-callback";
 
 const mockCreateUser = vi.hoisted(() => vi.fn());
+const mockDeleteUser = vi.hoisted(() => vi.fn());
+const mockGetUserById = vi.hoisted(() => vi.fn());
 const mockGenerateLink = vi.hoisted(() => vi.fn());
-const mockListUsers = vi.hoisted(() => vi.fn());
+const mockIdentityMaybeSingle = vi.hoisted(() => vi.fn());
+const mockIdentityInsert = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(() => ({
     auth: {
       admin: {
         createUser: mockCreateUser,
+        deleteUser: mockDeleteUser,
+        getUserById: mockGetUserById,
         generateLink: mockGenerateLink,
-        listUsers: mockListUsers,
       },
     },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            maybeSingle: mockIdentityMaybeSingle,
+          })),
+        })),
+      })),
+      insert: mockIdentityInsert,
+    })),
   })),
 }));
 
@@ -44,19 +58,20 @@ describe("handleVippsCallback", () => {
     vi.resetAllMocks();
     process.env.VIPPS_CLIENT_ID = "client-id";
     process.env.VIPPS_CLIENT_SECRET = "client-secret";
+    mockIdentityMaybeSingle.mockResolvedValue({ data: null, error: null });
+    mockIdentityInsert.mockResolvedValue({ error: null });
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it("uses sanitizePostAuthRedirect for the next path", async () => {
-    mockListUsers.mockResolvedValueOnce({ data: { users: [] }, error: null });
-    mockCreateUser.mockResolvedValueOnce({
-      data: { user: { email: "test@example.com" } },
+  it("creates a server-controlled identity and sanitizes next", async () => {
+    mockCreateUser.mockResolvedValue({
+      data: { user: { id: "user-1", email: "test@example.com" } },
       error: null,
     });
-    mockGenerateLink.mockResolvedValueOnce({
+    mockGenerateLink.mockResolvedValue({
       data: { properties: { action_link: "http://localhost/no/callback" } },
       error: null,
     });
@@ -70,16 +85,21 @@ describe("handleVippsCallback", () => {
       next: "/no/portfolio",
     });
 
+    expect(mockIdentityInsert).toHaveBeenCalledWith({
+      provider: "vipps",
+      provider_subject: "vipps-sub-123",
+      user_id: "user-1",
+      provider_email: "test@example.com",
+    });
     expect(result.redirectUrl).toContain("next=%2Fno%2Fportfolio");
   });
 
   it("rejects external next paths", async () => {
-    mockListUsers.mockResolvedValueOnce({ data: { users: [] }, error: null });
-    mockCreateUser.mockResolvedValueOnce({
-      data: { user: { email: "test@example.com" } },
+    mockCreateUser.mockResolvedValue({
+      data: { user: { id: "user-1", email: "test@example.com" } },
       error: null,
     });
-    mockGenerateLink.mockResolvedValueOnce({
+    mockGenerateLink.mockResolvedValue({
       data: { properties: { action_link: "http://localhost/no/callback" } },
       error: null,
     });
@@ -109,20 +129,30 @@ describe("handleVippsCallback", () => {
     expect(result.redirectUrl).toContain("error=vipps_email_not_verified");
   });
 
-  it("signs in an existing user linked by vipps_sub", async () => {
-    mockListUsers.mockResolvedValueOnce({
-      data: {
-        users: [
-          {
-            id: "user-1",
-            email: "test@example.com",
-            user_metadata: { vipps_sub: "vipps-sub-123" },
-          },
-        ],
-      },
+  it("rejects Vipps userinfo without a provider subject", async () => {
+    mockTokenAndUserinfo({ ...baseUserinfo, sub: "" });
+
+    const result = await handleVippsCallback({
+      code: "code",
+      state: "state",
+      codeVerifier: "verifier",
+      locale: "no",
+    });
+
+    expect(result.redirectUrl).toContain("error=vipps_userinfo");
+    expect(mockCreateUser).not.toHaveBeenCalled();
+  });
+
+  it("signs in an existing user from the server-controlled identity", async () => {
+    mockIdentityMaybeSingle.mockResolvedValue({
+      data: { user_id: "user-1", provider_email: "test@example.com" },
       error: null,
     });
-    mockGenerateLink.mockResolvedValueOnce({
+    mockGetUserById.mockResolvedValue({
+      data: { user: { id: "user-1", email: "test@example.com" } },
+      error: null,
+    });
+    mockGenerateLink.mockResolvedValue({
       data: { properties: { action_link: "http://localhost/no/callback" } },
       error: null,
     });
@@ -135,6 +165,7 @@ describe("handleVippsCallback", () => {
       locale: "no",
     });
 
+    expect(mockCreateUser).not.toHaveBeenCalled();
     expect(mockGenerateLink).toHaveBeenCalledWith({
       type: "magiclink",
       email: "test@example.com",
@@ -142,18 +173,10 @@ describe("handleVippsCallback", () => {
     expect(result.redirectUrl).toContain("next=%2Fno%2Fdashboard");
   });
 
-  it("requires explicit linking when email exists but vipps_sub is not linked", async () => {
-    mockListUsers.mockResolvedValueOnce({
-      data: {
-        users: [
-          {
-            id: "user-1",
-            email: "test@example.com",
-            user_metadata: {},
-          },
-        ],
-      },
-      error: null,
+  it("requires explicit linking when the email already exists", async () => {
+    mockCreateUser.mockResolvedValue({
+      data: { user: null },
+      error: { message: "User already registered" },
     });
     mockTokenAndUserinfo();
 
@@ -165,28 +188,18 @@ describe("handleVippsCallback", () => {
     });
 
     expect(result.redirectUrl).toContain("error=vipps_email_exists");
-    expect(mockCreateUser).not.toHaveBeenCalled();
-    expect(mockGenerateLink).not.toHaveBeenCalled();
+    expect(mockIdentityInsert).not.toHaveBeenCalled();
   });
 
-  it("rejects when vipps_sub is linked to a different user than the email", async () => {
-    mockListUsers.mockResolvedValueOnce({
-      data: {
-        users: [
-          {
-            id: "user-vipps",
-            email: "other@example.com",
-            user_metadata: { vipps_sub: "vipps-sub-123" },
-          },
-          {
-            id: "user-email",
-            email: "test@example.com",
-            user_metadata: {},
-          },
-        ],
-      },
+  it("rolls back a newly created user when identity insertion conflicts", async () => {
+    mockCreateUser.mockResolvedValue({
+      data: { user: { id: "user-1", email: "test@example.com" } },
       error: null,
     });
+    mockIdentityInsert.mockResolvedValue({
+      error: { message: "duplicate key value" },
+    });
+    mockDeleteUser.mockResolvedValue({ error: null });
     mockTokenAndUserinfo();
 
     const result = await handleVippsCallback({
@@ -196,40 +209,7 @@ describe("handleVippsCallback", () => {
       locale: "no",
     });
 
+    expect(mockDeleteUser).toHaveBeenCalledWith("user-1");
     expect(result.redirectUrl).toContain("error=vipps_sub_linked_other");
-  });
-
-  it("creates a new user and uses magic-link bridge with deprecation warning", async () => {
-    mockListUsers.mockResolvedValueOnce({ data: { users: [] }, error: null });
-    mockCreateUser.mockResolvedValueOnce({
-      data: { user: { email: "test@example.com" } },
-      error: null,
-    });
-    mockGenerateLink.mockResolvedValueOnce({
-      data: { properties: { action_link: "http://localhost/no/callback" } },
-      error: null,
-    });
-    mockTokenAndUserinfo();
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    const result = await handleVippsCallback({
-      code: "code",
-      state: "state",
-      codeVerifier: "verifier",
-      locale: "no",
-    });
-
-    expect(mockCreateUser).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: "test@example.com",
-        user_metadata: expect.objectContaining({ vipps_sub: "vipps-sub-123" }),
-      }),
-    );
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Magic-link bridge used for new Vipps user"),
-    );
-    expect(result.redirectUrl).toContain("next=%2Fno%2Fdashboard");
-
-    warnSpy.mockRestore();
   });
 });

@@ -159,6 +159,8 @@ export const AUTH_ERRORS: { [key: string]: string } = {
   vipps_sub_linked_other:
     "Vipps-kontoen er allerede koblet til en annen bruker.",
   vipps_missing_params: "Ugyldig eller manglende Vipps-respons.",
+  vipps_state_store_unavailable:
+    "Vipps-innlogging er midlertidig utilgjengelig. Prøv igjen senere.",
 };
 
 // Get human-readable error message

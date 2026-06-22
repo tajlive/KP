@@ -6,11 +6,15 @@ const mockHandleVippsCallback = vi.hoisted(() => vi.fn());
 const mockRedisGet = vi.hoisted(() => vi.fn());
 const mockRedisSet = vi.hoisted(() => vi.fn());
 const mockRedisDel = vi.hoisted(() => vi.fn());
+const mockRedisIncr = vi.hoisted(() => vi.fn(async () => 1));
+const mockRedisPexpire = vi.hoisted(() => vi.fn(async () => 1));
 const mockGetRedisRest = vi.hoisted(() =>
   vi.fn(() => ({
     get: mockRedisGet,
     set: mockRedisSet,
     del: mockRedisDel,
+    incr: mockRedisIncr,
+    pexpire: mockRedisPexpire,
   })),
 );
 

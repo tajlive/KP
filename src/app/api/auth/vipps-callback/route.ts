@@ -1,7 +1,7 @@
 import { constantTimeEqual } from "@/lib/auth/crypto";
 import { handleVippsCallback } from "@/lib/auth/vipps-callback";
 import { getRedisRest } from "@/lib/redis-client";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkDistributedRateLimit } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -32,7 +32,11 @@ export async function GET(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
-  const { allowed } = checkRateLimit(`vipps-callback:${ip}`, 10, 60_000);
+  const { allowed } = await checkDistributedRateLimit(
+    `vipps-callback:${ip}`,
+    10,
+    60_000,
+  );
 
   // Locale is read from KV when available; fall back to Norwegian for errors.
   let locale = "no";
@@ -56,19 +60,26 @@ export async function GET(request: NextRequest) {
   }
 
   const redis = getRedisRest();
-  let next: string | undefined;
-  if (redis) {
-    const stateData = await redis.get<{ locale?: string; next?: string }>(
-      `vipps:state:${state}`,
+  if (!redis) {
+    return redirectNoCache(
+      request,
+      `/${locale}/innlogging?error=vipps_state_store_unavailable`,
     );
-    if (stateData?.locale) {
-      locale = stateData.locale;
-    }
-    if (stateData?.next) {
-      next = stateData.next;
-    }
-    await redis.del(`vipps:state:${state}`);
   }
+  let next: string | undefined;
+  const stateData = await redis.get<{ locale?: string; next?: string }>(
+    `vipps:state:${state}`,
+  );
+  if (!stateData) {
+    return redirectNoCache(request, `/${locale}/innlogging?error=invalid_state`);
+  }
+  if (stateData.locale) {
+    locale = stateData.locale;
+  }
+  if (stateData.next) {
+    next = stateData.next;
+  }
+  await redis.del(`vipps:state:${state}`);
 
   const result = await handleVippsCallback({
     code,

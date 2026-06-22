@@ -52,17 +52,10 @@ export function sanitizePostAuthRedirect(
     return fallback;
   }
 
-  // Extract path from absolute URLs; reject everything else that is not a
-  // relative path starting with "/".
-  let pathPart = raw;
-  if (/^https?:\/\//i.test(raw)) {
-    try {
-      const u = new URL(raw);
-      pathPart = u.pathname + (u.search || "");
-    } catch {
-      return fallback;
-    }
-  }
+  // Post-auth targets must be relative. Never reinterpret an external URL as
+  // a local path because doing so hides caller bugs and weakens the policy.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return fallback;
+  const pathPart = raw;
 
   if (!pathPart.startsWith("/") || pathPart.startsWith("//")) return fallback;
 
