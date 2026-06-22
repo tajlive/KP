@@ -40,7 +40,7 @@ test.describe("Refresh Token Flow @auth", () => {
 
     await page.evaluate((session) => {
       localStorage.setItem(
-        "sb-vuxbjlykgmzskxbclquf-auth-token",
+        "sb-pskhryjzkobytnfwucrb-auth-token",
         JSON.stringify(session)
       );
     }, expiredSession);
@@ -84,7 +84,7 @@ test.describe("Refresh Token Flow @auth", () => {
 
     await page.evaluate((session) => {
       localStorage.setItem(
-        "sb-vuxbjlykgmzskxbclquf-auth-token",
+        "sb-pskhryjzkobytnfwucrb-auth-token",
         JSON.stringify(session)
       );
     }, expiredSession);

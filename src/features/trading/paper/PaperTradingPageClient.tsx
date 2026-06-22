@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Wallet, LayoutDashboard } from "lucide-react";
-import { PaperTradingList } from "@/features/paper-trading/PaperTradingList";
+import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
 import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
 import { SURFACE } from "@/lib/design/tokens";
 import {

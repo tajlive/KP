@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { BotDetailView } from "@/features/auto-trade/BotDetailView";
+import { BotDetailView } from "@/features/trading/auto-trading/BotDetailView";
 
 export const runtime = 'nodejs';
 

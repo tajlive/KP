@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { AutoTradingConfigCard } from "@/features/dashboard/AutoTradingConfigCard";
 import { PaperTradingCard } from "@/features/dashboard/PaperTradingCard";
 import { PulseChartContainer } from "@/features/dashboard/pulse/PulseChartContainer";
-import { GamificationCard } from "@/features/gamification/GamificationCard";
-import { KLTWallet } from "@/features/gamification/KLTWallet";
+import { GamificationCard } from "@/features/account/gamification/GamificationCard";
+import { KLTWallet } from "@/features/account/gamification/KLTWallet";
 import type {
   Portfolio,
   StrategyType,
@@ -39,7 +39,7 @@ import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 
 import { SignalFeed } from "./SignalFeed";
-import { MonthlyCompetitionBanner } from "@/features/gamification/MonthlyCompetitionBanner";
+import { MonthlyCompetitionBanner } from "@/features/account/gamification/MonthlyCompetitionBanner";
 import { SURFACE } from "@/lib/design/tokens";
 import {
   STRATEGY_DEFS_FOR_DASHBOARD,

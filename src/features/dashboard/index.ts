@@ -4,8 +4,8 @@ export { DashboardPro } from "./DashboardPro";
 export { AdaptiveDashboard } from "./AdaptiveDashboard";
 
 // Chart & Stats
-export { PortfolioChart } from "./PortfolioChart";
-export { StatsGrid, StatsGridMini } from "./StatsGrid";
+export { PortfolioChart } from "@/features/portfolio/PortfolioChart";
+export { StatsGrid, StatsGridMini } from "@/features/portfolio/StatsGrid";
 
 // Existing components
 export { SimplifiedHero } from "./SimplifiedHero";
@@ -14,9 +14,9 @@ export { LivePnLWidget } from "./LivePnLWidget";
 export { PaperTradingCard } from "./PaperTradingCard";
 
 // Enterprise 2026 components
-export { EquityCurveChart } from "./EquityCurveChart";
-export { WinLossHeatmap } from "./WinLossHeatmap";
-export { AssetAllocationChart } from "./AssetAllocationChart";
+export { EquityCurveChart } from "@/features/portfolio/EquityCurveChart";
+export { WinLossHeatmap } from "@/features/portfolio/WinLossHeatmap";
+export { AssetAllocationChart } from "@/features/portfolio/AssetAllocationChart";
 export { PersonalizedGreeting } from "./PersonalizedGreeting";
 export { ExplainStatButton } from "./ExplainStatButton";
 export { PositionSizingCalculator } from "./PositionSizingCalculator";

@@ -4,7 +4,13 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import dotenv from "dotenv";
 import { locales, defaultLocale } from "../../src/i18n/config";
+
+dotenv.config({
+  path: path.resolve(process.cwd(), ".env.local"),
+  quiet: true,
+});
 
 export const SRC_DIR = path.resolve(process.cwd(), "src");
 export const ENV_FILES = [".env.local", ".env.production", ".env"];

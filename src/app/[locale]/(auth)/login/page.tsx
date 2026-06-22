@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/utils";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
+import { isMicrosoftOAuthEnabled } from "@/lib/auth/config";
 
 
 export default function LoginPage() {
@@ -176,21 +177,22 @@ export default function LoginPage() {
               {t("pages.login.continueWithGoogle")}
             </button>
 
-            {/* Microsoft Login */}
-            <button
-              data-testid="microsoft-login-button"
-              onClick={handleMicrosoftLogin}
-              disabled={loading}
-              className="w-full py-3 px-4 bg-[#2F2F2F] hover:bg-[#1F1F1F] disabled:bg-[#2F2F2F]/50 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 21 21">
-                <rect x="1" y="1" width="9" height="9" fill="#f25022" />
-                <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
-                <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
-                <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
-              </svg>
-              {t("pages.login.continueWithMicrosoft")}
-            </button>
+            {isMicrosoftOAuthEnabled && (
+              <button
+                data-testid="microsoft-login-button"
+                onClick={handleMicrosoftLogin}
+                disabled={loading}
+                className="w-full py-3 px-4 bg-[#2F2F2F] hover:bg-[#1F1F1F] disabled:bg-[#2F2F2F]/50 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 21 21">
+                  <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+                  <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+                  <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                  <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+                </svg>
+                {t("pages.login.continueWithMicrosoft")}
+              </button>
+            )}
           </div>
         </div>
 

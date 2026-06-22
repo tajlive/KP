@@ -23,8 +23,11 @@ import type {
   Position,
   OrderBookSnapshot,
 } from './order-executor';
-import { fetchBinancePrice, calculateFee, fetchBinanceDepth } from './order-executor';
+import { calculateFee } from './order-executor';
+import { createBinanceMarketDataProvider } from './canonical/market-data';
 import { binanceCircuitBreaker, CircuitBreakerOpenError } from './circuit-breaker';
+
+const marketDataProvider = createBinanceMarketDataProvider();
 
 interface BinanceApiKeys {
   apiKey: string;
@@ -285,13 +288,13 @@ export class BinanceExecutor implements OrderExecutor {
    * Get current market price
    */
   async getMarketPrice(symbol: string): Promise<number> {
-    return fetchBinancePrice(symbol);
+    return marketDataProvider.getPrice(symbol);
   }
 
   /**
    * Get current order book (depth)
    */
   async fetchOrderBook(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
-    return fetchBinanceDepth(symbol, limit);
+    return marketDataProvider.getDepth(symbol, limit);
   }
 }

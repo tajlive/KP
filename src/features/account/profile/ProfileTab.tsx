@@ -20,9 +20,9 @@ import {
 import {
   GamificationProvider,
   useGamification,
-} from "@/features/gamification/GamificationProvider";
-import { XPBar } from "@/features/gamification/XPBar";
-import { LevelUpModal } from "@/features/gamification/LevelUpModal";
+} from "@/features/account/gamification/GamificationProvider";
+import { XPBar } from "@/features/account/gamification/XPBar";
+import { LevelUpModal } from "@/features/account/gamification/LevelUpModal";
 import { UpgradeBanner } from "@/features/dashboard/UpgradeBanner";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { LEARNING_TRACKS, type UserBadge } from "@/lib/learningTracks";

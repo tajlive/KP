@@ -12,7 +12,7 @@ SELECT cron.schedule(
   '*/5 * * * *',             -- every 5 minutes
   $$
   SELECT net.http_post(
-    url:='https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/position-monitor',
+    url:='https://pskhryjzkobytnfwucrb.supabase.co/functions/v1/position-monitor',
     headers:='{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.settings.service_role_key') || '"}'::jsonb,
     body:='{}'::jsonb
   ) AS request_id;

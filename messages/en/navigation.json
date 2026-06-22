@@ -14,5 +14,9 @@
   "navPricing": "Pricing",
   "siteNavAria": "Main navigation",
   "myPage": "Dashboard",
-  "logout": "Log out"
+  "logout": "Log out",
+  "portfolio": "Portfolio",
+  "market": "Market",
+  "trade": "Trade",
+  "account": "Account"
 }

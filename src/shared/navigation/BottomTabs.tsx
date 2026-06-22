@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
 import { useHaptic } from "@/hooks/use-haptic";
 
-type TabId = "home" | "trade" | "portfolio" | "autoTrade" | "profile";
+type TabId = "portfolio" | "market" | "trade" | "account";
 
 interface Tab {
   id: TabId;
@@ -80,6 +80,21 @@ const PieChartFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const GlobeIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h20" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+
+const GlobeFilled = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm0-2V4a8 8 0 0 1 0 16z" />
+    <path d="M1 12h22" stroke="white" strokeWidth="2" />
+  </svg>
+);
+
 const UserIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -109,11 +124,10 @@ const CopyFilled = ({ className }: { className?: string }) => (
 
 // Map icon names from nav config to icon components
 const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledIcon: React.FC<{ className?: string }> }> = {
-  Home: { icon: HomeIcon, filledIcon: HomeFilled },
   TrendingUp: { icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
   PieChart: { icon: PieChartIcon, filledIcon: PieChartFilled },
+  Globe: { icon: GlobeIcon, filledIcon: GlobeFilled },
   User: { icon: UserIcon, filledIcon: UserFilled },
-  Bot: { icon: BotIcon, filledIcon: BotFilled },
 };
 
 // Build tabs from nav config
@@ -121,7 +135,7 @@ const TABS: Tab[] = MOBILE_BOTTOM_TABS.map(navItem => {
   const icons = ICON_MAP[navItem.icon || 'Home'] || ICON_MAP.Home;
   return {
     id: navItem.key as TabId,
-    labelKey: navItem.labelKey.replace('dashboard.sidebar.', '').replace('navigation.', ''),
+    labelKey: navItem.labelKey.replace('navigation.', ''),
     href: navItem.href,
     icon: icons.icon,
     filledIcon: icons.filledIcon,
@@ -136,13 +150,13 @@ export function BottomTabs() {
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const locale = useLocale();
-  const t = useTranslations("dashboard.sidebar");
+  const t = useTranslations("navigation");
 
   // Initialiser activeTab basert på pathname for å unngå hydration mismatch
   // Server og klient må ha samme initial verdi
   const getInitialTab = (): TabId => {
-    // Default til "home" - konsistent for både server og klient
-    return "home";
+    // Default til "portfolio" - konsistent for både server og klient
+    return "portfolio";
   };
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab);
@@ -152,25 +166,18 @@ export function BottomTabs() {
     // Check for exact match or starts with for nested routes
     for (const tab of TABS) {
       const fullPath = `/${locale}${tab.href}`;
-      if (tab.id === "home") {
-        if (path === `/${locale}/dashboard` || path === `/${locale}/dashboard/`) {
-          return "home";
-        }
-      } else if (path.startsWith(fullPath)) {
+      if (path.startsWith(fullPath)) {
         return tab.id;
       }
     }
-    return "home";
+    return "portfolio";
   };
   const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    const currentTab = TABS.find((tab) => {
-      if (tab.id === "home") {
-        return pathname === `/${locale}/dashboard` || pathname === `/${locale}/dashboard/`;
-      }
-      return pathname.startsWith(`/${locale}${tab.href}`);
-    });
+    const currentTab = TABS.find((tab) =>
+      pathname.startsWith(`/${locale}${tab.href}`)
+    );
 
     if (currentTab) {
       setActiveTab(currentTab.id);
@@ -230,6 +237,7 @@ export function BottomTabs() {
             return (
               <motion.button
                 key={tab.id}
+                data-testid={`bottom-tab-${tab.id}`}
                 onClick={() => handleTabPress(tab)}
                 className="relative flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1.5 px-2 rounded-2xl transition-colors touch-manipulation"
                 whileTap={{ scale: 0.92 }}

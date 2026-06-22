@@ -1,7 +1,7 @@
 "use client";
 
 import { m, AnimatePresence } from "framer-motion";
-import { RiskMetricsPanel } from "./RiskMetricsPanel";
+import { RiskMetricsPanel } from "@/features/portfolio/RiskMetricsPanel";
 import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import { computeUserState } from "@/hooks/useUserState";
 import { AdaptiveDashboard } from "./AdaptiveDashboard";

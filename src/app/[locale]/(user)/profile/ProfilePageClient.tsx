@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { ProfileTab } from "@/features/profile/ProfileTab";
-import { WalletTab } from "@/features/profile/WalletTab";
-import { SettingsTab } from "@/features/profile/SettingsTab";
-import { NotificationsTab } from "@/features/profile/NotificationsTab";
+import { ProfileTab } from "@/features/account/profile/ProfileTab";
+import { WalletTab } from "@/features/account/profile/WalletTab";
+import { SettingsTab } from "@/features/account/profile/SettingsTab";
+import { NotificationsTab } from "@/features/account/profile/NotificationsTab";
 import { User, Wallet, Settings, Bell } from "lucide-react";
 
 type TabValue = "profile" | "wallet" | "settings" | "notifications";

@@ -105,8 +105,8 @@ klarpakke/
 
 ## 🗄️ Supabase — Databasekart
 
-**Prosjekt:** `vuxbjlykgmzskxbclquf`
-**Dashboard:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf
+**Prosjekt:** `pskhryjzkobytnfwucrb`
+**Dashboard:** https://supabase.com/dashboard/project/pskhryjzkobytnfwucrb
 
 | Tabell | Formål | Primærnøkkel |
 |---|---|---|
@@ -351,17 +351,17 @@ For å aktivere Sprint 1–10 i produksjon:
 #    - supabase/sql-scripts/004_live_mode.sql
 
 # 2. Deploy Edge Functions
-supabase functions deploy signal-engine --project-ref vuxbjlykgmzskxbclquf
-supabase functions deploy position-monitor --project-ref vuxbjlykgmzskxbclquf
-supabase functions deploy trading-push --project-ref vuxbjlykgmzskxbclquf
-supabase functions deploy connect-exchange --project-ref vuxbjlykgmzskxbclquf
+supabase functions deploy signal-engine --project-ref pskhryjzkobytnfwucrb
+supabase functions deploy position-monitor --project-ref pskhryjzkobytnfwucrb
+supabase functions deploy trading-push --project-ref pskhryjzkobytnfwucrb
+supabase functions deploy connect-exchange --project-ref pskhryjzkobytnfwucrb
 
 # 3. Generer VAPID-nøkler
 npx web-push generate-vapid-keys
 supabase secrets set VAPID_SUBJECT=mailto:admin@klarpakke.no \
   NEXT_PUBLIC_VAPID_PUBLIC_KEY=<PUBLIC_KEY> \
   VAPID_PRIVATE_KEY=<PRIVATE_KEY> \
-  --project-ref vuxbjlykgmzskxbclquf
+  --project-ref pskhryjzkobytnfwucrb
 
 # 4. Sett opp Database Webhook (bot_health INSERT → trading-push)
 # 5. Aktiver Supabase Vault extension

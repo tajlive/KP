@@ -266,8 +266,8 @@ function collect(dir, filter) {
   }
 }
 
-collect("src/features/settings", "settings");
-collect("src/features/profile", "settings");
+collect("src/features/account/settings", "settings");
+collect("src/features/account/profile", "settings");
 collect("src/app/[locale]/(user)/innstillinger", "settings");
 collect("src/app/[locale]/(beta)/beta", "beta");
 collect("src/app/[locale]/(user)/dashboard/tax-report", "taxReport");

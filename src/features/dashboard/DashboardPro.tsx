@@ -7,12 +7,12 @@ import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react
 import { useCurrency } from "@/hooks/useCurrency";
 
 // Nye WOW-komponenter
-import { PortfolioChart } from "./PortfolioChart";
-import { StatsGrid } from "./StatsGrid";
+import { PortfolioChart } from "@/features/portfolio/PortfolioChart";
+import { StatsGrid } from "@/features/portfolio/StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
 import { SkeletonBlock } from "./loading-skeleton";
 
-import { DailyChallenge } from "@/features/gamification/DailyChallenge";
+import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
 
 // Eksisterende komponenter
 import { SimplifiedHero } from "./SimplifiedHero";
@@ -35,7 +35,7 @@ import { FeatureGate } from "@/lib/feature-flags";
 // Adaptive state machine
 import { computeUserState, type UserState } from "@/hooks/useUserState";
 
-import { PaperTradingList } from "@/features/paper-trading/PaperTradingList";
+import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
 
 interface UserStats {
   totalTrades: number;

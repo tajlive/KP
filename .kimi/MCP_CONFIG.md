@@ -8,7 +8,7 @@
 export SUPABASE_ACCESS_TOKEN=$(gh secret get SUPABASE_ACCESS_TOKEN -R tajlive/KP)
 
 # Oppdater auth config
-curl -X PATCH "https://api.supabase.com/v1/projects/vuxbjlykgmzskxbclquf/config/auth" \
+curl -X PATCH "https://api.supabase.com/v1/projects/pskhryjzkobytnfwucrb/config/auth" \
   -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

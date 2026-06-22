@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { SkeletonBlock } from "./loading-skeleton";
+import { SkeletonBlock } from "@/features/dashboard/loading-skeleton";
 
 interface ChartDataPoint {
   date: string;

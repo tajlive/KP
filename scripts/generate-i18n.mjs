@@ -164,8 +164,8 @@ const TRANSLATIONS = {
 
 // Collect all keys per top-level namespace
 const files = [
-  ...scanDir("src/features/settings", "settings"),
-  ...scanDir("src/features/profile", "settings"),
+  ...scanDir("src/features/account/settings", "settings"),
+  ...scanDir("src/features/account/profile", "settings"),
   ...scanDir("src/app/[locale]/(user)/innstillinger", "settings"),
   ...scanDir("src/app/[locale]/(beta)/beta", "beta"),
   ...scanDir("src/app/[locale]/(user)/dashboard/tax-report", "taxReport"),

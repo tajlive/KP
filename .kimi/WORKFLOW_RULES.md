@@ -319,7 +319,7 @@ sleep 120 && curl -I https://www.klarpakke.no/no
 - **GitHub Repo:** https://github.com/tajlive/KP
 - **Vercel Dashboard:** https://vercel.com/dashboard
 - **Produksjon:** https://www.klarpakke.no
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/pskhryjzkobytnfwucrb
 
 ---
 

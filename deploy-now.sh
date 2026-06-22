@@ -56,7 +56,7 @@ fi
 # Fix 4: Regenerer Supabase-typer
 echo "📦 Regenererer Supabase-typer..."
 npx supabase gen types typescript \
-  --project-id vuxbjlykgmzskxbclquf \
+  --project-id pskhryjzkobytnfwucrb \
   --schema public > src/types/supabase.ts 2>/dev/null \
   && ok "Supabase-typer regenerert: $(wc -c < src/types/supabase.ts | tr -d ' ') bytes" \
   || warn "Supabase type-gen feilet — fortsetter med eksisterende typer"

@@ -21,8 +21,18 @@ import type {
   Position,
   OrderBookSnapshot,
 } from "./order-executor";
-import { calculateFee, fetchBinancePrice, fetchBinanceDepth } from "./order-executor";
-import { getUsdtToNokRate, usdtToNok } from "./currency";
+import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { computeFill } from "./canonical/execution/fill-model";
+import { getUsdtToNokRateAsync, usdtToNok } from "./currency";
+
+const marketDataProvider = createBinanceMarketDataProvider();
+
+/** Paper-adapter parametere – alle modusspesifikke verdier samlet her. */
+const PAPER_PARAMS = {
+  feeRate: 0.001, // 0.1%
+  marketSlippageRate: 0.0005, // 0.05%
+  minOrderValueUsdt: 10,
+};
 
 export class PaperExecutor implements OrderExecutor {
   constructor(
@@ -36,56 +46,39 @@ export class PaperExecutor implements OrderExecutor {
    */
   async executeOrder(params: OrderParams): Promise<OrderResult> {
     try {
-      // 0. Balance check for buy orders
-      if (params.side.toLowerCase() === "buy") {
-        const balance = await this.getBalance();
-        const currentPrice = await fetchBinancePrice(params.symbol);
-        const orderValueUsdt = params.quantity * currentPrice;
-        const feeUsdt = calculateFee(params.quantity, currentPrice);
-        const totalCostUsdt = orderValueUsdt + feeUsdt;
-        const totalCostNok = usdtToNok(totalCostUsdt);
+      // 1. Fetch current market price (kanonisk markedsdata)
+      const currentPrice = await marketDataProvider.getPrice(params.symbol);
 
-        // Minimum ~100 NOK order value (≈ $10)
-        const MIN_ORDER_VALUE_NOK = usdtToNok(10);
-        if (usdtToNok(orderValueUsdt) < MIN_ORDER_VALUE_NOK) {
-          return {
-            success: false,
-            orderId: "",
-            executedPrice: 0,
-            executedQuantity: 0,
-            fee: 0,
-            timestamp: new Date(),
-            error: `Order value must be at least ${MIN_ORDER_VALUE_NOK.toFixed(0)} NOK. Current: ${usdtToNok(orderValueUsdt).toFixed(0)} NOK`,
-          };
-        }
+      // 2. Balance i USDT for fill-modellen (paper-kapital er NOK)
+      const rate = await getUsdtToNokRateAsync(this.supabase);
+      const balanceNok = await this.getBalance();
+      const availableUsdt =
+        rate > 0 ? balanceNok.available / rate : balanceNok.available;
 
-        if (balance.available < totalCostNok) {
-          return {
-            success: false,
-            orderId: "",
-            executedPrice: 0,
-            executedQuantity: 0,
-            fee: 0,
-            timestamp: new Date(),
-            error: `Insufficient paper balance. Required: ${totalCostNok.toFixed(0)} NOK, Available: ${balance.available.toFixed(0)} NOK`,
-          };
-        }
+      // 3. Beregn fill via kanonisk modell
+      const fill = computeFill({
+        side: params.side,
+        quantity: params.quantity,
+        orderType: params.orderType,
+        limitPrice: params.price,
+        marketPrice: currentPrice,
+        feeRate: PAPER_PARAMS.feeRate,
+        marketSlippageRate: PAPER_PARAMS.marketSlippageRate,
+        minOrderValue: PAPER_PARAMS.minOrderValueUsdt,
+        availableCapital: params.side.toLowerCase() === "buy" ? availableUsdt : undefined,
+      });
+
+      if (!fill.success) {
+        return {
+          success: false,
+          orderId: "",
+          executedPrice: 0,
+          executedQuantity: 0,
+          fee: 0,
+          timestamp: new Date(),
+          error: fill.error,
+        };
       }
-
-      // 1. Fetch current market price
-      const currentPrice = await fetchBinancePrice(params.symbol);
-
-      // 2. Calculate execution details
-      const executedPrice =
-        params.orderType === "limit" && params.price
-          ? params.price
-          : currentPrice;
-
-      const executedQuantity = params.quantity;
-      const fee = calculateFee(executedQuantity, executedPrice);
-
-      // 3. Simulate slippage (0.05% for market orders)
-      const slippagePct = params.orderType === "market" ? 0.05 : 0;
 
       // 4. Generate synthetic order ID
       const orderId = `paper-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -93,11 +86,11 @@ export class PaperExecutor implements OrderExecutor {
       return {
         success: true,
         orderId,
-        executedPrice,
-        executedQuantity,
-        fee,
+        executedPrice: fill.executedPrice,
+        executedQuantity: fill.executedQuantity,
+        fee: fill.fee,
         timestamp: new Date(),
-        slippagePct,
+        slippagePct: fill.slippagePct,
       };
     } catch (error) {
       console.error("Paper execution error:", error);
@@ -230,13 +223,13 @@ export class PaperExecutor implements OrderExecutor {
    * Get current market price
    */
   async getMarketPrice(symbol: string): Promise<number> {
-    return fetchBinancePrice(symbol);
+    return marketDataProvider.getPrice(symbol);
   }
 
   /**
    * Get current order book (depth)
    */
   async fetchOrderBook(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
-    return fetchBinanceDepth(symbol, limit);
+    return marketDataProvider.getDepth(symbol, limit);
   }
 }

@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { AssetDetailView } from "@/features/coinbase/AssetDetailView";
+import { AssetDetailView } from "@/features/market/coinbase/AssetDetailView";
 
 export const runtime = 'nodejs';
 

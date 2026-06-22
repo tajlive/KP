@@ -94,62 +94,41 @@ export interface OrderExecutor {
   fetchOrderBook(symbol: string, limit?: number): Promise<OrderBookSnapshot>;
 }
 
+import { createBinanceMarketDataProvider } from "./canonical/market-data";
+
+const marketDataProvider = createBinanceMarketDataProvider();
+
 /**
  * Helper: Fetch real-time market price from Binance public API
  * Used by both paper and live executors
+ *
+ * @deprecated Bruk canonical/market-data provider direkte i ny kode.
  */
 export async function fetchBinancePrice(symbol: string): Promise<number> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-
   try {
-    const response = await fetch(
-      `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`,
-      { signal: controller.signal }
-    );
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`Binance API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return parseFloat(data.price);
+    return await marketDataProvider.getPrice(symbol);
   } catch (error) {
-    clearTimeout(timeoutId);
-    throw new Error(`Failed to fetch price for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to fetch price for ${symbol}: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 }
 
 /**
  * Helper: Fetch depth (order book) from Binance public API
+ *
+ * @deprecated Bruk canonical/market-data provider direkte i ny kode.
  */
-export async function fetchBinanceDepth(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-
+export async function fetchBinanceDepth(
+  symbol: string,
+  limit: number = 20,
+): Promise<OrderBookSnapshot> {
   try {
-    const response = await fetch(
-      `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`,
-      { signal: controller.signal }
-    );
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`Binance API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return {
-      bids: data.bids.map(([p, q]: [string, string]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
-      asks: data.asks.map(([p, q]: [string, string]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
-      timestamp: new Date()
-    };
+    return await marketDataProvider.getDepth(symbol, limit);
   } catch (error) {
-    clearTimeout(timeoutId);
-    throw new Error(`Failed to fetch depth for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to fetch depth for ${symbol}: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 }
 

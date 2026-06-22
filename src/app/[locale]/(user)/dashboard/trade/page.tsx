@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { TradeHub } from "@/features/coinbase/TradeHub";
+import { TradeHub } from "@/features/market/coinbase/TradeHub";
 
 export const runtime = 'nodejs';
 

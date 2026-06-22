@@ -151,7 +151,7 @@ config['mcpServers']['supabase'] = {
         '-y',
         '@supabase/mcp-server-supabase@latest',
         '--access-token', '$SUPABASE_TOKEN',
-        '--project-ref', 'vuxbjlykgmzskxbclquf'
+        '--project-ref', 'pskhryjzkobytnfwucrb'
     ]
 }
 
@@ -238,7 +238,7 @@ print_summary() {
   echo "  3. Perplexity har nå full arkitekt-tilgang ✅"
   echo ""
   echo "${BOLD}Husk manuelt:${RESET}"
-  echo "  • Roter Supabase-nøkler: https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf/settings/api"
+  echo "  • Roter Supabase-nøkler: https://supabase.com/dashboard/project/pskhryjzkobytnfwucrb/settings/api"
   echo "  • Roter Stripe live-nøkler: https://dashboard.stripe.com/apikeys"
   echo ""
 }

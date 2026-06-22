@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, BarChart3 } from "lucide-react";
-import { EquityCurveChart } from "./EquityCurveChart";
-import { WinLossHeatmap } from "./WinLossHeatmap";
-import { AssetAllocationChart } from "./AssetAllocationChart";
+import { EquityCurveChart } from "@/features/portfolio/EquityCurveChart";
+import { WinLossHeatmap } from "@/features/portfolio/WinLossHeatmap";
+import { AssetAllocationChart } from "@/features/portfolio/AssetAllocationChart";
 import { PositionSizingCalculator } from "./PositionSizingCalculator";
 import { ExplainStatButton } from "./ExplainStatButton";
 

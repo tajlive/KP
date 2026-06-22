@@ -38,7 +38,7 @@ test("Håndterer korrupt localStorage uten reload-loop", async ({ page }) => {
     localStorage.setItem("sb-test-token", "\xFF\xFE\xFD");
     localStorage.setItem("gotrue.current.user", "\xFF\xFE");
     localStorage.setItem(
-      "sb-vuxbjlykgmzskxbclquf-auth-token",
+      "sb-pskhryjzkobytnfwucrb-auth-token",
       '{"corrupt": "\xFF\xFE"}',
     );
   });

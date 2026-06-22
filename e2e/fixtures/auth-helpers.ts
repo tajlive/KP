@@ -26,7 +26,7 @@ export async function clearAuthState(page: Page): Promise<void> {
 export async function isAuthenticated(page: Page): Promise<boolean> {
   // Check for session in localStorage (Supabase stores session here)
   const hasSession = await page.evaluate(() => {
-    const session = localStorage.getItem("sb-vuxbjlykgmzskxbclquf-auth-token");
+    const session = localStorage.getItem("sb-pskhryjzkobytnfwucrb-auth-token");
     return session !== null;
   });
   
@@ -46,7 +46,7 @@ export async function isAuthenticated(page: Page): Promise<boolean> {
  */
 export async function getSession(page: Page): Promise<Record<string, unknown> | null> {
   const session = await page.evaluate(() => {
-    const sessionStr = localStorage.getItem("sb-vuxbjlykgmzskxbclquf-auth-token");
+    const sessionStr = localStorage.getItem("sb-pskhryjzkobytnfwucrb-auth-token");
     if (!sessionStr) return null;
     try {
       return JSON.parse(sessionStr);
@@ -82,7 +82,7 @@ export async function setMockSession(
   
   await page.evaluate((session) => {
     localStorage.setItem(
-      "sb-vuxbjlykgmzskxbclquf-auth-token", 
+      "sb-pskhryjzkobytnfwucrb-auth-token",
       JSON.stringify(session)
     );
   }, mockSession);
@@ -99,7 +99,7 @@ export async function waitForAuthState(
   
   await page.waitForFunction(
     (shouldBeAuth) => {
-      const session = localStorage.getItem("sb-vuxbjlykgmzskxbclquf-auth-token");
+      const session = localStorage.getItem("sb-pskhryjzkobytnfwucrb-auth-token");
       const isAuth = session !== null;
       return shouldBeAuth ? isAuth : !isAuth;
     },

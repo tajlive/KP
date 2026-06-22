@@ -2143,6 +2143,8 @@
     "upgrade": "Oppgrader",
     "upgradeNow": "Oppgrader nå",
     "language": "Språk",
+    "market": "Marked",
+    "account": "Konto",
     "autoTrading": "Autohandel",
     "liveTrading": "Live Trading",
     "simulator": "Simulator",
@@ -3287,7 +3289,10 @@
     "sonarLoadError": "Kunne ikke laste inn Sonar AI analyse.",
     "upgradeForMore": "Oppgrader for flere analyser",
     "upgradeDesc": "Få live Sonar-analyser for ETH, SOL og over 20+ andre kryptoassets.",
-    "welcomeStart": "Velkommen! Start en strategi for å begynne."
+    "welcomeStart": "Velkommen! Start en strategi for å begynne.",
+    "marketTitle": "Marked",
+    "marketSubtitle": "Oversikt over markeder og watchlist",
+    "goToTrade": "Gå til handel"
   },
   "wallet": {
     "title": "Lommebok",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Synkroniser Supabase URL + anon + service_role inn i .env.local via Management API.
+ * Synkroniser Supabase URL + legacy og moderne API-nøkler via Management API.
  *
  * Krever (én av):
  *   - SUPABASE_ACCESS_TOKEN (PAT fra https://supabase.com/dashboard/account/tokens)
@@ -17,7 +17,27 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const REPO_ROOT = process.cwd();
-const ENV_LOCAL = resolve(REPO_ROOT, ".env.local");
+function parseArgs(argv) {
+  const args = {
+    envFile: resolve(REPO_ROOT, ".env.local"),
+    runtimeOnly: false,
+    managementOnly: false,
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--env-path" || argv[i] === "-e") {
+      args.envFile = resolve(REPO_ROOT, argv[++i]);
+    } else if (argv[i] === "--runtime-only") {
+      args.runtimeOnly = true;
+    } else if (argv[i] === "--management-only") {
+      args.managementOnly = true;
+    }
+  }
+
+  return args;
+}
+
+const args = parseArgs(process.argv.slice(2));
 
 /** Samme prioritering som create-test-users.js / playwright.config (siste fil vinner). */
 function loadRepositoryEnv() {
@@ -84,24 +104,34 @@ function extractProjectRefFromUrl(url) {
   return m ? m[1] : null;
 }
 
-function upsertEnvLocal(updates) {
+function updateEnvFile(envFile, updates, removeKeys = []) {
   const keysToSet = new Set(Object.keys(updates));
+  const keysToRemove = new Set(removeKeys);
   let lines = [];
-  if (existsSync(ENV_LOCAL)) {
-    lines = readFileSync(ENV_LOCAL, "utf8").split("\n");
+  if (existsSync(envFile)) {
+    lines = readFileSync(envFile, "utf8").split("\n");
   }
 
   const seen = new Set();
+  const outputKeys = new Set();
   const out = [];
 
   for (const line of lines) {
     const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (m && keysToRemove.has(m[1])) {
+      continue;
+    }
     if (m && keysToSet.has(m[1])) {
+      if (seen.has(m[1])) continue;
       const v = updates[m[1]];
       out.push(`${m[1]}=${v}`);
       seen.add(m[1]);
+      outputKeys.add(m[1]);
+    } else if (m && outputKeys.has(m[1])) {
+      continue;
     } else {
       out.push(line);
+      if (m) outputKeys.add(m[1]);
     }
   }
 
@@ -111,7 +141,7 @@ function upsertEnvLocal(updates) {
     }
   }
 
-  writeFileSync(ENV_LOCAL, out.join("\n").replace(/\n+$/, "\n"));
+  writeFileSync(envFile, out.join("\n").replace(/\n+$/, "\n"));
 }
 
 async function main() {
@@ -188,43 +218,81 @@ async function main() {
 
   let anon = "";
   let service = "";
+  let publishable = "";
+  let secret = "";
 
   for (const row of data) {
     if (!row || typeof row !== "object") continue;
     const apiKey = row.api_key;
-    if (typeof apiKey !== "string" || !apiKey.startsWith("eyJ")) continue;
-    const role = jwtRole(apiKey);
-    if (role === "anon") anon = apiKey;
-    if (role === "service_role") service = apiKey;
+    if (typeof apiKey !== "string") continue;
+    if (apiKey.startsWith("eyJ")) {
+      const role = jwtRole(apiKey);
+      if (role === "anon") anon = apiKey;
+      if (role === "service_role") service = apiKey;
+    }
+    if (row.type === "publishable" && apiKey.startsWith("sb_publishable_")) {
+      publishable = apiKey;
+    }
+    if (row.type === "secret" && apiKey.startsWith("sb_secret_")) {
+      secret = apiKey;
+    }
   }
 
-  if (!anon || !service) {
-    console.error("❌ Fant ikke både anon og service_role JWT i api-keys-svaret.");
+  if (!anon || !service || !publishable || !secret) {
     console.error(
-      "   Nye prosjekter kan bruke andre nøkkeltyper — bruk Dashboard → Settings → API eller vercel env pull.",
+      "❌ Fant ikke anon, service_role, publishable og secret i api-keys-svaret.",
     );
     process.exit(1);
   }
 
   const publicUrl = `https://${ref}.supabase.co`;
 
-  if (!existsSync(ENV_LOCAL)) {
+  if (!existsSync(args.envFile)) {
     writeFileSync(
-      ENV_LOCAL,
+      args.envFile,
       `# Generert av npm run env:sync:supabase — ikke commit\n`,
     );
   }
 
-  upsertEnvLocal({
+  const runtimeUpdates = {
     NEXT_PUBLIC_SUPABASE_URL: publicUrl,
+    SUPABASE_URL: publicUrl,
+    SUPABASE_PROJECT_REF: ref,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: anon,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishable,
+    SUPABASE_PUBLISHABLE_KEY: publishable,
+    SUPABASE_SECRET_KEY: secret,
     SUPABASE_SERVICE_ROLE_KEY: service,
-  });
+  };
 
-  console.log("✅ Oppdatert .env.local (masket):");
-  console.log(`   NEXT_PUBLIC_SUPABASE_URL=${publicUrl}`);
-  console.log(`   NEXT_PUBLIC_SUPABASE_ANON_KEY=${mask(anon)}`);
-  console.log(`   SUPABASE_SERVICE_ROLE_KEY=${mask(service)}`);
+  const updates = args.managementOnly
+    ? {
+        SUPABASE_PROJECT_REF: ref,
+        SUPABASE_ACCESS_TOKEN: token,
+      }
+    : runtimeUpdates;
+
+  updateEnvFile(
+    args.envFile,
+    updates,
+    args.runtimeOnly
+      ? ["SUPABASE_ACCESS_TOKEN"]
+      : args.managementOnly
+        ? []
+        : ["VIPPS_CLIENT_ID", "VIPPS_CLIENT_SECRET"],
+  );
+
+  console.log(`✅ Oppdatert ${args.envFile} (masket):`);
+  if (args.managementOnly) {
+    console.log(`   SUPABASE_PROJECT_REF=${ref}`);
+    console.log(`   SUPABASE_ACCESS_TOKEN=${mask(token)}`);
+  } else {
+    console.log(`   NEXT_PUBLIC_SUPABASE_URL=${publicUrl}`);
+    console.log(`   NEXT_PUBLIC_SUPABASE_ANON_KEY=${mask(anon)}`);
+    console.log(`   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${mask(publishable)}`);
+    console.log(`   SUPABASE_SECRET_KEY=${mask(secret)}`);
+    console.log(`   SUPABASE_SERVICE_ROLE_KEY=${mask(service)}`);
+  }
   console.log("");
   console.log("   Neste: npm run test:e2e:check-env  eller  npm run test:e2e:prepare");
 }

@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { ReferralDashboard } from "@/features/referral/ReferralDashboard";
+import { ReferralDashboard } from "@/features/account/referral/ReferralDashboard";
 
 export const runtime = 'nodejs';
 

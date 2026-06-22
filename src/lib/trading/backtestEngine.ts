@@ -17,6 +17,7 @@
 import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics";
 import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
+import { createBinanceMarketDataProvider } from "./canonical/market-data";
 
 // ============================================================================
 // TYPES
@@ -204,6 +205,8 @@ function calculateVolatility(returns: number[]): number {
 // HENTE HISTORISKE DATA
 // ============================================================================
 
+const marketDataProvider = createBinanceMarketDataProvider();
+
 /**
  * Hent historiske OHLCV-data fra Binance
  */
@@ -212,22 +215,15 @@ export async function fetchHistoricalData(
   days: number
 ): Promise<OHLCV[]> {
   const limit = Math.min(days, 1095); // Max 3 år
-  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=${limit}`;
-  
-  const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
-  if (!response.ok) {
-    throw new Error(`Binance API error: ${response.status} for ${symbol}`);
-  }
-  
-  const data = await response.json();
-  
-  return data.map((candle: unknown[]) => ({
-    timestamp: candle[0] as number,
-    open: parseFloat(candle[1] as string),
-    high: parseFloat(candle[2] as string),
-    low: parseFloat(candle[3] as string),
-    close: parseFloat(candle[4] as string),
-    volume: parseFloat(candle[5] as string),
+  const klines = await marketDataProvider.getKlines(symbol, "1d", limit);
+
+  return klines.map((candle) => ({
+    timestamp: candle.timestamp,
+    open: candle.open,
+    high: candle.high,
+    low: candle.low,
+    close: candle.close,
+    volume: candle.volume,
   }));
 }
 

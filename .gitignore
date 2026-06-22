@@ -258,6 +258,7 @@ config/perplexity-local-mcp.json
 .mempalace/kimi_sessions/
 # Swarm auto-genererte rapporter
 .knowledge/session/
+.kimi/oauth-guard-snapshots/
 
 # ── Cloudflare ──
 .open-next/

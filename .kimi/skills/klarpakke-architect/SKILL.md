@@ -161,7 +161,7 @@ New strategies go in `strategies/v2/<name>.ts`. Never delete `v1/`.
 
 ## 🗄️ Supabase — Database Map
 
-**Project:** `vuxbjlykgmzskxbclquf`
+**Project:** `pskhryjzkobytnfwucrb`
 
 | Table | Purpose |
 |---|---|

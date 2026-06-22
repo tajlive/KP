@@ -20,20 +20,42 @@ export interface NavItem {
   desktopOnly?: boolean;
 }
 
-// Hovednavigasjon for autentiserte brukere
+// Hovednavigasjon for autentiserte brukere — fire kjerneflyter
 export const AUTH_NAV_CONFIG: NavItem[] = [
+  { 
+    key: 'portfolio', 
+    href: '/dashboard/portfolio', 
+    labelKey: 'dashboard.sidebar.portfolio', 
+    icon: 'PieChart',
+    roles: ['auth'] 
+  },
+  { 
+    key: 'market', 
+    href: '/marked', 
+    labelKey: 'navigation.market', 
+    icon: 'Globe',
+    roles: ['auth'] 
+  },
+  { 
+    key: 'trade', 
+    href: '/handel', 
+    labelKey: 'dashboard.sidebar.trade', 
+    icon: 'TrendingUp',
+    roles: ['auth'] 
+  },
+  { 
+    key: 'account', 
+    href: '/profile', 
+    labelKey: 'navigation.account', 
+    icon: 'User',
+    roles: ['auth'] 
+  },
+  // Sekundære flyter beholdes i side-/top-navigasjon
   { 
     key: 'home', 
     href: '/dashboard', 
     labelKey: 'dashboard.sidebar.home', 
     icon: 'Home',
-    roles: ['auth'] 
-  },
-  { 
-    key: 'trade', 
-    href: '/dashboard/trade', 
-    labelKey: 'dashboard.sidebar.trade', 
-    icon: 'TrendingUp',
     roles: ['auth'] 
   },
   { 
@@ -44,15 +66,8 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ['auth'] 
   },
   { 
-    key: 'portfolio', 
-    href: '/dashboard/portfolio', 
-    labelKey: 'dashboard.sidebar.portfolio', 
-    icon: 'PieChart',
-    roles: ['auth'] 
-  },
-  { 
     key: 'history', 
-    href: '/handelshistorikk', 
+    href: '/dashboard/historikk', 
     labelKey: 'dashboard.sidebar.history', 
     icon: 'History',
     roles: ['auth'] 
@@ -62,13 +77,6 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     href: '/kurs', 
     labelKey: 'navigation.courses', 
     icon: 'BookOpen',
-    roles: ['auth'] 
-  },
-  { 
-    key: 'profile', 
-    href: '/profile', 
-    labelKey: 'navigation.profile', 
-    icon: 'User',
     roles: ['auth'] 
   },
 ];
@@ -102,46 +110,37 @@ export const GUEST_NAV_CONFIG: NavItem[] = [
   },
 ];
 
-// Mobil-bottom-tabs (maks 5 items)
-// Layout: home | copy | trade | auto | profile
-// Inspirert av BingX/Binance — copy trading synlig på første nivå
+// Mobil-bottom-tabs — fire kjerneflyter
+// Layout: portfolio | market | trade | account
 export const MOBILE_BOTTOM_TABS: NavItem[] = [
-  { 
-    key: 'home', 
-    href: '/dashboard', 
-    labelKey: 'dashboard.sidebar.home', 
-    icon: 'Home',
-    roles: ['auth'],
-    mobileOnly: true,
-  },
-  {
-    key: 'trade',
-    href: '/dashboard/trade',
-    labelKey: 'dashboard.sidebar.trade',
-    icon: 'TrendingUp',
-    roles: ['auth'],
-    mobileOnly: true,
-  },
   {
     key: 'portfolio',
     href: '/dashboard/portfolio',
-    labelKey: 'dashboard.sidebar.portfolio',
+    labelKey: 'navigation.portfolio',
     icon: 'PieChart',
     roles: ['auth'],
     mobileOnly: true,
   },
   {
-    key: 'autoTrade',
-    href: '/dashboard/auto-handel',
-    labelKey: 'dashboard.sidebar.autoTrade',
-    icon: 'Bot',
+    key: 'market',
+    href: '/marked',
+    labelKey: 'navigation.market',
+    icon: 'Globe',
+    roles: ['auth'],
+    mobileOnly: true,
+  },
+  {
+    key: 'trade',
+    href: '/handel',
+    labelKey: 'navigation.trade',
+    icon: 'TrendingUp',
     roles: ['auth'],
     mobileOnly: true,
   },
   { 
-    key: 'profile', 
+    key: 'account', 
     href: '/profile', 
-    labelKey: 'navigation.profile', 
+    labelKey: 'navigation.account', 
     icon: 'User',
     roles: ['auth'],
     mobileOnly: true,

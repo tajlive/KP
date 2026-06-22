@@ -5,7 +5,7 @@ import { useLocale } from "next-intl";
 import { TrendingUp, BarChart3, Wallet } from "lucide-react";
 import type { UserState } from "@/hooks/useUserState";
 import { SimplifiedHero } from "./SimplifiedHero";
-import { StatsGrid } from "./StatsGrid";
+import { StatsGrid } from "@/features/portfolio/StatsGrid";
 import { AITip } from "./AITip";
 import { SmartActions } from "./SmartActions";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -37,7 +37,7 @@ export interface UserStats {
   recentSessions?: any[];
 }
 
-import { PaperTradingList } from "@/features/paper-trading/PaperTradingList";
+import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
 
 /* ------------------------------------------------------------------ */
 /*  Progress indicator (onboarding)                                    */

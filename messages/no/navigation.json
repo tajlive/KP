@@ -14,5 +14,9 @@
   "navPricing": "Priser",
   "siteNavAria": "Hovednavigasjon",
   "myPage": "Min Side",
-  "logout": "Logg ut"
+  "logout": "Logg ut",
+  "portfolio": "Portefølje",
+  "market": "Marked",
+  "trade": "Handel",
+  "account": "Konto"
 }

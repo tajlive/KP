@@ -72,23 +72,25 @@ This document defines the testing strategy for Klarpakke, a Next.js 15 applicati
 
 **Failure response:** Report only (v1), will block in v2.
 
-### 4. Mobile Tests (@mobile) — Non-blocking
+### 4. Mobile Tests (@mobile) — Blocking for core flows
 
-**Purpose:** Device-specific testing and responsive design.
+**Purpose:** Device-specific testing and responsive design for the four core flows: portfolio, market/watchlist, trading and account.
 
 **Characteristics:**
 
 - Mobile Safari and Chrome
 - Responsive design validation
 - Touch interactions
+- Critical journeys must be reachable within four taps from the main navigation
 
 **Examples:**
 
 - Dashboard renders on mobile viewport
 - Navigation works on small screens
 - Login page is mobile-friendly
+- Portfolio, market, trading and account flows are reachable via bottom navigation
 
-**Failure response:** Report only, never blocking.
+**Failure response:** Blocking for core-flow specs. Report only for exploratory/mobile-regression specs.
 
 ---
 
@@ -134,6 +136,7 @@ This document defines the testing strategy for Klarpakke, a Next.js 15 applicati
 | Smoke tests        | 100% pass               | ✅ Yes   |
 | Critical tests     | ≥ 95% pass              | ✅ Yes   |
 | Lighthouse Preview | Thresholds\*            | ✅ Yes   |
+| Lighthouse Mobile  | Performance ≥ 90 on core flows\*\* | ✅ Yes |
 | Console errors     | 0 new in smoke/critical | ✅ Yes   |
 | API errors         | 0 5xx on critical paths | ✅ Yes   |
 
@@ -142,6 +145,13 @@ _Lighthouse thresholds v1:_
 - Performance: ≥ 70
 - Accessibility: ≥ 90
 - SEO: ≥ 90
+
+_Lighthouse mobile thresholds for core flows:_
+
+- Median Performance over 3 runs: ≥ 90
+- Accessibility: ≥ 90
+- Cumulative Layout Shift: ≤ 0.1
+- Core flows: `/no/dashboard/portfolio`, `/no/dashboard/trade`, `/no/handel`, `/no/profile`
 
 ### Non-blocking (v1)
 

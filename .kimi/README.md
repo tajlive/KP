@@ -78,7 +78,7 @@ KIMI vil:
 - **Actions:** https://github.com/tajlive/KP/actions
 - **Produksjon:** https://www.klarpakke.no
 - **Google Cloud:** https://console.cloud.google.com/run?project=klarpakke-universitet
-- **Supabase:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf
+- **Supabase:** https://supabase.com/dashboard/project/pskhryjzkobytnfwucrb
 
 ---
 

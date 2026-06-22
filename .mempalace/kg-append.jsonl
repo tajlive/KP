@@ -91,3 +91,60 @@
 {"subject":"oauth-guard","predicate":"supports","object":"dry-run-apply-rollback","validFrom":"2026-06-22T03:00:00.000Z"}
 {"subject":"auth-system","predicate":"fixed","object":"exposed-secrets-in-git-history","validFrom":"2026-06-22T03:00:00.000Z"}
 {"subject":"auth-system","predicate":"depends_on","object":"cloudflare-workers-fetch-client","validFrom":"2026-06-22T03:00:00.000Z"}
+{"subject":"oauth-guard","predicate":"uses","object":"comma-separated-uri-allow-list","validFrom":"2026-06-22T03:08:00.720Z"}
+{"subject":"supabase-management-api","predicate":"stores","object":"uri_allow_list as comma-separated string","validFrom":"2026-06-22T03:08:00.720Z"}
+{"subject":"vipps-callback","predicate":"uses","object":"external_auth_identities table","validFrom":"2026-06-22T03:08:00.721Z"}
+{"subject":"external_auth_identities","predicate":"has","object":"UNIQUE(provider, provider_subject)","validFrom":"2026-06-22T03:08:00.722Z"}
+{"subject":"production","predicate":"deployed-to","object":"cloudflare-workers","validFrom":"2026-06-22T03:08:00.722Z"}
+{"subject":"supabase-project","predicate":"migrated-to","object":"pskhryjzkobytnfwucrb","validFrom":"2026-06-22T03:08:00.723Z"}
+{"subject":"cron_secret","predicate":"rotated","object":"2026-06-22","validFrom":"2026-06-22T03:08:00.724Z"}
+{"subject":"cloudflare-workers-secrets","predicate":"updated","object":"supabase-url-anon-service-role-postgres-url-cron-secret","validFrom":"2026-06-22T03:08:00.725Z"}
+{"subject":"rate-limit","predicate":"uses","object":"distributed-kv-redis-fail-closed","validFrom":"2026-06-22T03:08:00.727Z"}
+{"subject":"google-oauth","predicate":"verified","object":"supabase-provider-callback-accepted","validFrom":"2026-06-22T03:08:00.730Z"}
+{"subject":"microsoft-oauth","predicate":"deferred","object":"pending-portal-update","validFrom":"2026-06-22T03:09:52.388Z"}
+{"subject":"vipps-oauth","predicate":"deferred","object":"pending-portal-update","validFrom":"2026-06-22T03:09:52.388Z"}
+{"subject":"oauth-lockdown-fase2","predicate":"status","object":"deployed-with-ms-vipps-pending","validFrom":"2026-06-22T03:09:52.388Z"}
+{"subject":"signal-engine-cron","predicate":"rescheduled","object":"with-rotated-cron-secret-2026-06-22","validFrom":"2026-06-22T03:19:11.502Z"}
+{"subject":"cron_secret","predicate":"vault-update","object":"pending-supabase-dashboard","validFrom":"2026-06-22T03:19:11.502Z"}
+{"subject":"health-prod-gate","predicate":"status","object":"healthy-2026-06-22","validFrom":"2026-06-22T03:19:11.503Z"}
+{"subject":"cron_secret","predicate":"stored_in","object":"supabase_vault","validFrom":"2026-06-22T13:20:57.061Z"}
+{"subject":"signal-engine-5min","predicate":"reads_secret_from","object":"vault.decrypted_secrets","validFrom":"2026-06-22T13:20:57.062Z"}
+{"subject":"signal-engine-5min","predicate":"authentication_method","object":"vault-based-bearer-token","validFrom":"2026-06-22T13:20:57.062Z"}
+{"subject":"signal-engine-5min","predicate":"status","object":"hardcoded-workaround-removed","validFrom":"2026-06-22T13:20:57.062Z"}
+{"subject":"cron_secret","predicate":"rotation_date","object":"2026-06-22","validFrom":"2026-06-22T13:20:57.063Z"}
+{"subject":"google-oauth","predicate":"verified-in-production","object":"successful-user-login-2026-06-22","validFrom":"2026-06-22T18:54:05.399Z"}
+{"subject":"production","predicate":"status","object":"healthy-after-oauth-fix","validFrom":"2026-06-22T18:54:05.400Z"}
+{"subject":"oauth-lockdown-fase2","predicate":"status","object":"deployed-to-production-2026-06-22","validFrom":"2026-06-22T19:08:19.683Z"}
+{"subject":"supabase-project","predicate":"production-ref","object":"pskhryjzkobytnfwucrb","validFrom":"2026-06-22T19:08:19.687Z"}
+{"subject":"cron_secret","predicate":"source","object":"supabase-vault","validFrom":"2026-06-22T19:08:19.691Z"}
+{"subject":"cloudflare-secrets","predicate":"lesson","object":"use-printf-to-avoid-whitespace-injection","validFrom":"2026-06-22T19:08:19.693Z"}
+{"subject":"playwright-smoke-production","predicate":"issue","object":"hangs-requires-curl-fallback","validFrom":"2026-06-22T19:08:19.694Z"}
+{"subject":"health-prod-gate","predicate":"status","object":"healthy-after-oauth-fix","validFrom":"2026-06-22T19:08:19.695Z"}
+{"subject":"klarpakke","predicate":"has","object":"four core flows: portfolio, market/watchlist, trading, account","validFrom":"2026-06-22T19:37:34.405Z"}
+{"subject":"klarpakke-ui","predicate":"has","object":"mobile bottom nav only on /dashboard/* routes","validFrom":"2026-06-22T19:37:34.406Z"}
+{"subject":"klarpakke-ui","predicate":"needs","object":"unified app shell covering all four core flows","validFrom":"2026-06-22T19:37:34.409Z"}
+{"subject":"klarpakke-trading","predicate":"has-duplication","object":"test/live price sources, symbol universes, P&L/calculation logic","validFrom":"2026-06-22T19:37:34.410Z"}
+{"subject":"klarpakke-trading","predicate":"needs","object":"canonical data layer under src/lib/trading/canonical/","validFrom":"2026-06-22T19:37:34.410Z"}
+{"subject":"klarpakke-testing","predicate":"has","object":"desktop Lighthouse in CI, mobile tests non-blocking","validFrom":"2026-06-22T19:37:34.410Z"}
+{"subject":"klarpakke-structure","predicate":"uses","object":"src/features/ with domain folders but messy overlaps","validFrom":"2026-06-22T19:37:34.411Z"}
+{"subject":"klarpakke-trading","predicate":"completed","object":"Fase 1: canonical symbol registry and market data provider under src/lib/trading/canonical/","validFrom":"2026-06-22T19:59:17.118Z"}
+{"subject":"klarpakke-ui","predicate":"completed","object":"Unified app shell with 4-tab bottom navigation for portfolio, market, trade, account","validFrom":"2026-06-22T19:59:17.126Z"}
+{"subject":"klarpakke-testing","predicate":"completed","object":"Mobile Lighthouse config .lighthouserc.mobile.json with performance ≥90 threshold","validFrom":"2026-06-22T19:59:17.130Z"}
+{"subject":"klarpakke-routes","predicate":"has","object":"/no/marked (new), /no/handel (canonical trading), /no/dashboard/portfolio, /no/profile","validFrom":"2026-06-22T19:59:17.133Z"}
+{"subject":"klarpakke-trading","predicate":"in-progress","object":"Fase 2: canonical risk engine and P&L ledger","validFrom":"2026-06-22T19:59:17.134Z"}
+{"subject":"klarpakke-trading","predicate":"completed","object":"canonical P&L ledger and trade-pnl module under src/lib/trading/canonical/pnl/","validFrom":"2026-06-22T20:03:37.755Z"}
+{"subject":"klarpakke-trading","predicate":"in-progress","object":"canonical risk engine (risk-validator + RiskKernel consolidation)","validFrom":"2026-06-22T20:03:37.756Z"}
+{"subject":"klarpakke-trading","predicate":"completed","object":"canonical P&L ledger, trade-pnl, limits-resolver and risk-engine scaffold","validFrom":"2026-06-22T20:13:31.685Z"}
+{"subject":"klarpakke-ui","predicate":"in-progress","object":"feature component migration to src/features/{portfolio,market,trading,account}","validFrom":"2026-06-22T20:13:31.688Z"}
+{"subject":"klarpakke-ui","predicate":"completed","object":"referral components moved to src/features/account/referral/","validFrom":"2026-06-22T20:13:31.689Z"}
+{"subject":"klarpakke-ui","predicate":"completed","object":"account components migrated: profile, settings, referral, gamification under src/features/account/","validFrom":"2026-06-22T20:17:09.605Z"}
+{"subject":"klarpakke-ui","predicate":"in-progress","object":"portfolio, market, trading component migration","validFrom":"2026-06-22T20:17:09.606Z"}
+{"subject":"klarpakke-trading","predicate":"in-progress","object":"canonical risk engine wiring to risk-validator.ts","validFrom":"2026-06-22T20:17:09.610Z"}
+{"subject":"klarpakke-ui","predicate":"completed","object":"portfolio components migrated to src/features/portfolio/","validFrom":"2026-06-22T20:27:39.490Z"}
+{"subject":"klarpakke-ui","predicate":"completed","object":"market components migrated to src/features/market/coinbase/","validFrom":"2026-06-22T20:27:39.491Z"}
+{"subject":"klarpakke-ui","predicate":"in-progress","object":"trading component consolidation (auto-trade moved; auto-trading and paper-trading remaining)","validFrom":"2026-06-22T20:27:39.492Z"}
+{"subject":"klarpakke-trading","predicate":"has_canonical_layer","object":"src/lib/trading/canonical/","validFrom":"2026-06-22T20:54:41.810Z"}
+{"subject":"klarpakke-trading-canonical","predicate":"includes","object":"symbols/market-data/pnl/risk/execution","validFrom":"2026-06-22T20:54:41.816Z"}
+{"subject":"klarpakke-trading-risk","predicate":"uses","object":"canonical risk-engine + limits-resolver","validFrom":"2026-06-22T20:54:41.829Z"}
+{"subject":"klarpakke-trading-execution","predicate":"uses","object":"canonical fill-model in PaperExecutor","validFrom":"2026-06-22T20:54:41.834Z"}
+{"subject":"klarpakke-features","predicate":"trading_components","object":"src/features/trading/{auto-trading,paper,components,hooks,journal}","validFrom":"2026-06-22T20:54:41.837Z"}

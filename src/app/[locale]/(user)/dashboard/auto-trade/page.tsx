@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
-import { BotWizard } from "@/features/auto-trade/BotWizard";
+import { BotWizard } from "@/features/trading/auto-trading/BotWizard";
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import Link from "next/link";
 import { Bot } from "lucide-react";

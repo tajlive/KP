@@ -35,7 +35,7 @@ fi
 # ── Supabase typer ────────────────────────────────────────────────────────────
 info "Regenererer Supabase TypeScript-typer..."
 npx supabase gen types typescript \
-  --project-id vuxbjlykgmzskxbclquf \
+  --project-id pskhryjzkobytnfwucrb \
   --schema public > src/types/supabase.ts 2>/dev/null \
   && ok "Supabase typer OK ($(wc -c < src/types/supabase.ts | tr -d ' ') bytes)" \
   || warn "Type-gen feilet — bruker eksisterende typer"

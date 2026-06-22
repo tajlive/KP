@@ -12,6 +12,7 @@
  */
 
 import Binance from "binance-api-node";
+import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
 /** Binance testnet (dev eller BINANCE_USE_TESTNET) — ikke «use*»-navn (unngår react-hooks/rules-of-hooks i ESLint). */
 function isBinanceTestnet(): boolean {
@@ -131,6 +132,7 @@ export async function getBalances(coins?: string[]) {
  */
 const priceCache = new Map<string, { price: string; timestamp: number }>();
 const CACHE_TTL = 5000; // 5 seconds
+const marketDataProvider = createBinanceMarketDataProvider();
 
 export async function getPrice(symbol: string): Promise<string | undefined> {
   const cacheKey = symbol.toUpperCase();
@@ -141,11 +143,14 @@ export async function getPrice(symbol: string): Promise<string | undefined> {
   }
 
   await rateLimiter.checkLimit(2); // Price has weight 2
-  const client = getBinanceClient();
-  const prices = (await client.prices()) as unknown as Record<string, string>;
-  const price = prices[cacheKey];
-  priceCache.set(cacheKey, { price, timestamp: Date.now() });
-  return price;
+  try {
+    const price = await marketDataProvider.getPrice(symbol);
+    const priceString = price.toString();
+    priceCache.set(cacheKey, { price: priceString, timestamp: Date.now() });
+    return priceString;
+  } catch {
+    return undefined;
+  }
 }
 
 /**

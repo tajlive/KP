@@ -12,7 +12,7 @@ SELECT cron.schedule(
   '0 * * * *',               -- every hour at minute 0
   $$
   SELECT net.http_post(
-    url:='https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/signal-engine',
+    url:='https://pskhryjzkobytnfwucrb.supabase.co/functions/v1/signal-engine',
     headers:='{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.settings.service_role_key') || '"}'::jsonb,
     body:='{}'::jsonb
   ) AS request_id;

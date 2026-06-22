@@ -101,7 +101,7 @@ gh run watch
 | **Owner**            | tomarnejensen@gmail.com / tom@klarpakke.no           |
 | **Hosting**          | Vercel (Edge Network)                                |
 | **Region**           | arn1 (Stockholm, Sverige)                            |
-| **Supabase Project** | vuxbjlykgmzskxbclquf                                 |
+| **Supabase Project** | pskhryjzkobytnfwucrb                                 |
 
 ---
 
@@ -436,7 +436,7 @@ gh secret list --repo tajlive/KP
 - **Issue #16:** https://github.com/tajlive/KP/issues/16
 - **Produksjon:** https://www.klarpakke.no
 - **Vercel Dashboard:** https://vercel.com/tom-jensens-projects/klarpakke
-- **Supabase:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf
+- **Supabase:** https://supabase.com/dashboard/project/pskhryjzkobytnfwucrb
 
 ---
 

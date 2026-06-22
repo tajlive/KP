@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/shared/ui/button";
 import { Switch } from "@/shared/ui/switch";
-import { ThemeSettings } from "@/features/settings/ThemeSettings";
+import { ThemeSettings } from "@/features/account/settings/ThemeSettings";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

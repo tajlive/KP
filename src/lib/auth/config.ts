@@ -10,6 +10,8 @@ import { locales, defaultLocale } from "@/i18n/config";
 // Environment detection
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDevelopment = process.env.NODE_ENV === "development";
+export const isMicrosoftOAuthEnabled =
+  process.env.NEXT_PUBLIC_ENABLE_MICROSOFT_OAUTH === "true";
 
 // Valid locales are derived from the i18n source of truth.
 export type ValidLocale = (typeof locales)[number];

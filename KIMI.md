@@ -4,7 +4,7 @@
 - **Name**: Klarpakke
 - **Type**: Next.js 14 + Supabase + TypeScript trading platform
 - **Locale**: Norwegian (no) / English (en)
-- **Database**: Supabase PostgreSQL (vuxbjlykgmzskxbclquf)
+- **Database**: Supabase PostgreSQL (pskhryjzkobytnfwucrb)
 
 ## Quick Commands
 ```bash

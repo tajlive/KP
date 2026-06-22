@@ -544,7 +544,7 @@ describe("KLA-137 Trading Safety Core", () => {
       expect(result.rejectionReason).toBe("DAILY_LOSS_CHECK_FAILED");
     });
 
-    it("paper: skips calculate_daily_loss — RPC error must not block", async () => {
+    it("paper: fails closed when calculate_daily_loss RPC errors", async () => {
       mockSupabase.from.mockImplementation((table: string) => {
         if (table === "trading_sessions") {
           return {
@@ -618,7 +618,8 @@ describe("KLA-137 Trading Safety Core", () => {
       };
 
       const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
+      expect(result.rejectionReason).toBe("DAILY_LOSS_CHECK_FAILED");
     });
   });
 

@@ -2126,6 +2126,8 @@
   },
   "navigation": {
     "home": "Home",
+    "market": "Market",
+    "account": "Account",
     "autoTrading": "Auto-Trading",
     "paperTrading": "Paper Trading",
     "courses": "Courses",
@@ -3287,7 +3289,10 @@
     "sonarLoadError": "Could not load Sonar AI analysis.",
     "upgradeForMore": "Upgrade for more analyses",
     "upgradeDesc": "Get live Sonar analyses for ETH, SOL and 20+ other crypto assets.",
-    "welcomeStart": "Welcome! Start a strategy to begin."
+    "welcomeStart": "Welcome! Start a strategy to begin.",
+    "marketTitle": "Market",
+    "marketSubtitle": "Market overview and watchlist",
+    "goToTrade": "Go to trade"
   },
   "wallet": {
     "title": "Wallet",

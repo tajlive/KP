@@ -1,7 +1,7 @@
 "use client";
 
 import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
-import { ExchangeApiSettings } from "@/features/settings/ExchangeApiSettings";
+import { ExchangeApiSettings } from "@/features/account/settings/ExchangeApiSettings";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { createClient } from "@/lib/utils";
