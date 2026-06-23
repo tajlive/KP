@@ -14,7 +14,7 @@ export function PullToRefreshIndicator({
   ready,
   refreshing,
 }: PullToRefreshIndicatorProps) {
-  const t = useTranslations("portfolio.pullToRefresh");
+  const t = useTranslations("dashboard.portfolioPage");
   const opacity = Math.min(distance / 60, 1);
 
   return (
@@ -26,12 +26,12 @@ export function PullToRefreshIndicator({
       {refreshing ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t("refreshing")}
+          {t("pullToRefresh.refreshing")}
         </>
       ) : ready ? (
-        <>{t("release")}</>
+        <>{t("pullToRefresh.release")}</>
       ) : (
-        <>{t("pull")}</>
+        <>{t("pullToRefresh.pull")}</>
       )}
     </div>
   );

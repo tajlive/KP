@@ -1073,7 +1073,12 @@
       },
       "totalPortfolio": "Total Portfolio",
       "available": "Available",
-      "totalValue": "Total Value"
+      "totalValue": "Total Value",
+      "pullToRefresh": {
+        "pull": "Pull down to refresh",
+        "release": "Release to refresh",
+        "refreshing": "Refreshing..."
+      }
     },
     "settingsPage": {
       "title": "Settings",

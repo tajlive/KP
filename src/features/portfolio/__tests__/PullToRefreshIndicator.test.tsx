@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PullToRefreshIndicator } from "../PullToRefreshIndicator";
 
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const map: Record<string, string> = {
-      pull: "Pull down to refresh",
-      release: "Release to refresh",
-      refreshing: "Refreshing...",
+      "pullToRefresh.pull": "Pull down to refresh",
+      "pullToRefresh.release": "Release to refresh",
+      "pullToRefresh.refreshing": "Refreshing...",
     };
     return map[key] ?? key;
   },

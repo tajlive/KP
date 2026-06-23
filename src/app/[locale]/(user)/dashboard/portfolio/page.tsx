@@ -13,6 +13,7 @@ import { RestartTradingButton } from "@/features/trading";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { formatNOK } from "@/lib/format/currency";
+import { MobilePullToRefreshWrapper } from "@/features/portfolio/MobilePullToRefreshWrapper";
 
 export const runtime = 'nodejs';
 
@@ -249,105 +250,107 @@ export default async function PortfolioPage({ params }: PageProps) {
     }
 
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t("title")}</h1>
-            <p className="text-slate-600 dark:text-slate-400">{t("subtitle")}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            {rebalanceConfig && wallets && (
-              <PortfolioHealthHeader wallets={wallets} config={rebalanceConfig} />
-            )}
-            <div className="p-3 bg-blue-50 dark:bg-blue-600/10 rounded-xl border border-blue-200 dark:border-blue-600/20">
-              <span className="text-blue-700 dark:text-blue-400 font-bold text-sm">
-                {t("totalAssets", { count: wallets?.length || 0 })}
-              </span>
+      <MobilePullToRefreshWrapper>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t("title")}</h1>
+              <p className="text-slate-600 dark:text-slate-400">{t("subtitle")}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              {rebalanceConfig && wallets && (
+                <PortfolioHealthHeader wallets={wallets} config={rebalanceConfig} />
+              )}
+              <div className="p-3 bg-blue-50 dark:bg-blue-600/10 rounded-xl border border-blue-200 dark:border-blue-600/20">
+                <span className="text-blue-700 dark:text-blue-400 font-bold text-sm">
+                  {t("totalAssets", { count: wallets?.length || 0 })}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {displayAssets.map((asset) => (
-            <div
-              key={asset.id}
-              className={`rounded-2xl p-6 flex items-center justify-between transition-all group ${
-                asset.type === "total"
-                  ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 hover:border-blue-300 dark:hover:border-blue-600/40"
-                  : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+          <div className="grid grid-cols-1 gap-4">
+            {displayAssets.map((asset) => (
+              <div
+                key={asset.id}
+                className={`rounded-2xl p-6 flex items-center justify-between transition-all group ${
                   asset.type === "total"
-                    ? "bg-blue-100 dark:bg-blue-800/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-600/30"
-                    : "bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-600/20"
-                }`}>
-                  <Wallet className={`w-6 h-6 ${
-                    asset.type === "total" ? "text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300" : "text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
-                  }`} />
+                    ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 hover:border-blue-300 dark:hover:border-blue-600/40"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                    asset.type === "total"
+                      ? "bg-blue-100 dark:bg-blue-800/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-600/30"
+                      : "bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-600/20"
+                  }`}>
+                    <Wallet className={`w-6 h-6 ${
+                      asset.type === "total" ? "text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300" : "text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    }`} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-white text-lg">
+                      {asset.currency}
+                    </h3>
+                    <p className="text-slate-500 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">
+                      {asset.label || t("mainHolding")}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white text-lg">
-                    {asset.currency}
-                  </h3>
-                  <p className="text-slate-500 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">
-                    {asset.label || t("mainHolding")}
+                <div className="text-right">
+                  <p className="text-2xl font-black text-slate-900 dark:text-white">
+                    {formatNOK(asset.balance, { fractionDigits: 2 })}
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-500 text-xs font-medium">
+                    {asset.type === "total" ? t("totalValue") : t("balance")}
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-2xl font-black text-slate-900 dark:text-white">
-                  {formatNOK(asset.balance, { fractionDigits: 2 })}
-                </p>
-                <p className="text-slate-500 dark:text-slate-500 text-xs font-medium">
-                  {asset.type === "total" ? t("totalValue") : t("balance")}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
 
-          {displayAssets.length === 0 && (
-            <div className="text-center p-20 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
-              <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Wallet className="w-8 h-8 text-slate-500 dark:text-slate-600" />
+            {displayAssets.length === 0 && (
+              <div className="text-center p-20 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Wallet className="w-8 h-8 text-slate-500 dark:text-slate-600" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                  {t("noAssets.title")}
+                </h3>
+                <p className="text-slate-500 dark:text-slate-500 max-w-xs mx-auto mb-6">
+                  {t("noAssets.description")}
+                </p>
+                <a
+                  href={`/${locale}/paper-trading?mode=live`}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all"
+                >
+                  {t("noAssets.button")}
+                  <ArrowRight className="w-4 h-4" />
+                </a>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                {t("noAssets.title")}
-              </h3>
-              <p className="text-slate-500 dark:text-slate-500 max-w-xs mx-auto mb-6">
-                {t("noAssets.description")}
-              </p>
-              <a
-                href={`/${locale}/paper-trading?mode=live`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all"
-              >
-                {t("noAssets.button")}
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
+            )}
+          </div>
+
+          {/* Restart button if all sessions are stopped/crashed */}
+          {stoppedSessions.length + crashedSessions.length > 0 && activeSessions.length === 0 && (
+            <RestartTradingButton
+              locale={locale}
+              stoppedCount={stoppedSessions.length}
+              crashedCount={crashedSessions.length}
+            />
           )}
+
+          {sessions && sessions.length > 0 && (
+            <SessionCards sessions={sessions} locale={locale} />
+          )}
+
+          <PositionLotsCard locale={locale} />
+          
+          <div className="mt-8">
+            <SmartPortfolioDashboard userId={user.id} />
+          </div>
         </div>
-
-        {/* Restart button if all sessions are stopped/crashed */}
-        {stoppedSessions.length + crashedSessions.length > 0 && activeSessions.length === 0 && (
-          <RestartTradingButton
-            locale={locale}
-            stoppedCount={stoppedSessions.length}
-            crashedCount={crashedSessions.length}
-          />
-        )}
-
-        {sessions && sessions.length > 0 && (
-          <SessionCards sessions={sessions} locale={locale} />
-        )}
-
-        <PositionLotsCard locale={locale} />
-        
-        <div className="mt-8">
-          <SmartPortfolioDashboard userId={user.id} />
-        </div>
-      </div>
+      </MobilePullToRefreshWrapper>
     );
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
