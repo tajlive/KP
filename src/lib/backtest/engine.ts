@@ -94,9 +94,6 @@ export const STRATEGY_MAP: Record<RiskProfile, StrategyConfig> = {
   },
 };
 
-// USD/NOK conversion rate (konservativt estimat)
-const USDNOK_RATE = 10.5;
-
 // Import shared strategies (same source as tick engine)
 import {
   DCAStrategy,
@@ -109,6 +106,8 @@ import {
   type StrategyInput,
 } from '@/lib/trading/strategies';
 import type { StrategyEngine } from '@/lib/trading/strategies';
+import { createBinanceMarketDataProvider } from '@/lib/trading/canonical/market-data';
+import { getUsdtToNokRate } from '@/lib/trading/currency';
 
 export interface Methodology {
   title: string;
@@ -199,9 +198,10 @@ export const STRATEGY_METHODOLOGY: Record<StrategyType, Methodology> = {
 
 const FEE_RATE = 0.001;
 
+const marketDataProvider = createBinanceMarketDataProvider();
+
 /**
- * Hent historiske OHLCV-data fra Binance med paginering.
- * Støtter opptil 4 år (1460 dager) ved å hente i bolker på 1000 lys.
+ * Hent historiske OHLCV-data fra Binance via kanonisk markedsdata-provider.
  */
 export async function fetchHistoricalData(
   symbol: string,
@@ -212,44 +212,44 @@ export async function fetchHistoricalData(
   const intervalMs = interval === '1d' ? 86400000 : interval === '4h' ? 14400000 : 3600000;
   const candlesPerChunk = 1000;
   const chunkMs = candlesPerChunk * intervalMs;
-  
+
   const endTime = Date.now();
   const startTime = endTime - (maxDays * 86400000);
-  
+
   const allCandles: OHLCV[] = [];
   let currentStart = startTime;
-  
+
   while (currentStart < endTime) {
     const currentEnd = Math.min(currentStart + chunkMs, endTime);
-    const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&startTime=${Math.floor(currentStart)}&endTime=${Math.floor(currentEnd)}&limit=${candlesPerChunk}`;
-    
-    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
-    if (!response.ok) {
-      throw new Error(`Binance API error: ${response.status} for ${symbol}`);
-    }
-    
-    const data = await response.json();
-    if (!Array.isArray(data) || data.length === 0) break;
-    
-    const chunk = data.map((candle: unknown[]) => ({
-      timestamp: candle[0] as number,
-      open: parseFloat(candle[1] as string),
-      high: parseFloat(candle[2] as string),
-      low: parseFloat(candle[3] as string),
-      close: parseFloat(candle[4] as string),
-      volume: parseFloat(candle[5] as string),
+    const klines = await marketDataProvider.getKlines(
+      symbol,
+      interval,
+      candlesPerChunk,
+      currentStart,
+      currentEnd,
+    );
+
+    if (!Array.isArray(klines) || klines.length === 0) break;
+
+    const chunk = klines.map((candle) => ({
+      timestamp: candle.timestamp,
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+      volume: candle.volume,
     }));
-    
+
     allCandles.push(...chunk);
-    
+
     // Avanseér til neste chunk (siste candle + 1 interval)
     const lastTimestamp = chunk[chunk.length - 1].timestamp;
     currentStart = lastTimestamp + intervalMs;
-    
-    // Sikkerhetsbryter: maks 10 requests
+
+    // Sikkerhetsbryter: maks 10 000 lys
     if (allCandles.length > 10000) break;
   }
-  
+
   return allCandles;
 }
 
@@ -622,8 +622,9 @@ function calculateMetrics(
     avgTradeDuration,
   };
 
-  const startValueNOK = initialCapital * USDNOK_RATE;
-  const endValueNOK = finalEquity * USDNOK_RATE;
+  const usdNokRate = getUsdtToNokRate();
+  const startValueNOK = initialCapital * usdNokRate;
+  const endValueNOK = finalEquity * usdNokRate;
 
   const enhancedMetrics: EnhancedBacktestMetrics = {
     ...metrics,

@@ -67,9 +67,17 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     symbol: string,
     interval: string,
     limit: number,
+    startTime?: number,
+    endTime?: number,
   ): Promise<Kline[]> {
     const normalized = symbol.toUpperCase();
-    const url = `${BINANCE_API_BASE}/api/v3/klines?symbol=${normalized}&interval=${interval}&limit=${limit}`;
+    let url = `${BINANCE_API_BASE}/api/v3/klines?symbol=${normalized}&interval=${interval}&limit=${limit}`;
+    if (startTime !== undefined) {
+      url += `&startTime=${Math.floor(startTime)}`;
+    }
+    if (endTime !== undefined) {
+      url += `&endTime=${Math.floor(endTime)}`;
+    }
     const data = await binanceFetch<unknown[]>(url, 15000);
 
     return data.map((candle) => {

@@ -18,6 +18,7 @@ import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics
 import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { getUsdtToNokRate, getUsdtToNokRateAsync } from "./currency";
 
 // ============================================================================
 // TYPES
@@ -105,7 +106,7 @@ export interface BacktestInput {
   strategyId: StrategyId;
   /** Periode i måneder (f.eks. 12) */
   months: number;
-  /** USD/NOK kurs (valgfri, default 10.8) */
+  /** USD/NOK kurs (valgfri, default fra getUsdtToNokRate) */
   usdNokRate?: number;
   /** Include Monte Carlo simulation (default false, adds ~1-2s) */
   includeMonteCarloSim?: boolean;
@@ -131,7 +132,6 @@ export interface StrategyConfig {
 // KONFIGURASJON
 // ============================================================================
 
-const DEFAULT_USD_NOK_RATE = 10.8;
 const DEFAULT_FEE_RATE = 0.001; // 0.1% Binance taker fee
 
 export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
@@ -423,7 +423,7 @@ export function runBacktest(
  * @param input.initialCapitalNOK - Startkapital i NOK (f.eks. 100000)
  * @param input.strategyId - Strategi-ID: 'eth-dca' | 'btc-sma-20-50' | 'btc-sma-10-30'
  * @param input.months - Periode i måneder (f.eks. 12)
- * @param input.usdNokRate - USD/NOK kurs (valgfri, default 10.8)
+ * @param input.usdNokRate - USD/NOK kurs (valgfri, default fra getUsdtToNokRate)
  * 
  * @returns Fullstendig backtest-resultat med trades, equity curve og metrics
  * 
@@ -448,7 +448,8 @@ export function runBacktest(
  * - Scenarier beregnes basert på faktisk volatilitet
  */
 export async function calculateBacktest(input: BacktestInput): Promise<BacktestResult> {
-  const { initialCapitalNOK, strategyId, months, usdNokRate = DEFAULT_USD_NOK_RATE } = input;
+  const usdNokRate = input.usdNokRate ?? getUsdtToNokRate();
+  const { initialCapitalNOK, strategyId, months } = input;
   
   // Finn config
   const riskProfile = strategyIdToRiskProfile(strategyId);
@@ -909,7 +910,8 @@ export async function calculateBacktestWithCache(
   input: BacktestInput,
   options?: { skipCache?: boolean; skipTelemetry?: boolean }
 ): Promise<BacktestWithCacheResult> {
-  const { initialCapitalNOK, strategyId, months, usdNokRate = DEFAULT_USD_NOK_RATE } = input;
+  const usdNokRate = input.usdNokRate ?? await getUsdtToNokRateAsync();
+  const { initialCapitalNOK, strategyId, months } = input;
   const sessionId = getSessionId();
   const startTime = Date.now();
   
@@ -952,7 +954,7 @@ export async function calculateBacktestWithCache(
   }
   
   // Ingen cache - kjør full backtest
-  const result = await calculateBacktest(input);
+  const result = await calculateBacktest({ ...input, usdNokRate });
   
   // Lagre i cache (fire-and-forget)
   backtestCache.set(config.symbol, strategyId, months, result).catch(() => {});

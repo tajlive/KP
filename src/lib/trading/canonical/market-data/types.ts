@@ -46,9 +46,17 @@ export interface MarketDataProvider {
    * @param symbol - Handelssymbol, f.eks. "BTCUSDT"
    * @param interval - Binance intervall, f.eks. "1d", "1h"
    * @param limit - Maksimalt antall lys
+   * @param startTime - Optional start-tidspunkt i millisekunder siden epoch
+   * @param endTime - Optional slutt-tidspunkt i millisekunder siden epoch
    * @returns Array av Kline
    */
-  getKlines(symbol: string, interval: string, limit: number): Promise<Kline[]>;
+  getKlines(
+    symbol: string,
+    interval: string,
+    limit: number,
+    startTime?: number,
+    endTime?: number,
+  ): Promise<Kline[]>;
 
   /**
    * Hent 24-timers prisendring for et symbol.
