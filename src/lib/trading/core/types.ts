@@ -35,6 +35,14 @@ export interface ExecuteTradeRequest {
   metadata?: {
     maxSlippageBps?: number;
   };
+  /** Optional deterministic idempotency key (defaults to runtime-generated). */
+  idempotencyKey?: string;
+  /** Optional trade explanation reason code for audit/explanation UI. */
+  reasonCode?: string;
+  /** Optional trade explanation parameters. */
+  reasonParams?: Record<string, unknown>;
+  /** Optional indicator snapshot for audit/explanation UI. */
+  indicatorSnapshot?: Record<string, unknown>;
 }
 
 export interface ExecuteTradeResult {

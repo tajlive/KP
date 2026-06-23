@@ -14,7 +14,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+import type { Database, Json } from "@/types/database.types";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
   validateTradeAgainstRiskProfile,
@@ -337,7 +337,9 @@ async function executeTradeWithLock(
     // 8. Record trade
     // ========================================================================
     const nowIso = new Date().toISOString();
-    const idempotencyKey = `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
+    const idempotencyKey =
+      request.idempotencyKey ??
+      `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
 
     const tradeInsert: Database["public"]["Tables"]["trades"]["Insert"] & {
       usdt_nok_rate?: number;
@@ -378,6 +380,9 @@ async function executeTradeWithLock(
             reason: request.signalContext.reason,
           }
         : null,
+      reason_code: request.reasonCode ?? null,
+      reason_params: (request.reasonParams ?? null) as Json,
+      indicator_snapshot: (request.indicatorSnapshot ?? null) as Json,
     };
 
     const { data: trade, error: tradeError } = await supabase
