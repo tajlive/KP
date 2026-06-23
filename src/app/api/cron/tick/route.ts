@@ -65,7 +65,7 @@ async function fetchCandles(
   limit: number = 100,
 ): Promise<Candle[]> {
   // Always use mainnet — paper and live see identical prices
-  const symbol = pair.replace("/", "").toUpperCase();
+  const symbol = pair.replace("/", "");
 
   try {
     const klines = await marketDataProvider.getKlines(symbol, interval, limit);
@@ -555,44 +555,48 @@ async function processSession(
     return { session_id: session.id, action: "hold" };
   }
 
-  const riskResult = await validateTradeAgainstRiskProfile(db, {
-    userId: session.user_id,
-    sessionId: session.id,
-    symbol: pair.replace("/", ""),
-    side: signal.action as "buy" | "sell",
-    quantity,
-    price: currentPrice,
-    orderType: "market",
-    tradingMode: session.mode as "paper" | "live",
-  });
-
-  if (!riskResult.allowed) {
-    // Log risk block to database - using correct table schema
-    const riskLogDetails = {
-      reason: riskResult.rejectionReason,
-      signal: signal.action,
-      requested_amount: tradeAmount,
-      current_capital: session.current_capital,
-      risk_config: { ...riskConfig },
-    } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
-
-    await db.from("trading_logs").insert({
-      session_id: session.id,
-      user_id: session.user_id,
-      action: "risk_blocked",
-      details: riskLogDetails,
-    } as never);
-
-    console.warn("Trade blocked by risk validator:", {
-      session_id: session.id,
-      reason: riskResult.rejectionReason,
+  // Tick-route risk gate is kept for live path only. Paper trades are routed
+  // through executeTrade() which performs the canonical risk validation.
+  if (session.mode === "live") {
+    const riskResult = await validateTradeAgainstRiskProfile(db, {
+      userId: session.user_id,
+      sessionId: session.id,
+      symbol: pair.replace("/", ""),
+      side: signal.action as "buy" | "sell",
+      quantity,
+      price: currentPrice,
+      orderType: "market",
+      tradingMode: "live",
     });
 
-    return {
-      session_id: session.id,
-      action: "risk_blocked",
-      risk_reason: riskResult.rejectionReason,
-    };
+    if (!riskResult.allowed) {
+      // Log risk block to database - using correct table schema
+      const riskLogDetails = {
+        reason: riskResult.rejectionReason,
+        signal: signal.action,
+        requested_amount: tradeAmount,
+        current_capital: session.current_capital,
+        risk_config: { ...riskConfig },
+      } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
+
+      await db.from("trading_logs").insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        action: "risk_blocked",
+        details: riskLogDetails,
+      } as never);
+
+      console.warn("Trade blocked by risk validator:", {
+        session_id: session.id,
+        reason: riskResult.rejectionReason,
+      });
+
+      return {
+        session_id: session.id,
+        action: "risk_blocked",
+        risk_reason: riskResult.rejectionReason,
+      };
+    }
   }
 
   // ─── BETA GUARDRAILS ─────────────────────────────────────────────────
@@ -728,8 +732,18 @@ async function processSession(
     }
 
     // AUDIT TRAIL (B1.4): Log every executed trade for compliance & debugging
+    // executeTrade returns USDT-denominated paper fill values; convert to NOK for
+    // audit parity with the NOK values stored in trades.price/total_value/fee.
     if (result.tradeId) {
       try {
+        const rate = getUsdtToNokRate();
+        const executedQty = result.executedQuantity ?? quantity;
+        const executedUsdt = result.executedPrice ?? currentPrice;
+        const totalUsdt = executedQty * executedUsdt;
+        const nokPrice = usdtToNok(executedUsdt, rate);
+        const nokTotalValue = usdtToNok(totalUsdt, rate);
+        const nokFee = usdtToNok(result.fee ?? 0, rate);
+
         await db.from("trading_logs").insert({
           session_id: session.id,
           user_id: session.user_id,
@@ -739,13 +753,14 @@ async function processSession(
             mode: "paper",
             side: signal.action,
             symbol: pair.replace("/", ""),
-            quantity: result.executedQuantity ?? quantity,
-            price: result.executedPrice,
-            total_value:
-              result.executedQuantity && result.executedPrice
-                ? result.executedQuantity * result.executedPrice
-                : tradeAmount,
-            fee: result.fee,
+            quantity: executedQty,
+            price: nokPrice,
+            total_value: nokTotalValue,
+            fee: nokFee,
+            usdt_price: executedUsdt,
+            usdt_total_value: totalUsdt,
+            usdt_fee: result.fee,
+            usdt_nok_rate: rate,
             strategy_id: session.strategy_id,
             engine: resolvedEngine,
             dark_fleet: useDarkFleet,

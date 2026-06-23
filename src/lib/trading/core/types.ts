@@ -4,6 +4,8 @@
  * Shared types for the consolidated paper/live execution pipeline.
  */
 
+import type { TradeReasonCode } from "@/types/trading";
+
 export type TradingMode = "paper" | "live";
 
 export interface TradeSignalContext {
@@ -38,7 +40,7 @@ export interface ExecuteTradeRequest {
   /** Optional deterministic idempotency key (defaults to runtime-generated). */
   idempotencyKey?: string;
   /** Optional trade explanation reason code for audit/explanation UI. */
-  reasonCode?: string;
+  reasonCode?: TradeReasonCode;
   /** Optional trade explanation parameters. */
   reasonParams?: Record<string, unknown>;
   /** Optional indicator snapshot for audit/explanation UI. */
