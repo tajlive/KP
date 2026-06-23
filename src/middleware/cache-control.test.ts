@@ -7,44 +7,74 @@ function makeRequest(pathname: string): NextRequest {
 }
 
 describe("cacheControlMiddleware", () => {
-  it("sets no-store for auth routes", () => {
-    for (const path of ["/no/login", "/en/register", "/no/reset-password", "/en/callback"]) {
+  it.each([
+    "/no/login",
+    "/en/register",
+    "/no/reset-password",
+    "/en/callback",
+  ])("sets no-store for auth route %s", (path) => {
+    const req = makeRequest(path);
+    const res = cacheControlMiddleware(req);
+    expect(res.headers.get("Cache-Control")).toContain("no-store");
+    expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
+  });
+
+  it.each([
+    "/no/dashboard",
+    "/en/dashboard/trade",
+    "/no/admin",
+  ])("sets no-store for dashboard/admin route %s", (path) => {
+    const req = makeRequest(path);
+    const res = cacheControlMiddleware(req);
+    expect(res.headers.get("Cache-Control")).toContain("no-store");
+  });
+
+  it.each([
+    "/no",
+    "/en/priser",
+    "/no/om-oss",
+    "/en/kontakt",
+  ])("sets edge-cache headers for marketing page %s", (path) => {
+    const req = makeRequest(path);
+    const res = cacheControlMiddleware(req);
+    const cc = res.headers.get("Cache-Control");
+    expect(cc).toContain("s-maxage=300");
+    expect(cc).toContain("stale-while-revalidate=86400");
+    expect(cc).toContain("public");
+  });
+
+  it.each([
+    "/no/personvern",
+    "/en/vilkar",
+    "/no/cookies",
+  ])("sets edge-cache headers for legal page %s", (path) => {
+    const req = makeRequest(path);
+    const res = cacheControlMiddleware(req);
+    const cc = res.headers.get("Cache-Control");
+    expect(cc).toContain("s-maxage=300");
+    expect(cc).toContain("stale-while-revalidate=86400");
+    expect(cc).toContain("public");
+  });
+
+  it.each(["/no/login", "/en/register"])(
+    "keeps no-store for auth page %s even when removed from marketing paths",
+    (path) => {
       const req = makeRequest(path);
       const res = cacheControlMiddleware(req);
       expect(res.headers.get("Cache-Control")).toContain("no-store");
       expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
-    }
-  });
+    },
+  );
 
-  it("sets no-store for dashboard and admin", () => {
-    for (const path of ["/no/dashboard", "/en/dashboard/trade", "/no/admin"]) {
+  it.each(["/no/hjelp", "/en/kurs"])(
+    "does not override Cache-Control for non-marketing, non-auth route %s",
+    (path) => {
       const req = makeRequest(path);
       const res = cacheControlMiddleware(req);
-      expect(res.headers.get("Cache-Control")).toContain("no-store");
-    }
-  });
-
-  it("sets edge-cache headers for marketing pages", () => {
-    for (const path of ["/no", "/en/priser", "/no/om-oss", "/en/kontakt"]) {
-      const req = makeRequest(path);
-      const res = cacheControlMiddleware(req);
-      const cc = res.headers.get("Cache-Control");
-      expect(cc).toContain("s-maxage=300");
-      expect(cc).toContain("stale-while-revalidate=86400");
-      expect(cc).toContain("public");
-    }
-  });
-
-  it("sets edge-cache headers for legal pages", () => {
-    for (const path of ["/no/personvern", "/en/vilkar", "/no/cookies"]) {
-      const req = makeRequest(path);
-      const res = cacheControlMiddleware(req);
-      const cc = res.headers.get("Cache-Control");
-      expect(cc).toContain("s-maxage=300");
-      expect(cc).toContain("stale-while-revalidate=86400");
-      expect(cc).toContain("public");
-    }
-  });
+      expect(res.headers.get("Cache-Control")).toBeNull();
+      expect(res.headers.get("CDN-Cache-Control")).toBeNull();
+    },
+  );
 
   it("does NOT override API routes", () => {
     const req = makeRequest("/api/health");

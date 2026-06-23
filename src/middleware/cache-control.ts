@@ -2,8 +2,8 @@
  * Selective Cache-Control middleware
  *
  * Replaces the global no-store that used to live in CSP middleware.
- * Only sensitive/user-specific routes get no-store; marketing and legal
- * pages are left to Next.js / CDN cache heuristics.
+ * Sensitive/user-specific routes get no-store; public marketing and legal
+ * pages receive explicit Cloudflare edge-cache headers.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -57,8 +57,6 @@ const NO_STORE_PATHS = [
 const MARKETING_PATHS = [
   "/",
   "/priser",
-  "/login",
-  "/register",
   "/kontakt",
   "/om-oss",
   "/vilkar",
@@ -105,8 +103,6 @@ export const cacheControlMiddleware: MiddlewareFn = (
 
   const { strippedPath } = parseLocalePath(pathname);
 
-  // Sensitive/user-specific routes must never be cached, even if they overlap
-  // with marketing path definitions (e.g. /login, /register).
   if (isNoStoreRoute(strippedPath)) {
     setNoStoreHeaders(res);
     return res;
