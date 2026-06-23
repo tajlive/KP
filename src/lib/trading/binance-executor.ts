@@ -26,6 +26,7 @@ import { calculateFee } from './order-executor';
 import { createBinanceMarketDataProvider } from './canonical/market-data';
 import { binanceCircuitBreaker, CircuitBreakerOpenError } from './circuit-breaker';
 import { signBinanceQuery } from './binance-signer';
+import type { NormalizedWalletBalance } from '@/lib/exchanges/types';
 
 const marketDataProvider = createBinanceMarketDataProvider();
 
@@ -210,6 +211,22 @@ export class BinanceExecutor implements OrderExecutor {
       console.error('Failed to fetch balance:', error);
       return { available: 0, locked: 0, total: 0 };
     }
+  }
+
+  /**
+   * Fetch all non-zero wallet balances from Binance account.
+   */
+  async fetchBalances(): Promise<NormalizedWalletBalance[]> {
+    const account = await this.makeRequest<{
+      balances: Array<{ asset: string; free: string; locked: string }>;
+    }>('/api/v3/account');
+
+    return account.balances
+      .map((row) => ({
+        currency: row.asset,
+        balance: Number(row.free) + Number(row.locked),
+      }))
+      .filter((row) => Number.isFinite(row.balance) && row.balance > 0);
   }
 
   /**
