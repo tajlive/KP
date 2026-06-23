@@ -35,6 +35,10 @@ import {
   type TradePnlInput,
 } from "@/lib/trading/canonical/pnl/trade-pnl";
 import {
+  resolveRiskLimits,
+  type RawRiskProfile,
+} from "@/lib/trading/canonical/risk/limits-resolver";
+import {
   resolveStrategy,
   type Candle,
   type StrategySignal,
@@ -245,6 +249,28 @@ export function strategyIdToRiskProfile(strategyId: StrategyId): RiskProfile {
   }
 }
 
+/**
+ * Bygg en syntetisk RawRiskProfile fra backtest-config slik at backtest bruker
+ * de samme posisjons-/eksponeringsgrensene som live/paper (kanonisk resolver).
+ */
+function buildRawRiskProfile(
+  riskProfile: RiskProfile,
+  config: StrategyConfig,
+): RawRiskProfile {
+  // Bruk strategi-profilens kanoniske grenser (samme som live/paper),
+  // uavhengig av eventuell test-override av config.maxPositionPct.
+  const maxPositionPct = STRATEGY_CONFIGS[riskProfile].maxPositionPct * 100;
+  return {
+    id: `backtest-${riskProfile}`,
+    name: `Backtest ${riskProfile}`,
+    max_position_pct: maxPositionPct,
+    max_exposure_pct: maxPositionPct,
+    max_daily_loss_pct: 100,
+    allowed_pairs: [config.symbol],
+    leverage_allowed: false,
+  };
+}
+
 // ============================================================================
 // HJELPEFUNKSJONER
 // ============================================================================
@@ -311,6 +337,13 @@ export function runBacktest(
   const strategy = resolveStrategy(engineConfig.key);
   if (!strategy) {
     throw new Error(`Strategy engine "${engineConfig.key}" not found for risk profile "${riskProfile}"`);
+  }
+
+  // Kanoniske risikogrenser (samme som live/paper) — sync, ingen Supabase-avhengighet
+  const rawProfile = buildRawRiskProfile(riskProfile, config);
+  const limits = resolveRiskLimits("paper", rawProfile);
+  if (!limits) {
+    throw new Error(`Could not resolve risk limits for backtest profile "${riskProfile}"`);
   }
 
   const mappedCandles: Candle[] = candles.map((d) => ({
@@ -388,17 +421,39 @@ export function runBacktest(
       const rawQuantity = (desiredCapital * (1 - FEE_RATE)) / candle.close;
       const roundedQuantity = roundToLotSize(config.symbol, rawQuantity);
 
-      const fill = computeFill({
-        side: "buy",
-        quantity: roundedQuantity,
-        orderType: "market",
-        marketPrice: candle.close,
-        feeRate: FEE_RATE,
-        marketSlippageRate: MARKET_SLIPPAGE_RATE,
-        minOrderValue: MIN_ORDER_VALUE_USDT,
-        availableCapital: cashUSD,
-        quoteCurrency: "USDT",
-      });
+      // Kanonisk risikosjekk (sync) før fill-beregning
+      const currentEquity = cashUSD + positionQty * candle.close;
+      const existingPositionValue = positionQty * positionEntryPrice;
+      const orderValue = roundedQuantity * candle.close;
+      const postTradePositionValue = existingPositionValue + orderValue;
+      const postTradeExposure = postTradePositionValue; // backtest er single-symbol
+
+      const postTradePositionPct =
+        currentEquity > 0 ? (postTradePositionValue / currentEquity) * 100 : 0;
+      const postTradeExposurePct =
+        currentEquity > 0 ? (postTradeExposure / currentEquity) * 100 : 0;
+
+      if (
+        postTradePositionPct > limits.maxPositionPct ||
+        postTradeExposurePct > limits.maxExposurePct
+      ) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `Backtest buy skipped: risk limit exceeded (postTradePositionPct=${postTradePositionPct.toFixed(2)}%, max=${limits.maxPositionPct}%)`,
+          );
+        }
+      } else {
+        const fill = computeFill({
+          side: "buy",
+          quantity: roundedQuantity,
+          orderType: "market",
+          marketPrice: candle.close,
+          feeRate: FEE_RATE,
+          marketSlippageRate: MARKET_SLIPPAGE_RATE,
+          minOrderValue: MIN_ORDER_VALUE_USDT,
+          availableCapital: cashUSD,
+          quoteCurrency: "USDT",
+        });
 
       if (!fill.success) {
         if (process.env.NODE_ENV !== "production") {
@@ -443,6 +498,7 @@ export function runBacktest(
           position.dailyBuyCount += 1;
         }
       }
+    }
     } else if (signal.action === "sell" && !isEmpty(ledger)) {
       const currentQty = getTotalQuantity(ledger);
       let rawQtyToSell: number;

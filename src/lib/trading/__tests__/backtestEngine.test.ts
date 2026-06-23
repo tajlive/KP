@@ -409,5 +409,88 @@ describe('Backtest Engine', () => {
         4,
       );
     });
+
+    it('should block conservative buys that exceed canonical position limit and not record trades', () => {
+      // Konservativ profil har kanonisk grense på 50 % posisjon.
+      // Vi lager et DCA-scenario med et kraftig dip (-6 % på 24h) som dobler
+      // signal.positionSize til 1.0. Uten risikosjekken ville dette kjøpt for
+      // ~100 % av kapitalen; med resolveRiskLimits skal kjøpet blokkeres.
+      const candles: OHLCV[] = [];
+      const basePrice = 100;
+      const startTime = Date.now();
+
+      for (let i = 0; i < 110; i++) {
+        const close = i < 100 ? basePrice : basePrice * 0.94;
+        candles.push({
+          timestamp: startTime + i * 24 * 60 * 60 * 1000,
+          open: close,
+          high: close * 1.001,
+          low: close * 0.999,
+          close,
+          volume: 1000000,
+        });
+      }
+
+      // Høy maxPositionPct i config lar signalet foreslå 100 % av kapitalen;
+      // den kanoniske konservative profilen skal likevel blokkere.
+      const customConfig = { ...STRATEGY_CONFIGS.konservativ, maxPositionPct: 2.0 };
+      const result = runBacktest(candles, customConfig, 10000);
+
+      // Ingen kjøp => ingen trades, og blokkerende handler skal aldri logges.
+      expect(result.trades).toHaveLength(0);
+      // Kapitalen skal være urørt.
+      expect(result.equityCurve[result.equityCurve.length - 1].equity).toBeCloseTo(10000, 4);
+    });
+
+    it('should allow aggressive profile to reach higher position pct', () => {
+      // Trend-scenario som gir tydelig EMA-crossover etter at ADX er tilgjengelig,
+      // fulgt av en trailing-stop-utgang. Aggressiv profil med maxPositionPct=0.8
+      // skal kunne kjøpe for ~80 % av kapitalen uten å bli blokkert av den
+      // kanoniske risikogrensen (100 %).
+      const candles: OHLCV[] = [];
+      const basePrice = 100;
+      const startTime = Date.now();
+      const peak = basePrice * Math.pow(1.05, 14);
+      const dip = peak * Math.pow(0.95, 10);
+      const top = dip * Math.pow(1.05, 35);
+
+      for (let i = 0; i < 150; i++) {
+        let close = basePrice;
+        if (i < 14) {
+          close = basePrice * Math.pow(1.05, i);
+        } else if (i < 46) {
+          close = peak;
+        } else if (i < 56) {
+          close = peak * Math.pow(0.95, i - 45);
+        } else if (i < 91) {
+          close = dip * Math.pow(1.05, i - 55);
+        } else {
+          close = top * Math.pow(0.95, i - 90);
+        }
+        candles.push({
+          timestamp: startTime + i * 24 * 60 * 60 * 1000,
+          open: close * 0.99,
+          high: close * 1.02,
+          low: close * 0.98,
+          close,
+          volume: 1000000,
+        });
+      }
+
+      const customConfig = { ...STRATEGY_CONFIGS.aggressiv, maxPositionPct: 0.8 };
+      const initialCapital = 10000;
+      const result = runBacktest(candles, customConfig, initialCapital);
+
+      expect(result.trades.length).toBeGreaterThan(0);
+
+      const totalSoldQty = result.trades.reduce((sum, t) => sum + t.size, 0);
+      const entryPrice = result.trades[0].entryPrice;
+      // Hele posisjonen skal tilsvare ~80 % av kapitalen (med fees/slippage).
+      const slippageFeeFactor = (1 + 0.0005) * (1 + customConfig.feeRate);
+      const expectedQty =
+        (initialCapital * customConfig.maxPositionPct * (1 - customConfig.feeRate) * slippageFeeFactor) /
+        entryPrice;
+      expect(totalSoldQty).toBeCloseTo(expectedQty, 3);
+    });
   });
 });
