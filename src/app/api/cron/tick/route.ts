@@ -88,7 +88,7 @@ async function fetchCandles(
  * Uses ExecutorFactory for consistent key decryption and tier validation.
  * Returns null if anything fails — live trades must NEVER silently fall back.
  */
-async function executeLiveTrade(
+export async function executeLiveTrade(
   db: SupabaseClient<Database>,
   userId: string,
   pair: string,
