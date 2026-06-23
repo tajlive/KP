@@ -2,10 +2,18 @@
  * CRON TICK ENGINE - Unified Trading System
  * Processes ALL trading sessions with integrated Risk Management
  *
- * CRITICAL: Every trade MUST pass RiskManager.canExecuteTrade() BEFORE execution
+ * CRITICAL: Every trade MUST pass validateTradeAgainstRiskProfile() BEFORE execution
  */
 
-import { RiskConfig, RiskManager } from "@/lib/auto-trading/risk-manager";
+import type { RiskConfig } from "@/lib/auto-trading/risk-levels";
+import { BinanceMarketDataProvider } from "@/lib/trading/canonical/market-data/binance-provider";
+import type { Kline } from "@/lib/trading/canonical/market-data/types";
+import { validateTradeAgainstRiskProfile } from "@/lib/trading/safety/risk-validator";
+import {
+  executeTrade,
+  type ExecuteTradeRequest,
+  type TradeSignalContext,
+} from "@/lib/trading/core/execute-trade";
 import { resolveTickStrategyEngineKey, getStrategyConfig, shouldUseDarkFleet, getDarkFleetConfig } from "@/lib/trading/strategy-id-aliases";
 import { buildTradeReason, buildIndicatorSnapshot, resolveStrategyKey } from "@/lib/trading/build-trade-reason";
 import { div, mul } from "@/lib/decimal";
@@ -17,12 +25,12 @@ import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/types/database.types";
 import {
-  createLedger, addLot, sellFIFO, getWeightedEntryPrice,
+  createLedger, addLot, sellFIFO,
   getTotalQuantity, migrateFromLegacy, toLegacyPosition,
   type LedgerState,
 } from "@/lib/trading/position-ledger";
 import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
-import { sma } from "@/lib/trading/strategies/indicators";
+
 import { logger } from "@/lib/logger";
 import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
 import { getFlagsAsync } from "@/lib/flags";
@@ -32,7 +40,7 @@ import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from 
 import { queueEmail } from "@/lib/email";
 import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
 import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
-import { usdtToNok, getUsdtToNokRate, getUsdtToNokRateAsync } from "@/lib/trading/currency";
+import { usdtToNok, getUsdtToNokRate } from "@/lib/trading/currency";
 import { runEnsembleForSymbol } from "@/lib/ai/ensemble-v2";
 import { validateCronSecret } from "@/lib/auth/cron";
 
@@ -49,33 +57,25 @@ interface TickResult {
 }
 
 // Price Data Fetcher — ALWAYS uses Binance mainnet for paper/live parity
+const marketDataProvider = new BinanceMarketDataProvider();
+
 async function fetchCandles(
   pair: string,
   interval: string = "1h",
   limit: number = 100,
 ): Promise<Candle[]> {
   // Always use mainnet — paper and live see identical prices
-  const baseUrl = "https://api.binance.com";
   const symbol = pair.replace("/", "");
 
   try {
-    const res = await fetch(
-      `${baseUrl}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
-      {
-        next: { revalidate: 30 },
-      },
-    );
-
-    if (!res.ok) throw new Error(`Binance API error: ${res.status}`);
-
-    const data = await res.json();
-    return data.map((k: number[]) => ({
-      time: k[0],
-      open: parseFloat(String(k[1])),
-      high: parseFloat(String(k[2])),
-      low: parseFloat(String(k[3])),
-      close: parseFloat(String(k[4])),
-      volume: parseFloat(String(k[5])),
+    const klines = await marketDataProvider.getKlines(symbol, interval, limit);
+    return klines.map((k: Kline) => ({
+      time: k.timestamp,
+      open: k.open,
+      high: k.high,
+      low: k.low,
+      close: k.close,
+      volume: k.volume,
     }));
   } catch (err) {
     console.error("Binance API fetch failed:", err);
@@ -88,7 +88,7 @@ async function fetchCandles(
  * Uses ExecutorFactory for consistent key decryption and tier validation.
  * Returns null if anything fails — live trades must NEVER silently fall back.
  */
-async function executeLiveTrade(
+export async function executeLiveTrade(
   db: SupabaseClient<Database>,
   userId: string,
   pair: string,
@@ -555,44 +555,48 @@ async function processSession(
     return { session_id: session.id, action: "hold" };
   }
 
-  const riskManager = new RiskManager(riskConfig);
-
-  const riskCheck = await riskManager.canExecuteTrade({
-    userId: session.user_id,
-    sessionId: session.id,
-    tradeAmount: tradeAmount,
-    currentCapital: session.current_capital,
-    direction: signal.action === "buy" ? "LONG" : "SHORT",
-    symbol: pair,
-  });
-
-  if (!riskCheck.allowed) {
-    // Log risk block to database - using correct table schema
-    const riskLogDetails = {
-      reason: riskCheck.reason,
-      signal: signal.action,
-      requested_amount: tradeAmount,
-      current_capital: session.current_capital,
-      risk_config: { ...riskConfig },
-    } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
-
-    await db.from("trading_logs").insert({
-      session_id: session.id,
-      user_id: session.user_id,
-      action: "risk_blocked",
-      details: riskLogDetails,
-    } as never);
-
-    console.warn("Trade blocked by risk manager:", {
-      session_id: session.id,
-      reason: riskCheck.reason,
+  // Tick-route risk gate is kept for live path only. Paper trades are routed
+  // through executeTrade() which performs the canonical risk validation.
+  if (session.mode === "live") {
+    const riskResult = await validateTradeAgainstRiskProfile(db, {
+      userId: session.user_id,
+      sessionId: session.id,
+      symbol: pair.replace("/", ""),
+      side: signal.action as "buy" | "sell",
+      quantity,
+      price: currentPrice,
+      orderType: "market",
+      tradingMode: "live",
     });
 
-    return {
-      session_id: session.id,
-      action: "risk_blocked",
-      risk_reason: riskCheck.reason,
-    };
+    if (!riskResult.allowed) {
+      // Log risk block to database - using correct table schema
+      const riskLogDetails = {
+        reason: riskResult.rejectionReason,
+        signal: signal.action,
+        requested_amount: tradeAmount,
+        current_capital: session.current_capital,
+        risk_config: { ...riskConfig },
+      } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
+
+      await db.from("trading_logs").insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        action: "risk_blocked",
+        details: riskLogDetails,
+      } as never);
+
+      console.warn("Trade blocked by risk validator:", {
+        session_id: session.id,
+        reason: riskResult.rejectionReason,
+      });
+
+      return {
+        session_id: session.id,
+        action: "risk_blocked",
+        risk_reason: riskResult.rejectionReason,
+      };
+    }
   }
 
   // ─── BETA GUARDRAILS ─────────────────────────────────────────────────
@@ -627,37 +631,13 @@ async function processSession(
   // ─────────────────────────────────────────────────────────────────────
 
   // Calculate stop loss
-  const stopLossPrice = riskManager.calculateStopLoss({
-    entryPrice: currentPrice,
-    direction: signal.action === "buy" ? "LONG" : "SHORT",
-  });
+  const stopLossPercent = riskConfig.stopLossPercent ?? 1;
+  const stopLossPrice =
+    signal.action === "buy"
+      ? currentPrice * (1 - stopLossPercent / 100)
+      : currentPrice * (1 + stopLossPercent / 100);
 
-  // ─── LIVE TRADING EXECUTION ──────────────────────────────────────────
-  let liveResult: { executedPrice: number; binanceOrderId: string; fee: number } | null = null;
-  if (session.mode === "live") {
-    liveResult = await executeLiveTrade(db, session.user_id, pair, signal.action as 'buy' | 'sell', quantity);
-
-    if (!liveResult) {
-      console.warn(`[Tick] Live trade blocked for session ${session.id}: Binance execution failed`);
-
-      // Log failure to trading_logs so user sees it
-      await db.from("trading_logs").insert({
-        session_id: session.id,
-        user_id: session.user_id,
-        action: "live_trade_failed",
-        details: { reason: "Binance execution failed", signal: signal.action, requested_amount: tradeAmount } as never,
-      } as never);
-
-      return {
-        session_id: session.id,
-        action: "live_trade_failed",
-        risk_reason: "Binance execution failed",
-      };
-    }
-  }
-  // ─────────────────────────────────────────────────────────────────────
-
-  // Build reason code and indicator snapshot for trade explanation
+  // Build common trade context for explanation and canonical execution
   const strategyKey = resolveStrategyKey(session.strategy_id);
   const { reasonCode, reasonParams } = buildTradeReason({
     side: signal.action as TradeSide,
@@ -669,11 +649,160 @@ async function processSession(
   });
   const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as unknown as Record<string, unknown>) || null);
 
+  const signalContext: TradeSignalContext = {
+    action: signal.action,
+    confidence: (signal.indicators?.confidence as number) ?? 0,
+    regime: (signal.indicators?.regime as string) ?? "unknown",
+    strategy: strategyKey,
+    reason: signal.reason,
+    sizingPct: positionSize,
+    stopLossPrice,
+    indicators: {
+      ...signal.indicators,
+      stop_loss: stopLossPrice,
+      position_size: Math.round(positionSize * 10000) / 10000,
+      position_size_reason: positionSizeReason,
+      kelly_fraction: kellyFraction ?? null,
+    },
+  };
+
+  // ─── PAPER TRADING EXECUTION ─────────────────────────────────────────
+  // Route paper trades through the canonical execution pipeline so they share
+  // identical market-data, risk, and balance logic with live trading.
+  if (session.mode === "paper") {
+    const executeRequest: ExecuteTradeRequest = {
+      userId: session.user_id,
+      sessionId: session.id,
+      symbol: pair.replace("/", ""),
+      side: signal.action as "buy" | "sell",
+      quantity,
+      price: currentPrice,
+      orderType: "market",
+      mode: "paper",
+      signalContext,
+      idempotencyKey: generateTradeIdempotencyKey(session.id, pair, signal.action),
+      reasonCode,
+      reasonParams,
+      indicatorSnapshot: indicatorSnapshot as unknown as Record<string, unknown>,
+      metadata: { maxSlippageBps: 5 },
+    };
+
+    const result = await executeTrade(db, executeRequest);
+
+    if (!result.success) {
+      console.warn(`[Tick] Paper trade failed for session ${session.id}:`, result.error);
+
+      await db.from("trading_logs").insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        action: result.rejectionReason ? "risk_blocked" : "live_trade_failed",
+        details: {
+          reason: result.rejectionReason || result.error,
+          signal: signal.action,
+          requested_amount: tradeAmount,
+        } as never,
+      } as never);
+
+      return {
+        session_id: session.id,
+        action: result.rejectionReason ? "risk_blocked" : "error",
+        risk_reason: result.rejectionReason || result.error,
+      };
+    }
+
+    // Log Dark Fleet / regime metadata for every trade
+    if (signal.action === "buy" || signal.action === "sell") {
+      try {
+        await db.from("trading_logs").insert({
+          session_id: session.id,
+          user_id: session.user_id,
+          action: "regime_signal",
+          details: {
+            trade_id: result.tradeId,
+            regime: signal.indicators?.regime ?? "unknown",
+            ensemble_score: signal.indicators?.ensembleScore ?? null,
+            dark_fleet: useDarkFleet,
+            engine: resolvedEngine,
+            strategy_id: session.strategy_id,
+          } as never,
+        } as never);
+      } catch {
+        // Non-critical: don't fail the tick if logging fails
+      }
+    }
+
+    // AUDIT TRAIL (B1.4): Log every executed trade for compliance & debugging
+    // executeTrade returns USDT-denominated paper fill values; convert to NOK for
+    // audit parity with the NOK values stored in trades.price/total_value/fee.
+    if (result.tradeId) {
+      try {
+        const rate = getUsdtToNokRate();
+        const executedQty = result.executedQuantity ?? quantity;
+        const executedUsdt = result.executedPrice ?? currentPrice;
+        const totalUsdt = executedQty * executedUsdt;
+        const nokPrice = usdtToNok(executedUsdt, rate);
+        const nokTotalValue = usdtToNok(totalUsdt, rate);
+        const nokFee = usdtToNok(result.fee ?? 0, rate);
+
+        await db.from("trading_logs").insert({
+          session_id: session.id,
+          user_id: session.user_id,
+          action: "trade_executed",
+          details: {
+            trade_id: result.tradeId,
+            mode: "paper",
+            side: signal.action,
+            symbol: pair.replace("/", ""),
+            quantity: executedQty,
+            price: nokPrice,
+            total_value: nokTotalValue,
+            fee: nokFee,
+            usdt_price: executedUsdt,
+            usdt_total_value: totalUsdt,
+            usdt_fee: result.fee,
+            usdt_nok_rate: rate,
+            strategy_id: session.strategy_id,
+            engine: resolvedEngine,
+            dark_fleet: useDarkFleet,
+          } as never,
+        } as never);
+      } catch {
+        // Non-critical: audit logging must not fail the trade
+      }
+    }
+
+    return {
+      session_id: session.id,
+      action: signal.action,
+      trade_id: result.tradeId,
+    };
+  }
+
+  // ─── LIVE TRADING EXECUTION ──────────────────────────────────────────
+  let liveResult: { executedPrice: number; binanceOrderId: string; fee: number } | null = null;
+  liveResult = await executeLiveTrade(db, session.user_id, pair, signal.action as 'buy' | 'sell', quantity);
+
+  if (!liveResult) {
+    console.warn(`[Tick] Live trade blocked for session ${session.id}: Binance execution failed`);
+
+    // Log failure to trading_logs so user sees it
+    await db.from("trading_logs").insert({
+      session_id: session.id,
+      user_id: session.user_id,
+      action: "live_trade_failed",
+      details: { reason: "Binance execution failed", signal: signal.action, requested_amount: tradeAmount } as never,
+    } as never);
+
+    return {
+      session_id: session.id,
+      action: "live_trade_failed",
+      risk_reason: "Binance execution failed",
+    };
+  }
+
   // Calculate realized P&L for sell trades using FIFO cost basis
   let realizedPnl: number | undefined;
   let updatedLedgerState: LedgerState | null = null;
-  const isPaperMode = session.mode === "paper";
-  const usdtNokRateForPnl = isPaperMode ? getUsdtToNokRate() : undefined;
 
   if (signal.action === "sell" && session.open_position) {
     // Build FIFO ledger: use lots if available, otherwise migrate from legacy
@@ -685,32 +814,22 @@ async function processSession(
     const matchedQty = Math.min(quantity, positionQty);
     if (matchedQty > 0) {
       try {
-        // For paper, convert Binance USDT price to NOK so FIFO cost basis matches
-        const fifoPrice = isPaperMode ? usdtToNok(currentPrice, usdtNokRateForPnl) : currentPrice;
-        const sellResult = sellFIFO(ledger, matchedQty, fifoPrice);
+        const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
         realizedPnl = sellResult.realizedPnl;
         updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
       } catch {
         // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
         const entryPrice = session.open_position.entry_price;
-        const fifoCurrentPrice = isPaperMode ? usdtToNok(currentPrice, usdtNokRateForPnl) : currentPrice;
-        realizedPnl = Math.round((fifoCurrentPrice - entryPrice) * matchedQty * 100) / 100;
+        realizedPnl = Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
       }
     }
   }
 
   // Execute trade
-  // For live mode, use Binance actuals; for paper, convert to NOK so capital math works
-  const finalExecutedPrice = liveResult ? liveResult.executedPrice : executedPrice;
-  const finalFee = liveResult ? liveResult.fee : mul(mul(quantity, executedPrice), 0.001);
+  const finalExecutedPrice = liveResult.executedPrice;
+  const finalFee = liveResult.fee;
   const totalValue = mul(quantity, finalExecutedPrice);
   const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
-
-  const rate = getUsdtToNokRate();
-  const nokPrice = isPaperMode ? usdtToNok(finalExecutedPrice, rate) : finalExecutedPrice;
-  const nokTotalValue = isPaperMode ? usdtToNok(totalValue, rate) : totalValue;
-  const nokFee = isPaperMode ? usdtToNok(finalFee, rate) : finalFee;
-  const nokRealizedPnl = isPaperMode && realizedPnl != null ? usdtToNok(realizedPnl, rate) : realizedPnl;
 
   const { data: trade, error: tradeError } = await db
     .from("trades")
@@ -724,19 +843,13 @@ async function processSession(
       side: signal.action as TradeSide,
       order_type: "market",
       quantity,
-      price: nokPrice,
-      total_value: nokTotalValue,
-      fee: nokFee,
+      price: finalExecutedPrice,
+      total_value: totalValue,
+      fee: finalFee,
       status: "filled",
-      realized_pnl: nokRealizedPnl,
-      binance_order_id: liveResult?.binanceOrderId ?? null,
-      strategy_signal: {
-        ...signal.indicators,
-        stop_loss: stopLossPrice,
-        position_size: Math.round(positionSize * 10000) / 10000,
-        position_size_reason: positionSizeReason,
-        kelly_fraction: kellyFraction ?? null,
-      },
+      realized_pnl: realizedPnl,
+      binance_order_id: liveResult.binanceOrderId,
+      strategy_signal: signalContext.indicators,
       // Explanation data
       reason_code: reasonCode,
       reason_params: reasonParams as unknown as Json,
@@ -757,8 +870,8 @@ async function processSession(
   }
 
   // ── LIVE CAPITAL UPDATE (B1.3) ───────────────────────────────────────────
-  // Paper capital is updated by DB trigger; live capital MUST be updated here.
-  if (session.mode === "live" && trade?.id) {
+  // Live capital MUST be updated here.
+  if (trade?.id) {
     try {
       const rate = getUsdtToNokRate();
       const netValueUsdt =
@@ -792,10 +905,8 @@ async function processSession(
         : createLedger("long");
 
     // For live trades, use actual Binance executed price as cost basis
-    // For paper, store cost basis in NOK to match trade values
-    const entryPriceForLot = liveResult ? liveResult.executedPrice : executedPrice;
-    const lotPrice = isPaperMode ? usdtToNok(entryPriceForLot, rate) : entryPriceForLot;
-    const updatedLedger = addLot(ledger, quantity, lotPrice);
+    const entryPriceForLot = liveResult.executedPrice;
+    const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
     const legacyPos = toLegacyPosition(updatedLedger);
 
     if (legacyPos) {
@@ -804,7 +915,7 @@ async function processSession(
         .update({
           open_position: {
             ...legacyPos,
-            highest_price: session.open_position?.highest_price ?? lotPrice,
+            highest_price: session.open_position?.highest_price ?? entryPriceForLot,
           },
         } as never)
         .eq("id", session.id);
@@ -863,7 +974,7 @@ async function processSession(
           total_value: totalValue,
           fee: finalFee,
           realized_pnl: realizedPnl ?? null,
-          binance_order_id: liveResult?.binanceOrderId ?? null,
+          binance_order_id: liveResult.binanceOrderId,
           idempotency_key: idempotencyKey,
           strategy_id: session.strategy_id,
           engine: resolvedEngine,

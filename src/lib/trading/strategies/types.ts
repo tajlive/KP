@@ -18,6 +18,7 @@ export interface StrategyPosition {
   entry_price: number;
   entry_time: string;
   highest_price?: number;
+  partial_exits_executed?: number[];
   lots?: Array<{
     id: string;
     quantity: number;
@@ -35,7 +36,10 @@ export interface MinimalSession {
 
 export interface StrategySignal {
   action: "buy" | "sell" | "hold";
+  /** Fraction of capital to allocate (used for buys). */
   positionSize?: number;
+  /** Absolute quantity to trade (used for partial sells). Takes precedence over positionSize for sells. */
+  quantity?: number;
   indicators?: Record<string, unknown>;
   reason?: string;
 }

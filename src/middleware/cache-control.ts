@@ -2,8 +2,8 @@
  * Selective Cache-Control middleware
  *
  * Replaces the global no-store that used to live in CSP middleware.
- * Only sensitive/user-specific routes get no-store; marketing and legal
- * pages are left to Next.js / CDN cache heuristics.
+ * Sensitive/user-specific routes get no-store; public marketing and legal
+ * pages receive explicit Cloudflare edge-cache headers.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -53,6 +53,23 @@ const NO_STORE_PATHS = [
   "/verify",
 ] as const;
 
+/** Public marketing/legal pages that benefit from Cloudflare edge caching. */
+const MARKETING_PATHS = [
+  "/",
+  "/priser",
+  "/kontakt",
+  "/om-oss",
+  "/vilkar",
+  "/personvern",
+  "/cookies",
+] as const;
+
+function isMarketingPath(strippedPath: string): boolean {
+  return MARKETING_PATHS.some(
+    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
+  );
+}
+
 function isNoStoreRoute(strippedPath: string): boolean {
   const lower = strippedPath.toLowerCase();
   return NO_STORE_PATHS.some(
@@ -68,6 +85,9 @@ function setNoStoreHeaders(response: NextResponse): void {
   response.headers.set("CDN-Cache-Control", "no-store, max-age=0");
   response.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
 }
+
+const MARKETING_CACHE_CONTROL =
+  "public, max-age=60, s-maxage=300, stale-while-revalidate=86400, stale-if-error=3600";
 
 export const cacheControlMiddleware: MiddlewareFn = (
   request: NextRequest,
@@ -85,6 +105,12 @@ export const cacheControlMiddleware: MiddlewareFn = (
 
   if (isNoStoreRoute(strippedPath)) {
     setNoStoreHeaders(res);
+    return res;
+  }
+
+  if (isMarketingPath(strippedPath)) {
+    res.headers.set("Cache-Control", MARKETING_CACHE_CONTROL);
+    return res;
   }
 
   return res;

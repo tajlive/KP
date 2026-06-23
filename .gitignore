@@ -268,3 +268,4 @@ config/perplexity-local-mcp.json
 backups/
 .kimi/backup/
 .DS_Store
+.worktrees/

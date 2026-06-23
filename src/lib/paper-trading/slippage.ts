@@ -7,7 +7,9 @@
  * Based on TradingView and professional simulator implementations.
  */
 
-import { getTicker24h } from "@/lib/binance";
+import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
+
+const marketDataProvider = createBinanceMarketDataProvider();
 
 export interface SlippageParams {
   symbol: string;
@@ -130,19 +132,16 @@ export function wouldLimitOrderFill(
  */
 export async function fetchMarketVolatility(symbol: string): Promise<number> {
   try {
-    // OPTIMIZED: Use centralized Binance client (consistent error handling, caching)
-    const data = await getTicker24h(symbol.toUpperCase()) as {
-      priceChangePercent: string;
-    };
-    
-    // Calculate volatility based on price change percentage
-    const priceChangePercent = Math.abs(parseFloat(data.priceChangePercent) || 0);
-    
+    // OPTIMIZED: Use canonical Binance market-data provider
+    const priceChangePercent = Math.abs(
+      (await marketDataProvider.get24hChange(symbol.toUpperCase())) || 0,
+    );
+
     // Normalize to 0-1 scale (assuming max daily volatility is 20%)
     const normalizedVolatility = Math.min(priceChangePercent / 20, 1);
-    
+
     updateVolatility(symbol, normalizedVolatility);
-    
+
     return normalizedVolatility;
   } catch (error) {
     console.warn('Failed to fetch volatility, using cached/default:', error);

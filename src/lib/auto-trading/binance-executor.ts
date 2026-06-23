@@ -5,7 +5,8 @@
  */
 
 import { createClient } from "@/lib/utils";
-import { getKlines } from "../binance";
+import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
+import type { Kline } from "@/lib/trading/canonical/market-data";
 import {
   OPTIMIZED_PROFILES,
   type RiskLevel as OptimizedRiskLevel,
@@ -45,6 +46,8 @@ const logger = {
 
 import { BINANCE_REFERRAL } from "@/lib/constants/binance";
 export { BINANCE_REFERRAL };
+
+const marketDataProvider = createBinanceMarketDataProvider();
 
 interface BinanceCredentials {
   apiKey: string;
@@ -933,20 +936,16 @@ function roundToStepSize(quantity: number, stepSize: number): number {
 }
 
 /**
- * Calculate ATR(14) from Binance klines (OHLC format)
- * Kline format: [openTime, open, high, low, close, ...]
+ * Calculate ATR(14) from canonical Binance klines (OHLC format)
  */
-function calculateATRFromKlines(
-  klines: Array<{ 1?: string; 2?: string; 3?: string; 4?: string }>,
-  period: number = 14,
-): number {
+function calculateATRFromKlines(klines: Kline[], period: number = 14): number {
   if (klines.length < period + 1) return 0;
 
   const ranges: number[] = [];
   for (let i = 1; i < klines.length; i++) {
-    const high = parseFloat((klines[i] as { 2?: string })[2] ?? "0");
-    const low = parseFloat((klines[i] as { 3?: string })[3] ?? "0");
-    const prevClose = parseFloat((klines[i - 1] as { 4?: string })[4] ?? "0");
+    const high = klines[i].high;
+    const low = klines[i].low;
+    const prevClose = klines[i - 1].close;
     const tr = Math.max(
       high - low,
       Math.abs(high - prevClose),
@@ -1201,17 +1200,13 @@ export async function syncOpenTrades(userId: string): Promise<void> {
 
   for (const symbol of symbols) {
     try {
-      const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`,
-      );
-      const data = await response.json();
-      prices[symbol] = parseFloat(data.price);
+      prices[symbol] = await marketDataProvider.getPrice(symbol);
     } catch (error) {
       console.error(`Failed to get price for ${symbol}:`, error);
     }
 
     try {
-      const klines = await getKlines(symbol, "1h", 50);
+      const klines = await marketDataProvider.getKlines(symbol, "1h", 50);
       atrBySymbol[symbol] = calculateATRFromKlines(klines, 14);
     } catch (error) {
       console.error(`Failed to fetch ATR for ${symbol}:`, error);
@@ -1356,8 +1351,8 @@ export async function runAutoTradingIteration(
           }
 
           // Get historical data for indicators
-          const klines = await getKlines(symbol, "1h", 100);
-          const prices = klines.map((k) => parseFloat(k[4]));
+          const klines = await marketDataProvider.getKlines(symbol, "1h", 100);
+          const prices = klines.map((k) => k.close);
 
           // Calculate indicators
           const indicators = await strategy.calculateIndicators(symbol, prices);

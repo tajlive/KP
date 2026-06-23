@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { AutoTradingConfigCard } from "@/features/dashboard/AutoTradingConfigCard";
+import { AutoTradingConfigCard } from "@/features/trading";
 import { PaperTradingCard } from "@/features/dashboard/PaperTradingCard";
 import { PulseChartContainer } from "@/features/dashboard/pulse/PulseChartContainer";
 import { GamificationCard } from "@/features/account/gamification/GamificationCard";

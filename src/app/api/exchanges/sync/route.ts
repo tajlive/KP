@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient, createServerClient } from "@/lib/supabase/server";
 import { decryptExchangeSecret } from "@/lib/exchanges/secret-crypto";
-import { fetchBinanceBalances } from "@/lib/exchanges/adapters/binance-readonly";
+import { BinanceExecutor } from "@/lib/trading/binance-executor";
 import {
   fetchKrakenBalances,
   fetchKrakenTradeHistory,
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   const db = createClient();
   const { data: connection, error: connectionError } = await db
     .from("exchange_connections")
-    .select("api_key,api_secret_ciphertext,api_secret_nonce,permissions")
+    .select("api_key,api_secret_ciphertext,api_secret_nonce,permissions,is_testnet")
     .eq("user_id", user.id)
     .eq("exchange", exchange)
     .eq("is_active", true)
@@ -56,7 +56,11 @@ export async function POST(request: NextRequest) {
     const balances =
       exchange === "kraken"
         ? await fetchKrakenBalances(apiKey, apiSecret)
-        : await fetchBinanceBalances(apiKey, apiSecret);
+        : await new BinanceExecutor({
+            apiKey,
+            apiSecret,
+            testnet: Boolean(connection.is_testnet),
+          }).fetchBalances();
 
     // Keep wallets as current source for dashboard totals.
     if (balances.length > 0) {

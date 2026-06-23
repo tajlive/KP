@@ -14,7 +14,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+import type { Database, Json } from "@/types/database.types";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
   validateTradeAgainstRiskProfile,
@@ -24,12 +24,21 @@ import {
   type RiskValidationResult,
 } from "@/lib/trading/safety/risk-validator";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
+import { computeFill } from "@/lib/trading/canonical/execution/fill-model";
+import { calculatePnlFromTrades, type TradePnlInput } from "@/lib/trading/canonical/pnl/trade-pnl";
 import { acquireTradeLock } from "./distributed-lock";
 import type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext } from "./types";
 
 export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
 
 const PAPER_DEFAULT_CAPITAL = 100000;
+
+/** Estimerte fill-parametere brukt til forhåndsvalidering av kapital/kostnad. */
+export const ESTIMATED_FILL_PARAMS = {
+  feeRate: 0.001, // 0.1%
+  marketSlippageRate: 0.0005, // 0.05%
+  minOrderValue: 10,
+};
 
 export async function executeTrade(
   supabase: SupabaseClient<Database>,
@@ -169,7 +178,7 @@ async function executeTradeWithLock(
     const { data: session, error: sessionError } = await supabase
       .from("trading_sessions")
       .select(
-        "id, user_id, current_capital_nok, current_capital, status, mode, strategy_config",
+        "id, user_id, current_capital_nok, current_capital, status, mode, strategy_config, open_position",
       )
       .eq("id", sessionId)
       .eq("user_id", request.userId)
@@ -259,10 +268,43 @@ async function executeTradeWithLock(
     }
 
     // ========================================================================
-    // 5. Balance check
+    // 5. Balance check (use canonical fill model for market-order estimates)
     // ========================================================================
-    const orderValueUsdt = request.quantity * request.price;
     const rate = await getUsdtToNokRateAsync(supabase);
+
+    const tradeCurrency: "USDT" | "NOK" = request.mode === "paper" ? "NOK" : "USDT";
+
+    let orderValueUsdt: number;
+    if (request.orderType === "market") {
+      const estimatedFill = computeFill({
+        side: request.side,
+        quantity: request.quantity,
+        orderType: request.orderType,
+        marketPrice: request.price,
+        feeRate: ESTIMATED_FILL_PARAMS.feeRate,
+        marketSlippageRate: ESTIMATED_FILL_PARAMS.marketSlippageRate,
+        minOrderValue: ESTIMATED_FILL_PARAMS.minOrderValue,
+        quoteCurrency: "USDT",
+      });
+      if (!estimatedFill.success) {
+        const rejectionResult: RiskValidationResult = {
+          allowed: false,
+          rejectionReason: "ESTIMATED_FILL_FAILED",
+          rejectionDetails: { reason: estimatedFill.error },
+        };
+        await recordTradeRejection(supabase, tradeRequest, rejectionResult);
+        await recordTradeDecision(supabase, tradeRequest, rejectionResult);
+        return {
+          success: false,
+          rejectionReason: "ESTIMATED_FILL_FAILED",
+          error: estimatedFill.error || "Estimated fill validation failed",
+        };
+      }
+      orderValueUsdt = estimatedFill.totalCost;
+    } else {
+      orderValueUsdt = request.quantity * request.price;
+    }
+
     const orderValueNok = usdtToNok(orderValueUsdt, rate ?? undefined);
 
     const currentBalance = Number(
@@ -310,26 +352,71 @@ async function executeTradeWithLock(
     }
 
     // ========================================================================
-    // 7. Calculate realized P&L for sell trades
+    // 7. Calculate realized P&L for sell trades (canonical FIFO)
     // ========================================================================
     let realizedPnl: number | undefined;
-    if (request.side === "sell" && (session as Record<string, unknown>).open_position) {
-      const pos = (session as Record<string, unknown>).open_position as Record<string, unknown>;
-      const entryPrice = (pos.entry_price as number) || 0;
-      const positionQty = (pos.quantity as number) || 0;
-      if (entryPrice > 0 && positionQty > 0) {
-        const matchedQty = Math.min(execResult.executedQuantity, positionQty);
-        const feeNok =
-          request.mode === "live"
-            ? execResult.fee || 0
-            : usdtToNok(execResult.fee || 0, rate ?? undefined);
-        const tradeValueNok =
+    const openPosition = session.open_position as {
+      side?: "long" | "short";
+      quantity?: number;
+      entry_price?: number;
+      entry_time?: string;
+      lots?: Array<{ quantity: number; entryPrice: number; timestamp?: string }>;
+    } | null;
+
+    if (
+      request.side === "sell" &&
+      openPosition &&
+      (openPosition.quantity ?? 0) > 0
+    ) {
+      const positionQty = openPosition.quantity ?? 0;
+      const matchedQty = Math.min(execResult.executedQuantity, positionQty);
+      if (matchedQty > 0) {
+        // Convert sell-side fill to the same currency as the cost basis
+        // (paper stores NOK, live stores USDT).
+        const sellPrice =
           request.mode === "paper"
-            ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
-            : execResult.executedQuantity * execResult.executedPrice;
-        const costBasisNok = entryPrice * matchedQty;
-        // For simplicity, use the trade value in the same currency as cost basis
-        realizedPnl = Math.round((tradeValueNok - costBasisNok - feeNok) * 100) / 100;
+            ? usdtToNok(execResult.executedPrice, rate ?? undefined)
+            : execResult.executedPrice;
+        const sellFee =
+          request.mode === "paper"
+            ? usdtToNok(execResult.fee || 0, rate ?? undefined)
+            : execResult.fee || 0;
+
+        const priorBuys: TradePnlInput[] =
+          openPosition.lots && openPosition.lots.length > 0
+            ? openPosition.lots.map((lot) => ({
+                symbol: request.symbol,
+                side: "buy" as const,
+                quantity: lot.quantity,
+                price: lot.entryPrice,
+                fee: 0,
+                timestamp: lot.timestamp,
+                currency: tradeCurrency,
+              }))
+            : [
+                {
+                  symbol: request.symbol,
+                  side: "buy" as const,
+                  quantity: positionQty,
+                  price: openPosition.entry_price ?? 0,
+                  fee: 0,
+                  timestamp: openPosition.entry_time,
+                  currency: tradeCurrency,
+                },
+              ];
+
+        const currentSell: TradePnlInput = {
+          symbol: request.symbol,
+          side: "sell",
+          quantity: matchedQty,
+          price: sellPrice,
+          fee: sellFee,
+          timestamp: execResult.timestamp.toISOString(),
+          currency: tradeCurrency,
+        };
+
+        const pnlResult = calculatePnlFromTrades([...priorBuys, currentSell]);
+        realizedPnl = Math.round(pnlResult.realizedPnl * 100) / 100;
       }
     }
 
@@ -337,7 +424,9 @@ async function executeTradeWithLock(
     // 8. Record trade
     // ========================================================================
     const nowIso = new Date().toISOString();
-    const idempotencyKey = `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
+    const idempotencyKey =
+      request.idempotencyKey ??
+      `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
 
     const tradeInsert: Database["public"]["Tables"]["trades"]["Insert"] & {
       usdt_nok_rate?: number;
@@ -378,6 +467,9 @@ async function executeTradeWithLock(
             reason: request.signalContext.reason,
           }
         : null,
+      reason_code: request.reasonCode ?? null,
+      reason_params: (request.reasonParams ?? null) as Json,
+      indicator_snapshot: (request.indicatorSnapshot ?? null) as Json,
     };
 
     const { data: trade, error: tradeError } = await supabase

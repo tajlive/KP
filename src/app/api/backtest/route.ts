@@ -120,6 +120,8 @@ export async function POST(request: NextRequest) {
       smaFast: finalSmaFast,
       smaSlow: finalSmaSlow,
       maxPositionPct: finalMaxPositionPct,
+      symbol: finalSymbol,
+      riskProfile,
     }, externalSignals);
 
     // Optional Monte Carlo simulation

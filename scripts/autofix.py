@@ -21,7 +21,7 @@ class Fixer:
         print("\n🚀 KLARPAKKE AUTO-FIX\n")
         
         # 1-5: All fixes
-        self.fix_file("app/api/risk-calculator/route.ts", [("parseFloat(riskScore)", "riskScore")])
+        # NOTE: app/api/risk-calculator/route.ts was removed; kept out to avoid orphan reference.
         for f in ["src/components/auth/LoginForm.tsx", "src/components/auth/RegisterForm.tsx"]:
             self.fix_file(f, [('variant="danger"', 'variant="destructive"')])
         for f in Path("src").rglob("*.tsx"):

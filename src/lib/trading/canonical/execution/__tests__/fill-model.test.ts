@@ -19,6 +19,7 @@ describe("canonical fill-model", () => {
       marketSlippageRate: 0.0005,
       minOrderValue: 10,
       availableCapital: 200,
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(true);
@@ -26,6 +27,7 @@ describe("canonical fill-model", () => {
     expect(result.executedQuantity).toBe(1);
     expect(result.fee).toBeCloseTo(0.10005, 5); // 100.05 * 0.001
     expect(result.slippagePct).toBe(0.05);
+    expect(result.quoteCurrency).toBe("USDT");
   });
 
   it("fills a market sell with negative slippage", () => {
@@ -37,6 +39,7 @@ describe("canonical fill-model", () => {
       feeRate: 0.001,
       marketSlippageRate: 0.0005,
       minOrderValue: 10,
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(true);
@@ -54,6 +57,7 @@ describe("canonical fill-model", () => {
       marketSlippageRate: 0,
       minOrderValue: 10,
       availableCapital: 200,
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(true);
@@ -72,6 +76,7 @@ describe("canonical fill-model", () => {
       marketSlippageRate: 0,
       minOrderValue: 10,
       availableCapital: 200,
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(false);
@@ -88,6 +93,7 @@ describe("canonical fill-model", () => {
       feeRate: 0.001,
       marketSlippageRate: 0,
       minOrderValue: 10,
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(false);
@@ -104,6 +110,7 @@ describe("canonical fill-model", () => {
       marketSlippageRate: 0,
       minOrderValue: 10,
       availableCapital: 150, // trenger 200
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(false);
@@ -120,6 +127,7 @@ describe("canonical fill-model", () => {
       marketSlippageRate: 0.0005,
       minOrderValue: 10,
       availableCapital: 200,
+      quoteCurrency: "USDT",
     });
 
     expect(result.success).toBe(false);
@@ -136,10 +144,28 @@ describe("canonical fill-model", () => {
       marketSlippageRate: 0.0005,
       minOrderValue: 10,
       availableCapital: 500,
+      quoteCurrency: "USDT" as const,
     };
 
     const r1 = computeFill(params);
     const r2 = computeFill(params);
     expect(r1).toEqual(r2);
+  });
+
+  it("rejects invalid quote currency", () => {
+    const result = computeFill({
+      side: "buy",
+      quantity: 1,
+      orderType: "market",
+      marketPrice: 100,
+      feeRate: 0.001,
+      marketSlippageRate: 0.0005,
+      minOrderValue: 10,
+      availableCapital: 200,
+      quoteCurrency: "EUR" as any,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("Invalid or missing quote currency");
   });
 });
