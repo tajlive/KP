@@ -1,2 +1,2 @@
 // Account feature exports
-// TODO: populate during component migration
+export { default as BinanceAPISettings } from "./settings/BinanceAPISettings";
