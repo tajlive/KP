@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useLivePnL } from "@/hooks/useLivePnL";
 import { useCountUp } from "@/hooks/useCountUp";
-import { SparklineChart } from "./SparklineChart";
+import { SparklineChart } from "@/features/dashboard/SparklineChart";
 import { Skeleton } from "@/shared/ui/skeleton";
 
 export function LivePnLWidget() {

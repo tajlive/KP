@@ -10,7 +10,6 @@ export { StatsGrid, StatsGridMini } from "@/features/portfolio/StatsGrid";
 // Existing components
 export { SimplifiedHero } from "./SimplifiedHero";
 export { AdvancedSection } from "./AdvancedSection";
-export { LivePnLWidget } from "./LivePnLWidget";
 export { PaperTradingCard } from "./PaperTradingCard";
 
 // Enterprise 2026 components
