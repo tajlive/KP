@@ -18,6 +18,8 @@ import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics
 import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { computeFill } from "./canonical/execution/fill-model";
+import { roundToLotSize } from "./canonical/symbols/lot-sizes";
 import { getUsdtToNokRate, getUsdtToNokRateAsync } from "./currency";
 import {
   resolveStrategy,
@@ -140,6 +142,11 @@ export interface StrategyConfig {
 // ============================================================================
 
 const DEFAULT_FEE_RATE = 0.001; // 0.1% Binance taker fee
+
+/** Kanoniske backtest-fill-parametere (samme som paper executor). */
+const FEE_RATE = 0.001;
+const MARKET_SLIPPAGE_RATE = 0.0005;
+const MIN_ORDER_VALUE_USDT = 10;
 
 export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
   konservativ: {
@@ -268,6 +275,7 @@ export async function fetchHistoricalData(
 
 interface BacktestPosition {
   entryPrice: number;
+  entryFee: number;
   size: number;
   entryTime: number;
   highestPrice: number;
@@ -361,68 +369,111 @@ export function runBacktest(
         signal.positionSize ?? config.maxPositionPct,
         config.maxPositionPct,
       );
-      const positionCapital = capital * targetSizePct;
-      const fee = positionCapital * config.feeRate;
-      const positionSizeQty = (positionCapital - fee) / candle.close;
+      const desiredCapital = capital * targetSizePct;
+      const rawQuantity = (desiredCapital * (1 - FEE_RATE)) / candle.close;
+      const roundedQuantity = roundToLotSize(config.symbol, rawQuantity);
 
-      const today = new Date(candle.timestamp).toISOString().split("T")[0];
+      const fill = computeFill({
+        side: "buy",
+        quantity: roundedQuantity,
+        orderType: "market",
+        marketPrice: candle.close,
+        feeRate: FEE_RATE,
+        marketSlippageRate: MARKET_SLIPPAGE_RATE,
+        minOrderValue: MIN_ORDER_VALUE_USDT,
+        availableCapital: capital,
+        quoteCurrency: "USDT",
+      });
 
-      position = {
-        entryPrice: candle.close,
-        size: positionSizeQty,
-        entryTime: candle.timestamp,
-        highestPrice: candle.close,
-        partialExitsExecuted: [],
-        dailyBuysToday: today,
-        dailyBuyCount: 1,
-      };
-      capital = capital - positionCapital;
+      if (!fill.success) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`Backtest buy skipped: ${fill.error}`);
+        }
+      } else {
+        const today = new Date(candle.timestamp).toISOString().split("T")[0];
+
+        position = {
+          entryPrice: fill.executedPrice,
+          entryFee: fill.fee,
+          size: fill.executedQuantity,
+          entryTime: candle.timestamp,
+          highestPrice: candle.close,
+          partialExitsExecuted: [],
+          dailyBuysToday: today,
+          dailyBuyCount: 1,
+        };
+        capital = capital - fill.totalCost;
+      }
     } else if (signal.action === "sell" && position) {
-      let qtyToSell: number;
+      let rawQtyToSell: number;
       if (signal.quantity !== undefined) {
         // Absolute quantity sell (e.g. DCA partial take-profits)
-        qtyToSell = Math.min(signal.quantity, position.size);
+        rawQtyToSell = Math.min(signal.quantity, position.size);
       } else {
         const signalSize = signal.positionSize ?? 1.0;
         // positionSize er en brøk av total kapital; konverter til brøk av posisjonen
         const positionValueRatio =
           (position.size * position.entryPrice) / capital || 1;
         const sellFraction = Math.min(signalSize / positionValueRatio, 1);
-        qtyToSell = position.size * sellFraction;
+        rawQtyToSell = position.size * sellFraction;
       }
-      const remainingSize = position.size - qtyToSell;
+      const qtyToSell = roundToLotSize(config.symbol, rawQtyToSell);
 
-      const exitValue = qtyToSell * candle.close;
-      const fee = exitValue * config.feeRate;
-      const costBasis = qtyToSell * position.entryPrice;
-      const pnl = exitValue - fee - costBasis;
-      const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
+      if (qtyToSell > 0) {
+        const fill = computeFill({
+          side: "sell",
+          quantity: qtyToSell,
+          orderType: "market",
+          marketPrice: candle.close,
+          feeRate: FEE_RATE,
+          marketSlippageRate: MARKET_SLIPPAGE_RATE,
+          minOrderValue: MIN_ORDER_VALUE_USDT,
+          quoteCurrency: "USDT",
+        });
 
-      trades.push({
-        entryTime: position.entryTime,
-        exitTime: candle.timestamp,
-        entryPrice: position.entryPrice,
-        exitPrice: candle.close,
-        side: 'LONG',
-        size: qtyToSell,
-        pnl,
-        pnlPct,
-        fee: costBasis * config.feeRate + fee,
-      });
+        if (!fill.success) {
+          if (process.env.NODE_ENV !== "production") {
+            console.warn(`Backtest sell skipped: ${fill.error}`);
+          }
+        } else {
+          const soldQty = fill.executedQuantity;
+          const remainingSize = position.size - soldQty;
+          const soldFraction = soldQty / position.size;
+          const entryValue = soldQty * position.entryPrice;
+          const entryFeeForSold = position.entryFee * soldFraction;
+          const exitValue = soldQty * fill.executedPrice;
+          const totalFee = entryFeeForSold + fill.fee;
+          const pnl = exitValue - fill.fee - entryValue - entryFeeForSold;
+          const pnlPct = entryValue > 0 ? (pnl / entryValue) * 100 : 0;
 
-      capital = capital + exitValue - fee;
+          trades.push({
+            entryTime: position.entryTime,
+            exitTime: candle.timestamp,
+            entryPrice: position.entryPrice,
+            exitPrice: fill.executedPrice,
+            side: 'LONG',
+            size: soldQty,
+            pnl,
+            pnlPct,
+            fee: totalFee,
+          });
 
-      if (remainingSize > 1e-12) {
-        position.size = remainingSize;
-        const target = signal.indicators?.target as number | undefined;
-        if (target !== undefined) {
-          position.partialExitsExecuted = [
-            ...position.partialExitsExecuted,
-            target,
-          ];
+          capital = capital + exitValue - fill.fee;
+
+          if (remainingSize > 1e-12) {
+            position.size = remainingSize;
+            position.entryFee = position.entryFee * (1 - soldFraction);
+            const target = signal.indicators?.target as number | undefined;
+            if (target !== undefined) {
+              position.partialExitsExecuted = [
+                ...position.partialExitsExecuted,
+                target,
+              ];
+            }
+          } else {
+            position = null;
+          }
         }
-      } else {
-        position = null;
       }
     }
 
@@ -446,24 +497,47 @@ export function runBacktest(
   // Lukk åpen posisjon ved slutten
   if (position && candles.length > 0) {
     const lastCandle = candles[candles.length - 1];
-    const exitValue = position.size * lastCandle.close;
-    const fee = exitValue * config.feeRate;
-    const costBasis = position.size * position.entryPrice;
-    const pnl = exitValue - fee - costBasis;
+    const qtyToSell = roundToLotSize(config.symbol, position.size);
 
-    trades.push({
-      entryTime: position.entryTime,
-      exitTime: lastCandle.timestamp,
-      entryPrice: position.entryPrice,
-      exitPrice: lastCandle.close,
-      side: 'LONG',
-      size: position.size,
-      pnl,
-      pnlPct: costBasis > 0 ? (pnl / costBasis) * 100 : 0,
-      fee: costBasis * config.feeRate + fee,
-    });
+    if (qtyToSell > 0) {
+      const fill = computeFill({
+        side: "sell",
+        quantity: qtyToSell,
+        orderType: "market",
+        marketPrice: lastCandle.close,
+        feeRate: FEE_RATE,
+        marketSlippageRate: MARKET_SLIPPAGE_RATE,
+        minOrderValue: MIN_ORDER_VALUE_USDT,
+        quoteCurrency: "USDT",
+      });
 
-    capital = capital + exitValue - fee;
+      if (!fill.success) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`Backtest final close skipped: ${fill.error}`);
+        }
+      } else {
+        const soldQty = fill.executedQuantity;
+        const entryValue = soldQty * position.entryPrice;
+        const exitValue = soldQty * fill.executedPrice;
+        const totalFee = position.entryFee + fill.fee;
+        const pnl = exitValue - fill.fee - entryValue - position.entryFee;
+
+        trades.push({
+          entryTime: position.entryTime,
+          exitTime: lastCandle.timestamp,
+          entryPrice: position.entryPrice,
+          exitPrice: fill.executedPrice,
+          side: 'LONG',
+          size: soldQty,
+          pnl,
+          pnlPct: entryValue > 0 ? (pnl / entryValue) * 100 : 0,
+          fee: totalFee,
+        });
+
+        capital = capital + exitValue - fill.fee;
+      }
+    }
+    position = null;
   }
 
   // Beregn metrics
