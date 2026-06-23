@@ -5,7 +5,7 @@
  * CRITICAL: Every trade MUST pass validateTradeAgainstRiskProfile() BEFORE execution
  */
 
-import type { RiskConfig } from "@/lib/auto-trading/risk-manager";
+import type { RiskConfig } from "@/lib/auto-trading/risk-levels";
 import { BinanceMarketDataProvider } from "@/lib/trading/canonical/market-data/binance-provider";
 import type { Kline } from "@/lib/trading/canonical/market-data/types";
 import { validateTradeAgainstRiskProfile } from "@/lib/trading/safety/risk-validator";

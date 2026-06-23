@@ -6,7 +6,7 @@
  */
 
 import { RISK_LEVELS, mapRiskLevelToConfig } from "./risk-levels";
-import type { RiskConfig } from "./risk-manager";
+import type { RiskConfig } from "./risk-levels";
 
 export type PresetProfileId = "forsiktig" | "moderat" | "aggressiv";
 

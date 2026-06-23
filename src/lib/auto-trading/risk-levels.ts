@@ -112,11 +112,25 @@ export const SUPPORTED_PAIRS = [
 
 export type SupportedPair = (typeof SUPPORTED_PAIRS)[number];
 
-import type { RiskConfig } from "@/lib/auto-trading/risk-manager";
+/**
+ * Risk-config som brukes av tick-ruten og preset-profiler.
+ * Tidligere definert i risk-manager.ts (slettet).
+ */
+export interface RiskConfig {
+  maxPositionSizePercent: number;
+  stopLossPercent: number;
+  trailingStopLossPercent?: number;
+  maxDailyLossPercent: number;
+  maxDailyTrades: number;
+  maxDrawdownPercent: number;
+  maxLeverage: number;
+  kellyFraction?: number;
+  volatilityAdjustment?: boolean;
+}
 
 /**
  * Konverterer et brukervalg ("safe", "offensive", etc) til
- * det nøyaktige RiskConfig-formatet som kreves av RiskManager i backend.
+ * det nøyaktige RiskConfig-formatet som kreves av backend.
  */
 export function mapRiskLevelToConfig(levelKey?: string): RiskConfig {
   const level =
