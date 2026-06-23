@@ -2,7 +2,7 @@
 # ⚠️  DEPRECATED / LEGACY
 # This script deploys to Cloudflare Pages and is NOT the current production deploy path.
 # Current source of truth:
-#   - CI/CD: .woodpecker/deploy.yml
+#   - CI/CD: .github/workflows/deploy.yml
 #   - Manual deploy: npm run cf:deploy
 # Kept for historical/reference purposes only.
 set -e
