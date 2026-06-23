@@ -101,6 +101,8 @@ export async function executeBacktest(input: BacktestInput) {
     smaFast: finalSmaFast,
     smaSlow: finalSmaSlow,
     maxPositionPct: finalMaxPositionPct,
+    symbol: finalSymbol,
+    riskProfile,
   }, externalSignals);
 
   // Optional Monte Carlo
