@@ -19,6 +19,13 @@ import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
 import { getUsdtToNokRate, getUsdtToNokRateAsync } from "./currency";
+import {
+  resolveStrategy,
+  type Candle,
+  type StrategySignal,
+  type StrategyInput,
+  type MinimalSession,
+} from "@/lib/trading/strategies";
 
 // ============================================================================
 // TYPES
@@ -167,6 +174,47 @@ export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
   },
 };
 
+// Mapping fra risk profile til shared strategy registry
+const RISK_PROFILE_STRATEGY_CONFIG: Record<
+  RiskProfile,
+  { key: string; params: Record<string, unknown> }
+> = {
+  konservativ: {
+    key: "dca",
+    params: {
+      fast_period: 30,
+      slow_period: 100,
+      position_size: 0.5,
+      interval_minutes: 60 * 24,
+      profit_target_pct: 25,
+      stop_loss_pct: -10,
+      use_trailing_stop: true,
+    },
+  },
+  balansert: {
+    key: "trend_follow",
+    params: {
+      fast_period: 20,
+      slow_period: 50,
+      position_size: 1.0,
+      use_adx_filter: true,
+      adx_threshold: 25,
+      use_trailing_stop: true,
+    },
+  },
+  aggressiv: {
+    key: "trend_follow",
+    params: {
+      fast_period: 10,
+      slow_period: 30,
+      position_size: 1.0,
+      use_adx_filter: true,
+      adx_threshold: 25,
+      use_trailing_stop: true,
+    },
+  },
+};
+
 // Mapping fra gammel strategi-ID til risk profile
 export function strategyIdToRiskProfile(strategyId: StrategyId): RiskProfile {
   switch (strategyId) {
@@ -180,19 +228,6 @@ export function strategyIdToRiskProfile(strategyId: StrategyId): RiskProfile {
 // ============================================================================
 // HJELPEFUNKSJONER
 // ============================================================================
-
-function calculateSMA(prices: number[], period: number): number[] {
-  const sma: number[] = [];
-  for (let i = 0; i < prices.length; i++) {
-    if (i < period - 1) {
-      sma.push(NaN);
-    } else {
-      const sum = prices.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
-      sma.push(sum / period);
-    }
-  }
-  return sma;
-}
 
 function calculateVolatility(returns: number[]): number {
   if (returns.length < 2) return 0;
@@ -231,80 +266,173 @@ export async function fetchHistoricalData(
 // BACKTEST-LOGIKK
 // ============================================================================
 
+interface BacktestPosition {
+  entryPrice: number;
+  size: number;
+  entryTime: number;
+  highestPrice: number;
+  partialExitsExecuted: number[];
+  dailyBuysToday: string;
+  dailyBuyCount: number;
+}
+
 /**
- * Kjør backtest med SMA crossover strategi
+ * Kjør backtest via shared strategy registry.
+ *
+ * Bruker resolveStrategy() slik at backtest-signalene er identiske med
+ * live/paper trading (single source of truth).
  */
 export function runBacktest(
   candles: OHLCV[],
   config: StrategyConfig,
   initialCapitalUSD: number
 ): Omit<BacktestResult, 'startValueNOK' | 'endValueNOK' | 'usdNokRate' | 'alpha'> {
-  const closes = candles.map(d => d.close);
-  const smaFast = calculateSMA(closes, config.smaFast);
-  const smaSlow = calculateSMA(closes, config.smaSlow);
-  
+  const riskProfile = strategyIdToRiskProfile(config.id);
+  const engineConfig = RISK_PROFILE_STRATEGY_CONFIG[riskProfile];
+  const strategy = resolveStrategy(engineConfig.key);
+  if (!strategy) {
+    throw new Error(`Strategy engine "${engineConfig.key}" not found for risk profile "${riskProfile}"`);
+  }
+
+  const mappedCandles: Candle[] = candles.map((d) => ({
+    time: d.timestamp,
+    open: d.open,
+    high: d.high,
+    low: d.low,
+    close: d.close,
+    volume: d.volume,
+  }));
+
+  const closes = candles.map((d) => d.close);
   const trades: BacktestTrade[] = [];
   const equityCurve: Array<{ timestamp: number; equity: number }> = [];
-  
+
   let capital = initialCapitalUSD;
   let maxEquity = initialCapitalUSD;
   let maxDrawdown = 0;
-  let position: { entryPrice: number; size: number; entryTime: number } | null = null;
-  
-  // Start fra der begge SMA-er er tilgjengelige
+  let position: BacktestPosition | null = null;
+
+  // Start fra der begge MA-er er tilgjengelige (samme som tidligere SMA-logikk)
   const startIndex = config.smaSlow;
-  
+
   for (let i = startIndex; i < candles.length; i++) {
     const candle = candles[i];
-    const prevFast = smaFast[i - 1];
-    const prevSlow = smaSlow[i - 1];
-    const currFast = smaFast[i];
-    const currSlow = smaSlow[i];
-    
-    // Golden cross - kjøp
-    if (!position && prevFast <= prevSlow && currFast > currSlow) {
-      const positionCapital = capital * config.maxPositionPct;
+    const candlesUpToNow = mappedCandles.slice(0, i + 1);
+
+    const session: MinimalSession = {
+      open_position: position
+        ? {
+            side: "long",
+            quantity: position.size,
+            entry_price: position.entryPrice,
+            entry_time: new Date(position.entryTime).toISOString(),
+            highest_price: position.highestPrice,
+            partial_exits_executed: position.partialExitsExecuted,
+          }
+        : null,
+      last_tick_at:
+        i > 0 ? new Date(candles[i - 1].timestamp).toISOString() : null,
+      strategy_config: {
+        daily_buys_today: position?.dailyBuysToday ?? "",
+        daily_buy_count: position?.dailyBuyCount ?? 0,
+      },
+    };
+
+    const strategyConfig: Record<string, unknown> = {
+      ...engineConfig.params,
+      fast_period: config.smaFast,
+      slow_period: config.smaSlow,
+    };
+
+    const signal: StrategySignal = strategy.evaluate({
+      candles: candlesUpToNow,
+      session,
+      config: strategyConfig,
+      currentTime: candle.timestamp,
+    });
+
+    // Oppdater highest price for trailing stop
+    if (position && candle.close > position.highestPrice) {
+      position.highestPrice = candle.close;
+    }
+
+    if (signal.action === "buy" && !position) {
+      const targetSizePct = Math.min(
+        signal.positionSize ?? config.maxPositionPct,
+        config.maxPositionPct,
+      );
+      const positionCapital = capital * targetSizePct;
       const fee = positionCapital * config.feeRate;
-      const positionSize = (positionCapital - fee) / candle.close;
-      
+      const positionSizeQty = (positionCapital - fee) / candle.close;
+
+      const today = new Date(candle.timestamp).toISOString().split("T")[0];
+
       position = {
         entryPrice: candle.close,
-        size: positionSize,
+        size: positionSizeQty,
         entryTime: candle.timestamp,
+        highestPrice: candle.close,
+        partialExitsExecuted: [],
+        dailyBuysToday: today,
+        dailyBuyCount: 1,
       };
       capital = capital - positionCapital;
-    }
-    
-    // Death cross - selg
-    else if (position && prevFast >= prevSlow && currFast < currSlow) {
-      const exitValue = position.size * candle.close;
+    } else if (signal.action === "sell" && position) {
+      let qtyToSell: number;
+      if (signal.quantity !== undefined) {
+        // Absolute quantity sell (e.g. DCA partial take-profits)
+        qtyToSell = Math.min(signal.quantity, position.size);
+      } else {
+        const signalSize = signal.positionSize ?? 1.0;
+        // positionSize er en brøk av total kapital; konverter til brøk av posisjonen
+        const positionValueRatio =
+          (position.size * position.entryPrice) / capital || 1;
+        const sellFraction = Math.min(signalSize / positionValueRatio, 1);
+        qtyToSell = position.size * sellFraction;
+      }
+      const remainingSize = position.size - qtyToSell;
+
+      const exitValue = qtyToSell * candle.close;
       const fee = exitValue * config.feeRate;
-      const pnl = exitValue - fee - (position.size * position.entryPrice);
-      const pnlPct = (pnl / (position.size * position.entryPrice)) * 100;
-      
+      const costBasis = qtyToSell * position.entryPrice;
+      const pnl = exitValue - fee - costBasis;
+      const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
+
       trades.push({
         entryTime: position.entryTime,
         exitTime: candle.timestamp,
         entryPrice: position.entryPrice,
         exitPrice: candle.close,
         side: 'LONG',
-        size: position.size,
+        size: qtyToSell,
         pnl,
         pnlPct,
-        fee: position.size * position.entryPrice * config.feeRate + fee,
+        fee: costBasis * config.feeRate + fee,
       });
-      
-      capital = exitValue - fee;
-      position = null;
+
+      capital = capital + exitValue - fee;
+
+      if (remainingSize > 1e-12) {
+        position.size = remainingSize;
+        const target = signal.indicators?.target as number | undefined;
+        if (target !== undefined) {
+          position.partialExitsExecuted = [
+            ...position.partialExitsExecuted,
+            target,
+          ];
+        }
+      } else {
+        position = null;
+      }
     }
-    
+
     // Beregn daglig equity
-    const currentEquity = position 
-      ? capital + (position.size * candle.close)
+    const currentEquity = position
+      ? capital + position.size * candle.close
       : capital;
-    
+
     equityCurve.push({ timestamp: candle.timestamp, equity: currentEquity });
-    
+
     // Track drawdown
     if (currentEquity > maxEquity) {
       maxEquity = currentEquity;
@@ -314,14 +442,15 @@ export function runBacktest(
       maxDrawdown = drawdown;
     }
   }
-  
+
   // Lukk åpen posisjon ved slutten
   if (position && candles.length > 0) {
     const lastCandle = candles[candles.length - 1];
     const exitValue = position.size * lastCandle.close;
     const fee = exitValue * config.feeRate;
-    const pnl = exitValue - fee - (position.size * position.entryPrice);
-    
+    const costBasis = position.size * position.entryPrice;
+    const pnl = exitValue - fee - costBasis;
+
     trades.push({
       entryTime: position.entryTime,
       exitTime: lastCandle.timestamp,
@@ -330,76 +459,98 @@ export function runBacktest(
       side: 'LONG',
       size: position.size,
       pnl,
-      pnlPct: (pnl / (position.size * position.entryPrice)) * 100,
-      fee: position.size * position.entryPrice * config.feeRate + fee,
+      pnlPct: costBasis > 0 ? (pnl / costBasis) * 100 : 0,
+      fee: costBasis * config.feeRate + fee,
     });
-    
-    capital = exitValue - fee;
+
+    capital = capital + exitValue - fee;
   }
-  
+
   // Beregn metrics
   const finalEquity = capital;
-  const totalReturnPct = ((finalEquity - initialCapitalUSD) / initialCapitalUSD) * 100;
-  const buyHoldReturn = ((closes[closes.length - 1] - closes[startIndex]) / closes[startIndex]) * 100;
-  
-  const winningTrades = trades.filter(t => t.pnl > 0);
-  const losingTrades = trades.filter(t => t.pnl <= 0);
-  
+  const totalReturnPct =
+    ((finalEquity - initialCapitalUSD) / initialCapitalUSD) * 100;
+  const buyHoldReturn =
+    ((closes[closes.length - 1] - closes[startIndex]) / closes[startIndex]) *
+    100;
+
+  const winningTrades = trades.filter((t) => t.pnl > 0);
+  const losingTrades = trades.filter((t) => t.pnl <= 0);
+
   const totalProfit = winningTrades.reduce((sum, t) => sum + t.pnl, 0);
-  const totalLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0));
-  
-  // Beregn daglige returns for Sharpe og volatilitet
-  const dailyReturns = equityCurve.map((e, i) => 
-    i === 0 ? 0 : (e.equity - equityCurve[i - 1].equity) / equityCurve[i - 1].equity
-  ).slice(1);
-  
-  const avgReturn = dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
-  const stdReturn = Math.sqrt(
-    dailyReturns.reduce((sq, n) => sq + Math.pow(n - avgReturn, 2), 0) / dailyReturns.length
+  const totalLoss = Math.abs(
+    losingTrades.reduce((sum, t) => sum + t.pnl, 0),
   );
-  
+
+  // Beregn daglige returns for Sharpe og volatilitet
+  const dailyReturns = equityCurve
+    .map((e, i) =>
+      i === 0
+        ? 0
+        : (e.equity - equityCurve[i - 1].equity) / equityCurve[i - 1].equity,
+    )
+    .slice(1);
+
+  const avgReturn =
+    dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
+  const stdReturn = Math.sqrt(
+    dailyReturns.reduce((sq, n) => sq + Math.pow(n - avgReturn, 2), 0) /
+      dailyReturns.length,
+  );
+
   // Sharpe ratio (antar 3% risk-free rate)
   const riskFreeRateDaily = 0.03 / 365;
-  const sharpeRatio = stdReturn === 0 ? 0 : 
-    ((avgReturn - riskFreeRateDaily) / stdReturn) * Math.sqrt(365);
-  
+  const sharpeRatio =
+    stdReturn === 0
+      ? 0
+      : ((avgReturn - riskFreeRateDaily) / stdReturn) * Math.sqrt(365);
+
   // Beregn scenarier basert på faktisk volatilitet
-  // Optimistisk = bedre avkastning (mindre negativ eller mer positiv)
-  // Pessimistisk = dårligere avkastning (mer negativ eller mindre positiv)
   const volatility = calculateVolatility(dailyReturns);
   const volAdjustment = volatility * 0.5;
-  
+
   const scenarios: BacktestScenarios = {
-    optimistic: totalReturnPct + volAdjustment * 100, // Bedre resultat
+    optimistic: totalReturnPct + volAdjustment * 100,
     expected: totalReturnPct,
-    pessimistic: totalReturnPct - volAdjustment * 100, // Dårligere resultat
+    pessimistic: totalReturnPct - volAdjustment * 100,
   };
-  
+
   const metrics: BacktestMetrics = {
     totalReturnPct,
     maxDrawdownPct: -maxDrawdown * 100,
     sharpeRatio,
-    winRate: trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0,
+    winRate:
+      trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0,
     totalTrades: trades.length,
-    profitFactor: totalLoss === 0 ? (totalProfit > 0 ? Infinity : 0) : totalProfit / totalLoss,
-    bestTradePct: trades.length > 0 ? Math.max(...trades.map(t => t.pnlPct)) : 0,
-    worstTradePct: trades.length > 0 ? Math.min(...trades.map(t => t.pnlPct)) : 0,
-    avgTradeDurationDays: trades.length > 0
-      ? trades.reduce((sum, t) => sum + (t.exitTime - t.entryTime) / (1000 * 60 * 60 * 24), 0) / trades.length
-      : 0,
+    profitFactor:
+      totalLoss === 0
+        ? totalProfit > 0
+          ? Infinity
+          : 0
+        : totalProfit / totalLoss,
+    bestTradePct: trades.length > 0 ? Math.max(...trades.map((t) => t.pnlPct)) : 0,
+    worstTradePct: trades.length > 0 ? Math.min(...trades.map((t) => t.pnlPct)) : 0,
+    avgTradeDurationDays:
+      trades.length > 0
+        ? trades.reduce(
+            (sum, t) =>
+              sum + (t.exitTime - t.entryTime) / (1000 * 60 * 60 * 24),
+            0,
+          ) / trades.length
+        : 0,
     volatility: volatility * 100,
-    // Advanced risk metrics
-    riskMetrics: dailyReturns.length >= 2
-      ? calculateAllRiskMetrics(
-          dailyReturns,
-          trades,
-          equityCurve.map(e => e.equity),
-          totalReturnPct / 100,
-          maxDrawdown,
-        )
-      : undefined,
+    riskMetrics:
+      dailyReturns.length >= 2
+        ? calculateAllRiskMetrics(
+            dailyReturns,
+            trades,
+            equityCurve.map((e) => e.equity),
+            totalReturnPct / 100,
+            maxDrawdown,
+          )
+        : undefined,
   };
-  
+
   return {
     trades,
     equityCurve,

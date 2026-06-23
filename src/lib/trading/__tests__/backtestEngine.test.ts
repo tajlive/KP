@@ -4,7 +4,6 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-  calculateSMA,
   runBacktest,
   strategyIdToRiskProfile,
   STRATEGY_CONFIGS,
@@ -156,6 +155,49 @@ describe('Backtest Engine', () => {
       // Med sterke trender bør det være minst én trade
       expect(result.metrics.totalTrades).toBeGreaterThanOrEqual(0); // Kan være 0 hvis ingen crossovers
       expect(result.equityCurve.length).toBeGreaterThan(0);
+    });
+
+    it('should execute DCA partial sells using absolute quantity', () => {
+      // Konservativ profil bruker DCA med delvis take-profit.
+      const candles: OHLCV[] = [];
+      const basePrice = 100;
+      const startTime = Date.now();
+
+      for (let i = 0; i < 150; i++) {
+        // Hold prisen flat til SMA-er er tilgjengelige, kjøp ved basePrice,
+        // og trigger første delvise TP ved +5 %.
+        const close = i <= 109 ? basePrice : basePrice * 1.05;
+        candles.push({
+          timestamp: startTime + i * 24 * 60 * 60 * 1000,
+          open: close,
+          high: close * 1.001,
+          low: close * 0.999,
+          close,
+          volume: 1000000,
+        });
+      }
+
+      const config = STRATEGY_CONFIGS.konservativ;
+      const initialCapital = 10000;
+      const result = runBacktest(candles, config, initialCapital);
+
+      // Det skal finnes minst én handel: delvis take-profit.
+      expect(result.trades.length).toBeGreaterThanOrEqual(1);
+
+      // Finn første salgshandel (delvis TP).
+      const firstSell = result.trades[0];
+      expect(firstSell.exitPrice).toBe(basePrice * 1.05);
+
+      // Kjøp bruker 50 % av kapital ved basePrice.
+      const buyCapital = initialCapital * 0.5;
+      const buyFee = buyCapital * config.feeRate;
+      const boughtQty = (buyCapital - buyFee) / basePrice;
+      const expectedPartialQty = boughtQty * 0.25; // Første TP-nivå selger 25 %
+
+      // Salgsmengden skal tilsvare omtrent 25 % av kjøpt kvantum,
+      // ikke 25 % av total kapital (som ville vært et mye større tall).
+      expect(firstSell.size).toBeCloseTo(expectedPartialQty, 4);
+      expect(firstSell.size).toBeLessThan(boughtQty);
     });
   });
 });
