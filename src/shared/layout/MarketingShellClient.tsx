@@ -3,6 +3,7 @@
 import { ConditionalFooter } from "@/features/landing/ConditionalFooter";
 import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
 import type { NavigationData } from "@/shared/layout/NavigationServer";
+import { isAppShellPath } from "@/shared/layout/marketing-shell-paths";
 import { isGuestAuthRoute, parseLocalePath } from "@/middleware/locale-path";
 import { usePathname, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
@@ -11,36 +12,7 @@ import { type ReactNode } from "react";
  * Ruter med egen app-chrome (sidebar, fullskjerm trading, checkout, osv.)
  * skal ikke ha MarketingNavigation + ConditionalFooter — det ga dobbelt header
  * og «rot» (f.eks. /copy-trading under lys marketing-bar + mørk dashboard).
- *
- * MUST stay in sync with APP_SHELL_PATHS in src/app/[locale]/layout.tsx.
  */
-const STRIPPED_PATHS_HIDE_MARKETING: readonly string[] = [
-  "/dashboard",
-  "/copy-trading",
-  "/marketplace",
-  "/admin",
-  "/checkout",
-  "/onboarding",
-  "/akademi",
-  "/konto",
-  "/handel",
-  "/handelshistorikk",
-  "/varsler",
-  "/leagues",
-  "/profile",
-  "/quiz",
-  "/innstillinger",
-  "/callback",
-  "/paper-trading",
-  "/live-trading",
-  "/auto-trading",
-];
-
-function shouldHideMarketingShell(strippedPath: string): boolean {
-  return STRIPPED_PATHS_HIDE_MARKETING.some(
-    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
-  );
-}
 
 /** `next` / `redirect` etter innlogging — kun path, støtter /en/... og full URL */
 function strippedPathFromPostAuthTarget(raw: string | null): string | null {
@@ -94,12 +66,12 @@ export function LocaleMarketingShellInner({
   const searchParams = useSearchParams();
   const { strippedPath } = parseLocalePath(pathname);
 
-  let hideMarketing = shouldHideMarketingShell(strippedPath);
+  let hideMarketing = isAppShellPath(strippedPath);
 
   if (!hideMarketing && isGuestAuthRoute(strippedPath)) {
     const targetRaw = searchParams.get("next") ?? searchParams.get("redirect");
     const targetStripped = strippedPathFromPostAuthTarget(targetRaw);
-    if (targetStripped && shouldHideMarketingShell(targetStripped)) {
+    if (targetStripped && isAppShellPath(targetStripped)) {
       hideMarketing = true;
     }
   }
@@ -121,7 +93,7 @@ export function LocaleMarketingShellFallback({
 }) {
   const pathname = usePathname() ?? "/";
   const { strippedPath } = parseLocalePath(pathname);
-  const hideMarketing = shouldHideMarketingShell(strippedPath);
+  const hideMarketing = isAppShellPath(strippedPath);
 
   return (
     <MarketingShellLayout hideMarketing={hideMarketing} navData={navData}>

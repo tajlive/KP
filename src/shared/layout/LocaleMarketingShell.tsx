@@ -3,7 +3,7 @@ import type { NavigationData } from "@/shared/layout/NavigationServer";
 import {
   LocaleMarketingShellFallback,
   LocaleMarketingShellInner,
-} from "@/shared/layout/MarketingShellInner";
+} from "@/shared/layout/MarketingShellClient";
 
 export function LocaleMarketingShell({
   navData,
