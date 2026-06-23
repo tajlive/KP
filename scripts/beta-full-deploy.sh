@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# ⚠️  DEPRECATED / LEGACY
+# This full-deploy script targets Cloudflare Pages/Coolify and is NOT the current
+# production deploy path.
+# Current source of truth:
+#   - CI/CD: .woodpecker/deploy.yml
+#   - Manual deploy: npm run cf:deploy
+# Kept for historical/reference purposes only.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

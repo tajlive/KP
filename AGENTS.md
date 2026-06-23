@@ -4,8 +4,8 @@
 **Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Cloudflare (DNS/CDN/Workers), Wrangler, Domeneshop  
 **Status:** Production (www.klarpakke.no)  
 **Node:** 24.x (se `.nvmrc`)  
-**Hosting:** Cloudflare Workers (Wrangler) + Cloudflare DNS/CDN + Domeneshop domene
-**CI/CD:** Wrangler CLI / Cloudflare Pages (ikke Woodpecker/Coolify)
+**Hosting:** Cloudflare Workers (OpenNext.js + Wrangler) + Cloudflare DNS/CDN + Domeneshop domene
+**CI/CD:** Woodpecker (`.woodpecker/deploy.yml`) → `npm run cf:build && npx wrangler deploy`
 **Error Tracking:** Selv-hostet GlitchTip
 
 > **Sist oppdatert:** 2026-06-21 — Produksjon: Domeneshop → Cloudflare DNS/proxy → Cloudflare Workers (Wrangler) + Supabase.
@@ -27,11 +27,11 @@ npm run oauth:check
 # Test & bygg
 npm run test:unit && npm run build
 
-# Deploy til Cloudflare Pages (via Wrangler)
-node scripts/cf-deploy.mjs
-# eller direkte: npx wrangler pages deploy .vercel/output/static --project-name=<PROJECT>
+# Deploy til Cloudflare Workers (manuelt)
+npm run cf:deploy
+# eller direkte: npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
 
-# Commit & push (CI/CD kjører via Wrangler / Cloudflare Pages)
+# Commit & push (CI/CD kjører via Woodpecker .woodpecker/deploy.yml)
 git add -A && git commit -m "type: beskrivelse" && git push origin main
 ```
 
@@ -47,7 +47,7 @@ kimi test            # npm run test:unit
 kimi test:e2e        # npm run test:e2e:critical:chromium
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
-kimi deploy          # node scripts/cf-deploy.mjs
+kimi deploy          # npm run cf:deploy
 
 # Pipeline (NYTT)
 kimi ci              # npm run lint:gate && npm run test:unit
@@ -66,20 +66,20 @@ kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 
 ---
 
-## 🚀 Hosting — Domeneshop + Cloudflare + Wrangler (oppdatert)
+## 🚀 Hosting — Domeneshop + Cloudflare + Wrangler
 
-> **Status:** Produksjon kjører på Cloudflare Workers via Wrangler.
+> **Status:** Produksjon kjører på **Cloudflare Workers** via Wrangler/OpenNext.js.
 > **Domene:** Domeneshop (klarpakke.no / www.klarpakke.no)  
 > **DNS/CDN/Proxy:** Cloudflare  
-> **App-hosting:** Cloudflare Workers (OpenNext / Wrangler)  
+> **App-hosting:** Cloudflare Workers (OpenNext.js / Wrangler)  
 > **Database/Auth:** Supabase  
 > **URL:** https://www.klarpakke.no  
-> **CI/CD:** Wrangler CLI / Cloudflare Pages  
+> **CI/CD:** Woodpecker (`.woodpecker/deploy.yml`)  
 > **Error Tracking:** Selv-hostet GlitchTip
 
 ### Arkitektur
 ```
-User → Domeneshop domene → Cloudflare DNS → Cloudflare CDN/Proxy → Cloudflare Workers (Wrangler)
+User → Domeneshop domene → Cloudflare DNS → Cloudflare Workers (Wrangler / OpenNext.js)
                                        ↓
                               DDoS + SSL + Caching
                                        ↓
@@ -87,16 +87,16 @@ User → Domeneshop domene → Cloudflare DNS → Cloudflare CDN/Proxy → Cloud
 ```
 
 ### Setup (én gang)
-> **Merk:** Eksakt provisionerings-steg avhenger av Cloudflare-konto og Pages-prosjekt. Se `docs/SELF-HOSTED-SETUP.md` for detaljer (hvis oppdatert), eller følg Wrangler-dokumentasjonen.
+> **Merk:** Eksakt provisionerings-steg avhenger av Cloudflare-konto og Workers-prosjekt. Se `docs/SELF-HOSTED-SETUP.md` for detaljer (hvis oppdatert), eller følg Wrangler-dokumentasjonen.
 
 ```bash
 # 1. Logg inn i Cloudflare via Wrangler
 npx wrangler login
 
-# 2. Konfigurer Pages-prosjekt (f.eks. klarpakke) i Cloudflare Dashboard
+# 2. Konfigurer Workers-prosjektet (wrangler.jsonc) i Cloudflare Dashboard
 #    - Koble til Git-repo: https://github.com/tajlive/KP
-#    - Build-kommando: npm run build   (eller cf:build / next-on-pages)
-#    - Output-directory: .vercel/output/static   (eller out)
+#    - Build-kommando: npm run cf:build
+#    - Deploy-kommando: npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}
 #    - Env-variabler fra .env.local / Wrangler secrets
 
 # 3. Konfigurer Domeneshop-domene til Cloudflare navneservere
@@ -109,21 +109,33 @@ npx wrangler login
 
 ### Deploy-kommandoer
 ```bash
-node scripts/cf-deploy.mjs              # Full pipeline: bygg + custom Worker + deploy
-npx wrangler pages deploy .vercel/output/static --project-name=<PROJECT>   # Direkte deploy
-npm run build                           # Lokal bygg
-npm run lint:gate                       # Lint-gate (kjøres i CI)
-npm run type-check                      # Type-check (kjøres i CI)
+# Manuell deploy til Cloudflare Workers
+npm run cf:deploy
+# Ekvivalent med minifisering + versjon:
+npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
+
+# Lokal bygg / verifisering
+npm run build
+npm run lint:gate
+npm run type-check
 ```
+
+> **Automatisk deploy:** Når `main` pushes, kjører Woodpecker (`.woodpecker/deploy.yml`):
+> ```bash
+> npm run cf:build
+> npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}
+> ```
+>
+> **Legacy:** `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify og er ikke lenger aktiv kilde til sannhet.
 
 ### DNS (Cloudflare)
 | Record | Type | Target | Proxy |
 |--------|------|--------|-------|
-| `www.klarpakke.no` | CNAME | `<Pages/Workers target>` | ✅ |
-| `klarpakke.no` | CNAME | `<Pages/Workers target>` | ✅ |
+| `www.klarpakke.no` | CNAME | `<Cloudflare Workers target>` | ✅ |
+| `klarpakke.no` | CNAME | `<Cloudflare Workers target>` | ✅ |
 | `glitchtip.klarpakke.no` | A/AAAA/CNAME | `<GlitchTip-host>` | ✅ |
 
-> **Merk:** `ci.klarpakke.no` er ikke lenger i bruk. Cloudflare Pages/Workers håndterer CI/CD og hosting.
+> **Merk:** `ci.klarpakke.no` er ikke lenger i bruk. Woodpecker håndterer CI/CD; Cloudflare Workers håndterer hosting.
 
 ---
 
