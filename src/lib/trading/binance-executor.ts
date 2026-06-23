@@ -14,7 +14,6 @@
  * - Rate limiting is respected
  */
 
-import crypto from 'crypto';
 import type {
   OrderExecutor,
   OrderParams,
@@ -26,6 +25,7 @@ import type {
 import { calculateFee } from './order-executor';
 import { createBinanceMarketDataProvider } from './canonical/market-data';
 import { binanceCircuitBreaker, CircuitBreakerOpenError } from './circuit-breaker';
+import { signBinanceQuery } from './binance-signer';
 
 const marketDataProvider = createBinanceMarketDataProvider();
 
@@ -68,11 +68,8 @@ export class BinanceExecutor implements OrderExecutor {
   /**
    * Generate HMAC-SHA256 signature for Binance API
    */
-  private generateSignature(queryString: string): string {
-    return crypto
-      .createHmac('sha256', this.keys.apiSecret)
-      .update(queryString)
-      .digest('hex');
+  private async generateSignature(queryString: string): Promise<string> {
+    return signBinanceQuery(this.keys.apiSecret, queryString);
   }
 
   /**
@@ -92,7 +89,7 @@ export class BinanceExecutor implements OrderExecutor {
       .join('&');
 
     // Sign request
-    const signature = this.generateSignature(queryString);
+    const signature = await this.generateSignature(queryString);
     const url = `${this.baseUrl}${endpoint}?${queryString}&signature=${signature}`;
 
     // Make request
