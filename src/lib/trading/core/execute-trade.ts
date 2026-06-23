@@ -272,6 +272,8 @@ async function executeTradeWithLock(
     // ========================================================================
     const rate = await getUsdtToNokRateAsync(supabase);
 
+    const tradeCurrency: "USDT" | "NOK" = request.mode === "paper" ? "NOK" : "USDT";
+
     let orderValueUsdt: number;
     if (request.orderType === "market") {
       const estimatedFill = computeFill({
@@ -282,6 +284,7 @@ async function executeTradeWithLock(
         feeRate: ESTIMATED_FILL_PARAMS.feeRate,
         marketSlippageRate: ESTIMATED_FILL_PARAMS.marketSlippageRate,
         minOrderValue: ESTIMATED_FILL_PARAMS.minOrderValueUsdt,
+        quoteCurrency: "USDT",
       });
       if (!estimatedFill.success) {
         const rejectionResult: RiskValidationResult = {
@@ -388,6 +391,7 @@ async function executeTradeWithLock(
                 price: lot.entryPrice,
                 fee: 0,
                 timestamp: lot.timestamp,
+                currency: tradeCurrency,
               }))
             : [
                 {
@@ -397,6 +401,7 @@ async function executeTradeWithLock(
                   price: openPosition.entry_price ?? 0,
                   fee: 0,
                   timestamp: openPosition.entry_time,
+                  currency: tradeCurrency,
                 },
               ];
 
@@ -407,6 +412,7 @@ async function executeTradeWithLock(
           price: sellPrice,
           fee: sellFee,
           timestamp: execResult.timestamp.toISOString(),
+          currency: tradeCurrency,
         };
 
         const pnlResult = calculatePnlFromTrades([...priorBuys, currentSell]);

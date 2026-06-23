@@ -66,6 +66,7 @@ export class PaperExecutor implements OrderExecutor {
         marketSlippageRate: PAPER_PARAMS.marketSlippageRate,
         minOrderValue: PAPER_PARAMS.minOrderValueUsdt,
         availableCapital: params.side.toLowerCase() === "buy" ? availableUsdt : undefined,
+        quoteCurrency: "USDT",
       });
 
       if (!fill.success) {

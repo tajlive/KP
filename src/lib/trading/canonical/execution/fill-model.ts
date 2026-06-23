@@ -6,6 +6,8 @@
  * settes av execution-adapteren; denne modellen er ren matematikk.
  */
 
+export type QuoteCurrency = "USDT" | "NOK";
+
 export interface FillModelParams {
   /** Ordreside */
   side: "buy" | "sell";
@@ -25,6 +27,8 @@ export interface FillModelParams {
   minOrderValue: number;
   /** Tilgjengelig kapital (for buy-ordre) */
   availableCapital?: number;
+  /** Quote-valuta for priser og returnerte verdier */
+  quoteCurrency: QuoteCurrency;
 }
 
 export interface FillModelResult {
@@ -34,8 +38,11 @@ export interface FillModelResult {
   fee: number;
   slippagePct: number;
   totalCost: number;
+  quoteCurrency: QuoteCurrency;
   error?: string;
 }
+
+const VALID_CURRENCIES: readonly QuoteCurrency[] = ["USDT", "NOK"];
 
 /**
  * Beregner fill basert på kanoniske regler.
@@ -58,7 +65,21 @@ export function computeFill(params: FillModelParams): FillModelResult {
     marketSlippageRate,
     minOrderValue,
     availableCapital,
+    quoteCurrency,
   } = params;
+
+  if (!VALID_CURRENCIES.includes(quoteCurrency)) {
+    return {
+      success: false,
+      executedPrice: 0,
+      executedQuantity: 0,
+      fee: 0,
+      slippagePct: 0,
+      totalCost: 0,
+      quoteCurrency: quoteCurrency ?? "USDT",
+      error: `Invalid or missing quote currency: ${String(quoteCurrency)}`,
+    };
+  }
 
   if (quantity <= 0 || !Number.isFinite(quantity)) {
     return {
@@ -68,6 +89,7 @@ export function computeFill(params: FillModelParams): FillModelResult {
       fee: 0,
       slippagePct: 0,
       totalCost: 0,
+      quoteCurrency,
       error: "Invalid quantity",
     };
   }
@@ -80,6 +102,7 @@ export function computeFill(params: FillModelParams): FillModelResult {
       fee: 0,
       slippagePct: 0,
       totalCost: 0,
+      quoteCurrency,
       error: "Invalid market price",
     };
   }
@@ -96,6 +119,7 @@ export function computeFill(params: FillModelParams): FillModelResult {
         fee: 0,
         slippagePct: 0,
         totalCost: 0,
+        quoteCurrency,
         error: "Limit price required for limit order",
       };
     }
@@ -114,6 +138,7 @@ export function computeFill(params: FillModelParams): FillModelResult {
         fee: 0,
         slippagePct: 0,
         totalCost: 0,
+        quoteCurrency,
         error: "Limit price not reachable",
       };
     }
@@ -136,6 +161,7 @@ export function computeFill(params: FillModelParams): FillModelResult {
       fee: 0,
       slippagePct: 0,
       totalCost: 0,
+      quoteCurrency,
       error: `Order value ${orderValue.toFixed(2)} below minimum ${minOrderValue.toFixed(2)}`,
     };
   }
@@ -151,6 +177,7 @@ export function computeFill(params: FillModelParams): FillModelResult {
       fee: 0,
       slippagePct: 0,
       totalCost: 0,
+      quoteCurrency,
       error: `Insufficient capital: required ${totalCost.toFixed(2)}, available ${availableCapital.toFixed(2)}`,
     };
   }
@@ -162,5 +189,6 @@ export function computeFill(params: FillModelParams): FillModelResult {
     fee,
     slippagePct,
     totalCost,
+    quoteCurrency,
   };
 }
