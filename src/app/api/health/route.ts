@@ -266,6 +266,7 @@ export async function GET() {
     status,
     timestamp: new Date().toISOString(),
     version:
+      process.env.APP_VERSION?.slice(0, 7) ||
       process.env.SOURCE_COMMIT?.slice(0, 7) ||
       process.env.COOLIFY_COMMIT_SHA?.slice(0, 7) ||
       process.env.GITHUB_SHA?.slice(0, 7) ||
