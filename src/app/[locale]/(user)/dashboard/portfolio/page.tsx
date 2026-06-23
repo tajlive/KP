@@ -9,7 +9,7 @@ import { SmartPortfolioDashboard } from "@/features/portfolio";
 import { SessionCards } from "@/features/portfolio/SessionCards";
 import type { SessionCardData } from "@/features/portfolio/SessionCards";
 import { PortfolioHealthHeader } from "@/features/portfolio";
-import { RestartTradingButton } from "@/features/dashboard/RestartTradingButton";
+import { RestartTradingButton } from "@/features/trading";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { formatNOK } from "@/lib/format/currency";

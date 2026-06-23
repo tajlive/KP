@@ -7,7 +7,7 @@ import { ChevronDown, BarChart3 } from "lucide-react";
 import { EquityCurveChart } from "@/features/portfolio/EquityCurveChart";
 import { WinLossHeatmap } from "@/features/portfolio/WinLossHeatmap";
 import { AssetAllocationChart } from "@/features/portfolio/AssetAllocationChart";
-import { PositionSizingCalculator } from "./PositionSizingCalculator";
+import { PositionSizingCalculator } from "@/features/trading";
 import { ExplainStatButton } from "./ExplainStatButton";
 
 interface TradingAnalytics {

@@ -18,7 +18,6 @@ export { WinLossHeatmap } from "@/features/portfolio/WinLossHeatmap";
 export { AssetAllocationChart } from "@/features/portfolio/AssetAllocationChart";
 export { PersonalizedGreeting } from "./PersonalizedGreeting";
 export { ExplainStatButton } from "./ExplainStatButton";
-export { PositionSizingCalculator } from "./PositionSizingCalculator";
 export { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 
 // Types

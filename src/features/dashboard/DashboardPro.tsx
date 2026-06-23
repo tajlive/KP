@@ -17,7 +17,7 @@ import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
 // Eksisterende komponenter
 import { SimplifiedHero } from "./SimplifiedHero";
 import { SmartActions } from "./SmartActions";
-import { AutoTradingConfigCard } from "./AutoTradingConfigCard";
+import { AutoTradingConfigCard } from "@/features/trading";
 
 // Nye onboarding & retention komponenter
 import { FirstTradeReward } from "./FirstTradeReward";
