@@ -84,4 +84,11 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
       };
     });
   }
+
+  async get24hChange(symbol: string): Promise<number> {
+    const normalized = symbol.toUpperCase();
+    const url = `${BINANCE_API_BASE}/api/v3/ticker/24hr?symbol=${normalized}`;
+    const data = await binanceFetch<{ priceChangePercent: string }>(url, 5000);
+    return parseFloat(data.priceChangePercent);
+  }
 }

@@ -150,4 +150,53 @@ describe("BinanceMarketDataProvider", () => {
       );
     });
   });
+
+  describe("get24hChange", () => {
+    it("returns parsed 24h change percentage", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({ priceChangePercent: "-2.45" }),
+        }),
+      );
+
+      const change = await provider.get24hChange("BTCUSDT");
+      expect(change).toBe(-2.45);
+      expect(fetch).toHaveBeenCalledWith(
+        "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT",
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      );
+    });
+
+    it("uppercases symbol", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({ priceChangePercent: "5.67" }),
+        }),
+      );
+
+      await provider.get24hChange("btcusdt");
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("symbol=BTCUSDT"),
+        expect.anything(),
+      );
+    });
+
+    it("throws on non-ok response", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 500,
+        }),
+      );
+
+      await expect(provider.get24hChange("BTCUSDT")).rejects.toThrow(
+        "Binance API error: 500",
+      );
+    });
+  });
 });

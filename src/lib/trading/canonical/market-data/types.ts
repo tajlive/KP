@@ -49,4 +49,11 @@ export interface MarketDataProvider {
    * @returns Array av Kline
    */
   getKlines(symbol: string, interval: string, limit: number): Promise<Kline[]>;
+
+  /**
+   * Hent 24-timers prisendring for et symbol.
+   * @param symbol - Handelssymbol, f.eks. "BTCUSDT"
+   * @returns 24-timers prosentendring som number
+   */
+  get24hChange(symbol: string): Promise<number>;
 }
