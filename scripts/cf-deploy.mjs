@@ -1,7 +1,19 @@
 #!/usr/bin/env node
 /**
- * Cloudflare Pages Deploy Script
- * 
+ * ⚠️  DEPRECATED / LEGACY — Cloudflare Pages proxy deploy
+ *
+ * This script targets Cloudflare Pages with a custom proxy Worker and is NOT the
+ * current production deploy path. Production is served by a Cloudflare Worker
+ * built with OpenNext.js and deployed via Wrangler.
+ *
+ * Current source of truth:
+ *   - CI/CD: .woodpecker/deploy.yml
+ *   - Manual deploy: npm run cf:deploy
+ *   - Under the hood: npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}
+ *
+ * Kept for historical/reference purposes only.
+ *
+ * Original description:
  * 1. Runs cf:build (pre-build → next-on-pages → post-build)
  * 2. Replaces next-on-pages _worker.js with lightweight proxy Worker
  *    that includes migrated API routes

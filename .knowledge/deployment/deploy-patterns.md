@@ -1,9 +1,10 @@
 # Deployment Knowledge
 
-## Fly.io Deploy Flow
-1. `git push origin main` → GitHub Actions → Fly.io deploy (~3-5 min)
-2. Fly.io bygger Docker image remote (ikke lokalt)
-3. Cloudflare DNS peker til `klarpakke.fly.dev`
+## Cloudflare Workers Deploy Flow
+1. `git push origin main` → Woodpecker CI (`.woodpecker/deploy.yml`) → Cloudflare Workers deploy (~2-5 min)
+2. Woodpecker runs `npm run build` followed by `npm run cf:build`
+3. Wrangler deploys the OpenNext.js Worker bundle: `npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}`
+4. Cloudflare DNS points `klarpakke.no` / `www.klarpakke.no` to the Cloudflare Workers route
 
 ## Pre-commit Gates (i rekkefølge)
 1. **Secrets scan** — sjekker at ingen API-nøkler er staged
@@ -15,16 +16,17 @@
 | Dato | Commit | Hva |
 |------|--------|-----|
 | 2026-05-12 | — | Migrated from Vercel to Fly.io |
+| 2026-06-21 | — | Migrated from Fly.io/Cloudflare Pages to Cloudflare Workers (OpenNext.js + Wrangler) |
 
 ## Rollback
-- `flyctl deploy --image <previous-image>` — rollback til forrige image
-- `scripts/rollback-deployment.sh` — legacy Vercel rollback (arkivert)
+- `npx wrangler rollback --name <worker-name>` — rollback til forrige Workers deployment
+- `scripts/rollback-deployment.sh` — legacy Vercel/Fly.io rollback (arkivert)
 
 ## DNS (Cloudflare)
 | Record | Type | Target | Proxy |
 |--------|------|--------|-------|
-| `www.klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
-| `klarpakke.no` | CNAME | `klarpakke.fly.dev` | ✅ |
+| `www.klarpakke.no` | CNAME | `<Cloudflare Workers target>` | ✅ |
+| `klarpakke.no` | CNAME | `<Cloudflare Workers target>` | ✅ |
 
 ## Cron
 - **Source of truth:** Supabase (IKKE Vercel cron)
