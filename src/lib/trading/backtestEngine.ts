@@ -22,6 +22,19 @@ import { computeFill } from "./canonical/execution/fill-model";
 import { roundToLotSize } from "./canonical/symbols/lot-sizes";
 import { getUsdtToNokRate, getUsdtToNokRateAsync } from "./currency";
 import {
+  createLedger,
+  addLot,
+  sellFIFO,
+  getTotalQuantity,
+  getWeightedEntryPrice,
+  isEmpty,
+  type LedgerState,
+} from "@/lib/trading/position-ledger";
+import {
+  calculatePnlFromTrades,
+  type TradePnlInput,
+} from "@/lib/trading/canonical/pnl/trade-pnl";
+import {
   resolveStrategy,
   type Candle,
   type StrategySignal,
@@ -274,9 +287,7 @@ export async function fetchHistoricalData(
 // ============================================================================
 
 interface BacktestPosition {
-  entryPrice: number;
-  entryFee: number;
-  size: number;
+  /** Timestamp of the first buy that opened the current position (for trade records). */
   entryTime: number;
   highestPrice: number;
   partialExitsExecuted: number[];
@@ -314,10 +325,12 @@ export function runBacktest(
   const closes = candles.map((d) => d.close);
   const trades: BacktestTrade[] = [];
   const equityCurve: Array<{ timestamp: number; equity: number }> = [];
+  const tradePnlInputs: TradePnlInput[] = [];
 
-  let capital = initialCapitalUSD;
+  let cashUSD = initialCapitalUSD;
   let maxEquity = initialCapitalUSD;
   let maxDrawdown = 0;
+  let ledger: LedgerState = createLedger("long");
   let position: BacktestPosition | null = null;
 
   // Start fra der begge MA-er er tilgjengelige (samme som tidligere SMA-logikk)
@@ -326,13 +339,15 @@ export function runBacktest(
   for (let i = startIndex; i < candles.length; i++) {
     const candle = candles[i];
     const candlesUpToNow = mappedCandles.slice(0, i + 1);
+    const positionQty = getTotalQuantity(ledger);
+    const positionEntryPrice = getWeightedEntryPrice(ledger);
 
     const session: MinimalSession = {
-      open_position: position
+      open_position: position && positionQty > 0
         ? {
             side: "long",
-            quantity: position.size,
-            entry_price: position.entryPrice,
+            quantity: positionQty,
+            entry_price: positionEntryPrice,
             entry_time: new Date(position.entryTime).toISOString(),
             highest_price: position.highestPrice,
             partial_exits_executed: position.partialExitsExecuted,
@@ -364,12 +379,12 @@ export function runBacktest(
       position.highestPrice = candle.close;
     }
 
-    if (signal.action === "buy" && !position) {
+    if (signal.action === "buy") {
       const targetSizePct = Math.min(
         signal.positionSize ?? config.maxPositionPct,
         config.maxPositionPct,
       );
-      const desiredCapital = capital * targetSizePct;
+      const desiredCapital = cashUSD * targetSizePct;
       const rawQuantity = (desiredCapital * (1 - FEE_RATE)) / candle.close;
       const roundedQuantity = roundToLotSize(config.symbol, rawQuantity);
 
@@ -381,7 +396,7 @@ export function runBacktest(
         feeRate: FEE_RATE,
         marketSlippageRate: MARKET_SLIPPAGE_RATE,
         minOrderValue: MIN_ORDER_VALUE_USDT,
-        availableCapital: capital,
+        availableCapital: cashUSD,
         quoteCurrency: "USDT",
       });
 
@@ -391,31 +406,56 @@ export function runBacktest(
         }
       } else {
         const today = new Date(candle.timestamp).toISOString().split("T")[0];
+        const isNewPosition = isEmpty(ledger);
 
-        position = {
-          entryPrice: fill.executedPrice,
-          entryFee: fill.fee,
-          size: fill.executedQuantity,
-          entryTime: candle.timestamp,
-          highestPrice: candle.close,
-          partialExitsExecuted: [],
-          dailyBuysToday: today,
-          dailyBuyCount: 1,
-        };
-        capital = capital - fill.totalCost;
+        const effectiveEntryPrice =
+          fill.executedQuantity > 0
+            ? fill.totalCost / fill.executedQuantity
+            : fill.executedPrice;
+        ledger = addLot(
+          ledger,
+          fill.executedQuantity,
+          effectiveEntryPrice,
+          new Date(candle.timestamp).toISOString(),
+        );
+        cashUSD -= fill.totalCost;
+
+        tradePnlInputs.push({
+          symbol: config.symbol,
+          side: "buy",
+          quantity: fill.executedQuantity,
+          price: fill.executedPrice,
+          fee: fill.fee,
+          timestamp: new Date(candle.timestamp).toISOString(),
+          currency: "USDT",
+        });
+
+        if (isNewPosition || !position) {
+          position = {
+            entryTime: candle.timestamp,
+            highestPrice: candle.close,
+            partialExitsExecuted: [],
+            dailyBuysToday: today,
+            dailyBuyCount: 1,
+          };
+        } else {
+          position.dailyBuysToday = today;
+          position.dailyBuyCount += 1;
+        }
       }
-    } else if (signal.action === "sell" && position) {
+    } else if (signal.action === "sell" && !isEmpty(ledger)) {
+      const currentQty = getTotalQuantity(ledger);
       let rawQtyToSell: number;
       if (signal.quantity !== undefined) {
         // Absolute quantity sell (e.g. DCA partial take-profits)
-        rawQtyToSell = Math.min(signal.quantity, position.size);
+        rawQtyToSell = Math.min(signal.quantity, currentQty);
       } else {
         const signalSize = signal.positionSize ?? 1.0;
         // positionSize er en brøk av total kapital; konverter til brøk av posisjonen
         const positionValueRatio =
-          (position.size * position.entryPrice) / capital || 1;
+          (currentQty * positionEntryPrice) / cashUSD || 1;
         const sellFraction = Math.min(signalSize / positionValueRatio, 1);
-        rawQtyToSell = position.size * sellFraction;
+        rawQtyToSell = currentQty * sellFraction;
       }
       const qtyToSell = roundToLotSize(config.symbol, rawQtyToSell);
 
@@ -436,33 +476,56 @@ export function runBacktest(
             console.warn(`Backtest sell skipped: ${fill.error}`);
           }
         } else {
-          const soldQty = fill.executedQuantity;
-          const remainingSize = position.size - soldQty;
-          const soldFraction = soldQty / position.size;
-          const entryValue = soldQty * position.entryPrice;
-          const entryFeeForSold = position.entryFee * soldFraction;
-          const exitValue = soldQty * fill.executedPrice;
-          const totalFee = entryFeeForSold + fill.fee;
-          const pnl = exitValue - fill.fee - entryValue - entryFeeForSold;
-          const pnlPct = entryValue > 0 ? (pnl / entryValue) * 100 : 0;
+          const sellQty = Math.min(fill.executedQuantity, currentQty);
+          const sellResult = sellFIFO(ledger, sellQty, fill.executedPrice);
+          const grossRealizedPnl = sellResult.realizedPnl;
+          const netPnl = grossRealizedPnl - fill.fee;
+          const entryValue = sellResult.lotMatches.reduce(
+            (sum, m) => sum + m.matchedQuantity * m.entryPrice,
+            0,
+          );
+          const avgEntryPrice = sellQty > 0 ? entryValue / sellQty : 0;
+          const earliestEntryTime =
+            sellResult.lotMatches.length > 0
+              ? Math.min(
+                  ...sellResult.lotMatches.map((m) => {
+                    const lot = ledger.lots.find((l) => l.id === m.lotId);
+                    return lot
+                      ? new Date(lot.timestamp).getTime()
+                      : position?.entryTime ?? candle.timestamp;
+                  }),
+                )
+              : position?.entryTime ?? candle.timestamp;
+
+          const buyFeeForMatch = entryValue * (FEE_RATE / (1 + FEE_RATE));
+          const roundTripFee = buyFeeForMatch + fill.fee;
 
           trades.push({
-            entryTime: position.entryTime,
+            entryTime: earliestEntryTime,
             exitTime: candle.timestamp,
-            entryPrice: position.entryPrice,
+            entryPrice: avgEntryPrice,
             exitPrice: fill.executedPrice,
             side: 'LONG',
-            size: soldQty,
-            pnl,
-            pnlPct,
-            fee: totalFee,
+            size: sellQty,
+            pnl: netPnl,
+            pnlPct: entryValue > 0 ? (netPnl / entryValue) * 100 : 0,
+            fee: roundTripFee,
           });
 
-          capital = capital + exitValue - fill.fee;
+          cashUSD += sellQty * fill.executedPrice - fill.fee;
+          ledger = { ...ledger, lots: sellResult.remainingLots };
 
-          if (remainingSize > 1e-12) {
-            position.size = remainingSize;
-            position.entryFee = position.entryFee * (1 - soldFraction);
+          tradePnlInputs.push({
+            symbol: config.symbol,
+            side: "sell",
+            quantity: sellQty,
+            price: fill.executedPrice,
+            fee: fill.fee,
+            timestamp: new Date(candle.timestamp).toISOString(),
+            currency: "USDT",
+          });
+
+          if (!isEmpty(ledger) && position) {
             const target = signal.indicators?.target as number | undefined;
             if (target !== undefined) {
               position.partialExitsExecuted = [
@@ -477,10 +540,8 @@ export function runBacktest(
       }
     }
 
-    // Beregn daglig equity
-    const currentEquity = position
-      ? capital + position.size * candle.close
-      : capital;
+    // Beregn daglig equity: cash + markedsverdi av åpne lots
+    const currentEquity = cashUSD + getTotalQuantity(ledger) * candle.close;
 
     equityCurve.push({ timestamp: candle.timestamp, equity: currentEquity });
 
@@ -494,54 +555,76 @@ export function runBacktest(
     }
   }
 
-  // Lukk åpen posisjon ved slutten
-  if (position && candles.length > 0) {
-    const lastCandle = candles[candles.length - 1];
-    const qtyToSell = roundToLotSize(config.symbol, position.size);
+  // Lukk åpen posisjon ved slutten (markedsverdi ved siste close, ingen ekstra fee)
+  const lastCandle = candles.length > 0 ? candles[candles.length - 1] : undefined;
+  const remainingQty = getTotalQuantity(ledger);
+  if (remainingQty > 0 && lastCandle) {
+    const qtyToSell = roundToLotSize(config.symbol, remainingQty);
 
     if (qtyToSell > 0) {
-      const fill = computeFill({
-        side: "sell",
-        quantity: qtyToSell,
-        orderType: "market",
-        marketPrice: lastCandle.close,
-        feeRate: FEE_RATE,
-        marketSlippageRate: MARKET_SLIPPAGE_RATE,
-        minOrderValue: MIN_ORDER_VALUE_USDT,
-        quoteCurrency: "USDT",
+      const sellResult = sellFIFO(ledger, qtyToSell, lastCandle.close);
+      const grossRealizedPnl = sellResult.realizedPnl;
+      const entryValue = sellResult.lotMatches.reduce(
+        (sum, m) => sum + m.matchedQuantity * m.entryPrice,
+        0,
+      );
+      const avgEntryPrice = qtyToSell > 0 ? entryValue / qtyToSell : 0;
+      const earliestEntryTime =
+        sellResult.lotMatches.length > 0
+          ? Math.min(
+              ...sellResult.lotMatches.map((m) => {
+                const lot = ledger.lots.find((l) => l.id === m.lotId);
+                return lot
+                  ? new Date(lot.timestamp).getTime()
+                  : position?.entryTime ?? lastCandle.timestamp;
+              }),
+            )
+          : position?.entryTime ?? lastCandle.timestamp;
+
+      const buyFeeForFinalMatch = entryValue * (FEE_RATE / (1 + FEE_RATE));
+
+      trades.push({
+        entryTime: earliestEntryTime,
+        exitTime: lastCandle.timestamp,
+        entryPrice: avgEntryPrice,
+        exitPrice: lastCandle.close,
+        side: 'LONG',
+        size: qtyToSell,
+        pnl: grossRealizedPnl,
+        pnlPct: entryValue > 0 ? (grossRealizedPnl / entryValue) * 100 : 0,
+        fee: buyFeeForFinalMatch,
       });
 
-      if (!fill.success) {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(`Backtest final close skipped: ${fill.error}`);
-        }
-      } else {
-        const soldQty = fill.executedQuantity;
-        const entryValue = soldQty * position.entryPrice;
-        const exitValue = soldQty * fill.executedPrice;
-        const totalFee = position.entryFee + fill.fee;
-        const pnl = exitValue - fill.fee - entryValue - position.entryFee;
-
-        trades.push({
-          entryTime: position.entryTime,
-          exitTime: lastCandle.timestamp,
-          entryPrice: position.entryPrice,
-          exitPrice: fill.executedPrice,
-          side: 'LONG',
-          size: soldQty,
-          pnl,
-          pnlPct: entryValue > 0 ? (pnl / entryValue) * 100 : 0,
-          fee: totalFee,
-        });
-
-        capital = capital + exitValue - fill.fee;
-      }
+      cashUSD += qtyToSell * lastCandle.close;
+      ledger = { ...ledger, lots: sellResult.remainingLots };
+      tradePnlInputs.push({
+        symbol: config.symbol,
+        side: "sell",
+        quantity: qtyToSell,
+        price: lastCandle.close,
+        fee: 0,
+        timestamp: new Date(lastCandle.timestamp).toISOString(),
+        currency: "USDT",
+      });
     }
     position = null;
   }
 
+  // Kanonisk P&L-sanity-check (utvikling/test only)
+  if (process.env.NODE_ENV !== "production" && tradePnlInputs.length > 0 && lastCandle) {
+    const canonical = calculatePnlFromTrades(tradePnlInputs, lastCandle.close);
+    const finalEquity = cashUSD + getTotalQuantity(ledger) * lastCandle.close;
+    const enginePnl = finalEquity - initialCapitalUSD;
+    const canonicalPnl = canonical.realizedPnl + canonical.unrealizedPnl;
+    if (Math.abs(enginePnl - canonicalPnl) > 0.05) {
+      console.warn(
+        `Backtest P&L sanity mismatch: engine=${enginePnl.toFixed(4)} canonical=${canonicalPnl.toFixed(4)}`,
+      );
+    }
+  }
+
   // Beregn metrics
-  const finalEquity = capital;
+  const finalEquity = cashUSD + getTotalQuantity(ledger) * (lastCandle?.close ?? 0);
   const totalReturnPct =
     ((finalEquity - initialCapitalUSD) / initialCapitalUSD) * 100;
   const buyHoldReturn =

@@ -9,6 +9,17 @@ import {
   STRATEGY_CONFIGS,
   type OHLCV,
 } from '../backtestEngine';
+import {
+  createLedger,
+  addLot,
+  sellFIFO,
+  getTotalQuantity,
+  getWeightedEntryPrice,
+} from '../position-ledger';
+import {
+  calculatePnlFromTrades,
+  type TradePnlInput,
+} from '../canonical/pnl/trade-pnl';
 
 describe('Backtest Engine', () => {
   // Hjelpefunksjon for å generere testdata
@@ -200,6 +211,203 @@ describe('Backtest Engine', () => {
       // ikke 25 % av total kapital (som ville vært et mye større tall).
       expect(firstSell.size).toBeCloseTo(expectedPartialQty, 4);
       expect(firstSell.size).toBeLessThan(boughtQty);
+    });
+
+    it('should track multi-buy average cost basis correctly', () => {
+      // DCA-scenario som trigger to kjøp/salg-sykluser:
+      // 1) flat → kjøp → kraftig oppgang (4 delvise TP) → posisjon lukket
+      // 2) tilbake til flat → nytt kjøp (annen kostnadsbasis) → sluttsalg.
+      const candles: OHLCV[] = [];
+      const startTime = Date.now();
+      const basePrice = 100;
+
+      for (let i = 0; i < 220; i++) {
+        let close = basePrice;
+        if (i >= 110 && i < 130) {
+          // Kraftig oppgang: trigge alle delvise TP-nivåer
+          close = basePrice * (1 + (i - 109) * 0.015);
+        } else if (i >= 130 && i < 160) {
+          // Tilbake til basePrice
+          close = basePrice * (1.315 - (i - 129) * 0.01);
+        }
+
+        candles.push({
+          timestamp: startTime + i * 24 * 60 * 60 * 1000,
+          open: close * 0.99,
+          high: close * 1.02,
+          low: close * 0.98,
+          close,
+          volume: 1000000,
+        });
+      }
+
+      const config = STRATEGY_CONFIGS.konservativ;
+      const initialCapital = 10000;
+      const result = runBacktest(candles, config, initialCapital);
+
+      // Det skal være minst to salgshandler (minst én fra hver syklus).
+      expect(result.trades.length).toBeGreaterThanOrEqual(2);
+
+      // Ingen trade skal ha entryPrice lik 0 (kostnadsbasis skal være satt).
+      for (const trade of result.trades) {
+        expect(trade.entryPrice).toBeGreaterThan(0);
+      }
+
+      // Siste trade skal ha en annen kostnadsbasis enn første (ulike kjøp).
+      const lastTrade = result.trades[result.trades.length - 1];
+      const firstTrade = result.trades[0];
+      expect(lastTrade.entryPrice).not.toBeCloseTo(firstTrade.entryPrice, 1);
+    });
+
+    it('should match oldest lots first on partial sells (FIFO)', () => {
+      // Direkte FIFO-test: to lots med ulike entry-priser, delvis salg.
+      const ledger = addLot(
+        addLot(createLedger('long'), 1, 100, '2024-01-01T00:00:00.000Z'),
+        1,
+        120,
+        '2024-01-02T00:00:00.000Z',
+      );
+
+      expect(getWeightedEntryPrice(ledger)).toBeCloseTo(110, 6);
+
+      // Selg 1.5 enheter — skal tømme eldste lot (100) og 0.5 av nyeste lot (120).
+      const sellResult = sellFIFO(ledger, 1.5, 130);
+
+      expect(sellResult.realizedPnl).toBeCloseTo(35, 6);
+      expect(sellResult.remainingLots.length).toBe(1);
+      expect(sellResult.remainingLots[0].quantity).toBeCloseTo(0.5, 8);
+      expect(sellResult.remainingLots[0].entryPrice).toBe(120);
+      expect(getWeightedEntryPrice({ ...ledger, lots: sellResult.remainingLots })).toBe(120);
+    });
+
+    it('should make totalReturnPct equal cash-based final equity change', () => {
+      const candles = generateCandles(200, 50000);
+      const config = STRATEGY_CONFIGS.balansert;
+      const initialCapital = 10000;
+      const result = runBacktest(candles, config, initialCapital);
+
+      const finalEquity = result.equityCurve[result.equityCurve.length - 1].equity;
+      const expectedReturnPct =
+        ((finalEquity - initialCapital) / initialCapital) * 100;
+
+      expect(result.metrics.totalReturnPct).toBeCloseTo(expectedReturnPct, 4);
+    });
+
+    it('should agree with canonical PnL for a complete trade sequence', () => {
+      // Konstruer en enkel trade-sekvens og verifiser at canonical P&L matcher
+      // cash-basert avkastning fra backtesten.
+      const inputs: TradePnlInput[] = [
+        {
+          symbol: 'BTCUSDT',
+          side: 'buy',
+          quantity: 0.1,
+          price: 50000,
+          fee: 5,
+          currency: 'USDT',
+        },
+        {
+          symbol: 'BTCUSDT',
+          side: 'sell',
+          quantity: 0.1,
+          price: 55000,
+          fee: 5.5,
+          currency: 'USDT',
+        },
+      ];
+
+      const canonical = calculatePnlFromTrades(inputs);
+      expect(canonical.realizedPnl).toBeCloseTo(489.5, 2);
+      expect(canonical.remainingQuantity).toBe(0);
+    });
+
+    it('should align backtest P&L with canonical P&L for a deterministic DCA sequence', () => {
+      // DCA-scenario som gir nøyaktig én kjøp, én delvis take-profit og
+      // en avsluttende lukking ved siste candle.
+      const candles: OHLCV[] = [];
+      const basePrice = 100;
+      const startTime = Date.now();
+
+      for (let i = 0; i < 150; i++) {
+        const close = i <= 109 ? basePrice : basePrice * 1.06;
+        candles.push({
+          timestamp: startTime + i * 24 * 60 * 60 * 1000,
+          open: close,
+          high: close * 1.001,
+          low: close * 0.999,
+          close,
+          volume: 1000000,
+        });
+      }
+
+      const config = STRATEGY_CONFIGS.konservativ;
+      const initialCapital = 10000;
+      const result = runBacktest(candles, config, initialCapital);
+
+      // Forventet: én delvis TP + endelig lukking av resterende posisjon.
+      expect(result.trades.length).toBe(2);
+
+      const [partialTrade, finalTrade] = result.trades;
+      const feeRate = config.feeRate;
+
+      // Gjenskape kanonisk input fra faktiske fills.
+      // Kjøpsprisen kan utledes fra effektiv kostnadsbasis (inkludert buy fee).
+      const buyExecutedPrice = partialTrade.entryPrice / (1 + feeRate);
+      const buyQty = partialTrade.size + finalTrade.size;
+      const buyFee = buyQty * buyExecutedPrice * feeRate;
+
+      const inputs: TradePnlInput[] = [
+        {
+          symbol: config.symbol,
+          side: 'buy',
+          quantity: buyQty,
+          price: buyExecutedPrice,
+          fee: buyFee,
+          timestamp: new Date(partialTrade.entryTime).toISOString(),
+          currency: 'USDT',
+        },
+        {
+          symbol: config.symbol,
+          side: 'sell',
+          quantity: partialTrade.size,
+          price: partialTrade.exitPrice,
+          fee: partialTrade.size * partialTrade.exitPrice * feeRate,
+          timestamp: new Date(partialTrade.exitTime).toISOString(),
+          currency: 'USDT',
+        },
+        {
+          symbol: config.symbol,
+          side: 'sell',
+          quantity: finalTrade.size,
+          price: finalTrade.exitPrice,
+          fee: 0,
+          timestamp: new Date(finalTrade.exitTime).toISOString(),
+          currency: 'USDT',
+        },
+      ];
+
+      const lastClose = candles[candles.length - 1].close;
+      const canonical = calculatePnlFromTrades(inputs, lastClose);
+
+      const engineTotalPnl =
+        result.equityCurve[result.equityCurve.length - 1].equity - initialCapital;
+      const canonicalTotalPnl =
+        canonical.realizedPnl + canonical.unrealizedPnl;
+
+      expect(result.metrics.totalReturnPct).toBeCloseTo(
+        (canonicalTotalPnl / initialCapital) * 100,
+        4,
+      );
+      // Trade-level realized P&L er avrundet til 2 desimaler i ledgeret, så
+      // cash-basert total kan avvike med noen cent fra summen av trade-pnl.
+      expect(engineTotalPnl).toBeCloseTo(canonicalTotalPnl, 2);
+      expect(partialTrade.pnl + finalTrade.pnl).toBeCloseTo(
+        canonical.realizedPnl,
+        4,
+      );
+      expect(partialTrade.fee + finalTrade.fee).toBeCloseTo(
+        canonical.totalFee,
+        4,
+      );
     });
   });
 });
