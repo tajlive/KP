@@ -77,7 +77,7 @@ function createMockSupabase(): SupabaseClient<Database> {
 }
 
 function mockBinanceFetch() {
-  return vi.fn(async (input: RequestInfo | URL) => {
+  return vi.fn(async (input: string | URL) => {
     const url = input.toString();
 
     if (url.includes("/api/v3/order")) {

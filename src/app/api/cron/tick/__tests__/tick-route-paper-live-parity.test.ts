@@ -139,10 +139,12 @@ describe("tick route paper/live parity", () => {
     expect(paperCreateCall).toBeDefined();
     expect(liveCreateCall).toBeDefined();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const factoryModule = await import("@/lib/trading/executor-factory");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mockExecutor = (factoryModule as any).__mockExecutor;
+    const mockExecutor = (
+      factoryModule as unknown as {
+        __mockExecutor: ReturnType<typeof createMockExecutor>;
+      }
+    ).__mockExecutor;
     const orderCalls = mockExecutor.executeOrder.mock.calls as Array<
       [Record<string, unknown>]
     >;
