@@ -1,9 +1,9 @@
 # Deployment Knowledge
 
 ## Cloudflare Workers Deploy Flow
-1. `git push origin main` → Woodpecker CI (`.woodpecker/deploy.yml`) → Cloudflare Workers deploy (~2-5 min)
-2. Woodpecker runs `npm run build` followed by `npm run cf:build`
-3. Wrangler deploys the OpenNext.js Worker bundle: `npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}`
+1. `git push origin main` → GitHub Actions (`.github/workflows/deploy.yml`) → Cloudflare Workers deploy (~2-5 min)
+2. GitHub Actions runs `npm run build` followed by `npm run cf:build`
+3. Wrangler deploys the OpenNext.js Worker bundle: `npx wrangler deploy --minify --var APP_VERSION:${GITHUB_SHA}`
 4. Cloudflare DNS points `klarpakke.no` / `www.klarpakke.no` to the Cloudflare Workers route
 
 ## Pre-commit Gates (i rekkefølge)

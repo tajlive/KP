@@ -5,7 +5,7 @@
 **Status:** Production (www.klarpakke.no)  
 **Node:** 24.x (se `.nvmrc`)  
 **Hosting:** Cloudflare Workers (OpenNext.js + Wrangler) + Cloudflare DNS/CDN + Domeneshop domene
-**CI/CD:** Woodpecker (`.woodpecker/deploy.yml`) → `npm run cf:build && npx wrangler deploy`
+**CI/CD:** GitHub Actions (`.github/workflows/pr-check.yml` + `.github/workflows/deploy.yml`) → `npm run cf:build && npx wrangler deploy`
 **Error Tracking:** Selv-hostet GlitchTip
 
 > **Sist oppdatert:** 2026-06-21 — Produksjon: Domeneshop → Cloudflare DNS/proxy → Cloudflare Workers (Wrangler) + Supabase.
@@ -31,7 +31,7 @@ npm run test:unit && npm run build
 npm run cf:deploy
 # eller direkte: npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
 
-# Commit & push (CI/CD kjører via Woodpecker .woodpecker/deploy.yml)
+# Commit & push (CI/CD kjører via GitHub Actions .github/workflows/deploy.yml)
 git add -A && git commit -m "type: beskrivelse" && git push origin main
 ```
 
@@ -74,7 +74,7 @@ kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
 > **App-hosting:** Cloudflare Workers (OpenNext.js / Wrangler)  
 > **Database/Auth:** Supabase  
 > **URL:** https://www.klarpakke.no  
-> **CI/CD:** Woodpecker (`.woodpecker/deploy.yml`)  
+> **CI/CD:** GitHub Actions (`.github/workflows/pr-check.yml` + `.github/workflows/deploy.yml`)  
 > **Error Tracking:** Selv-hostet GlitchTip
 
 ### Arkitektur
@@ -120,13 +120,13 @@ npm run lint:gate
 npm run type-check
 ```
 
-> **Automatisk deploy:** Når `main` pushes, kjører Woodpecker (`.woodpecker/deploy.yml`):
+> **Automatisk deploy:** Når `main` pushes, kjører GitHub Actions (`.github/workflows/deploy.yml`):
 > ```bash
 > npm run cf:build
-> npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}
+> npx wrangler deploy --minify --var APP_VERSION:${GITHUB_SHA}
 > ```
 >
-> **Legacy:** `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify og er ikke lenger aktiv kilde til sannhet.
+> **Legacy:** Woodpecker-filene (`.woodpecker/`) er fjernet. `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify/Woodpecker og er ikke lenger aktiv kilde til sannhet.
 
 ### DNS (Cloudflare)
 | Record | Type | Target | Proxy |
@@ -135,7 +135,7 @@ npm run type-check
 | `klarpakke.no` | CNAME | `<Cloudflare Workers target>` | ✅ |
 | `glitchtip.klarpakke.no` | A/AAAA/CNAME | `<GlitchTip-host>` | ✅ |
 
-> **Merk:** `ci.klarpakke.no` er ikke lenger i bruk. Woodpecker håndterer CI/CD; Cloudflare Workers håndterer hosting.
+> **Merk:** `ci.klarpakke.no` er ikke lenger i bruk. GitHub Actions håndterer CI/CD; Cloudflare Workers håndterer hosting.
 
 ---
 

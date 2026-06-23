@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ⚠️  DEPRECATED / LEGACY
-# This full-deploy script targets Cloudflare Pages/Coolify and is NOT the current
-# production deploy path.
+# This full-deploy script targets Cloudflare Pages/Coolify/Woodpecker and is NOT the
+# current production deploy path.
 # Current source of truth:
-#   - CI/CD: .woodpecker/deploy.yml
+#   - CI/CD: .github/workflows/deploy.yml
 #   - Manual deploy: npm run cf:deploy
 # Kept for historical/reference purposes only.
 set -euo pipefail

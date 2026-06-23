@@ -39,39 +39,40 @@ User-bound trading-ruter bruker `createServerClient(request, response)` for å s
 - Mode bestemmer kun execution-adapter (PaperExecutor vs BinanceExecutor)
 - Service-role (`createClient()`) er kun tillatt i cron/system-ruter og legacy wrappers
 
-### Hosting (migrerer til selv-hostet)
+### Hosting
 
-> **Status:** Migrering pågår fra Fly.io/Vercel/GitHub Actions til Hetzner + Coolify + Woodpecker CI.
+> **Status:** Produksjon kjører på Cloudflare Workers.
 > Se [docs/SELF-HOSTED-SETUP.md](docs/SELF-HOSTED-SETUP.md) for detaljer.
 
-- **App:** Coolify på Hetzner VPS
+- **App:** Cloudflare Workers (OpenNext.js + Wrangler)
 - **URL:** https://klarpakke.no / https://www.klarpakke.no (Cloudflare DNS)
-- **CI/CD:** Woodpecker CI (`.woodpecker/`)
+- **CI/CD:** GitHub Actions (`.github/workflows/pr-check.yml` + `.github/workflows/deploy.yml`)
 - **Error tracking:** GlitchTip (selv-hostet, Sentry SDK-kompatibel)
 - **Legacy:** Fly.io-oppsettet er arkivert i `.github/workflows/archived/`
 
 ### Deploy-sekvens
 
 ```bash
-# 1. Push til main
+# 1. Push til main (trigger GitHub Actions deploy)
 git push origin main
 
-# 2. Vent på Woodpecker CI → Coolify deploy
-#    Konfigurasjon: .woodpecker/deploy.yml
+# 2. Vent på GitHub Actions → Cloudflare Workers deploy
+#    Konfigurasjon: .github/workflows/deploy.yml
 
 # 3. Verifiser produksjon
 npm run verify:prod
 ```
 
+### Manuell deploy
+
+```bash
+npm run cf:deploy
+# eller: npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
+```
+
 ### Nyttige kommandoer
 
 ```bash
-# Coolify logg (på VPS)
-docker logs -f coolify
-
-# Woodpecker logg (på VPS)
-docker logs -f woodpecker-server
-
 # GlitchTip status
 docker compose -f docker-compose.glitchtip.yml ps
 ```

@@ -1,31 +1,52 @@
-# GitHub Actions Workflows (Arkivert)
+# GitHub Actions Workflows
 
-> **Status:** Workflows er flyttet til Woodpecker CI (`.woodpecker/`).
-> Dette katalogen beholdes kun for historikk og eventuelle fremtidige GitHub-spesifikke hooks.
+This directory contains the CI/CD workflows for Klarpakke. They run on GitHub Actions and deploy to Cloudflare Workers via Wrangler.
 
-## Hvor er CI/CD nå?
+## Workflows
 
-- **PR-check:** `.woodpecker/pr-check.yml`
-- **Deploy:** `.woodpecker/deploy.yml`
-- **Arkiverte GitHub Actions:** `.github/workflows/archived/`
+### `deploy.yml`
 
-## Hvorfor Woodpecker?
+- **Trigger:** Push to `main`
+- **Job:** `build-and-deploy`
+- **What it does:**
+  1. Checks out the repository
+  2. Sets up Node.js using the version in `.nvmrc`
+  3. Installs dependencies with `npm ci`
+  4. Runs `npm run type-check`
+  5. Runs `npm run test:unit`
+  6. Builds the app with `npm run cf:build`
+  7. Deploys to Cloudflare Workers with `npx wrangler deploy --minify --var APP_VERSION:${{ github.sha }}`
+  8. Polls `https://www.klarpakke.no/api/health` until the deployed version is live
 
-Som del av migreringen til selv-hostet infrastruktur (Hetzner + Coolify) kjøres CI/CD
-nå i Woodpecker på egen VPS. Dette gir:
+### `pr-check.yml`
 
-- Full kontroll over byggemiljøet
-- Ingen GitHub Actions-minutt-grenser
-- Sømløs integrasjon med Coolify for deploy
+- **Trigger:** Pull request to `main`
+- **Job:** `check`
+- **What it does:**
+  1. Checks out the PR branch
+  2. Sets up Node.js using the version in `.nvmrc`
+  3. Installs dependencies with `npm ci`
+  4. Runs `npm run lint:gate`
+  5. Runs `npm run type-check`
+  6. Runs `npm run test:unit`
 
-## Aktivere en arkivert workflow (midlertidig)
+## Configuration
 
-```bash
-cp .github/workflows/archived/<workflow>.yml .github/workflows/
-git add . && git commit -m "Re-enable GitHub Actions workflow"
-```
+The workflows read public configuration from GitHub `vars` and secrets from GitHub `secrets`.
 
-## Secrets
+Required secrets:
 
-Woodpecker henter secrets fra prosjektets secret-store i Coolify/Woodpecker.
-Se `docs/SELF-HOSTED-SETUP.md` for detaljer.
+- `CLOUDFLARE_API_TOKEN` — Used by Wrangler to deploy the Worker
+
+Required vars (used by both workflows):
+
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_SANITY_PROJECT_ID`
+- `NEXT_PUBLIC_SANITY_DATASET`
+- `NEXT_PUBLIC_SANITY_API_VERSION`
+- `NEXT_PUBLIC_GLITCHTIP_DSN`
+
+`NEXT_TELEMETRY_DISABLED` is hardcoded to `"1"` in both workflows.
