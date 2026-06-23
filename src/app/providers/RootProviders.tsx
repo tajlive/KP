@@ -2,10 +2,6 @@
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/shared/theme";
 import { NextIntlClientProvider } from "next-intl";
-
-// Build stamp to bust client bundle cache on deploy
-// eslint-disable-next-line no-console
-if (typeof window !== "undefined") console.log("[Klarpakke] Build:", "2026-05-14-i18n-fix");
 import { CdsProvider } from "@/app/providers/CdsProvider";
 import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
 import { MarketingProviders } from "@/shared/providers/MarketingProviders";
@@ -27,6 +23,7 @@ interface RootProvidersProps {
   showVippsMarket: boolean;
   navData: NavigationData;
   flags: Partial<FeatureFlags>;
+  isMarketing: boolean;
   children: ReactNode;
 }
 
@@ -36,8 +33,17 @@ export function RootProviders({
   showVippsMarket,
   navData,
   flags,
+  isMarketing,
   children,
 }: RootProvidersProps) {
+  const marketingShell = (
+    <LocaleMarketingShell navData={navData}>
+      <LazyMotion features={loadFeatures} strict={false}>
+        {children}
+      </LazyMotion>
+    </LocaleMarketingShell>
+  );
+
   return (
     <ThemeProvider
       attribute="class"
@@ -47,24 +53,24 @@ export function RootProviders({
     >
       {/* <SessionCleanup /> */}
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <CdsProvider>
-          <VippsMarketProvider showVippsMarket={showVippsMarket}>
-            <MarketingProviders>
-              <ErrorBoundary>
-                <AuthProvider>
-                  <AuthHashHandler />
-                  <FeatureFlagProvider initialFlags={flags}>
-                    <LocaleMarketingShell navData={navData}>
-                      <LazyMotion features={loadFeatures} strict={false}>
-                        {children}
-                      </LazyMotion>
-                    </LocaleMarketingShell>
-                  </FeatureFlagProvider>
-                </AuthProvider>
-              </ErrorBoundary>
-            </MarketingProviders>
-          </VippsMarketProvider>
-        </CdsProvider>
+        <VippsMarketProvider showVippsMarket={showVippsMarket}>
+          <MarketingProviders>
+            <ErrorBoundary>
+              <FeatureFlagProvider initialFlags={flags}>
+                {isMarketing ? (
+                  marketingShell
+                ) : (
+                  <CdsProvider>
+                    <AuthProvider>
+                      <AuthHashHandler />
+                      {marketingShell}
+                    </AuthProvider>
+                  </CdsProvider>
+                )}
+              </FeatureFlagProvider>
+            </ErrorBoundary>
+          </MarketingProviders>
+        </VippsMarketProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
   );

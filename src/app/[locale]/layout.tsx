@@ -161,8 +161,31 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     : null;
   const showVippsMarket = shouldShowVippsForRequest(hdrs);
 
-  // Vi fjerner await her oppe slik at html og head strømmes til nettleseren umiddelbart!
-  // Flaggene hentes asynkront i AsyncFeatureFlagProvider i body i stedet.
+  // Marketing pages get a lighter provider tree to reduce JS and hydration cost.
+  const APP_SHELL_PATHS: readonly string[] = [
+    "/dashboard",
+    "/copy-trading",
+    "/marketplace",
+    "/admin",
+    "/checkout",
+    "/onboarding",
+    "/akademi",
+    "/konto",
+    "/handel",
+    "/handelshistorikk",
+    "/varsler",
+    "/leagues",
+    "/profile",
+    "/quiz",
+    "/innstillinger",
+    "/callback",
+    "/paper-trading",
+    "/live-trading",
+    "/auto-trading",
+  ];
+  const isMarketing = !APP_SHELL_PATHS.some(
+    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
+  );
 
   // Get CSP nonce from middleware header for inline scripts
   const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
@@ -200,7 +223,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {/* KRITISK: Avregistrer gamle service workers FØR React hydrerer */}
         <Script
           id="sw-killer"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){
@@ -230,7 +253,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <Script
           id="supabase-auth-cleaner"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){
@@ -307,6 +330,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           showVippsMarket={showVippsMarket}
           navData={navData}
           flags={flags}
+          isMarketing={isMarketing}
         >
           {children}
         </RootProviders>
