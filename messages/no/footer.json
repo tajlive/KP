@@ -17,5 +17,8 @@
     "privacy": "Personvern",
     "terms": "Vilkår"
   },
+  "paymentSubtitle": "Vi bruker Stripe og Vipps for sikker betaling. Ingen kortdetaljer lagres hos oss.",
+  "paymentSubtitleNoVipps": "Vi bruker Stripe for sikker betaling. Ingen kortdetaljer lagres hos oss.",
+  "stripeBadgeAria": "Sikker betaling levert av Stripe",
   "disclaimer": "Kryptovaluta er en høyrisikoinvestering. Ikke invester mer enn du har råd til å tape."
 }

@@ -74,5 +74,49 @@
         "content": "Spørsmål om vilkårene? Kontakt oss på:"
       }
     }
+  },
+  "cookieTitle": "Informasjonskapsler",
+  "cookies": {
+    "title": "Informasjonskapsler (Cookies)",
+    "whatAreCookies": {
+      "title": "Hva er informasjonskapsler?",
+      "content": "Informasjonskapsler er små tekstfiler som lagres i nettleseren din når du besøker et nettsted. De brukes til å huske innstillinger, logge inn, analysere trafikk og tilpasse innhold."
+    },
+    "categories": {
+      "title": "Kategorier av informasjonskapsler",
+      "necessary": {
+        "name": "Nødvendige",
+        "description": "Disse er nødvendige for at nettstedet skal fungere og kan ikke slås av. De inkluderer innstillinger for økt, autentisering og sikkerhet."
+      },
+      "analytics": {
+        "name": "Analyse",
+        "description": "Hjelper oss å forstå hvordan besøkende bruker nettstedet, slik at vi kan forbedre funksjonalitet og innhold."
+      },
+      "marketing": {
+        "name": "Markedsføring",
+        "description": "Brukes til å levere relevante annonser og måle effekten av markedsføringskampanjer."
+      },
+      "functional": {
+        "name": "Funksjonelle",
+        "description": "Husker valg du gjør for å gi en mer personlig og forbedret brukeropplevelse."
+      }
+    },
+    "thirdParty": {
+      "title": "Tredjepartstjenester",
+      "vercel": "Brukes til analyse og ytelse av nettstedet.",
+      "sentry": "Brukes til å overvåke feil og ytelse.",
+      "google": "Brukes til analyse av trafikk og brukeratferd.",
+      "supabase": "Brukes til autentisering og lagring av data."
+    },
+    "manage": {
+      "title": "Administrer samtykke",
+      "lastUpdated": "Sist oppdatert",
+      "revoke": "Tilbakekall samtykke",
+      "noConsent": "Du har ikke gitt noe samtykke ennå. Samtykke-dialogen vises igjen neste gang du besøker nettstedet."
+    },
+    "contact": {
+      "title": "Kontakt oss",
+      "content": "Har du spørsmål om vår bruk av informasjonskapsler? Kontakt oss på post@klarpakke.no."
+    }
   }
 }

@@ -17,5 +17,8 @@
     "privacy": "Privacy",
     "terms": "Terms"
   },
+  "paymentSubtitle": "We use Stripe and Vipps for secure payment. No card details are stored with us.",
+  "paymentSubtitleNoVipps": "We use Stripe for secure payment. No card details are stored with us.",
+  "stripeBadgeAria": "Secure payments powered by Stripe",
   "disclaimer": "Cryptocurrency is a high-risk investment. Do not invest more than you can afford to lose."
 }

@@ -74,5 +74,49 @@
         "content": "Questions about the terms? Contact us at:"
       }
     }
+  },
+  "cookieTitle": "Cookies",
+  "cookies": {
+    "title": "Cookies",
+    "whatAreCookies": {
+      "title": "What are cookies?",
+      "content": "Cookies are small text files stored in your browser when you visit a website. They are used to remember settings, logins, analyze traffic, and personalize content."
+    },
+    "categories": {
+      "title": "Cookie categories",
+      "necessary": {
+        "name": "Necessary",
+        "description": "These are essential for the website to function and cannot be turned off. They include session, authentication, and security settings."
+      },
+      "analytics": {
+        "name": "Analytics",
+        "description": "Helps us understand how visitors use the website so we can improve functionality and content."
+      },
+      "marketing": {
+        "name": "Marketing",
+        "description": "Used to deliver relevant advertisements and measure the effectiveness of marketing campaigns."
+      },
+      "functional": {
+        "name": "Functional",
+        "description": "Remembers choices you make to provide a more personalized and improved user experience."
+      }
+    },
+    "thirdParty": {
+      "title": "Third-party services",
+      "vercel": "Used for website analytics and performance.",
+      "sentry": "Used to monitor errors and performance.",
+      "google": "Used for traffic and user behavior analytics.",
+      "supabase": "Used for authentication and data storage."
+    },
+    "manage": {
+      "title": "Manage consent",
+      "lastUpdated": "Last updated",
+      "revoke": "Revoke consent",
+      "noConsent": "You have not given any consent yet. The consent dialog will appear again the next time you visit the site."
+    },
+    "contact": {
+      "title": "Contact us",
+      "content": "Have questions about our use of cookies? Contact us at post@klarpakke.no."
+    }
   }
 }
