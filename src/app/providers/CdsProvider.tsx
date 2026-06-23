@@ -1,11 +1,16 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { MediaQueryProvider, ThemeProvider } from "@coinbase/cds-web/system";
 import { defaultTheme } from "@coinbase/cds-web/themes/defaultTheme";
 
 export function CdsProvider({ children }: { children: ReactNode }) {
-  const colorScheme = useMemo<"light" | "dark">(() => "light", []);
+  const { resolvedTheme } = useTheme();
+  const colorScheme = useMemo<"light" | "dark">(
+    () => (resolvedTheme === "dark" ? "dark" : "light"),
+    [resolvedTheme],
+  );
 
   return (
     <MediaQueryProvider>

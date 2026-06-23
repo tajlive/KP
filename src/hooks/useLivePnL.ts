@@ -180,10 +180,14 @@ export function useLivePnL(): LivePnLData {
 
     return () => {
       if (channelRef.current) {
-        channelRef.current.unsubscribe();
+        channelRef.current.unsubscribe().catch((err: unknown) => {
+          console.warn("[useLivePnL] unsubscribe error:", err);
+        });
+        channelRef.current = null;
       }
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [fetchData]);

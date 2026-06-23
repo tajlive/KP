@@ -21,6 +21,7 @@ import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { RootProviders } from "@/app/providers/RootProviders";
 import { Outfit, Geist } from "next/font/google";
+import { getFlagsAsync } from "@/lib/flags";
 import "../globals.css";
 
 
@@ -170,6 +171,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const tokensCss = await getSanityTokensCSS().catch(() => DEFAULT_TOKENS_CSS);
 
   const navData = await loadNavigation();
+  const flags = await getFlagsAsync().catch(() => ({}));
 
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -304,6 +306,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           messages={messages}
           showVippsMarket={showVippsMarket}
           navData={navData}
+          flags={flags}
         >
           {children}
         </RootProviders>

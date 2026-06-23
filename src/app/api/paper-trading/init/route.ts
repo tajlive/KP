@@ -11,7 +11,8 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerClient();
+    const response = NextResponse.next();
+    const supabase = createServerClient(request, response);
 
     const {
       data: { user },

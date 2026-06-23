@@ -21,6 +21,7 @@ const STRIPPED_PATHS_HIDE_MARKETING: readonly string[] = [
   "/onboarding",
   "/akademi",
   "/konto",
+  "/handel",
   "/handelshistorikk",
   "/varsler",
   "/leagues",

@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Wallet, LayoutDashboard } from "lucide-react";
@@ -39,6 +38,10 @@ interface PaperTradingPageClientProps {
   /** Server-liste filtrert på denne modusen (paper | live) */
   listMode: "paper" | "live";
   contextBannerText: string;
+  /** view fra searchParams (?view=sessions) */
+  view?: string;
+  /** mode fra searchParams (?mode=live) */
+  mode?: string;
 }
 
 /**
@@ -52,12 +55,11 @@ export function PaperTradingPageClient({
   userId,
   listMode,
   contextBannerText,
+  view = "",
+  mode = "",
 }: PaperTradingPageClientProps) {
   const t = useTranslations("paperTrading");
-  const searchParams = useSearchParams();
-  const view = searchParams?.get("view") ?? "";
-  const modeParam = searchParams?.get("mode") ?? "";
-  const initialMode: TradingMode = modeParam === "live" ? "live" : "paper";
+  const initialMode: TradingMode = mode === "live" ? "live" : "paper";
 
   const showSessionsList = view === "sessions";
 

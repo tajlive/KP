@@ -107,7 +107,9 @@ export function useRealtime<T extends Record<string, unknown>>(
     channelRef.current = channel;
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channel).catch((err: unknown) => {
+        console.warn("[useRealtime] removeChannel error:", err);
+      });
       channelRef.current = null;
       setIsSubscribed(false);
     };

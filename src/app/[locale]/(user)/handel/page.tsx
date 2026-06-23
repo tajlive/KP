@@ -27,7 +27,7 @@ export default async function TradingPage({
   searchParams: Promise<{ mode?: string; view?: string }>;
 }) {
   const { locale } = await params;
-  const { mode = "paper", view } = await searchParams;
+  const { mode = "paper", view = "" } = await searchParams;
 
   const { supabase, user } = await requireAuth(locale);
   if (!user) {
@@ -57,6 +57,8 @@ export default async function TradingPage({
       userId={user.id}
       listMode={mode === "live" ? "live" : "paper"}
       contextBannerText={mode === "live" ? "Live Trading" : "Paper Trading"}
+      view={view}
+      mode={mode}
     />
   );
 }

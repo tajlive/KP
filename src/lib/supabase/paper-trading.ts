@@ -93,6 +93,11 @@ export async function createPaperTradingSession(
     .single();
 
   if (error) {
+    // Unique active-session conflict: return the existing active session instead.
+    if (error.code === "23505") {
+      const existing = await getPaperTradingSession(supabase, userId);
+      if (existing) return existing;
+    }
     console.error("Failed to create paper trading session:", error);
     throw new Error("Failed to create paper trading session");
   }

@@ -12,7 +12,8 @@ import { MarketingProviders } from "@/shared/providers/MarketingProviders";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
-import { AsyncFeatureFlagProvider } from "@/app/providers/AsyncFeatureFlagProvider";
+import { FeatureFlagProvider } from "@/lib/feature-flags";
+import type { FeatureFlags } from "@/lib/flags";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import type { NavigationData } from "@/shared/layout/NavigationServer";
 import { LazyMotion } from "framer-motion";
@@ -25,6 +26,7 @@ interface RootProvidersProps {
   messages: any;
   showVippsMarket: boolean;
   navData: NavigationData;
+  flags: Partial<FeatureFlags>;
   children: ReactNode;
 }
 
@@ -33,6 +35,7 @@ export function RootProviders({
   messages,
   showVippsMarket,
   navData,
+  flags,
   children,
 }: RootProvidersProps) {
   return (
@@ -50,13 +53,13 @@ export function RootProviders({
               <ErrorBoundary>
                 <AuthProvider>
                   <AuthHashHandler />
-                  <AsyncFeatureFlagProvider>
+                  <FeatureFlagProvider initialFlags={flags}>
                     <LocaleMarketingShell navData={navData}>
                       <LazyMotion features={loadFeatures} strict={false}>
                         {children}
                       </LazyMotion>
                     </LocaleMarketingShell>
-                  </AsyncFeatureFlagProvider>
+                  </FeatureFlagProvider>
                 </AuthProvider>
               </ErrorBoundary>
             </MarketingProviders>
