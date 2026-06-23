@@ -1080,7 +1080,12 @@
       },
       "totalPortfolio": "Total Portefølje",
       "available": "Tilgjengelig",
-      "totalValue": "Total verdi"
+      "totalValue": "Total verdi",
+      "pullToRefresh": {
+        "pull": "Dra ned for å oppfriske",
+        "release": "Slipp for å oppfriske",
+        "refreshing": "Oppfrisker..."
+      }
     },
     "settingsPage": {
       "title": "Innstillinger",
