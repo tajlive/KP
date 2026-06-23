@@ -9,7 +9,7 @@
  *   - useAnimatedPrice(symbol) → useWebSocketPrice(symbol)
  */
 
-import { PriceWebSocket } from "@/lib/auto-trading/binance-websocket";
+import { binanceWebSocket } from "@/lib/websocket/BinanceWebSocket";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { RealtimeChannel } from "@supabase/realtime-js";
@@ -41,7 +41,6 @@ export function usePrices() {
   const [isConnected, setIsConnected] = useState(false);
 
   const channelRef = useRef<RealtimeChannel | null>(null);
-  const wsRef = useRef<PriceWebSocket | null>(null);
 
   useEffect(() => {
     const supabase = getSupabaseClient();
@@ -82,7 +81,7 @@ export function usePrices() {
       });
 
     // 2. Binance WebSocket for Priority Symbols (Active UI)
-    const ws = new PriceWebSocket(PRIORITY_SYMBOLS, (updatedPrices) => {
+    const callback = (updatedPrices: Record<string, number>) => {
       setPrices((prev) => {
         const next = { ...prev };
         Object.entries(updatedPrices).forEach(([symbol, price]) => {
@@ -108,22 +107,23 @@ export function usePrices() {
         });
         return next;
       });
-    });
+    };
 
-    ws.connect();
+    const unsubscribe = binanceWebSocket.subscribeToTickers(
+      PRIORITY_SYMBOLS,
+      (ticker) => {
+        callback({ [ticker.symbol]: ticker.price });
+      },
+    );
 
     channelRef.current = channel;
-    wsRef.current = ws;
 
     return () => {
       if (channelRef.current) {
         void supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
-      if (wsRef.current) {
-        wsRef.current.disconnect();
-        wsRef.current = null;
-      }
+      unsubscribe();
     };
   }, []); // Empty deps - singleton client is stable
 
