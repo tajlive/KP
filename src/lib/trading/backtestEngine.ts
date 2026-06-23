@@ -161,9 +161,9 @@ export interface StrategyConfig {
 const DEFAULT_FEE_RATE = 0.001; // 0.1% Binance taker fee
 
 /** Kanoniske backtest-fill-parametere (samme som paper executor). */
-const FEE_RATE = 0.001;
-const MARKET_SLIPPAGE_RATE = 0.0005;
-const MIN_ORDER_VALUE_USDT = 10;
+export const FEE_RATE = 0.001;
+export const MARKET_SLIPPAGE_RATE = 0.0005;
+export const MIN_ORDER_VALUE_USDT = 10;
 
 export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
   konservativ: {

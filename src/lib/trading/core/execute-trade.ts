@@ -34,10 +34,10 @@ export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
 const PAPER_DEFAULT_CAPITAL = 100000;
 
 /** Estimerte fill-parametere brukt til forhåndsvalidering av kapital/kostnad. */
-const ESTIMATED_FILL_PARAMS = {
+export const ESTIMATED_FILL_PARAMS = {
   feeRate: 0.001, // 0.1%
   marketSlippageRate: 0.0005, // 0.05%
-  minOrderValueUsdt: 10,
+  minOrderValue: 10,
 };
 
 export async function executeTrade(
@@ -283,7 +283,7 @@ async function executeTradeWithLock(
         marketPrice: request.price,
         feeRate: ESTIMATED_FILL_PARAMS.feeRate,
         marketSlippageRate: ESTIMATED_FILL_PARAMS.marketSlippageRate,
-        minOrderValue: ESTIMATED_FILL_PARAMS.minOrderValueUsdt,
+        minOrderValue: ESTIMATED_FILL_PARAMS.minOrderValue,
         quoteCurrency: "USDT",
       });
       if (!estimatedFill.success) {

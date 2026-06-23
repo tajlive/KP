@@ -28,10 +28,10 @@ import { getUsdtToNokRateAsync, usdtToNok } from "./currency";
 const marketDataProvider = createBinanceMarketDataProvider();
 
 /** Paper-adapter parametere – alle modusspesifikke verdier samlet her. */
-const PAPER_PARAMS = {
+export const PAPER_PARAMS = {
   feeRate: 0.001, // 0.1%
   marketSlippageRate: 0.0005, // 0.05%
-  minOrderValueUsdt: 10,
+  minOrderValue: 10,
 };
 
 export class PaperExecutor implements OrderExecutor {
@@ -64,7 +64,7 @@ export class PaperExecutor implements OrderExecutor {
         marketPrice: currentPrice,
         feeRate: PAPER_PARAMS.feeRate,
         marketSlippageRate: PAPER_PARAMS.marketSlippageRate,
-        minOrderValue: PAPER_PARAMS.minOrderValueUsdt,
+        minOrderValue: PAPER_PARAMS.minOrderValue,
         availableCapital: params.side.toLowerCase() === "buy" ? availableUsdt : undefined,
         quoteCurrency: "USDT",
       });
