@@ -1,5 +1,5 @@
 # Woodpecker CI — Deploy
-# Bygger appen og trigger deploy til Coolify.
+# Bygger appen og deployer til Cloudflare Workers.
 
 when:
   - event: push
@@ -23,7 +23,7 @@ steps:
     environment:
       SKIP_LINT_IN_BUILD: "true"
       NEXT_PUBLIC_APP_URL: "${NEXT_PUBLIC_APP_URL}"
-      NEXT_PUBLIC_APP_VERSION: "${NEXT_PUBLIC_APP_VERSION}"
+      NEXT_PUBLIC_APP_VERSION: "${CI_COMMIT_SHA}"
       NEXT_PUBLIC_SUPABASE_URL: "${NEXT_PUBLIC_SUPABASE_URL}"
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}"
@@ -33,28 +33,24 @@ steps:
       NEXT_PUBLIC_GLITCHTIP_DSN: "${NEXT_PUBLIC_GLITCHTIP_DSN}"
       NEXT_TELEMETRY_DISABLED: "1"
 
-  - name: deploy-to-coolify
-    image: alpine/curl
+  - name: deploy-to-cloudflare
+    image: node:24
     commands:
-      - |
-        set -eu
-        : "${COOLIFY_DEPLOY_WEBHOOK:?Missing Woodpecker secret: coolify_deploy_webhook}"
-        : "${COOLIFY_TOKEN:?Missing Woodpecker secret: coolify_token}"
-        echo "Triggering Coolify deploy for ${CI_COMMIT_SHA}..."
-        curl \
-          --fail-with-body \
-          --show-error \
-          --silent \
-          --max-time 30 \
-          --retry 2 \
-          --request POST \
-          --header "Authorization: Bearer ${COOLIFY_TOKEN}" \
-          "${COOLIFY_DEPLOY_WEBHOOK}"
-        echo
-        echo "Coolify accepted the deploy request."
+      - npm run cf:build
+      - npx wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}
+    environment:
+      CLOUDFLARE_API_TOKEN: "${CLOUDFLARE_API_TOKEN}"
+      NEXT_PUBLIC_APP_VERSION: "${CI_COMMIT_SHA}"
+      NEXT_PUBLIC_APP_URL: "${NEXT_PUBLIC_APP_URL}"
+      NEXT_PUBLIC_SUPABASE_URL: "${NEXT_PUBLIC_SUPABASE_URL}"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}"
+      NEXT_PUBLIC_SANITY_PROJECT_ID: "${NEXT_PUBLIC_SANITY_PROJECT_ID}"
+      NEXT_PUBLIC_SANITY_DATASET: "${NEXT_PUBLIC_SANITY_DATASET}"
+      NEXT_PUBLIC_SANITY_API_VERSION: "${NEXT_PUBLIC_SANITY_API_VERSION}"
+      NEXT_PUBLIC_GLITCHTIP_DSN: "${NEXT_PUBLIC_GLITCHTIP_DSN}"
     secrets:
-      - coolify_deploy_webhook
-      - coolify_token
+      - cloudflare_api_token
 
   - name: health-check
     image: alpine/curl
