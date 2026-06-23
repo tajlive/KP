@@ -53,6 +53,25 @@ const NO_STORE_PATHS = [
   "/verify",
 ] as const;
 
+/** Public marketing/legal pages that benefit from Cloudflare edge caching. */
+const MARKETING_PATHS = [
+  "/",
+  "/priser",
+  "/login",
+  "/register",
+  "/kontakt",
+  "/om-oss",
+  "/vilkar",
+  "/personvern",
+  "/cookies",
+] as const;
+
+function isMarketingPath(strippedPath: string): boolean {
+  return MARKETING_PATHS.some(
+    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
+  );
+}
+
 function isNoStoreRoute(strippedPath: string): boolean {
   const lower = strippedPath.toLowerCase();
   return NO_STORE_PATHS.some(
@@ -69,6 +88,9 @@ function setNoStoreHeaders(response: NextResponse): void {
   response.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
 }
 
+const MARKETING_CACHE_CONTROL =
+  "public, max-age=60, s-maxage=300, stale-while-revalidate=86400, stale-if-error=3600";
+
 export const cacheControlMiddleware: MiddlewareFn = (
   request: NextRequest,
   response?: NextResponse,
@@ -83,8 +105,16 @@ export const cacheControlMiddleware: MiddlewareFn = (
 
   const { strippedPath } = parseLocalePath(pathname);
 
+  // Sensitive/user-specific routes must never be cached, even if they overlap
+  // with marketing path definitions (e.g. /login, /register).
   if (isNoStoreRoute(strippedPath)) {
     setNoStoreHeaders(res);
+    return res;
+  }
+
+  if (isMarketingPath(strippedPath)) {
+    res.headers.set("Cache-Control", MARKETING_CACHE_CONTROL);
+    return res;
   }
 
   return res;

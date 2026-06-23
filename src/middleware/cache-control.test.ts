@@ -24,20 +24,25 @@ describe("cacheControlMiddleware", () => {
     }
   });
 
-  it("does NOT set no-store for marketing pages", () => {
+  it("sets edge-cache headers for marketing pages", () => {
     for (const path of ["/no", "/en/priser", "/no/om-oss", "/en/kontakt"]) {
       const req = makeRequest(path);
       const res = cacheControlMiddleware(req);
-      expect(res.headers.get("Cache-Control")).toBeNull();
-      expect(res.headers.get("CDN-Cache-Control")).toBeNull();
+      const cc = res.headers.get("Cache-Control");
+      expect(cc).toContain("s-maxage=300");
+      expect(cc).toContain("stale-while-revalidate=86400");
+      expect(cc).toContain("public");
     }
   });
 
-  it("does NOT set no-store for legal pages", () => {
+  it("sets edge-cache headers for legal pages", () => {
     for (const path of ["/no/personvern", "/en/vilkar", "/no/cookies"]) {
       const req = makeRequest(path);
       const res = cacheControlMiddleware(req);
-      expect(res.headers.get("Cache-Control")).toBeNull();
+      const cc = res.headers.get("Cache-Control");
+      expect(cc).toContain("s-maxage=300");
+      expect(cc).toContain("stale-while-revalidate=86400");
+      expect(cc).toContain("public");
     }
   });
 
