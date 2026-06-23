@@ -95,7 +95,7 @@ auth_status=$(echo "$auth_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE 
 
 if [ "$auth_status" = "200" ]; then
   # Direkte 200 respons (ikke redirect)
-  if assert_contains "$auth_headers" "x-matched-path:" "auth x-matched-path"; then
+  if assert_contains "$auth_headers" "content-type: text/html" "auth path serves HTML"; then
     pass "auth-path: 200 OK, matched login route"
   fi
 elif [ "$auth_status" = "307" ] || [ "$auth_status" = "308" ]; then
@@ -133,7 +133,9 @@ legacy_headers=$(curl -sSI "$BASE_URL/no/login" 2>&1 || true)
 legacy_status=$(echo "$legacy_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE "[0-9]+$")
 
 if [ "$legacy_status" = "200" ]; then
-  if assert_contains "$legacy_headers" "x-matched-path:" "legacy x-matched-path"; then
+  # Cloudflare Workers / Next.js on Workers does not emit Vercel's x-matched-path header.
+  # Just verify we got a real HTML response for the prefixed locale route.
+  if assert_contains "$legacy_headers" "content-type: text/html" "prefixed default locale serves HTML"; then
     pass "prefixed default locale works (/no/login -> 200 OK)"
   fi
 else
