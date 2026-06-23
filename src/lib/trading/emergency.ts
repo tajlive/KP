@@ -11,7 +11,7 @@
  */
 
 import { createClient } from "@/lib/utils";
-import { placeOrder } from "@/lib/binance/client";
+import { BinanceExecutor } from "@/lib/trading/binance-executor";
 
 export interface EmergencyStatus {
   isActive: boolean;
@@ -20,6 +20,25 @@ export interface EmergencyStatus {
   reason: string | null;
   affectedUsers: number;
   closedPositions: number;
+}
+
+/**
+ * Hjelper for å lage en BinanceExecutor fra miljøvariabler.
+ */
+export function getEnvBinanceExecutor(): BinanceExecutor {
+  const apiKey = process.env.BINANCE_API_KEY || "";
+  const apiSecret = process.env.BINANCE_API_SECRET || "";
+  if (!apiKey || !apiSecret) {
+    throw new Error(
+      "Binance API keys not configured. " +
+        "Set BINANCE_API_KEY and BINANCE_API_SECRET in .env.local",
+    );
+  }
+  return new BinanceExecutor({
+    apiKey,
+    apiSecret,
+    testnet: process.env.BINANCE_USE_TESTNET === "true",
+  });
 }
 
 /**
@@ -85,7 +104,7 @@ export async function activateEmergencyStop(
     const { data: activeSessions, error: sessionsError } = await supabase
       .from("trading_sessions")
       .select("id, user_id")
-      .eq("status", "ACTIVE");
+      .eq("status", "active");
 
     if (sessionsError) throw sessionsError;
 
@@ -162,45 +181,68 @@ export async function panicCloseAllPositions(): Promise<number> {
   let closedCount = 0;
 
   try {
-    // Hent alle åpne posisjoner
+    // Hent alle aktive sesjoner med åpne posisjoner
     const { data: openPositions, error } = await supabase
       .from("trading_sessions")
-      .select("*")
-      .eq("status", "OPEN");
+      .select("id, user_id, trading_pair, open_position")
+      .eq("status", "active")
+      .not("open_position", "is", null);
 
     if (error) throw error;
     if (!openPositions || openPositions.length === 0) {
       return 0;
     }
+
+    const executor = getEnvBinanceExecutor();
+
     // Lukk hver posisjon med MARKET order (session row: trading_pair, open_position)
     for (const row of openPositions) {
-      const position = row as unknown as {
+      const session = row as unknown as {
         id: string;
-        symbol: string;
-        quantity: number;
+        user_id: string;
+        trading_pair: string;
+        open_position: {
+          side?: "long" | "short";
+          quantity?: number;
+        } | null;
       };
+
+      const position = session.open_position;
+      if (!position) continue;
+
+      const symbol = session.trading_pair.replace("/", "").toUpperCase();
+      const quantity = position.quantity ?? 0;
+      if (quantity <= 0) continue;
+
+      // Close side must be opposite of open position side
+      const closeSide = position.side === "short" ? "buy" : "sell";
+
       try {
-        await placeOrder({
-          symbol: position.symbol,
-          side: "SELL",
-          type: "MARKET",
-          quantity: position.quantity,
+        const result = await executor.executeOrder({
+          symbol,
+          side: closeSide,
+          orderType: "market",
+          quantity,
         });
+
+        if (!result.success) {
+          throw new Error(result.error || "Order execution failed");
+        }
 
         // Oppdater status i database
         await supabase
           .from("trading_sessions")
           .update({
-            status: "CLOSED",
-            closed_at: new Date().toISOString(),
-            close_reason: "EMERGENCY_PANIC_CLOSE",
+            status: "stopped",
+            open_position: null,
+            stopped_at: new Date().toISOString(),
           } as never)
-          .eq("id", (row as unknown as { id: string }).id);
+          .eq("id", session.id);
 
         closedCount++;
       } catch (closeError) {
         console.error(
-          `[Emergency] Failed to close position ${position.id}:`,
+          `[Emergency] Failed to close position ${session.id}:`,
           closeError,
         );
         // Fortsett med neste posisjon

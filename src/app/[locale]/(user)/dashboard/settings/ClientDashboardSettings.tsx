@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BinanceAPISettings from "@/features/dashboard/BinanceAPISettings";
+import { BinanceAPISettings } from "@/features/account";
 import { createClient } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";

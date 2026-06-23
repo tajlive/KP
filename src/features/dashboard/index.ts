@@ -10,7 +10,6 @@ export { StatsGrid, StatsGridMini } from "@/features/portfolio/StatsGrid";
 // Existing components
 export { SimplifiedHero } from "./SimplifiedHero";
 export { AdvancedSection } from "./AdvancedSection";
-export { LivePnLWidget } from "./LivePnLWidget";
 export { PaperTradingCard } from "./PaperTradingCard";
 
 // Enterprise 2026 components
@@ -19,7 +18,6 @@ export { WinLossHeatmap } from "@/features/portfolio/WinLossHeatmap";
 export { AssetAllocationChart } from "@/features/portfolio/AssetAllocationChart";
 export { PersonalizedGreeting } from "./PersonalizedGreeting";
 export { ExplainStatButton } from "./ExplainStatButton";
-export { PositionSizingCalculator } from "./PositionSizingCalculator";
 export { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 
 // Types

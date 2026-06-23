@@ -118,7 +118,7 @@ export class DCAStrategy implements StrategyEngine {
       const currentQty = session.open_position.quantity || 1;
       return {
         action: "sell",
-        positionSize: (nextLevel.sell_pct / 100) * currentQty,
+        quantity: (nextLevel.sell_pct / 100) * currentQty,
         indicators: {
           pnl_pct: Math.round(pnlPct * 100) / 100,
           target: nextLevel.target_pct,

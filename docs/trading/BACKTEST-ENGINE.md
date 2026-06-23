@@ -21,7 +21,7 @@ interface BacktestInput {
   initialCapitalNOK: number;  // Startkapital i NOK (f.eks. 100000)
   strategyId: StrategyId;      // 'eth-dca' | 'btc-sma-20-50' | 'btc-sma-10-30'
   months: number;              // Periode i måneder (f.eks. 12)
-  usdNokRate?: number;         // Valgfri, default 10.8
+  usdNokRate?: number;         // Valgfri, default fra getUsdtToNokRate()
 }
 
 interface BacktestResult {
@@ -160,10 +160,21 @@ Pessimistisk = TotalReturn - (Volatility * 0.5 * 100)
 ### Antagelser
 
 1. **Trading fees**: 0.1% per trade (Binance taker fee)
-2. **Slippage**: Ikke modellert eksplisitt, men fees dekker delvis
-3. **Execution**: All-or-nothing fills ved SMA-crossover
-4. **Valuta**: USD/NOK = 10.8 (default)
+2. **Slippage**: Modellert eksplisitt via kanonisk `computeFill`
+3. **Execution**: Market fills med lot-size-avrunding
+4. **Valuta**: USD/NOK hentes dynamisk via `getUsdtToNokRate` — ingen hardkodet kurs
 5. **Risk-free rate**: 3% annualisert
+
+## Kanoniske komponenter
+
+Backtest-motoren deler implementasjon med live- og paper-trading for å sikre at simulerte resultater samsvarer med faktisk oppførsel:
+
+- **Fill-modell**: `computeFill` fra `src/lib/trading/canonical/execution/fill-model` håndterer fees, slippage og lot-size-avrunding.
+- **Posisjons-ledger**: FIFO-ledger (`src/lib/trading/position-ledger`) brukes for kostnadsbasis og realisert P&L.
+- **P&L-sanity-check**: `calculatePnlFromTrades` validerer at motorens P&L stemmer med kanonisk beregning.
+- **Risikogrenser**: `resolveRiskLimits` fra `src/lib/trading/canonical/risk/limits-resolver` håndhever maksimal posisjons- og eksponeringsgrense før hver kjøpsordre.
+- **Markedsdata**: Historiske data hentes via kanonisk `createBinanceMarketDataProvider`.
+- **Valutakurs**: `getUsdtToNokRate` og `getUsdtToNokRateAsync` gir USD/NOK uten hardkodede verdier.
 
 ## Caching
 
@@ -221,6 +232,16 @@ const fresh = await calculateBacktestWithCache(input, { skipCache: true });
 Standard-kombinasjoner (9 totalt) kan pre-caches:
 - 3 strategier × 3 perioder (12, 24, 36 måneder)
 
+### Deploy / cache invalidation
+
+Etter deploy av endringer i backtest-motoren (fill-modell, fees, slippage, risikogrenser, strategier, etc.) må eksisterende cachede resultater invalides. Kjør følgende mot databasen:
+
+```sql
+TRUNCATE backtest_cache;
+```
+
+> **Merk:** Uten dette kan brukere få utdaterte eller inkonsistente backtest-resultater fra `backtest_cache` inntil TTL-en (24t) utløper.
+
 ## Telemetri
 
 Backtest Engine logger anonymisert bruk for analyse og konverteringssporing.
@@ -271,6 +292,9 @@ await markBacktestConverted();
 # Kjør enhetstester
 npm run test:unit -- src/lib/trading/__tests__/backtestEngine.test.ts
 
+# Kjør cross-engine parity-tester
+npm run test:unit -- src/lib/trading/__tests__/backtest-parity.test.ts
+
 # Kjør e2e-tester
 npm run test:e2e -- e2e/landing/backtest-match.spec.ts
 ```
@@ -285,4 +309,4 @@ npm run test:e2e -- e2e/landing/backtest-match.spec.ts
 ---
 
 **Ansvarlig**: Backend & Trading Team  
-**Sist oppdatert**: 2026-04-04
+**Sist oppdatert**: 2026-06-23

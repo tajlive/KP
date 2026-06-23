@@ -18,6 +18,33 @@ import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics
 import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { computeFill } from "./canonical/execution/fill-model";
+import { roundToLotSize } from "./canonical/symbols/lot-sizes";
+import { getUsdtToNokRate, getUsdtToNokRateAsync } from "./currency";
+import {
+  createLedger,
+  addLot,
+  sellFIFO,
+  getTotalQuantity,
+  getWeightedEntryPrice,
+  isEmpty,
+  type LedgerState,
+} from "@/lib/trading/position-ledger";
+import {
+  calculatePnlFromTrades,
+  type TradePnlInput,
+} from "@/lib/trading/canonical/pnl/trade-pnl";
+import {
+  resolveRiskLimits,
+  type RawRiskProfile,
+} from "@/lib/trading/canonical/risk/limits-resolver";
+import {
+  resolveStrategy,
+  type Candle,
+  type StrategySignal,
+  type StrategyInput,
+  type MinimalSession,
+} from "@/lib/trading/strategies";
 
 // ============================================================================
 // TYPES
@@ -105,7 +132,7 @@ export interface BacktestInput {
   strategyId: StrategyId;
   /** Periode i måneder (f.eks. 12) */
   months: number;
-  /** USD/NOK kurs (valgfri, default 10.8) */
+  /** USD/NOK kurs (valgfri, default fra getUsdtToNokRate) */
   usdNokRate?: number;
   /** Include Monte Carlo simulation (default false, adds ~1-2s) */
   includeMonteCarloSim?: boolean;
@@ -131,8 +158,12 @@ export interface StrategyConfig {
 // KONFIGURASJON
 // ============================================================================
 
-const DEFAULT_USD_NOK_RATE = 10.8;
 const DEFAULT_FEE_RATE = 0.001; // 0.1% Binance taker fee
+
+/** Kanoniske backtest-fill-parametere (samme som paper executor). */
+export const FEE_RATE = 0.001;
+export const MARKET_SLIPPAGE_RATE = 0.0005;
+export const MIN_ORDER_VALUE_USDT = 10;
 
 export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
   konservativ: {
@@ -167,6 +198,47 @@ export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
   },
 };
 
+// Mapping fra risk profile til shared strategy registry
+const RISK_PROFILE_STRATEGY_CONFIG: Record<
+  RiskProfile,
+  { key: string; params: Record<string, unknown> }
+> = {
+  konservativ: {
+    key: "dca",
+    params: {
+      fast_period: 30,
+      slow_period: 100,
+      position_size: 0.5,
+      interval_minutes: 60 * 24,
+      profit_target_pct: 25,
+      stop_loss_pct: -10,
+      use_trailing_stop: true,
+    },
+  },
+  balansert: {
+    key: "trend_follow",
+    params: {
+      fast_period: 20,
+      slow_period: 50,
+      position_size: 1.0,
+      use_adx_filter: true,
+      adx_threshold: 25,
+      use_trailing_stop: true,
+    },
+  },
+  aggressiv: {
+    key: "trend_follow",
+    params: {
+      fast_period: 10,
+      slow_period: 30,
+      position_size: 1.0,
+      use_adx_filter: true,
+      adx_threshold: 25,
+      use_trailing_stop: true,
+    },
+  },
+};
+
 // Mapping fra gammel strategi-ID til risk profile
 export function strategyIdToRiskProfile(strategyId: StrategyId): RiskProfile {
   switch (strategyId) {
@@ -177,22 +249,31 @@ export function strategyIdToRiskProfile(strategyId: StrategyId): RiskProfile {
   }
 }
 
+/**
+ * Bygg en syntetisk RawRiskProfile fra backtest-config slik at backtest bruker
+ * de samme posisjons-/eksponeringsgrensene som live/paper (kanonisk resolver).
+ */
+function buildRawRiskProfile(
+  riskProfile: RiskProfile,
+  config: StrategyConfig,
+): RawRiskProfile {
+  // Bruk strategi-profilens kanoniske grenser (samme som live/paper),
+  // uavhengig av eventuell test-override av config.maxPositionPct.
+  const maxPositionPct = STRATEGY_CONFIGS[riskProfile].maxPositionPct * 100;
+  return {
+    id: `backtest-${riskProfile}`,
+    name: `Backtest ${riskProfile}`,
+    max_position_pct: maxPositionPct,
+    max_exposure_pct: maxPositionPct,
+    max_daily_loss_pct: 100,
+    allowed_pairs: [config.symbol],
+    leverage_allowed: false,
+  };
+}
+
 // ============================================================================
 // HJELPEFUNKSJONER
 // ============================================================================
-
-function calculateSMA(prices: number[], period: number): number[] {
-  const sma: number[] = [];
-  for (let i = 0; i < prices.length; i++) {
-    if (i < period - 1) {
-      sma.push(NaN);
-    } else {
-      const sum = prices.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
-      sma.push(sum / period);
-    }
-  }
-  return sma;
-}
 
 function calculateVolatility(returns: number[]): number {
   if (returns.length < 2) return 0;
@@ -231,80 +312,295 @@ export async function fetchHistoricalData(
 // BACKTEST-LOGIKK
 // ============================================================================
 
+interface BacktestPosition {
+  /** Timestamp of the first buy that opened the current position (for trade records). */
+  entryTime: number;
+  highestPrice: number;
+  partialExitsExecuted: number[];
+  dailyBuysToday: string;
+  dailyBuyCount: number;
+}
+
 /**
- * Kjør backtest med SMA crossover strategi
+ * Kjør backtest via shared strategy registry.
+ *
+ * Bruker resolveStrategy() slik at backtest-signalene er identiske med
+ * live/paper trading (single source of truth).
  */
 export function runBacktest(
   candles: OHLCV[],
   config: StrategyConfig,
   initialCapitalUSD: number
 ): Omit<BacktestResult, 'startValueNOK' | 'endValueNOK' | 'usdNokRate' | 'alpha'> {
-  const closes = candles.map(d => d.close);
-  const smaFast = calculateSMA(closes, config.smaFast);
-  const smaSlow = calculateSMA(closes, config.smaSlow);
-  
+  const riskProfile = strategyIdToRiskProfile(config.id);
+  const engineConfig = RISK_PROFILE_STRATEGY_CONFIG[riskProfile];
+  const strategy = resolveStrategy(engineConfig.key);
+  if (!strategy) {
+    throw new Error(`Strategy engine "${engineConfig.key}" not found for risk profile "${riskProfile}"`);
+  }
+
+  // Kanoniske risikogrenser (samme som live/paper) — sync, ingen Supabase-avhengighet
+  const rawProfile = buildRawRiskProfile(riskProfile, config);
+  const limits = resolveRiskLimits("paper", rawProfile);
+  if (!limits) {
+    throw new Error(`Could not resolve risk limits for backtest profile "${riskProfile}"`);
+  }
+
+  const mappedCandles: Candle[] = candles.map((d) => ({
+    time: d.timestamp,
+    open: d.open,
+    high: d.high,
+    low: d.low,
+    close: d.close,
+    volume: d.volume,
+  }));
+
+  const closes = candles.map((d) => d.close);
   const trades: BacktestTrade[] = [];
   const equityCurve: Array<{ timestamp: number; equity: number }> = [];
-  
-  let capital = initialCapitalUSD;
+  const tradePnlInputs: TradePnlInput[] = [];
+
+  let cashUSD = initialCapitalUSD;
   let maxEquity = initialCapitalUSD;
   let maxDrawdown = 0;
-  let position: { entryPrice: number; size: number; entryTime: number } | null = null;
-  
-  // Start fra der begge SMA-er er tilgjengelige
+  let ledger: LedgerState = createLedger("long");
+  let position: BacktestPosition | null = null;
+
+  // Start fra der begge MA-er er tilgjengelige (samme som tidligere SMA-logikk)
   const startIndex = config.smaSlow;
-  
+
   for (let i = startIndex; i < candles.length; i++) {
     const candle = candles[i];
-    const prevFast = smaFast[i - 1];
-    const prevSlow = smaSlow[i - 1];
-    const currFast = smaFast[i];
-    const currSlow = smaSlow[i];
-    
-    // Golden cross - kjøp
-    if (!position && prevFast <= prevSlow && currFast > currSlow) {
-      const positionCapital = capital * config.maxPositionPct;
-      const fee = positionCapital * config.feeRate;
-      const positionSize = (positionCapital - fee) / candle.close;
-      
-      position = {
-        entryPrice: candle.close,
-        size: positionSize,
-        entryTime: candle.timestamp,
-      };
-      capital = capital - positionCapital;
+    const candlesUpToNow = mappedCandles.slice(0, i + 1);
+    const positionQty = getTotalQuantity(ledger);
+    const positionEntryPrice = getWeightedEntryPrice(ledger);
+
+    const session: MinimalSession = {
+      open_position: position && positionQty > 0
+        ? {
+            side: "long",
+            quantity: positionQty,
+            entry_price: positionEntryPrice,
+            entry_time: new Date(position.entryTime).toISOString(),
+            highest_price: position.highestPrice,
+            partial_exits_executed: position.partialExitsExecuted,
+          }
+        : null,
+      last_tick_at:
+        i > 0 ? new Date(candles[i - 1].timestamp).toISOString() : null,
+      strategy_config: {
+        daily_buys_today: position?.dailyBuysToday ?? "",
+        daily_buy_count: position?.dailyBuyCount ?? 0,
+      },
+    };
+
+    const strategyConfig: Record<string, unknown> = {
+      ...engineConfig.params,
+      fast_period: config.smaFast,
+      slow_period: config.smaSlow,
+    };
+
+    const signal: StrategySignal = strategy.evaluate({
+      candles: candlesUpToNow,
+      session,
+      config: strategyConfig,
+      currentTime: candle.timestamp,
+    });
+
+    // Oppdater highest price for trailing stop
+    if (position && candle.close > position.highestPrice) {
+      position.highestPrice = candle.close;
     }
-    
-    // Death cross - selg
-    else if (position && prevFast >= prevSlow && currFast < currSlow) {
-      const exitValue = position.size * candle.close;
-      const fee = exitValue * config.feeRate;
-      const pnl = exitValue - fee - (position.size * position.entryPrice);
-      const pnlPct = (pnl / (position.size * position.entryPrice)) * 100;
-      
-      trades.push({
-        entryTime: position.entryTime,
-        exitTime: candle.timestamp,
-        entryPrice: position.entryPrice,
-        exitPrice: candle.close,
-        side: 'LONG',
-        size: position.size,
-        pnl,
-        pnlPct,
-        fee: position.size * position.entryPrice * config.feeRate + fee,
-      });
-      
-      capital = exitValue - fee;
-      position = null;
+
+    if (signal.action === "buy") {
+      const targetSizePct = Math.min(
+        signal.positionSize ?? config.maxPositionPct,
+        config.maxPositionPct,
+      );
+      const desiredCapital = cashUSD * targetSizePct;
+      const rawQuantity = (desiredCapital * (1 - FEE_RATE)) / candle.close;
+      const roundedQuantity = roundToLotSize(config.symbol, rawQuantity);
+
+      // Kanonisk risikosjekk (sync) før fill-beregning
+      const currentEquity = cashUSD + positionQty * candle.close;
+      const existingPositionValue = positionQty * positionEntryPrice;
+      const orderValue = roundedQuantity * candle.close;
+      const postTradePositionValue = existingPositionValue + orderValue;
+      const postTradeExposure = postTradePositionValue; // backtest er single-symbol
+
+      const postTradePositionPct =
+        currentEquity > 0 ? (postTradePositionValue / currentEquity) * 100 : 0;
+      const postTradeExposurePct =
+        currentEquity > 0 ? (postTradeExposure / currentEquity) * 100 : 0;
+
+      if (
+        postTradePositionPct > limits.maxPositionPct ||
+        postTradeExposurePct > limits.maxExposurePct
+      ) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `Backtest buy skipped: risk limit exceeded (postTradePositionPct=${postTradePositionPct.toFixed(2)}%, max=${limits.maxPositionPct}%)`,
+          );
+        }
+      } else {
+        const fill = computeFill({
+          side: "buy",
+          quantity: roundedQuantity,
+          orderType: "market",
+          marketPrice: candle.close,
+          feeRate: FEE_RATE,
+          marketSlippageRate: MARKET_SLIPPAGE_RATE,
+          minOrderValue: MIN_ORDER_VALUE_USDT,
+          availableCapital: cashUSD,
+          quoteCurrency: "USDT",
+        });
+
+      if (!fill.success) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`Backtest buy skipped: ${fill.error}`);
+        }
+      } else {
+        const today = new Date(candle.timestamp).toISOString().split("T")[0];
+        const isNewPosition = isEmpty(ledger);
+
+        const effectiveEntryPrice =
+          fill.executedQuantity > 0
+            ? fill.totalCost / fill.executedQuantity
+            : fill.executedPrice;
+        ledger = addLot(
+          ledger,
+          fill.executedQuantity,
+          effectiveEntryPrice,
+          new Date(candle.timestamp).toISOString(),
+        );
+        cashUSD -= fill.totalCost;
+
+        tradePnlInputs.push({
+          symbol: config.symbol,
+          side: "buy",
+          quantity: fill.executedQuantity,
+          price: fill.executedPrice,
+          fee: fill.fee,
+          timestamp: new Date(candle.timestamp).toISOString(),
+          currency: "USDT",
+        });
+
+        if (isNewPosition || !position) {
+          position = {
+            entryTime: candle.timestamp,
+            highestPrice: candle.close,
+            partialExitsExecuted: [],
+            dailyBuysToday: today,
+            dailyBuyCount: 1,
+          };
+        } else {
+          position.dailyBuysToday = today;
+          position.dailyBuyCount += 1;
+        }
+      }
     }
-    
-    // Beregn daglig equity
-    const currentEquity = position 
-      ? capital + (position.size * candle.close)
-      : capital;
-    
+    } else if (signal.action === "sell" && !isEmpty(ledger)) {
+      const currentQty = getTotalQuantity(ledger);
+      let rawQtyToSell: number;
+      if (signal.quantity !== undefined) {
+        // Absolute quantity sell (e.g. DCA partial take-profits)
+        rawQtyToSell = Math.min(signal.quantity, currentQty);
+      } else {
+        const signalSize = signal.positionSize ?? 1.0;
+        // positionSize er en brøk av total kapital; konverter til brøk av posisjonen
+        const positionValueRatio =
+          (currentQty * positionEntryPrice) / cashUSD || 1;
+        const sellFraction = Math.min(signalSize / positionValueRatio, 1);
+        rawQtyToSell = currentQty * sellFraction;
+      }
+      const qtyToSell = roundToLotSize(config.symbol, rawQtyToSell);
+
+      if (qtyToSell > 0) {
+        const fill = computeFill({
+          side: "sell",
+          quantity: qtyToSell,
+          orderType: "market",
+          marketPrice: candle.close,
+          feeRate: FEE_RATE,
+          marketSlippageRate: MARKET_SLIPPAGE_RATE,
+          minOrderValue: MIN_ORDER_VALUE_USDT,
+          quoteCurrency: "USDT",
+        });
+
+        if (!fill.success) {
+          if (process.env.NODE_ENV !== "production") {
+            console.warn(`Backtest sell skipped: ${fill.error}`);
+          }
+        } else {
+          const sellQty = Math.min(fill.executedQuantity, currentQty);
+          const sellResult = sellFIFO(ledger, sellQty, fill.executedPrice);
+          const grossRealizedPnl = sellResult.realizedPnl;
+          const netPnl = grossRealizedPnl - fill.fee;
+          const entryValue = sellResult.lotMatches.reduce(
+            (sum, m) => sum + m.matchedQuantity * m.entryPrice,
+            0,
+          );
+          const avgEntryPrice = sellQty > 0 ? entryValue / sellQty : 0;
+          const earliestEntryTime =
+            sellResult.lotMatches.length > 0
+              ? Math.min(
+                  ...sellResult.lotMatches.map((m) => {
+                    const lot = ledger.lots.find((l) => l.id === m.lotId);
+                    return lot
+                      ? new Date(lot.timestamp).getTime()
+                      : position?.entryTime ?? candle.timestamp;
+                  }),
+                )
+              : position?.entryTime ?? candle.timestamp;
+
+          const buyFeeForMatch = entryValue * (FEE_RATE / (1 + FEE_RATE));
+          const roundTripFee = buyFeeForMatch + fill.fee;
+
+          trades.push({
+            entryTime: earliestEntryTime,
+            exitTime: candle.timestamp,
+            entryPrice: avgEntryPrice,
+            exitPrice: fill.executedPrice,
+            side: 'LONG',
+            size: sellQty,
+            pnl: netPnl,
+            pnlPct: entryValue > 0 ? (netPnl / entryValue) * 100 : 0,
+            fee: roundTripFee,
+          });
+
+          cashUSD += sellQty * fill.executedPrice - fill.fee;
+          ledger = { ...ledger, lots: sellResult.remainingLots };
+
+          tradePnlInputs.push({
+            symbol: config.symbol,
+            side: "sell",
+            quantity: sellQty,
+            price: fill.executedPrice,
+            fee: fill.fee,
+            timestamp: new Date(candle.timestamp).toISOString(),
+            currency: "USDT",
+          });
+
+          if (!isEmpty(ledger) && position) {
+            const target = signal.indicators?.target as number | undefined;
+            if (target !== undefined) {
+              position.partialExitsExecuted = [
+                ...position.partialExitsExecuted,
+                target,
+              ];
+            }
+          } else {
+            position = null;
+          }
+        }
+      }
+    }
+
+    // Beregn daglig equity: cash + markedsverdi av åpne lots
+    const currentEquity = cashUSD + getTotalQuantity(ledger) * candle.close;
+
     equityCurve.push({ timestamp: candle.timestamp, equity: currentEquity });
-    
+
     // Track drawdown
     if (currentEquity > maxEquity) {
       maxEquity = currentEquity;
@@ -314,92 +610,160 @@ export function runBacktest(
       maxDrawdown = drawdown;
     }
   }
-  
-  // Lukk åpen posisjon ved slutten
-  if (position && candles.length > 0) {
-    const lastCandle = candles[candles.length - 1];
-    const exitValue = position.size * lastCandle.close;
-    const fee = exitValue * config.feeRate;
-    const pnl = exitValue - fee - (position.size * position.entryPrice);
-    
-    trades.push({
-      entryTime: position.entryTime,
-      exitTime: lastCandle.timestamp,
-      entryPrice: position.entryPrice,
-      exitPrice: lastCandle.close,
-      side: 'LONG',
-      size: position.size,
-      pnl,
-      pnlPct: (pnl / (position.size * position.entryPrice)) * 100,
-      fee: position.size * position.entryPrice * config.feeRate + fee,
-    });
-    
-    capital = exitValue - fee;
+
+  // Lukk åpen posisjon ved slutten (markedsverdi ved siste close, ingen ekstra fee)
+  const lastCandle = candles.length > 0 ? candles[candles.length - 1] : undefined;
+  const remainingQty = getTotalQuantity(ledger);
+  if (remainingQty > 0 && lastCandle) {
+    const qtyToSell = roundToLotSize(config.symbol, remainingQty);
+
+    if (qtyToSell > 0) {
+      const sellResult = sellFIFO(ledger, qtyToSell, lastCandle.close);
+      const grossRealizedPnl = sellResult.realizedPnl;
+      const entryValue = sellResult.lotMatches.reduce(
+        (sum, m) => sum + m.matchedQuantity * m.entryPrice,
+        0,
+      );
+      const avgEntryPrice = qtyToSell > 0 ? entryValue / qtyToSell : 0;
+      const earliestEntryTime =
+        sellResult.lotMatches.length > 0
+          ? Math.min(
+              ...sellResult.lotMatches.map((m) => {
+                const lot = ledger.lots.find((l) => l.id === m.lotId);
+                return lot
+                  ? new Date(lot.timestamp).getTime()
+                  : position?.entryTime ?? lastCandle.timestamp;
+              }),
+            )
+          : position?.entryTime ?? lastCandle.timestamp;
+
+      const buyFeeForFinalMatch = entryValue * (FEE_RATE / (1 + FEE_RATE));
+
+      trades.push({
+        entryTime: earliestEntryTime,
+        exitTime: lastCandle.timestamp,
+        entryPrice: avgEntryPrice,
+        exitPrice: lastCandle.close,
+        side: 'LONG',
+        size: qtyToSell,
+        pnl: grossRealizedPnl,
+        pnlPct: entryValue > 0 ? (grossRealizedPnl / entryValue) * 100 : 0,
+        fee: buyFeeForFinalMatch,
+      });
+
+      cashUSD += qtyToSell * lastCandle.close;
+      ledger = { ...ledger, lots: sellResult.remainingLots };
+      tradePnlInputs.push({
+        symbol: config.symbol,
+        side: "sell",
+        quantity: qtyToSell,
+        price: lastCandle.close,
+        fee: 0,
+        timestamp: new Date(lastCandle.timestamp).toISOString(),
+        currency: "USDT",
+      });
+    }
+    position = null;
   }
-  
+
+  // Kanonisk P&L-sanity-check (utvikling/test only)
+  if (process.env.NODE_ENV !== "production" && tradePnlInputs.length > 0 && lastCandle) {
+    const canonical = calculatePnlFromTrades(tradePnlInputs, lastCandle.close);
+    const finalEquity = cashUSD + getTotalQuantity(ledger) * lastCandle.close;
+    const enginePnl = finalEquity - initialCapitalUSD;
+    const canonicalPnl = canonical.realizedPnl + canonical.unrealizedPnl;
+    if (Math.abs(enginePnl - canonicalPnl) > 0.05) {
+      console.warn(
+        `Backtest P&L sanity mismatch: engine=${enginePnl.toFixed(4)} canonical=${canonicalPnl.toFixed(4)}`,
+      );
+    }
+  }
+
   // Beregn metrics
-  const finalEquity = capital;
-  const totalReturnPct = ((finalEquity - initialCapitalUSD) / initialCapitalUSD) * 100;
-  const buyHoldReturn = ((closes[closes.length - 1] - closes[startIndex]) / closes[startIndex]) * 100;
-  
-  const winningTrades = trades.filter(t => t.pnl > 0);
-  const losingTrades = trades.filter(t => t.pnl <= 0);
-  
+  const finalEquity = cashUSD + getTotalQuantity(ledger) * (lastCandle?.close ?? 0);
+  const totalReturnPct =
+    ((finalEquity - initialCapitalUSD) / initialCapitalUSD) * 100;
+  const buyHoldReturn =
+    ((closes[closes.length - 1] - closes[startIndex]) / closes[startIndex]) *
+    100;
+
+  const winningTrades = trades.filter((t) => t.pnl > 0);
+  const losingTrades = trades.filter((t) => t.pnl <= 0);
+
   const totalProfit = winningTrades.reduce((sum, t) => sum + t.pnl, 0);
-  const totalLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0));
-  
-  // Beregn daglige returns for Sharpe og volatilitet
-  const dailyReturns = equityCurve.map((e, i) => 
-    i === 0 ? 0 : (e.equity - equityCurve[i - 1].equity) / equityCurve[i - 1].equity
-  ).slice(1);
-  
-  const avgReturn = dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
-  const stdReturn = Math.sqrt(
-    dailyReturns.reduce((sq, n) => sq + Math.pow(n - avgReturn, 2), 0) / dailyReturns.length
+  const totalLoss = Math.abs(
+    losingTrades.reduce((sum, t) => sum + t.pnl, 0),
   );
-  
+
+  // Beregn daglige returns for Sharpe og volatilitet
+  const dailyReturns = equityCurve
+    .map((e, i) =>
+      i === 0
+        ? 0
+        : (e.equity - equityCurve[i - 1].equity) / equityCurve[i - 1].equity,
+    )
+    .slice(1);
+
+  const avgReturn =
+    dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
+  const stdReturn = Math.sqrt(
+    dailyReturns.reduce((sq, n) => sq + Math.pow(n - avgReturn, 2), 0) /
+      dailyReturns.length,
+  );
+
   // Sharpe ratio (antar 3% risk-free rate)
   const riskFreeRateDaily = 0.03 / 365;
-  const sharpeRatio = stdReturn === 0 ? 0 : 
-    ((avgReturn - riskFreeRateDaily) / stdReturn) * Math.sqrt(365);
-  
+  const sharpeRatio =
+    stdReturn === 0
+      ? 0
+      : ((avgReturn - riskFreeRateDaily) / stdReturn) * Math.sqrt(365);
+
   // Beregn scenarier basert på faktisk volatilitet
-  // Optimistisk = bedre avkastning (mindre negativ eller mer positiv)
-  // Pessimistisk = dårligere avkastning (mer negativ eller mindre positiv)
   const volatility = calculateVolatility(dailyReturns);
   const volAdjustment = volatility * 0.5;
-  
+
   const scenarios: BacktestScenarios = {
-    optimistic: totalReturnPct + volAdjustment * 100, // Bedre resultat
+    optimistic: totalReturnPct + volAdjustment * 100,
     expected: totalReturnPct,
-    pessimistic: totalReturnPct - volAdjustment * 100, // Dårligere resultat
+    pessimistic: totalReturnPct - volAdjustment * 100,
   };
-  
+
   const metrics: BacktestMetrics = {
     totalReturnPct,
     maxDrawdownPct: -maxDrawdown * 100,
     sharpeRatio,
-    winRate: trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0,
+    winRate:
+      trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0,
     totalTrades: trades.length,
-    profitFactor: totalLoss === 0 ? (totalProfit > 0 ? Infinity : 0) : totalProfit / totalLoss,
-    bestTradePct: trades.length > 0 ? Math.max(...trades.map(t => t.pnlPct)) : 0,
-    worstTradePct: trades.length > 0 ? Math.min(...trades.map(t => t.pnlPct)) : 0,
-    avgTradeDurationDays: trades.length > 0
-      ? trades.reduce((sum, t) => sum + (t.exitTime - t.entryTime) / (1000 * 60 * 60 * 24), 0) / trades.length
-      : 0,
+    profitFactor:
+      totalLoss === 0
+        ? totalProfit > 0
+          ? Infinity
+          : 0
+        : totalProfit / totalLoss,
+    bestTradePct: trades.length > 0 ? Math.max(...trades.map((t) => t.pnlPct)) : 0,
+    worstTradePct: trades.length > 0 ? Math.min(...trades.map((t) => t.pnlPct)) : 0,
+    avgTradeDurationDays:
+      trades.length > 0
+        ? trades.reduce(
+            (sum, t) =>
+              sum + (t.exitTime - t.entryTime) / (1000 * 60 * 60 * 24),
+            0,
+          ) / trades.length
+        : 0,
     volatility: volatility * 100,
-    // Advanced risk metrics
-    riskMetrics: dailyReturns.length >= 2
-      ? calculateAllRiskMetrics(
-          dailyReturns,
-          trades,
-          equityCurve.map(e => e.equity),
-          totalReturnPct / 100,
-          maxDrawdown,
-        )
-      : undefined,
+    riskMetrics:
+      dailyReturns.length >= 2
+        ? calculateAllRiskMetrics(
+            dailyReturns,
+            trades,
+            equityCurve.map((e) => e.equity),
+            totalReturnPct / 100,
+            maxDrawdown,
+          )
+        : undefined,
   };
-  
+
   return {
     trades,
     equityCurve,
@@ -423,7 +787,7 @@ export function runBacktest(
  * @param input.initialCapitalNOK - Startkapital i NOK (f.eks. 100000)
  * @param input.strategyId - Strategi-ID: 'eth-dca' | 'btc-sma-20-50' | 'btc-sma-10-30'
  * @param input.months - Periode i måneder (f.eks. 12)
- * @param input.usdNokRate - USD/NOK kurs (valgfri, default 10.8)
+ * @param input.usdNokRate - USD/NOK kurs (valgfri, default fra getUsdtToNokRate)
  * 
  * @returns Fullstendig backtest-resultat med trades, equity curve og metrics
  * 
@@ -448,7 +812,8 @@ export function runBacktest(
  * - Scenarier beregnes basert på faktisk volatilitet
  */
 export async function calculateBacktest(input: BacktestInput): Promise<BacktestResult> {
-  const { initialCapitalNOK, strategyId, months, usdNokRate = DEFAULT_USD_NOK_RATE } = input;
+  const usdNokRate = input.usdNokRate ?? getUsdtToNokRate();
+  const { initialCapitalNOK, strategyId, months } = input;
   
   // Finn config
   const riskProfile = strategyIdToRiskProfile(strategyId);
@@ -909,7 +1274,8 @@ export async function calculateBacktestWithCache(
   input: BacktestInput,
   options?: { skipCache?: boolean; skipTelemetry?: boolean }
 ): Promise<BacktestWithCacheResult> {
-  const { initialCapitalNOK, strategyId, months, usdNokRate = DEFAULT_USD_NOK_RATE } = input;
+  const usdNokRate = input.usdNokRate ?? await getUsdtToNokRateAsync();
+  const { initialCapitalNOK, strategyId, months } = input;
   const sessionId = getSessionId();
   const startTime = Date.now();
   
@@ -952,7 +1318,7 @@ export async function calculateBacktestWithCache(
   }
   
   // Ingen cache - kjør full backtest
-  const result = await calculateBacktest(input);
+  const result = await calculateBacktest({ ...input, usdNokRate });
   
   // Lagre i cache (fire-and-forget)
   backtestCache.set(config.symbol, strategyId, months, result).catch(() => {});

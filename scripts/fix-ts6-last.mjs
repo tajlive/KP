@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'fs';
 
 const files = [
   'src/lib/paper-trading/supabase.ts',
-  'src/lib/trading/core/execute-trade-safe.ts',
+  // NOTE: src/lib/trading/core/execute-trade-safe.ts was deleted in C2 refactor.
   'src/lib/trading/emergency.ts',
   'src/lib/trading/risk.ts',
   'src/lib/trial/trial-manager.ts',

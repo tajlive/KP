@@ -19,6 +19,7 @@ import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
+import { isAppShellPath } from "@/shared/layout/marketing-shell-paths";
 import { RootProviders } from "@/app/providers/RootProviders";
 import { Outfit, Geist } from "next/font/google";
 import { getFlagsAsync } from "@/lib/flags";
@@ -162,30 +163,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const showVippsMarket = shouldShowVippsForRequest(hdrs);
 
   // Marketing pages get a lighter provider tree to reduce JS and hydration cost.
-  const APP_SHELL_PATHS: readonly string[] = [
-    "/dashboard",
-    "/copy-trading",
-    "/marketplace",
-    "/admin",
-    "/checkout",
-    "/onboarding",
-    "/akademi",
-    "/konto",
-    "/handel",
-    "/handelshistorikk",
-    "/varsler",
-    "/leagues",
-    "/profile",
-    "/quiz",
-    "/innstillinger",
-    "/callback",
-    "/paper-trading",
-    "/live-trading",
-    "/auto-trading",
-  ];
-  const isMarketing = !APP_SHELL_PATHS.some(
-    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`),
-  );
+  const isMarketing = !isAppShellPath(strippedPath);
 
   // Get CSP nonce from middleware header for inline scripts
   const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
