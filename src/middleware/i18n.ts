@@ -64,7 +64,7 @@ export function i18nMiddleware(
   if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
     const url = request.nextUrl.clone();
     if (strippedPath.includes("live-trading")) {
-      url.pathname = localizedPathname(locale, "/paper-trading");
+      url.pathname = localizedPathname(locale, "/handel");
       url.searchParams.set("mode", "live");
     } else if (strippedPath.includes("auto-trade")) {
       url.pathname = localizedPathname(locale, "/dashboard/auto-trade");

@@ -335,8 +335,8 @@ export interface NavigationData {
 export const FALLBACK_NAVIGATION: NavigationData = {
   loggedOutLinks: [
     { label: "Lær", path: "/kurs", order: 0 },
-    { label: "Trade", path: "/paper-trading", order: 1 },
-    { label: "Bots", path: "/auto-trading", order: 2 },
+    { label: "Trade", path: "/handel?mode=paper", order: 1 },
+    { label: "Bots", path: "/dashboard/auto-trade", order: 2 },
     { label: "Priser", path: "/priser", order: 3 },
   ],
   loggedInLinks: [
