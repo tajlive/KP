@@ -171,7 +171,8 @@ const eslintConfig = [
     ignores: [
       "**/node_modules/**",
       "**/.next/**",
-      "**/out/**",
+      "**/.open-next/**",
+      "**/out/",
       "**/.cache/**",
       "**/public/**",
       "**/allure-report/**",
