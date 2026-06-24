@@ -6,6 +6,7 @@
 set -euo pipefail
 
 CONFIG_CANDIDATES=(
+  "$HOME/.kimi-code/mcp.json"
   "$HOME/.kimi/mcp.json"
   ".mcp/mcp_config.json"
 )

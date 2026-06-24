@@ -16,7 +16,10 @@ const root = resolve(__dirname, "..");
 
 const kgPath = resolve(root, ".mempalace/kg.json");
 const diaryPath = resolve(root, ".kimi/diary.jsonl");
-const mcpConfigPath = resolve(process.env.HOME || "/Users/taj", ".kimi/mcp.json");
+const mcpConfigCandidates = [
+  resolve(process.env.HOME || "/Users/taj", ".kimi-code/mcp.json"),
+  resolve(process.env.HOME || "/Users/taj", ".kimi/mcp.json"),
+];
 const logPath = resolve(root, ".kimi/logs/mempalace.jsonl");
 const sessionFile = "/tmp/kimi_session.json";
 
@@ -107,19 +110,36 @@ if (existsSync(diaryPath)) {
 
 // ─── MCP SERVERE ───
 let mcpServers = [];
-try {
-  if (existsSync(mcpConfigPath)) {
-    const mcpConfig = JSON.parse(readFileSync(mcpConfigPath, "utf8"));
-    // Støtter flere formater: { mcpServers: {} }, { servers: {} }, etc.
-    const servers =
-      mcpConfig.mcpServers ||
-      mcpConfig.servers ||
-      mcpConfig.MCPServers ||
-      {};
-    mcpServers = Object.keys(servers).filter((k) => servers[k]);
+let activeMcpConfigPath = null;
+let mcpConfigError = null;
+for (const candidate of mcpConfigCandidates) {
+  try {
+    if (existsSync(candidate)) {
+      const mcpConfig = JSON.parse(readFileSync(candidate, "utf8"));
+      const servers =
+        mcpConfig.mcpServers ||
+        mcpConfig.servers ||
+        mcpConfig.MCPServers ||
+        {};
+      const names = Object.keys(servers).filter((k) => servers[k]);
+      if (names.length > 0) {
+        mcpServers = names;
+        activeMcpConfigPath = candidate;
+        break;
+      }
+    }
+  } catch (e) {
+    mcpConfigError = e.message;
   }
+}
+
+// ─── SJEKK OM PYTHON CLI FINNES ───
+let pythonCliWarning = null;
+try {
+  execSync("which mempalace", { stdio: "ignore" });
+  pythonCliWarning = "mempalace Python CLI funnet i PATH — IKKE BRUK 'mempalace mine'. Bruk Node.js MCP-serveren.";
 } catch {
-  // ignore
+  // ikke i PATH — OK
 }
 
 // ─── LOGG START ───
@@ -154,6 +174,16 @@ if (lastEntry) {
   );
 }
 console.log(`  MCP:      ${mcpServers.length} server${mcpServers.length === 1 ? "" : "e"}${mcpServers.length > 0 ? " (" + mcpServers.join(", ") + ")" : ""}`);
+if (activeMcpConfigPath) {
+  console.log(`  Config:   ${activeMcpConfigPath}`);
+}
+if (mcpConfigError) {
+  console.log(`  ⚠️  Config-feil: ${mcpConfigError}`);
+}
+if (pythonCliWarning) {
+  console.log("");
+  console.log(`  ⚠️  ADVARSEL: ${pythonCliWarning}`);
+}
 console.log(`  Session:  ${sessionId}`);
 console.log("───────────────────────");
 console.log("");

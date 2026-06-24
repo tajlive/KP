@@ -156,3 +156,12 @@
 {"subject":"dependabot","predicate":"configuration","object":".github/dependabot.yml","validFrom":"2026-06-24T15:31:13.807Z"}
 {"subject":"kimi-code-cli","predicate":"installed_version","object":"0.19.2","validFrom":"2026-06-24T15:31:13.808Z"}
 {"subject":"mempalace","predicate":"installed_version","object":"3.5.0","validFrom":"2026-06-24T15:31:13.809Z"}
+{"subject":"klarpakke","predicate":"has_issue","object":"github-actions-phantom-workflow-94","validFrom":"2026-06-24T15:48:37.449Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"workflow_id","object":"260912064","validFrom":"2026-06-24T15:48:37.450Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"workflow_path","object":"BuildFailed","validFrom":"2026-06-24T15:48:37.450Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"workflow_state","object":"deleted","validFrom":"2026-06-24T15:48:37.450Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"symptom","object":"startup_failure-on-every-event","validFrom":"2026-06-24T15:48:37.450Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"workaround_tried","object":"disable-enable-actions","validFrom":"2026-06-24T15:48:37.451Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"workaround_tried","object":"rename-default-branch","validFrom":"2026-06-24T15:48:37.451Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"workaround_tried","object":"dummy-BuildFailed-workflow","validFrom":"2026-06-24T15:48:37.451Z"}
+{"subject":"github-actions-phantom-workflow-94","predicate":"resolution","object":"requires-github-support-backend-cleanup","validFrom":"2026-06-24T15:48:37.451Z"}

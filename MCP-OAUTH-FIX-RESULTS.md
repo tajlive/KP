@@ -1,8 +1,10 @@
+> **Merk:** Dette er et historisk resultat-dokument fra 2026-04-10. Filen `scripts/run-mempalace-mcp.mjs` som nevnes nedenfor er senere erstattet av `scripts/run-mempalace-mcp-v3.mjs`.
+
 # 🔧 MCP & OAuth Feilretting - Resultater
 
 **Dato:** 2026-04-10  
 **Utført av:** KIMI Infrastructure Agent  
-**Status:** ✅ Alle feil rettet
+**Status:** ✅ Alle feil rettet (se merknad over om aktuell server-fil)
 
 ---
 

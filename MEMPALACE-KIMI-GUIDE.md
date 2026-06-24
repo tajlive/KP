@@ -176,8 +176,7 @@ grep "TODO" .knowledge/current-todos.md
 
 | Versjon | Status | Merknad |
 |---------|--------|---------|
-| **3.0.0** | ✅ Stabil | Nåværende installert versjon |
-| 3.1.0–3.3.4 | ❌ Segfault | Kræsjer på M1 Mac (Python 3.13 + ChromaDB 1.5.8) |
+| **3.4.0** | ✅ Stabil | Nåværende Node.js MCP-server |
+| 3.0.0–3.3.4 (Python CLI) | ❌ Segfault / deprecated | Kræsjer på M1/M2/M3/M4 Mac (Python 3.13 + ChromaDB) |
 
-**Anbefaling:** Hold deg på PyPI `mempalace==3.0.0` på M1 Mac.
-Vår Node.js MCP-server (`run-mempalace-mcp-v2.mjs`) er uavhengig og kjører v3.1.1 uten problemer.
+**Anbefaling:** Bruk kun Node.js MCP-serveren `scripts/run-mempalace-mcp-v3.mjs`. Python CLI-en `mempalace mine` er deprecated og krasjer på macOS + Python 3.13.
