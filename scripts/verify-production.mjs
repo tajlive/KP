@@ -62,9 +62,9 @@ const CRITICAL_PATHS = [
   {
     path: "/no/dashboard/auto-handel",
     status: 200,
-    description: "Auto-handel (mobil viewport, auth redirect OK)",
+    description: "Auto-handel redirect (mobil viewport, auth redirect OK)",
     noFollowRedirects: true,
-    acceptStatuses: [200, 302, 307],
+    acceptStatuses: [200, 302, 307, 308],
   },
   {
     path: "/handel",
