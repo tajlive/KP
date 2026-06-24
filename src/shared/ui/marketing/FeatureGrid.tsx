@@ -9,10 +9,12 @@ export interface FeatureGridProps {
 }
 
 export function FeatureGrid({
+  namespace: _namespace,
   children,
   className,
   columns = 3,
 }: FeatureGridProps) {
+  // `_namespace` is reserved for namespace-aware translation keys in the full implementation.
   const columnClasses = {
     2: "grid-cols-1 md:grid-cols-2",
     3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",

@@ -7,7 +7,12 @@ export interface CTASectionProps {
   className?: string;
 }
 
-export function CTASection({ children, className }: CTASectionProps) {
+export function CTASection({
+  namespace: _namespace,
+  children,
+  className,
+}: CTASectionProps) {
+  // `_namespace` is reserved for namespace-aware translation keys in the full implementation.
   return (
     <section className={cn("relative w-full", className)}>
       <div className="container mx-auto px-4 py-12 md:py-20">{children}</div>

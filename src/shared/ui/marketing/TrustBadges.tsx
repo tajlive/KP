@@ -7,7 +7,12 @@ export interface TrustBadgesProps {
   className?: string;
 }
 
-export function TrustBadges({ children, className }: TrustBadgesProps) {
+export function TrustBadges({
+  namespace: _namespace,
+  children,
+  className,
+}: TrustBadgesProps) {
+  // `_namespace` is reserved for namespace-aware translation keys in the full implementation.
   return (
     <section className={cn("relative w-full", className)}>
       <div className="container mx-auto px-4 py-8 md:py-12">{children}</div>

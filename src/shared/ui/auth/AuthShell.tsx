@@ -16,7 +16,12 @@ export interface AuthShellProps {
   className?: string;
 }
 
-export function AuthShell({ children, className }: AuthShellProps) {
+export function AuthShell({
+  mode: _mode,
+  children,
+  className,
+}: AuthShellProps) {
+  // `_mode` is reserved to drive mode-specific copy/links in the full implementation.
   return (
     <div className={cn("min-h-screen flex items-center justify-center bg-background p-4", className)}>
       {children}

@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 import { type ReactNode } from "react";
+import { type AuthMode } from "./AuthShell";
 
 export interface AuthCardProps {
-  mode?: string;
+  mode?: AuthMode;
   children?: ReactNode;
   className?: string;
 }
