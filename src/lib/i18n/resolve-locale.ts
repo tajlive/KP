@@ -1,11 +1,10 @@
-const VALID_LOCALES = ["no", "en", "th", "zh"] as const;
-type ValidLocale = (typeof VALID_LOCALES)[number];
+import { locales, defaultLocale, type Locale } from "@/i18n/config";
 
-export function resolveLocale(raw: string | undefined): ValidLocale {
-  if (raw && VALID_LOCALES.includes(raw as ValidLocale)) {
-    return raw as ValidLocale;
+export function resolveLocale(raw: string | undefined): Locale {
+  if (raw && locales.includes(raw as Locale)) {
+    return raw as Locale;
   }
-  return "no";
+  return defaultLocale;
 }
 
-export type { ValidLocale };
+export type { Locale as ValidLocale };
