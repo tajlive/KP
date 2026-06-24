@@ -72,3 +72,5 @@ mempalace 3.5.0
   (issue #94) er løst før den kan kjøre.
 - Forsøk på løsning: disable/enable Actions i repo-innstillingene tvinger GitHub til
   å re-indeksere workflows. Hvis det ikke hjelper, se issue #94.
+- Midlertidig renaming av default branch (`main` → `main-temp` → `main`) har også
+  blitt forsøkt for å tvinge re-indeksering.
