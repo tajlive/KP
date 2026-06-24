@@ -1,12 +1,12 @@
-# 🏛️ MemPalace MCP — Verktøy Referanse (v3.1.1)
+# 🏛️ MemPalace MCP — Verktøy Referanse (v3.4.0)
 
-> **Oppdatert:** 2026-05-03 | MemPalace MCP Server v3.1.1 | KIMI CLI v1.41.0 + k2.6
+> **Oppdatert:** 2026-06-25 | MemPalace MCP Server v3.4.0 | KIMI Code CLI v0.19.2 + k2.6
 
 ---
 
 ## 📊 MemPalace MCP Verktøy (12 stk)
 
-Disse verktøyene eksponeres via `run-mempalace-mcp-v2.mjs` (MCP-server).
+Disse verktøyene eksponeres via `scripts/run-mempalace-mcp-v3.mjs` (MCP-server).
 
 | # | Verktøy | Beskrivelse | Når å bruke |
 |---|---------|-------------|-------------|
@@ -88,8 +88,9 @@ write_diary(entry={type:"FIX", task:"fiks auth", status:"GO", rating:5, files:3}
 
 ## 📁 Konfigurasjon
 
-**MCP Config:** `~/.kimi/mcp.json`  
-**MemPalace Server:** `scripts/run-mempalace-mcp-v2.mjs`  
+**MCP Config (KIMI Code CLI):** `~/.kimi-code/mcp.json`  
+**MCP Config (legacy KIMI CLI):** `~/.kimi/mcp.json`  
+**MemPalace Server:** `scripts/run-mempalace-mcp-v3.mjs`  
 **Diary:** `.kimi/diary.jsonl`  
 **Knowledge Graph:** `.mempalace/kg.json`
 

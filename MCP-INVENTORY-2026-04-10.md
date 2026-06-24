@@ -206,7 +206,7 @@
 ```json
 {
   "command": "node",
-  "args": ["scripts/run-mempalace-mcp.mjs"]
+  "args": ["scripts/run-mempalace-mcp-v3.mjs"]
 }
 ```
 **Funksjoner:**

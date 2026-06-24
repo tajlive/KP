@@ -155,14 +155,16 @@ function analyzeConfig() {
   }
 
   // Check MCP configs point to v3
-  const mcpPath = resolve(process.env.HOME || '/Users/taj', '.kimi/mcp.json');
-  if (existsSync(mcpPath)) {
+  const mcpPaths = [
+    resolve(process.env.HOME || '/Users/taj', '.kimi-code/mcp.json'),
+    resolve(process.env.HOME || '/Users/taj', '.kimi/mcp.json')
+  ];
+  for (const mcpPath of mcpPaths) {
+    if (!existsSync(mcpPath)) continue;
+    const label = mcpPath.replace(resolve(process.env.HOME || '/Users/taj'), '~');
     const mcp = readFileSync(mcpPath, 'utf8');
-    if (mcp.includes('run-mempalace-mcp-v2.mjs')) {
-      issues.push('~/.kimi/mcp.json peker fortsatt til MemPalace v2');
-    }
     if (!mcp.includes('run-mempalace-mcp-v3.mjs')) {
-      issues.push('~/.kimi/mcp.json mangler referanse til MemPalace v3');
+      issues.push(`${label} mangler referanse til MemPalace v3`);
     }
   }
 
