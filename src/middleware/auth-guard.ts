@@ -11,7 +11,6 @@ export const PROTECTED_PATHS = [
   "/courses",
   "/betaling",
   "/handel",
-  "/auto-trading-ai",
   "/akademi",
   "/leaderboard",
   "/handelshistorikk",

@@ -189,7 +189,7 @@ test.describe("Regression: authenticated full route audit @regression @audit", (
       waitUntil: "domcontentloaded",
       timeout: 90_000,
     });
-    await expect(page).toHaveURL(/paper-trading/);
+    await expect(page).toHaveURL(/dashboard\/trade/);
 
     const res = await page.goto("/dashboard/auto-trade", {
       waitUntil: "domcontentloaded",
