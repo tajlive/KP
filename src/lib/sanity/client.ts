@@ -23,6 +23,17 @@ export const client = createClient({
   stega: { enabled: false },
 });
 
+// Sitemap client — uses CDN to avoid burning API quota during builds.
+// Sitemap data does not need ISR consistency, so CDN caching is fine.
+export const sitemapClient = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: true,
+  perspective: "published",
+  stega: { enabled: false },
+});
+
 // Preview client (for draft content) — always bypass CDN
 export const previewClient = createClient({
   projectId,

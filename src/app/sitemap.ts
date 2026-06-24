@@ -1,8 +1,11 @@
 import { MetadataRoute } from "next";
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join, extname } from "path";
-import { client, isSanityConfigured } from "@/lib/sanity/client";
+import { sitemapClient, isSanityConfigured } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
+
+// Cache sitemap for 1 hour — Sanity pages rarely change and this reduces API quota usage.
+export const revalidate = 3600;
 
 const baseUrl = "https://www.klarpakke.no";
 const appDir = join(process.cwd(), "src/app/[locale]");
@@ -176,7 +179,7 @@ async function fetchSanityPages(): Promise<SitemapEntry[]> {
   if (!isSanityConfigured()) return [];
 
   try {
-    const pages = await client.fetch<
+    const pages = await sitemapClient.fetch<
       Array<{
         slug: string;
         language: string;
@@ -190,6 +193,8 @@ async function fetchSanityPages(): Promise<SitemapEntry[]> {
           publishedAt
         }
       `,
+      {},
+      { next: { revalidate: 3600 } },
     );
 
     return pages.map((page) => ({
@@ -198,7 +203,14 @@ async function fetchSanityPages(): Promise<SitemapEntry[]> {
       changeFrequency: "weekly" as const,
     }));
   } catch (err) {
-    console.warn("[sitemap] Failed to fetch Sanity pages:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes("plan_limit_reached")) {
+      console.warn(
+        "[sitemap] Sanity API plan limit reached. Falling back to filesystem routes only.",
+      );
+    } else {
+      console.warn("[sitemap] Failed to fetch Sanity pages:", err);
+    }
     return [];
   }
 }
