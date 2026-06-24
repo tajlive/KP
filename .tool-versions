@@ -1,2 +1,4 @@
-nodejs 24.11.1
-
+# Pinned tool versions for Klarpakke development environment
+# Updated automatically by scripts/update-tools.sh and .github/workflows/tool-updater.yml
+kimi-code 0.19.2
+mempalace 3.5.0

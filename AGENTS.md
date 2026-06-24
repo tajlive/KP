@@ -60,6 +60,8 @@ kimi prod:preview    # Full pipeline til preview
 kimi depcheck        # node scripts/dependency-report.mjs
 kimi coverage        # node scripts/coverage-report.mjs
 kimi refactor:client # node scripts/client-component-refactor.mjs --dry-run
+kimi tools:check     # npm run tools:check
+kimi tools:update    # npm run tools:update
 ```
 
 > **Skills:** Aktive skills ligger i `.kimi/skills/` og lastes med `kimi --skills-dir .kimi/skills/klarpakke-<skill>` (f.eks. `klarpakke-auth`, `klarpakke-trading`).
@@ -504,6 +506,7 @@ Cron source of truth: Supabase (ikke Vercel)
 i18n: Kun no + en (th/zh avvent)
 Trading: Edge Functions eller Supabase scheduler
 Auth: @supabase/ssr (ikke auth-helpers-nextjs)
+Auto updates: Dependabot (npm + Actions), scripts/update-tools.sh (KIMI CLI + MemPalace)
 ```
 
 ### Supabase ↔ Vercel — ALDRI bruk REST API fra Serverless (2026-05-12)
