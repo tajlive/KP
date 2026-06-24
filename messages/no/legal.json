@@ -3,6 +3,7 @@
   "termsTitle": "Vilkår for bruk",
   "privacy": {
     "title": "Personvernerklæring",
+    "description": "Les hvordan Klarpakke Universitet håndterer dine personopplysninger.",
     "intro": {
       "title": "1. Innledning",
       "content": "Klarpakke (\"vi\", \"oss\") tar ditt personvern på alvor. Denne erklæringen beskriver hvordan vi samler inn, bruker og beskytter dine personopplysninger."
@@ -36,6 +37,7 @@
   },
   "terms": {
     "title": "Vilkår for bruk",
+    "description": "Les vilkårene for bruk av Klarpakke Universitet.",
     "lastUpdated": "Sist oppdatert: 11. februar 2026",
     "sections": {
       "1": {
@@ -78,6 +80,7 @@
   "cookieTitle": "Informasjonskapsler",
   "cookies": {
     "title": "Informasjonskapsler (Cookies)",
+    "description": "Les om hvordan Klarpakke Universitet bruker informasjonskapsler.",
     "whatAreCookies": {
       "title": "Hva er informasjonskapsler?",
       "content": "Informasjonskapsler er små tekstfiler som lagres i nettleseren din når du besøker et nettsted. De brukes til å huske innstillinger, logge inn, analysere trafikk og tilpasse innhold."

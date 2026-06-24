@@ -1,23 +1,34 @@
-import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import ClientKontakt from "./ClientKontakt";
+import {
+  MarketingPageShell,
+  generateMarketingMetadata,
+} from "@/shared/ui/marketing";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+}) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "contact" });
-  
-  return {
-    title: "Kontakt oss | Klarpakke",
-    description: "Har du spørsmål om kurs, trading eller konto? Kontakt Klarpakke-teamet. Vi svarer vanligvis innen 24 timer.",
-  };
+  return generateMarketingMetadata({
+    locale,
+    namespace: "contact",
+    titleKey: "metadata.title",
+    descriptionKey: "metadata.description",
+    pathname: "/kontakt",
+  });
 }
 
-export default function KontaktPage() {
-  return <ClientKontakt />;
+export default async function KontaktPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  return (
+    <MarketingPageShell>
+      <ClientKontakt />
+    </MarketingPageShell>
+  );
 }

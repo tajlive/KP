@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * @deprecated Refactor into shared page/section components when redesigning this page.
+ */
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Clock, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";

@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * @deprecated Refactor into shared page/section components when redesigning this page.
+ */
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";

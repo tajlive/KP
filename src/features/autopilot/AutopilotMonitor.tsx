@@ -140,7 +140,7 @@ export function AutopilotMonitor({ locale }: AutopilotMonitorProps) {
           Du har ingen aktiv autopilot. Aktiver en for å la AI trade for deg.
         </p>
         <Button
-          onClick={() => router.push(`/${locale}/dashboard/autopilot/launch`)}
+          onClick={() => router.push(`/${locale}/dashboard/autopilot`)}
           className="bg-indigo-600 hover:bg-indigo-500 text-white"
         >
           Aktiver Autopilot

@@ -103,6 +103,10 @@
     }
   },
   "binanceGuide": {
+    "metadata": {
+      "title": "How to get started with Binance - Klarpakke University",
+      "description": "Complete guide to creating a Binance account via Klarpakke. Get lower fees and support our work."
+    },
     "title": "Binance Guide",
     "description": "Guide for Binance",
     "subtitle": "Binance is the world's largest crypto exchange. We guide you through registration step by step."

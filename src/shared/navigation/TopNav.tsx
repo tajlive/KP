@@ -14,7 +14,7 @@ import {
   DASHBOARD_COINBASE_TOP_NAV,
   DASHBOARD_MORE_NAV,
   isDashboardSidebarLinkActive,
-} from "@/lib/navigation/dashboard-links";
+} from "@/lib/navigation/config";
 
 function TopNavLink({
   href,

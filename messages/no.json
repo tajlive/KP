@@ -156,6 +156,7 @@
     "forgotPassword": "Glemt passord?",
     "forgotPasswordDesc": "Skriv inn e-posten din, så sender vi en lenke for å lage nytt passord.",
     "email": "E-post",
+    "password": "Passord",
     "sending": "Sender...",
     "sendLink": "Send lenke",
     "invalidCredentials": "Ugyldig e-post eller passord",
@@ -276,6 +277,46 @@
       "whatNext": "Hva skjer nå?",
       "whatNextDesc": "Du vil motta en e-post med lekepenger-guide i løpet av de neste dagene. Sjekk også søppelpost-mappen din!",
       "checkAnother": "Sjekk annen e-post"
+    },
+    "pages": {
+      "login": {
+        "subtitle": "Logg inn på din konto",
+        "or": "eller",
+        "continueWithGoogle": "Fortsett med Google",
+        "continueWithMicrosoft": "Fortsett med Microsoft",
+        "registerLink": "Registrer deg"
+      },
+      "register": {
+        "title": "Opprett konto",
+        "subtitle": "Registrer deg for å komme i gang med Klarpakke",
+        "userCreated": "Bruker opprettet!",
+        "confirmationSent": "Vi har sendt en bekreftelseslenke til din e-postadresse. Klikk på lenken for å aktivere kontoen din.",
+        "goToLogin": "Gå til login",
+        "creatingAccount": "Oppretter konto...",
+        "createAccount": "Opprett konto",
+        "passwordPlaceholder": "Minst 8 tegn",
+        "haveAccount": "Har du allerede konto?",
+        "logIn": "Logg inn"
+      },
+      "resetPassword": {
+        "title": "Glemt passord?",
+        "desc": "Oppgi e-postadressen din, så sender vi en lenke for å tilbakestille passordet.",
+        "submit": "Send tilbakestillingslenke",
+        "sending": "Sender...",
+        "checkEmailTitle": "Sjekk e-posten din!",
+        "checkEmailDesc": "Vi har sendt en lenke for å tilbakestille passordet til din e-postadresse.",
+        "backToLogin": "Tilbake til login"
+      },
+      "updatePassword": {
+        "title": "Nytt passord",
+        "desc": "Velg et nytt passord for kontoen din",
+        "placeholder": "Minst 8 tegn",
+        "updating": "Oppdaterer...",
+        "submit": "Oppdater passord",
+        "successTitle": "Passord oppdatert!",
+        "successDesc": "Ditt passord har blitt endret. Du kan nå logge inn med det nye passordet.",
+        "goToLogin": "Gå til login"
+      }
     }
   },
   "autoTrade": {
@@ -612,6 +653,10 @@
     "maxDailyLoss": "Maks daglig tap"
   },
   "binanceGuide": {
+    "metadata": {
+      "title": "Slik kommer du i gang med Binance - Klarpakke Universitet",
+      "description": "Komplett guide for å opprette Binance-konto via Klarpakke. Få lavere gebyrer og støtt vårt arbeid."
+    },
     "title": "Binance Guide",
     "description": "Guide for Binance",
     "subtitle": "Binance er verdens største kryptobørs. Vi guider deg gjennom registrering steg for steg.",
@@ -625,6 +670,10 @@
     "startTrading": "Begynn å handle"
   },
   "calculator": {
+    "metadata": {
+      "title": "Kalkulator | Klarpakke",
+      "description": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning. Bruk Klarpakkets tradingkalkulator."
+    },
     "title": "Kalkulator",
     "description": "Trading kalkulator",
     "subtitle": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning",

@@ -4,9 +4,8 @@ export default function ClientPersonvern() {
   const t = useTranslations('legal.privacy');
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 py-16 pt-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 
         <section>
           <h2 className="text-xl font-semibold mb-4">{t('intro.title')}</h2>
@@ -53,6 +52,5 @@ export default function ClientPersonvern() {
           </p>
         </section>
       </div>
-    </div>
-  );
-}
+    );
+  }

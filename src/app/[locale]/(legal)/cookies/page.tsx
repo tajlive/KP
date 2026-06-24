@@ -1,8 +1,10 @@
-import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import ClientCookies from "./ClientCookies";
+import {
+  LegalPageShell,
+  generateLegalMetadata,
+} from "@/shared/ui/marketing";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export const revalidate = 86400;
 
@@ -10,12 +12,25 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+}) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "legal" });
-  return { title: t("cookieTitle") };
+  return generateLegalMetadata({
+    locale,
+    namespace: "legal.cookies",
+    titleKey: "title",
+    descriptionKey: "description",
+    pathname: "/cookies",
+  });
 }
 
-export default function Page() {
-  return <ClientCookies />;
+export default async function CookiesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  return (
+    <LegalPageShell>
+      <ClientCookies />
+    </LegalPageShell>
+  );
 }

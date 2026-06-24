@@ -1,3 +1,6 @@
+/**
+ * @deprecated Refactor into shared page/section components when redesigning this page.
+ */
 import { getTranslations } from 'next-intl/server';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';

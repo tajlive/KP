@@ -1,4 +1,7 @@
 
+/**
+ * @deprecated Refactor into shared page/section components when redesigning this page.
+ */
 import { GraduationCap, PlayCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";

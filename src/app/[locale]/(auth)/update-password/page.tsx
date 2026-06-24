@@ -2,15 +2,16 @@
 
 /**
  * UPDATE PASSWORD PAGE
- * 
+ *
  * Bruker setter nytt passord etter å ha mottatt reset-link på e-post.
  */
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { updatePassword } from "@/lib/auth/new/auth-actions";
-
+import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
 
 export default function UpdatePasswordPage() {
   const router = useRouter();
@@ -23,9 +24,9 @@ export default function UpdatePasswordPage() {
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     setError("");
-    
+
     const result = await updatePassword(formData);
-    
+
     if (result?.error) {
       setError(result.error);
       setLoading(false);
@@ -37,65 +38,64 @@ export default function UpdatePasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-        <div className="w-full max-w-md space-y-8 text-center">
-          <div className="bg-slate-900 rounded-2xl p-8 border border-slate-800">
-            <div className="text-green-400 text-5xl mb-4">✓</div>
-            <h1 className="text-2xl font-bold text-white mb-4">{t("pages.updatePassword.successTitle")}</h1>
-            <p className="text-slate-400 mb-6">{t("pages.updatePassword.successDesc")}</p>
-            <button
-              onClick={() => router.push(`/${locale}/login`)}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-            >
-              {t("pages.updatePassword.goToLogin")}
-            </button>
-          </div>
-        </div>
-      </div>
+      <AuthShell mode="update">
+        <AuthCard
+          mode="update"
+          header={{
+            icon: <CheckCircle className="h-6 w-6 text-green-500" />,
+            title: t("pages.updatePassword.successTitle"),
+            description: t("pages.updatePassword.successDesc"),
+          }}
+        >
+          <button
+            onClick={() => router.push(`/${locale}/login`)}
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            {t("pages.updatePassword.goToLogin")}
+          </button>
+        </AuthCard>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">{t("pages.updatePassword.title")}</h1>
-          <p className="mt-2 text-slate-400">{t("pages.updatePassword.desc")}</p>
-        </div>
-
-        <div className="bg-slate-900 rounded-2xl p-8 border border-slate-800">
+    <AuthShell mode="update">
+      <AuthCard
+        mode="update"
+        header={{
+          title: t("pages.updatePassword.title"),
+          description: t("pages.updatePassword.desc"),
+        }}
+      >
           {error && (
-            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
               {error}
             </div>
           )}
 
           <form action={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1">
-                {t("resetPassword.label")}
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                minLength={8}
-                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={t("pages.updatePassword.placeholder")}
-              />
-            </div>
+            <AuthFormField
+              id="password"
+              name="password"
+              type="password"
+              label={t("resetPassword.label")}
+              placeholder={t("pages.updatePassword.placeholder")}
+              required
+              minLength={8}
+              variant="public"
+            />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-semibold rounded-lg transition-colors"
+              className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:bg-blue-600/50"
             >
-              {loading ? t("pages.updatePassword.updating") : t("pages.updatePassword.submit")}
+              {loading
+                ? t("pages.updatePassword.updating")
+                : t("pages.updatePassword.submit")}
             </button>
           </form>
-        </div>
-      </div>
-    </div>
+        </AuthCard>
+    </AuthShell>
   );
 }
