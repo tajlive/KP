@@ -430,7 +430,7 @@
     "rxjs": "^7.8.2",
     "sanity": "^5.31.1",
     "sonner": "^2.0.7",
-    "stripe": "22.1.0",
+    "stripe": "^22.2.3",
     "styled-components": "^6.4.2",
     "svix": "^1.90.0",
     "tailwind-merge": "^3.6.0",
