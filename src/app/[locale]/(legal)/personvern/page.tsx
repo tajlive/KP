@@ -1,24 +1,40 @@
-import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
 import ClientPersonvern from "./ClientPersonvern";
+import {
+  LegalPageShell,
+  generateLegalMetadata,
+} from "@/shared/ui/marketing";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export const revalidate = 86400; // 24 hours
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ locale: string }> 
-}): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'legal' });
-  
-  return {
-    title: t('privacyTitle'),
-  };
+  return generateLegalMetadata({
+    locale,
+    namespace: "legal.privacy",
+    titleKey: "title",
+    pathname: "/personvern",
+  });
 }
 
-export default function Page() {
-  return <ClientPersonvern />;
+export default async function PersonvernPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return (
+    <LegalPageShell
+      locale={locale}
+      namespace="legal.privacy"
+      titleKey="title"
+    >
+      <ClientPersonvern />
+    </LegalPageShell>
+  );
 }

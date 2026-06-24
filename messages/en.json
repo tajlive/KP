@@ -625,6 +625,10 @@
     "startTrading": "Start trading"
   },
   "calculator": {
+    "metadata": {
+      "title": "Calculator | Klarpakke",
+      "description": "See how your investments can grow with daily compound returns. Use Klarpakke's trading calculator."
+    },
     "title": "Calculator",
     "description": "Trading calculator",
     "subtitle": "See how your investments can grow with daily compound returns",

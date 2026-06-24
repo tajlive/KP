@@ -625,6 +625,10 @@
     "startTrading": "Begynn å handle"
   },
   "calculator": {
+    "metadata": {
+      "title": "Kalkulator | Klarpakke",
+      "description": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning. Bruk Klarpakkets tradingkalkulator."
+    },
     "title": "Kalkulator",
     "description": "Trading kalkulator",
     "subtitle": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning",

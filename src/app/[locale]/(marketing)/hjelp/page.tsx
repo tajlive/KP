@@ -1,25 +1,42 @@
+import { HelpClient } from "./HelpClient";
+import {
+  MarketingPageShell,
+  generateMarketingMetadata,
+} from "@/shared/ui/marketing";
 
-
-
-
-import { HelpClient } from './HelpClient';
-import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-
-export const runtime = 'nodejs';
-
+export const runtime = "nodejs";
 
 export const dynamic = "force-dynamic"; // Was: revalidate = 86400
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-    const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: 'helpPage' });
-    return {
-        title: `${t('title')} | Klarpakke`,
-        description: t('subtitle'),
-    };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return generateMarketingMetadata({
+    locale,
+    namespace: "helpPage",
+    titleKey: "title",
+    descriptionKey: "subtitle",
+    pathname: "/hjelp",
+  });
 }
 
-export default function Page() {
-    return <HelpClient />;
+export default async function HelpPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return (
+    <MarketingPageShell
+      locale={locale}
+      namespace="helpPage"
+      titleKey="title"
+      descriptionKey="subtitle"
+    >
+      <HelpClient />
+    </MarketingPageShell>
+  );
 }

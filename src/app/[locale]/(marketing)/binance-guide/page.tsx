@@ -1,20 +1,42 @@
+import { BinanceGuideContent } from "./BinanceGuideContent";
+import {
+  MarketingPageShell,
+  generateMarketingMetadata,
+} from "@/shared/ui/marketing";
 
+export const runtime = "nodejs";
 
+export const dynamic = "force-dynamic";
 
-
-import { Metadata } from 'next'
-import { BinanceGuideContent } from './BinanceGuideContent'
-
-export const runtime = 'nodejs';
-
-export const metadata: Metadata = {
-  title: 'Slik kommer du i gang med Binance - Klarpakke Universitet',
-  description: 'Komplett guide for å opprette Binance-konto via Klarpakke'
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return generateMarketingMetadata({
+    locale,
+    namespace: "binanceGuide",
+    titleKey: "metadata.title",
+    descriptionKey: "metadata.description",
+    pathname: "/binance-guide",
+  });
 }
 
-
-export const dynamic = 'force-dynamic'
-
-export default function BinanceGuidePage() {
-  return <BinanceGuideContent />
+export default async function BinanceGuidePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return (
+    <MarketingPageShell
+      locale={locale}
+      namespace="binanceGuide"
+      titleKey="metadata.title"
+      descriptionKey="metadata.description"
+    >
+      <BinanceGuideContent />
+    </MarketingPageShell>
+  );
 }
