@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { CheckCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { signUpWithEmail } from "@/lib/auth/new/auth-actions";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
@@ -64,41 +65,37 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <AuthShell mode="register" locale={locale}>
-        <div className="w-full max-w-md space-y-8 text-center">
-          <AuthCard mode="register">
-            <div className="mb-4 text-5xl text-green-400">✓</div>
-            <h1 className="mb-4 text-2xl font-bold text-white">
-              {t("pages.register.userCreated")}
-            </h1>
-            <p className="mb-6 text-slate-400">
-              {t("pages.register.confirmationSent")}
-            </p>
+      <AuthShell mode="register">
+        <AuthCard
+          mode="register"
+          header={{
+            icon: <CheckCircle className="h-6 w-6 text-green-500" />,
+            title: t("pages.register.userCreated"),
+            description: t("pages.register.confirmationSent"),
+          }}
+        >
+          <div className="text-center">
             <Link
               href={`/${locale}/login`}
               className="text-blue-400 hover:text-blue-300"
             >
               {t("pages.register.goToLogin")}
             </Link>
-          </AuthCard>
-        </div>
+          </div>
+        </AuthCard>
       </AuthShell>
     );
   }
 
   return (
-    <AuthShell mode="register" locale={locale}>
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">
-            {t("pages.register.title")}
-          </h1>
-          <p className="mt-2 text-slate-400">
-            {t("pages.register.subtitle")}
-          </p>
-        </div>
-
-        <AuthCard mode="register">
+    <AuthShell mode="register">
+      <AuthCard
+        mode="register"
+        header={{
+          title: t("pages.register.title"),
+          description: t("pages.register.subtitle"),
+        }}
+      >
           {error && (
             <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
               {error}
@@ -194,7 +191,7 @@ export default function RegisterPage() {
           </div>
         </AuthCard>
 
-        <div className="text-center">
+        <div className="mt-8 text-center">
           <p className="text-sm text-slate-400">
             {t("pages.register.haveAccount")}{" "}
             <Link
@@ -205,7 +202,6 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
-      </div>
     </AuthShell>
   );
 }

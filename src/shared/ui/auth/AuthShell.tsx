@@ -14,7 +14,7 @@ export type AuthMode =
 
 export interface AuthShellProps {
   mode: AuthMode;
-  locale: string;
+  locale?: string;
   children: ReactNode;
   className?: string;
   "data-testid"?: string;

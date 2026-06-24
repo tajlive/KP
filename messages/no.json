@@ -156,6 +156,7 @@
     "forgotPassword": "Glemt passord?",
     "forgotPasswordDesc": "Skriv inn e-posten din, så sender vi en lenke for å lage nytt passord.",
     "email": "E-post",
+    "password": "Passord",
     "sending": "Sender...",
     "sendLink": "Send lenke",
     "invalidCredentials": "Ugyldig e-post eller passord",

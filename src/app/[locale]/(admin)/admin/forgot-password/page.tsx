@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/utils";
@@ -46,7 +47,7 @@ export default function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <AuthShell mode="admin-forgot" locale={locale}>
+      <AuthShell mode="admin-forgot">
         <AuthCard
           mode="admin-forgot"
           header={{
@@ -58,20 +59,20 @@ export default function ForgotPasswordPage() {
           <p className="mb-4 text-center text-sm text-slate-400">
             {t("checkInbox")}
           </p>
-          <a
+          <Link
             href={`/${locale}/admin/login`}
             className="flex w-full items-center justify-center rounded-lg border border-slate-600 px-4 py-3 text-center font-semibold text-slate-300 transition-colors hover:bg-slate-800"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t("backToLogin")}
-          </a>
+          </Link>
         </AuthCard>
       </AuthShell>
     );
   }
 
   return (
-    <AuthShell mode="admin-forgot" locale={locale}>
+    <AuthShell mode="admin-forgot">
       <AuthCard
         mode="admin-forgot"
         header={{
@@ -117,13 +118,13 @@ export default function ForgotPasswordPage() {
           </button>
 
           <div className="text-center">
-            <a
+            <Link
               href={`/${locale}/admin/login`}
               className="flex items-center justify-center gap-1 text-sm text-blue-400 hover:text-blue-300"
             >
               <ArrowLeft className="h-4 w-4" />
-              Tilbake til login
-            </a>
+              {t("backToLogin")}
+            </Link>
           </div>
         </form>
       </AuthCard>

@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { updatePassword } from "@/lib/auth/new/auth-actions";
 import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
@@ -37,41 +38,35 @@ export default function UpdatePasswordPage() {
 
   if (success) {
     return (
-      <AuthShell mode="update" locale={locale}>
-        <div className="w-full max-w-md space-y-8 text-center">
-          <AuthCard mode="update">
-            <div className="mb-4 text-5xl text-green-400">✓</div>
-            <h1 className="mb-4 text-2xl font-bold text-white">
-              {t("pages.updatePassword.successTitle")}
-            </h1>
-            <p className="mb-6 text-slate-400">
-              {t("pages.updatePassword.successDesc")}
-            </p>
-            <button
-              onClick={() => router.push(`/${locale}/login`)}
-              className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
-            >
-              {t("pages.updatePassword.goToLogin")}
-            </button>
-          </AuthCard>
-        </div>
+      <AuthShell mode="update">
+        <AuthCard
+          mode="update"
+          header={{
+            icon: <CheckCircle className="h-6 w-6 text-green-500" />,
+            title: t("pages.updatePassword.successTitle"),
+            description: t("pages.updatePassword.successDesc"),
+          }}
+        >
+          <button
+            onClick={() => router.push(`/${locale}/login`)}
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            {t("pages.updatePassword.goToLogin")}
+          </button>
+        </AuthCard>
       </AuthShell>
     );
   }
 
   return (
-    <AuthShell mode="update" locale={locale}>
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">
-            {t("pages.updatePassword.title")}
-          </h1>
-          <p className="mt-2 text-slate-400">
-            {t("pages.updatePassword.desc")}
-          </p>
-        </div>
-
-        <AuthCard mode="update">
+    <AuthShell mode="update">
+      <AuthCard
+        mode="update"
+        header={{
+          title: t("pages.updatePassword.title"),
+          description: t("pages.updatePassword.desc"),
+        }}
+      >
           {error && (
             <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
               {error}
@@ -101,7 +96,6 @@ export default function UpdatePasswordPage() {
             </button>
           </form>
         </AuthCard>
-      </div>
     </AuthShell>
   );
 }

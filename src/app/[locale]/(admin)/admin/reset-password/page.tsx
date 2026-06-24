@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/utils";
@@ -88,7 +89,7 @@ export default function AdminResetPasswordPage() {
 
   if (verifying) {
     return (
-      <AuthShell mode="admin-reset" locale={locale}>
+      <AuthShell mode="admin-reset">
         <AuthCard mode="admin-reset">
           <div className="p-8 text-center">
             <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-blue-500" />
@@ -101,7 +102,7 @@ export default function AdminResetPasswordPage() {
 
   if (success) {
     return (
-      <AuthShell mode="admin-reset" locale={locale}>
+      <AuthShell mode="admin-reset">
         <AuthCard
           mode="admin-reset"
           header={{
@@ -110,12 +111,12 @@ export default function AdminResetPasswordPage() {
             description: t("passwordUpdatedDesc"),
           }}
         >
-          <a
+          <Link
             href={`/${locale}/admin/login`}
             className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
           >
             {t("loginNow")}
-          </a>
+          </Link>
         </AuthCard>
       </AuthShell>
     );
@@ -123,7 +124,7 @@ export default function AdminResetPasswordPage() {
 
   if (error && !sessionValid) {
     return (
-      <AuthShell mode="admin-reset" locale={locale}>
+      <AuthShell mode="admin-reset">
         <AuthCard
           mode="admin-reset"
           header={{
@@ -133,20 +134,20 @@ export default function AdminResetPasswordPage() {
           }}
         >
           <div className="space-y-4">
-            <a
+            <Link
               href={`/${locale}/admin/forgot-password`}
               className="flex w-full items-center justify-center rounded-lg border border-slate-600 px-4 py-3 font-semibold text-slate-300 transition-colors hover:bg-slate-800"
             >
               {t("requestNewLink")}
-            </a>
+            </Link>
             <div className="text-center">
-              <a
+              <Link
                 href={`/${locale}/admin/login`}
                 className="flex items-center justify-center gap-1 text-sm text-blue-400 hover:text-blue-300"
               >
                 <ArrowLeft className="h-4 w-4" />
                 {t("backToLogin")}
-              </a>
+              </Link>
             </div>
           </div>
         </AuthCard>
@@ -155,7 +156,7 @@ export default function AdminResetPasswordPage() {
   }
 
   return (
-    <AuthShell mode="admin-reset" locale={locale}>
+    <AuthShell mode="admin-reset">
       <AuthCard
         mode="admin-reset"
         header={{

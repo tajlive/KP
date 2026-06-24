@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/utils";
@@ -59,7 +60,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <AuthShell mode="admin-login" locale={locale}>
+    <AuthShell mode="admin-login">
       <AuthCard
         mode="admin-login"
         header={{
@@ -86,7 +87,7 @@ export default function AdminLoginPage() {
             id="admin-login-password"
             name="password"
             type="password"
-            label="Passord"
+            label={t("password")}
             placeholder="••••••••"
             required
             variant="admin"
@@ -118,12 +119,12 @@ export default function AdminLoginPage() {
           </button>
 
           <div className="text-center">
-            <a
+            <Link
               href={`/${locale}/admin/forgot-password`}
               className="text-sm text-blue-400 hover:text-blue-300"
             >
-              Glemt passord?
-            </a>
+              {t("forgotPassword")}
+            </Link>
           </div>
         </form>
       </AuthCard>

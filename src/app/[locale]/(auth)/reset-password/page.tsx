@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { CheckCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { sendPasswordReset } from "@/lib/auth/new/auth-actions";
 import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
@@ -36,41 +37,37 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <AuthShell mode="reset" locale={locale}>
-        <div className="w-full max-w-md space-y-8 text-center">
-          <AuthCard mode="reset">
-            <div className="mb-4 text-5xl text-green-400">✓</div>
-            <h1 className="mb-4 text-2xl font-bold text-white">
-              {t("pages.resetPassword.checkEmailTitle")}
-            </h1>
-            <p className="mb-6 text-slate-400">
-              {t("pages.resetPassword.checkEmailDesc")}
-            </p>
+      <AuthShell mode="reset">
+        <AuthCard
+          mode="reset"
+          header={{
+            icon: <CheckCircle className="h-6 w-6 text-green-500" />,
+            title: t("pages.resetPassword.checkEmailTitle"),
+            description: t("pages.resetPassword.checkEmailDesc"),
+          }}
+        >
+          <div className="text-center">
             <Link
               href={`/${locale}/login`}
               className="text-blue-400 hover:text-blue-300"
             >
               {t("pages.resetPassword.backToLogin")}
             </Link>
-          </AuthCard>
-        </div>
+          </div>
+        </AuthCard>
       </AuthShell>
     );
   }
 
   return (
-    <AuthShell mode="reset" locale={locale}>
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">
-            {t("pages.resetPassword.title")}
-          </h1>
-          <p className="mt-2 text-slate-400">
-            {t("pages.resetPassword.desc")}
-          </p>
-        </div>
-
-        <AuthCard mode="reset">
+    <AuthShell mode="reset">
+      <AuthCard
+        mode="reset"
+        header={{
+          title: t("pages.resetPassword.title"),
+          description: t("pages.resetPassword.desc"),
+        }}
+      >
           {error && (
             <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
               {error}
@@ -108,7 +105,6 @@ export default function ResetPasswordPage() {
             </Link>
           </div>
         </AuthCard>
-      </div>
     </AuthShell>
   );
 }
