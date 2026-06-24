@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * @deprecated Use `src/shared/ui/marketing/CTASection` instead.
+ * @deprecated Consolidate into shared marketing shells when refactoring this page.
  */
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";

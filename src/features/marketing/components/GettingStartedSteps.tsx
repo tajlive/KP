@@ -1,6 +1,6 @@
 
 /**
- * @deprecated Use `src/shared/ui/marketing/FeatureGrid` instead.
+ * @deprecated Consolidate into shared marketing shells when refactoring this page.
  */
 interface Step {
   number: string;

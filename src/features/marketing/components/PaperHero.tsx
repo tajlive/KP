@@ -1,6 +1,6 @@
 
 /**
- * @deprecated Use `src/shared/ui/marketing/Hero` instead.
+ * @deprecated Consolidate into shared marketing shells when refactoring this page.
  */
 import { GraduationCap, PlayCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";

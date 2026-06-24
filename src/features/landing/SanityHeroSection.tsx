@@ -1,5 +1,5 @@
 /**
- * @deprecated Use `src/shared/ui/marketing/Hero` instead.
+ * @deprecated Consolidate into shared marketing shells when refactoring this page.
  */
 import { getTranslations } from 'next-intl/server';
 import { Sparkles, ArrowRight } from 'lucide-react';

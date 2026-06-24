@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * @deprecated Use `src/shared/ui/marketing/CTASection` instead.
+ * @deprecated Consolidate into shared marketing shells when refactoring this page.
  */
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Clock, Sparkles } from "lucide-react";
