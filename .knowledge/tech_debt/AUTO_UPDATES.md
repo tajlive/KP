@@ -70,3 +70,5 @@ mempalace 3.5.0
   npm-global bin er først i `PATH`.
 - GitHub Actions-versjonen av oppdatereren avhenger av at phantom-workflow-problemet
   (issue #94) er løst før den kan kjøre.
+- Forsøk på løsning: disable/enable Actions i repo-innstillingene tvinger GitHub til
+  å re-indeksere workflows. Hvis det ikke hjelper, se issue #94.
