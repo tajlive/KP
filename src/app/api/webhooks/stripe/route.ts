@@ -43,7 +43,7 @@ const getStripe = () => {
     throw new Error("STRIPE_SECRET_KEY ikke satt");
   }
   return new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2026-04-22.dahlia",
+    apiVersion: "2026-05-27.dahlia",
   });
 };
 
