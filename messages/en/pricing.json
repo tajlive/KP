@@ -32,6 +32,10 @@
     }
   },
   "success": {
+    "metadata": {
+      "title": "Thank you for your order! | Klarpakke",
+      "description": "Your payment is confirmed. Welcome to Klarpakke."
+    },
     "title": "Thank you for your order!",
     "loadingTitle": "Confirming payment...",
     "verifying": "Verifying payment...",
@@ -43,6 +47,10 @@
     "loadingMessage": "Loading..."
   },
   "cancel": {
+    "metadata": {
+      "title": "Payment cancelled | Klarpakke",
+      "description": "You have cancelled the payment. No charge has been made."
+    },
     "title": "Payment cancelled",
     "message": "You have cancelled the payment. No charge has been made.",
     "returnButton": "Back to pricing"

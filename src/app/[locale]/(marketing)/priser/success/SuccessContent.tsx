@@ -79,8 +79,7 @@ export default function SuccessContent() {
   }, [sessionId, t]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-      <div className="max-w-md w-full text-center">
+    <div className="w-full max-w-md px-4 text-center">
         {status === "loading" && (
           <>
             <Loader2 className="w-16 h-16 animate-spin text-blue-500 mx-auto mb-6" />
@@ -125,7 +124,6 @@ export default function SuccessContent() {
             </Button>
           </>
         )}
-      </div>
     </div>
   );
 }

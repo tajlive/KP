@@ -32,6 +32,10 @@
     }
   },
   "success": {
+    "metadata": {
+      "title": "Takk for din bestilling! | Klarpakke",
+      "description": "Din betaling er bekreftet. Velkommen til Klarpakke."
+    },
     "title": "Takk for din bestilling!",
     "loadingTitle": "Bekrefter betaling...",
     "verifying": "Verifiserer betaling...",
@@ -43,6 +47,10 @@
     "loadingMessage": "Laster..."
   },
   "cancel": {
+    "metadata": {
+      "title": "Betaling avbrutt | Klarpakke",
+      "description": "Du har avbrutt betalingen. Ingen belastning har skjedd."
+    },
     "title": "Betaling avbrutt",
     "message": "Du har avbrutt betalingen. Ingen belastning har skjedd.",
     "returnButton": "Tilbake til priser"
