@@ -3,12 +3,25 @@
 > Oppdatert: 2026-06-24  
 > Etter: `deps: safe patch/minor dependency updates` (ec10cac0f)
 
-## Hva ble gjort i siste runde
+## Hva ble gjort
+
+### Runde 1: safe patch/minor update
 - `npm update --save` ble kjørt for alle pakker innenfor eksisterende semver-ranges.
 - `eslint.config.mjs` fikk `**/.open-next/**` i ignore-listen for å unngå linting av build-artifakter.
-- `stripe` ble pinnnet til `22.1.0` (eksakt) fordi `22.2.3` introduserer ny default API-versjon (`2026-05-27.dahlia`) som krever kodeendringer.
+- `stripe` ble pinnnet til `22.1.0` (eksakt) midlertidig fordi `22.2.3` introduserer ny default API-versjon.
 - `svix` ble lagt til som direkte avhengighet (var tidligere kun transitiv).
 - Verifisering: `lint:gate`, `type-check`, `test:unit`, `build:local` og `verify` alle grønne.
+
+### Runde 2: stripe API-versjon
+- `stripe` oppgradert fra `22.1.0` til `^22.2.3`.
+- `apiVersion` oppdatert fra `"2026-04-22.dahlia"` til `"2026-05-27.dahlia"` i:
+  - `src/lib/stripe.ts`
+  - `src/lib/stripe/config.ts`
+  - `src/lib/stripe/verify-webhook.ts`
+  - `src/app/api/stripe/customer-portal/route.ts`
+  - `src/app/api/webhooks/stripe/route.ts`
+- Commit: `deps(stripe): upgrade to 22.2.3 and update API version` (`263aa1cc3`).
+- Deployet manuelt til Cloudflare Workers og verifisert med `npm run verify`.
 
 ## Major / breaking oppgraderinger som gjenstår
 
@@ -45,12 +58,6 @@
 | `@supabase/ssr` | `0.10.2` | `0.12.0` | Pre-1.0 minor, men kan være breaking for auth/cookies. Test auth-flow. |
 | `chrome-devtools-mcp` | `0.20.3` | `1.4.0` | Major; MCP-server for DevTools. Sjekk om config må oppdateres. |
 
-### Spesielle tilfeller
-
-| Pakke | Fra | Til | Kommentar |
-|-------|-----|-----|-----------|
-| `stripe` | `22.1.0` | `22.2.3` | Patch, men krever kodeendring. Oppdater `apiVersion` fra `"2026-04-22.dahlia"` til `"2026-05-27.dahlia"` i følgende filer: `src/lib/stripe.ts`, `src/lib/stripe/config.ts`, `src/lib/stripe/verify-webhook.ts`, `src/app/api/stripe/customer-portal/route.ts`, `src/app/api/webhooks/stripe/route.ts`. Verifiser Stripe-webhook og customer portal i staging. |
-
 ## Anbefalt fremgangsmåte
 
 1. **Én major om gangen** – isoler hver oppgradering i egen branch.
@@ -60,7 +67,6 @@
    npm run lint:gate && npm run type-check && npm run test:unit && npm run build:local && npm run verify
    ```
 4. **For `eslint` + `sanity`** – vurder å oppgradere disse sist, og gjerne i samme deploy-vindu som relaterte pakker (`eslint-config-next`, `@sanity/vision`, `next-sanity`).
-5. **For `stripe`** – gjør API-versjonsendringen i staging og kjør en testkjøp + webhook før prod.
 
 ## Sjekkliste før neste major-runde
 
