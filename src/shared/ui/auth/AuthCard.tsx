@@ -8,7 +8,12 @@ export interface AuthCardProps {
   className?: string;
 }
 
-export function AuthCard({ children, className }: AuthCardProps) {
+export function AuthCard({
+  mode: _mode,
+  children,
+  className,
+}: AuthCardProps) {
+  // `_mode` is reserved for mode-specific card styling in the full implementation.
   return (
     <div
       className={cn(
