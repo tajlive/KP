@@ -612,6 +612,10 @@
     "maxDailyLoss": "Maks daglig tap"
   },
   "binanceGuide": {
+    "metadata": {
+      "title": "Slik kommer du i gang med Binance - Klarpakke Universitet",
+      "description": "Komplett guide for å opprette Binance-konto via Klarpakke. Få lavere gebyrer og støtt vårt arbeid."
+    },
     "title": "Binance Guide",
     "description": "Guide for Binance",
     "subtitle": "Binance er verdens største kryptobørs. Vi guider deg gjennom registrering steg for steg.",

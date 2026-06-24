@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import {
   LegalPageShell,
   generateLegalMetadata,
@@ -30,16 +30,19 @@ export default async function TermsPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "legal.terms" });
+
   return (
     <LegalPageShell>
-      <TermsContent />
+      <TermsContent t={t} />
     </LegalPageShell>
   );
 }
 
-function TermsContent() {
-  const t = useTranslations("legal.terms");
+type TermsTranslations = Awaited<ReturnType<typeof getTranslations>>;
 
+function TermsContent({ t }: { t: TermsTranslations }) {
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
