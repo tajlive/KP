@@ -44,7 +44,11 @@
     "messageConfirmed": "Din betaling er bekreftet! Du vil motta en e-post med detaljer.",
     "messagePending": "Din betaling behandles. Vi sender deg en e-post når den er bekreftet.",
     "messageFallback": "Takk for din bestilling! Sjekk e-posten din for detaljer.",
-    "loadingMessage": "Laster..."
+    "loadingMessage": "Laster...",
+    "goToDashboard": "Gå til dashboard",
+    "backToHome": "Tilbake til forsiden",
+    "errorTitle": "Noe gikk galt",
+    "backToPricing": "Tilbake til priser"
   },
   "cancel": {
     "metadata": {
@@ -53,7 +57,18 @@
     },
     "title": "Betaling avbrutt",
     "message": "Du har avbrutt betalingen. Ingen belastning har skjedd.",
-    "returnButton": "Tilbake til priser"
+    "returnButton": "Tilbake til priser",
+    "subtitle": "Ingen bekymring — du kan prøve igjen når som helst.",
+    "faqTitle": "Vanlige spørsmål",
+    "whyFailedQ": "Hvorfor gikk betalingen ikke gjennom?",
+    "whyFailedA": "Banken eller betalingsleverandøren kan ha avvist transaksjonen. Sjekk at kortet ditt er gyldig og at du har dekning.",
+    "chargedQ": "Har jeg blitt belastet?",
+    "chargedA": "Nei. Når du avbryter betalingen skjer ingen belastning.",
+    "trialQ": "Kan jeg prøve gratis først?",
+    "trialA": "Ja, Student-planen er gratis for alltid og gir deg tilgang til å komme i gang.",
+    "tryAgain": "Prøv igjen",
+    "backHome": "Tilbake til forsiden",
+    "needHelp": "Trenger du hjelp? Kontakt oss på"
   },
   "comparison": {
     "title": "Sammenlign planer",

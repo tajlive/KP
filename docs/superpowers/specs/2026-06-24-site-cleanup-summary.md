@@ -48,6 +48,7 @@ These now use `MarketingPageShell` and `generateMarketingMetadata`. Metadata key
 - Navigation consumers import from `src/lib/navigation/config.ts` (TopNav, BottomTabs, MarketingNavigation, NavigationServer, locale-path helpers, etc.).
 - No `[MISSING: ...]` fallback strings remain in `src/`.
 - `SUPPORTED_LOCALES` is exported from `src/i18n/config.ts` and referenced by locale-resolution logic.
+- All required `pricing.success.*` and `pricing.cancel.*` translation keys are present in both `messages/no/pricing.json` and `messages/en/pricing.json`; missing keys identified during final review were added.
 
 ### 3.2 Concerns / Non-blocking Gaps
 

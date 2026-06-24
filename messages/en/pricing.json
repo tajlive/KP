@@ -44,7 +44,11 @@
     "messageConfirmed": "Your payment is confirmed! You will receive an email with details.",
     "messagePending": "Your payment is being processed. We'll email you when confirmed.",
     "messageFallback": "Thank you for your order! Check your email for details.",
-    "loadingMessage": "Loading..."
+    "loadingMessage": "Loading...",
+    "goToDashboard": "Go to dashboard",
+    "backToHome": "Back to home",
+    "errorTitle": "Something went wrong",
+    "backToPricing": "Back to pricing"
   },
   "cancel": {
     "metadata": {
@@ -53,7 +57,18 @@
     },
     "title": "Payment cancelled",
     "message": "You have cancelled the payment. No charge has been made.",
-    "returnButton": "Back to pricing"
+    "returnButton": "Back to pricing",
+    "subtitle": "No worries — you can try again at any time.",
+    "faqTitle": "Frequently asked questions",
+    "whyFailedQ": "Why did the payment fail?",
+    "whyFailedA": "Your bank or payment provider may have declined the transaction. Make sure your card is valid and that you have sufficient funds.",
+    "chargedQ": "Have I been charged?",
+    "chargedA": "No. When you cancel the payment, no charge is made.",
+    "trialQ": "Can I try for free first?",
+    "trialA": "Yes, the Student plan is free forever and gives you access to get started.",
+    "tryAgain": "Try again",
+    "backHome": "Back to home",
+    "needHelp": "Need help? Contact us at"
   },
   "comparison": {
     "title": "Compare plans",
