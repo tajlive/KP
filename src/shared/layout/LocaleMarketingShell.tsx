@@ -1,5 +1,5 @@
 import { Suspense, type ReactNode } from "react";
-import type { NavigationData } from "@/shared/layout/NavigationServer";
+import type { NavigationData } from "@/lib/navigation/config";
 import {
   LocaleMarketingShellFallback,
   LocaleMarketingShellInner,

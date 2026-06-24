@@ -11,7 +11,7 @@ import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import type { FeatureFlags } from "@/lib/flags";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
-import type { NavigationData } from "@/shared/layout/NavigationServer";
+import type { NavigationData } from "@/lib/navigation/config";
 import { LazyMotion } from "framer-motion";
 
 const loadFeatures = () => import("framer-motion").then((res) => res.domAnimation);

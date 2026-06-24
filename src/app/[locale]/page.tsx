@@ -40,13 +40,7 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
 
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="landing"
-      titleKey="metadata.title"
-      descriptionKey="metadata.description"
-      className={SURFACE.BG_LIGHT}
-    >
+    <MarketingPageShell className={SURFACE.BG_LIGHT}>
       {/* Above-fold: Synchronous for LCP */}
       <SanityHeroSection locale={locale} />
       <KLTTeaser locale={locale} />
