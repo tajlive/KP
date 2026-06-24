@@ -267,7 +267,7 @@ kimib "implementer mean reversion strategy"
 | 🗄️ Database | migration, sql, supabase, postgres, trigger, rls | full |
 | 🎨 Frontend | ui, component, react, tailwind, dashboard | minimal |
 | 🔌 API | endpoint, route, handler, middleware, webhook | medium |
-| 🚀 Deploy | vercel, ci, build, env, secret, domain | medium |
+| 🚀 Deploy | cloudflare, workers, wrangler, ci, build, env, secret, domain | medium |
 | 🧪 Testing | test, e2e, vitest, playwright, coverage | medium |
 | 📝 Sanity CMS | sanity, schema, groq, studio, content | medium |
 | 📱 Mobile | pwa, responsive, lighthouse, viewport | medium |
@@ -579,7 +579,7 @@ Database: DECLARE på toppnivå
 | `listFlags` | Feature flags |
 | `searchTrades` | Søk i trades |
 | `searchUsers` | Søk i brukere |
-| `getVercelCost` | Vercel usage/estimat |
+| `getVercelCost` | (legacy) Vercel usage/estimat — app hosted on Cloudflare Workers |
 | `ai_health_report` | Ukentlig AI-helserapport |
 
 ---
