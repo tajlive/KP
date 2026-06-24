@@ -16,9 +16,9 @@ export async function generateMetadata({
   const { locale } = await params;
   return generateMarketingMetadata({
     locale,
-    namespace: "helpPage",
-    titleKey: "title",
-    descriptionKey: "subtitle",
+    namespace: "help",
+    titleKey: "metadata.title",
+    descriptionKey: "metadata.description",
     pathname: "/hjelp",
   });
 }
@@ -28,14 +28,8 @@ export default async function HelpPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="helpPage"
-      titleKey="title"
-      descriptionKey="subtitle"
-    >
+    <MarketingPageShell>
       <HelpClient />
     </MarketingPageShell>
   );

@@ -177,6 +177,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       pricing,
       about,
       competition,
+      help,
       helpPage: help,
       quizPage: quiz,
       strategyMarketplace,
@@ -185,7 +186,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       legal,
       tax,
       tradeHistory,
-      toasts
+      toasts,
+      contact: (metadata as Record<string, unknown>)?.contact,
     };
 
     function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {

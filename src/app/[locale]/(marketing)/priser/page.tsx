@@ -26,14 +26,8 @@ export default async function PriserPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="pricing"
-      titleKey="metadata.title"
-      descriptionKey="metadata.description"
-    >
+    <MarketingPageShell>
       <PriserClient />
     </MarketingPageShell>
   );

@@ -14,9 +14,9 @@ export async function generateMetadata({
   const { locale } = await params;
   return generateMarketingMetadata({
     locale,
-    namespace: "metadata",
-    titleKey: "contact.title",
-    descriptionKey: "contact.description",
+    namespace: "contact",
+    titleKey: "metadata.title",
+    descriptionKey: "metadata.description",
     pathname: "/kontakt",
   });
 }
@@ -26,14 +26,8 @@ export default async function KontaktPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="metadata"
-      titleKey="contact.title"
-      descriptionKey="contact.description"
-    >
+    <MarketingPageShell>
       <ClientKontakt />
     </MarketingPageShell>
   );

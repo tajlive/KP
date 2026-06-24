@@ -26,14 +26,8 @@ export default async function OmOssPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="about"
-      titleKey="metadata.title"
-      descriptionKey="metadata.description"
-    >
+    <MarketingPageShell>
       <OmOssClient />
     </MarketingPageShell>
   );

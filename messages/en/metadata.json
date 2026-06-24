@@ -2,7 +2,9 @@
   "title": "Klarpakke University",
   "description": "Learn crypto trading from A to Z. From Student to Master Trader in 4 weeks.",
   "contact": {
-    "title": "Contact | Klarpakke University",
-    "description": "Contact us for questions about courses, trading, or partnerships."
+    "metadata": {
+      "title": "Contact | Klarpakke University",
+      "description": "Contact us for questions about courses, trading, or partnerships."
+    }
   }
 }

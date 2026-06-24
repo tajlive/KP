@@ -1,6 +1,6 @@
 
 /**
- * @deprecated Consolidate into shared marketing shells when refactoring this page.
+ * @deprecated Refactor into shared page/section components when redesigning this page.
  */
 interface Step {
   number: string;

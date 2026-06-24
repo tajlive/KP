@@ -6,9 +6,6 @@ import { type ReactNode } from "react";
 export type LegalNamespace = "legal" | "legal.terms" | "legal.privacy" | "legal.cookies";
 
 export interface LegalPageShellProps {
-  locale: string;
-  namespace: LegalNamespace;
-  titleKey: string;
   children: ReactNode;
   className?: string;
 }
@@ -35,6 +32,7 @@ export interface LegalMetadataOptions {
   locale: string;
   namespace: LegalNamespace;
   titleKey: string;
+  descriptionKey: string;
   pathname?: string;
 }
 
@@ -42,15 +40,19 @@ export async function generateLegalMetadata({
   locale,
   namespace,
   titleKey,
+  descriptionKey,
   pathname = "",
 }: LegalMetadataOptions): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace });
   const title = t(titleKey);
+  const description = t(descriptionKey);
 
   return {
     title,
+    description,
     openGraph: {
       title,
+      description,
       type: "website",
       url: `https://www.klarpakke.no/${locale}${pathname}`,
     },

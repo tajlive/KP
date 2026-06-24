@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * @deprecated Consolidate into shared marketing shells when refactoring this page.
+ * @deprecated Refactor into shared page/section components when redesigning this page.
  */
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";

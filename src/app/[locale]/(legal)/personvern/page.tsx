@@ -18,6 +18,7 @@ export async function generateMetadata({
     locale,
     namespace: "legal.privacy",
     titleKey: "title",
+    descriptionKey: "description",
     pathname: "/personvern",
   });
 }
@@ -27,13 +28,8 @@ export default async function PersonvernPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <LegalPageShell
-      locale={locale}
-      namespace="legal.privacy"
-      titleKey="title"
-    >
+    <LegalPageShell>
       <ClientPersonvern />
     </LegalPageShell>
   );

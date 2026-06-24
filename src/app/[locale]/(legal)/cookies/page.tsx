@@ -18,6 +18,7 @@ export async function generateMetadata({
     locale,
     namespace: "legal.cookies",
     titleKey: "title",
+    descriptionKey: "description",
     pathname: "/cookies",
   });
 }
@@ -27,13 +28,8 @@ export default async function CookiesPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <LegalPageShell
-      locale={locale}
-      namespace="legal.cookies"
-      titleKey="title"
-    >
+    <LegalPageShell>
       <ClientCookies />
     </LegalPageShell>
   );

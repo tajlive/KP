@@ -4,6 +4,8 @@ import {
   generateLegalMetadata,
 } from "@/shared/ui/marketing";
 
+const SUPPORT_EMAIL = "support@klarpakke.no";
+
 export const runtime = "nodejs";
 
 export const revalidate = 86400; // 24 hours
@@ -18,6 +20,7 @@ export async function generateMetadata({
     locale,
     namespace: "legal.terms",
     titleKey: "title",
+    descriptionKey: "description",
     pathname: "/vilkar",
   });
 }
@@ -27,13 +30,8 @@ export default async function TermsPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <LegalPageShell
-      locale={locale}
-      namespace="legal.terms"
-      titleKey="title"
-    >
+    <LegalPageShell>
       <TermsContent />
     </LegalPageShell>
   );
@@ -106,10 +104,10 @@ function TermsContent() {
           <p className="text-gray-600">
             {t("sections.7.content")}{" "}
             <a
-              href="mailto:support@klarpakke.no"
+              href={`mailto:${SUPPORT_EMAIL}`}
               className="text-blue-600 hover:text-blue-500"
             >
-              support@klarpakke.no
+              {SUPPORT_EMAIL}
             </a>
           </p>
         </section>

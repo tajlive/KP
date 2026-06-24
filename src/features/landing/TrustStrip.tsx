@@ -1,7 +1,7 @@
 /**
  * TrustStrip — Premium 2026 Design
  * Trust signals with glassmorphism cards and subtle animations
- * @deprecated Consolidate into shared marketing shells when refactoring this page.
+ * @deprecated Refactor into shared page/section components when redesigning this page.
  */
 
 import { getTranslations } from 'next-intl/server';

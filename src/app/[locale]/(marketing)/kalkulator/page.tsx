@@ -28,14 +28,8 @@ export default async function KalkulatorPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="calculator"
-      titleKey="metadata.title"
-      descriptionKey="metadata.description"
-    >
+    <MarketingPageShell>
       <ClientKalkulator />
     </MarketingPageShell>
   );

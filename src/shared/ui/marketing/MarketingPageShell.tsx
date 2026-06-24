@@ -10,16 +10,10 @@ export type MarketingNamespace =
   | "contact"
   | "calculator"
   | "help"
-  | "helpPage"
   | "binanceGuide"
   | "metadata";
 
 export interface MarketingPageShellProps {
-  locale: string;
-  namespace: MarketingNamespace;
-  titleKey: string;
-  descriptionKey: string;
-  ogImage?: string;
   children: ReactNode;
   className?: string;
 }

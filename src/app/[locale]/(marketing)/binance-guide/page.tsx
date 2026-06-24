@@ -28,14 +28,8 @@ export default async function BinanceGuidePage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   return (
-    <MarketingPageShell
-      locale={locale}
-      namespace="binanceGuide"
-      titleKey="metadata.title"
-      descriptionKey="metadata.description"
-    >
+    <MarketingPageShell>
       <BinanceGuideContent />
     </MarketingPageShell>
   );
