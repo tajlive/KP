@@ -25,167 +25,151 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
     const consolidated = deepMerge(baseNo, targetConsolidated);
 
-    // Load all consolidated namespaces for the locale
+    // Load actively used split namespaces for the locale.
+    // Namespaces whose keys already exist in the consolidated messages/${validLocale}.json
+    // (e.g. coursePreview, notifications, tradeHistory) are omitted here.
     const [
+      about,
+      admin,
+      auth,
+      autopilot,
+      beta,
+      checkout,
       common,
+      competition,
+      copyTrading,
+      dashboard,
+      footer,
+      gamification,
+      help,
+      landing,
+      legal,
+      marketplace,
       metadata,
       navigation,
-      footer,
-      auth,
-      dashboard,
-      gamification,
-      trading,
-      account,
-      marketplace,
-      notifications,
       onboarding,
-      landing,
-      errors,
-      admin,
-      components,
-      simulator,
-      education,
-      checkout,
       pricing,
-      about,
-      competition,
-      help,
-      quiz,
+      quizPage,
+      settings,
       strategyMarketplace,
-      coursePreview,
+      taxReport,
       threeSteps,
-      legal,
-      tax,
-      tradeHistory,
-      toasts
+      trading,
+      tradingResults,
     ] = await Promise.all([
+      import(`../messages/${validLocale}/about.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/about.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/admin.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/admin.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/auth.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/auth.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/autopilot.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/autopilot.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/beta.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/beta.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/checkout.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/checkout.json").then((m) => m.default)),
       import(`../messages/${validLocale}/common.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/common.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/competition.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/competition.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/copyTrading.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/copyTrading.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/dashboard.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/dashboard.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/footer.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/footer.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/gamification.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/gamification.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/help.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/help.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/landing.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/landing.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/legal.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/legal.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/marketplace.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/marketplace.json").then((m) => m.default)),
       import(`../messages/${validLocale}/metadata.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/metadata.json").then((m) => m.default)),
       import(`../messages/${validLocale}/navigation.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/navigation.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/footer.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/footer.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/auth.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/auth.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/dashboard.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/dashboard.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/gamification.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/gamification.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/trading.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/trading.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/account.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/account.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/marketplace.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/marketplace.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/notifications.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/notifications.json").then((m) => m.default)),
       import(`../messages/${validLocale}/onboarding.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/onboarding.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/landing.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/landing.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/errors.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/errors.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/admin.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/admin.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/components.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/components.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/simulator.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/simulator.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/education.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/education.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/checkout.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/checkout.json").then((m) => m.default)),
       import(`../messages/${validLocale}/pricing.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/pricing.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/about.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/about.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/competition.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/competition.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/help.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/help.json").then((m) => m.default)),
       import(`../messages/${validLocale}/quizPage.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/quizPage.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/settings.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/settings.json").then((m) => m.default)),
       import(`../messages/${validLocale}/strategyMarketplace.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/strategyMarketplace.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/coursePreview.json`)
+      import(`../messages/${validLocale}/taxReport.json`)
         .then((m) => m.default)
-        .catch(() => import("../messages/en/coursePreview.json").then((m) => m.default)),
+        .catch(() => import("../messages/en/taxReport.json").then((m) => m.default)),
       import(`../messages/${validLocale}/threeSteps.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/threeSteps.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/legal.json`)
+      import(`../messages/${validLocale}/trading.json`)
         .then((m) => m.default)
-        .catch(() => import("../messages/en/legal.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/tax.json`)
+        .catch(() => import("../messages/en/trading.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/tradingResults.json`)
         .then((m) => m.default)
-        .catch(() => import("../messages/en/tax.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/tradeHistory.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/tradeHistory.json").then((m) => m.default)),
-      import(`../messages/${validLocale}/toasts.json`)
-        .then((m) => m.default)
-        .catch(() => import("../messages/en/toasts.json").then((m) => m.default)),
+        .catch(() => import("../messages/en/tradingResults.json").then((m) => m.default)),
     ]);
 
     const splits: Record<string, unknown> = {
+      about,
+      admin,
+      auth,
+      autopilot,
+      beta,
+      checkout,
       common,
+      competition,
+      copyTrading,
+      dashboard,
+      footer,
+      gamification,
+      help,
+      helpPage: help,
+      landing,
+      legal,
+      marketplace,
       metadata,
       navigation,
-      footer,
-      auth,
-      dashboard,
-      gamification,
-      trading,
-      account,
-      marketplace,
-      notifications,
       onboarding,
-      landing,
-      errors,
-      admin,
-      components,
-      simulator,
-      education,
-      checkout,
       pricing,
-      about,
-      competition,
-      helpPage: help,
-      quizPage: quiz,
+      quizPage,
+      settings,
       strategyMarketplace,
-      coursePreview,
+      taxReport,
       threeSteps,
-      legal,
-      tax,
-      tradeHistory,
-      toasts
+      trading,
+      tradingResults,
+      contact: (metadata as Record<string, unknown>)?.contact,
     };
 
     function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
@@ -219,8 +203,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
         console.error("[i18n ERROR]", error.code, error.message || error);
       },
       getMessageFallback({ namespace, key }) {
-        // Return visible fallback so missing keys are obvious in UI
-        return `[MISSING: ${namespace ? namespace + "." : ""}${key}]`;
+        // Return key as safe production fallback
+        return namespace ? `${namespace}.${key}` : key;
       },
     };
   } catch (err) {
@@ -234,7 +218,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       messages: { common },
       onError() {},
       getMessageFallback({ namespace, key }) {
-        return `[${namespace ? namespace + "." : ""}${key}]`;
+        return namespace ? `${namespace}.${key}` : key;
       },
     };
   }

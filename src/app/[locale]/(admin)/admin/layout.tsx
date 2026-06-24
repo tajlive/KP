@@ -24,9 +24,9 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { SUPPORTED_LOCALES } from "@/i18n/config";
 
-
-const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
+const LOCALE_PATH_RE = new RegExp(`^/(${SUPPORTED_LOCALES.join("|")})`);
 
 export default function AdminLayout({
   children,
@@ -81,8 +81,11 @@ export default function AdminLayout({
             setTimeout(() => checkAdmin(retryCount + 1), RETRY_DELAY);
             return;
           }
-          const supportedLocales = ["no", "en", "th", "zh"];
-          const safeLocale = supportedLocales.includes(locale) ? locale : "no";
+          const safeLocale = SUPPORTED_LOCALES.includes(
+            locale as (typeof SUPPORTED_LOCALES)[number],
+          )
+            ? locale
+            : "no";
           router.push(
             `/${safeLocale}/innlogging?error=admin_auth_required&next=${encodeURIComponent(pathname ?? "/")}`,
           );
@@ -268,9 +271,9 @@ export default function AdminLayout({
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const pathWithoutLocale =
-                    (pathname ?? "").replace(/^\/(no|en|th|zh)/, "") || "/";
+                    (pathname ?? "").replace(LOCALE_PATH_RE, "") || "/";
                   const hrefWithoutLocale =
-                    item.href.replace(/^\/(no|en|th|zh)/, "") || "/";
+                    item.href.replace(LOCALE_PATH_RE, "") || "/";
                   const isActive = pathWithoutLocale === hrefWithoutLocale;
                   return (
                     <Link

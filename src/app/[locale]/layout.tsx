@@ -19,7 +19,7 @@ import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
-import { isAppShellPath } from "@/shared/layout/marketing-shell-paths";
+import { isAppShellPath } from "@/lib/navigation/config";
 import { RootProviders } from "@/app/providers/RootProviders";
 import { Outfit, Geist } from "next/font/google";
 import { getFlagsAsync } from "@/lib/flags";

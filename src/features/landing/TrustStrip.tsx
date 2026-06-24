@@ -1,6 +1,7 @@
 /**
  * TrustStrip — Premium 2026 Design
  * Trust signals with glassmorphism cards and subtle animations
+ * @deprecated Refactor into shared page/section components when redesigning this page.
  */
 
 import { getTranslations } from 'next-intl/server';

@@ -3,6 +3,7 @@
   "termsTitle": "Terms of Service",
   "privacy": {
     "title": "Privacy Policy",
+    "description": "Read how Klarpakke University handles your personal data.",
     "intro": {
       "title": "1. Introduction",
       "content": "Klarpakke (\"we\", \"us\") takes your privacy seriously. This statement describes how we collect, use, and protect your personal data."
@@ -36,6 +37,7 @@
   },
   "terms": {
     "title": "Terms of Use",
+    "description": "Read the terms of use for Klarpakke University.",
     "lastUpdated": "Last updated: February 11, 2026",
     "sections": {
       "1": {
@@ -78,6 +80,7 @@
   "cookieTitle": "Cookies",
   "cookies": {
     "title": "Cookies",
+    "description": "Read about how Klarpakke University uses cookies.",
     "whatAreCookies": {
       "title": "What are cookies?",
       "content": "Cookies are small text files stored in your browser when you visit a website. They are used to remember settings, logins, analyze traffic, and personalize content."

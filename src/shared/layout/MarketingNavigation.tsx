@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { NavigationData } from "./NavigationServer";
+import type { NavigationData } from "@/lib/navigation/config";
 
 interface MarketingNavigationProps {
   navData: NavigationData;

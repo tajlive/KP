@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
+import { SUPPORTED_LOCALES } from "@/i18n/config";
 
 export const runtime = 'nodejs';
-
-const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
 
 interface PageProps {
   params: Promise<{ locale: string }>;

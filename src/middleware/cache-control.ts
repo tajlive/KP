@@ -34,11 +34,6 @@ const NO_STORE_PATHS = [
   "/leagues",
   // Trading
   "/handel",
-  "/paper-trading",
-  "/live-trading",
-  "/auto-trade",
-  "/auto-handel",
-  "/auto-trading",
   "/autopilot",
   // Social / commerce
   "/copy-trading",

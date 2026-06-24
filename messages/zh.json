@@ -215,6 +215,46 @@
       "whatNext": "Hva skjer nå?",
       "whatNextDesc": "Du vil motta en e-post med paper trading-guide i løpet av de neste dagene. Sjekk også søppelpost-mappen din!",
       "checkAnother": "Sjekk annen e-post"
+    },
+    "pages": {
+      "login": {
+        "subtitle": "Log in to your account",
+        "or": "or",
+        "continueWithGoogle": "Continue with Google",
+        "continueWithMicrosoft": "Continue with Microsoft",
+        "registerLink": "Register"
+      },
+      "register": {
+        "title": "Create account",
+        "subtitle": "Register to get started with Klarpakke",
+        "userCreated": "User created!",
+        "confirmationSent": "We have sent a confirmation link to your email address. Click the link to activate your account.",
+        "goToLogin": "Go to login",
+        "creatingAccount": "Creating account...",
+        "createAccount": "Create account",
+        "passwordPlaceholder": "At least 8 characters",
+        "haveAccount": "Already have an account?",
+        "logIn": "Log in"
+      },
+      "resetPassword": {
+        "title": "Forgot password?",
+        "desc": "Enter your email address and we'll send you a link to reset your password.",
+        "submit": "Send reset link",
+        "sending": "Sending...",
+        "checkEmailTitle": "Check your email!",
+        "checkEmailDesc": "We have sent a link to reset your password to your email address.",
+        "backToLogin": "Back to login"
+      },
+      "updatePassword": {
+        "title": "New password",
+        "desc": "Choose a new password for your account",
+        "placeholder": "At least 8 characters",
+        "updating": "Updating...",
+        "submit": "Update password",
+        "successTitle": "Password updated!",
+        "successDesc": "Your password has been changed. You can now log in with the new password.",
+        "goToLogin": "Go to login"
+      }
     }
   },
   "autoTrade": {

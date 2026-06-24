@@ -302,19 +302,11 @@ const nextConfig = {
       { source: "/trading", destination: "/no/dashboard/trade", permanent: true },
       { source: "/portfolio", destination: "/no/dashboard/portfolio", permanent: true },
       
-      // Route unification: /dashboard/auto-handel replaces /dashboard/auto-trade
-      { source: "/dashboard/auto-trade", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale(no|en)/dashboard/auto-trade", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
-      { source: "/dashboard/auto-trade/:path*", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale(no|en)/dashboard/auto-trade/:path*", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
-      // Legacy auto-trade paths → dashboard/auto-handel (direct, no chain)
-      { source: "/auto-trade", destination: "/no/dashboard/auto-handel", permanent: true },
-      { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-handel", permanent: true },
-      // Autopilot → auto-handel canonical
-      { source: "/dashboard/autopilot", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale(no|en)/dashboard/autopilot", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
-      { source: "/dashboard/autopilot/:path*", destination: "/dashboard/auto-handel", permanent: true },
-      { source: "/:locale(no|en)/dashboard/autopilot/:path*", destination: "/:locale(no|en)/dashboard/auto-handel", permanent: true },
+      // /dashboard/auto-handel is a legacy alias handled by middleware → /dashboard/auto-trade.
+      // Do NOT add Next.js redirects from /dashboard/auto-trade here; the real page lives there.
+      // Legacy auto-trade paths → dashboard/auto-trade (direct, no chain)
+      { source: "/auto-trade", destination: "/no/dashboard/auto-trade", permanent: true },
+      { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-trade", permanent: true },
       // Handelshistorikk → dashboard/historikk canonical
       { source: "/handelshistorikk", destination: "/dashboard/historikk", permanent: true },
       { source: "/:locale(no|en)/handelshistorikk", destination: "/:locale(no|en)/dashboard/historikk", permanent: true },

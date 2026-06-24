@@ -1,4 +1,7 @@
 
+/**
+ * @deprecated Refactor into shared page/section components when redesigning this page.
+ */
 interface Step {
   number: string;
   title: string;

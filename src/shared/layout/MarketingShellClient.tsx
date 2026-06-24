@@ -2,8 +2,10 @@
 
 import { ConditionalFooter } from "@/features/landing/ConditionalFooter";
 import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
-import type { NavigationData } from "@/shared/layout/NavigationServer";
-import { isAppShellPath } from "@/shared/layout/marketing-shell-paths";
+import {
+  isAppShellPath,
+  type NavigationData,
+} from "@/lib/navigation/config";
 import { isGuestAuthRoute, parseLocalePath } from "@/middleware/locale-path";
 import { usePathname, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
