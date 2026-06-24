@@ -1,5 +1,16 @@
 # 🚀 Klarpakke Deployment Guide
 
+> **⚠️ DEPRECATED / UTDATERT (2026-06-24)**
+>
+> Denne guiden ble skrevet for den opprinnelige Webflow + Supabase Edge Functions-stacken og er **ikke lenger gjeldende**. Klarpakke kjører nå i produksjon på **Cloudflare Workers (OpenNext.js + Wrangler) + Supabase**.
+>
+> Bruk følgende dokumenter i stedet:
+> - `AGENTS.md` — hurtigstart, hosting-arkitektur og deploy-kommandoer
+> - `docs/PRODUCTION_RELEASE_CHECKLIST.md` — sjekkliste før/etter hver produksjonsdeploy
+> - `.github/workflows/deploy.yml` — aktiv Cloudflare Workers deploy-workflow
+>
+> Denne filen beholdes kun som historisk referanse.
+
 Complete step-by-step guide to deploy Klarpakke to production.
 
 ---

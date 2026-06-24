@@ -2,26 +2,26 @@
 
 Use this checklist before and after every production deployment.
 
+> **Current hosting stack:** Cloudflare Workers (OpenNext.js + Wrangler) + Supabase.  
+> **Auto-deploy status:** GitHub Actions is currently blocked by the phantom `BuildFailed` workflow (issue #94). Deploy manually with `npm run cf:deploy` until GitHub Support resolves the stale workflow registration.
+
 ## Pre-Deploy
 
-- [ ] On `main` branch, up to date with remote
-- [ ] `npm run lint` passes with 0 warnings
-- [ ] `npm run test` passes (all unit tests green)
-- [ ] `npm run build` completes successfully locally
-- [ ] No new unreviewed Sentry errors from last deploy
-- [ ] Environment variables in Vercel are up to date (see `docs/ENVIRONMENT.md`)
+- [ ] On `main` branch, up to date with `origin/main`
+- [ ] `npm run lint:gate` passes
+- [ ] `npm run test:unit` passes (all unit tests green)
+- [ ] `npm run cf:build` completes successfully locally
+- [ ] No new unreviewed errors in GlitchTip
+- [ ] Cloudflare / Wrangler environment variables and secrets are up to date (see `docs/ENVIRONMENT.md` and `wrangler.jsonc`)
 
 ## Deploy
 
 ```bash
-# Option A: Push to main (triggers Vercel auto-deploy)
-git push origin main
+# Manual deploy (GitHub Actions auto-deploy is blocked by phantom workflow #94)
+npm run cf:deploy
 
-# Option B: Manual deploy via GitHub Actions
-# Go to https://github.com/tajlive/KP/actions → "Manual Deploy" → "production"
-
-# Option C: Vercel CLI
-vercel --prod --scope klarpakke
+# Equivalent explicit command:
+# npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
 ```
 
 ## Post-Deploy (within 5 minutes)
@@ -32,19 +32,20 @@ vercel --prod --scope klarpakke
   # Expected: "healthy"
   ```
 
+- [ ] Correct version is deployed:
+  ```bash
+  curl -s https://www.klarpakke.no/api/health | jq '.version'
+  # Should match the latest commit SHA (first 7 chars).
+  # If it returns "unknown", the APP_VERSION variable was not injected during deploy.
+  ```
+
 - [ ] Critical paths return 200:
   ```bash
   npm run verify
   # Or manually check: /no, /en, /no/innlogging, /no/priser
   ```
 
-- [ ] No new errors in Sentry (check https://sentry.io)
-
-- [ ] Correct version deployed:
-  ```bash
-  curl -s https://www.klarpakke.no/api/health | jq '.version'
-  # Should match latest commit SHA (first 7 chars)
-  ```
+- [ ] No new errors in GlitchTip
 
 - [ ] Trading endpoints alive:
   ```bash
@@ -55,9 +56,12 @@ vercel --prod --scope klarpakke
 ## If Something Goes Wrong
 
 ```bash
-# Immediate rollback
-export VERCEL_TOKEN=<your-token>
-./scripts/rollback-deployment.sh
+# Rollback to the previous Cloudflare Worker version
+npx wrangler rollback
+
+# Alternative: redeploy the previous commit
+git checkout <previous-commit-sha>
+npm run cf:deploy
 
 # Verify rollback worked
 curl -s https://www.klarpakke.no/api/health | jq '.'
@@ -66,4 +70,4 @@ curl -s https://www.klarpakke.no/api/health | jq '.'
 # Post in #klarpakke-alerts with reason and status
 ```
 
-See `ROLLBACK.md` and `runbook.md` for full incident procedures.
+See `AGENTS.md` for the full deployment and verification commands.

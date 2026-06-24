@@ -1,7 +1,19 @@
 # 🚀 GitHub Deployment Status: Webflow MVP Ready
 
+> **⚠️ ARCHIVED / UTDATERT (2026-06-24)**
+>
+> Dette dokumentet beskriver Webflow MVP-leveransen fra januar 2026 og er **ikke lenger gjeldende**. Klarpakke kjører nå i produksjon på **Cloudflare Workers (OpenNext.js + Wrangler) + Supabase**, ikke Webflow.
+>
+> Gjeldende deploy-dokumentasjon:
+> - `AGENTS.md` — hurtigstart, hosting-arkitektur og deploy-kommandoer
+> - `.github/workflows/deploy.yml` — aktiv Cloudflare Workers deploy-workflow
+> - `docs/PRODUCTION_RELEASE_CHECKLIST.md` — sjekkliste før/etter produksjonsdeploy
+> - Issue #94 — GitHub Actions phantom `BuildFailed` workflow blocker
+>
+> Filen beholdes kun som historisk referanse.
+
 **Date:** 2026-01-31
-**Status:** ✅ GITHUB PORTION COMPLETE
+**Status:** ✅ GITHUB PORTION COMPLETE (historisk)
 **Latest Commit:** d0cc4fd3 - "feat: Final production deployment package ready"
 
 ---

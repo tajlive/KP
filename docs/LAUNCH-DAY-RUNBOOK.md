@@ -1,5 +1,15 @@
 # Klarpakke — Launch Day Runbook 🚀
 
+> **⚠️ DEPRECATED / UTDATERT (2026-06-24)**
+>
+> Dette dokumentet ble skrevet for den gamle stacken (Vercel + Supabase Edge Functions) og er ikke lenger gjeldende. Klarpakke kjører nå på **Cloudflare Workers (OpenNext.js + Wrangler) + Supabase**.
+>
+> Bruk følgende dokumenter i stedet:
+> - `AGENTS.md` — hurtigstart, deploy-kommandoer og verifisering
+> - `docs/PRODUCTION_RELEASE_CHECKLIST.md` — sjekkliste før/etter hver produksjonsdeploy
+>
+> Denne filen beholdes kun som historisk referanse.
+
 **Siste oppdatering**: 2026-03-30  
 **Ansvarlig**: DevOps Team  
 **Nødnummer**: ops@klarpakke.no

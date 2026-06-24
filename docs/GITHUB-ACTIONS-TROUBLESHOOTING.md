@@ -1,5 +1,11 @@
 # GitHub Actions – Feilsøking og optimalisering
 
+> **⚠️ MEST UTDATERT (2026-06-24)**
+>
+> Tabellen under refererer til den gamle Vercel-baserte stacken. Klarpakke kjører nå på **Cloudflare Workers (OpenNext.js + Wrangler)**. Se `AGENTS.md` og `docs/PRODUCTION_RELEASE_CHECKLIST.md` for gjeldende deploy- og feilsøkingsrutiner.
+>
+> Siste kjente problem (ikke Vercel-relatert) er dokumentert nederst: **phantom `BuildFailed` workflow (#94)**.
+
 **Sist oppdatert:** 2026-03-19
 
 ---
@@ -62,6 +68,32 @@ gh secret set SUPABASE_ACCESS_TOKEN --repo tajlive/KP
 ```bash
 gh run list --repo tajlive/KP --limit 10
 gh run view <RUN_ID> --repo tajlive/KP --log-failed  # Se kun feilede steg
+```
+
+---
+
+## Phantom `BuildFailed` workflow (#94) — 2026-06-24
+
+**Symptom:** Hver push/PR får en ekstra workflow-run med status `startup_failure` fra en slettet `BuildFailed`-workflow (workflow-id `260912064`). Dette blokkerer auto-deploy til Cloudflare Workers.
+
+**Rotårsak:** GitHub Actions har en fastlåst backend-registrering for workflow-filen `.github/workflows/BuildFailed.yml`. Selv om filen er slettet fra `main`, eksisterer registreringen fortsatt — sannsynligvis fordi gamle grener (`feat/dark-fleet-phase1`, `deps/*`, `backup/*`) fremdeles inneholder en `BuildFailed.yml`-fil (eller `archived/BuildFailed.yml`), noe som hindrer GitHub i å fjerne den globale registreringen.
+
+**Forsøkte workaround:**
+- Deaktivere/aktivere Actions på nytt.
+- Gi default branch nytt navn (`main` → `main-temp` → `main`).
+- Legge til en midlertidig dummy `BuildFailed.yml` for å tvinge re-indeksering (fjernet igjen).
+
+**Status:** Ingen av workaround-ene løste problemet. Løsning krever opprydding fra **GitHub Support**.
+
+**Midlertidig løsning:** Kjør produksjonsdeploy manuelt:
+```bash
+npm run cf:deploy
+```
+
+**Verifiser kjørte workflow-runs:**
+```bash
+gh run list --repo tajlive/KP --limit 10
+gh run list --workflow 260912064 --repo tajlive/KP --limit 10
 ```
 
 ---
