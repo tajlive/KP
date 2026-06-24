@@ -148,3 +148,11 @@
 {"subject":"klarpakke-trading-risk","predicate":"uses","object":"canonical risk-engine + limits-resolver","validFrom":"2026-06-22T20:54:41.829Z"}
 {"subject":"klarpakke-trading-execution","predicate":"uses","object":"canonical fill-model in PaperExecutor","validFrom":"2026-06-22T20:54:41.834Z"}
 {"subject":"klarpakke-features","predicate":"trading_components","object":"src/features/trading/{auto-trading,paper,components,hooks,journal}","validFrom":"2026-06-22T20:54:41.837Z"}
+{"subject":"klarpakke","predicate":"has_auto_update","object":"dependabot-npm-and-actions","validFrom":"2026-06-24T15:31:13.806Z"}
+{"subject":"klarpakke","predicate":"has_auto_update","object":"kimi-code-cli","validFrom":"2026-06-24T15:31:13.807Z"}
+{"subject":"klarpakke","predicate":"has_auto_update","object":"mempalace","validFrom":"2026-06-24T15:31:13.807Z"}
+{"subject":"klarpakke","predicate":"uses_tool","object":"scripts/update-tools.sh","validFrom":"2026-06-24T15:31:13.807Z"}
+{"subject":"klarpakke","predicate":"uses_workflow","object":".github/workflows/tool-updater.yml","validFrom":"2026-06-24T15:31:13.807Z"}
+{"subject":"dependabot","predicate":"configuration","object":".github/dependabot.yml","validFrom":"2026-06-24T15:31:13.807Z"}
+{"subject":"kimi-code-cli","predicate":"installed_version","object":"0.19.2","validFrom":"2026-06-24T15:31:13.808Z"}
+{"subject":"mempalace","predicate":"installed_version","object":"3.5.0","validFrom":"2026-06-24T15:31:13.809Z"}
