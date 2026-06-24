@@ -1,7 +1,7 @@
 /**
  * TrustStrip — Premium 2026 Design
  * Trust signals with glassmorphism cards and subtle animations
- * TODO(marketing-shells): Migrate to @/shared/ui/marketing/TrustBadges for consistency.
+ * @deprecated Use `src/shared/ui/marketing/TrustBadges` instead.
  */
 
 import { getTranslations } from 'next-intl/server';

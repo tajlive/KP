@@ -1,5 +1,7 @@
 
-// TODO(marketing-shells): Consider migrating step grid to @/shared/ui/marketing/FeatureGrid.
+/**
+ * @deprecated Use `src/shared/ui/marketing/FeatureGrid` instead.
+ */
 interface Step {
   number: string;
   title: string;

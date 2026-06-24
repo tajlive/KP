@@ -1,6 +1,8 @@
 "use client";
 
-// TODO(marketing-shells): Migrate grid layout to @/shared/ui/marketing/FeatureGrid for consistency.
+/**
+ * @deprecated Use `src/shared/ui/marketing/FeatureGrid` instead.
+ */
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import {

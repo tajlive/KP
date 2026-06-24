@@ -7,20 +7,16 @@ other agents can import them without circular dependencies.
 ## Components
 
 - `MarketingPageShell` — page-level wrapper for marketing pages.
-- `Hero` — hero section layout shell.
-- `CTASection` — call-to-action section layout shell.
-- `FeatureGrid` — responsive feature grid layout shell.
-- `TrustBadges` — trust badge / social proof section layout shell.
+- `LegalPageShell` — page-level wrapper for legal pages.
 
 ## Import
 
 ```ts
 import {
   MarketingPageShell,
-  Hero,
-  CTASection,
-  FeatureGrid,
-  TrustBadges,
+  LegalPageShell,
+  generateMarketingMetadata,
+  generateLegalMetadata,
 } from "@/shared/ui/marketing";
 ```
 

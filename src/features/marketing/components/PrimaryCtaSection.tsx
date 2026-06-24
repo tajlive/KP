@@ -1,6 +1,8 @@
 "use client";
 
-// TODO(marketing-shells): Migrate to @/shared/ui/marketing/CTASection for consistent CTA styling.
+/**
+ * @deprecated Use `src/shared/ui/marketing/CTASection` instead.
+ */
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";

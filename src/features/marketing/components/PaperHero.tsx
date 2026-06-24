@@ -1,5 +1,7 @@
 
-// TODO(marketing-shells): Migrate to @/shared/ui/marketing/Hero for consistent hero styling.
+/**
+ * @deprecated Use `src/shared/ui/marketing/Hero` instead.
+ */
 import { GraduationCap, PlayCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";

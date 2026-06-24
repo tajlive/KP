@@ -1,4 +1,6 @@
-// TODO(marketing-shells): Migrate to @/shared/ui/marketing/Hero once content fetching is decoupled.
+/**
+ * @deprecated Use `src/shared/ui/marketing/Hero` instead.
+ */
 import { getTranslations } from 'next-intl/server';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';

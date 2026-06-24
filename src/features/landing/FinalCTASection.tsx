@@ -1,6 +1,8 @@
 "use client";
 
-// TODO(marketing-shells): Migrate to @/shared/ui/marketing/CTASection for consistent CTA styling.
+/**
+ * @deprecated Use `src/shared/ui/marketing/CTASection` instead.
+ */
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Clock, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
