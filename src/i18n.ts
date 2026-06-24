@@ -251,8 +251,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
         console.error("[i18n ERROR]", error.code, error.message || error);
       },
       getMessageFallback({ namespace, key }) {
-        // Return visible fallback so missing keys are obvious in UI
-        return `[MISSING: ${namespace ? namespace + "." : ""}${key}]`;
+        // Return key as safe production fallback
+        return namespace ? `${namespace}.${key}` : key;
       },
     };
   } catch (err) {
@@ -266,7 +266,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       messages: { common },
       onError() {},
       getMessageFallback({ namespace, key }) {
-        return `[${namespace ? namespace + "." : ""}${key}]`;
+        return namespace ? `${namespace}.${key}` : key;
       },
     };
   }
