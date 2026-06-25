@@ -96,20 +96,20 @@
     --bottom-nav-height: 5.75rem;
     
     /* ============================================
-       LIGHT MODE - WCAG AA Compliant
+       DEFAULT THEME - Nordic Trust dark
        ============================================ */
-    
-    /* Background colors - Crisp, clean light palette */
-    --kp-bg-primary: #fafafa;         /* Page background - soft white */
-    --kp-bg-secondary: #ffffff;       /* Cards, panels */
+
+    /* Background colors - Nordic Trust dark default */
+    --kp-bg-primary: var(--kp-bg-dark);         /* Page background */
+    --kp-bg-secondary: var(--kp-bg-dark-elevated);       /* Cards, panels */
     --kp-bg-tertiary: #f4f4f5;        /* Elevated surfaces */
     --kp-bg-card: #ffffff;            /* Card background */
     --kp-bg-hover: #f4f4f5;           /* Hover state */
     --kp-bg-active: #e4e4e7;          /* Active/pressed state */
     
-    /* Text colors - High contrast for readability (WCAG AA) */
-    --kp-text-primary: #18181b;       /* Primary text - zinc-900 */
-    --kp-text-secondary: #3f3f46;     /* Secondary - zinc-700 */
+    /* Text colors - Nordic Trust dark default */
+    --kp-text-primary: var(--kp-text-dark-primary);       /* Primary text */
+    --kp-text-secondary: var(--kp-text-dark-secondary);     /* Secondary */
     --kp-text-tertiary: #52525b;      /* Tertiary - zinc-600 */
     --kp-text-muted: #71717a;         /* Muted - zinc-500 (4.6:1 on white) */
     
@@ -137,19 +137,19 @@
     --kp-input-placeholder: #a1a1aa;
     
     /* Brand accent */
-    --kp-brand: #0052FF;
+    --kp-brand: var(--kp-ai);
     --kp-brand-hover: #0047E0;
     --kp-brand-light: #3d7aff;
     --kp-brand-dark: #0039c7;
     --kp-brand-glow: rgba(0, 82, 255, 0.25);
     --kp-brand-subtle: rgba(0, 82, 255, 0.1);
-    
+
     /* Status colors */
-    --kp-success: #059669;            /* emerald-600 - good contrast on white */
+    --kp-success: var(--kp-positive);
     --kp-success-bg: rgba(5, 150, 105, 0.1);
-    --kp-warning: #d97706;            /* amber-600 */
+    --kp-warning: var(--kp-live);
     --kp-warning-bg: rgba(217, 119, 6, 0.1);
-    --kp-danger: #dc2626;             /* red-600 */
+    --kp-danger: var(--kp-negative);
     --kp-danger-bg: rgba(220, 38, 38, 0.1);
   }
   
@@ -157,17 +157,17 @@
      DARK MODE - WCAG AA Compliant
      ============================================ */
   .dark {
-    /* Background colors - Rich, deep dark palette */
-    --kp-bg-primary: #09090b;         /* Deepest background - zinc-950 */
-    --kp-bg-secondary: #18181b;       /* Main surface - zinc-900 */
+    /* Background colors - Nordic Trust dark palette */
+    --kp-bg-primary: var(--kp-bg-dark);         /* Deepest background */
+    --kp-bg-secondary: var(--kp-bg-dark-elevated);       /* Main surface */
     --kp-bg-tertiary: #27272a;        /* Elevated surfaces - zinc-800 */
     --kp-bg-card: #18181b;            /* Card background */
     --kp-bg-hover: #27272a;           /* Hover state */
     --kp-bg-active: #3f3f46;          /* Active/pressed state - zinc-700 */
     
-    /* Text colors - High contrast for readability (WCAG AA) */
-    --kp-text-primary: #fafafa;       /* Primary text - zinc-50 */
-    --kp-text-secondary: #e4e4e7;     /* Secondary - zinc-200 */
+    /* Text colors - Nordic Trust dark palette */
+    --kp-text-primary: var(--kp-text-dark-primary);       /* Primary text */
+    --kp-text-secondary: var(--kp-text-dark-secondary);     /* Secondary */
     --kp-text-tertiary: #a1a1aa;      /* Tertiary - zinc-400 */
     --kp-text-muted: #71717a;         /* Muted - zinc-500 */
     
@@ -195,35 +195,31 @@
     --kp-input-placeholder: #71717a;
     
     /* Brand accent */
-    --kp-brand: #0052FF;
+    --kp-brand: var(--kp-ai);
     --kp-brand-hover: #0047E0;
     --kp-brand-light: #3d7aff;
     --kp-brand-dark: #0039c7;
     --kp-brand-glow: rgba(0, 82, 255, 0.4);
     --kp-brand-subtle: rgba(0, 82, 255, 0.15);
-    
+
     /* Status colors */
-    --kp-success: #10b981;            /* emerald-500 */
+    --kp-success: var(--kp-positive);
     --kp-success-bg: rgba(16, 185, 129, 0.15);
-    --kp-warning: #f59e0b;            /* amber-500 */
+    --kp-warning: var(--kp-live);
     --kp-warning-bg: rgba(245, 158, 11, 0.15);
-    --kp-danger: #ef4444;             /* red-500 */
+    --kp-danger: var(--kp-negative);
     --kp-danger-bg: rgba(239, 68, 68, 0.15);
   }
 
-  /* Phase 1 redesign: default dark, light opt-in via .light */
-  html {
-    color-scheme: dark;
-    background-color: var(--kp-bg-dark);
-    color: var(--kp-text-dark-primary);
+  /* Light mode opt-in via next-themes */
+  html.light,
+  .light {
+    --kp-bg-primary: var(--kp-bg-light);
+    --kp-bg-secondary: var(--kp-bg-light-elevated);
+    --kp-text-primary: var(--kp-text-light-primary);
+    --kp-text-secondary: var(--kp-text-light-secondary);
   }
 
-  html.light {
-    color-scheme: light;
-    background-color: var(--kp-bg-light);
-    color: var(--kp-text-light-primary);
-  }
-  
   /* Smooth theme transitions - disabled for users who prefer reduced motion */
   @media (prefers-reduced-motion: no-preference) {
     *,
