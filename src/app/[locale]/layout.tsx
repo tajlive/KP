@@ -22,7 +22,9 @@ import Script from "next/script";
 import { isAppShellPath } from "@/lib/navigation/config";
 import { RootProviders } from "@/app/providers/RootProviders";
 import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
-import { Outfit, Geist } from "next/font/google";
+import { Geist } from "next/font/google";
+import { outfit } from "@/lib/perf/hero-font";
+import { getCriticalHeroCss } from "@/lib/perf/critical-hero-css";
 import { getFlagsAsync } from "@/lib/flags";
 import "../globals.css";
 
@@ -74,22 +76,6 @@ import "../globals.css";
  * - LCP: 6.2s → <3.0s (target)
  * - Font loading: Minimal FOUT for Inter (swap)
  */
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "block",
-  variable: "--font-inter", // Keep variable name to avoid refactoring CSS
-  preload: true,
-  adjustFontFallback: true,
-  fallback: [
-    "system-ui",
-    "-apple-system",
-    "BlinkMacSystemFont",
-    "Segoe UI",
-    "Roboto",
-    "sans-serif",
-  ],
-});
 
 const geist = Geist({
   subsets: ["latin"],
@@ -200,6 +186,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {process.env.NEXT_PUBLIC_GSC_VERIFICATION ? (
           <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GSC_VERIFICATION} />
         ) : null}
+        {/* Critical hero styles so the LCP headline paints before the full Tailwind CSS arrives */}
+        <style
+          id="critical-hero-css"
+          dangerouslySetInnerHTML={{ __html: getCriticalHeroCss() }}
+          suppressHydrationWarning
+        />
         {/* KRITISK: Avregistrer gamle service workers FØR React hydrerer */}
         <Script
           id="sw-killer"
