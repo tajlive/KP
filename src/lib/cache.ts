@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
 
 /**
@@ -145,3 +146,19 @@ export const cacheKeys = {
   trades: (userId: string, limit: number) => `trades:${userId}:${limit}`,
   course: (courseId: string) => `course:${courseId}`,
 } as const;
+
+export interface CacheOptions<TArgs extends unknown[], TReturn> {
+  key: string;
+  tags: string[];
+  revalidate?: number | false;
+}
+
+export function withRequestCache<TArgs extends unknown[], TReturn>(
+  fn: (...args: TArgs) => Promise<TReturn>,
+  options: CacheOptions<TArgs, TReturn>
+) {
+  return unstable_cache(fn, [options.key], {
+    tags: options.tags,
+    revalidate: options.revalidate ?? 60,
+  });
+}
