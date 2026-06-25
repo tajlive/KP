@@ -21,5 +21,11 @@
   "yourRankThisMonth": "You're #{{rank}} this month",
   "viewLeaderboard": "View leaderboard",
   "kltStoryShort": "10 million KLT. Earn them by learning – use them to compete. 50,000 KLT to the monthly winner.",
-  "daysLeft": "days left"
+  "daysLeft": "days left",
+  "riskBadge": {
+    "label": "Risk: {level}",
+    "low": "Low risk",
+    "medium": "Medium risk",
+    "high": "High risk"
+  }
 }
