@@ -14,8 +14,7 @@ import {
 
 export const runtime = "nodejs";
 
-// Short revalidation for Sanity-driven landing content; webhook invalidates on publish
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
