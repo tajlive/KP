@@ -14,10 +14,10 @@
      ═══════════════════════════════════════════════════════════════ */
 
   /* Brand Colors (#0052FF canonical accent) */
-  --kp-accent: #0052FF;
-  --kp-primary: #0052FF;
-  --kp-primary-hover: #0047E0;
-  --kp-primary-active: #003ECB;
+  --kp-accent: #0052ff;
+  --kp-primary: #0052ff;
+  --kp-primary-hover: #0047e0;
+  --kp-primary-active: #003ecb;
   --kp-primary-light: #dbeafe;
 
   /* Secondary/Neutral */
@@ -42,7 +42,7 @@
   --kp-error-text: #991b1b;
 
   --kp-info: #3b82f6;
-  --kp-info-hover: #0052FF;
+  --kp-info-hover: #0052ff;
   --kp-info-light: #dbeafe;
   --kp-info-text: #1e40af;
 
@@ -63,6 +63,21 @@
   --kp-status-active-text: #1e40af;
   --kp-status-active-border: #93c5fd;
 
+  /* Phase 1 redesign palette: Nordic Trust + Live Accents */
+  --kp-bg-dark: #0b1220;
+  --kp-bg-dark-elevated: #111827;
+  --kp-bg-light: #f8fafc;
+  --kp-bg-light-elevated: #e2e8f0;
+  --kp-positive: #22c55e;
+  --kp-negative: #ef4444;
+  --kp-ai: #3b82f6;
+  --kp-live: #f59e0b;
+  --kp-learning: #a855f7;
+  --kp-text-dark-primary: #f8fafc;
+  --kp-text-dark-secondary: #94a3b8;
+  --kp-text-light-primary: #0f172a;
+  --kp-text-light-secondary: #64748b;
+
   /* Background Colors */
   --kp-bg-primary: #ffffff;
   --kp-bg-secondary: #f8fafc;
@@ -78,25 +93,28 @@
   --kp-border: #e5e7eb;
   --kp-border-dark: #d1d5db;
   --kp-border-light: #f3f4f6;
-  --kp-border-focus: #0052FF;
+  --kp-border-focus: #0052ff;
 
   /* ═══════════════════════════════════════════════════════════════
      TYPOGRAPHY
      ═══════════════════════════════════════════════════════════════ */
 
   /* Font Family */
-  --kp-font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --kp-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  --kp-font-sans:
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --kp-font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
 
   /* Font Sizes */
-  --kp-text-xs: 0.75rem;      /* 12px */
-  --kp-text-sm: 0.875rem;     /* 14px */
-  --kp-text-base: 1rem;       /* 16px */
-  --kp-text-lg: 1.125rem;     /* 18px */
-  --kp-text-xl: 1.25rem;      /* 20px */
-  --kp-text-2xl: 1.5rem;      /* 24px */
-  --kp-text-3xl: 1.875rem;    /* 30px */
-  --kp-text-4xl: 2.25rem;     /* 36px */
+  --kp-text-xs: 0.75rem; /* 12px */
+  --kp-text-sm: 0.875rem; /* 14px */
+  --kp-text-base: 1rem; /* 16px */
+  --kp-text-lg: 1.125rem; /* 18px */
+  --kp-text-xl: 1.25rem; /* 20px */
+  --kp-text-2xl: 1.5rem; /* 24px */
+  --kp-text-3xl: 1.875rem; /* 30px */
+  --kp-text-4xl: 2.25rem; /* 36px */
 
   /* Line Heights */
   --kp-leading-none: 1;
@@ -116,28 +134,28 @@
      ═══════════════════════════════════════════════════════════════ */
 
   --kp-space-0: 0;
-  --kp-space-1: 0.25rem;      /* 4px */
-  --kp-space-2: 0.5rem;       /* 8px */
-  --kp-space-3: 0.75rem;      /* 12px */
-  --kp-space-4: 1rem;         /* 16px */
-  --kp-space-5: 1.25rem;      /* 20px */
-  --kp-space-6: 1.5rem;       /* 24px */
-  --kp-space-8: 2rem;         /* 32px */
-  --kp-space-10: 2.5rem;      /* 40px */
-  --kp-space-12: 3rem;        /* 48px */
-  --kp-space-16: 4rem;        /* 64px */
-  --kp-space-20: 5rem;        /* 80px */
+  --kp-space-1: 0.25rem; /* 4px */
+  --kp-space-2: 0.5rem; /* 8px */
+  --kp-space-3: 0.75rem; /* 12px */
+  --kp-space-4: 1rem; /* 16px */
+  --kp-space-5: 1.25rem; /* 20px */
+  --kp-space-6: 1.5rem; /* 24px */
+  --kp-space-8: 2rem; /* 32px */
+  --kp-space-10: 2.5rem; /* 40px */
+  --kp-space-12: 3rem; /* 48px */
+  --kp-space-16: 4rem; /* 64px */
+  --kp-space-20: 5rem; /* 80px */
 
   /* ═══════════════════════════════════════════════════════════════
      BORDERS & RADIUS
      ═══════════════════════════════════════════════════════════════ */
 
   --kp-radius-none: 0;
-  --kp-radius-sm: 0.25rem;    /* 4px */
-  --kp-radius-md: 0.375rem;   /* 6px */
-  --kp-radius-lg: 0.5rem;     /* 8px */
-  --kp-radius-xl: 0.75rem;    /* 12px */
-  --kp-radius-2xl: 1rem;      /* 16px */
+  --kp-radius-sm: 0.25rem; /* 4px */
+  --kp-radius-md: 0.375rem; /* 6px */
+  --kp-radius-lg: 0.5rem; /* 8px */
+  --kp-radius-xl: 0.75rem; /* 12px */
+  --kp-radius-2xl: 1rem; /* 16px */
   --kp-radius-full: 9999px;
 
   --kp-border-width: 1px;
@@ -149,9 +167,12 @@
 
   --kp-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --kp-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --kp-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --kp-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --kp-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --kp-shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --kp-shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --kp-shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --kp-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
   --kp-shadow-none: 0 0 #0000;
 

@@ -46,7 +46,7 @@ export function RootProviders({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange={false}
     >

@@ -24,8 +24,8 @@ describe("ThemeProvider", () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByTestId("theme").textContent).toBe("system");
-    expect(screen.getByTestId("resolved").textContent).toMatch(/^(light|dark)$/);
+    expect(screen.getByTestId("theme").textContent).toBe("dark");
+    expect(screen.getByTestId("resolved").textContent).toBe("dark");
     expect(screen.getByTestId("system").textContent).toMatch(/^(light|dark)$/);
   });
 
