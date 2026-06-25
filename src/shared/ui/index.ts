@@ -38,7 +38,6 @@ export * from "./kbd";
 export * from "./KlarpakkeLogo";
 export * from "./label";
 export * from "./Logo";
-export * from "./MarkdownRenderer";
 export { OptimizedImage } from "./OptimizedImage";
 export * from "./pagination";
 export * from "./password-input";
