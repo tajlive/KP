@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/shared/theme";
 import { createClient } from "@/lib/utils";
 
 export type ThemePreference = "system" | "light" | "dark";
