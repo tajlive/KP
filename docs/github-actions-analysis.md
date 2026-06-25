@@ -1,18 +1,27 @@
-# Analyse av GitHub Actions (mars 2026)
+# Analyse av GitHub Actions (arkivert)
+
+> **⚠️ ARKIVERT / UTDATERT (2026-06-25)**
+>
+> Klarpakke har migrert auto-deploy fra GitHub Actions til **Cloudflare Workers Builds**.
+> Se `docs/GITHUB-ACTIONS-TROUBLESHOOTING.md` og `docs/PRODUCTION_RELEASE_CHECKLIST.md` for gjeldende rutiner.
+>
+> Det opprinnelige innholdet nedenfor er bevart som historisk referanse.
+
+---
 
 ## Status: Alle workflow-kjøringer feiler med samme årsak
 
-Alle nylige runs (Manual Deploy, TypeScript Check, E2E Critical Tests, Enterprise Test Suite, Auto Schema Dump, MCP Integration Tests, MCP Health Check) viser **failure** fordi **jobben aldri startes**.
+Alle nylige runs (Manual Deploy, TypeScript Check, E2E Critical Tests, Enterprise Test Suite, Auto Schema Dump, MCP Integration Tests, MCP Health Check) viste **failure** fordi **jobben aldri startes**.
 
 ### Root cause
 
 **GitHub Actions inkluderte minutter er brukt opp (2 000 / 2 000 min denne perioden).**
 
 På GitHub Free får du 2 000 Actions-minutter per måned. Når de er brukt, starter ingen nye jobber før:
-- perioden resettes (f.eks. om 17 dager), eller
+- perioden resettes, eller
 - du legger til betalingsmetode og setter et spending limit slik at du kan bruke betalte minutter.
 
-Feilmeldingen fra GitHub («recent account payments have failed or your spending limit…») betyr i praksis: **du har ingen minutter igjen, og ingen betalingsmetode for å kjøpe flere**.
+Feilmeldingen fra GitHub («recent account payments have failed or your spending limit…») betydde i praksis: **ingen minutter igjen, og ingen betalingsmetode for å kjøpe flere**.
 
 - **TypeScript Check** (push) – jobben startes ikke  
 - **E2E Critical Tests** (push + scheduled) – jobben startes ikke  
@@ -22,43 +31,7 @@ Feilmeldingen fra GitHub («recent account payments have failed or your spending
 - **🔌 MCP Health Check** (scheduled) – jobben startes ikke  
 - **🚀 Manual Deploy** (workflow_dispatch) – jobben startes ikke  
 
-Kjøretiden på ~3–9s er tiden før GitHub avviser jobben; ingen steg kjører.
-
----
-
-## Anbefalte tiltak
-
-<<<<<<< Updated upstream
-### 1. Løs GitHub billing (nødvendig for at Actions skal kjøre)
-
-1. Gå til **GitHub → Settings → Billing and plans** (på kontoen som eier repo).  
-2. Sjekk at betaling er aktiv og at det ikke er mislykkede betalinger.  
-3. Øk **Spending limit** for Actions (eller fjern 0-limit) slik at minutter kan brukes.  
-4. Etter at billing er i orden, vil eksisterende workflows kjøre som konfigurert.
-=======
-### 1. Få tilgang til Actions igjen
-
-**Alternativ A – Vente på reset (gratis)**  
-- Inkluderte minutter resettes hver måned (f.eks. om 17 dager).  
-- Etter reset vil workflows kjøre igjen inntil du når 2 000 min igjen.
-
-**Alternativ B – Betale for flere minutter**  
-1. Gå til **GitHub → Settings → Billing and plans**.  
-2. Legg til **Payment method** (kort).  
-3. Under **Spending limits** for Actions: sett et månedlig tak (f.eks. $5 eller $10) slik at du kan bruke minutter utover de 2 000 inkluderte.  
-4. Da kan nye jobber kjøre med en gang; du betaler bare for det du bruker over inkludert kvote.
->>>>>>> Stashed changes
-
-### 2. Reduser forbruk av Actions-minutter (valgfritt)
-
-- **Path filters:** Kjør TypeScript Check / lint kun ved endringer i `src/`, `*.config.*`, etc.  
-- **Scheduled runs:** Vurder å redusere frekvensen på E2E Critical Tests, Auto Schema Dump og MCP Health Check (f.eks. daglig i stedet for flere ganger per dag).  
-- **Manual Deploy:** Deploy kan kun skje via Vercel (push til main → auto-deploy). Manual Deploy-workflowen er da kun nødvendig hvis du eksplisitt vil deploye fra Actions med `vercel --prod`; ellers kan den stå urørt eller fjernes for å spare minutter.
-
-### 3. Vercel som primær deploy
-
-- Push til `main` trigger typisk Vercel deploy uten GitHub Actions.  
-- Lint/typecheck/E2E kan kjøres lokalt (`npm run lint`, `npm run type-check`, `npm run test:e2e:critical`) før push, eller i Actions når billing er aktiv.
+Kjøretiden på ~3–9s var tiden før GitHub avviste jobben; ingen steg kjørte.
 
 ---
 
@@ -74,4 +47,17 @@ Kjøretiden på ~3–9s er tiden før GitHub avviser jobben; ingen steg kjører.
 | MCP Integration Tests | Push        | Samme                  | Fiks billing               |
 | 🔌 MCP Health Check | Cron         | Samme                  | Fiks billing               |
 
-**Konklusjon:** Det er ikke feil i workflow-filene eller koden; alle feil skyldes at GitHub ikke starter jobber på grunn av billing/spending limit. Når det er løst, bør alle disse workflows kunne kjøre som før.
+**Konklusjon:** Det var ikke feil i workflow-filene eller koden; alle feil skyldtes at GitHub ikke startet jobber på grunn av billing/spending limit.
+
+---
+
+## Etterfølgende migrering
+
+På grunn av en **phantom `BuildFailed` workflow** (#96) som fortsatt trigget runs i GitHub backend, ble følgende endret 2026-06-24/25:
+
+- `.github/workflows/deploy.yml` og `.github/workflows/pr-check.yml` er arkivert under `.github/workflows/archived/`.
+- Auto-deploy er flyttet til **Cloudflare Workers Builds**.
+- Kvalitetskontroller (lint, type-check, unit tests) kjøres lokalt via `.husky/pre-push`.
+- Automatisk oppsett av Workers Builds er tilgjengelig via `npm run workers:setup-builds`.
+
+Se `docs/GITHUB-ACTIONS-TROUBLESHOOTING.md` for detaljer om phantom workflow og migreringen.

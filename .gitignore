@@ -268,4 +268,7 @@ config/perplexity-local-mcp.json
 backups/
 .kimi/backup/
 .DS_Store
+
+# Local development tools (managed by scripts/update-tools.sh, not needed in CI/build)
+.tool-versions
 .worktrees/

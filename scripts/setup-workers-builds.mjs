@@ -145,15 +145,24 @@ async function cf(path, opts = {}) {
   return data.result;
 }
 
+function getGitHubToken() {
+  const fileEnv = envFilePath ? parseEnvFile(resolve(ROOT, envFilePath)) : {};
+  // Prioritize explicit env vars set by the caller over potentially stale .env.local values.
+  return process.env.GITHUB_TOKEN || process.env.GH_PAT || fileEnv.GH_PAT || null;
+}
+
 async function gh(path) {
   const url = `${GITHUB_API}${path}`;
-  const res = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "klarpakke-setup-workers-builds",
-    },
-  });
+  const headers = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "klarpakke-setup-workers-builds",
+  };
+  const token = getGitHubToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const res = await fetch(url, { headers });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`GitHub API feilet (${res.status}): ${text.slice(0, 200)}`);
@@ -194,40 +203,28 @@ async function getGitHubRepoInfo() {
   };
 }
 
-async function getOrCreateRepoConnection(repoInfo) {
-  log("Sjekker eksisterende repo-tilkoblinger...");
-  const connections = await cf("/builds/repos/connections", { method: "GET" });
-
-  const existing = (connections || []).find(
-    (c) =>
-      c.provider_type === "github" &&
-      c.provider_account_id === repoInfo.providerAccountId &&
-      c.repo_id === repoInfo.repoId
+async function getOrCreateRepoConnection(repoInfo, workerTag) {
+  log("Sjekker eksisterende repo-tilkoblinger via triggers...");
+  const triggers = await getTriggers(workerTag);
+  const existingTrigger = triggers.find(
+    (t) =>
+      t.repo_connection?.provider_type === "github" &&
+      t.repo_connection?.provider_account_id === repoInfo.providerAccountId &&
+      t.repo_connection?.repo_id === repoInfo.repoId
   );
 
-  if (existing) {
-    log("✅ Fant eksisterende repo-tilkobling:", existing.repo_connection_uuid);
-    return existing.repo_connection_uuid;
+  if (existingTrigger) {
+    const uuid = existingTrigger.repo_connection.repo_connection_uuid;
+    log("✅ Fant eksisterende repo-tilkobling:", uuid);
+    return uuid;
   }
 
-  if (DRY_RUN) {
-    logDry("Ville opprettet repo-tilkobling");
-    return "dry-run-repo-connection-uuid";
-  }
-
-  log("Oppretter repo-tilkobling...");
-  const created = await cf("/builds/repos/connections", {
-    method: "PUT",
-    body: JSON.stringify({
-      provider_type: "github",
-      provider_account_id: repoInfo.providerAccountId,
-      provider_account_name: repoInfo.providerAccountName,
-      repo_id: repoInfo.repoId,
-      repo_name: repoInfo.repoName,
-    }),
-  });
-  log("✅ Opprettet repo-tilkobling:", created.repo_connection_uuid);
-  return created.repo_connection_uuid;
+  throw new Error(
+    "Cloudflare GitHub App ser ikke ut til å være installert for dette repoet. " +
+      "Gå til Cloudflare Dashboard → Workers & Pages → klarpakke → Settings → Builds → Connect → GitHub, " +
+      "og installer Cloudflare Workers and Pages GitHub App for tajlive/KP. " +
+      "Deretter kan du kjøre dette scriptet på nytt."
+  );
 }
 
 async function getWorkerTag() {
@@ -311,6 +308,34 @@ async function createTrigger(workerTag, repoConnectionUuid, buildTokenUuid, name
   return trigger;
 }
 
+async function updateTrigger(trigger, expectedBuildCommand, expectedDeployCommand) {
+  const needsUpdate =
+    trigger.build_command !== expectedBuildCommand ||
+    trigger.deploy_command !== expectedDeployCommand ||
+    !trigger.build_caching_enabled;
+
+  if (!needsUpdate) {
+    return trigger;
+  }
+
+  if (DRY_RUN) {
+    logDry(`Ville oppdatert trigger: ${trigger.trigger_name}`);
+    return { ...trigger, build_command: expectedBuildCommand, deploy_command: expectedDeployCommand, build_caching_enabled: true };
+  }
+
+  log(`Oppdaterer trigger: ${trigger.trigger_name} ...`);
+  const updated = await cf(`/builds/triggers/${trigger.trigger_uuid}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      build_command: expectedBuildCommand,
+      deploy_command: expectedDeployCommand,
+      build_caching_enabled: true,
+    }),
+  });
+  log("✅ Trigger oppdatert:", updated.trigger_uuid);
+  return updated;
+}
+
 async function ensureTriggers(workerTag, repoConnectionUuid, buildTokenUuid, defaultBranch) {
   const existing = await getTriggers(workerTag);
 
@@ -332,7 +357,8 @@ async function ensureTriggers(workerTag, repoConnectionUuid, buildTokenUuid, def
       PROD_DEPLOY_COMMAND
     );
   } else {
-    log("✅ Production trigger finnes allerede:", production.trigger_uuid);
+    log("Found existing production trigger:", production.trigger_uuid);
+    production = await updateTrigger(production, BUILD_COMMAND, PROD_DEPLOY_COMMAND);
   }
 
   if (!preview) {
@@ -346,7 +372,8 @@ async function ensureTriggers(workerTag, repoConnectionUuid, buildTokenUuid, def
       PREVIEW_DEPLOY_COMMAND
     );
   } else {
-    log("✅ Preview trigger finnes allerede:", preview.trigger_uuid);
+    log("Found existing preview trigger:", preview.trigger_uuid);
+    preview = await updateTrigger(preview, BUILD_COMMAND, PREVIEW_DEPLOY_COMMAND);
   }
 
   return { production, preview };
@@ -411,8 +438,8 @@ async function main() {
 
   await verifyToken();
   const repoInfo = await getGitHubRepoInfo();
-  const repoConnectionUuid = await getOrCreateRepoConnection(repoInfo);
   const workerTag = await getWorkerTag();
+  const repoConnectionUuid = await getOrCreateRepoConnection(repoInfo, workerTag);
   const buildTokenUuid = await getOrCreateBuildToken();
   const { production, preview } = await ensureTriggers(workerTag, repoConnectionUuid, buildTokenUuid, repoInfo.defaultBranch);
 
