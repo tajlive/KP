@@ -25,6 +25,7 @@ import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
 import { Geist } from "next/font/google";
 import { outfit } from "@/lib/perf/hero-font";
 import { getCriticalHeroCss } from "@/lib/perf/critical-hero-css";
+import { getThemeInitScript } from "@/shared/theme/theme-script";
 import { getFlagsAsync } from "@/lib/flags";
 import "../globals.css";
 
@@ -191,6 +192,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           id="critical-hero-css"
           dangerouslySetInnerHTML={{ __html: getCriticalHeroCss() }}
           suppressHydrationWarning
+        />
+        {/* Anti-FOUC theme init — runs before paint, no external helpers */}
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          nonce={cspNonce}
+          dangerouslySetInnerHTML={{ __html: getThemeInitScript() }}
         />
         {/* KRITISK: Avregistrer gamle service workers FØR React hydrerer */}
         <Script
