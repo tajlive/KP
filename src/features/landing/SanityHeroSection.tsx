@@ -101,7 +101,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
           </div>
 
           {/* Main Headline - FROM SANITY */}
-          <h1 className="text-[clamp(3rem,7vw,7rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.1] mb-6">
+          <h1 className="hero-headline text-[clamp(3rem,7vw,7rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.1] mb-6">
             {content.heroTitle.line1}
             <span className="block mt-2 bg-gradient-to-r from-kp-brand via-kp-brand-light to-purple-400 bg-clip-text text-transparent">
               {content.heroTitle.line2}
