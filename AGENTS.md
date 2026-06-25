@@ -122,13 +122,15 @@ npm run lint:gate
 npm run type-check
 ```
 
-> **Automatisk deploy:** Når `main` pushes, kjører GitHub Actions (`.github/workflows/deploy.yml`):
+> **Automatisk deploy:** Når `main` pushes, bygger og deployer **Cloudflare Workers Builds** workeren direkte:
 > ```bash
-> npm run cf:build
-> npx wrangler deploy --minify --var APP_VERSION:${GITHUB_SHA}
+> npm run cf:deploy:ci
+> # (kjøres automatisk av Cloudflare Workers Builds)
 > ```
 >
-> **⚠️ Status:** GitHub Actions auto-deploy er for øyeblikket **blokkert** av en phantom workflow (issue #96). Phantom workflow-id `260912064` (`BuildFailed`, state `deleted`) fanger alle events og gir `startup_failure`, slik at ingen andre workflows kjører. Dette er en GitHub backend-bug som krever support-intervensjon; se `docs/GITHUB-ACTIONS-TROUBLESHOOTING.md` og `docs/GITHUB-SUPPORT-PHANTOM-WORKFLOW.md`. Inntil videre må deploy gjøres manuelt med `npm run cf:deploy`.
+> **✅ Status:** Auto-deploy er tilbake via Cloudflare Workers Builds. GitHub Actions er arkivert (issue #96, phantom workflow). Kvalitetskontroller (lint, type-check, unit tests) kjøres lokalt via Husky pre-push hook (`.husky/pre-push`). Manuell deploy er fortsatt mulig med `npm run cf:deploy`.
+>
+> **Legacy:** Woodpecker-filene (`.woodpecker/`) er fjernet. `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify/Woodpecker og er ikke lenger aktiv kilde til sannhet.
 >
 > **Legacy:** Woodpecker-filene (`.woodpecker/`) er fjernet. `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify/Woodpecker og er ikke lenger aktiv kilde til sannhet.
 

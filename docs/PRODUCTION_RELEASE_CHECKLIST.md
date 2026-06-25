@@ -3,7 +3,7 @@
 Use this checklist before and after every production deployment.
 
 > **Current hosting stack:** Cloudflare Workers (OpenNext.js + Wrangler) + Supabase.  
-> **Auto-deploy status:** GitHub Actions is currently blocked by the phantom `BuildFailed` workflow (issue #96). Deploy manually with `npm run cf:deploy` until GitHub Support resolves the stale workflow registration.
+> **Auto-deploy status:** Auto-deploy runs via **Cloudflare Workers Builds** on every push to `main`. GitHub Actions workflows are archived (issue #96, phantom workflow).
 
 ## Pre-Deploy
 
@@ -16,8 +16,11 @@ Use this checklist before and after every production deployment.
 
 ## Deploy
 
+Auto-deploy triggers on every push to `main` via Cloudflare Workers Builds.
+
+For manual deploy (only if needed):
+
 ```bash
-# Manual deploy (GitHub Actions auto-deploy is blocked by phantom workflow #96)
 npm run cf:deploy
 
 # Equivalent explicit command:
