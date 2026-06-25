@@ -122,11 +122,10 @@
   },
   "hero": {
     "badge": "🇳🇴 Norges enkleste krypto-trading",
-    "title": {
-      "line1": "Lær krypto-trading med 100 000 kr",
-      "line2": "— uten å risikere egne penger."
-    },
-    "subtitle": "Øv med ekte markedsdata. Lekepenger med AI-signaler. Ingen betalingskort kreves.",
+    "title": "Lær å handle med AI — risikofritt med lekepenger",
+    "subtitle": "Øv i samme plattform som live trading. Fullfør oppdrag, få personlig feedback og gå fra nybegynner til trygg trader.",
+    "ctaPrimary": "Start gratis paper-trade-økt",
+    "ctaSecondary": "Se priser",
     "description": "Øv med virtuelle penger, lær av eksperter, og handle trygt",
     "cta": {
       "primary": "Start gratis nå",
