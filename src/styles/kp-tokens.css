@@ -68,22 +68,6 @@
   --kp-bg-secondary: #f8fafc;
   --kp-bg-tertiary: #f1f5f9;
 
-  /* Phase 1 redesign palette: Nordic Trust + Live Accents */
-  --kp-bg-dark: #0B1220;
-  --kp-bg-dark-elevated: #111827;
-  --kp-bg-light: #F8FAFC;
-  --kp-bg-light-elevated: #E2E8F0;
-  --kp-positive: #22C55E;
-  --kp-negative: #EF4444;
-  --kp-ai: #3B82F6;
-  --kp-live: #F59E0B;
-  --kp-learning: #A855F7;
-
-  --kp-text-dark-primary: #F8FAFC;
-  --kp-text-dark-secondary: #94A3B8;
-  --kp-text-light-primary: #0F172A;
-  --kp-text-light-secondary: #64748B;
-
   /* Text Colors */
   --kp-text-primary: #1f2937;
   --kp-text-secondary: #6b7280;
@@ -211,17 +195,4 @@
   }
 }
 
-/* Phase 1 redesign: explicit theme classes */
-.dark {
-  --kp-bg-primary: var(--kp-bg-dark);
-  --kp-bg-secondary: var(--kp-bg-dark-elevated);
-  --kp-text-primary: var(--kp-text-dark-primary);
-  --kp-text-secondary: var(--kp-text-dark-secondary);
-}
 
-.light {
-  --kp-bg-primary: var(--kp-bg-light);
-  --kp-bg-secondary: var(--kp-bg-light-elevated);
-  --kp-text-primary: var(--kp-text-light-primary);
-  --kp-text-secondary: var(--kp-text-light-secondary);
-}
