@@ -13,8 +13,10 @@ Et Node.js-script som bruker Cloudflare Builds REST API for å automatisere hele
 - Kjøres via: `npm run workers:setup-builds`
 
 ### Forutsetninger
-1. Cloudflare GitHub App må installeres én gang via dashboard:
-   - Workers & Pages → `<worker>` → Settings → Builds → Connect → GitHub
+1. **Cloudflare GitHub App må installeres én gang via dashboard** før API-et kan brukes:
+   - Gå til **Cloudflare Dashboard → Workers & Pages → klarpakke → Settings → Builds → Connect → GitHub**
+   - Installer **Cloudflare Workers and Pages** GitHub App for kontoen `tajlive`
+   - Hvis installasjonssiden returnerer 404, se GitHub-community-tråd [community/discussions/189517](https://github.com/orgs/community/discussions/189517) – det kan skyldes en GitHub-side konto-bug som krever support-henvendelse
 2. Et user-scoped API token med følgende permissions:
    - **Workers Builds Configuration** → Edit
    - **Workers Scripts** → Read
