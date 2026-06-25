@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { ScrollReveal } from "./ScrollReveal";
 import {
   DemoWidgetSkeleton,
   CoursePreviewSkeleton,
@@ -57,31 +56,19 @@ const FinalCTASection = dynamic(() => import("./FinalCTASection"), {
 export function BelowFoldSections() {
   return (
     <>
-      <ScrollReveal direction="up" delay={0.1}>
-        <LeaderboardPreview />
-      </ScrollReveal>
+      <LeaderboardPreview />
 
-      <ScrollReveal direction="up" delay={0.1}>
-        <DemoWidget />
-      </ScrollReveal>
+      <DemoWidget />
 
-      <ScrollReveal direction="up" delay={0.1}>
-        <CoursePreview />
-      </ScrollReveal>
+      <CoursePreview />
 
-      <ScrollReveal direction="up" delay={0.1}>
-        <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
-          <ThreeSteps />
-        </section>
-      </ScrollReveal>
+      <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
+        <ThreeSteps />
+      </section>
 
-      <ScrollReveal direction="up" delay={0.1}>
-        <FeaturesBentoGrid />
-      </ScrollReveal>
+      <FeaturesBentoGrid />
 
-      <ScrollReveal direction="up" delay={0.1}>
-        <FinalCTASection />
-      </ScrollReveal>
+      <FinalCTASection />
     </>
   );
 }
