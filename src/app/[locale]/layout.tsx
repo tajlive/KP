@@ -154,7 +154,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Enable static rendering for locale - required by next-intl v4
   setRequestLocale(locale);
 
-  const messages = await loadMessagesWithFallback();
+  const messages = await loadMessagesWithFallback(locale);
 
   const hdrs = await headers();
   const strippedPath = hdrs.get("x-kp-stripped-path") ?? "/";
