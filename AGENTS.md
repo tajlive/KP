@@ -128,9 +128,7 @@ npm run type-check
 > npx wrangler deploy --minify --var APP_VERSION:${GITHUB_SHA}
 > ```
 >
-> **⚠️ Status:** GitHub Actions er for øyeblikket blokkert av en phantom workflow
-> (`BuildFailed`, issue #94). Inntil GitHub Support rydder den fastlåste
-> workflow-registreringen, må deploy gjøres manuelt med `npm run cf:deploy`.
+> **✅ Status:** GitHub Actions auto-deploy er tilbake i drift (issue #94 løst ved å fjerne `BuildFailed.yml` fra alle grener og slette alle phantom workflow-runs).
 >
 > **Legacy:** Woodpecker-filene (`.woodpecker/`) er fjernet. `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify/Woodpecker og er ikke lenger aktiv kilde til sannhet.
 
