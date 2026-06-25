@@ -108,6 +108,18 @@ Filen `BuildFailed` finnes ikke i noen branch (`git log --all -- BuildFailed` er
 - Kvalitetskontroller (lint/type/test) kjøres lokalt via `.husky/pre-push`.
 - `.github/workflows/deploy.yml` og `.github/workflows/pr-check.yml` er arkivert under `.github/workflows/archived/`.
 
+**Automatisk oppsett av Workers Builds:**
+```bash
+# Krever user-scoped Cloudflare API token med:
+#   Workers Builds Configuration (Edit), Workers Scripts (Read), Workers CI Write
+# Krever at Cloudflare GitHub App er installert én gang via dashboard.
+CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<id> \
+  npm run workers:setup-builds -- --env-file=.env.local
+
+# Tørrkjøring
+npm run workers:setup-builds -- --dry-run
+```
+
 For manuell deploy (kun ved behov):
 ```bash
 npm run cf:deploy

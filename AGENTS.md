@@ -130,7 +130,7 @@ npm run type-check
 >
 > **✅ Status:** Auto-deploy er tilbake via Cloudflare Workers Builds. GitHub Actions er arkivert (issue #96, phantom workflow). Kvalitetskontroller (lint, type-check, unit tests) kjøres lokalt via Husky pre-push hook (`.husky/pre-push`). Manuell deploy er fortsatt mulig med `npm run cf:deploy`.
 >
-> **Legacy:** Woodpecker-filene (`.woodpecker/`) er fjernet. `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify/Woodpecker og er ikke lenger aktiv kilde til sannhet.
+> **Automatisk oppsett:** Bruk `npm run workers:setup-builds` for å konfigurere Cloudflare Workers Builds via API. Krever user-scoped `CLOUDFLARE_API_TOKEN` og at Cloudflare GitHub App er installert én gang. Se `docs/GITHUB-ACTIONS-TROUBLESHOOTING.md`.
 >
 > **Legacy:** Woodpecker-filene (`.woodpecker/`) er fjernet. `scripts/cf-deploy.mjs` og andre `scripts/deploy-*.sh`-skript var for Cloudflare Pages/Coolify/Woodpecker og er ikke lenger aktiv kilde til sannhet.
 
