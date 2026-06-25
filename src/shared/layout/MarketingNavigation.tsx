@@ -1,5 +1,4 @@
 import { ThemeToggleIcon } from "@/shared/theme";
-import { BRAND } from "@/lib/design/tokens";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
