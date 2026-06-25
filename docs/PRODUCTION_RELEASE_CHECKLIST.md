@@ -3,7 +3,8 @@
 Use this checklist before and after every production deployment.
 
 > **Current hosting stack:** Cloudflare Workers (OpenNext.js + Wrangler) + Supabase.  
-> **Auto-deploy status:** Auto-deploy runs via **Cloudflare Workers Builds** on every push to `main`. GitHub Actions workflows are archived (issue #96, phantom workflow).
+> **Auto-deploy status:** Auto-deploy runs via **Cloudflare Workers Builds** on every push to `main`. GitHub Actions workflows are archived (issue #96, phantom workflow).  
+> **Setup script:** `npm run workers:setup-builds` (automates Cloudflare Builds API configuration).
 
 ## Pre-Deploy
 
