@@ -16,7 +16,7 @@ function serializeArg(arg: unknown): string {
 export function getThemeInitScript(): string {
   const attribute = "class";
   const storageKey = "theme";
-  const defaultTheme = "system";
+  const defaultTheme = "dark";
   const forcedTheme: string | undefined = undefined;
   const themes = ["light", "dark"];
   const value: Record<string, string> | undefined = undefined;

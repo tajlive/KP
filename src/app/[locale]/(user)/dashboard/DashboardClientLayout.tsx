@@ -61,7 +61,7 @@ export default function DashboardClientLayout({
       <CorruptTokenCleanup />
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
+        defaultTheme="dark"
         enableSystem
         disableTransitionOnChange={false}
       >

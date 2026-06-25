@@ -27,14 +27,14 @@ export const CDS_THEME_MAP = {
 /** Coinbase-inspired dark theme surfaces */
 export const SURFACE = {
   // Dark theme (default) - Coinbase CDS colors
-  BG: "bg-[#0a0b0d]",              // Deepest background
-  BG_SECONDARY: "bg-[#161719]",    // Card/surface
-  BG_TERTIARY: "bg-[#1a1c24]",     // Elevated
-  BG_ELEVATED: "bg-[#1f2128]",     // Hover/elevated states
-  BG_LIGHT: "bg-kp-bg-secondary",  // Light theme fallback
-  BG_CARD: "bg-[#161719]",         // Card background
+  BG: "bg-[#0a0b0d]", // Deepest background
+  BG_SECONDARY: "bg-[#161719]", // Card/surface
+  BG_TERTIARY: "bg-[#1a1c24]", // Elevated
+  BG_ELEVATED: "bg-[#1f2128]", // Hover/elevated states
+  BG_LIGHT: "bg-kp-bg-secondary", // Light theme fallback
+  BG_CARD: "bg-[#161719]", // Card background
   BG_CARD_TRANSPARENT: "bg-[#161719]/90",
-  
+
   // Border colors - subtle white opacity
   BORDER: "border-white/[0.08]",
   BORDER_LIGHT: "border-white/[0.05]",
@@ -47,12 +47,12 @@ export const SURFACE = {
     medium: "bg-white/[0.05] backdrop-blur-xl border border-white/[0.08]",
     high: "bg-white/[0.08] backdrop-blur-2xl border border-white/[0.12]",
   },
-  
+
   // Text colors
   TEXT: "text-white",
-  TEXT_SECONDARY: "text-gray-400",  // gray-400 for secondary
-  TEXT_MUTED: "text-gray-500",      // gray-500 for muted
-  TEXT_SUBTLE: "text-gray-600",     // gray-600 for very subtle
+  TEXT_SECONDARY: "text-gray-400", // gray-400 for secondary
+  TEXT_MUTED: "text-gray-500", // gray-500 for muted
+  TEXT_SUBTLE: "text-gray-600", // gray-600 for very subtle
 } as const;
 
 export const BRAND = {
@@ -167,17 +167,17 @@ export const MOBILE = {
 
 /** Phase 1 redesign palette: Nordic Trust + Live Accents */
 export const SEMANTIC_COLORS = {
-  backgroundDark: "#0B1220",
+  backgroundDark: "#0b1220",
   backgroundDarkElevated: "#111827",
-  backgroundLight: "#F8FAFC",
-  backgroundLightElevated: "#E2E8F0",
-  positive: "#22C55E",
-  negative: "#EF4444",
-  ai: "#3B82F6",
-  live: "#F59E0B",
-  learning: "#A855F7",
-  textDarkPrimary: "#F8FAFC",
-  textDarkSecondary: "#94A3B8",
-  textLightPrimary: "#0F172A",
-  textLightSecondary: "#64748B",
+  backgroundLight: "#f8fafc",
+  backgroundLightElevated: "#e2e8f0",
+  positive: "#22c55e",
+  negative: "#ef4444",
+  ai: "#3b82f6",
+  live: "#f59e0b",
+  learning: "#a855f7",
+  textDarkPrimary: "#f8fafc",
+  textDarkSecondary: "#94a3b8",
+  textLightPrimary: "#0f172a",
+  textLightSecondary: "#64748b",
 } as const;
