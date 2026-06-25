@@ -193,9 +193,9 @@
 
 .kp-card {
   background-color: var(--kp-bg-secondary);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid var(--kp-border);
   border-radius: var(--kp-radius-lg);
-  padding: var(--kp-spacing-4);
+  padding: var(--kp-space-4);
 }
 
 .kp-card-header {

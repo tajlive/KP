@@ -355,51 +355,6 @@
    DARK MODE - COMPONENT STYLES
    ============================================ */
 
-.kp-card {
-  background: var(--kp-bg-card);
-  border-radius: 0.75rem;
-  border: 1px solid var(--kp-border);
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.06);
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease,
-    background-color 200ms,
-    border-color 200ms;
-}
-
-.dark .kp-card {
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.15);
-}
-
-.kp-card:hover {
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.dark .kp-card:hover {
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.25),
-    0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
-.kp-card-interactive:hover {
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
-}
-
-.dark .kp-card-interactive:hover {
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.25),
-    0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
 .kp-gradient-text {
   background: linear-gradient(135deg, #0052ff, #00c2ff);
   -webkit-background-clip: text;

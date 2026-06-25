@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useLocale, useTranslations } from "next-intl";
 import { Info, Wallet } from "lucide-react";
-import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 
 interface TopPair {
   pair: string;
@@ -38,14 +38,15 @@ function Skeleton() {
 function EmptyState({ noDataText }: { noDataText: string }) {
   return (
     <div className="h-[280px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
-      <p className="text-slate-400 dark:text-slate-500 text-sm">
-        {noDataText}
-      </p>
+      <p className="text-slate-400 dark:text-slate-500 text-sm">{noDataText}</p>
     </div>
   );
 }
 
-export function AssetAllocationChart({ data, loading }: AssetAllocationChartProps) {
+export function AssetAllocationChart({
+  data,
+  loading,
+}: AssetAllocationChartProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.assetAllocation");
   const [showInfo, setShowInfo] = useState(false);
@@ -82,7 +83,8 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
   }, [data, t]);
 
   if (loading) return <Skeleton />;
-  if (!data || data.length === 0) return <EmptyState noDataText={t("noData")} />;
+  if (!data || data.length === 0)
+    return <EmptyState noDataText={t("noData")} />;
 
   const CustomTooltip = ({
     active,
@@ -97,7 +99,9 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
       const item = payload[0].payload;
       return (
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl min-w-[140px]">
-          <p className="text-slate-900 dark:text-white font-semibold text-sm">{item.name}</p>
+          <p className="text-slate-900 dark:text-white font-semibold text-sm">
+            {item.name}
+          </p>
           <p
             className={`text-sm font-medium ${
               item.pnl >= 0 ? "text-emerald-400" : "text-red-400"
@@ -136,9 +140,10 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
         </div>
         <div className="flex items-center gap-1.5">
           <Wallet className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-          <AnimatedNumber 
-            value={totalValue} 
-            formatFn={(val) => `${val.toLocaleString("no-NO", { maximumFractionDigits: 2 })} NOK`}
+          <AnimatedNumber
+            value={totalValue}
+            decimals={2}
+            suffix=" NOK"
             className="text-sm font-bold text-slate-700 dark:text-slate-300"
           />
         </div>
@@ -174,7 +179,9 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
-                    opacity={activeIndex === null || activeIndex === index ? 1 : 0.4}
+                    opacity={
+                      activeIndex === null || activeIndex === index ? 1 : 0.4
+                    }
                     stroke="transparent"
                   />
                 ))}
@@ -189,7 +196,8 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
           {chartData.map((item, index) => {
             const percentage =
               chartData.reduce((s, d) => s + d.value, 0) > 0
-                ? (item.value / chartData.reduce((s, d) => s + d.value, 0)) * 100
+                ? (item.value / chartData.reduce((s, d) => s + d.value, 0)) *
+                  100
                 : 0;
             return (
               <div
@@ -203,7 +211,9 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
-                  <span className="text-slate-600 dark:text-slate-300 text-xs">{item.name}</span>
+                  <span className="text-slate-600 dark:text-slate-300 text-xs">
+                    {item.name}
+                  </span>
                 </div>
                 <div className="text-right flex items-center justify-end gap-2">
                   <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
