@@ -1,5 +1,3 @@
-"use client";
-
 import { ScrollToTop } from "@/features/dashboard/ScrollToTop";
 import { AnnouncementsContainer } from "@/components/Announcements";
 import { SURFACE } from "@/lib/design/tokens";

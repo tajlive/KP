@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Premium shimmer skeleton with CSS-only animation.
  * Highly performant and avoids JS overhead during initial load.
