@@ -165,3 +165,8 @@
 {"subject":"github-actions-phantom-workflow-94","predicate":"workaround_tried","object":"rename-default-branch","validFrom":"2026-06-24T15:48:37.451Z"}
 {"subject":"github-actions-phantom-workflow-94","predicate":"workaround_tried","object":"dummy-BuildFailed-workflow","validFrom":"2026-06-24T15:48:37.451Z"}
 {"subject":"github-actions-phantom-workflow-94","predicate":"resolution","object":"requires-github-support-backend-cleanup","validFrom":"2026-06-24T15:48:37.451Z"}
+{"subject":"frontend","predicate":"uses","object":"server-components-first","validFrom":"2026-06-25T13:55:04.413Z"}
+{"subject":"frontend","predicate":"optimizes","object":"lazy-load-charts","validFrom":"2026-06-25T13:55:04.415Z"}
+{"subject":"next.config.mjs","predicate":"has","object":"expanded-optimizePackageImports","validFrom":"2026-06-25T13:55:04.415Z"}
+{"subject":"landing-page","predicate":"uses","object":"force-dynamic","validFrom":"2026-06-25T13:55:04.417Z"}
+{"subject":"marketing-pages","predicate":"converted-to","object":"server-components","validFrom":"2026-06-25T13:55:04.419Z"}
