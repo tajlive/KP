@@ -3,6 +3,8 @@
  * Eliminates FOUC by injecting CSS in <head> before HTML reaches the client
  */
 
+import { withRequestCache } from "@/lib/cache";
+
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 
@@ -77,7 +79,7 @@ function generateCSS(tokens: Record<string, unknown>): string {
 `;
 }
 
-export async function getSanityTokensCSS(): Promise<string> {
+async function getSanityTokensCSSImpl(): Promise<string> {
   if (!projectId) {
     return DEFAULT_TOKENS_CSS;
   }
@@ -108,4 +110,14 @@ export async function getSanityTokensCSS(): Promise<string> {
   }
 
   return DEFAULT_TOKENS_CSS;
+}
+
+const cachedGetSanityTokensCSS = withRequestCache(getSanityTokensCSSImpl, {
+  key: "sanity-design-tokens",
+  tags: ["sanity", "sanity:designTokens"],
+  revalidate: 60,
+});
+
+export async function getSanityTokensCSS(): Promise<string> {
+  return cachedGetSanityTokensCSS();
 }

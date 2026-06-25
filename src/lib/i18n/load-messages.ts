@@ -1,4 +1,5 @@
 import { getMessages } from "next-intl/server";
+import { withRequestCache } from "@/lib/cache";
 
 const NAMESPACES = [
   "about",
@@ -40,7 +41,7 @@ const NAMESPACES = [
   "tradingResults",
 ] as const;
 
-export async function loadMessagesWithFallback() {
+async function loadMessagesWithFallbackImpl() {
   try {
     return await getMessages();
   } catch {
@@ -63,4 +64,14 @@ export async function loadMessagesWithFallback() {
 
     return messages;
   }
+}
+
+const cachedLoadMessages = withRequestCache(loadMessagesWithFallbackImpl, {
+  key: "i18n-messages",
+  tags: ["i18n:messages"],
+  revalidate: 300,
+});
+
+export async function loadMessagesWithFallback() {
+  return cachedLoadMessages();
 }
