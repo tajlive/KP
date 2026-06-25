@@ -125,6 +125,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "i.pravatar.cc",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
     ],
   },
 
@@ -232,8 +236,6 @@ const nextConfig = {
       "date-fns",
       "recharts",
       "lightweight-charts",
-      // zustand: behold utenfor optimize — transform kan trigge default-export-interop
-      // og [DEPRECATED] create-default-advarsel i prod-bundle (instrument-chunk).
       "@radix-ui/react-accordion",
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
@@ -241,9 +243,24 @@ const nextConfig = {
       "@radix-ui/react-select",
       "@radix-ui/react-tabs",
       "@radix-ui/react-tooltip",
-      // rxjs: needs optimization to prevent barrel import errors
       "rxjs",
       "rxjs/operators",
+      // NEW — high impact
+      "@coinbase/cds-web",
+      "@radix-ui/react-slot",
+      "sonner",
+      "next-themes",
+      "react-ts-tradingview-widgets",
+      "embla-carousel-react",
+      "react-resizable-panels",
+      "vaul",
+      "cmdk",
+      "input-otp",
+      "react-day-picker",
+      "@hookform/resolvers",
+      "react-hook-form",
+      "zustand",
+      "immer",
     ],
   },
 
