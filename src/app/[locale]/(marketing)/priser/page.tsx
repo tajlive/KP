@@ -1,8 +1,10 @@
-import PriserClient from "./PriserClient";
+import { headers } from "next/headers";
+import { PriserContent } from "./PriserContent";
 import {
   MarketingPageShell,
   generateMarketingMetadata,
 } from "@/shared/ui/marketing";
+import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 
 export const runtime = "nodejs";
 
@@ -26,9 +28,13 @@ export default async function PriserPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  const hdrs = await headers();
+  const showVipps = shouldShowVippsForRequest(hdrs);
+
   return (
     <MarketingPageShell>
-      <PriserClient />
+      <PriserContent locale={locale} showVipps={showVipps} />
     </MarketingPageShell>
   );
 }

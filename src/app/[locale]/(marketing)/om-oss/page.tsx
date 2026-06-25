@@ -1,4 +1,4 @@
-import OmOssClient from "./OmOssClient";
+import { OmOssContent } from "./OmOssContent";
 import {
   MarketingPageShell,
   generateMarketingMetadata,
@@ -26,9 +26,10 @@ export default async function OmOssPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   return (
     <MarketingPageShell>
-      <OmOssClient />
+      <OmOssContent locale={locale} />
     </MarketingPageShell>
   );
 }

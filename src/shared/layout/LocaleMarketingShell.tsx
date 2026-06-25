@@ -1,24 +1,23 @@
 import { Suspense, type ReactNode } from "react";
-import type { NavigationData } from "@/lib/navigation/config";
 import {
   LocaleMarketingShellFallback,
   LocaleMarketingShellInner,
 } from "@/shared/layout/MarketingShellClient";
 
 export function LocaleMarketingShell({
-  navData,
+  marketingNav,
   children,
 }: {
-  navData: NavigationData;
+  marketingNav: ReactNode;
   children: ReactNode;
 }) {
   return (
     <Suspense
       fallback={
-        <LocaleMarketingShellFallback navData={navData}>{children}</LocaleMarketingShellFallback>
+        <LocaleMarketingShellFallback marketingNav={marketingNav}>{children}</LocaleMarketingShellFallback>
       }
     >
-      <LocaleMarketingShellInner navData={navData}>{children}</LocaleMarketingShellInner>
+      <LocaleMarketingShellInner marketingNav={marketingNav}>{children}</LocaleMarketingShellInner>
     </Suspense>
   );
 }

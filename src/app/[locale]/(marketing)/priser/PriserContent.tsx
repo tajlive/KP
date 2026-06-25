@@ -1,17 +1,14 @@
-"use client";
-
 import { Button } from "@/shared/ui/button";
 import { Check, HelpCircle, Coins } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { PaymentTrustLogos } from "@/features/landing/PaymentTrustLogos";
-import { useVippsMarket } from "@/shared/providers/VippsMarketProvider";
 import { getPriserPlans } from "./priser-plans";
 import { PrimaryCtaSection } from "@/features/marketing/components";
 
 function getTierFeatures(
-  tStudy: ReturnType<typeof useTranslations<"studieprogram">>,
+  tStudy: { raw: (key: string) => unknown },
   slug: string,
 ): string[] {
   try {
@@ -21,12 +18,16 @@ function getTierFeatures(
   }
 }
 
-export default function PriserClient() {
-  const t = useTranslations("pricing");
-  const tFoot = useTranslations("footer");
-  const tStudy = useTranslations("studieprogram");
-  const { showVipps } = useVippsMarket();
-  const locale = useLocale();
+export async function PriserContent({
+  locale,
+  showVipps,
+}: {
+  locale: string;
+  showVipps: boolean;
+}) {
+  const t = await getTranslations({ locale, namespace: "pricing" });
+  const tFoot = await getTranslations({ locale, namespace: "footer" });
+  const tStudy = await getTranslations({ locale, namespace: "studieprogram" });
   const plans = getPriserPlans();
 
   const legacyFaqs = [
