@@ -94,8 +94,15 @@ const nextConfig = {
   // Image optimization
   // Coolify/Hetzner: unoptimized=false (Docker-host håndterer next/image)
   // Cloudflare Pages: unoptimized=true (Cloudflare Pages støtter ikke next/image)
+  // Cloudflare Workers + Images: custom loader når CLOUDFLARE_IMAGES_ACCOUNT_HASH er satt.
   images: {
-    unoptimized: process.env.CLOUDFLARE_PAGES === '1' || false,
+    unoptimized:
+      process.env.CLOUDFLARE_PAGES === "1" ||
+      (!process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH && !process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH),
+    loader: process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH ? "custom" : undefined,
+    loaderFile: process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH
+      ? "./src/lib/cloudflare-images-loader.ts"
+      : undefined,
     minimumCacheTTL: 2592000, // 30 dager cache
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
