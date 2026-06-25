@@ -188,10 +188,10 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .kp-card {
-  background-color: var(--kp-bg-primary);
-  border: var(--kp-border-width) solid var(--kp-border);
+  background-color: var(--kp-bg-secondary);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: var(--kp-radius-lg);
-  box-shadow: var(--kp-shadow-sm);
+  padding: var(--kp-spacing-4);
 }
 
 .kp-card-header {
