@@ -1,11 +1,11 @@
-import { getTranslations } from 'next-intl/server';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/shared/ui/button';
-import { withRequestCache } from '@/lib/cache';
-import { safeFetch } from '@/lib/sanity/client';
-import { landingContentQuery } from '@/lib/sanity/queries';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { getTranslations } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/shared/ui/button";
+import { withRequestCache } from "@/lib/cache";
+import { safeFetch } from "@/lib/sanity/client";
+import { landingContentQuery } from "@/lib/sanity/queries";
+import { Skeleton } from "@/shared/ui/skeleton";
 
 interface LandingContent {
   heroTitle?: { line1?: string; line2?: string };
@@ -16,33 +16,43 @@ interface LandingContent {
 }
 
 function getFallbackContent(locale: string): LandingContent {
-  const isEn = locale === 'en';
+  const isEn = locale === "en";
   return {
-    heroTitle: { line1: '', line2: '' },
-    heroSubtitle: '',
-    heroCta: { text: '', link: '' },
+    heroTitle: { line1: "", line2: "" },
+    heroSubtitle: "",
+    heroCta: { text: "", link: "" },
     trustBadges: [
-      { text: isEn ? 'Always free to try' : 'Alltid gratis å prøve', icon: '✓' },
-      { text: isEn ? 'No card required' : 'Ingen kort påkrevd', icon: '✓' },
-      { text: isEn ? 'Cancel anytime' : 'Kanseller når som helst', icon: '✓' },
+      {
+        text: isEn ? "Always free to try" : "Alltid gratis å prøve",
+        icon: "✓",
+      },
+      { text: isEn ? "No card required" : "Ingen kort påkrevd", icon: "✓" },
+      { text: isEn ? "Cancel anytime" : "Kanseller når som helst", icon: "✓" },
     ],
     features: [],
   };
 }
 
 const cachedGetLandingContent = withRequestCache(getLandingContentImpl, {
-  key: 'landing-content',
-  tags: ['sanity', 'sanity:landing', 'sanity:landingContent'],
+  key: "landing-content",
+  tags: ["sanity", "sanity:landing", "sanity:landingContent"],
   revalidate: 60,
 });
 
-async function getLandingContentImpl(language: string): Promise<LandingContent> {
+async function getLandingContentImpl(
+  language: string,
+): Promise<LandingContent> {
   const fallback = getFallbackContent(language);
   return safeFetch<LandingContent>(
     landingContentQuery,
     { language },
     fallback,
-    { next: { revalidate: 60, tags: ['sanity', 'sanity:landing', 'sanity:landingContent'] } }
+    {
+      next: {
+        revalidate: 60,
+        tags: ["sanity", "sanity:landing", "sanity:landingContent"],
+      },
+    },
   );
 }
 
@@ -54,18 +64,21 @@ interface SanityHeroSectionProps {
   locale?: string;
 }
 
-export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSectionProps) {
+export default async function SanityHeroSection({
+  locale = "no",
+}: SanityHeroSectionProps) {
   const [t, content] = await Promise.all([
-    getTranslations({ locale, namespace: 'landing.hero' }),
+    getTranslations({ locale, namespace: "landing.hero" }),
     getLandingContent(locale),
   ]);
 
-  const title = content.heroTitle?.line1 || t('title');
-  const titleAccent = content.heroTitle?.line2 || '';
-  const subtitle = content.heroSubtitle || t('subtitle');
-  const primaryText = content.heroCta?.text || t('ctaPrimary');
-  const primaryLink = content.heroCta?.link || `/${locale}/onboarding/step1-welcome`;
-  const secondaryText = t('ctaSecondary');
+  const title = content.heroTitle?.line1 || t("title");
+  const titleAccent = content.heroTitle?.line2 || "";
+  const subtitle = content.heroSubtitle || t("subtitle");
+  const primaryText = content.heroCta?.text || t("ctaPrimary");
+  const primaryLink =
+    content.heroCta?.link || `/${locale}/onboarding/step1-welcome`;
+  const secondaryText = t("ctaSecondary");
   const secondaryLink = `/${locale}/priser`;
   const trustBadges = content.trustBadges ?? [];
 
@@ -76,15 +89,17 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
         <div
           className="absolute top-1/4 left-1/4 h-48 w-48 sm:h-64 sm:w-64 md:h-96 md:w-96 rounded-full opacity-30 blur-3xl sm:animate-float"
           style={{
-            background: 'radial-gradient(circle, rgba(0,82,255,0.4) 0%, transparent 60%)',
-            animationDelay: '0s',
+            background:
+              "radial-gradient(circle, rgba(0,82,255,0.4) 0%, transparent 60%)",
+            animationDelay: "0s",
           }}
         />
         <div
           className="absolute bottom-1/4 right-1/4 h-40 w-40 sm:h-56 sm:w-56 md:h-80 md:w-80 rounded-full opacity-20 blur-3xl sm:animate-float"
           style={{
-            background: 'radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 60%)',
-            animationDelay: '-3s',
+            background:
+              "radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 60%)",
+            animationDelay: "-3s",
           }}
         />
       </div>
@@ -108,15 +123,31 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
 
           {/* CTA Buttons — Sanity CTA overrides primary; secondary is fixed i18n value */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" variant="primary" className="w-full sm:w-auto min-w-[240px]" asChild>
-              <Link href={primaryLink} className="inline-flex items-center justify-center gap-2">
+            <Button
+              size="lg"
+              variant="primary"
+              className="w-full sm:w-auto min-w-[240px]"
+              asChild
+            >
+              <Link
+                href={primaryLink}
+                className="inline-flex items-center justify-center gap-2"
+              >
                 {primaryText}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </Button>
 
-            <Button size="lg" variant="secondary" className="w-full sm:w-auto min-w-[240px]" asChild>
-              <Link href={secondaryLink} className="inline-flex items-center justify-center">
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-full sm:w-auto min-w-[240px]"
+              asChild
+            >
+              <Link
+                href={secondaryLink}
+                className="inline-flex items-center justify-center"
+              >
                 {secondaryText}
               </Link>
             </Button>
@@ -127,7 +158,13 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
             <div className="mt-10 pt-6 border-t border-kp-border flex flex-wrap items-center justify-center gap-6 text-sm text-kp-text-secondary">
               {trustBadges.map((badge, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-kp-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="w-5 h-5 text-kp-success"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>{badge.text}</span>
@@ -138,13 +175,23 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
 
           {/* Legal links for Google OAuth verification */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-kp-text-muted">
-            <span>{locale === 'en' ? 'By continuing you agree to our' : 'Ved å fortsette godtar du våre'}</span>
-            <a href={`/${locale}/vilkar`} className="underline hover:text-kp-text-primary transition-colors">
-              {locale === 'en' ? 'Terms' : 'vilkår'}
+            <span>
+              {locale === "en"
+                ? "By continuing you agree to our"
+                : "Ved å fortsette godtar du våre"}
+            </span>
+            <a
+              href={`/${locale}/vilkar`}
+              className="underline hover:text-kp-text-primary transition-colors"
+            >
+              {locale === "en" ? "Terms" : "vilkår"}
             </a>
-            <span>{locale === 'en' ? 'and' : 'og'}</span>
-            <a href={`/${locale}/personvern`} className="underline hover:text-kp-text-primary transition-colors">
-              {locale === 'en' ? 'Privacy Policy' : 'personvernerklæring'}
+            <span>{locale === "en" ? "and" : "og"}</span>
+            <a
+              href={`/${locale}/personvern`}
+              className="underline hover:text-kp-text-primary transition-colors"
+            >
+              {locale === "en" ? "Privacy Policy" : "personvernerklæring"}
             </a>
           </div>
         </div>
