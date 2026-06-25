@@ -19,5 +19,10 @@ describe("getThemeInitScript", () => {
     expect(script).toContain("classList.add");
     expect(script).toContain('"theme"');
     expect(script).toContain('"system"');
+
+    // Undefined arguments must be emitted as the literal `undefined`, not as
+    // empty slots, because `fn(1,,2)` is a syntax error.
+    expect(script).not.toMatch(/\([^)]*,,[^)]*\)/);
+    expect(script).toContain('"system",undefined,["light","dark"],undefined,true,true)');
   });
 });

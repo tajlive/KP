@@ -9,6 +9,10 @@
  * never leak into the inline script and cause a `ReferenceError: t is not
  * defined` at runtime.
  */
+function serializeArg(arg: unknown): string {
+  return arg === undefined ? "undefined" : JSON.stringify(arg);
+}
+
 export function getThemeInitScript(): string {
   const attribute = "class";
   const storageKey = "theme";
@@ -20,14 +24,14 @@ export function getThemeInitScript(): string {
   const enableColorScheme = true;
 
   const args = [
-    JSON.stringify(attribute),
-    JSON.stringify(storageKey),
-    JSON.stringify(defaultTheme),
-    JSON.stringify(forcedTheme),
-    JSON.stringify(themes),
-    JSON.stringify(value),
-    JSON.stringify(enableSystem),
-    JSON.stringify(enableColorScheme),
+    serializeArg(attribute),
+    serializeArg(storageKey),
+    serializeArg(defaultTheme),
+    serializeArg(forcedTheme),
+    serializeArg(themes),
+    serializeArg(value),
+    serializeArg(enableSystem),
+    serializeArg(enableColorScheme),
   ].join(",");
 
   return `(${scriptSource})(${args})`;
