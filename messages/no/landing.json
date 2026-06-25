@@ -244,6 +244,11 @@
     "stateEmpty": "Tom",
     "stateError": "Feil"
   },
+  "liveMarketStrip": {
+    "title": "Live markeder",
+    "volume": "Volum 24t",
+    "error": "Kunne ikke hente markedsdata"
+  },
   "emailCapture": {
     "badge": "Gratis kurs",
     "title": "Få gratis krypto-kurs",

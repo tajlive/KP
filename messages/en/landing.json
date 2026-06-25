@@ -265,6 +265,11 @@
     "stateEmpty": "Empty",
     "stateError": "Error"
   },
+  "liveMarketStrip": {
+    "title": "Live markets",
+    "volume": "Volume 24h",
+    "error": "Could not fetch market data"
+  },
   "emailCapture": {
     "badge": "Free course",
     "title": "Get a free crypto course",
