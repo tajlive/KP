@@ -83,17 +83,22 @@ gh run view <RUN_ID> --repo tajlive/KP --log-failed  # Se kun feilede steg
 - Gi default branch nytt navn (`main` → `main-temp` → `main`).
 - Legge til en midlertidig dummy `BuildFailed.yml` for å tvinge re-indeksering (fjernet igjen).
 
-**Status:** Ingen av workaround-ene løste problemet. Løsning krever opprydding fra **GitHub Support**.
+**Løsning (2026-06-25):** Slette **alle** workflow-runs for phantom workflow-id `260912064`. Når siste run ble fjernet, forsvant også den fastlåste registreringen fra GitHub's backend (nå 404). Auto-deploy fungerer igjen.
 
-**Midlertidig løsning:** Kjør produksjonsdeploy manuelt:
 ```bash
-npm run cf:deploy
+# List alle runs for phantom workflowen
+gh api repos/tajlive/KP/actions/workflows/260912064/runs --paginate
+
+# Slett alle runs (gjentas til ingen gjenstår)
+gh api repos/tajlive/KP/actions/runs/<RUN_ID> -X DELETE
 ```
+
+**Status:** ✅ Løst. Phantom workflow er fjernet og normale workflows kjører på push igjen.
 
 **Verifiser kjørte workflow-runs:**
 ```bash
 gh run list --repo tajlive/KP --limit 10
-gh run list --workflow 260912064 --repo tajlive/KP --limit 10
+gh api repos/tajlive/KP/actions/workflows/260912064  # skal gi 404
 ```
 
 ---
