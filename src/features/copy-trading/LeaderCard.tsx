@@ -3,6 +3,7 @@
 import type { DiscoverLeaderDto } from "@/lib/copy-trading/discover-types";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { m, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -85,12 +86,12 @@ export function LeaderCard({
       <div className="relative flex items-start gap-3">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-600 to-blue-700">
           {leader.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element -- avatar host kan variere
-            <img
+            <Image
               src={leader.avatar_url}
               alt=""
-              loading="lazy"
-              decoding="async"
+              fill
+              sizes="64px"
+              unoptimized
               className="h-full w-full object-cover"
             />
           ) : (

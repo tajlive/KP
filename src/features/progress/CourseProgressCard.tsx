@@ -66,10 +66,11 @@ export function CourseProgressCard({
         {/* Header with thumbnail or gradient */}
         <div className="relative h-32 rounded-t-card overflow-hidden mb-4 -mx-6 -mt-6">
           {thumbnailUrl ? (
-            <Image 
-              src={thumbnailUrl} 
+            <Image
+              src={thumbnailUrl}
               alt={title}
               fill
+              sizes="(max-width: 768px) 100vw, 320px"
               className="object-cover"
             />
           ) : (

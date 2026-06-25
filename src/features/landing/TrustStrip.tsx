@@ -102,6 +102,7 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
                 alt={logo.name}
                 width={48}
                 height={24}
+                sizes="48px"
                 className="object-contain"
               />
             ))}
