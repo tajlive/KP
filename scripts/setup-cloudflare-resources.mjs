@@ -18,6 +18,7 @@ import { parse, stringify } from "comment-json";
 const R2_BUCKET_NAME = "klarpakke-incremental-cache";
 const D1_DB_NAME = "klarpakke-tag-cache";
 const WORKER_NAME = "klarpakke";
+const ENABLE_R2_CACHE_VAR = "OPENNEXT_ENABLE_R2_CACHE";
 
 const ENV_PATH = path.resolve(".env.local");
 const WRANGLER_PATH = path.resolve("wrangler.jsonc");
@@ -166,6 +167,10 @@ async function updateEnvLocal(imagesAccountHash) {
     }
   }
 
+  if (!content.includes(ENABLE_R2_CACHE_VAR)) {
+    additions.push(`${ENABLE_R2_CACHE_VAR}=true`);
+  }
+
   if (additions.length === 0) {
     console.log("   = Ingen nye env-variabler nødvendig.");
     return;
@@ -175,6 +180,54 @@ async function updateEnvLocal(imagesAccountHash) {
   content += additions.join("\n") + "\n";
   await writeFile(ENV_PATH, content);
   console.log("   ✅ .env.local oppdatert.");
+}
+
+async function getWorkerTag(cf) {
+  console.log("🔍 Henter Worker tag...");
+  const res = await cf("/workers/scripts");
+  if (!res.ok) {
+    exit(`Kunne ikke liste Workers: ${JSON.stringify(res.json?.errors)}`);
+  }
+  const worker = res.json.result?.find((w) => w.id === WORKER_NAME);
+  if (!worker?.tag) {
+    exit(`Fant ikke Worker '${WORKER_NAME}' eller mangler tag.`);
+  }
+  console.log(`   Worker tag: ${worker.tag}`);
+  return worker.tag;
+}
+
+async function getTriggers(cf, workerTag) {
+  console.log("🔍 Henter Workers Builds triggers...");
+  const res = await cf(`/builds/workers/${workerTag}/triggers`);
+  if (!res.ok) {
+    exit(`Kunne ikke liste triggers: ${JSON.stringify(res.json?.errors)}`);
+  }
+  const triggers = res.json.result || [];
+  if (triggers.length === 0) {
+    exit("Ingen triggers funnet. Kjør setup-workers-builds.mjs først.");
+  }
+  console.log(`   Fant ${triggers.length} trigger(s).`);
+  return triggers;
+}
+
+async function enableR2CacheOnTriggers(cf, triggers) {
+  console.log("🚀 Aktiverer R2-cache på triggers...");
+  for (const trigger of triggers) {
+    const res = await cf(`/builds/triggers/${trigger.trigger_uuid}/environment_variables`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        [ENABLE_R2_CACHE_VAR]: { value: "true", is_secret: false },
+      }),
+    });
+    if (!res.ok) {
+      exit(
+        `Kunne ikke sette env-var på trigger ${trigger.trigger_name}: ${JSON.stringify(
+          res.json?.errors
+        )}`
+      );
+    }
+    console.log(`   ✅ ${trigger.trigger_name}: ${ENABLE_R2_CACHE_VAR}=true`);
+  }
 }
 
 async function main() {
@@ -189,6 +242,10 @@ async function main() {
   await updateWranglerJsonc(d1DatabaseId);
   await updateEnvLocal(imagesAccountHash);
 
+  const workerTag = await getWorkerTag(cf);
+  const triggers = await getTriggers(cf, workerTag);
+  await enableR2CacheOnTriggers(cf, triggers);
+
   console.log("\n✅ Oppsett fullført.");
   if (!imagesAccountHash) {
     console.log(
@@ -196,8 +253,9 @@ async function main() {
     );
   }
   console.log("\nNeste steg:");
-  console.log("  1. Kjør: npm run cf:deploy");
-  console.log("  2. Verifiser med: curl https://www.klarpakke.no/api/health");
+  console.log("  1. Commit endringene i wrangler.jsonc og .env.local");
+  console.log("  2. Push til main for å trigge ny deploy med R2-cache aktivert");
+  console.log("  3. Verifiser med: curl https://www.klarpakke.no/api/health");
 }
 
 main().catch((err) => {
