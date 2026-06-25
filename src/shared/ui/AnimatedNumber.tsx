@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface AnimatedNumberProps {
   value: number;
@@ -14,14 +14,15 @@ interface AnimatedNumberProps {
 
 export function AnimatedNumber({
   value,
-  prefix = '',
-  suffix = '',
+  prefix = "",
+  suffix = "",
   decimals = 2,
   duration = 600,
   className,
 }: AnimatedNumberProps) {
   const [display, setDisplay] = useState(value);
   const previous = useRef(value);
+  const rafId = useRef<number | null>(null);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -29,6 +30,10 @@ export function AnimatedNumber({
       setDisplay(value);
       previous.current = value;
       return;
+    }
+
+    if (rafId.current !== null) {
+      cancelAnimationFrame(rafId.current);
     }
 
     const start = previous.current;
@@ -40,15 +45,24 @@ export function AnimatedNumber({
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(start + (end - start) * eased);
       if (progress < 1) {
-        requestAnimationFrame(frame);
+        rafId.current = requestAnimationFrame(frame);
+      } else {
+        rafId.current = null;
       }
     };
 
-    requestAnimationFrame(frame);
+    rafId.current = requestAnimationFrame(frame);
     previous.current = value;
+
+    return () => {
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
+    };
   }, [value, duration, prefersReducedMotion]);
 
-  const formatted = display.toLocaleString('nb-NO', {
+  const formatted = display.toLocaleString("nb-NO", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

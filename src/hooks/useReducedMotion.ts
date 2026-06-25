@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduced(media.matches);
-    const listener = (event: Event) => setReduced(((event as unknown) as { matches: boolean }).matches);
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
+    // eslint-disable-next-line no-undef
+    const listener = (event: MediaQueryListEvent) => setReduced(event.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
   }, []);
 
   return reduced;
