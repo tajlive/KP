@@ -14,6 +14,7 @@
     "build:local": "SKIP_LINT_IN_BUILD=true next build",
     "cf:build": "CLOUDFLARE_PAGES=1 NODE_OPTIONS=\"--max-old-space-size=4096\" opennextjs-cloudflare build",
     "cf:deploy": "npm run cf:build && wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)",
+    "cf:deploy:ci": "npm run cf:build && wrangler deploy --minify --var APP_VERSION:${WORKERS_CI_COMMIT_SHA:-unknown}",
     "start": "next start",
     "── COOLIFY ──": "echo 'Coolify deployment commands'",
     "deploy:coolify:local": "node scripts/coolify-deploy.mjs",

@@ -98,9 +98,19 @@ Filen `BuildFailed` finnes ikke i noen branch (`git log --all -- BuildFailed` er
 
 **Påkrevd handling:** Kontakte **GitHub Support** og be om at workflow-registrering `260912064` purges manuelt fra GitHub's backend. Se `docs/GITHUB-SUPPORT-PHANTOM-WORKFLOW.md` for ferdig support-henvendelse.
 
-**Midlertidig workaround:** Bruk manuell deploy til Cloudflare Workers:
+**Løsning / workaround (2026-06-25):** Auto-deploy er migrert til **Cloudflare Workers Builds**.
+
+- Repository forblir på GitHub (`tajlive/KP`).
+- Cloudflare Worker `klarpakke` er koblet til GitHub-repoet.
+- Build command: `npm ci --prefer-offline --legacy-peer-deps && npm run cf:build`.
+- Deploy command: `npm run cf:deploy:ci`.
+- `APP_VERSION` settes fra `WORKERS_CI_COMMIT_SHA` (injisert av Workers Builds).
+- Kvalitetskontroller (lint/type/test) kjøres lokalt via `.husky/pre-push`.
+- `.github/workflows/deploy.yml` og `.github/workflows/pr-check.yml` er arkivert under `.github/workflows/archived/`.
+
+For manuell deploy (kun ved behov):
 ```bash
-npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
+npm run cf:deploy
 ```
 
 **Verifiser status:**
