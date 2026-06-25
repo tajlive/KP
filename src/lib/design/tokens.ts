@@ -3,8 +3,8 @@
 
 /** Merke-farge #0052FF – bruk overalt for primær CTA og accent */
 export const BRAND_COLOR = {
-  DEFAULT: "#0052FF",
-  HOVER: "#0047E0",
+  DEFAULT: "#0052ff",
+  HOVER: "#0047e0",
   LIGHT: "#3d7aff",
   MUTED: "rgba(0, 82, 255, 0.1)",
   BORDER: "rgba(0, 82, 255, 0.2)",
@@ -70,7 +70,7 @@ export const BRAND = {
   danger: "bg-red-600 hover:bg-red-700 text-white",
   success: "bg-emerald-600 hover:bg-emerald-700 text-white",
   warning: "bg-amber-500 hover:bg-amber-600 text-white",
-  vipps: "bg-[#FF5B24] hover:bg-[#E54E1B] text-white",
+  vipps: "bg-[#ff5b24] hover:bg-[#e54e1b] text-white",
   bachelor: "bg-blue-600 hover:bg-blue-700 text-white",
   master: "bg-emerald-600 hover:bg-emerald-700 text-white",
   phd: "bg-indigo-600 hover:bg-indigo-700 text-white",
