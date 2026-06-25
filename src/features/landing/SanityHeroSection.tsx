@@ -64,16 +64,16 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
     <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-kp-bg-primary">
       {/* Animated background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full opacity-30 blur-3xl animate-float"
-          style={{ 
+        <div
+          className="absolute top-1/4 left-1/4 h-48 w-48 sm:h-64 sm:w-64 md:h-96 md:w-96 rounded-full opacity-30 blur-3xl sm:animate-float"
+          style={{
             background: 'radial-gradient(circle, rgba(0,82,255,0.4) 0%, transparent 60%)',
             animationDelay: '0s',
           }}
         />
-        <div 
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl animate-float"
-          style={{ 
+        <div
+          className="absolute bottom-1/4 right-1/4 h-40 w-40 sm:h-56 sm:w-56 md:h-80 md:w-80 rounded-full opacity-20 blur-3xl sm:animate-float"
+          style={{
             background: 'radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 60%)',
             animationDelay: '-3s',
           }}

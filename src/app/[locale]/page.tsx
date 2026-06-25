@@ -14,8 +14,8 @@ import {
 
 export const runtime = "nodejs";
 
-// ISR: Revalidate every 60s, Sanity webhook invalidates on content change
-export const dynamic = "force-dynamic"; // Was: revalidate = 60 (ISR not supported on Cloudflare)
+// Short revalidation for Sanity-driven landing content; webhook invalidates on publish
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -52,7 +52,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <BelowFoldSections />
 
       {/* FAQ: Server Component, lightweight — kept synchronous with ScrollReveal */}
-      <ScrollReveal direction="up" delay={0.1}>
+      <ScrollReveal>
         <SanityFAQSection locale={locale} />
       </ScrollReveal>
 
