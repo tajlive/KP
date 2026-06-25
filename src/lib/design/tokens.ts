@@ -164,3 +164,20 @@ export const MOBILE = {
   /** Gap scaling */
   responsiveGap: "gap-3 sm:gap-4 lg:gap-6",
 } as const;
+
+/** Phase 1 redesign palette: Nordic Trust + Live Accents */
+export const SEMANTIC_COLORS = {
+  backgroundDark: "#0B1220",
+  backgroundDarkElevated: "#111827",
+  backgroundLight: "#F8FAFC",
+  backgroundLightElevated: "#E2E8F0",
+  positive: "#22C55E",
+  negative: "#EF4444",
+  ai: "#3B82F6",
+  live: "#F59E0B",
+  learning: "#A855F7",
+  textDarkPrimary: "#F8FAFC",
+  textDarkSecondary: "#94A3B8",
+  textLightPrimary: "#0F172A",
+  textLightSecondary: "#64748B",
+} as const;
