@@ -21,7 +21,7 @@ describe("ThemeProvider", () => {
     render(
       <ThemeProvider>
         <Consumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByTestId("theme").textContent).toBe("dark");
@@ -33,15 +33,19 @@ describe("ThemeProvider", () => {
     render(
       <ThemeProvider>
         <Consumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    act(() => fireEvent.click(screen.getByRole("button", { name: "set dark" })));
+    act(() =>
+      fireEvent.click(screen.getByRole("button", { name: "set dark" })),
+    );
 
     expect(screen.getByTestId("theme").textContent).toBe("dark");
     expect(screen.getByTestId("resolved").textContent).toBe("dark");
 
-    act(() => fireEvent.click(screen.getByRole("button", { name: "set light" })));
+    act(() =>
+      fireEvent.click(screen.getByRole("button", { name: "set light" })),
+    );
 
     expect(screen.getByTestId("theme").textContent).toBe("light");
     expect(screen.getByTestId("resolved").textContent).toBe("light");
@@ -51,13 +55,19 @@ describe("ThemeProvider", () => {
     render(
       <ThemeProvider>
         <Consumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    act(() => fireEvent.click(screen.getByRole("button", { name: "set dark" })));
-    act(() => fireEvent.click(screen.getByRole("button", { name: "set system" })));
+    act(() =>
+      fireEvent.click(screen.getByRole("button", { name: "set dark" })),
+    );
+    act(() =>
+      fireEvent.click(screen.getByRole("button", { name: "set system" })),
+    );
 
     expect(screen.getByTestId("theme").textContent).toBe("system");
-    expect(screen.getByTestId("resolved").textContent).toMatch(/^(light|dark)$/);
+    expect(screen.getByTestId("resolved").textContent).toMatch(
+      /^(light|dark)$/,
+    );
   });
 });
