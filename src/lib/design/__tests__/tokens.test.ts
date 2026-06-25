@@ -17,5 +17,4 @@ describe("SEMANTIC_COLORS", () => {
     expect(SEMANTIC_COLORS.textLightPrimary).toBe("#0F172A");
     expect(SEMANTIC_COLORS.textLightSecondary).toBe("#64748B");
   });
-
 });

@@ -99,64 +99,6 @@
        DEFAULT THEME - Nordic Trust dark
        ============================================ */
 
-    /* Background colors - Nordic Trust dark default */
-    --kp-bg-primary: var(--kp-bg-dark);         /* Page background */
-    --kp-bg-secondary: var(--kp-bg-dark-elevated);       /* Cards, panels */
-    --kp-bg-tertiary: #f4f4f5;        /* Elevated surfaces */
-    --kp-bg-card: #ffffff;            /* Card background */
-    --kp-bg-hover: #f4f4f5;           /* Hover state */
-    --kp-bg-active: #e4e4e7;          /* Active/pressed state */
-    
-    /* Text colors - Nordic Trust dark default */
-    --kp-text-primary: var(--kp-text-dark-primary);       /* Primary text */
-    --kp-text-secondary: var(--kp-text-dark-secondary);     /* Secondary */
-    --kp-text-tertiary: #52525b;      /* Tertiary - zinc-600 */
-    --kp-text-muted: #71717a;         /* Muted - zinc-500 (4.6:1 on white) */
-    
-    /* Border colors - Subtle but visible */
-    --kp-border: #e4e4e7;             /* zinc-200 */
-    --kp-border-light: #f4f4f5;       /* zinc-100 */
-    --kp-border-dark: #d4d4d8;        /* zinc-300 */
-    --kp-border-brand: rgba(0, 82, 255, 0.3);
-    
-    /* Surface colors */
-    --kp-surface: #ffffff;
-    --kp-surface-elevated: #ffffff;
-    --kp-surface-highlight: rgba(0, 82, 255, 0.04);
-    
-    /* Navigation */
-    --kp-nav-bg: rgba(255, 255, 255, 0.9);
-    --kp-nav-text: #18181b;
-    --kp-nav-text-muted: #71717a;
-    
-    /* Input colors */
-    --kp-input-bg: #ffffff;
-    --kp-input-border: #d4d4d8;
-    --kp-input-border-focus: #0052FF;
-    --kp-input-text: #18181b;
-    --kp-input-placeholder: #a1a1aa;
-    
-    /* Brand accent */
-    --kp-brand: var(--kp-ai);
-    --kp-brand-hover: #0047E0;
-    --kp-brand-light: #3d7aff;
-    --kp-brand-dark: #0039c7;
-    --kp-brand-glow: rgba(0, 82, 255, 0.25);
-    --kp-brand-subtle: rgba(0, 82, 255, 0.1);
-
-    /* Status colors */
-    --kp-success: var(--kp-positive);
-    --kp-success-bg: rgba(5, 150, 105, 0.1);
-    --kp-warning: var(--kp-live);
-    --kp-warning-bg: rgba(217, 119, 6, 0.1);
-    --kp-danger: var(--kp-negative);
-    --kp-danger-bg: rgba(220, 38, 38, 0.1);
-  }
-  
-  /* ============================================
-     DARK MODE - WCAG AA Compliant
-     ============================================ */
-  .dark {
     /* Background colors - Nordic Trust dark palette */
     --kp-bg-primary: var(--kp-bg-dark);         /* Deepest background */
     --kp-bg-secondary: var(--kp-bg-dark-elevated);       /* Main surface */
@@ -214,10 +156,58 @@
   /* Light mode opt-in via next-themes */
   html.light,
   .light {
+    /* Background colors - previous light default */
     --kp-bg-primary: var(--kp-bg-light);
     --kp-bg-secondary: var(--kp-bg-light-elevated);
+    --kp-bg-tertiary: #f4f4f5;
+    --kp-bg-card: #ffffff;
+    --kp-bg-hover: #f4f4f5;
+    --kp-bg-active: #e4e4e7;
+
+    /* Text colors - previous light default */
     --kp-text-primary: var(--kp-text-light-primary);
     --kp-text-secondary: var(--kp-text-light-secondary);
+    --kp-text-tertiary: #52525b;
+    --kp-text-muted: #71717a;
+
+    /* Border colors - previous light default */
+    --kp-border: #e4e4e7;
+    --kp-border-light: #f4f4f5;
+    --kp-border-dark: #d4d4d8;
+    --kp-border-brand: rgba(0, 82, 255, 0.3);
+
+    /* Surface colors - previous light default */
+    --kp-surface: #ffffff;
+    --kp-surface-elevated: #ffffff;
+    --kp-surface-highlight: rgba(0, 82, 255, 0.04);
+
+    /* Navigation - previous light default */
+    --kp-nav-bg: rgba(255, 255, 255, 0.9);
+    --kp-nav-text: #18181b;
+    --kp-nav-text-muted: #71717a;
+
+    /* Input colors - previous light default */
+    --kp-input-bg: #ffffff;
+    --kp-input-border: #d4d4d8;
+    --kp-input-border-focus: #0052FF;
+    --kp-input-text: #18181b;
+    --kp-input-placeholder: #a1a1aa;
+
+    /* Brand accent - previous light default */
+    --kp-brand: var(--kp-ai);
+    --kp-brand-hover: #0047E0;
+    --kp-brand-light: #3d7aff;
+    --kp-brand-dark: #0039c7;
+    --kp-brand-glow: rgba(0, 82, 255, 0.25);
+    --kp-brand-subtle: rgba(0, 82, 255, 0.1);
+
+    /* Status colors - previous light default */
+    --kp-success: var(--kp-positive);
+    --kp-success-bg: rgba(5, 150, 105, 0.1);
+    --kp-warning: var(--kp-live);
+    --kp-warning-bg: rgba(217, 119, 6, 0.1);
+    --kp-danger: var(--kp-negative);
+    --kp-danger-bg: rgba(220, 38, 38, 0.1);
   }
 
   /* Smooth theme transitions - disabled for users who prefer reduced motion */
