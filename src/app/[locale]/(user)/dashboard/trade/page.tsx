@@ -1,6 +1,10 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { TradeHub } from "@/features/market/coinbase/TradeHub";
+import nextDynamic from "next/dynamic";
+
+const TradeHub = nextDynamic(() =>
+  import("@/features/market/coinbase/TradeHub").then((mod) => mod.TradeHub),
+);
 
 export const runtime = 'nodejs';
 
