@@ -190,9 +190,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     preconnect(supabaseHost, { crossOrigin: "anonymous" });
     prefetchDNS(supabaseHost);
   }
-  preconnect("https://fonts.googleapis.com");
-  preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
-
   return (
     <html lang={locale} className={`${outfit.variable} ${geist.variable}`} suppressHydrationWarning>
       <head suppressHydrationWarning>
@@ -206,7 +203,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {/* KRITISK: Avregistrer gamle service workers FØR React hydrerer */}
         <Script
           id="sw-killer"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){
@@ -236,7 +233,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <Script
           id="supabase-auth-cleaner"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){
