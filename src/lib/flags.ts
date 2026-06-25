@@ -5,6 +5,7 @@
  * Støtter både env-defaults og Edge Config-overrides (server-side).
  */
 
+import { withRequestCache } from "@/lib/cache";
 import type { EdgeFeatureFlags } from './edge-config';
 
 export interface FeatureFlags {
@@ -60,7 +61,7 @@ export function isEnabled(
 }
 
 /** Async variant - henter Edge Config-overrides på serveren */
-export async function getFlagsAsync(): Promise<FeatureFlags> {
+async function getFlagsAsyncImpl(): Promise<FeatureFlags> {
   let edgeFlags: Partial<EdgeFeatureFlags> = {};
   try {
     const { getEdgeFlags } = await import('./edge-config');
@@ -69,4 +70,14 @@ export async function getFlagsAsync(): Promise<FeatureFlags> {
     // Edge Config ikke tilgjengelig (mangler env eller pakke)
   }
   return getFlags(edgeFlags as Partial<FeatureFlags>);
+}
+
+const cachedGetFlagsAsync = withRequestCache(getFlagsAsyncImpl, {
+  key: "feature-flags",
+  tags: ["flags"],
+  revalidate: 60,
+});
+
+export async function getFlagsAsync(): Promise<FeatureFlags> {
+  return cachedGetFlagsAsync();
 }

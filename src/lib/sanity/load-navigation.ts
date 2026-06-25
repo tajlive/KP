@@ -1,11 +1,12 @@
 import { client } from "@/lib/sanity/client";
 import { navigationQuery } from "@/lib/sanity/queries";
+import { withRequestCache } from "@/lib/cache";
 import {
   FALLBACK_NAVIGATION,
   type NavigationData,
 } from "@/lib/navigation/config";
 
-export async function loadNavigation(): Promise<NavigationData> {
+async function loadNavigationImpl(): Promise<NavigationData> {
   try {
     const result = await client.fetch(
       navigationQuery,
@@ -22,4 +23,14 @@ export async function loadNavigation(): Promise<NavigationData> {
     // Use fallback
   }
   return FALLBACK_NAVIGATION;
+}
+
+const cachedLoadNavigation = withRequestCache(loadNavigationImpl, {
+  key: "sanity-navigation",
+  tags: ["sanity", "sanity:navigation"],
+  revalidate: 60,
+});
+
+export async function loadNavigation(): Promise<NavigationData> {
+  return cachedLoadNavigation();
 }
