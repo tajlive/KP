@@ -41,15 +41,15 @@ const NAMESPACES = [
   "tradingResults",
 ] as const;
 
-async function loadMessagesWithFallbackImpl() {
+async function loadMessagesWithFallbackImpl(locale: string) {
   try {
-    return await getMessages();
+    return await getMessages({ locale });
   } catch {
     const loaded = await Promise.all(
       NAMESPACES.map((ns) =>
-        import(`../../../messages/en/${ns}.json`)
+        import(`../../../messages/${locale}/${ns}.json`)
           .then((m) => m.default)
-          .catch(() => ({})),
+          .catch(() => import(`../../../messages/en/${ns}.json`).then((m) => m.default).catch(() => ({}))),
       ),
     );
 
@@ -72,6 +72,6 @@ const cachedLoadMessages = withRequestCache(loadMessagesWithFallbackImpl, {
   revalidate: 300,
 });
 
-export async function loadMessagesWithFallback() {
-  return cachedLoadMessages();
+export async function loadMessagesWithFallback(locale: string) {
+  return cachedLoadMessages(locale);
 }
