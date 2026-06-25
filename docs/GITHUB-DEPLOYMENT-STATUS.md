@@ -8,7 +8,7 @@
 > - `AGENTS.md` — hurtigstart, hosting-arkitektur og deploy-kommandoer
 > - `.github/workflows/deploy.yml` — aktiv Cloudflare Workers deploy-workflow
 > - `docs/PRODUCTION_RELEASE_CHECKLIST.md` — sjekkliste før/etter produksjonsdeploy
-> - Issue #94 — GitHub Actions phantom `BuildFailed` workflow blocker
+> - Issue #96 — GitHub Actions phantom `BuildFailed` workflow blocker
 >
 > Filen beholdes kun som historisk referanse.
 
