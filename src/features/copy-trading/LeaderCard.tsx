@@ -85,6 +85,7 @@ export function LeaderCard({
 
       <div className="relative flex items-start gap-3">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-600 to-blue-700">
+          {/* unoptimized: avatar host varies and may not be in next.config remotePatterns */}
           {leader.avatar_url ? (
             <Image
               src={leader.avatar_url}
@@ -92,7 +93,7 @@ export function LeaderCard({
               fill
               sizes="64px"
               unoptimized
-              className="h-full w-full object-cover"
+              className="object-cover"
             />
           ) : (
             <span className="flex h-full w-full items-center justify-center text-lg font-bold text-white">

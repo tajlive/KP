@@ -298,7 +298,7 @@ export function ExchangeApiSettings() {
                 <Card className="bg-slate-900 border-slate-800">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Building2 className="h-6 w-6" aria-label="Binance" />
+                      <Building2 className="h-6 w-6" aria-hidden />
                       Binance
                     </CardTitle>
                   </CardHeader>
