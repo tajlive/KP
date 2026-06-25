@@ -1,6 +1,10 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { AssetDetailView } from "@/features/market/coinbase/AssetDetailView";
+import nextDynamic from "next/dynamic";
+
+const AssetDetailView = nextDynamic(() =>
+  import("@/features/market/coinbase/AssetDetailView").then((mod) => mod.AssetDetailView),
+);
 
 export const runtime = 'nodejs';
 

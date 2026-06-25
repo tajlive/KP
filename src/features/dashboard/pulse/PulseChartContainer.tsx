@@ -17,14 +17,10 @@ import type { PulseEventFeedProps } from "./PulseEventFeed";
 
 // Lazy load heavy components
 const PulseChart = dynamic<PulseChartProps>(
-  () => import("./PulseChart").then((mod) => mod.PulseChart),
+  () => import("@/features/dashboard/pulse/PulseChart").then((mod) => mod.PulseChart),
   {
     ssr: false,
-    loading: () => (
-      <div className="h-[400px] w-full flex items-center justify-center bg-slate-900/50 animate-pulse rounded-xl border border-white/5">
-        Laster graf...
-      </div>
-    ),
+    loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" />,
   },
 );
 
