@@ -40,4 +40,17 @@ describe("AnimatedNumber", () => {
     render(<AnimatedNumber value={9876.54} prefix="€" decimals={2} />);
     expect(screen.getByText(/€9\s876,54/)).toBeInTheDocument();
   });
+
+  it("defaults aria-live to polite", () => {
+    render(<AnimatedNumber value={100} />);
+    expect(screen.getByText(/100,00/)).toHaveAttribute("aria-live", "polite");
+  });
+
+  it("supports overriding aria-live", () => {
+    render(<AnimatedNumber value={100} ariaLive="assertive" />);
+    expect(screen.getByText(/100,00/)).toHaveAttribute(
+      "aria-live",
+      "assertive",
+    );
+  });
 });

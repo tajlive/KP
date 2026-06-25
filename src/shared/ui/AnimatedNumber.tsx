@@ -10,6 +10,7 @@ interface AnimatedNumberProps {
   decimals?: number;
   duration?: number;
   className?: string;
+  ariaLive?: "off" | "polite" | "assertive";
 }
 
 export function AnimatedNumber({
@@ -19,6 +20,7 @@ export function AnimatedNumber({
   decimals = 2,
   duration = 600,
   className,
+  ariaLive = "polite",
 }: AnimatedNumberProps) {
   const [display, setDisplay] = useState(value);
   const previous = useRef(value);
@@ -68,7 +70,7 @@ export function AnimatedNumber({
   });
 
   return (
-    <span className={className} aria-live="off">
+    <span className={className} aria-live={ariaLive}>
       {prefix}
       {formatted}
       {suffix}
