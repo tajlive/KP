@@ -210,6 +210,19 @@
     --kp-danger: #ef4444;             /* red-500 */
     --kp-danger-bg: rgba(239, 68, 68, 0.15);
   }
+
+  /* Phase 1 redesign: default dark, light opt-in via .light */
+  html {
+    color-scheme: dark;
+    background-color: var(--kp-bg-dark);
+    color: var(--kp-text-dark-primary);
+  }
+
+  html.light {
+    color-scheme: light;
+    background-color: var(--kp-bg-light);
+    color: var(--kp-text-light-primary);
+  }
   
   /* Smooth theme transitions - disabled for users who prefer reduced motion */
   @media (prefers-reduced-motion: no-preference) {

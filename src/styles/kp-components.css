@@ -462,6 +462,19 @@
 .kp-text-error { color: var(--kp-error); }
 .kp-text-warning { color: var(--kp-warning); }
 
+/* Phase 1 redesign semantic accents */
+.kp-text-positive { color: var(--kp-positive); }
+.kp-text-negative { color: var(--kp-negative); }
+.kp-text-ai { color: var(--kp-ai); }
+.kp-text-live { color: var(--kp-live); }
+.kp-text-learning { color: var(--kp-learning); }
+
+.kp-bg-positive { background-color: var(--kp-positive); }
+.kp-bg-negative { background-color: var(--kp-negative); }
+.kp-bg-ai { background-color: var(--kp-ai); }
+.kp-bg-live { background-color: var(--kp-live); }
+.kp-bg-learning { background-color: var(--kp-learning); }
+
 /* Font sizes */
 .kp-text-xs { font-size: var(--kp-text-xs); }
 .kp-text-sm { font-size: var(--kp-text-sm); }
