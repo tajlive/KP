@@ -31,6 +31,21 @@
   --kp-info: #3b82f6;
   --kp-info-bg: rgba(59, 130, 246, 0.1);
   
+  /* Phase 1 redesign palette: Nordic Trust + Live Accents */
+  --kp-bg-dark: #0B1220;
+  --kp-bg-dark-elevated: #111827;
+  --kp-bg-light: #F8FAFC;
+  --kp-bg-light-elevated: #E2E8F0;
+  --kp-positive: #22C55E;
+  --kp-negative: #EF4444;
+  --kp-ai: #3B82F6;
+  --kp-live: #F59E0B;
+  --kp-learning: #A855F7;
+  --kp-text-dark-primary: #F8FAFC;
+  --kp-text-dark-secondary: #94A3B8;
+  --kp-text-light-primary: #0F172A;
+  --kp-text-light-secondary: #64748B;
+  
   /* Dark Mode - Background Hierarchy */
   --kp-bg-primary: #0a0b0d;
   --kp-bg-secondary: #161719;
