@@ -77,7 +77,7 @@ import "../globals.css";
 
 const outfit = Outfit({
   subsets: ["latin"],
-  display: "swap",
+  display: "block",
   variable: "--font-inter", // Keep variable name to avoid refactoring CSS
   preload: true,
   adjustFontFallback: true,
