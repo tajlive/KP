@@ -1,10 +1,8 @@
 "use client";
 
 import { ConditionalFooter } from "@/features/landing/ConditionalFooter";
-import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
 import {
   isAppShellPath,
-  type NavigationData,
 } from "@/lib/navigation/config";
 import { isGuestAuthRoute, parseLocalePath } from "@/middleware/locale-path";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -36,11 +34,11 @@ function strippedPathFromPostAuthTarget(raw: string | null): string | null {
 
 function MarketingShellLayout({
   hideMarketing,
-  navData,
+  marketingNav,
   children,
 }: {
   hideMarketing: boolean;
-  navData: NavigationData;
+  marketingNav: ReactNode;
   children: ReactNode;
 }) {
   if (hideMarketing) {
@@ -50,7 +48,7 @@ function MarketingShellLayout({
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <MarketingNavigation navData={navData} />
+      {marketingNav}
       <main className="flex-1">{children}</main>
       <ConditionalFooter />
     </div>
@@ -58,10 +56,10 @@ function MarketingShellLayout({
 }
 
 export function LocaleMarketingShellInner({
-  navData,
+  marketingNav,
   children,
 }: {
-  navData: NavigationData;
+  marketingNav: ReactNode;
   children: ReactNode;
 }) {
   const pathname = usePathname() ?? "/";
@@ -79,7 +77,7 @@ export function LocaleMarketingShellInner({
   }
 
   return (
-    <MarketingShellLayout hideMarketing={hideMarketing} navData={navData}>
+    <MarketingShellLayout hideMarketing={hideMarketing} marketingNav={marketingNav}>
       {children}
     </MarketingShellLayout>
   );
@@ -87,10 +85,10 @@ export function LocaleMarketingShellInner({
 
 /** Fallback uten searchParams (unngår hydration mismatch / static krav) */
 export function LocaleMarketingShellFallback({
-  navData,
+  marketingNav,
   children,
 }: {
-  navData: NavigationData;
+  marketingNav: ReactNode;
   children: ReactNode;
 }) {
   const pathname = usePathname() ?? "/";
@@ -98,7 +96,7 @@ export function LocaleMarketingShellFallback({
   const hideMarketing = isAppShellPath(strippedPath);
 
   return (
-    <MarketingShellLayout hideMarketing={hideMarketing} navData={navData}>
+    <MarketingShellLayout hideMarketing={hideMarketing} marketingNav={marketingNav}>
       {children}
     </MarketingShellLayout>
   );

@@ -21,6 +21,7 @@ import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { isAppShellPath } from "@/lib/navigation/config";
 import { RootProviders } from "@/app/providers/RootProviders";
+import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
 import { Outfit, Geist } from "next/font/google";
 import { getFlagsAsync } from "@/lib/flags";
 import "../globals.css";
@@ -174,6 +175,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const navData = await loadNavigation();
   const flags = await getFlagsAsync().catch(() => ({}));
 
+  const marketingNav = (
+    <MarketingNavigation navData={navData} locale={locale} />
+  );
+
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
@@ -306,7 +311,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           locale={locale}
           messages={messages}
           showVippsMarket={showVippsMarket}
-          navData={navData}
+          marketingNav={marketingNav}
           flags={flags}
           isMarketing={isMarketing}
         >

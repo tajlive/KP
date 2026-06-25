@@ -11,7 +11,6 @@ import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import type { FeatureFlags } from "@/lib/flags";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
-import type { NavigationData } from "@/lib/navigation/config";
 import { LazyMotion } from "framer-motion";
 
 const loadFeatures = () => import("framer-motion").then((res) => res.domAnimation);
@@ -21,7 +20,7 @@ interface RootProvidersProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messages: any;
   showVippsMarket: boolean;
-  navData: NavigationData;
+  marketingNav: ReactNode;
   flags: Partial<FeatureFlags>;
   isMarketing: boolean;
   children: ReactNode;
@@ -31,13 +30,13 @@ export function RootProviders({
   locale,
   messages,
   showVippsMarket,
-  navData,
+  marketingNav,
   flags,
   isMarketing,
   children,
 }: RootProvidersProps) {
   const marketingShell = (
-    <LocaleMarketingShell navData={navData}>
+    <LocaleMarketingShell marketingNav={marketingNav}>
       <LazyMotion features={loadFeatures} strict={false}>
         {children}
       </LazyMotion>
