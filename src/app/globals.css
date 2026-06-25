@@ -136,7 +136,7 @@
     --kp-input-placeholder: #71717a;
 
     /* Brand accent */
-    --kp-brand: var(--kp-ai);
+    --kp-brand: #0052ff;
     --kp-brand-hover: #0047e0;
     --kp-brand-light: #3d7aff;
     --kp-brand-dark: #0039c7;
@@ -193,7 +193,7 @@
     --kp-input-placeholder: #a1a1aa;
 
     /* Brand accent - previous light default */
-    --kp-brand: var(--kp-ai);
+    --kp-brand: #0052ff;
     --kp-brand-hover: #0047e0;
     --kp-brand-light: #3d7aff;
     --kp-brand-dark: #0039c7;
@@ -308,11 +308,6 @@
 
 .animate-fade-in {
   animation: fade-in 0.6s ease-out forwards;
-}
-
-.animate-fade-in-delayed {
-  animation: fade-in-scale 0.6s ease-out 0.2s forwards;
-  opacity: 0;
 }
 
 .animate-float {

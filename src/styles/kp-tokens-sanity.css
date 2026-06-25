@@ -147,42 +147,16 @@
 
 @layer utilities {
   /* Backgrounds */
-  .bg-kp-primary {
-    background-color: var(--kp-bg-primary);
-  }
-  .bg-kp-secondary {
-    background-color: var(--kp-bg-secondary);
-  }
   .bg-kp-elevated {
     background-color: var(--kp-bg-elevated);
-  }
-  .bg-kp-card {
-    background-color: var(--kp-bg-card);
   }
   .bg-kp-brand {
     background-color: var(--kp-brand);
   }
 
   /* Text */
-  .text-kp-primary {
-    color: var(--kp-text-primary);
-  }
-  .text-kp-secondary {
-    color: var(--kp-text-secondary);
-  }
-  .text-kp-muted {
-    color: var(--kp-text-muted);
-  }
   .text-kp-brand {
     color: var(--kp-brand);
-  }
-
-  /* Borders */
-  .border-kp {
-    border-color: var(--kp-border);
-  }
-  .border-kp-brand {
-    border-color: var(--kp-border-brand);
   }
 
   /* Shadows */
@@ -194,14 +168,6 @@
   }
   .shadow-kp-glow {
     box-shadow: var(--kp-shadow-glow);
-  }
-
-  /* Glassmorphism */
-  .glass {
-    background: var(--kp-glass-bg);
-    backdrop-filter: blur(var(--kp-glass-blur));
-    -webkit-backdrop-filter: blur(var(--kp-glass-blur));
-    border: 1px solid var(--kp-glass-border);
   }
 
   /* Gradient text */
