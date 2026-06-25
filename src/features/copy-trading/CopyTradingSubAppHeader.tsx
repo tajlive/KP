@@ -58,6 +58,7 @@ export function CopyTradingSubAppHeader() {
             alt=""
             width={28}
             height={28}
+            priority
             className="h-7 w-7"
           />
           <span className="hidden font-semibold text-white sm:inline">

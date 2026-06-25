@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { createClient } from "@/lib/utils";
 import {
   AlertCircle,
+  Building2,
   Check,
   Copy,
   ExternalLink,
@@ -26,7 +27,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -298,12 +298,7 @@ export function ExchangeApiSettings() {
                 <Card className="bg-slate-900 border-slate-800">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Image
-                        src="/binance-logo.svg"
-                        alt="Binance"
-                        width={24}
-                        height={24}
-                      />
+                      <Building2 className="h-6 w-6" aria-label="Binance" />
                       Binance
                     </CardTitle>
                   </CardHeader>

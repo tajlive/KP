@@ -20,7 +20,6 @@ export function LevelUpModal() {
           className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-blue-500/30 bg-linear-to-b from-slate-900 to-slate-950 p-8 text-center shadow-[0_0_50px_rgba(59,130,246,0.2)]"
         >
           {/* Confetti effect placeholder / background rays */}
-          <div className="absolute inset-0 -z-10 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ ease: "linear", duration: 10, repeat: Infinity }}

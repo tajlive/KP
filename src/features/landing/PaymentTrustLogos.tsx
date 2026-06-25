@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 /**
  * Betalingsmerker for footer / prisside.
  * Visa + Mastercard: Stripe.js fingerprinted assets.
@@ -44,22 +42,16 @@ export function PaymentTrustLogos({
         </>
       ) : null}
 
-      <Image
+      <img
         src="/brand/payments/visa.svg"
         alt=""
-        width={42}
-        height={27}
         className="h-[22px] w-auto shrink-0"
-        unoptimized
         aria-hidden
       />
-      <Image
+      <img
         src="/brand/payments/mastercard.svg"
         alt=""
-        width={42}
-        height={27}
         className="h-[22px] w-auto shrink-0"
-        unoptimized
         aria-hidden
       />
 
@@ -69,13 +61,10 @@ export function PaymentTrustLogos({
         }`}
         aria-hidden
       >
-        <Image
+        <img
           src="/brand/payments/paypal.svg"
           alt=""
-          width={56}
-          height={18}
           className="h-[18px] w-auto"
-          unoptimized
         />
       </span>
 
@@ -97,13 +86,10 @@ export function PaymentTrustLogos({
         }`}
         aria-label={stripeBadgeAriaLabel}
       >
-        <Image
+        <img
           src="/brand/payments/powered-by-stripe.svg"
           alt=""
-          width={150}
-          height={34}
           className="h-[26px] w-auto max-w-[min(100vw-4rem,150px)]"
-          unoptimized
           aria-hidden
         />
       </a>

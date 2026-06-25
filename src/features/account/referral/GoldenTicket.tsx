@@ -46,10 +46,6 @@ export function GoldenTicket({ ticket, locale }: GoldenTicketProps) {
       }`}
       onClick={!isUsed ? handleCopy : undefined}
     >
-      {!isUsed && (
-        <div className="pointer-events-none absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
-      )}
-
       {/* Gloss effect */}
       {!isUsed && (
         <div className="pointer-events-none absolute -inset-[100%] animate-[spin_8s_linear_infinite] bg-linear-to-r from-transparent via-amber-100/10 to-transparent opacity-30 blur-2xl" />
