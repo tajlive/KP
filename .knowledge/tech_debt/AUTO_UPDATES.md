@@ -69,8 +69,10 @@ mempalace 3.5.0
 - Dersom `kimi --version` viser gammel versjon, sjekk at `~/.local/bin` eller
   npm-global bin er først i `PATH`.
 - GitHub Actions-versjonen av oppdatereren avhenger av at phantom-workflow-problemet
-  (issue #94) er løst før den kan kjøre.
-- Forsøk på løsning: disable/enable Actions i repo-innstillingene tvinger GitHub til
-  å re-indeksere workflows. Hvis det ikke hjelper, se issue #94.
-- Midlertidig renaming av default branch (`main` → `main-temp` → `main`) har også
-  blitt forsøkt for å tvinge re-indeksering.
+  (issue #96) er løst før den kan kjøre.
+- Forsøkte løsninger: disable/enable Actions i repo-innstillingene, renaming av
+  default branch (`main` → `main-temp` → `main` → `production` → `main`), slette alle
+  workflow-runs, og opprette/fjerne placeholder-workflow. Ingenting hjalp.
+- Rotårsak: korrupt backend-registrering hos GitHub (workflow-id `260912064`,
+  `BuildFailed`, state `deleted`). Krever GitHub Support-intervensjon.
+- Se `docs/GITHUB-ACTIONS-TROUBLESHOOTING.md` og `docs/GITHUB-SUPPORT-PHANTOM-WORKFLOW.md`.

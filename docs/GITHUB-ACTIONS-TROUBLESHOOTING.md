@@ -4,7 +4,7 @@
 >
 > Tabellen under refererer til den gamle Vercel-baserte stacken. Klarpakke kjører nå på **Cloudflare Workers (OpenNext.js + Wrangler)**. Se `AGENTS.md` og `docs/PRODUCTION_RELEASE_CHECKLIST.md` for gjeldende deploy- og feilsøkingsrutiner.
 >
-> Siste kjente problem (ikke Vercel-relatert) er dokumentert nederst: **phantom `BuildFailed` workflow (#94)**.
+> Siste kjente problem (ikke Vercel-relatert) er dokumentert nederst: **phantom `BuildFailed` workflow (#96)**.
 
 **Sist oppdatert:** 2026-03-19
 
@@ -72,34 +72,47 @@ gh run view <RUN_ID> --repo tajlive/KP --log-failed  # Se kun feilede steg
 
 ---
 
-## Phantom `BuildFailed` workflow (#94) — 2026-06-24
+## Phantom `BuildFailed` workflow (#96) — 2026-06-24 (oppdatert 2026-06-25)
 
-**Symptom:** Hver push/PR får en ekstra workflow-run med status `startup_failure` fra en slettet `BuildFailed`-workflow (workflow-id `260912064`). Dette blokkerer auto-deploy til Cloudflare Workers.
+**Symptom:** Hver push/PR/schedule/dependabot-event får en workflow-run med status `startup_failure` fra en slettet `BuildFailed`-workflow (workflow-id `260912064`). Ingen andre workflows kjører. Dette blokkerer auto-deploy til Cloudflare Workers.
 
-**Rotårsak:** GitHub Actions har en fastlåst backend-registrering for workflow-filen `.github/workflows/BuildFailed.yml`. Selv om filen er slettet fra `main`, eksisterer registreringen fortsatt — sannsynligvis fordi gamle grener (`feat/dark-fleet-phase1`, `deps/*`, `backup/*`) fremdeles inneholder en `BuildFailed.yml`-fil (eller `archived/BuildFailed.yml`), noe som hindrer GitHub i å fjerne den globale registreringen.
+**Rotårsak:** Dette er en **korrupt backend-registrering i GitHub Actions**, ikke noe som kan repareres fra repo-siden. Registreringen har:
+- `id`: `260912064`
+- `name`: `""` (tom)
+- `path`: `"BuildFailed"`
+- `state`: `"deleted"`
+- `html_url`: `https://github.com/tajlive/KP/blob/main/BuildFailed`
 
-**Forsøkte workaround:**
-- Deaktivere/aktivere Actions på nytt.
-- Gi default branch nytt navn (`main` → `main-temp` → `main`).
-- Legge til en midlertidig dummy `BuildFailed.yml` for å tvinge re-indeksering (fjernet igjen).
+Filen `BuildFailed` finnes ikke i noen branch (`git log --all -- BuildFailed` er tom), men registreringen trigger fortsatt runs på alle events. Dette samsvarer med flere kjente GitHub-community-rapporter (f.eks. `community/discussions/197048`, `194540`, `190193`) der samme type phantom workflow blokkerer hele Actions-oppsettet.
 
-**Løsning (2026-06-25):** Slette **alle** workflow-runs for phantom workflow-id `260912064`. Når siste run ble fjernet, forsvant også den fastlåste registreringen fra GitHub's backend (nå 404). Auto-deploy fungerer igjen.
+**Forsøkte workaround (ingen fungerte):**
+1. Slette alle workflow-runs for phantom workflow-id `260912064` (791+ runs slettet).
+2. Fjerne `BuildFailed.yml` fra alle remote grener (fant den i `fix/pr1-stop-bleeding`).
+3. Deaktivere/aktivere Actions på nytt.
+4. Gi default branch nytt navn (`main` → `main-temp` → `main`, deretter `production`, og tilbake til `main`).
+5. Legge til en midlertidig dummy `.github/workflows/BuildFailed.yml` for å tvinge re-indeksering (fjernet igjen).
+6. Teste `repository_dispatch` som alternativ trigger — phantom workflowen fanger også denne event-typen.
+7. Slette `production`-branch som var opprettet som workaround.
 
+**Konklusjon:** Ingen repo-side operasjon fjerner phantom workflowen. `PUT /repos/tajlive/KP/actions/workflows/260912064/disable` returnerer `403 "Unable to disable a workflow that is not active"` fordi state allerede er `deleted`.
+
+**Påkrevd handling:** Kontakte **GitHub Support** og be om at workflow-registrering `260912064` purges manuelt fra GitHub's backend. Se `docs/GITHUB-SUPPORT-PHANTOM-WORKFLOW.md` for ferdig support-henvendelse.
+
+**Midlertidig workaround:** Bruk manuell deploy til Cloudflare Workers:
 ```bash
-# List alle runs for phantom workflowen
-gh api repos/tajlive/KP/actions/workflows/260912064/runs --paginate
-
-# Slett alle runs (gjentas til ingen gjenstår)
-gh api repos/tajlive/KP/actions/runs/<RUN_ID> -X DELETE
+npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
 ```
 
-**Status:** ✅ Løst. Phantom workflow er fjernet og normale workflows kjører på push igjen.
-
-**Verifiser kjørte workflow-runs:**
+**Verifiser status:**
 ```bash
-gh run list --repo tajlive/KP --limit 10
-gh api repos/tajlive/KP/actions/workflows/260912064  # skal gi 404
+# Phantom workflow (fortsatt fastlåst)
+gh api repos/tajlive/KP/actions/workflows/260912064
+
+# Aktive workflows i repoet
+gh api repos/tajlive/KP/actions/workflows --paginate | jq '.workflows[] | {id, name, path, state}'
 ```
+
+**Status:** 🔴 **Blokkert av GitHub backend-bug**. Auto-deploy fungerer ikke før GitHub Support fjerner registreringen.
 
 ---
 
