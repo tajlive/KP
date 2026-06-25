@@ -27,5 +27,8 @@
     "low": "Lav risiko",
     "medium": "Middels risiko",
     "high": "Høy risiko"
+  },
+  "livePill": {
+    "label": "Live"
   }
 }
