@@ -1,3 +1,5 @@
+"use client";
+
 import dynamic from 'next/dynamic'
 import config from '@/sanity.config'
 
