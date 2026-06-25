@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';
 import { BadgePremium } from '@/shared/ui/BadgePremium';
+import { withRequestCache } from '@/lib/cache';
 import { safeFetch } from '@/lib/sanity/client';
 import { landingContentQuery } from '@/lib/sanity/queries';
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -40,7 +41,13 @@ function getFallbackContent(locale: string): LandingContent {
   };
 }
 
-async function getLandingContent(language: string): Promise<LandingContent> {
+const cachedGetLandingContent = withRequestCache(getLandingContentImpl, {
+  key: 'landing-content',
+  tags: ['sanity', 'sanity:landing', 'sanity:landingContent'],
+  revalidate: 60,
+});
+
+async function getLandingContentImpl(language: string): Promise<LandingContent> {
   const fallback = getFallbackContent(language);
   return safeFetch<LandingContent>(
     landingContentQuery,
@@ -48,6 +55,10 @@ async function getLandingContent(language: string): Promise<LandingContent> {
     fallback,
     { next: { revalidate: 60, tags: ['sanity', 'sanity:landing', 'sanity:landingContent'] } }
   );
+}
+
+async function getLandingContent(language: string): Promise<LandingContent> {
+  return cachedGetLandingContent(language);
 }
 
 interface SanityHeroSectionProps {
