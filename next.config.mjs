@@ -342,8 +342,10 @@ const nextConfig = {
   },
 
   // Generate build ID to bust caches
+  // Prefer Cloudflare Workers Builds commit SHA, then other CI providers, then timestamp.
   generateBuildId: async () => {
-    return process.env.COOLIFY_COMMIT_SHA?.slice(0, 7) ||
+    return process.env.WORKERS_CI_COMMIT_SHA?.slice(0, 7) ||
+           process.env.COOLIFY_COMMIT_SHA?.slice(0, 7) ||
            process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) ||
            process.env.GITHUB_SHA?.slice(0, 7) ||
            Date.now().toString();
