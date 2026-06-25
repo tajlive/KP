@@ -51,7 +51,7 @@ export function RootProviders({
       disableTransitionOnChange={false}
     >
       {/* <SessionCleanup /> */}
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Oslo">
         <VippsMarketProvider showVippsMarket={showVippsMarket}>
           <MarketingProviders>
             <ErrorBoundary>
