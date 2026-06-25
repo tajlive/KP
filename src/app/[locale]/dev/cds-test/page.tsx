@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, HStack, VStack } from "@coinbase/cds-web/layout";
 import { Text } from "@coinbase/cds-web/typography";
 import { Card } from "@coinbase/cds-web/cards";
