@@ -110,6 +110,7 @@
     "continue": "Continue",
     "loading": "Saving...",
     "error": "Could not save level. Please try again.",
+    "loadError": "Could not load onboarding status. Please try again.",
     "levels": {
       "beginner": {
         "label": "Beginner",
