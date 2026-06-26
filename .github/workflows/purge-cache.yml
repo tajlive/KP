@@ -1,0 +1,30 @@
+name: Purge Cloudflare cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Optional space-separated URLs to purge (leave empty for purge everything)"
+        required: false
+        type: string
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge Cloudflare cache for klarpakke.no
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ZONE_ID: 328d7de7e8e48308fd4f9d760da5b18f
+        run: |
+          set -e
+          if [ -n "${{ github.event.inputs.urls }}" ]; then
+            BODY=$(echo '${{ github.event.inputs.urls }}' | jq -R -s -c 'split(" ") | {files: .}')
+          else
+            BODY='{"purge_everything":true}'
+          fi
+          echo "Sending purge request..."
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "${BODY}"
