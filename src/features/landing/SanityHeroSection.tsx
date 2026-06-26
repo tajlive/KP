@@ -131,7 +131,7 @@ export default async function SanityHeroSection({
             >
               <Link
                 href={primaryLink}
-                className="inline-flex items-center justify-center gap-2"
+                className="inline-flex items-center justify-center gap-2 !text-slate-950 hover:!text-slate-950"
               >
                 {primaryText}
                 <ArrowRight className="w-5 h-5" />
@@ -174,7 +174,7 @@ export default async function SanityHeroSection({
           )}
 
           {/* Legal links for Google OAuth verification */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-kp-text-muted">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-kp-text-secondary">
             <span>
               {locale === "en"
                 ? "By continuing you agree to our"
