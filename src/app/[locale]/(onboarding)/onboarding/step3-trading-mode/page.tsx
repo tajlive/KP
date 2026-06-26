@@ -7,12 +7,13 @@ import { Button } from "@/shared/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Gamepad2, Info } from "lucide-react";
 import {
-
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
+
+export const dynamic = "force-dynamic";
 
 export default function OnboardingStep3() {
   const t = useTranslations("onboarding.step3");
@@ -31,7 +32,9 @@ export default function OnboardingStep3() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login?next=/onboarding/step3-trading-mode");
+        router.push(
+          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step3-trading-mode`)}`
+        );
         return;
       }
 

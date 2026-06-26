@@ -73,19 +73,17 @@ export default async function OnboardingPage({
     }
 
     // Redirect til riktig steg basert på onboarding_step
-    // NY: 3-stegs flyt - step 0-2 er hovedflyt, step 3 er valgfritt Binance
     const step = profile?.onboarding_step || 0;
     const steps = [
-      "/onboarding/step1-welcome",  // Steg 1: Velkommen + erfaring (slått sammen)
-      "/onboarding/step3-trading-mode", // Steg 2: Trading-modus
-      "/onboarding/step5-complete", // Steg 3: Fullført
+      "/onboarding/step1-welcome",
+      "/onboarding/step2-level",
+      "/onboarding/step3-trading-mode",
+      "/onboarding/step4-first-trade",
+      "/onboarding/step5-complete",
     ];
-    
-    // Binance (step4) er nå valgfritt - tilgjengelig fra dashboard etter onboarding
-    // Brukere med step >= 3 går til siste steg
-    const targetStep = step >= 3 ? 2 : step;
+    const targetStep = Math.min(step, steps.length - 1);
 
-    redirect(`/${locale}${steps[targetStep] || steps[0]}`);
+    redirect(`/${locale}${steps[targetStep]}`);
   } catch (error) {
     // Next.js redirect() throws NEXT_REDIRECT – må rethrow så framework håndterer den
     if (
