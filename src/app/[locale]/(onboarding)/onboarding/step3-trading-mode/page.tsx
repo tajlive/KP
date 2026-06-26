@@ -3,68 +3,92 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { m, useReducedMotion } from "framer-motion";
+import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
+import { Card } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
+import { RiskBadge } from "@/shared/ui/RiskBadge";
 import { createClient } from "@/lib/supabase/client";
 import { Gamepad2, Info } from "lucide-react";
 import {
-
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
 
+export const dynamic = "force-dynamic";
+
+const PAPER_START_BALANCE = 100_000;
+
 export default function OnboardingStep3() {
-  const t = useTranslations("onboarding.step3");
+  const t = useTranslations("onboarding.paperSetup");
   const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
+  const prefersReducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  const [paperBalance, setPaperBalance] = useState<number>(100000);
+  const [error, setError] = useState<string | null>(null);
 
-  // Sjekk auth
   useEffect(() => {
     const checkStatus = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.push("/login?next=/onboarding/step3-trading-mode");
-        return;
+        if (!user) {
+          router.push(`/${locale}/innlogging?next=/${locale}/onboarding/step3-trading-mode`);
+          return;
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from("user_profiles")
+          .select("onboarding_step, onboarding_completed")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        if (profile?.onboarding_completed) {
+          router.push(`/${locale}/dashboard`);
+          return;
+        }
+
+        const step = profile?.onboarding_step ?? 0;
+
+        if (step === 0) {
+          router.push(`/${locale}/onboarding/step1-welcome`);
+          return;
+        }
+
+        if (step === 1) {
+          router.push(`/${locale}/onboarding/step2-level`);
+          return;
+        }
+
+        if (step === 3) {
+          router.push(`/${locale}/onboarding/step4-first-trade`);
+          return;
+        }
+
+        if (step === 4) {
+          router.push(`/${locale}/onboarding/step5-complete`);
+          return;
+        }
+
+        if (step >= 5) {
+          router.push(`/${locale}/dashboard`);
+          return;
+        }
+
+        setInitializing(false);
+      } catch (err) {
+        console.error("Failed to load onboarding status:", err);
+        setError(t("error"));
+        setInitializing(false);
       }
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("onboarding_step, onboarding_completed, paper_balance")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.onboarding_completed) {
-        router.push(`/${locale}/dashboard`);
-        return;
-      }
-
-      // Redirect hvis brukeren er på feil steg
-      // NY: 3-stegs flyt - step 0-2 er hovedflyt
-      if (!profile?.onboarding_step || profile.onboarding_step < 1) {
-        router.push(`/${locale}/onboarding/step1-welcome`);
-        return;
-      }
-
-      if (profile.onboarding_step > 2) {
-        // Allerede forbi dette steget, gå til complete
-        router.push(`/${locale}/onboarding/step5-complete`);
-        return;
-      }
-
-      // Vis eksisterende paper_balance hvis satt
-      if (profile?.paper_balance) {
-        setPaperBalance(Number(profile.paper_balance));
-      }
-
-      setInitializing(false);
     };
 
     checkStatus();
@@ -77,94 +101,104 @@ export default function OnboardingStep3() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) throw new Error("Ikke autentisert");
+      if (!user) throw new Error(t("error"));
 
-      // Oppdater profil med paper_balance hvis ikke satt
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from("user_profiles")
         .update({
           onboarding_step: 3,
-          paper_balance: paperBalance,
+          paper_balance: PAPER_START_BALANCE,
         })
         .eq("id", user.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
-      // NY: Hopp over step4-binance (valgfritt), gå direkte til complete
-      router.push(`/${locale}/onboarding/step5-complete`);
+      router.push(`/${locale}/onboarding/step4-first-trade`);
     } catch (err) {
-      console.error("Failed to save:", err);
+      console.error("Failed to save paper setup:", err);
+      setError(t("error"));
       setLoading(false);
     }
   };
 
   if (initializing) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      <div role="status" className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kp-ai)]" />
+        <span className="sr-only">{t("loading")}</span>
       </div>
     );
   }
 
   return (
     <TooltipProvider>
-      <div className="space-y-8">
-        {/* Progress bar - 3 steg totalt, vi er på steg 2 */}
-        <div className="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
-          <div className="bg-blue-600 h-full rounded-full w-2/3" />
-        </div>
-
+      <m.div
+        className="min-h-full flex flex-col gap-6"
+        initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-[var(--kp-text-primary)]">
             {t("title")}
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">{t("subtitle")}</p>
+          <p className="text-[var(--kp-text-secondary)]">{t("subtitle")}</p>
         </div>
 
         {/* Paper Trading Card */}
-        <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+        <Card className="bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-6 gap-4">
+          <div className="flex items-center justify-center">
+            <div className="w-16 h-16 bg-[var(--kp-ai)] rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--kp-ai)]/20">
               <Gamepad2 className="w-8 h-8 text-white" />
             </div>
           </div>
 
-          <div className="text-center space-y-2 mb-6">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              {t("paperTrading.title")}
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">
-              {t("paperTrading.description")}
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-2">
+              <h2 className="text-xl font-bold text-[var(--kp-text-primary)]">
+                {t("badge")}
+              </h2>
+              <RiskBadge level="low" />
+            </div>
+            <p className="text-sm text-[var(--kp-text-secondary)]">
+              {t("virtual")}
             </p>
           </div>
 
           {/* Balance Display */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 text-center shadow-sm">
-            <p className="text-sm text-slate-500 mb-1">
-              {t("paperTrading.yourBalance")}
+          <div className="bg-[var(--kp-bg-primary)] border border-[var(--kp-border)] rounded-xl p-6 text-center">
+            <p className="text-sm text-[var(--kp-text-secondary)] mb-1">
+              {t("balanceLabel")}
             </p>
-            <p className="text-4xl font-bold text-slate-900 dark:text-white">
-              {paperBalance.toLocaleString("nb-NO")} kr
-            </p>
-            <p className="text-sm text-slate-400 mt-1">
-              {t("paperTrading.virtual")}
-            </p>
+            <AnimatedNumber
+              value={PAPER_START_BALANCE}
+              prefix=""
+              suffix={t("currencySuffix")}
+              decimals={0}
+              className="text-4xl font-bold text-[var(--kp-text-primary)]"
+            />
           </div>
-        </div>
+        </Card>
 
         {/* Info tooltip */}
-        <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+        <div className="flex items-center justify-center gap-2 text-sm text-[var(--kp-text-secondary)]">
           <Tooltip>
-            <TooltipTrigger className="flex items-center gap-1 underline decoration-dotted">
-              <Info className="w-4 h-4" />
-              {t("whatIsPaperTrading")}
+            <TooltipTrigger className="flex items-center gap-1 underline decoration-dotted min-h-[44px]">
+              <Info className="w-4 h-4" aria-hidden="true" />
+              {t("whatIs")}
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
-              <p>{t("paperTrading.tooltip")}</p>
+              <p>{t("tooltip")}</p>
             </TooltipContent>
           </Tooltip>
         </div>
+
+        {error && (
+          <p role="alert" className="text-sm text-red-500 text-center">
+            {error}
+          </p>
+        )}
 
         {/* CTA */}
         <Button
@@ -175,7 +209,7 @@ export default function OnboardingStep3() {
         >
           {loading ? t("loading") : t("cta")}
         </Button>
-      </div>
+      </m.div>
     </TooltipProvider>
   );
 }

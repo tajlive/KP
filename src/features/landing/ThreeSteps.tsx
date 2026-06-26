@@ -83,7 +83,7 @@ export function ThreeSteps() {
             </div>
 
             {/* Number badge */}
-            <span className="absolute top-6 right-6 font-fraunces text-4xl font-bold text-slate-700/50">
+            <span className="absolute top-6 right-6 font-fraunces text-4xl font-bold text-slate-300/50">
               {step.number}
             </span>
 
@@ -112,7 +112,7 @@ export function ThreeSteps() {
           onClick={() =>
             router.push(hrefWithLocale(locale, user ? "/dashboard" : "/register"))
           }
-          className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
+          className="bg-teal-700 hover:bg-teal-800 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
         >
           {user ? (
             <LayoutDashboard className="w-5 h-5" aria-hidden />
@@ -121,7 +121,7 @@ export function ThreeSteps() {
           )}
           {user ? t("ctaButtonLoggedIn") : t("ctaButton")}
         </button>
-        <p className="font-lexend text-slate-500 text-sm mt-4">
+        <p className="font-lexend text-slate-400 text-sm mt-4">
           {user ? t("ctaSubtextLoggedIn") : t("ctaSubtext")}
         </p>
       </div>

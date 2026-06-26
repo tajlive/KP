@@ -56,8 +56,8 @@ function disableAnimation(nonce?: string) {
   if (nonce) css.setAttribute("nonce", nonce);
   css.appendChild(
     document.createTextNode(
-      `*,*::before,*::after{-webkit-transition:none!important;-moz-transition:none!important;-o-transition:none!important;-ms-transition:none!important;transition:none!important}`
-    )
+      `*,*::before,*::after{-webkit-transition:none!important;-moz-transition:none!important;-o-transition:none!important;-ms-transition:none!important;transition:none!important}`,
+    ),
   );
   document.head.appendChild(css);
 
@@ -74,7 +74,7 @@ function disableAnimation(nonce?: string) {
 
 export function ThemeProvider({
   attribute = "class",
-  defaultTheme = "system",
+  defaultTheme = "dark",
   enableSystem = true,
   enableColorScheme = true,
   storageKey = "theme",
@@ -89,7 +89,7 @@ export function ThemeProvider({
   const [resolvedTheme, setResolvedTheme] = React.useState(() =>
     typeof window !== "undefined" && theme === "system" && enableSystem
       ? getSystemTheme()
-      : theme
+      : theme,
   );
   const initialRef = React.useRef(true);
 
@@ -100,7 +100,7 @@ export function ThemeProvider({
       const nextTheme = stored || defaultTheme;
       setThemeState(nextTheme);
       setResolvedTheme(
-        nextTheme === "system" && enableSystem ? getSystemTheme() : nextTheme
+        nextTheme === "system" && enableSystem ? getSystemTheme() : nextTheme,
       );
     } catch {
       // Unsupported (e.g. disabled localStorage)
@@ -155,7 +155,7 @@ export function ThemeProvider({
       nonce,
       themes,
       value,
-    ]
+    ],
   );
 
   const setTheme = React.useCallback(
@@ -170,7 +170,7 @@ export function ThemeProvider({
         return newTheme;
       });
     },
-    [storageKey]
+    [storageKey],
   );
 
   const handleMediaQuery = React.useCallback(
@@ -181,7 +181,7 @@ export function ThemeProvider({
         applyTheme("system");
       }
     },
-    [applyTheme, enableSystem, forcedTheme, theme]
+    [applyTheme, enableSystem, forcedTheme, theme],
   );
 
   // Listen to system preference changes.
@@ -235,7 +235,7 @@ export function ThemeProvider({
         ? (resolvedTheme as "light" | "dark")
         : undefined,
     }),
-    [theme, setTheme, forcedTheme, resolvedTheme, enableSystem, themes]
+    [theme, setTheme, forcedTheme, resolvedTheme, enableSystem, themes],
   );
 
   return (

@@ -122,11 +122,10 @@
   },
   "hero": {
     "badge": "🇳🇴 Norway's easiest crypto trading",
-    "title": {
-      "line1": "Trade crypto smarter.",
-      "line2": "Automatic and risk-free."
-    },
-    "subtitle": "From beginner to confident trader",
+    "title": "Learn to trade with AI — risk-free with play money",
+    "subtitle": "Practice in the same platform as live trading. Complete missions, get personal feedback, and go from beginner to confident trader.",
+    "ctaPrimary": "Start free paper-trade session",
+    "ctaSecondary": "See pricing",
     "description": "Practice with virtual money, learn from experts, and trade safely",
     "cta": {
       "primary": "Start free now",
@@ -264,6 +263,11 @@
     "stateDemo": "Demo",
     "stateEmpty": "Empty",
     "stateError": "Error"
+  },
+  "liveMarketStrip": {
+    "title": "Live markets",
+    "volume": "Volume 24h",
+    "error": "Could not fetch market data"
   },
   "emailCapture": {
     "badge": "Free course",

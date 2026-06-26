@@ -14,6 +14,9 @@ export const API_ERROR_CODES = {
   VALIDATION_ERROR: "VALIDATION_ERROR",
   CONFLICT: "CONFLICT",
   INTERNAL: "INTERNAL_ERROR",
+  MARKET_PRICE_ERROR: "MARKET_PRICE_ERROR",
+  INSUFFICIENT_BALANCE: "INSUFFICIENT_BALANCE",
+  ALREADY_COMPLETED: "ALREADY_COMPLETED",
 } as const;
 
 export type ApiErrorCode =
@@ -62,16 +65,31 @@ export function notFound(message = "Ikke funnet"): NextResponse {
 }
 
 /** 400 Ugyldig forespørsel */
-export function badRequest(message = "Ugyldig forespørsel"): NextResponse {
-  return jsonError(message, { code: API_ERROR_CODES.BAD_REQUEST, status: 400 });
+export function badRequest(
+  message = "Ugyldig forespørsel",
+  code?: ApiErrorCode,
+): NextResponse {
+  return jsonError(message, {
+    code: code ?? API_ERROR_CODES.BAD_REQUEST,
+    status: 400,
+  });
 }
 
 /** 409 Konflikt (f.eks. allerede fullført) */
-export function conflict(message: string): NextResponse {
-  return jsonError(message, { code: API_ERROR_CODES.CONFLICT, status: 409 });
+export function conflict(message: string, code?: ApiErrorCode): NextResponse {
+  return jsonError(message, {
+    code: code ?? API_ERROR_CODES.CONFLICT,
+    status: 409,
+  });
 }
 
 /** 500 Intern feil */
-export function internalError(message = "Uventet feil"): NextResponse {
-  return jsonError(message, { code: API_ERROR_CODES.INTERNAL, status: 500 });
+export function internalError(
+  message = "Uventet feil",
+  options?: { code?: ApiErrorCode },
+): NextResponse {
+  return jsonError(message, {
+    code: options?.code ?? API_ERROR_CODES.INTERNAL,
+    status: 500,
+  });
 }
