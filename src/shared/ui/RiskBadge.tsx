@@ -12,9 +12,9 @@ interface RiskBadgeProps {
 }
 
 const config: Record<RiskLevel, { icon: LucideIcon; color: string; bg: string }> = {
-  low: { icon: TrendingUp, color: 'text-kp-success', bg: 'bg-kp-success-bg' },
-  medium: { icon: Minus, color: 'text-kp-warning', bg: 'bg-kp-warning-bg' },
-  high: { icon: AlertTriangle, color: 'text-kp-danger', bg: 'bg-kp-danger-bg' },
+  low: { icon: TrendingUp, color: 'text-[var(--kp-positive)]', bg: 'bg-[var(--kp-positive)]/10' },
+  medium: { icon: Minus, color: 'text-[var(--kp-live)]', bg: 'bg-[var(--kp-live)]/10' },
+  high: { icon: AlertTriangle, color: 'text-[var(--kp-negative)]', bg: 'bg-[var(--kp-negative)]/10' },
 };
 
 export function RiskBadge({ level, className }: RiskBadgeProps) {

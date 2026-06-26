@@ -28,12 +28,6 @@
   "viewLeaderboard": "Se leaderboard",
   "kltStoryShort": "10 millioner KLT. Tjen dem ved å lære – bruk dem til å konkurrere. 50 000 KLT til månedens vinner.",
   "daysLeft": "dager igjen",
-  "riskBadge": {
-    "label": "Risiko: {level}",
-    "low": "Lav risiko",
-    "medium": "Middels risiko",
-    "high": "Høy risiko"
-  },
   "livePill": {
     "label": "Live"
   },
