@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Card, CardContent } from '@/shared/ui/card';
+import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { Button } from '@/shared/ui/button';
 import { RiskBadge, type RiskLevel } from '@/shared/ui/RiskBadge';
 import { createClient } from '@/lib/supabase/client';
@@ -52,6 +53,7 @@ export default function Step2LevelPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     const checkStatus = async () => {
       try {
         const {
@@ -111,15 +113,23 @@ export default function Step2LevelPage() {
         }
 
         const rec = getRecommendedLevel(answers);
-        setRecommended(rec);
-        setSelected(rec);
+        if (mounted) {
+          setRecommended(rec);
+          setSelected(rec);
+        }
+      } catch (err) {
+        console.error('Failed to load onboarding status:', err);
+        if (mounted) setError(t('error'));
       } finally {
-        setChecking(false);
+        if (mounted) setChecking(false);
       }
     };
 
     checkStatus();
-  }, [router, supabase, locale]);
+    return () => {
+      mounted = false;
+    };
+  }, [router, supabase, locale, t]);
 
   const handleContinue = async () => {
     if (!selected) return;
@@ -172,7 +182,12 @@ export default function Step2LevelPage() {
         <p className="text-kp-text-secondary">{t('subtitle')}</p>
       </div>
 
-      <div className="space-y-3" role="radiogroup" aria-label={t('title')}>
+      <RadioGroupPrimitive.Root
+        className="space-y-3"
+        value={selected ?? ''}
+        onValueChange={(value) => setSelected(value as ExperienceLevel)}
+        aria-label={t('title')}
+      >
         {LEVELS.map((level, index) => {
           const isSelected = selected === level.key;
           const isRecommended = recommended === level.key;
@@ -187,51 +202,43 @@ export default function Step2LevelPage() {
                 prefersReducedMotion ? undefined : { delay: index * 0.05, duration: 0.25 }
               }
             >
-              <Card
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={0}
-                onClick={() => setSelected(level.key)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setSelected(level.key);
-                  }
-                }}
-                className={cn(
-                  'cursor-pointer transition-colors hover:border-kp-brand/50',
-                  isSelected ? 'border-kp-brand bg-kp-surface-highlight' : 'border-kp-border',
-                )}
-              >
-                <CardContent className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-kp-bg-secondary">
-                    <Icon className="h-5 w-5 text-kp-brand" aria-hidden="true" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-kp-text-primary">
-                        {t(`levels.${level.key}.label`)}
-                      </span>
-                      {isRecommended && (
-                        <span className="text-xs font-medium text-kp-brand bg-kp-brand-subtle rounded-full px-2 py-0.5">
-                          {t('recommended')}
-                        </span>
-                      )}
+              <RadioGroupPrimitive.Item value={level.key} asChild>
+                <Card
+                  className={cn(
+                    'cursor-pointer transition-colors hover:border-kp-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kp-ai)]',
+                    isSelected ? 'border-kp-brand bg-kp-surface-highlight' : 'border-kp-border',
+                  )}
+                >
+                  <CardContent className="flex items-start gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-kp-bg-secondary">
+                      <Icon className="h-5 w-5 text-kp-brand" aria-hidden="true" />
                     </div>
-                    <p className="text-sm text-kp-text-secondary mt-1">
-                      {t(`levels.${level.key}.description`)}
-                    </p>
-                    <p className="text-xs text-kp-text-secondary mt-1">
-                      {t(`levels.${level.key}.time`)}
-                    </p>
-                  </div>
-                  <RiskBadge level={level.risk} />
-                </CardContent>
-              </Card>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-kp-text-primary">
+                          {t(`levels.${level.key}.label`)}
+                        </span>
+                        {isRecommended && (
+                          <span className="text-xs font-medium text-kp-brand bg-kp-brand-subtle rounded-full px-2 py-0.5">
+                            {t('recommended')}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-kp-text-secondary mt-1">
+                        {t(`levels.${level.key}.description`)}
+                      </p>
+                      <p className="text-xs text-kp-text-secondary mt-1">
+                        {t(`levels.${level.key}.time`)}
+                      </p>
+                    </div>
+                    <RiskBadge level={level.risk} />
+                  </CardContent>
+                </Card>
+              </RadioGroupPrimitive.Item>
             </motion.div>
           );
         })}
-      </div>
+      </RadioGroupPrimitive.Root>
 
       {error && (
         <p className="text-sm text-kp-danger" role="alert">
