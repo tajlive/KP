@@ -1,0 +1,2 @@
+export const FIRST_TRADE_SYMBOL = "BTCUSDT";
+export const PAPER_START_BALANCE = 100_000;
