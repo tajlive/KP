@@ -487,7 +487,7 @@ git commit -m "feat(onboarding): add step 4 first guided paper trade"
 **Files:**
 - Create: `e2e/critical/onboarding-redesign.spec.ts`
 
-- [ ] **Step 1: Opprett testfilen.**
+- [x] **Step 1: Opprett testfilen.**
 
 Testen skal:
 1. Bruke en seedet testbruker via `loginAsTestUser()`-hjelper (se `e2e/critical/auth.spec.ts` for mønster) eller logge inn med miljøvariabler `E2E_TEST_EMAIL` / `E2E_TEST_PASSWORD`.
@@ -533,16 +533,16 @@ test.describe("Onboarding redesign", () => {
 });
 ```
 
-- [ ] **Step 2: Legg til testen i riktig Playwright-prosjekt.**
+- [x] **Step 2: Legg til testen i riktig Playwright-prosjekt.**
 
 Filen ligger i `e2e/critical/`, så den kjøres automatisk av `critical-chromium`-prosjektet.
 
-- [ ] **Step 3: Kjør testen lokalt.**
+- [x] **Step 3: Kjør testen lokalt.**
 
 Run: `npm run test:e2e:critical -- e2e/critical/onboarding-redesign.spec.ts`
 Expected: Testen består (forutsetter gyldige test-credentials).
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 git add e2e/critical/onboarding-redesign.spec.ts
@@ -589,4 +589,4 @@ Etter at Task 11–14 er ferdige må følgende felles filer oppdateres **én gan
 - [ ] Step 2 viser "Anbefalt for deg" basert på svar fra step 1.
 - [ ] Step 4 plasserer en paper trade og oppdaterer `onboarding_step` til 4.
 - [ ] E2E-testen består lokalt.
-- [ ] `npm run lint:gate`, `npm run type-check` og `npm run test:unit` er grønne.
+- [x] `npm run lint:gate`, `npm run type-check` og `npm run test:unit` er grønne.
