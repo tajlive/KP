@@ -25,7 +25,7 @@ export default function OnboardingStep1() {
 
       if (!user) {
         router.push(
-          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding`)}`,
+          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step1-welcome`)}`,
         );
         return;
       }
@@ -37,12 +37,29 @@ export default function OnboardingStep1() {
         .single();
 
       if (profile?.onboarding_completed) {
-        router.push("/dashboard");
+        router.push(`/${locale}/dashboard`);
         return;
       }
 
-      if (profile?.onboarding_step && profile.onboarding_step >= 2) {
+      const step = profile?.onboarding_step ?? 0;
+      if (step === 1) {
         router.push("/onboarding/step2-level");
+        return;
+      }
+      if (step === 2) {
+        router.push("/onboarding/step3-trading-mode");
+        return;
+      }
+      if (step === 3) {
+        router.push("/onboarding/step4-first-trade");
+        return;
+      }
+      if (step === 4) {
+        router.push("/onboarding/step5-complete");
+        return;
+      }
+      if (step >= 5) {
+        router.push(`/${locale}/dashboard`);
         return;
       }
 
