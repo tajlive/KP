@@ -37,6 +37,7 @@ const NO_STORE_PATHS = [
   // Trading
   "/handel",
   "/autopilot",
+  "/marked",
   // Social / commerce
   "/copy-trading",
   "/marketplace",

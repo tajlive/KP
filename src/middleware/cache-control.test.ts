@@ -23,6 +23,7 @@ describe("cacheControlMiddleware", () => {
     "/no/dashboard",
     "/en/dashboard/trade",
     "/no/admin",
+    "/no/marked",
   ])("sets no-store for dashboard/admin route %s", (path) => {
     const req = makeRequest(path);
     const res = cacheControlMiddleware(req);
