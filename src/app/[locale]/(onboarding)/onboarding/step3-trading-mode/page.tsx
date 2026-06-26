@@ -136,7 +136,7 @@ export default function OnboardingStep3() {
         </div>
 
         {/* Paper Trading Card */}
-        <Card className="bg-[var(--kp-bg-secondary)] border-[var(--kp-border)] rounded-2xl p-6 gap-4">
+        <Card className="bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-6 gap-4">
           <div className="flex items-center justify-center">
             <div className="w-16 h-16 bg-[var(--kp-ai)] rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--kp-ai)]/20">
               <Gamepad2 className="w-8 h-8 text-white" />
