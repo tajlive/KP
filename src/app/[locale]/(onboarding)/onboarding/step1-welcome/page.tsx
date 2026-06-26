@@ -16,7 +16,7 @@ export default function OnboardingStep1() {
   const supabase = createClient();
   const [checking, setChecking] = useState(true);
 
-  // Sjekk auth og onboarding-status
+  // Check auth and onboarding status
   useEffect(() => {
     const checkStatus = async () => {
       const {
@@ -110,17 +110,6 @@ export default function OnboardingStep1() {
 
   return (
     <div className="space-y-6">
-      {/* Progress bar - 5 steg totalt, vi er på steg 1 */}
-      <div
-        className="h-1 w-full overflow-hidden rounded-full"
-        style={{ background: "var(--kp-bg-tertiary)" }}
-      >
-        <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: "20%", background: "var(--kp-ai)" }}
-        />
-      </div>
-
       <AIMappingChat onComplete={handleComplete} onSkip={handleSkip} />
 
       <p className="text-center text-sm" style={{ color: "var(--kp-text-muted)" }}>
