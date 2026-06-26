@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -112,7 +114,7 @@ export default function OnboardingStep1() {
     <div className="space-y-6">
       <AIMappingChat onComplete={handleComplete} onSkip={handleSkip} />
 
-      <p className="text-center text-sm" style={{ color: "var(--kp-text-muted)" }}>
+      <p className="text-center text-sm" style={{ color: "var(--kp-text-secondary)" }}>
         {t("timeEstimate")}
       </p>
     </div>
