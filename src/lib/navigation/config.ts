@@ -368,6 +368,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/konto",
   "/handel",
   "/handelshistorikk",
+  "/marked",
   "/varsler",
   "/leagues",
   "/profile",

@@ -3,8 +3,8 @@
 
 /** Merke-farge #0052FF – bruk overalt for primær CTA og accent */
 export const BRAND_COLOR = {
-  DEFAULT: "#0052FF",
-  HOVER: "#0047E0",
+  DEFAULT: "#0052ff",
+  HOVER: "#0047e0",
   LIGHT: "#3d7aff",
   MUTED: "rgba(0, 82, 255, 0.1)",
   BORDER: "rgba(0, 82, 255, 0.2)",
@@ -27,14 +27,14 @@ export const CDS_THEME_MAP = {
 /** Coinbase-inspired dark theme surfaces */
 export const SURFACE = {
   // Dark theme (default) - Coinbase CDS colors
-  BG: "bg-[#0a0b0d]",              // Deepest background
-  BG_SECONDARY: "bg-[#161719]",    // Card/surface
-  BG_TERTIARY: "bg-[#1a1c24]",     // Elevated
-  BG_ELEVATED: "bg-[#1f2128]",     // Hover/elevated states
-  BG_LIGHT: "bg-kp-bg-secondary",  // Light theme fallback
-  BG_CARD: "bg-[#161719]",         // Card background
+  BG: "bg-[#0a0b0d]", // Deepest background
+  BG_SECONDARY: "bg-[#161719]", // Card/surface
+  BG_TERTIARY: "bg-[#1a1c24]", // Elevated
+  BG_ELEVATED: "bg-[#1f2128]", // Hover/elevated states
+  BG_LIGHT: "bg-kp-bg-secondary", // Light theme fallback
+  BG_CARD: "bg-[#161719]", // Card background
   BG_CARD_TRANSPARENT: "bg-[#161719]/90",
-  
+
   // Border colors - subtle white opacity
   BORDER: "border-white/[0.08]",
   BORDER_LIGHT: "border-white/[0.05]",
@@ -47,12 +47,12 @@ export const SURFACE = {
     medium: "bg-white/[0.05] backdrop-blur-xl border border-white/[0.08]",
     high: "bg-white/[0.08] backdrop-blur-2xl border border-white/[0.12]",
   },
-  
+
   // Text colors
   TEXT: "text-white",
-  TEXT_SECONDARY: "text-gray-400",  // gray-400 for secondary
-  TEXT_MUTED: "text-gray-500",      // gray-500 for muted
-  TEXT_SUBTLE: "text-gray-600",     // gray-600 for very subtle
+  TEXT_SECONDARY: "text-gray-400", // gray-400 for secondary
+  TEXT_MUTED: "text-gray-500", // gray-500 for muted
+  TEXT_SUBTLE: "text-gray-600", // gray-600 for very subtle
 } as const;
 
 export const BRAND = {
@@ -70,7 +70,7 @@ export const BRAND = {
   danger: "bg-red-600 hover:bg-red-700 text-white",
   success: "bg-emerald-600 hover:bg-emerald-700 text-white",
   warning: "bg-amber-500 hover:bg-amber-600 text-white",
-  vipps: "bg-[#FF5B24] hover:bg-[#E54E1B] text-white",
+  vipps: "bg-[#ff5b24] hover:bg-[#e54e1b] text-white",
   bachelor: "bg-blue-600 hover:bg-blue-700 text-white",
   master: "bg-emerald-600 hover:bg-emerald-700 text-white",
   phd: "bg-indigo-600 hover:bg-indigo-700 text-white",
@@ -163,4 +163,21 @@ export const MOBILE = {
   responsivePadding: "px-3 sm:px-4 lg:px-8",
   /** Gap scaling */
   responsiveGap: "gap-3 sm:gap-4 lg:gap-6",
+} as const;
+
+/** Phase 1 redesign palette: Nordic Trust + Live Accents */
+export const SEMANTIC_COLORS = {
+  backgroundDark: "#0b1220",
+  backgroundDarkElevated: "#111827",
+  backgroundLight: "#f8fafc",
+  backgroundLightElevated: "#e2e8f0",
+  positive: "#22c55e",
+  negative: "#ef4444",
+  ai: "#3b82f6",
+  live: "#f59e0b",
+  learning: "#a855f7",
+  textDarkPrimary: "#f8fafc",
+  textDarkSecondary: "#94a3b8",
+  textLightPrimary: "#0f172a",
+  textLightSecondary: "#64748b",
 } as const;

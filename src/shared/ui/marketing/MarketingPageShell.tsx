@@ -23,9 +23,9 @@ export function MarketingPageShell({
   className = "bg-background",
 }: MarketingPageShellProps) {
   return (
-    <main className={cn("min-h-screen", className)}>
+    <div className={cn("min-h-screen", className)}>
       {children}
-    </main>
+    </div>
   );
 }
 

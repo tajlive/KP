@@ -185,7 +185,7 @@ export default defineConfig({
     // ============================================
     {
       name: "smoke-chromium",
-      testMatch: /smoke\/.*\.spec\.ts/,
+      testMatch: /smoke\/.*\.spec\.ts|landing\/landing-redesign\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1920, height: 1080 },

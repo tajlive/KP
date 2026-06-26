@@ -1,4 +1,10 @@
 {
+  "riskBadge": {
+    "label": "Risk: {level}",
+    "low": "Low risk",
+    "medium": "Medium risk",
+    "high": "High risk"
+  },
   "title": "Gamification",
   "description": "Learn and earn points",
   "subtitle": "Complete challenges and climb the leaderboard.",
@@ -21,5 +27,16 @@
   "yourRankThisMonth": "You're #{{rank}} this month",
   "viewLeaderboard": "View leaderboard",
   "kltStoryShort": "10 million KLT. Earn them by learning – use them to compete. 50,000 KLT to the monthly winner.",
-  "daysLeft": "days left"
+  "daysLeft": "days left",
+  "livePill": {
+    "label": "Live"
+  },
+  "themeToggle": {
+    "toggleTheme": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "setTheme": "Set theme to {theme}",
+    "switchTo": "Switch to {theme} mode"
+  }
 }
