@@ -149,6 +149,8 @@
     "balance": "Tilgjengelig",
     "price": "BTC-pris",
     "amountLabel": "Hvor mye vil du kjøpe for?",
+    "currencySuffix": " kr",
+    "loadingStatus": "Laster...",
     "presets": {
       "1000": "1 000 kr",
       "5000": "5 000 kr",
@@ -164,7 +166,15 @@
       "description": "Du har gjort din første paper trade. Nå er du klar for å fortsette.",
       "cta": "Fullfør onboarding"
     },
-    "error": "Kunne ikke gjennomføre trade. Prøv igjen."
+    "error": "Kunne ikke gjennomføre trade. Prøv igjen.",
+    "errors": {
+      "UNAUTHORIZED": "Du må logge inn på nytt.",
+      "BAD_REQUEST": "Ugyldig trade-forespørsel.",
+      "MARKET_PRICE_ERROR": "Kunne ikke hente markedspris.",
+      "INTERNAL_ERROR": "Kunne ikke gjennomføre trade. Prøv igjen.",
+      "INSUFFICIENT_BALANCE": "Beløpet overstiger din paper-saldo.",
+      "ALREADY_COMPLETED": "Onboarding er allerede fullført."
+    }
   },
   "step3": {
     "title": "Lekepenger",

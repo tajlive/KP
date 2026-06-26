@@ -9,11 +9,11 @@ import { Card } from "@/shared/ui/card";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import { RiskBadge } from "@/shared/ui/RiskBadge";
 import { createClient } from "@/lib/supabase/client";
+import { FIRST_TRADE_SYMBOL } from "@/lib/onboarding/constants";
 import { Bitcoin, TrendingUp, CheckCircle2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-const FIRST_TRADE_SYMBOL = "BTCUSDT";
 const PRESETS = [1000, 5000, 10000, 20000];
 const PRICE_INTERVAL_MS = 30_000;
 
@@ -98,7 +98,8 @@ export default function OnboardingStep4FirstTrade() {
   const [tradeResult, setTradeResult] = useState<TradeResult | null>(null);
 
   const amount = selectedAmount ?? (Number(customAmount) || 0);
-  const canSubmit = amount > 0 && amount <= paperBalance && !loading;
+  const canSubmit =
+    btcPrice != null && amount > 0 && amount <= paperBalance && !loading;
 
   useEffect(() => {
     let mounted = true;
@@ -111,7 +112,7 @@ export default function OnboardingStep4FirstTrade() {
 
         if (!user) {
           router.push(
-            `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step4-first-trade`)}`,
+            `/${locale}/login?next=${encodeURIComponent(`/${locale}/onboarding/step4-first-trade`)}`,
           );
           return;
         }
@@ -176,6 +177,7 @@ export default function OnboardingStep4FirstTrade() {
     let mounted = true;
 
     const loadPrice = async () => {
+      if (typeof document !== "undefined" && document.hidden) return;
       const price = await fetchBtcPrice(FIRST_TRADE_SYMBOL);
       if (mounted) setBtcPrice(price);
     };
@@ -211,6 +213,11 @@ export default function OnboardingStep4FirstTrade() {
   const handleBuy = async () => {
     if (!canSubmit) return;
 
+    if (amount > paperBalance) {
+      setError(t("errors.INSUFFICIENT_BALANCE"));
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -218,13 +225,27 @@ export default function OnboardingStep4FirstTrade() {
       const res = await fetch("/api/onboarding/first-paper-trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ symbol: FIRST_TRADE_SYMBOL, amount }),
+        body: JSON.stringify({ amount }),
       });
 
-      const data = (await res.json()) as TradeResult & { error?: string };
+      const data = (await res.json()) as TradeResult & {
+        error?: string;
+        code?: string;
+      };
 
       if (!res.ok) {
-        throw new Error(data.error || t("error"));
+        const errorKeyMap: Record<string, string> = {
+          UNAUTHORIZED: "errors.UNAUTHORIZED",
+          BAD_REQUEST: "errors.BAD_REQUEST",
+          INTERNAL_ERROR: "errors.INTERNAL_ERROR",
+          MARKET_PRICE_ERROR: "errors.MARKET_PRICE_ERROR",
+          INSUFFICIENT_BALANCE: "errors.INSUFFICIENT_BALANCE",
+          ALREADY_COMPLETED: "errors.ALREADY_COMPLETED",
+        };
+        const errorKey = data?.code ? errorKeyMap[data.code] : undefined;
+        setError(errorKey ? t(errorKey) : (data?.error ?? t("error")));
+        setLoading(false);
+        return;
       }
 
       setTradeResult(data);
@@ -244,7 +265,7 @@ export default function OnboardingStep4FirstTrade() {
           className="h-8 w-8 animate-spin rounded-full border-b-2"
           style={{ borderColor: "var(--kp-ai)" }}
         />
-        <span className="sr-only">{t("buying")}</span>
+        <span className="sr-only">{t("loadingStatus")}</span>
       </div>
     );
   }
@@ -287,7 +308,8 @@ export default function OnboardingStep4FirstTrade() {
               {t("amountLabel")}
             </span>
             <span className="font-medium text-[var(--kp-text-primary)]">
-              {tradeResult.amount.toLocaleString(locale)} kr
+              {tradeResult.amount.toLocaleString(locale)}
+              {t("currencySuffix")}
             </span>
           </div>
         </Card>
@@ -344,18 +366,20 @@ export default function OnboardingStep4FirstTrade() {
             <TrendingUp className="w-3.5 h-3.5" />
             {t("price")}
           </p>
-          {btcPrice ? (
-            <AnimatedNumber
-              value={btcPrice}
-              prefix="$"
-              decimals={2}
-              className="text-xl font-bold text-[var(--kp-text-primary)]"
-            />
-          ) : (
-            <span className="text-xl font-bold text-[var(--kp-text-secondary)]">
-              —
-            </span>
-          )}
+          <div aria-live="polite" aria-atomic="true">
+            {btcPrice ? (
+              <AnimatedNumber
+                value={btcPrice}
+                prefix="$"
+                decimals={2}
+                className="text-xl font-bold text-[var(--kp-text-primary)]"
+              />
+            ) : (
+              <span className="text-xl font-bold text-[var(--kp-text-secondary)]">
+                —
+              </span>
+            )}
+          </div>
         </Card>
       </div>
 
@@ -407,7 +431,7 @@ export default function OnboardingStep4FirstTrade() {
 
         {amount > paperBalance && (
           <p className="text-sm text-[var(--kp-negative)]" role="alert">
-            {t("error")}
+            {t("errors.INSUFFICIENT_BALANCE")}
           </p>
         )}
       </div>
