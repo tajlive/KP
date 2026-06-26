@@ -14,18 +14,18 @@ import { ChevronLeft, Loader2, BookOpen, TrendingUp, Award } from 'lucide-react'
 
 export const dynamic = 'force-dynamic';
 
-type ExperienceLevel = 'beginner' | 'intermediate' | 'expert';
-
 interface OnboardingAnswers {
   goal?: 'sparing' | 'vekst' | 'trading';
   timeHorizon?: 'over3ar' | '1til3ar' | 'under1ar';
 }
 
-const LEVELS: { key: ExperienceLevel; risk: RiskLevel; icon: typeof BookOpen }[] = [
+const LEVELS = [
   { key: 'beginner', risk: 'low', icon: BookOpen },
   { key: 'intermediate', risk: 'medium', icon: TrendingUp },
   { key: 'expert', risk: 'high', icon: Award },
-];
+] as const;
+
+type ExperienceLevel = (typeof LEVELS)[number]['key'];
 
 function getRecommendedLevel(answers: OnboardingAnswers | null): ExperienceLevel {
   if (!answers) return 'beginner';
@@ -119,7 +119,7 @@ export default function Step2LevelPage() {
         }
       } catch (err) {
         console.error('Failed to load onboarding status:', err);
-        if (mounted) setError(t('error'));
+        if (mounted) setError(t('loadError'));
       } finally {
         if (mounted) setChecking(false);
       }
@@ -178,15 +178,20 @@ export default function Step2LevelPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold text-kp-text-primary">{t('title')}</h1>
+        <h1 id="level-heading" className="text-2xl font-semibold text-kp-text-primary">
+          {t('title')}
+        </h1>
         <p className="text-kp-text-secondary">{t('subtitle')}</p>
       </div>
 
       <RadioGroupPrimitive.Root
         className="space-y-3"
         value={selected ?? ''}
-        onValueChange={(value) => setSelected(value as ExperienceLevel)}
-        aria-label={t('title')}
+        onValueChange={(value) => {
+          const level = LEVELS.find((l) => l.key === value)?.key;
+          if (level) setSelected(level);
+        }}
+        aria-labelledby="level-heading"
       >
         {LEVELS.map((level, index) => {
           const isSelected = selected === level.key;

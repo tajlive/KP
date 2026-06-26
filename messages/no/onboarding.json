@@ -110,6 +110,7 @@
     "continue": "Fortsett",
     "loading": "Lagrer...",
     "error": "Kunne ikke lagre nivå. Prøv igjen.",
+    "loadError": "Kunne ikke laste onboarding-status. Prøv igjen.",
     "levels": {
       "beginner": {
         "label": "Nybegynner",
