@@ -49,16 +49,25 @@ export default function OnboardingStep3() {
         return;
       }
 
-      // Redirect hvis brukeren er på feil steg
-      // NY: 3-stegs flyt - step 0-2 er hovedflyt
+      // Redirect hvis brukeren er på feil steg (5-stegs flyt)
       if (!profile?.onboarding_step || profile.onboarding_step < 1) {
         router.push(`/${locale}/onboarding/step1-welcome`);
         return;
       }
 
-      if (profile.onboarding_step > 2) {
-        // Allerede forbi dette steget, gå til complete
+      if (profile.onboarding_step >= 5) {
+        router.push(`/${locale}/dashboard`);
+        return;
+      }
+
+      if (profile.onboarding_step === 4) {
         router.push(`/${locale}/onboarding/step5-complete`);
+        return;
+      }
+
+      if (profile.onboarding_step > 2) {
+        // Allerede forbi dette steget, gå til neste steg
+        router.push(`/${locale}/onboarding/step4-first-trade`);
         return;
       }
 
@@ -93,8 +102,8 @@ export default function OnboardingStep3() {
 
       if (error) throw error;
 
-      // NY: Hopp over step4-binance (valgfritt), gå direkte til complete
-      router.push(`/${locale}/onboarding/step5-complete`);
+      // Gå videre til første trade (step 4)
+      router.push(`/${locale}/onboarding/step4-first-trade`);
     } catch (err) {
       console.error("Failed to save:", err);
       setLoading(false);
