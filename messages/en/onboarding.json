@@ -103,25 +103,28 @@
     "loading": "Saving..."
   },
   "level": {
-    "title": "What is your level?",
-    "subtitle": "Choose the level that fits you best. You can change this later.",
-    "recommended": "Recommended",
+    "title": "Choose your level",
+    "subtitle": "You can change this later in settings.",
+    "recommended": "Recommended for you",
     "back": "Back",
     "continue": "Continue",
     "loading": "Saving...",
     "error": "Could not save level. Please try again.",
     "levels": {
       "beginner": {
-        "label": "Complete beginner",
-        "description": "I have never traded before"
+        "label": "Beginner",
+        "description": "Learn the basics of trading with small, safe steps.",
+        "time": "10 min/day"
       },
       "intermediate": {
-        "label": "Some experience",
-        "description": "I have tried stocks or crypto"
+        "label": "Intermediate",
+        "description": "You know the terms and want to learn more advanced strategies.",
+        "time": "20 min/day"
       },
       "expert": {
-        "label": "Experienced",
-        "description": "I trade actively and want to learn AI strategies"
+        "label": "Expert",
+        "description": "Active trading with high risk and high potential.",
+        "time": "40+ min/day"
       }
     }
   },
