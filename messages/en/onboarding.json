@@ -129,6 +129,17 @@
       }
     }
   },
+  "paperSetup": {
+    "title": "Practice with play money",
+    "subtitle": "You get 100,000 NOK in virtual funds. No real money is at stake.",
+    "badge": "Paper Trading",
+    "balanceLabel": "Your starting balance",
+    "virtual": "Virtual currency",
+    "tooltip": "Play money simulates real market conditions, but you never lose real money.",
+    "whatIs": "What is play money?",
+    "cta": "Start first trade",
+    "loading": "Saving..."
+  },
   "step3": {
     "title": "Paper Trading",
     "subtitle": "Practice with virtual money",
