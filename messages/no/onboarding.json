@@ -129,6 +129,17 @@
       }
     }
   },
+  "paperSetup": {
+    "title": "Øv med lekepenger",
+    "subtitle": "Du får 100 000 kr i virtuelle midler. Ingen ekte penger er i spill.",
+    "badge": "Paper Trading",
+    "balanceLabel": "Din start-saldo",
+    "virtual": "Virtuell valuta",
+    "tooltip": "Lekepenger simulerer ekte markedsforhold, men du taper aldri ekte penger.",
+    "whatIs": "Hva er lekepenger?",
+    "cta": "Start første trade",
+    "loading": "Lagrer..."
+  },
   "step3": {
     "title": "Lekepenger",
     "subtitle": "Øv med virtuelle penger",
