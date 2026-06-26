@@ -15,7 +15,7 @@
 
   /* Brand Colors (#0052FF canonical accent) */
   --kp-accent: #0052ff;
-  --kp-ai: #3b82f6;
+  --kp-ai: #0052ff;
   --kp-primary: #0052ff;
   --kp-primary-hover: #0047e0;
   --kp-primary-active: #003ecb;
@@ -71,7 +71,6 @@
   --kp-bg-light-elevated: #e2e8f0;
   --kp-positive: #22c55e;
   --kp-negative: #ef4444;
-  --kp-ai: #3b82f6;
   --kp-live: #f59e0b;
   --kp-learning: #a855f7;
   --kp-text-dark-primary: #f8fafc;

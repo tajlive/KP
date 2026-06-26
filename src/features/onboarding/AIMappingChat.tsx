@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
@@ -27,6 +27,15 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
   const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<AIMappingAnswers>>({});
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const currentQuestion = QUESTIONS[currentIndex];
   const isLastQuestion = currentIndex === QUESTIONS.length - 1;
@@ -38,7 +47,10 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
 
     if (!isLastQuestion) {
-      setTimeout(() => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
         setCurrentIndex((prev) => prev + 1);
       }, reduceMotion ? 0 : 250);
     }
@@ -50,11 +62,14 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0, y: reduceMotion ? 0 : 16 },
-    visible: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: reduceMotion ? 0 : -8 },
-  };
+  const containerVariants = useMemo(
+    () => ({
+      hidden: { opacity: 0, y: reduceMotion ? 0 : 16 },
+      visible: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: reduceMotion ? 0 : -8 },
+    }),
+    [reduceMotion],
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -103,7 +118,7 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
       </Card>
 
       {/* Chat thread */}
-      <div className="flex flex-col gap-4" aria-live="polite" aria-atomic="false">
+      <div className="flex flex-col gap-4" aria-live="polite" aria-atomic="true">
         <AnimatePresence mode="wait" initial={false}>
           <m.div
             key={currentQuestion.id}
@@ -159,16 +174,16 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
                     key={option}
                     type="button"
                     onClick={() => handleSelect(option)}
-                    className="min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-colors"
+                    className="min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kp-ai)]"
                     style={{
                       borderColor: isSelected
-                        ? "var(--kp-ai)"
+                        ? "var(--kp-primary)"
                         : "var(--kp-border)",
                       background: isSelected
-                        ? "color-mix(in srgb, var(--kp-ai) 15%, transparent)"
+                        ? "var(--kp-bg-secondary)"
                         : "var(--kp-bg-secondary)",
                       color: isSelected
-                        ? "var(--kp-ai)"
+                        ? "var(--kp-text-primary)"
                         : "var(--kp-text-primary)",
                     }}
                     aria-pressed={isSelected}
@@ -189,22 +204,18 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
           disabled={!allAnswered}
           size="lg"
           className="h-12 w-full text-base font-semibold"
-          style={{
-            background: "var(--kp-ai)",
-            color: "var(--kp-text-inverse)",
-          }}
         >
           {t("cta")}
         </Button>
         {onSkip && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={onSkip}
-            className="mx-auto min-h-[44px] text-sm font-medium transition-opacity hover:opacity-80"
-            style={{ color: "var(--kp-text-secondary)" }}
+            className="mx-auto min-h-[44px] text-sm font-medium text-[var(--kp-text-secondary)] transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kp-ai)]"
           >
             {t("skip")}
-          </button>
+          </Button>
         )}
       </div>
     </div>
