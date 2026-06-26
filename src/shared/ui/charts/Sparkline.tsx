@@ -1,35 +1,39 @@
 "use client";
 
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import { Area, AreaChart, YAxis } from "recharts";
 import { ChartWrapper } from "@/shared/ui/chart-wrapper";
 
 interface SparklineProps {
   data: number[];
-  color: "green" | "red" | "yellow";
+  color?: "green" | "red" | "yellow";
+  positive?: boolean;
 }
 
-export function Sparkline({ data, color }: SparklineProps) {
+export function Sparkline({ data, color, positive }: SparklineProps) {
+  const id = useId();
   const chartData = useMemo(() => {
     return data.map((value, index) => ({ index, value }));
   }, [data]);
 
+  const derivedColor = color ?? (positive === false ? "red" : "green");
+
   const colorMap = {
     green: {
-      stroke: "#10b981",
-      fill: "url(#colorGreen)",
+      stroke: "var(--kp-positive)",
+      fill: `url(#colorGreen-${id})`,
     },
     red: {
-      stroke: "#ef4444",
-      fill: "url(#colorRed)",
+      stroke: "var(--kp-negative)",
+      fill: `url(#colorRed-${id})`,
     },
     yellow: {
-      stroke: "#eab308",
-      fill: "url(#colorYellow)",
+      stroke: "var(--kp-live)",
+      fill: `url(#colorYellow-${id})`,
     },
   };
 
-  const selectedColor = colorMap[color] || colorMap.green;
+  const selectedColor = colorMap[derivedColor] || colorMap.green;
 
   // If there's no data or only 1 point, it's hard to draw a sparkline
   if (!chartData || chartData.length < 2) {
@@ -54,17 +58,17 @@ export function Sparkline({ data, color }: SparklineProps) {
           margin={{ top: 2, right: 0, bottom: 2, left: 0 }}
         >
           <defs>
-            <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+            <linearGradient id={`colorGreen-${id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--kp-positive)" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="var(--kp-positive)" stopOpacity={0} />
             </linearGradient>
-            <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+            <linearGradient id={`colorRed-${id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--kp-negative)" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="var(--kp-negative)" stopOpacity={0} />
             </linearGradient>
-            <linearGradient id="colorYellow" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#eab308" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
+            <linearGradient id={`colorYellow-${id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--kp-live)" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="var(--kp-live)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <YAxis domain={[min - padding, max + padding]} hide={true} />

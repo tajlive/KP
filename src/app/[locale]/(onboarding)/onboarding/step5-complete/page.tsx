@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 
 export default function OnboardingStep5() {
   const t = useTranslations("onboarding.step5");
+  const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,9 @@ export default function OnboardingStep5() {
         } = await supabase.auth.getUser();
 
         if (!user) {
-          router.push("/login?next=/onboarding/step5-complete");
+          router.push(
+            `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step5-complete`)}`
+          );
           return;
         }
 
@@ -44,10 +48,9 @@ export default function OnboardingStep5() {
           return;
         }
 
-        // Redirect hvis brukeren ikke er på riktig steg
-        // NY: 3-stegs flyt - kommer her etter step3 (som er ny step 2)
+        // Redirect hvis brukeren ikke er på riktig steg (5-stegs flyt)
         if (!profile?.onboarding_step || profile.onboarding_step < 1) {
-          router.push("/onboarding/step1-welcome");
+          router.push(`/${locale}/onboarding/step1-welcome`);
           return;
         }
 
@@ -71,11 +74,11 @@ export default function OnboardingStep5() {
     };
 
     completeOnboarding();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleGoToDashboard = () => {
     setLoading(true);
-    router.push("/dashboard");
+    router.push(`/${locale}/dashboard`);
   };
 
   if (initializing) {
@@ -89,11 +92,6 @@ export default function OnboardingStep5() {
 
   return (
     <div className="text-center space-y-8">
-      {/* Progress bar - 3 steg totalt, vi er på steg 3 (ferdig) */}
-      <div className="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
-        <div className="bg-green-600 h-full rounded-full w-full" />
-      </div>
-
       {/* Success Animation */}
       <div className="relative">
         <div className="mx-auto w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center animate-in zoom-in duration-500">

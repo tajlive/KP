@@ -3,6 +3,7 @@
 import { useTheme } from "./ThemeProvider";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,10 +19,10 @@ interface ThemeToggleProps {
   size?: "sm" | "md" | "lg";
 }
 
-const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
-  { value: "light", label: "Lyst", icon: <Sun className="h-4 w-4" /> },
-  { value: "dark", label: "Mørkt", icon: <Moon className="h-4 w-4" /> },
-  { value: "system", label: "System", icon: <Monitor className="h-4 w-4" /> },
+const themeOptions: { value: Theme; icon: React.ReactNode }[] = [
+  { value: "light", icon: <Sun className="h-4 w-4" /> },
+  { value: "dark", icon: <Moon className="h-4 w-4" /> },
+  { value: "system", icon: <Monitor className="h-4 w-4" /> },
 ];
 
 function ThemeIcon({ theme }: { theme: Theme | undefined }) {
@@ -35,8 +36,13 @@ function ThemeIcon({ theme }: { theme: Theme | undefined }) {
   }
 }
 
-export function ThemeToggle({ variant = "dropdown", size = "md", ...props }: ThemeToggleProps & React.ComponentProps<"div">) {
+export function ThemeToggle({
+  variant = "dropdown",
+  size = "md",
+  ...props
+}: ThemeToggleProps & React.ComponentProps<"div">) {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const t = useTranslations("components.themeToggle");
   const [mounted, setMounted] = useState(false);
 
   // Avoid hydration mismatch by only rendering after mount
@@ -50,7 +56,7 @@ export function ThemeToggle({ variant = "dropdown", size = "md", ...props }: The
         variant="ghost"
         size={size === "lg" ? "default" : "icon"}
         className="opacity-50"
-        aria-label="Toggle theme"
+        aria-label={t("toggleTheme")}
         disabled
       >
         <Monitor className="h-4 w-4" />
@@ -60,23 +66,27 @@ export function ThemeToggle({ variant = "dropdown", size = "md", ...props }: The
 
   if (variant === "segmented") {
     return (
-      <div data-testid="theme-toggle-segmented" className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-1">
+      <div
+        data-testid="theme-toggle-segmented"
+        className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-1"
+      >
         {themeOptions.map((option) => (
           <button
             key={option.value}
             onClick={() => setTheme(option.value)}
             className={`
               flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-all
-              ${theme === option.value
-                ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              ${
+                theme === option.value
+                  ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }
             `}
-            aria-label={`Set theme to ${option.label}`}
+            aria-label={t("setTheme", { theme: t(option.value) })}
             aria-pressed={theme === option.value}
           >
             {option.icon}
-            <span className="hidden sm:inline">{option.label}</span>
+            <span className="hidden sm:inline">{t(option.value)}</span>
           </button>
         ))}
       </div>
@@ -90,11 +100,11 @@ export function ThemeToggle({ variant = "dropdown", size = "md", ...props }: The
           variant="ghost"
           size={size === "lg" ? "default" : "icon"}
           className="relative"
-          aria-label="Toggle theme"
+          aria-label={t("toggleTheme")}
           data-testid="theme-toggle"
         >
           <ThemeIcon theme={theme as Theme} />
-          <span className="sr-only">Bytt tema</span>
+          <span className="sr-only">{t("toggleTheme")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -108,7 +118,7 @@ export function ThemeToggle({ variant = "dropdown", size = "md", ...props }: The
             `}
           >
             {option.icon}
-            <span>{option.label}</span>
+            <span>{t(option.value)}</span>
             {theme === option.value && (
               <span className="ml-auto text-xs text-slate-500">●</span>
             )}
@@ -122,6 +132,7 @@ export function ThemeToggle({ variant = "dropdown", size = "md", ...props }: The
 // Export a simple icon-only toggle for compact spaces
 export function ThemeToggleIcon() {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const t = useTranslations("components.themeToggle");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -130,7 +141,13 @@ export function ThemeToggleIcon() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="opacity-50" disabled>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="opacity-50"
+        aria-label={t("toggleTheme")}
+        disabled
+      >
         <Monitor className="h-4 w-4" />
       </Button>
     );
@@ -144,12 +161,14 @@ export function ThemeToggleIcon() {
     }
   };
 
+  const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
+
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+      aria-label={t("switchTo", { theme: t(nextTheme) })}
       className="relative"
     >
       {resolvedTheme === "dark" ? (

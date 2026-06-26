@@ -1,0 +1,79 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
+interface AnimatedNumberProps {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+  duration?: number;
+  className?: string;
+  ariaLive?: "off" | "polite" | "assertive";
+}
+
+export function AnimatedNumber({
+  value,
+  prefix = "",
+  suffix = "",
+  decimals = 2,
+  duration = 600,
+  className,
+  ariaLive = "polite",
+}: AnimatedNumberProps) {
+  const [display, setDisplay] = useState(value);
+  const previous = useRef(value);
+  const rafId = useRef<number | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setDisplay(value);
+      previous.current = value;
+      return;
+    }
+
+    if (rafId.current !== null) {
+      cancelAnimationFrame(rafId.current);
+    }
+
+    const start = previous.current;
+    const end = value;
+    const startTime = performance.now();
+
+    const frame = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(start + (end - start) * eased);
+      if (progress < 1) {
+        rafId.current = requestAnimationFrame(frame);
+      } else {
+        rafId.current = null;
+      }
+    };
+
+    rafId.current = requestAnimationFrame(frame);
+    previous.current = value;
+
+    return () => {
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
+    };
+  }, [value, duration, prefersReducedMotion]);
+
+  const formatted = display.toLocaleString("nb-NO", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return (
+    <span className={className} aria-live={ariaLive}>
+      {prefix}
+      {formatted}
+      {suffix}
+    </span>
+  );
+}

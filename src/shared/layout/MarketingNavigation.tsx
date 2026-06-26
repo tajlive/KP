@@ -43,7 +43,7 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
             <span className="text-xl font-bold text-[#1A1D26] sm:hidden truncate">
               Klarpakke
             </span>
-            <span className="ml-1.5 text-sm font-medium text-[#5E6478] truncate hidden xl:inline shrink-0">
+            <span className="ml-1.5 text-sm font-medium text-[#505766] truncate hidden xl:inline shrink-0">
               — {t("tagline")}
             </span>
           </Link>

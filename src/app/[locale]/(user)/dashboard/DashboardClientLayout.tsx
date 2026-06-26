@@ -31,7 +31,7 @@ import { useAuth } from "@/lib/auth/new/AuthContext";
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   usePaperTradingInit(user?.id);
-  
+
   // Aktiver progress sync for dashboard
   useProgress();
 
@@ -61,33 +61,33 @@ export default function DashboardClientLayout({
       <CorruptTokenCleanup />
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
+        defaultTheme="dark"
         enableSystem
         disableTransitionOnChange={false}
       >
-      <ClientSideProviders>
-        <QueryProvider>
-          <ErrorBoundary>
-            <AuthProvider>
-              <ToastProvider>
-                <TradingModeProvider>
-                  <TradeSuccessProvider>
-                    <ProtectedRoute>
-                      <OnboardingFlow />
-                      <div data-testid="dashboard-root">
-                        <DashboardContent>{children}</DashboardContent>
-                      </div>
-                    </ProtectedRoute>
-                  </TradeSuccessProvider>
-                  {/* Analytics/SpeedInsights disabled on self-hosted stack */}
-                  {/* <Analytics /> */}
-                  {/* <SpeedInsights /> */}
-                </TradingModeProvider>
-              </ToastProvider>
-            </AuthProvider>
-          </ErrorBoundary>
-        </QueryProvider>
-      </ClientSideProviders>
+        <ClientSideProviders>
+          <QueryProvider>
+            <ErrorBoundary>
+              <AuthProvider>
+                <ToastProvider>
+                  <TradingModeProvider>
+                    <TradeSuccessProvider>
+                      <ProtectedRoute>
+                        <OnboardingFlow />
+                        <div data-testid="dashboard-root">
+                          <DashboardContent>{children}</DashboardContent>
+                        </div>
+                      </ProtectedRoute>
+                    </TradeSuccessProvider>
+                    {/* Analytics/SpeedInsights disabled on self-hosted stack */}
+                    {/* <Analytics /> */}
+                    {/* <SpeedInsights /> */}
+                  </TradingModeProvider>
+                </ToastProvider>
+              </AuthProvider>
+            </ErrorBoundary>
+          </QueryProvider>
+        </ClientSideProviders>
       </ThemeProvider>
     </>
   );
