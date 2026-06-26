@@ -69,6 +69,32 @@
       "auto": "Automated guidance"
     }
   },
+  "aiMapping": {
+    "coachName": "Klara",
+    "title": "Let me get to know you",
+    "subtitle": "Two quick questions, then we'll build a learning path tailored for you.",
+    "typing": "Klara is typing...",
+    "questions": {
+      "goal": {
+        "label": "What is your main goal?",
+        "options": {
+          "sparing": { "label": "Saving", "description": "Build wealth over time" },
+          "vekst": { "label": "Growth", "description": "Balanced risk and return" },
+          "trading": { "label": "Trading", "description": "Active trading with higher risk" }
+        }
+      },
+      "timeHorizon": {
+        "label": "How long do you want to save/trade?",
+        "options": {
+          "under1ar": { "label": "Under 1 year" },
+          "1til3ar": { "label": "1–3 years" },
+          "over3ar": { "label": "Over 3 years" }
+        }
+      }
+    },
+    "cta": "Continue",
+    "skip": "Skip mapping"
+  },
   "step2": {
     "title": "Your Profile",
     "subtitle": "Tell us a bit about yourself",

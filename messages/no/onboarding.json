@@ -69,6 +69,32 @@
       "auto": "Automatisert veiledning"
     }
   },
+  "aiMapping": {
+    "coachName": "Klara",
+    "title": "La meg bli kjent med deg",
+    "subtitle": "To raske spørsmål, så får du en læringssti skreddersydd for deg.",
+    "typing": "Klara skriver...",
+    "questions": {
+      "goal": {
+        "label": "Hva er hovedmålet ditt?",
+        "options": {
+          "sparing": { "label": "Sparing", "description": "Bygge formue over tid" },
+          "vekst": { "label": "Vekst", "description": "Balansert risiko og avkastning" },
+          "trading": { "label": "Trading", "description": "Aktiv handel med høyere risiko" }
+        }
+      },
+      "timeHorizon": {
+        "label": "Hvor lenge vil du spare/trade?",
+        "options": {
+          "under1ar": { "label": "Under 1 år" },
+          "1til3ar": { "label": "1–3 år" },
+          "over3ar": { "label": "Over 3 år" }
+        }
+      }
+    },
+    "cta": "Fortsett",
+    "skip": "Hopp over kartlegging"
+  },
   "step2": {
     "title": "Din profil",
     "subtitle": "Fortell oss litt om deg selv",
