@@ -364,10 +364,16 @@ export async function POST(request: NextRequest) {
   const { symbol, amount } = parsed.data;
   const supabase = createClient();
 
-  // Hent siste pris fra market snapshot
-  const { data: snapshot } = await supabase.functions.invoke("market-snapshot", { body: { symbols: [symbol] } })
-    .catch(() => ({ data: null }));
-  const requestedPrice = snapshot?.assets?.[0]?.price ?? 0;
+  // Hent siste pris fra Binance
+  const binanceRes = await fetch(
+    `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`,
+    { next: { revalidate: 0 } },
+  );
+  if (!binanceRes.ok) {
+    return internalError("Kunne ikke hente markedspris");
+  }
+  const binanceData = (await binanceRes.json()) as { lastPrice?: string };
+  const requestedPrice = Number(binanceData.lastPrice) || 0;
 
   const { data: tradeRows, error: rpcError } = await supabase.rpc(
     "place_paper_trade_with_slippage",
@@ -408,8 +414,6 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-> Hvis `supabase.functions.invoke("market-snapshot")` ikke finnes, bruk `fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT")` og parse `lastPrice`.
-
 - [ ] **Step 2: Opprett step4-siden.**
 
 Siden skal:
@@ -422,7 +426,7 @@ Siden skal:
    - POST `/api/onboarding/first-paper-trade` med `{ amount, symbol: "BTCUSDT" }`.
    - Ved suksess: vis suksess-view med confetti (respekter `prefers-reduced-motion`) og CTA "Fullfør onboarding" → `/onboarding/step5-complete`.
    - Ved feil: vis feilmelding fra API.
-7. Vise "Paper Trading"-badge og `RiskBadge level="medium"` fordi krypto er volatilt.
+7. Vise en "Paper Trading"-badge (eget i18n-nøkkel `badge`) og `RiskBadge level="medium"` fordi krypto er volatilt.
 
 ```tsx
 // src/app/[locale]/(onboarding)/onboarding/step4-first-trade/page.tsx (utdrag)
@@ -445,6 +449,7 @@ const PRESETS = [1000, 5000, 10000, 20000];
   "firstTrade": {
     "title": "Din første paper trade",
     "subtitle": "Kjøp litt Bitcoin med lekepenger. Ingen ekte penger er i spill.",
+    "badge": "Paper Trading",
     "balance": "Tilgjengelig",
     "price": "BTC-pris",
     "amountLabel": "Hvor mye vil du kjøpe for?",

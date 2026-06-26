@@ -399,7 +399,7 @@ export default function OnboardingStep4FirstTrade() {
           <button
             type="button"
             onClick={handleMax}
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium rounded-md bg-[var(--kp-bg-secondary)] text-[var(--kp-ai)] hover:bg-[var(--kp-bg-tertiary)] transition-colors min-h-[32px]"
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium rounded-md bg-[var(--kp-bg-secondary)] text-[var(--kp-ai)] hover:bg-[var(--kp-bg-tertiary)] transition-colors min-h-[44px]"
           >
             {t("max")}
           </button>
