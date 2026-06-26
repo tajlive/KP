@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 
 export default function OnboardingStep5() {
   const t = useTranslations("onboarding.step5");
+  const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,9 @@ export default function OnboardingStep5() {
         } = await supabase.auth.getUser();
 
         if (!user) {
-          router.push("/login?next=/onboarding/step5-complete");
+          router.push(
+            `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step5-complete`)}`
+          );
           return;
         }
 
@@ -75,7 +79,7 @@ export default function OnboardingStep5() {
 
   const handleGoToDashboard = () => {
     setLoading(true);
-    router.push("/dashboard");
+    router.push(`/${locale}/dashboard`);
   };
 
   if (initializing) {
