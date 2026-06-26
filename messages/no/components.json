@@ -32,6 +32,11 @@
     "label": "Live"
   },
   "themeToggle": {
-    "toggleTheme": "Bytt tema"
+    "toggleTheme": "Bytt tema",
+    "light": "Lyst",
+    "dark": "Mørkt",
+    "system": "System",
+    "setTheme": "Sett tema til {theme}",
+    "switchTo": "Bytt til {theme} modus"
   }
 }

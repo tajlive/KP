@@ -19,10 +19,10 @@ interface ThemeToggleProps {
   size?: "sm" | "md" | "lg";
 }
 
-const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
-  { value: "light", label: "Lyst", icon: <Sun className="h-4 w-4" /> },
-  { value: "dark", label: "Mørkt", icon: <Moon className="h-4 w-4" /> },
-  { value: "system", label: "System", icon: <Monitor className="h-4 w-4" /> },
+const themeOptions: { value: Theme; icon: React.ReactNode }[] = [
+  { value: "light", icon: <Sun className="h-4 w-4" /> },
+  { value: "dark", icon: <Moon className="h-4 w-4" /> },
+  { value: "system", icon: <Monitor className="h-4 w-4" /> },
 ];
 
 function ThemeIcon({ theme }: { theme: Theme | undefined }) {
@@ -82,11 +82,11 @@ export function ThemeToggle({
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }
             `}
-            aria-label={`Set theme to ${option.label}`}
+            aria-label={t("setTheme", { theme: t(option.value) })}
             aria-pressed={theme === option.value}
           >
             {option.icon}
-            <span className="hidden sm:inline">{option.label}</span>
+            <span className="hidden sm:inline">{t(option.value)}</span>
           </button>
         ))}
       </div>
@@ -104,7 +104,7 @@ export function ThemeToggle({
           data-testid="theme-toggle"
         >
           <ThemeIcon theme={theme as Theme} />
-          <span className="sr-only">Bytt tema</span>
+          <span className="sr-only">{t("toggleTheme")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -118,7 +118,7 @@ export function ThemeToggle({
             `}
           >
             {option.icon}
-            <span>{option.label}</span>
+            <span>{t(option.value)}</span>
             {theme === option.value && (
               <span className="ml-auto text-xs text-slate-500">●</span>
             )}
@@ -161,12 +161,14 @@ export function ThemeToggleIcon() {
     }
   };
 
+  const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
+
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+      aria-label={t("switchTo", { theme: t(nextTheme) })}
       className="relative"
     >
       {resolvedTheme === "dark" ? (
