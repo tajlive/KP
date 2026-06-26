@@ -138,7 +138,9 @@
     "tooltip": "Lekepenger simulerer ekte markedsforhold, men du taper aldri ekte penger.",
     "whatIs": "Hva er lekepenger?",
     "cta": "Start første trade",
-    "loading": "Lagrer..."
+    "loading": "Lagrer...",
+    "error": "Kunne ikke lagre oppsett. Prøv igjen.",
+    "currencySuffix": " kr"
   },
   "step3": {
     "title": "Lekepenger",
