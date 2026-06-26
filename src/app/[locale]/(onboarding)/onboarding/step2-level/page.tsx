@@ -78,19 +78,25 @@ export default function Step2LevelPage() {
 
         const step = profile?.onboarding_step ?? 0;
 
-        if (step < 1) {
-          router.push(`/${locale}/onboarding/step1-welcome`);
-          return;
-        }
-
-        if (step === 2) {
-          router.push(`/${locale}/onboarding/step3-trading-mode`);
-          return;
-        }
-
-        if (step >= 3) {
-          router.push(`/${locale}/onboarding/step3-trading-mode`);
-          return;
+        switch (step) {
+          case 0:
+            router.push(`/${locale}/onboarding/step1-welcome`);
+            return;
+          case 1:
+            // stay on step2-level
+            break;
+          case 2:
+            router.push(`/${locale}/onboarding/step3-trading-mode`);
+            return;
+          case 3:
+            router.push(`/${locale}/onboarding/step4-first-trade`);
+            return;
+          case 4:
+            router.push(`/${locale}/onboarding/step5-complete`);
+            return;
+          default:
+            router.push(`/${locale}/dashboard`);
+            return;
         }
 
         const raw = localStorage.getItem('kp-onboarding-answers');
