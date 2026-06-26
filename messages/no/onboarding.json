@@ -145,6 +145,7 @@
   "firstTrade": {
     "title": "Din første paper trade",
     "subtitle": "Kjøp litt Bitcoin med lekepenger. Ingen ekte penger er i spill.",
+    "badge": "Paper Trading",
     "balance": "Tilgjengelig",
     "price": "BTC-pris",
     "amountLabel": "Hvor mye vil du kjøpe for?",

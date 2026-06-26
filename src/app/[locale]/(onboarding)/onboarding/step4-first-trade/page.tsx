@@ -312,10 +312,13 @@ export default function OnboardingStep4FirstTrade() {
     >
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 flex-wrap">
           <h1 className="text-2xl font-bold text-[var(--kp-text-primary)]">
             {t("title")}
           </h1>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--kp-positive)]/10 text-[var(--kp-positive)] px-2.5 py-1 text-xs font-medium">
+            {t("badge")}
+          </span>
           <RiskBadge level="medium" />
         </div>
         <p className="text-[var(--kp-text-secondary)]">{t("subtitle")}</p>
