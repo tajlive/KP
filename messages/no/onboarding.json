@@ -103,25 +103,28 @@
     "loading": "Lagrer..."
   },
   "level": {
-    "title": "Hva er ditt nivå?",
-    "subtitle": "Velg det nivået som passer deg best. Du kan endre dette senere.",
-    "recommended": "Anbefalt",
+    "title": "Velg ditt nivå",
+    "subtitle": "Du kan endre dette senere i innstillingene.",
+    "recommended": "Anbefalt for deg",
     "back": "Tilbake",
     "continue": "Fortsett",
     "loading": "Lagrer...",
-    "error": "Kunne ikke lagre nivået. Prøv igjen.",
+    "error": "Kunne ikke lagre nivå. Prøv igjen.",
     "levels": {
       "beginner": {
-        "label": "Helt ny",
-        "description": "Jeg har aldri handlet før"
+        "label": "Nybegynner",
+        "description": "Lær grunnleggende trading med små, trygge steg.",
+        "time": "10 min/dag"
       },
       "intermediate": {
-        "label": "Litt erfaring",
-        "description": "Jeg har prøvd aksjer eller krypto"
+        "label": "Middels",
+        "description": "Du kjenner begrepene og vil lære mer avanserte strategier.",
+        "time": "20 min/dag"
       },
       "expert": {
-        "label": "Erfaren",
-        "description": "Jeg trader aktivt og vil lære AI-strategier"
+        "label": "Ekspert",
+        "description": "Aktiv trading med høy risiko og høyt potensial.",
+        "time": "40+ min/dag"
       }
     }
   },

@@ -1,17 +1,17 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { RiskBadge, type RiskLevel } from '@/shared/ui/RiskBadge';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ChevronLeft, Loader2, BookOpen, TrendingUp, Award } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 type ExperienceLevel = 'beginner' | 'intermediate' | 'expert';
 
@@ -20,10 +20,10 @@ interface OnboardingAnswers {
   timeHorizon?: 'over3ar' | '1til3ar' | 'under1ar';
 }
 
-const LEVELS: { key: ExperienceLevel; risk: RiskLevel }[] = [
-  { key: 'beginner', risk: 'low' },
-  { key: 'intermediate', risk: 'medium' },
-  { key: 'expert', risk: 'high' },
+const LEVELS: { key: ExperienceLevel; risk: RiskLevel; icon: typeof BookOpen }[] = [
+  { key: 'beginner', risk: 'low', icon: BookOpen },
+  { key: 'intermediate', risk: 'medium', icon: TrendingUp },
+  { key: 'expert', risk: 'high', icon: Award },
 ];
 
 function getRecommendedLevel(answers: OnboardingAnswers | null): ExperienceLevel {
@@ -41,8 +41,7 @@ function getRecommendedLevel(answers: OnboardingAnswers | null): ExperienceLevel
 export default function Step2LevelPage() {
   const t = useTranslations('onboarding.level');
   const router = useRouter();
-  const params = useParams<{ locale: string }>();
-  const locale = params.locale;
+  const locale = useLocale();
   const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
 
@@ -81,6 +80,11 @@ export default function Step2LevelPage() {
 
         if (step < 1) {
           router.push(`/${locale}/onboarding/step1-welcome`);
+          return;
+        }
+
+        if (step === 2) {
+          router.push(`/${locale}/onboarding/step3-trading-mode`);
           return;
         }
 
@@ -166,6 +170,7 @@ export default function Step2LevelPage() {
         {LEVELS.map((level, index) => {
           const isSelected = selected === level.key;
           const isRecommended = recommended === level.key;
+          const Icon = level.icon;
 
           return (
             <motion.div
@@ -193,6 +198,9 @@ export default function Step2LevelPage() {
                 )}
               >
                 <CardContent className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-kp-bg-secondary">
+                    <Icon className="h-5 w-5 text-kp-brand" aria-hidden="true" />
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-kp-text-primary">
@@ -206,6 +214,9 @@ export default function Step2LevelPage() {
                     </div>
                     <p className="text-sm text-kp-text-secondary mt-1">
                       {t(`levels.${level.key}.description`)}
+                    </p>
+                    <p className="text-xs text-kp-text-secondary mt-1">
+                      {t(`levels.${level.key}.time`)}
                     </p>
                   </div>
                   <RiskBadge level={level.risk} />
@@ -229,7 +240,7 @@ export default function Step2LevelPage() {
           disabled={loading}
           className="flex-1"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           {t('back')}
         </Button>
         <Button
