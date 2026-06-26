@@ -15,27 +15,6 @@ const schema = z.object({
   amount: z.number().positive().max(100_000),
 });
 
-async function fetchLatestPrice(symbol: string): Promise<number> {
-  try {
-    const res = await fetch(
-      `https://api.binance.com/api/v3/ticker/24hr?symbol=${encodeURIComponent(symbol)}`,
-      { signal: AbortSignal.timeout(8000) },
-    );
-
-    if (!res.ok) {
-      console.warn(`[first-paper-trade] Binance non-OK: ${res.status}`);
-      return 0;
-    }
-
-    const data = (await res.json()) as { lastPrice?: string };
-    const price = data.lastPrice ? parseFloat(data.lastPrice) : 0;
-    return Number.isFinite(price) ? price : 0;
-  } catch (err) {
-    console.error("[first-paper-trade] Failed to fetch Binance price:", err);
-    return 0;
-  }
-}
-
 export async function POST(request: NextRequest) {
   const response = NextResponse.next();
   const supabaseAuth = createServerClient(request, response);
@@ -58,7 +37,18 @@ export async function POST(request: NextRequest) {
   const { symbol, amount } = parsed.data;
   const supabase = createClient();
 
-  const requestedPrice = await fetchLatestPrice(symbol);
+  const binanceRes = await fetch(
+    `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`,
+    { next: { revalidate: 0 } },
+  );
+  if (!binanceRes.ok) {
+    return internalError("Kunne ikke hente markedspris");
+  }
+  const binanceData = (await binanceRes.json()) as { lastPrice?: string };
+  const requestedPrice = Number(binanceData.lastPrice) || 0;
+  if (requestedPrice <= 0) {
+    return internalError("Kunne ikke hente markedspris");
+  }
 
   const { data: tradeRows, error: rpcError } = await supabase.rpc(
     "place_paper_trade_with_slippage",
