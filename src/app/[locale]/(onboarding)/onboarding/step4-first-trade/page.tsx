@@ -249,6 +249,7 @@ export default function OnboardingStep4FirstTrade() {
       }
 
       setTradeResult(data);
+      setLoading(false);
       setSuccess(true);
       void triggerConfetti();
     } catch (err) {
