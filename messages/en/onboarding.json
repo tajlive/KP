@@ -142,6 +142,29 @@
     "error": "Could not save setup. Please try again.",
     "currencySuffix": " NOK"
   },
+  "firstTrade": {
+    "title": "Your first paper trade",
+    "subtitle": "Buy a little Bitcoin with play money. No real money is at stake.",
+    "balance": "Available",
+    "price": "BTC price",
+    "amountLabel": "How much do you want to buy for?",
+    "presets": {
+      "1000": "1,000 NOK",
+      "5000": "5,000 NOK",
+      "10000": "10,000 NOK",
+      "20000": "20,000 NOK"
+    },
+    "custom": "Custom amount",
+    "max": "Max",
+    "buyCta": "Buy BTC",
+    "buying": "Executing...",
+    "success": {
+      "title": "Congratulations! 🎉",
+      "description": "You've made your first paper trade. You're ready to continue.",
+      "cta": "Complete onboarding"
+    },
+    "error": "Could not execute trade. Please try again."
+  },
   "step3": {
     "title": "Paper Trading",
     "subtitle": "Practice with virtual money",
