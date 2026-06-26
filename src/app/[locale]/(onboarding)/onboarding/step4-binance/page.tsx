@@ -31,7 +31,7 @@ export default function OnboardingStep4() {
 
       if (!user) {
         router.push(
-          `/${locale}/login?next=${encodeURIComponent(`/${locale}/onboarding/step4-binance`)}`
+          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step4-binance`)}`
         );
         return;
       }
@@ -60,7 +60,7 @@ export default function OnboardingStep4() {
 
       // Hvis allerede koblet, gå videre
       if (profile?.binance_connected) {
-        router.push("`/${locale}/onboarding/step5-complete`");
+        router.push(`/${locale}/onboarding/step5-complete`);
         return;
       }
 
@@ -108,7 +108,7 @@ export default function OnboardingStep4() {
 
       if (error) throw error;
 
-      router.push("`/${locale}/onboarding/step5-complete`");
+      router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {
       console.error("Failed to connect Binance:", err);
       alert(err instanceof Error ? err.message : t("error"));
@@ -135,7 +135,7 @@ export default function OnboardingStep4() {
 
       if (error) throw error;
 
-      router.push("`/${locale}/onboarding/step5-complete`");
+      router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {
       console.error("Failed to skip:", err);
       setLoading(false);
