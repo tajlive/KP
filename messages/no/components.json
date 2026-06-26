@@ -1,4 +1,10 @@
 {
+  "riskBadge": {
+    "label": "Risiko: {level}",
+    "low": "Lav risiko",
+    "medium": "Middels risiko",
+    "high": "Høy risiko"
+  },
   "title": "Gamification",
   "description": "Lær og tjen poeng",
   "subtitle": "Fullfør utfordringer og klatr på ledertavlen.",
