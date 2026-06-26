@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { Link2, SkipForward, Eye, EyeOff, Shield } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 
 export default function OnboardingStep4() {
   const t = useTranslations("onboarding.step4");
+  const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
   const [apiKey, setApiKey] = useState("");
@@ -28,7 +30,9 @@ export default function OnboardingStep4() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login?next=/onboarding/step4-binance");
+        router.push(
+          `/${locale}/login?next=${encodeURIComponent(`/${locale}/onboarding/step4-binance`)}`
+        );
         return;
       }
 
@@ -39,14 +43,13 @@ export default function OnboardingStep4() {
         .single();
 
       if (profile?.onboarding_completed) {
-        router.push("/dashboard");
+        router.push(`/${locale}/dashboard`);
         return;
       }
 
-      // Redirect hvis brukeren er på feil steg
-      // NY: 3-stegs flyt - step4 er nå valgfritt og kan aksesseres når som helst etter step3
+      // Redirect hvis brukeren er på feil steg (5-stegs flyt: step4 er valgfritt etter step3)
       if (!profile?.onboarding_step || profile.onboarding_step < 1) {
-        router.push("/onboarding/step1-welcome");
+        router.push(`/${locale}/onboarding/step1-welcome`);
         return;
       }
 
@@ -57,7 +60,7 @@ export default function OnboardingStep4() {
 
       // Hvis allerede koblet, gå videre
       if (profile?.binance_connected) {
-        router.push("/onboarding/step5-complete");
+        router.push("`/${locale}/onboarding/step5-complete`");
         return;
       }
 
@@ -65,7 +68,7 @@ export default function OnboardingStep4() {
     };
 
     checkStatus();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleConnect = async () => {
     if (!apiKey || !apiSecret) return;
@@ -105,7 +108,7 @@ export default function OnboardingStep4() {
 
       if (error) throw error;
 
-      router.push("/onboarding/step5-complete");
+      router.push("`/${locale}/onboarding/step5-complete`");
     } catch (err) {
       console.error("Failed to connect Binance:", err);
       alert(err instanceof Error ? err.message : t("error"));
@@ -132,7 +135,7 @@ export default function OnboardingStep4() {
 
       if (error) throw error;
 
-      router.push("/onboarding/step5-complete");
+      router.push("`/${locale}/onboarding/step5-complete`");
     } catch (err) {
       console.error("Failed to skip:", err);
       setLoading(false);

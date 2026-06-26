@@ -48,10 +48,9 @@ export default function OnboardingStep5() {
           return;
         }
 
-        // Redirect hvis brukeren ikke er på riktig steg
-        // NY: 3-stegs flyt - kommer her etter step3 (som er ny step 2)
+        // Redirect hvis brukeren ikke er på riktig steg (5-stegs flyt)
         if (!profile?.onboarding_step || profile.onboarding_step < 1) {
-          router.push("/onboarding/step1-welcome");
+          router.push(`/${locale}/onboarding/step1-welcome`);
           return;
         }
 
@@ -75,7 +74,7 @@ export default function OnboardingStep5() {
     };
 
     completeOnboarding();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleGoToDashboard = () => {
     setLoading(true);
