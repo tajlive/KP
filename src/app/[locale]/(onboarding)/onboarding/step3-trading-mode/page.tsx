@@ -54,7 +54,12 @@ export default function OnboardingStep3() {
 
       const step = profile?.onboarding_step ?? 0;
 
-      if (step < 2) {
+      if (step === 0) {
+        router.push(`/${locale}/onboarding/step1-welcome`);
+        return;
+      }
+
+      if (step === 1) {
         router.push(`/${locale}/onboarding/step2-level`);
         return;
       }
