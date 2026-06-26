@@ -30,7 +30,10 @@ function formatKr(n: number): string {
 }
 
 function formatUsd(n: number): string {
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return n.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 export function DemoWidget() {
@@ -58,10 +61,13 @@ export function DemoWidget() {
       try {
         const [tickerRes, klinesRes] = await Promise.all([
           fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"),
-          fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=24"),
+          fetch(
+            "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=24",
+          ),
         ]);
 
-        if (!tickerRes.ok || !klinesRes.ok) throw new Error("Binance API error");
+        if (!tickerRes.ok || !klinesRes.ok)
+          throw new Error("Binance API error");
 
         const tickerData = (await tickerRes.json()) as BinanceTicker;
         const klinesData = (await klinesRes.json()) as Array<unknown[]>;
@@ -85,7 +91,9 @@ export function DemoWidget() {
   // Poll current price every 10 seconds
   const tick = useCallback(async () => {
     try {
-      const res = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+      const res = await fetch(
+        "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+      );
       if (!res.ok) return;
       const data = (await res.json()) as { price: string };
       const price = parseFloat(data.price);
@@ -153,7 +161,8 @@ export function DemoWidget() {
       : "";
 
   const priceUp =
-    prices.length >= 2 && prices[prices.length - 1] >= prices[prices.length - 2];
+    prices.length >= 2 &&
+    prices[prices.length - 1] >= prices[prices.length - 2];
 
   const priceChangePercent = ticker ? parseFloat(ticker.priceChangePercent) : 0;
   const portfolioValue = balance + (position > 0 ? pnl : 0);
@@ -310,7 +319,7 @@ export function DemoWidget() {
                 disabled={position > 0 || loading}
                 aria-label={t("buy")}
                 data-testid="demo-widget-buy"
-                className="py-3.5 rounded-xl font-bold text-white transition-all duration-200 bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="py-3.5 rounded-xl font-bold text-white transition-all duration-200 bg-emerald-700 hover:bg-emerald-600 shadow-lg shadow-emerald-700/20 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {t("buy")}
               </button>

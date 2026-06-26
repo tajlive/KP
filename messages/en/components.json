@@ -32,6 +32,11 @@
     "label": "Live"
   },
   "themeToggle": {
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "setTheme": "Set theme to {theme}",
+    "switchTo": "Switch to {theme} mode"
   }
 }
