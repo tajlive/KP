@@ -170,3 +170,17 @@
 {"subject":"next.config.mjs","predicate":"has","object":"expanded-optimizePackageImports","validFrom":"2026-06-25T13:55:04.415Z"}
 {"subject":"landing-page","predicate":"uses","object":"force-dynamic","validFrom":"2026-06-25T13:55:04.417Z"}
 {"subject":"marketing-pages","predicate":"converted-to","object":"server-components","validFrom":"2026-06-25T13:55:04.419Z"}
+{"subject":"onboarding.step4-first-trade","predicate":"has","object":"paper-trading-badge","validFrom":"2026-06-26T04:07:06.740Z"}
+{"subject":"onboarding-redesign","predicate":"has-e2e-test","object":"e2e/critical/onboarding-redesign.spec.ts","validFrom":"2026-06-26T04:52:41.636Z"}
+{"subject":"onboarding-redesign","predicate":"has-reset-helper","object":"e2e/helpers/onboarding.ts","validFrom":"2026-06-26T04:52:41.638Z"}
+{"subject":"e2e/critical/onboarding-redesign.spec.ts","predicate":"covers-flow","object":"5-step onboarding AI mapping → level → paper setup → first BTC paper trade → completion","validFrom":"2026-06-26T04:52:41.639Z"}
+{"subject":"e2e/helpers/onboarding.ts","predicate":"resets","object":"user_profiles onboarding state, trades, trading_sessions for test user","validFrom":"2026-06-26T04:52:41.639Z"}
+{"subject":"production-deploy","predicate":"status","object":"redesign phase 1 live on www.klarpakke.no as of 2026-06-26","validFrom":"2026-06-26T09:37:18.612Z"}
+{"subject":"local-e2e-smoke","predicate":"blocked-by","object":"Sanity API quota limit reached (plan_limit_reached 402)","validFrom":"2026-06-26T09:37:18.619Z"}
+{"subject":"production-landing","predicate":"shows","object":"new dark hero \"Lær å handle med AI — risikofritt med lekepenger\" and Live markeder strip","validFrom":"2026-06-26T09:37:18.621Z"}
+{"subject":"user-issue","predicate":"possible-cause","object":"browser or Cloudflare cache hiding redesign","validFrom":"2026-06-26T09:37:18.623Z"}
+{"subject":"marked-route","predicate":"is","object":"app-shell-path","validFrom":"2026-06-26T14:43:14.076Z"}
+{"subject":"app-shell-paths","predicate":"controls","object":"CdsProvider-render","validFrom":"2026-06-26T14:43:14.079Z"}
+{"subject":"CdsProvider","predicate":"provides","object":"ThemeProvider-for-CDS-components","validFrom":"2026-06-26T14:43:14.082Z"}
+{"subject":"marked-route","predicate":"requires","object":"CdsProvider","validFrom":"2026-06-26T14:43:14.082Z"}
+{"subject":"cache-control","predicate":"marks","object":"marked-as-no-store","validFrom":"2026-06-26T14:43:14.089Z"}
