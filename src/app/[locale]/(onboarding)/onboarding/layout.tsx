@@ -46,13 +46,10 @@ export default async function OnboardingLayout({
   }
 
   // Beregn nåværende steg fra URL
-  // NY: 3-stegs flyt - mapper gamle steg til ny visning
-  // DB step 0 = Nytt steg 1 (welcome+experience)
-  // DB step 1-2 = Nytt steg 2 (trading-mode)  
-  // DB step >=3 = Nytt steg 3 (complete)
+  // 5-stegs flyt: DB step 0-4 mappes direkte til visning
   const dbStep = profile?.onboarding_step || 0;
-  const displayStep = dbStep >= 3 ? 2 : dbStep >= 1 ? 1 : 0; // 0-indexed for display
-  const TOTAL_STEPS = 3;
+  const TOTAL_STEPS = 5;
+  const displayStep = Math.min(dbStep, TOTAL_STEPS - 1);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">

@@ -89,11 +89,6 @@ export default function OnboardingStep5() {
 
   return (
     <div className="text-center space-y-8">
-      {/* Progress bar - 3 steg totalt, vi er på steg 3 (ferdig) */}
-      <div className="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
-        <div className="bg-green-600 h-full rounded-full w-full" />
-      </div>
-
       {/* Success Animation */}
       <div className="relative">
         <div className="mx-auto w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center animate-in zoom-in duration-500">

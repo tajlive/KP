@@ -179,12 +179,8 @@ export function AIMappingChat({ onComplete, onSkip }: AIMappingChatProps) {
                       borderColor: isSelected
                         ? "var(--kp-primary)"
                         : "var(--kp-border)",
-                      background: isSelected
-                        ? "var(--kp-bg-secondary)"
-                        : "var(--kp-bg-secondary)",
-                      color: isSelected
-                        ? "var(--kp-text-primary)"
-                        : "var(--kp-text-primary)",
+                      background: "var(--kp-bg-secondary)",
+                      color: "var(--kp-text-primary)",
                     }}
                     aria-pressed={isSelected}
                   >

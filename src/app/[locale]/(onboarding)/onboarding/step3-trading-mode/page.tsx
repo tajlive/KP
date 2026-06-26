@@ -109,11 +109,6 @@ export default function OnboardingStep3() {
   return (
     <TooltipProvider>
       <div className="space-y-8">
-        {/* Progress bar - 3 steg totalt, vi er på steg 2 */}
-        <div className="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
-          <div className="bg-blue-600 h-full rounded-full w-2/3" />
-        </div>
-
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
