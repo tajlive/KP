@@ -37,7 +37,7 @@ export default function OnboardingStep3() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push(`/${locale}/login?next=/${locale}/onboarding/step3-trading-mode`);
+        router.push(`/${locale}/innlogging?next=/${locale}/onboarding/step3-trading-mode`);
         return;
       }
 
