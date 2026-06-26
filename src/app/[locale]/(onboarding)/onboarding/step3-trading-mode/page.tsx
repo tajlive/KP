@@ -43,11 +43,13 @@ export default function OnboardingStep3() {
           return;
         }
 
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from("user_profiles")
           .select("onboarding_step, onboarding_completed")
           .eq("id", user.id)
           .single();
+
+        if (profileError) throw profileError;
 
         if (profile?.onboarding_completed) {
           router.push(`/${locale}/dashboard`);
