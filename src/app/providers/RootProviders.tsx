@@ -13,7 +13,8 @@ import type { FeatureFlags } from "@/lib/flags";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { LazyMotion } from "framer-motion";
 
-const loadFeatures = () => import("framer-motion").then((res) => res.domAnimation);
+const loadFeatures = () =>
+  import("framer-motion").then((res) => res.domAnimation);
 
 interface RootProvidersProps {
   locale: string;
@@ -46,12 +47,16 @@ export function RootProviders({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange={false}
     >
       {/* <SessionCleanup /> */}
-      <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Oslo">
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
+        timeZone="Europe/Oslo"
+      >
         <VippsMarketProvider showVippsMarket={showVippsMarket}>
           <MarketingProviders>
             <ErrorBoundary>

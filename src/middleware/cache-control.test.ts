@@ -23,6 +23,7 @@ describe("cacheControlMiddleware", () => {
     "/no/dashboard",
     "/en/dashboard/trade",
     "/no/admin",
+    "/no/marked",
   ])("sets no-store for dashboard/admin route %s", (path) => {
     const req = makeRequest(path);
     const res = cacheControlMiddleware(req);
@@ -31,6 +32,15 @@ describe("cacheControlMiddleware", () => {
 
   it.each([
     "/no",
+    "/en",
+  ])("sets no-store for landing page %s", (path) => {
+    const req = makeRequest(path);
+    const res = cacheControlMiddleware(req);
+    expect(res.headers.get("Cache-Control")).toContain("no-store");
+    expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
+  });
+
+  it.each([
     "/en/priser",
     "/no/om-oss",
     "/en/kontakt",

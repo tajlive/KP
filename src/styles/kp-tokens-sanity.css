@@ -13,14 +13,14 @@
      FALLBACK DESIGN TOKENS
      Disse overstyres av Sanity hvis aktivert
      ═══════════════════════════════════════════════════════════════ */
-  
+
   /* Brand Colors */
-  --kp-brand: #0052FF;
-  --kp-brand-hover: #0047E0;
+  --kp-brand: #0052ff;
+  --kp-brand-hover: #0047e0;
   --kp-brand-light: #dbeafe;
   --kp-brand-dark: #0039c7;
   --kp-brand-glow: rgba(0, 82, 255, 0.3);
-  
+
   /* Semantic Colors */
   --kp-success: #22c55e;
   --kp-success-bg: rgba(34, 197, 94, 0.1);
@@ -30,7 +30,22 @@
   --kp-error-bg: rgba(239, 68, 68, 0.1);
   --kp-info: #3b82f6;
   --kp-info-bg: rgba(59, 130, 246, 0.1);
-  
+
+  /* Phase 1 redesign palette: Nordic Trust + Live Accents */
+  --kp-bg-dark: #0b1220;
+  --kp-bg-dark-elevated: #111827;
+  --kp-bg-light: #f8fafc;
+  --kp-bg-light-elevated: #e2e8f0;
+  --kp-positive: #22c55e;
+  --kp-negative: #ef4444;
+  --kp-ai: #3b82f6;
+  --kp-live: #f59e0b;
+  --kp-learning: #a855f7;
+  --kp-text-dark-primary: #f8fafc;
+  --kp-text-dark-secondary: #94a3b8;
+  --kp-text-light-primary: #0f172a;
+  --kp-text-light-secondary: #64748b;
+
   /* Dark Mode - Background Hierarchy */
   --kp-bg-primary: #0a0b0d;
   --kp-bg-secondary: #161719;
@@ -39,36 +54,38 @@
   --kp-bg-card: #1a1c24;
   --kp-bg-hover: rgba(255, 255, 255, 0.05);
   --kp-bg-active: rgba(255, 255, 255, 0.1);
-  
+
   /* Dark Mode - Text */
   --kp-text-primary: #f1f5f9;
   --kp-text-secondary: #94a3b8;
   --kp-text-tertiary: #64748b;
   --kp-text-muted: #475569;
-  
+
   /* Dark Mode - Borders */
   --kp-border: rgba(255, 255, 255, 0.08);
   --kp-border-light: rgba(255, 255, 255, 0.05);
   --kp-border-strong: rgba(255, 255, 255, 0.15);
   --kp-border-brand: rgba(0, 82, 255, 0.5);
-  
+
   /* Typography */
-  --kp-font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --kp-font-serif: 'Instrument Serif', Georgia, serif;
-  --kp-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --kp-font-sans:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --kp-font-serif: "Instrument Serif", Georgia, serif;
+  --kp-font-mono: "JetBrains Mono", "Fira Code", monospace;
   --kp-font-size-base: 16px;
   --kp-line-height-base: 1.6;
-  
+
   /* Spacing */
   --kp-spacing-unit: 4px;
-  --kp-spacing-xs: calc(var(--kp-spacing-unit) * 1);   /* 4px */
-  --kp-spacing-sm: calc(var(--kp-spacing-unit) * 2);   /* 8px */
-  --kp-spacing-md: calc(var(--kp-spacing-unit) * 4);   /* 16px */
-  --kp-spacing-lg: calc(var(--kp-spacing-unit) * 6);   /* 24px */
-  --kp-spacing-xl: calc(var(--kp-spacing-unit) * 8);   /* 32px */
+  --kp-spacing-xs: calc(var(--kp-spacing-unit) * 1); /* 4px */
+  --kp-spacing-sm: calc(var(--kp-spacing-unit) * 2); /* 8px */
+  --kp-spacing-md: calc(var(--kp-spacing-unit) * 4); /* 16px */
+  --kp-spacing-lg: calc(var(--kp-spacing-unit) * 6); /* 24px */
+  --kp-spacing-xl: calc(var(--kp-spacing-unit) * 8); /* 32px */
   --kp-spacing-2xl: calc(var(--kp-spacing-unit) * 12); /* 48px */
   --kp-spacing-3xl: calc(var(--kp-spacing-unit) * 16); /* 64px */
-  
+
   /* Border Radius */
   --kp-radius-button: 12px;
   --kp-radius-card: 16px;
@@ -77,23 +94,27 @@
   --kp-radius-input: 10px;
   --kp-radius-badge: 9999px;
   --kp-radius-full: 9999px;
-  
+
   /* Shadows */
   --kp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --kp-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --kp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --kp-shadow-card: 0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --kp-shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --kp-shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --kp-shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --kp-shadow-card:
+    0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --kp-shadow-card-hover:
+    0 8px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   --kp-shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.3);
   --kp-shadow-glow: 0 0 40px rgba(0, 82, 255, 0.3);
   --kp-shadow-glow-success: 0 0 30px rgba(16, 185, 129, 0.25);
   --kp-shadow-glow-error: 0 0 30px rgba(239, 68, 68, 0.25);
-  
+
   /* Transitions */
   --kp-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --kp-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --kp-transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Z-Index Scale */
   --kp-z-base: 0;
   --kp-z-dropdown: 100;
@@ -105,7 +126,7 @@
   --kp-z-tooltip: 700;
   --kp-z-toast: 800;
   --kp-z-devtools: 9000;
-  
+
   /* Layout */
   --kp-header-height: 4rem;
   --kp-footer-height: 5rem;
@@ -113,7 +134,7 @@
   --kp-bottom-nav-height: 5.75rem;
   --kp-max-content-width: 1400px;
   --kp-container-padding: 1rem;
-  
+
   /* Glassmorphism */
   --kp-glass-bg: rgba(26, 28, 36, 0.7);
   --kp-glass-border: rgba(255, 255, 255, 0.08);
@@ -126,35 +147,29 @@
 
 @layer utilities {
   /* Backgrounds */
-  .bg-kp-primary { background-color: var(--kp-bg-primary); }
-  .bg-kp-secondary { background-color: var(--kp-bg-secondary); }
-  .bg-kp-elevated { background-color: var(--kp-bg-elevated); }
-  .bg-kp-card { background-color: var(--kp-bg-card); }
-  .bg-kp-brand { background-color: var(--kp-brand); }
-  
-  /* Text */
-  .text-kp-primary { color: var(--kp-text-primary); }
-  .text-kp-secondary { color: var(--kp-text-secondary); }
-  .text-kp-muted { color: var(--kp-text-muted); }
-  .text-kp-brand { color: var(--kp-brand); }
-  
-  /* Borders */
-  .border-kp { border-color: var(--kp-border); }
-  .border-kp-brand { border-color: var(--kp-border-brand); }
-  
-  /* Shadows */
-  .shadow-kp-card { box-shadow: var(--kp-shadow-card); }
-  .shadow-kp-elevated { box-shadow: var(--kp-shadow-elevated); }
-  .shadow-kp-glow { box-shadow: var(--kp-shadow-glow); }
-  
-  /* Glassmorphism */
-  .glass {
-    background: var(--kp-glass-bg);
-    backdrop-filter: blur(var(--kp-glass-blur));
-    -webkit-backdrop-filter: blur(var(--kp-glass-blur));
-    border: 1px solid var(--kp-glass-border);
+  .bg-kp-elevated {
+    background-color: var(--kp-bg-elevated);
   }
-  
+  .bg-kp-brand {
+    background-color: var(--kp-brand);
+  }
+
+  /* Text */
+  .text-kp-brand {
+    color: var(--kp-brand);
+  }
+
+  /* Shadows */
+  .shadow-kp-card {
+    box-shadow: var(--kp-shadow-card);
+  }
+  .shadow-kp-elevated {
+    box-shadow: var(--kp-shadow-elevated);
+  }
+  .shadow-kp-glow {
+    box-shadow: var(--kp-shadow-glow);
+  }
+
   /* Gradient text */
   .text-gradient-brand {
     background: linear-gradient(135deg, var(--kp-brand) 0%, #7c3aed 100%);
@@ -190,8 +205,10 @@ html.light {
   --kp-border-strong: rgba(0, 0, 0, 0.15);
 
   /* Shadows */
-  --kp-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --kp-shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --kp-shadow-card:
+    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --kp-shadow-elevated:
+    0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
   --kp-shadow-glow: 0 0 20px rgba(0, 82, 255, 0.15);
 }
 

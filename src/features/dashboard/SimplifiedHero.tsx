@@ -15,7 +15,7 @@ interface Props {
   sessionMode?: "paper" | "live";
 }
 
-import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 
 export function SimplifiedHero({
   balance,
@@ -86,16 +86,11 @@ export function SimplifiedHero({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.4 }}
       >
-        <AnimatedNumber 
-          value={balance} 
-          duration={0.6}
-          formatFn={(val) => 
-            new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
-              style: "currency",
-              currency: "NOK",
-              maximumFractionDigits: 0,
-            }).format(Math.round(val))
-          } 
+        <AnimatedNumber
+          value={balance}
+          duration={600}
+          decimals={0}
+          suffix=" kr"
         />
       </m.div>
 
@@ -129,7 +124,9 @@ export function SimplifiedHero({
             asChild
             className={`${BRAND.gradient} mt-6 px-8 py-5 text-base md:text-lg font-semibold rounded-xl shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200`}
           >
-            <span>{ctaText ?? (locale === "no" ? "Start trading" : "Start trading")}</span>
+            <span>
+              {ctaText ?? (locale === "no" ? "Start trading" : "Start trading")}
+            </span>
           </Button>
         </Link>
       </m.div>
