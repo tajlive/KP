@@ -102,6 +102,29 @@
     "cta": "Fortsett",
     "loading": "Lagrer..."
   },
+  "level": {
+    "title": "Hva er ditt nivå?",
+    "subtitle": "Velg det nivået som passer deg best. Du kan endre dette senere.",
+    "recommended": "Anbefalt",
+    "back": "Tilbake",
+    "continue": "Fortsett",
+    "loading": "Lagrer...",
+    "error": "Kunne ikke lagre nivået. Prøv igjen.",
+    "levels": {
+      "beginner": {
+        "label": "Helt ny",
+        "description": "Jeg har aldri handlet før"
+      },
+      "intermediate": {
+        "label": "Litt erfaring",
+        "description": "Jeg har prøvd aksjer eller krypto"
+      },
+      "expert": {
+        "label": "Erfaren",
+        "description": "Jeg trader aktivt og vil lære AI-strategier"
+      }
+    }
+  },
   "step3": {
     "title": "Lekepenger",
     "subtitle": "Øv med virtuelle penger",
