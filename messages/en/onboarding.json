@@ -145,6 +145,7 @@
   "firstTrade": {
     "title": "Your first paper trade",
     "subtitle": "Buy a little Bitcoin with play money. No real money is at stake.",
+    "badge": "Paper Trading",
     "balance": "Available",
     "price": "BTC price",
     "amountLabel": "How much do you want to buy for?",
