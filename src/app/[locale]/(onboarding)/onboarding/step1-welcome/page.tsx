@@ -43,19 +43,19 @@ export default function OnboardingStep1() {
 
       const step = profile?.onboarding_step ?? 0;
       if (step === 1) {
-        router.push("/onboarding/step2-level");
+        router.push(`/${locale}/onboarding/step2-level`);
         return;
       }
       if (step === 2) {
-        router.push("/onboarding/step3-trading-mode");
+        router.push(`/${locale}/onboarding/step3-trading-mode`);
         return;
       }
       if (step === 3) {
-        router.push("/onboarding/step4-first-trade");
+        router.push(`/${locale}/onboarding/step4-first-trade`);
         return;
       }
       if (step === 4) {
-        router.push("/onboarding/step5-complete");
+        router.push(`/${locale}/onboarding/step5-complete`);
         return;
       }
       if (step >= 5) {
