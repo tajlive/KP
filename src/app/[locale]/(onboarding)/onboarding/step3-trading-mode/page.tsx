@@ -29,57 +29,64 @@ export default function OnboardingStep3() {
   const prefersReducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkStatus = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.push(`/${locale}/innlogging?next=/${locale}/onboarding/step3-trading-mode`);
-        return;
+        if (!user) {
+          router.push(`/${locale}/innlogging?next=/${locale}/onboarding/step3-trading-mode`);
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("onboarding_step, onboarding_completed")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.onboarding_completed) {
+          router.push(`/${locale}/dashboard`);
+          return;
+        }
+
+        const step = profile?.onboarding_step ?? 0;
+
+        if (step === 0) {
+          router.push(`/${locale}/onboarding/step1-welcome`);
+          return;
+        }
+
+        if (step === 1) {
+          router.push(`/${locale}/onboarding/step2-level`);
+          return;
+        }
+
+        if (step === 3) {
+          router.push(`/${locale}/onboarding/step4-first-trade`);
+          return;
+        }
+
+        if (step === 4) {
+          router.push(`/${locale}/onboarding/step5-complete`);
+          return;
+        }
+
+        if (step >= 5) {
+          router.push(`/${locale}/dashboard`);
+          return;
+        }
+
+        setInitializing(false);
+      } catch (err) {
+        console.error("Failed to load onboarding status:", err);
+        setError(t("error"));
+        setInitializing(false);
       }
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("onboarding_step, onboarding_completed")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.onboarding_completed) {
-        router.push(`/${locale}/dashboard`);
-        return;
-      }
-
-      const step = profile?.onboarding_step ?? 0;
-
-      if (step === 0) {
-        router.push(`/${locale}/onboarding/step1-welcome`);
-        return;
-      }
-
-      if (step === 1) {
-        router.push(`/${locale}/onboarding/step2-level`);
-        return;
-      }
-
-      if (step === 3) {
-        router.push(`/${locale}/onboarding/step4-first-trade`);
-        return;
-      }
-
-      if (step === 4) {
-        router.push(`/${locale}/onboarding/step5-complete`);
-        return;
-      }
-
-      if (step >= 5) {
-        router.push(`/${locale}/dashboard`);
-        return;
-      }
-
-      setInitializing(false);
     };
 
     checkStatus();
@@ -92,9 +99,9 @@ export default function OnboardingStep3() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) throw new Error("Ikke autentisert");
+      if (!user) throw new Error(t("error"));
 
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from("user_profiles")
         .update({
           onboarding_step: 3,
@@ -102,19 +109,21 @@ export default function OnboardingStep3() {
         })
         .eq("id", user.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       router.push(`/${locale}/onboarding/step4-first-trade`);
     } catch (err) {
       console.error("Failed to save paper setup:", err);
+      setError(t("error"));
       setLoading(false);
     }
   };
 
   if (initializing) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div role="status" className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kp-ai)]" />
+        <span className="sr-only">{t("loading")}</span>
       </div>
     );
   }
@@ -163,7 +172,7 @@ export default function OnboardingStep3() {
             <AnimatedNumber
               value={PAPER_START_BALANCE}
               prefix=""
-              suffix=" kr"
+              suffix={t("currencySuffix")}
               decimals={0}
               className="text-4xl font-bold text-[var(--kp-text-primary)]"
             />
@@ -182,6 +191,12 @@ export default function OnboardingStep3() {
             </TooltipContent>
           </Tooltip>
         </div>
+
+        {error && (
+          <p role="alert" className="text-sm text-red-500 text-center">
+            {error}
+          </p>
+        )}
 
         {/* CTA */}
         <Button

@@ -138,7 +138,9 @@
     "tooltip": "Play money simulates real market conditions, but you never lose real money.",
     "whatIs": "What is play money?",
     "cta": "Start first trade",
-    "loading": "Saving..."
+    "loading": "Saving...",
+    "error": "Could not save setup. Please try again.",
+    "currencySuffix": " NOK"
   },
   "step3": {
     "title": "Paper Trading",
