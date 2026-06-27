@@ -56,6 +56,7 @@ export async function resetOnboardingState(userId: string): Promise<void> {
       onboarding_completed: false,
       onboarding_started_at: null,
       onboarding_completed_at: null,
+      setup_completed_at: null,
       trading_experience: null,
       paper_balance: 100_000,
     })
@@ -77,14 +78,16 @@ export async function resetOnboardingState(userId: string): Promise<void> {
   }
 
   // Legacy paper_trades table may also contain rows from earlier flows.
+  // The legacy table/schema may not have a user_id column, so we ignore
+  // schema-mismatch errors here; the main trades table is already wiped above.
   const { error: legacyTradesError } = await supabase
     .from("paper_trades")
     .delete()
     .eq("user_id", userId);
 
   if (legacyTradesError) {
-    throw new Error(
-      `Failed to delete legacy paper trades: ${legacyTradesError.message}`,
+    console.warn(
+      `[resetOnboardingState] Skipping legacy paper_trades cleanup: ${legacyTradesError.message}`,
     );
   }
 

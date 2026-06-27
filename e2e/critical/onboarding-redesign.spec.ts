@@ -32,9 +32,13 @@ test.describe("Critical: redesigned onboarding flow @critical @onboarding", () =
     }
     await resetOnboardingState(userId);
 
-    // Ensure the browser starts without stale onboarding answers.
+    // Ensure the browser starts without stale onboarding state or answers.
+    await page.context().clearCookies();
+    // Navigate to the app origin first so localStorage access is allowed.
+    await page.goto("/no", { waitUntil: "domcontentloaded" });
     await page.evaluate(() => {
       localStorage.removeItem("kp-onboarding-answers");
+      sessionStorage.clear();
     });
   });
 
@@ -86,7 +90,7 @@ test.describe("Critical: redesigned onboarding flow @critical @onboarding", () =
     await expect(
       page.getByRole("heading", { name: /Øv med lekepenger/i }),
     ).toBeVisible();
-    await expect(page.getByText(/100\s*000\s*kr/)).toBeVisible();
+    await expect(page.getByText(/100\s*000\s*kr/).first()).toBeVisible();
 
     await page.getByRole("button", { name: /Start første trade/i }).click();
 
