@@ -57,7 +57,7 @@ These variables are injected at build/deploy time in Coolify and Woodpecker CI.
 | `NEXT_PUBLIC_STRIPE_PRICE_MASTER` | public | Stripe price ID for Master tier | `src/app/api/pricing/route.ts`, `src/app/api/webhooks/stripe/route.ts` |
 | `NEXT_PUBLIC_STRIPE_PRICE_PHD` | public | Stripe price ID for PhD tier | `src/app/api/pricing/route.ts`, `src/app/api/webhooks/stripe/route.ts` |
 | `NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR` | public | Stripe price ID for Professor tier | `src/app/api/pricing/route.ts`, `src/app/api/webhooks/stripe/route.ts` |
-| `RESEND_API_KEY` | server | Resend API key for transactional email | `.env.production.template`, runtime |
+| `RESEND_API_KEY` | server | Resend API key (`full_access`) for transactional email. Rotated 2026-06-27 to dedicated `KIMI-automation` key. | `.env.local`, GitHub Actions secret, runtime |
 | `NEXT_PUBLIC_GLITCHTIP_DSN` | public | GlitchTip/Sentry-compatible DSN (preferred error tracking) | `.woodpecker/deploy.yml`, `src/lib/sentry.ts` |
 | `COOLIFY_DEPLOY_WEBHOOK` | server | Coolify deployment webhook URL | `.woodpecker/deploy.yml`, `scripts/coolify-deploy.mjs` |
 | `COOLIFY_TOKEN` | server | Coolify API token | `.woodpecker/deploy.yml`, `scripts/coolify-deploy.mjs` |
@@ -257,10 +257,10 @@ These secrets are configured as Woodpecker secrets and referenced in `.woodpecke
 | Name | Type | Purpose | Source |
 |------|------|---------|--------|
 | `GITHUB_TOKEN` | server | GitHub personal access token for scripts | `.env.deploy.template`, scripts |
-| `GH_PAT` | server | GitHub personal access token alias | `.env.local` |
+| `GH_PAT` | server | GitHub OAuth token for `tajlive` with `repo`, `workflow`, `read:org`, `gist`. Rotated 2026-06-27 from active `gh` CLI session. | `.env.local`, GitHub Actions secret |
 | `GITHUB_OWNER` | server | GitHub owner/org (defaults to `taj`) | `scripts/run-klarpakke-monitor-mcp.mjs` |
 | `GITHUB_REPO` | server | GitHub repo name (defaults to `klarpakke`) | `scripts/run-klarpakke-monitor-mcp.mjs`, `scripts/sync-github-actions-secrets.mjs` |
-| `CLOUDFLARE_API_TOKEN` | server | Cloudflare API token | `.env.local.example`, `.env.deploy.template`, scripts |
+| `CLOUDFLARE_API_TOKEN` | server | Cloudflare API token. **Current token is under-scoped** (missing Zone:Workers Routes:Edit and Zone:Cache Purge:Edit). Use `scripts/rotate-cloudflare-token.mjs` after creating a new token. | `.env.local`, GitHub Actions secret |
 | `CLOUDFLARE_ZONE_ID` | server | Cloudflare zone ID | `.env.local.example` |
 | `CLOUDFLARE_ACCOUNT_ID` | server | Cloudflare account ID | `.env.local.example`, scripts |
 | `VERCEL_TOKEN` | server | Vercel CLI token (legacy/migration) | `.env.local`, `.env.deploy.template`, scripts |
@@ -275,6 +275,44 @@ These secrets are configured as Woodpecker secrets and referenced in `.woodpecke
 | `PROD_REF` | server | Supabase project ref for deploy scripts | `.env.deploy.template` |
 | `SUPABASE_ACCESS_TOKEN` | server | Supabase personal access token for CLI/management | `.env.deploy.template`, scripts |
 | `SUPABASE_PROJECT_REF` | server | Supabase project reference (auto-derived from URL if unset) | scripts |
+
+### Cloudflare API token
+
+`CLOUDFLARE_API_TOKEN` is used by `npm run cf:deploy`, `scripts/purge-cloudflare-cache.mjs`,
+`scripts/setup-cloudflare-resources.mjs`, and other deploy/ops scripts.
+
+The current token is **missing permissions**, which causes `wrangler deploy` to report
+`Some triggers failed to deploy` and cache-purge operations to fail with HTTP 403.
+
+Required token permissions:
+
+| Permission | Scope | Why |
+|------------|-------|-----|
+| `Cloudflare Workers Scripts` → **Edit** | Account | Deploy worker scripts via Wrangler |
+| `Zone:Workers Routes` → **Edit** | Zone | Attach/detach worker routes on `klarpakke.no` |
+| `Cloudflare Workers KV` → **Edit** | Account | Read/write KV namespaces used by the worker |
+| `Zone:Cache Purge` → **Edit** | Zone | Purge Cloudflare cache after deploy |
+| `Zone:Zone` → **Read** | Zone | Resolve and verify the zone |
+
+Pre-filled token creation URL (logs in to Cloudflare Dashboard):
+
+```text
+https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_routes%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22cache%22%2C%22type%22%3A%22purge%22%7D%2C%7B%22key%22%3A%22zone%22%2C%22type%22%3A%22read%22%7D%5D&accountId=80d5b1d56a3e907150ba7348b6182894&zoneId=328d7de7e8e48308fd4f9d760da5b18f&name=Klarpakke%20deploy%20%2B%20cache%20purge
+```
+
+After creating the token, rotate it automatically:
+
+```bash
+# Token in env:
+export CLOUDFLARE_API_TOKEN=<new-token>
+node scripts/rotate-cloudflare-token.mjs
+
+# Or pipe it in:
+echo "<new-token>" | node scripts/rotate-cloudflare-token.mjs
+```
+
+The script verifies the token, updates `.env.local`, optionally re-encrypts secrets to
+MemPalace KG, runs `npm run cf:deploy`, and purges the cache.
 
 ### Email
 
@@ -406,7 +444,7 @@ These variables are tied to platforms or services that Klarpakke has migrated aw
 | `POSTGRES_PRISMA_URL` | server | Vercel/Prisma-style Postgres config | `.env.local` |
 | `POSTGRES_URL_NON_POOLING` | server | Vercel/Prisma-style Postgres config | `.env.local` |
 | `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` | server | Replaced by `E2E_USER_*` | scripts, e2e |
-| `GH_PAT` | server | Replaced by `GITHUB_TOKEN` | `.env.local` |
+| `GH_PAT` | server | Active GitHub token for `tajlive/KP` automation. Replaced the revoked token on 2026-06-27. | `.env.local`, GitHub Actions secret |
 | `KLARPAKKE_MCP_TOKEN` | server | Unclear purpose, likely legacy placeholder | `.env.local` |
 
 ---
