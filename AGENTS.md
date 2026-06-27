@@ -48,6 +48,7 @@ kimi test:e2e        # npm run test:e2e:critical:chromium
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
 kimi deploy          # npm run cf:deploy
+kimi browser         # Start Chrome Control MCP-serveren
 
 # Pipeline (NYTT)
 kimi ci              # npm run lint:gate && npm run test:unit
@@ -314,6 +315,29 @@ cat .kimi/PROJECT_CONTEXT.md
 # Lim inn i KIMI ved session-start, eller referer:
 # @.kimi/session-summaries/current-session-context.md
 ```
+
+---
+
+## 🤖 Sentralisert Orkestrering
+
+`korch '<task>'` (alias for `node scripts/kimi-orchestrator.mjs '<task>'`) er det anbefalte utgangspunktet for oppgaver som ikke er rene lokale filoperasjoner. Den genererer en ferdig KIMI-brief med:
+- Automatisk domene/skill-deteksjon
+- Obligatoriske web-søkespørsmål
+- Rekkefølge for sub-agenter (`explore` → `coder`/`security`/`architect` → `tester` → `knowledge`)
+- MemPalace pre-flight (`search`, `recent_context`, `kg_query`)
+
+Forhold til eksisterende verktøy:
+- `korch` — nytt, raskt entry point for én konkret oppgave.
+- `kimi-super` / `kimil` — fortsatt nyttig for fulle sessioner med pre/post-kontekst.
+
+### Hurtigprotokoll
+
+1. Kjør `korch '<task>'` og lim inn briefen i KIMI.
+2. Kjør web-søkene i briefen først.
+3. Følg sub-agentplanen i rekkefølge.
+4. Etter endt oppgave: `kg_batch` + `write_diary` + `auto_tag`.
+
+Se også: `docs/superpowers/specs/2026-06-27-kimi-orchestrator-smart-thinking-design.md`
 
 ---
 
