@@ -24,9 +24,9 @@ import {
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { resolve, dirname } from "path";
+import { resolve, dirname, basename } from "path";
 import { fileURLToPath } from "url";
-import { mkdirSync, appendFileSync } from "fs";
+import { mkdirSync, appendFileSync, existsSync, cpSync, rmSync } from "fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -41,6 +41,51 @@ const ALLOWLIST = new Set([
     Boolean,
   ) || []),
 ]);
+
+// ── SYSTEM PROFILE IMPORT ───────────────────────────────────────────────────
+
+function systemChromeProfilePath() {
+  if (process.platform === "darwin") {
+    return resolve(process.env.HOME, "Library/Application Support/Google/Chrome");
+  }
+  if (process.platform === "linux") {
+    return resolve(process.env.HOME, ".config/google-chrome");
+  }
+  if (process.platform === "win32") {
+    return resolve(process.env.LOCALAPPDATA || "", "Google/Chrome/User Data");
+  }
+  return null;
+}
+
+function copySystemProfile() {
+  const src = systemChromeProfilePath();
+  if (!src || !existsSync(src)) {
+    throw new Error(`System Chrome profile not found at ${src}`);
+  }
+  if (existsSync(PROFILE_DIR)) {
+    rmSync(PROFILE_DIR, { recursive: true, force: true });
+  }
+  const skip = new Set([
+    "SingletonLock",
+    "SingletonCookie",
+    "SingletonSocket",
+    "lockfile",
+    "Crashpad",
+    "Code Cache",
+    "GPUCache",
+    "Service Worker",
+    "Storage",
+    "SharedStorage",
+  ]);
+  cpSync(src, PROFILE_DIR, {
+    recursive: true,
+    filter: (srcPath) => {
+      const name = basename(srcPath);
+      return !skip.has(name);
+    },
+  });
+  return true;
+}
 
 // ── STATE ───────────────────────────────────────────────────────────────────
 
@@ -147,7 +192,11 @@ async function handleStart(args) {
     };
   }
 
-  mkdirSync(PROFILE_DIR, { recursive: true });
+  if (args.useSystemProfile === true) {
+    copySystemProfile();
+  } else {
+    mkdirSync(PROFILE_DIR, { recursive: true });
+  }
 
   const headless = args.headless === true;
   const context = await chromium.launchPersistentContext(PROFILE_DIR, {
@@ -173,6 +222,7 @@ async function handleStart(args) {
     pagesCount: pages.length,
     sessionId,
     headless,
+    useSystemProfile: args.useSystemProfile === true,
   };
 }
 
@@ -373,11 +423,12 @@ async function handleApprove(args) {
 const TOOLS = [
   {
     name: "chrome_start",
-    description: "Launch Chrome with a persistent user profile. Default is headed (headless:false).",
+    description: "Launch Chrome with a persistent user profile. Default is headed (headless:false). Use useSystemProfile:true to import your existing Chrome profile with saved passwords.",
     inputSchema: {
       type: "object",
       properties: {
         headless: { type: "boolean", description: "Run Chrome headless" },
+        useSystemProfile: { type: "boolean", description: "Copy the system Chrome profile (with saved passwords/logins) into the local profile before launching" },
       },
       required: [],
     },
