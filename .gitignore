@@ -133,7 +133,8 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 logs/
-.chrome-profile/
+.chrome-profile*
+.chrome-profile.backup*/
 
 # =============================================================================
 # SECRETS AND KEYS (ALDRI COMMIT!)
