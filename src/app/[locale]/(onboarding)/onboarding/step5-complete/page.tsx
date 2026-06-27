@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import { createClient } from "@/lib/supabase/client";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +17,7 @@ export default function OnboardingStep5() {
   const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
+  const prefersReducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [paperBalance, setPaperBalance] = useState<number>(100000);
@@ -84,8 +88,8 @@ export default function OnboardingStep5() {
   if (initializing) {
     return (
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        <p className="text-slate-500">{t("initializing")}</p>
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--kp-ai)]" />
+        <p className="text-[var(--kp-text-secondary)]">{t("initializing")}</p>
       </div>
     );
   }
@@ -94,61 +98,70 @@ export default function OnboardingStep5() {
     <div className="text-center space-y-8">
       {/* Success Animation */}
       <div className="relative">
-        <div className="mx-auto w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
-          <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
+        <div
+          className={`mx-auto w-24 h-24 bg-[var(--kp-success-bg)] rounded-full flex items-center justify-center ${
+            prefersReducedMotion ? "" : "animate-in zoom-in duration-500"
+          }`}
+        >
+          <CheckCircle2 className="w-12 h-12 text-[var(--kp-success)]" />
         </div>
         {/* Confetti effect (CSS) */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 rounded-full animate-ping"
-              style={{
-                backgroundColor: ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"][i],
-                transform: `rotate(${i * 60}deg) translateY(-40px)`,
-                animationDelay: `${i * 0.1}s`,
-                animationDuration: "1s",
-              }}
-            />
-          ))}
-        </div>
+        {!prefersReducedMotion && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-2 h-2 rounded-full animate-ping"
+                style={{
+                  backgroundColor: ["#3B82F6", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"][i],
+                  transform: `rotate(${i * 60}deg) translateY(-40px)`,
+                  animationDelay: `${i * 0.1}s`,
+                  animationDuration: "1s",
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Text */}
       <div className="space-y-3">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--kp-text-primary)]">
           {t("title")}
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-400">
+        <p className="text-lg text-[var(--kp-text-secondary)]">
           {t("subtitle")}
         </p>
       </div>
 
       {/* Summary Card */}
-      <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800">
-        <p className="text-sm text-slate-500 mb-2">{t("paperBalance")}</p>
-        <p className="text-3xl font-bold text-slate-900 dark:text-white">
-          {paperBalance.toLocaleString("nb-NO")} kr
-        </p>
-        <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30">
+      <Card className="bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-6 gap-3 text-center">
+        <p className="text-sm text-[var(--kp-text-secondary)] mb-2">{t("paperBalance")}</p>
+        <AnimatedNumber
+          value={paperBalance}
+          suffix=" kr"
+          decimals={0}
+          className="text-3xl font-bold text-[var(--kp-text-primary)]"
+        />
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[var(--kp-success-bg)] text-[var(--kp-success)]">
             {t("botReady")}
           </span>
         </div>
-      </div>
+      </Card>
 
       {/* Features list */}
       <div className="text-left space-y-3 max-w-sm mx-auto">
-        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+        <div className="flex items-center gap-3 text-[var(--kp-text-secondary)]">
+          <CheckCircle2 className="w-5 h-5 text-[var(--kp-success)] shrink-0" />
           <span>{t("features.paperTrading")}</span>
         </div>
-        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+        <div className="flex items-center gap-3 text-[var(--kp-text-secondary)]">
+          <CheckCircle2 className="w-5 h-5 text-[var(--kp-success)] shrink-0" />
           <span>{t("features.strategies")}</span>
         </div>
-        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+        <div className="flex items-center gap-3 text-[var(--kp-text-secondary)]">
+          <CheckCircle2 className="w-5 h-5 text-[var(--kp-success)] shrink-0" />
           <span>{t("features.analytics")}</span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Logo } from "@/shared/ui/Logo";
 
@@ -20,7 +20,7 @@ export default async function OnboardingLayout({
 }: OnboardingLayoutProps) {
   const { locale } = await params;
   const t = await getTranslations("onboarding");
-  const supabase = await createClient();
+  const supabase = await createServerClient();
 
   // Sjekk autentisering
   const {
@@ -52,25 +52,25 @@ export default async function OnboardingLayout({
   const displayStep = Math.min(dbStep, TOTAL_STEPS - 1);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-[var(--kp-bg-primary)]">
       {/* Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <header className="bg-[var(--kp-bg-secondary)] border-b border-[var(--kp-border)]">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href={`/${locale}`}>
             <Logo className="h-8" />
           </Link>
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-[var(--kp-text-muted)]">
             {t("stepIndicator", { current: displayStep + 1, total: TOTAL_STEPS })}
           </div>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="bg-white dark:bg-slate-900">
+      <div className="bg-[var(--kp-bg-secondary)]">
         <div className="max-w-2xl mx-auto">
-          <div className="h-1 bg-slate-100 dark:bg-slate-800">
+          <div className="h-1 bg-[var(--kp-bg-tertiary)]">
             <div
-              className="h-full bg-blue-600 transition-all duration-500"
+              className="h-full bg-[var(--kp-ai)] transition-all duration-500"
               style={{ width: `${((displayStep + 1) / TOTAL_STEPS) * 100}%` }}
             />
           </div>
@@ -79,7 +79,7 @@ export default async function OnboardingLayout({
 
       {/* Main content */}
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
+        <div className="bg-[var(--kp-bg-secondary)] rounded-2xl shadow-sm border border-[var(--kp-border)] p-6 md:p-8">
           {children}
         </div>
       </main>
