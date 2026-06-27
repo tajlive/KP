@@ -152,7 +152,15 @@ async function handleStart(args) {
   const headless = args.headless === true;
   const context = await chromium.launchPersistentContext(PROFILE_DIR, {
     headless,
-    args: ["--no-first-run", "--no-default-browser-check"],
+    args: [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-blink-features=AutomationControlled",
+      "--disable-features=IsolateOrigins,site-per-process",
+      "--disable-site-isolation-trials",
+      "--window-size=1920,1080",
+    ],
+    ignoreDefaultArgs: ["--enable-automation"],
   });
 
   browserContext = context;
