@@ -33,6 +33,7 @@ alias kexec='bash .kimi/AGENT_ORCHESTRATOR.sh execute'
 
 # Orchestrator v3.0 — generates KIMI brief with web-search and sub-agent plan
 alias korch='node /Users/taj/klarpakke/scripts/kimi-orchestrator.mjs'
+alias rntest='npm run orch:verify && npx vitest run scripts/__tests__/kimi-orchestrator.test.mjs'
 
 # Swarm
 alias kswarm='npm run swarm:review'
