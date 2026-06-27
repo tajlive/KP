@@ -37,6 +37,24 @@ describe('classifyDomain', () => {
   it('throws on empty domains', () => {
     expect(() => classifyDomain('task', [])).toThrow('domains must be a non-empty array');
   });
+
+  it('falls back to general when confidence is below threshold', () => {
+    const result = classifyDomain('oppdater dokumentasjon', domains);
+    expect(result.domain.id).toBe('general');
+    expect(result.fallback).toBe(true);
+  });
+});
+
+describe('tokenization', () => {
+  it('preserves norwegian characters in task keywords', () => {
+    const brief = assembleBrief({
+      task: 'optimaliser database-spørringer',
+      domain,
+      agents,
+      template
+    });
+    expect(brief).toContain('database-spørringer');
+  });
 });
 
 const template = `# Task

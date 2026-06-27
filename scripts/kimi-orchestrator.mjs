@@ -18,9 +18,10 @@ export function classifyDomain(task, domains) {
   }
 
   const normalizedTask = task.toLowerCase();
-  const words = new Set(normalizedTask.split(/\W+/).filter(Boolean));
+  const words = new Set(normalizedTask.split(/[^a-zæøå0-9]+/i).filter((w) => w.length > 1));
 
-  let best = { domain: domains.find((d) => d.id === 'general') || domains[0], confidence: 0 };
+  const generalDomain = domains.find((d) => d.id === 'general');
+  let best = { domain: generalDomain || domains[0], confidence: 0 };
 
   for (const domain of domains) {
     const matches = domain.keywords.filter((kw) => words.has(kw.toLowerCase())).length;
@@ -30,7 +31,13 @@ export function classifyDomain(task, domains) {
     }
   }
 
-  return best;
+  const confidenceThreshold = 0.15;
+  const isFallback = best.confidence < confidenceThreshold;
+  if (isFallback && generalDomain && best.domain.id !== 'general') {
+    return { domain: generalDomain, confidence: best.confidence, fallback: true };
+  }
+
+  return { ...best, fallback: isFallback };
 }
 
 export function assembleBrief({ task, domain, agents, template }) {
@@ -57,8 +64,8 @@ export function assembleBrief({ task, domain, agents, template }) {
 
   const taskWords = task
     .toLowerCase()
-    .split(/\W+/)
-    .filter((w) => w.length > 2);
+    .split(/[^a-zæøå0-9]+/i)
+    .filter((w) => w.length > 1);
   const taskKeywords = taskWords.slice(0, 5).join(' ');
   const kgEntity = domain.id;
 
@@ -126,17 +133,36 @@ function main() {
     const task = taskIndex >= 0 ? args[taskIndex] : '';
 
     if (!task) {
-      console.error('Usage: node scripts/kimi-orchestrator.mjs [--verify] "<task>" [--template=<name>]');
+      console.error(
+        'Usage: node scripts/kimi-orchestrator.mjs [--verify] "<task>" [--template=<name>] [--domain=<id>]' +
+          '\n\nAvailable domains: auth, trading, database, frontend, api, deploy, testing, mempalace, general'
+      );
       process.exit(1);
     }
 
     const templateName = args.find((arg) => arg.startsWith('--template='))?.split('=')[1] || 'default';
+    const domainOverride = args.find((arg) => arg.startsWith('--domain='))?.split('=')[1];
     const { domains } = loadJson('domains.json');
     if (!Array.isArray(domains)) throw new Error('domains.json must contain a "domains" array');
     const { agents: agentDefinitions } = loadJson('agent-registry.json');
     if (!Array.isArray(agentDefinitions)) throw new Error('agent-registry.json must contain an "agents" array');
 
-    const { domain } = classifyDomain(task, domains);
+    let selectedDomain;
+    if (domainOverride) {
+      selectedDomain = domains.find((d) => d.id === domainOverride);
+      if (!selectedDomain) {
+        throw new Error(`Unknown domain: "${domainOverride}". Available: ${domains.map((d) => d.id).join(', ')}`);
+      }
+    }
+
+    const classification = classifyDomain(task, domains);
+    const { domain } = selectedDomain ? { domain: selectedDomain } : classification;
+
+    if (classification.fallback && !domainOverride) {
+      console.warn(
+        `Warning: low confidence (${classification.confidence.toFixed(2)}). Falling back to "general". Use --domain=<id> to override.`
+      );
+    }
     const selectedAgents = domain.sub_agents
       .map((id) => {
         const agent = agentDefinitions.find((a) => a.id === id);
