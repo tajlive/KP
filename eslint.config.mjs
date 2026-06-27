@@ -213,6 +213,7 @@ const eslintConfig = [
       "seed*.cjs",
       "seed*.sql",
       ".chrome-profile.backup*/**",
+      ".chrome-profile/**",
     ],
   },
 
