@@ -122,6 +122,10 @@
       "description": "Start Chrome Control MCP-serveren for KIMI (krever MCP_API_KEY)",
       "command": "npm run chrome:mcp"
     },
+    "chrome": {
+      "description": "Start Chrome Control MCP-serveren for KIMI (krever MCP_API_KEY)",
+      "command": "npm run chrome:mcp"
+    },
     "watchdog": {
       "description": "Kjør watchdog sjekk",
       "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
