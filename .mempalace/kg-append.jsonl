@@ -184,3 +184,10 @@
 {"subject":"CdsProvider","predicate":"provides","object":"ThemeProvider-for-CDS-components","validFrom":"2026-06-26T14:43:14.082Z"}
 {"subject":"marked-route","predicate":"requires","object":"CdsProvider","validFrom":"2026-06-26T14:43:14.082Z"}
 {"subject":"cache-control","predicate":"marks","object":"marked-as-no-store","validFrom":"2026-06-26T14:43:14.089Z"}
+{"subject":"chrome-control","predicate":"is","object":"local-mcp-server","validFrom":"2026-06-27T00:24:40.688Z"}
+{"subject":"chrome-control","predicate":"uses","object":"playwright","validFrom":"2026-06-27T00:24:40.689Z"}
+{"subject":"chrome-control","predicate":"provides","object":"chrome_*-tools","validFrom":"2026-06-27T00:24:40.689Z"}
+{"subject":"lead-architect","predicate":"can_use","object":"chrome-control-for-dashboard-automation","validFrom":"2026-06-27T00:24:40.693Z"}
+{"subject":"resend-api-key","predicate":"rotated_to","object":"KIMI-automation-full-access","validFrom":"2026-06-27T00:24:40.693Z"}
+{"subject":"GH_PAT","predicate":"rotated_to","object":"gh-cli-oauth-token","validFrom":"2026-06-27T00:24:40.693Z"}
+{"subject":"CLOUDFLARE_API_TOKEN","predicate":"missing","object":"zone-workers-routes-cache-purge-permissions","validFrom":"2026-06-27T00:24:40.693Z"}
