@@ -60,6 +60,17 @@ If the session is in auto permission mode, you **MUST NOT** use `AskUserQuestion
 ### Secrets & deploy authority
 You may gather, inspect, and rotate secrets via project vault scripts. You may deploy via `npm run cf:deploy`. You must update `docs/SECRETS-INVENTORY.md` and run memory sync after any secret rotation.
 
+### Dashboard automation authority
+When an external service (Cloudflare, Sanity, GitHub, Resend, etc.) requires an action that has no API or where the current token lacks permission, use the **`chrome_*` MCP tools** to drive Chrome locally. Workflow:
+1. Call `chrome_start` (headed by default so the user can watch).
+2. Call `chrome_navigate` to the dashboard URL.
+3. Use `chrome_screenshot` and `chrome_extract` to read state.
+4. Use `chrome_click` / `chrome_fill` / `chrome_select` for write actions; these pause for user approval.
+5. When a token or secret is generated, capture it with `chrome_extract`, then rotate it via the vault/env scripts and sync to GitHub Actions.
+6. Call `chrome_stop` when done.
+
+**Rules:** Never auto-fill passwords. Never execute a confirm-class action without explicit user approval. Never drive Chrome to unknown/non-HTTPS sites. Log every action.
+
 ---
 
 ## 🛠️ Tool Priority (MCP)

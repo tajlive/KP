@@ -41,6 +41,11 @@
       "description": "MemPalace MCP v3.4.0 — prosjektkunnskap, KG, diary (zero-dep, TF-IDF + bigram + cross-lingual + Atomic writes, SuperKIMI-optimalisert)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
+    },
+    "chrome": {
+      "description": "Chrome Control MCP — local Playwright browser automation for dashboard-only operations (tokens, billing, quotas). Requires MCP_API_KEY and user approval for writes.",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-chrome-mcp.mjs"]
     }
   }
 }
