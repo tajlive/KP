@@ -132,6 +132,7 @@
     "agent:swarm": "bash .kimi/AGENT_ORCHESTRATOR.sh swarm",
     "agent:handoff": "bash .kimi/AGENT_ORCHESTRATOR.sh handoff",
     "agent:status": "bash .kimi/AGENT_ORCHESTRATOR.sh status",
+    "orch:verify": "node scripts/kimi-orchestrator.mjs --verify",
     "agent:setup": "bash .kimi/SETUP_ANTIGRAVITY.sh",
     "ask:gemini": "bash .kimi/AGENT_ORCHESTRATOR.sh plan",
     "tell:kimi": "bash .kimi/AGENT_ORCHESTRATOR.sh execute",

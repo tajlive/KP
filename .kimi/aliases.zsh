@@ -31,6 +31,9 @@ alias karch='kimi --skills-dir .kimi/skills/klarpakke-architect'
 alias kplan='bash .kimi/AGENT_ORCHESTRATOR.sh plan'
 alias kexec='bash .kimi/AGENT_ORCHESTRATOR.sh execute'
 
+# Orchestrator v3.0 — generates KIMI brief with web-search and sub-agent plan
+alias korch='node /Users/taj/klarpakke/scripts/kimi-orchestrator.mjs'
+
 # Swarm
 alias kswarm='npm run swarm:review'
 alias ksec='npm run swarm:security'

@@ -118,6 +118,10 @@
       "description": "List MCP-servere i repo-konfigurasjonen",
       "command": "node --input-type=module -e \"import { readFileSync } from 'node:fs'; const cfg = JSON.parse(readFileSync('.mcp/mcp_config.json','utf8')); console.log(Object.keys(cfg.mcpServers || {}).join('\\\\n'))\""
     },
+    "browser": {
+      "description": "Start Chrome Control MCP-serveren for KIMI (krever MCP_API_KEY)",
+      "command": "npm run chrome:mcp"
+    },
     "watchdog": {
       "description": "Kjør watchdog sjekk",
       "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
@@ -133,6 +137,10 @@
     "super": {
       "description": "Aktiver super-skill med full smart-launch + pre-session kontekst + post-session analyse",
       "command": "kimi --skills-dir .kimi/skills/klarpakke-super"
+    },
+    "orch": {
+      "description": "Generer KIMI brief med søkespørsmål og agenter (shell-alias: korch)",
+      "command": "node scripts/kimi-orchestrator.mjs"
     },
     "sanity:token": {
       "description": "Hjelp til å generere Sanity API-tokens",

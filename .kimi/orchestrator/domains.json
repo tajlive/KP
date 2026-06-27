@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "domains": [
+    {
+      "id": "auth",
+      "name": "Auth & Security",
+      "keywords": ["auth", "login", "oauth", "session", "jwt", "permission", "refresh", "token", "password", "rls"],
+      "skill": ".kimi/skills/klarpakke-auth",
+      "mcp_profile": "medium",
+      "sub_agents": ["explore", "security", "tester"],
+      "search_queries": ["{{task}} Supabase SSR auth", "{{task}} Next.js OAuth best practice 2026", "{{task}} refresh token security"]
+    },
+    {
+      "id": "trading",
+      "name": "Trading Engine",
+      "keywords": ["trading", "strategy", "bot", "order", "position", "pnl", "binance", "circuit", "breaker"],
+      "skill": ".kimi/skills/klarpakke-trading",
+      "mcp_profile": "full",
+      "sub_agents": ["explore", "architect", "coder", "tester"],
+      "search_queries": ["{{task}} trading bot architecture", "{{task}} Binance API best practice", "{{task}} risk management crypto trading"]
+    },
+    {
+      "id": "database",
+      "name": "Database & Schema",
+      "keywords": ["migration", "sql", "supabase", "postgres", "trigger", "rls", "schema", "index", "function"],
+      "skill": ".kimi/skills/klarpakke-database",
+      "mcp_profile": "full",
+      "sub_agents": ["explore", "architect", "coder", "tester"],
+      "search_queries": ["{{task}} Supabase PostgreSQL", "{{task}} database migration best practice", "{{task}} Postgres RLS pattern"]
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend & UI",
+      "keywords": ["ui", "component", "react", "tailwind", "dashboard", "page", "layout", "lighthouse", "responsive"],
+      "skill": ".kimi/skills/klarpakke-performance",
+      "mcp_profile": "minimal",
+      "sub_agents": ["explore", "coder", "tester"],
+      "search_queries": ["{{task}} Next.js React 19", "{{task}} Tailwind best practice", "{{task}} frontend performance 2026"]
+    },
+    {
+      "id": "api",
+      "name": "API & Routes",
+      "keywords": ["endpoint", "route", "handler", "middleware", "webhook", "api", "rate", "limit"],
+      "skill": ".kimi/skills/klarpakke-architect",
+      "mcp_profile": "medium",
+      "sub_agents": ["explore", "security", "coder", "tester"],
+      "search_queries": ["{{task}} Next.js API route", "{{task}} REST API design", "{{task}} webhook security"]
+    },
+    {
+      "id": "deploy",
+      "name": "Deploy & Infrastructure",
+      "keywords": ["cloudflare", "workers", "wrangler", "ci", "build", "env", "secret", "domain", "deploy", "hosting"],
+      "skill": ".kimi/skills/klarpakke-architect",
+      "mcp_profile": "medium",
+      "sub_agents": ["explore", "architect", "tester"],
+      "search_queries": ["{{task}} Cloudflare Workers", "{{task}} Wrangler deploy best practice", "{{task}} CI/CD GitHub Actions"]
+    },
+    {
+      "id": "testing",
+      "name": "Testing & QA",
+      "keywords": ["test", "e2e", "vitest", "playwright", "coverage", "mock", "assert"],
+      "skill": ".kimi/skills/klarpakke-testing",
+      "mcp_profile": "medium",
+      "sub_agents": ["explore", "coder", "tester"],
+      "search_queries": ["{{task}} Vitest best practice", "{{task}} Playwright E2E pattern", "{{task}} testing strategy 2026"]
+    },
+    {
+      "id": "mempalace",
+      "name": "Memory & Knowledge",
+      "keywords": ["mempalace", "memory", "knowledge", "diary", "handoff", "sync", "kg", "index"],
+      "skill": ".kimi/skills/klarpakke-mempalace",
+      "mcp_profile": "full",
+      "sub_agents": ["explore", "knowledge"],
+      "search_queries": ["{{task}} knowledge graph maintenance", "{{task}} MemPalace MCP pattern", "{{task}} AI memory management"]
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "keywords": ["refactor", "fix", "bug", "optimize", "improve", "clean", "update"],
+      "skill": ".kimi/skills/klarpakke-super",
+      "mcp_profile": "auto",
+      "sub_agents": ["explore", "coder", "tester"],
+      "search_queries": ["{{task}} best practice", "{{task}} 2026", "{{task}} common pitfalls"]
+    }
+  ]
+}
