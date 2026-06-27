@@ -4,7 +4,7 @@
     "lastOptimized": "2026-05-15",
     "for": "KIMI CLI v1.44.0 + k2.6",
     "description": "MINIMAL MCP-konfigurasjon — 7 raske servere. MemPalace v3.4 (zero-dep, TF-IDF + bigram + cross-lingual) inkludert for prosjektkunnskap.",
-    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote). MemPalace v3.4 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt. All servers lokalt installert."
+    "note": "Lokal Chrome MCP aktivert (ingen npx). Fjernet: npx-servere (chrome-devtools, resend), klarpakke (remote). MemPalace v3.4 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt. All servers lokalt installert."
   },
   "mcpServers": {
     "filesystem": {
@@ -43,7 +43,7 @@
       "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
     },
     "chrome": {
-      "description": "Chrome Control MCP — local Playwright browser automation for dashboard-only operations (tokens, billing, quotas). Requires MCP_API_KEY and user approval for writes.",
+      "description": "Chrome Control MCP — lokal Playwright browser automation. Krever MCP_API_KEY. Skrivende operasjoner krever chrome_approve.",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-chrome-mcp.mjs"]
     }
