@@ -191,3 +191,11 @@
 {"subject":"resend-api-key","predicate":"rotated_to","object":"KIMI-automation-full-access","validFrom":"2026-06-27T00:24:40.693Z"}
 {"subject":"GH_PAT","predicate":"rotated_to","object":"gh-cli-oauth-token","validFrom":"2026-06-27T00:24:40.693Z"}
 {"subject":"CLOUDFLARE_API_TOKEN","predicate":"missing","object":"zone-workers-routes-cache-purge-permissions","validFrom":"2026-06-27T00:24:40.693Z"}
+{"subject":"kimi-orchestrator","predicate":"is_a","object":"cli-tool","validFrom":"2026-06-27T19:19:38.511Z"}
+{"subject":"kimi-orchestrator","predicate":"generates","object":"kimi-brief","validFrom":"2026-06-27T19:19:38.511Z"}
+{"subject":"kimi-orchestrator","predicate":"uses","object":"web-search","validFrom":"2026-06-27T19:19:38.511Z"}
+{"subject":"kimi-orchestrator","predicate":"uses","object":"sub-agents","validFrom":"2026-06-27T19:19:38.511Z"}
+{"subject":"kimi-orchestrator","predicate":"depends_on","object":"domains-registry","validFrom":"2026-06-27T19:19:38.511Z"}
+{"subject":"kimi-orchestrator","predicate":"depends_on","object":"agent-registry","validFrom":"2026-06-27T19:19:38.512Z"}
+{"subject":"kimi-orchestrator","predicate":"depends_on","object":"prompt-template","validFrom":"2026-06-27T19:19:38.512Z"}
+{"subject":"kimi-orchestrator","predicate":"integrated_with","object":"AGENTS.md","validFrom":"2026-06-27T19:19:38.512Z"}
