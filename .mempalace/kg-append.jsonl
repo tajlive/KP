@@ -203,3 +203,29 @@
 {"subject":"lint-gate","predicate":"improved","object":"working-tree-and-staged-files-detection","validFrom":"2026-06-27T22:27:41.609Z"}
 {"subject":"onboarding-e2e","predicate":"hardened","object":"reset-helper-and-spec-locator-fixes","validFrom":"2026-06-27T22:27:41.610Z"}
 {"subject":"onboarding-step4-first-trade","predicate":"uses","object":"kp-tailwind-semantic-tokens","validFrom":"2026-06-28T02:23:49.940Z"}
+{"subject":"onboarding","predicate":"token-cleanup","object":"completed-all-steps-and-shell","validFrom":"2026-06-28T02:31:51.289Z"}
+{"subject":"supabase-migrations","predicate":"synced","object":"local-and-remote-history-aligned","validFrom":"2026-06-28T02:31:51.311Z"}
+{"subject":"db-status-ci","predicate":"replaces","object":"db-status-gate","validFrom":"2026-06-28"}
+{"subject":"db-status-ci","predicate":"detects","object":"migration-version-mismatch","validFrom":"2026-06-28"}
+{"subject":"db-status-ci","predicate":"detects","object":"pending-local-migrations","validFrom":"2026-06-28"}
+{"subject":"db-status-ci","predicate":"detects","object":"remote-history-divergence","validFrom":"2026-06-28"}
+{"subject":"package.json","predicate":"has-script","object":"db:status:ci -> node scripts/db-status-ci.mjs --strict","validFrom":"2026-06-28"}
+{"subject":"package.json","predicate":"has-script","object":"db:status:gate -> node scripts/db-status-ci.mjs","validFrom":"2026-06-28"}
+{"subject":"audit_events","predicate":"serialized_by","object":"pg_advisory_xact_lock(20260703) via acquire_audit_lock RPC","validFrom":"2026-06-28T18:48:00.202Z"}
+{"subject":"insertAuditEvent","predicate":"calls","object":"db.rpc(acquire_audit_lock) before selecting chain head","validFrom":"2026-06-28T18:48:00.217Z"}
+{"subject":"audit-events","predicate":"uses","object":"append-only-log","validFrom":"2026-06-28T18:54:30.906Z"}
+{"subject":"audit-events","predicate":"removed","object":"hash-chain","validFrom":"2026-06-28T18:54:30.906Z"}
+{"subject":"audit-events","predicate":"removed","object":"event_hash-column","validFrom":"2026-06-28T18:54:30.906Z"}
+{"subject":"audit-events","predicate":"removed","object":"previous_hash-column","validFrom":"2026-06-28T18:54:30.907Z"}
+{"subject":"audit-events","predicate":"removed","object":"acquire_audit_lock-rpc","validFrom":"2026-06-28T18:54:30.907Z"}
+{"subject":"audit-events","predicate":"added","object":"sequence-bigserial","validFrom":"2026-06-28T18:54:30.907Z"}
+{"subject":"analytics","predicate":"uses","object":"plausible","validFrom":"2026-06-28T20:32:33.373Z"}
+{"subject":"analytics_events","predicate":"deprecated","object":"supabase","validFrom":"2026-06-28T20:32:33.378Z"}
+{"subject":"page_visits","predicate":"deprecated","object":"supabase","validFrom":"2026-06-28T20:32:33.379Z"}
+{"subject":"src/lib/analytics.ts","predicate":"tracks_via","object":"plausible","validFrom":"2026-06-28T20:32:33.379Z"}
+{"subject":"admin/analytics","predicate":"uses","object":"plausible","validFrom":"2026-06-28T20:32:33.380Z"}
+{"subject":"production-db","predicate":"has_table","object":"user_binance_keys","validFrom":"2026-06-28T20:45:04.813Z"}
+{"subject":"src/lib/portfolio.ts","predicate":"queries","object":"user_binance_keys","validFrom":"2026-06-28T20:45:04.814Z"}
+{"subject":"migration-20260704000000","predicate":"creates","object":"user_binance_keys","validFrom":"2026-06-28T20:45:04.814Z"}
+{"subject":"user_binance_keys","predicate":"backfilled_from","object":"trading_api_keys","validFrom":"2026-06-28T20:45:04.814Z"}
+{"subject":"trading_signals","predicate":"has_migration","object":"20260705000000_add_trading_signals.sql","validFrom":"2026-06-28T20:51:01.884Z"}
