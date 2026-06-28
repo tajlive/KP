@@ -26,21 +26,21 @@ function OnboardingErrorFallback({
   backToLogin: string;
 }) {
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-red-900/20 border border-red-700/50 rounded-xl p-6 text-center">
-        <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-red-200 mb-2">{title}</h2>
-        <p className="text-red-300/80 mb-4">{message}</p>
+    <div className="min-h-screen bg-kp-bg-primary flex items-center justify-center p-6">
+      <div className="max-w-md w-full bg-kp-danger-bg border border-kp-danger/20 rounded-xl p-6 text-center">
+        <AlertCircle className="w-12 h-12 text-kp-danger mx-auto mb-4" />
+        <h2 className="text-xl font-semibold text-kp-danger mb-2">{title}</h2>
+        <p className="text-kp-danger/80 mb-4">{message}</p>
         <div className="flex gap-3 justify-center">
           <Link
             href={`/${locale}/onboarding`}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-kp-danger hover:bg-kp-danger/90 text-kp-text-primary rounded-lg transition-colors"
           >
             {retry}
           </Link>
           <Link
             href={`/${locale}/innlogging`}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-kp-bg-tertiary hover:bg-kp-bg-elevated text-kp-text-primary rounded-lg transition-colors"
           >
             {backToLogin}
           </Link>

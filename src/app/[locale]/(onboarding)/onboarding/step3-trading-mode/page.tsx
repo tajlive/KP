@@ -124,7 +124,7 @@ export default function OnboardingStep3() {
   if (initializing) {
     return (
       <div role="status" className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kp-ai)]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kp-brand" />
         <span className="sr-only">{t("loading")}</span>
       </div>
     );
@@ -140,35 +140,35 @@ export default function OnboardingStep3() {
       >
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-[var(--kp-text-primary)]">
+          <h1 className="text-2xl font-bold text-kp-text-primary">
             {t("title")}
           </h1>
-          <p className="text-[var(--kp-text-secondary)]">{t("subtitle")}</p>
+          <p className="text-kp-text-secondary">{t("subtitle")}</p>
         </div>
 
         {/* Paper Trading Card */}
-        <Card className="bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-6 gap-4">
+        <Card className="bg-kp-bg-secondary border border-kp-border rounded-2xl p-6 gap-4">
           <div className="flex items-center justify-center">
-            <div className="w-16 h-16 bg-[var(--kp-ai)] rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--kp-ai)]/20">
+            <div className="w-16 h-16 bg-kp-brand rounded-2xl flex items-center justify-center shadow-lg shadow-kp-brand/20">
               <Gamepad2 className="w-8 h-8 text-white" />
             </div>
           </div>
 
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2">
-              <h2 className="text-xl font-bold text-[var(--kp-text-primary)]">
+              <h2 className="text-xl font-bold text-kp-text-primary">
                 {t("badge")}
               </h2>
               <RiskBadge level="low" />
             </div>
-            <p className="text-sm text-[var(--kp-text-secondary)]">
+            <p className="text-sm text-kp-text-secondary">
               {t("virtual")}
             </p>
           </div>
 
           {/* Balance Display */}
-          <div className="bg-[var(--kp-bg-primary)] border border-[var(--kp-border)] rounded-xl p-6 text-center">
-            <p className="text-sm text-[var(--kp-text-secondary)] mb-1">
+          <div className="bg-kp-bg-primary border border-kp-border rounded-xl p-6 text-center">
+            <p className="text-sm text-kp-text-secondary mb-1">
               {t("balanceLabel")}
             </p>
             <AnimatedNumber
@@ -176,13 +176,13 @@ export default function OnboardingStep3() {
               prefix=""
               suffix={t("currencySuffix")}
               decimals={0}
-              className="text-4xl font-bold text-[var(--kp-text-primary)]"
+              className="text-4xl font-bold text-kp-text-primary"
             />
           </div>
         </Card>
 
         {/* Info tooltip */}
-        <div className="flex items-center justify-center gap-2 text-sm text-[var(--kp-text-secondary)]">
+        <div className="flex items-center justify-center gap-2 text-sm text-kp-text-secondary">
           <Tooltip>
             <TooltipTrigger className="flex items-center gap-1 underline decoration-dotted min-h-[44px]">
               <Info className="w-4 h-4" aria-hidden="true" />
@@ -195,7 +195,7 @@ export default function OnboardingStep3() {
         </div>
 
         {error && (
-          <p role="alert" className="text-sm text-red-500 text-center">
+          <p role="alert" className="text-sm text-kp-danger text-center">
             {error}
           </p>
         )}
