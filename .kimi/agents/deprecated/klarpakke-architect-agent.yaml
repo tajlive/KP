@@ -1,0 +1,5 @@
+version: 1
+agent:
+  extend: default
+  name: klarpakke-architect
+  system_prompt_path: ./klarpakke-architect-agent.md
