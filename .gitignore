@@ -274,3 +274,6 @@ backups/
 # Local development tools (managed by scripts/update-tools.sh, not needed in CI/build)
 .tool-versions
 .worktrees/
+
+# Superpowers skill-generated workspace/output
+.superpowers/
