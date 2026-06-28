@@ -1074,6 +1074,113 @@ async function mirrorTradeToFollowers(
 }
 
 /**
+ * Find users with auto-trading enabled and ensure each has at least one active
+ * paper session. This routes auto-trading users through the canonical tick
+ * pipeline even when they have no manually created session.
+ */
+async function getAutoTradingUsers(
+  db: SupabaseClient<Database>,
+): Promise<string[]> {
+  const { data, error } = await db
+    .from("auto_trade_settings")
+    .select("user_id")
+    .eq("auto_trading_enabled", true);
+
+  if (error) throw error;
+  return [...new Set((data ?? []).map((r) => r.user_id as string))];
+}
+
+/**
+ * Ensure every auto-trading user has an active paper session. Creates default
+ * paper sessions only for users who do not already have an active session of
+ * any kind, then appends them to the list for tick processing.
+ */
+async function ensureAutoTradingSessions(
+  db: SupabaseClient<Database>,
+  sessions: TradingSession[],
+): Promise<TradingSession[]> {
+  const autoUserIds = await getAutoTradingUsers(db);
+  if (autoUserIds.length === 0) return sessions;
+
+  const representedUserIds = new Set(sessions.map((s) => s.user_id));
+  const usersNeedingSession = autoUserIds.filter(
+    (userId) => !representedUserIds.has(userId),
+  );
+  if (usersNeedingSession.length === 0) return sessions;
+
+  // Guard against duplicate active paper sessions that may have been created
+  // concurrently since the initial fetch.
+  const { data: existingSessions } = await db
+    .from("trading_sessions")
+    .select("user_id")
+    .in("user_id", usersNeedingSession)
+    .eq("status", "active")
+    .eq("mode", "paper");
+
+  const existingUserIds = new Set(
+    (existingSessions ?? []).map((s) => s.user_id as string),
+  );
+  const usersToCreate = usersNeedingSession.filter(
+    (userId) => !existingUserIds.has(userId),
+  );
+  if (usersToCreate.length === 0) return sessions;
+
+  const now = new Date().toISOString();
+  const baseSession = {
+    trading_pair: "BTCUSDT",
+    mode: "paper" as const,
+    strategy_id: "dca",
+    status: "active" as const,
+    starting_capital_nok: 100000,
+    current_capital_nok: 100000,
+    initial_capital: 100000,
+    current_capital: 100000,
+    total_trades: 0,
+    winning_trades: 0,
+    losing_trades: 0,
+    total_pnl: 0,
+    strategy_config: {},
+    started_at: now,
+    last_heartbeat: now,
+    last_tick_at: now,
+    created_at: now,
+    updated_at: now,
+  };
+
+  const inserts: Database["public"]["Tables"]["trading_sessions"]["Insert"][] =
+    usersToCreate.map((user_id) => ({ ...baseSession, user_id }));
+
+  // The unique partial index idx_unique_active_session on (user_id, trading_pair)
+  // WHERE status = 'active' prevents duplicate active paper sessions for the same
+  // user. In a race between concurrent cron workers, one insert will win and the
+  // other will fail with Postgres error 23505 (unique violation), which is expected
+  // and safe to ignore.
+  const { data: newSessions, error: insertError } = await db
+    .from("trading_sessions")
+    .insert(inserts)
+    .select("*");
+
+  if (insertError) {
+    if (insertError.code === "23505") {
+      console.debug(
+        "[Tick] Race-condition: auto-trading session already created, skipping",
+      );
+    } else {
+      console.error(
+        "[Tick] Failed to create auto-trading sessions:",
+        insertError,
+      );
+      throw insertError;
+    }
+  }
+
+  if (newSessions) {
+    sessions.push(...(newSessions as unknown as TradingSession[]));
+  }
+  return sessions;
+}
+
+/**
  * Main Cron Handler - Unified Trading System for Paper, Live, and Copy Modes
  */
 export async function GET(req: NextRequest) {
@@ -1131,10 +1238,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ processed: 0, message: "No active sessions" });
     }
 
+    // Route auto-trading users through the canonical tick pipeline even if they
+    // do not currently have an active session.
+    const sessionsWithAuto = await ensureAutoTradingSessions(
+      db,
+      sessions as unknown as TradingSession[],
+    );
+
     // Portfolio-level circuit breaker: stop ALL trading if user's paper balance
     // has dropped 15% or more from initial across all sessions (was 5%, too aggressive)
     const userPortfolioMap = new Map<string, { initial: number; current: number }>();
-    for (const s of sessions) {
+    for (const s of sessionsWithAuto) {
       const existing = userPortfolioMap.get(s.user_id) || { initial: 0, current: 0 };
       existing.initial += s.initial_capital;
       existing.current += s.current_capital;
@@ -1203,7 +1317,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch user risk configs in one query to avoid N+1
-    const userIds = [...new Set(sessions.map((s) => s.user_id))];
+    const userIds = [...new Set(sessionsWithAuto.map((s) => s.user_id))];
     const { data: autoSettings } = await db
       .from("auto_trade_settings")
       .select("user_id, risk_profile, max_position_percent, daily_loss_limit_percent, daily_trade_limit")
@@ -1229,7 +1343,7 @@ export async function GET(req: NextRequest) {
     const uniqueSymbols = new Map<string, Candle[]>();
     const uniqueSymbols4h = new Map<string, Candle[]>();
     const uniqueSymbols15m = new Map<string, Candle[]>();
-    const symbolList = [...new Set(sessions.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))];
+    const symbolList = [...new Set(sessionsWithAuto.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))];
     
     await Promise.all(
       symbolList.map(async (symbol) => {
@@ -1249,7 +1363,7 @@ export async function GET(req: NextRequest) {
     );
     const results: TickResult[] = [];
 
-    for (const session of sessions as unknown as TradingSession[]) {
+    for (const session of sessionsWithAuto) {
       // Skip manual sessions — these are user-driven and not processed by auto-trading cron
       if (session.strategy_id === "manual") {
         results.push({ session_id: session.id, action: "heartbeat" });
@@ -1259,7 +1373,7 @@ export async function GET(req: NextRequest) {
       // Timeout protection
       if (Date.now() - startTime > 55_000) {
         console.warn(
-          `Cron tick timeout approaching, processed ${results.length}/${sessions.length}`,
+          `Cron tick timeout approaching, processed ${results.length}/${sessionsWithAuto.length}`,
         );
         break;
       }
@@ -1305,7 +1419,7 @@ export async function GET(req: NextRequest) {
 
     const summary = {
       processed: results.length,
-      total_active: sessions.length,
+      total_active: sessionsWithAuto.length,
       trades_executed: results.filter(
         (r) => r.action === "buy" || r.action === "sell",
       ).length,
