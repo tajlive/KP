@@ -3412,6 +3412,39 @@ export type Database = {
         }
         Relationships: []
       }
+      idempotency_keys: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          key: string
+          request_hash: string
+          response: Json | null
+          scope: string
+          state: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          key: string
+          request_hash: string
+          response?: Json | null
+          scope: string
+          state: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          key?: string
+          request_hash?: string
+          response?: Json | null
+          scope?: string
+          state?: string
+        }
+        Relationships: []
+      }
       kelly_stats: {
         Row: {
           avg_loss_pct: number | null
