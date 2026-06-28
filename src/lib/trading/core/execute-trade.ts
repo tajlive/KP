@@ -27,6 +27,7 @@ import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import { computeFill } from "@/lib/trading/canonical/execution/fill-model";
 import { calculatePnlFromTrades, type TradePnlInput } from "@/lib/trading/canonical/pnl/trade-pnl";
 import { acquireTradeLock } from "./distributed-lock";
+import { makeIdempotencyKey, withIdempotency } from "@/lib/trading/idempotency";
 import type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext } from "./types";
 
 export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
@@ -46,7 +47,7 @@ export async function executeTrade(
 ): Promise<ExecuteTradeResult> {
   // Acquire distributed lock to prevent concurrent trades for same user+symbol
   const lockResult = await acquireTradeLock(request.userId, request.symbol, {
-    ttlSeconds: 30,
+    ttlSeconds: 35,
     retries: 2,
     retryDelayMs: 50,
   });
@@ -327,242 +328,276 @@ async function executeTradeWithLock(
     }
 
     // ========================================================================
-    // 6. Execute via adapter
+    // 6. Execute via adapter (idempotently)
     // ========================================================================
-    const executor = await ExecutorFactory.create(
-      supabase,
-      request.userId,
-      request.mode,
-      session.id,
-    );
-
-    const execResult = await executor.executeOrder({
-      symbol: request.symbol,
-      side: request.side,
-      quantity: request.quantity,
-      orderType: request.orderType,
-      price: request.price,
-    });
-
-    if (!execResult.success) {
-      return {
-        success: false,
-        error: execResult.error || "Execution failed",
-      };
-    }
-
-    // ========================================================================
-    // 7. Calculate realized P&L for sell trades (canonical FIFO)
-    // ========================================================================
-    let realizedPnl: number | undefined;
-    const openPosition = session.open_position as {
-      side?: "long" | "short";
-      quantity?: number;
-      entry_price?: number;
-      entry_time?: string;
-      lots?: Array<{ quantity: number; entryPrice: number; timestamp?: string }>;
-    } | null;
-
-    if (
-      request.side === "sell" &&
-      openPosition &&
-      (openPosition.quantity ?? 0) > 0
-    ) {
-      const positionQty = openPosition.quantity ?? 0;
-      const matchedQty = Math.min(execResult.executedQuantity, positionQty);
-      if (matchedQty > 0) {
-        // Convert sell-side fill to the same currency as the cost basis
-        // (paper stores NOK, live stores USDT).
-        const sellPrice =
-          request.mode === "paper"
-            ? usdtToNok(execResult.executedPrice, rate ?? undefined)
-            : execResult.executedPrice;
-        const sellFee =
-          request.mode === "paper"
-            ? usdtToNok(execResult.fee || 0, rate ?? undefined)
-            : execResult.fee || 0;
-
-        const priorBuys: TradePnlInput[] =
-          openPosition.lots && openPosition.lots.length > 0
-            ? openPosition.lots.map((lot) => ({
-                symbol: request.symbol,
-                side: "buy" as const,
-                quantity: lot.quantity,
-                price: lot.entryPrice,
-                fee: 0,
-                timestamp: lot.timestamp,
-                currency: tradeCurrency,
-              }))
-            : [
-                {
-                  symbol: request.symbol,
-                  side: "buy" as const,
-                  quantity: positionQty,
-                  price: openPosition.entry_price ?? 0,
-                  fee: 0,
-                  timestamp: openPosition.entry_time,
-                  currency: tradeCurrency,
-                },
-              ];
-
-        const currentSell: TradePnlInput = {
-          symbol: request.symbol,
-          side: "sell",
-          quantity: matchedQty,
-          price: sellPrice,
-          fee: sellFee,
-          timestamp: execResult.timestamp.toISOString(),
-          currency: tradeCurrency,
-        };
-
-        const pnlResult = calculatePnlFromTrades([...priorBuys, currentSell]);
-        realizedPnl = Math.round(pnlResult.realizedPnl * 100) / 100;
-      }
-    }
-
-    // ========================================================================
-    // 8. Record trade
-    // ========================================================================
-    const nowIso = new Date().toISOString();
+    // NOTE: Callers that need true cross-request deduplication should pass a
+    // deterministic `request.idempotencyKey`. The runtime fallback below uses
+    // `Date.now()` and is intended mainly for local/manual calls.
     const idempotencyKey =
       request.idempotencyKey ??
-      `${session.id}-${Date.now()}-${execResult.orderId ?? Math.random()}`;
+      makeIdempotencyKey([
+        request.userId,
+        request.botId ?? request.signalContext?.strategy ?? "manual",
+        request.symbol,
+        request.signalContext?.action ?? request.reasonCode ?? "trade",
+        request.side,
+        Date.now(),
+      ]);
 
-    const tradeInsert: Database["public"]["Tables"]["trades"]["Insert"] & {
-      usdt_nok_rate?: number;
-    } = {
-      session_id: session.id,
-      user_id: request.userId,
-      trading_pair: request.symbol,
-      side: request.side,
-      quantity: execResult.executedQuantity,
-      price:
-        request.mode === "paper"
-          ? usdtToNok(execResult.executedPrice, rate ?? undefined)
-          : execResult.executedPrice,
-      total_value:
-        request.mode === "paper"
-          ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
-          : execResult.executedQuantity * execResult.executedPrice,
-      fee:
-        request.mode === "live"
-          ? execResult.fee
-          : usdtToNok(execResult.fee || 0, rate ?? undefined),
-      status: "filled",
-      mode: request.mode,
-      order_type: request.orderType,
-      realized_pnl: realizedPnl,
-      binance_order_id:
-        request.mode === "live" ? execResult.orderId ?? null : null,
-      idempotency_key: idempotencyKey,
-      usdt_nok_rate: rate,
-      executed_at: execResult.timestamp.toISOString(),
-      created_at: nowIso,
-      strategy_signal: request.signalContext
-        ? {
-            ...request.signalContext.indicators,
-            action: request.signalContext.action,
-            confidence: request.signalContext.confidence,
-            regime: request.signalContext.regime,
-            reason: request.signalContext.reason,
+    const requestHash = makeIdempotencyKey([
+      request.userId,
+      request.sessionId ?? "",
+      request.symbol,
+      request.side,
+      String(request.quantity),
+      String(request.price),
+      request.orderType,
+      request.mode,
+      request.botId ?? request.signalContext?.strategy ?? "manual",
+      request.signalContext?.action ?? request.reasonCode ?? "trade",
+    ]);
+
+    return await withIdempotency(
+      supabase,
+      idempotencyKey,
+      "trade",
+      requestHash,
+      async () => {
+        const executor = await ExecutorFactory.create(
+          supabase,
+          request.userId,
+          request.mode,
+          session.id,
+        );
+
+        const execResult = await executor.executeOrder({
+          symbol: request.symbol,
+          side: request.side,
+          quantity: request.quantity,
+          orderType: request.orderType,
+          price: request.price,
+        });
+
+        if (!execResult.success) {
+          return {
+            success: false,
+            error: execResult.error || "Execution failed",
+          };
+        }
+
+        // ========================================================================
+        // 7. Calculate realized P&L for sell trades (canonical FIFO)
+        // ========================================================================
+        let realizedPnl: number | undefined;
+        const openPosition = session.open_position as {
+          side?: "long" | "short";
+          quantity?: number;
+          entry_price?: number;
+          entry_time?: string;
+          lots?: Array<{ quantity: number; entryPrice: number; timestamp?: string }>;
+        } | null;
+
+        if (
+          request.side === "sell" &&
+          openPosition &&
+          (openPosition.quantity ?? 0) > 0
+        ) {
+          const positionQty = openPosition.quantity ?? 0;
+          const matchedQty = Math.min(execResult.executedQuantity, positionQty);
+          if (matchedQty > 0) {
+            // Convert sell-side fill to the same currency as the cost basis
+            // (paper stores NOK, live stores USDT).
+            const sellPrice =
+              request.mode === "paper"
+                ? usdtToNok(execResult.executedPrice, rate ?? undefined)
+                : execResult.executedPrice;
+            const sellFee =
+              request.mode === "paper"
+                ? usdtToNok(execResult.fee || 0, rate ?? undefined)
+                : execResult.fee || 0;
+
+            const priorBuys: TradePnlInput[] =
+              openPosition.lots && openPosition.lots.length > 0
+                ? openPosition.lots.map((lot) => ({
+                    symbol: request.symbol,
+                    side: "buy" as const,
+                    quantity: lot.quantity,
+                    price: lot.entryPrice,
+                    fee: 0,
+                    timestamp: lot.timestamp,
+                    currency: tradeCurrency,
+                  }))
+                : [
+                    {
+                      symbol: request.symbol,
+                      side: "buy" as const,
+                      quantity: positionQty,
+                      price: openPosition.entry_price ?? 0,
+                      fee: 0,
+                      timestamp: openPosition.entry_time,
+                      currency: tradeCurrency,
+                    },
+                  ];
+
+            const currentSell: TradePnlInput = {
+              symbol: request.symbol,
+              side: "sell",
+              quantity: matchedQty,
+              price: sellPrice,
+              fee: sellFee,
+              timestamp: execResult.timestamp.toISOString(),
+              currency: tradeCurrency,
+            };
+
+            const pnlResult = calculatePnlFromTrades([...priorBuys, currentSell]);
+            realizedPnl = Math.round(pnlResult.realizedPnl * 100) / 100;
           }
-        : null,
-      reason_code: request.reasonCode ?? null,
-      reason_params: (request.reasonParams ?? null) as Json,
-      indicator_snapshot: (request.indicatorSnapshot ?? null) as Json,
-    };
+        }
 
-    const { data: trade, error: tradeError } = await supabase
-      .from("trades")
-      .insert(tradeInsert as any)
-      .select()
-      .single();
+        // ========================================================================
+        // 8. Record trade
+        // ========================================================================
+        const nowIso = new Date().toISOString();
 
-    if (tradeError) {
-      console.error("[executeTrade] Failed to record trade:", tradeError);
-      // For live, the trade DID execute on exchange — return critical warning
-      if (request.mode === "live") {
+        const tradeInsert: Database["public"]["Tables"]["trades"]["Insert"] & {
+          usdt_nok_rate?: number;
+          idempotency_scope?: string;
+        } = {
+          session_id: session.id,
+          user_id: request.userId,
+          trading_pair: request.symbol,
+          side: request.side,
+          quantity: execResult.executedQuantity,
+          price:
+            request.mode === "paper"
+              ? usdtToNok(execResult.executedPrice, rate ?? undefined)
+              : execResult.executedPrice,
+          total_value:
+            request.mode === "paper"
+              ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
+              : execResult.executedQuantity * execResult.executedPrice,
+          fee:
+            request.mode === "live"
+              ? execResult.fee
+              : usdtToNok(execResult.fee || 0, rate ?? undefined),
+          status: "filled",
+          mode: request.mode,
+          order_type: request.orderType,
+          realized_pnl: realizedPnl,
+          binance_order_id:
+            request.mode === "live" ? execResult.orderId ?? null : null,
+          idempotency_key: idempotencyKey,
+          idempotency_scope: "trade",
+          usdt_nok_rate: rate,
+          executed_at: execResult.timestamp.toISOString(),
+          created_at: nowIso,
+          strategy_signal: request.signalContext
+            ? {
+                ...request.signalContext.indicators,
+                action: request.signalContext.action,
+                confidence: request.signalContext.confidence,
+                regime: request.signalContext.regime,
+                reason: request.signalContext.reason,
+              }
+            : null,
+          reason_code: request.reasonCode ?? null,
+          reason_params: (request.reasonParams ?? null) as Json,
+          indicator_snapshot: (request.indicatorSnapshot ?? null) as Json,
+        };
+
+        const { data: trade, error: tradeError } = await supabase
+          .from("trades")
+          .insert(tradeInsert as any)
+          .select()
+          .single();
+
+        if (tradeError) {
+          console.error("[executeTrade] Failed to record trade:", tradeError);
+          // For live, the trade DID execute on exchange — return critical warning
+          if (request.mode === "live") {
+            return {
+              success: true,
+              tradeId: undefined,
+              orderId: execResult.orderId,
+              executedPrice: execResult.executedPrice,
+              executedQuantity: execResult.executedQuantity,
+              fee: execResult.fee,
+              error: "Trade executed but failed to save to database",
+            };
+          }
+          return {
+            success: false,
+            error: "Failed to record trade",
+          };
+        }
+
+        // ========================================================================
+        // 9. Update balance
+        // ========================================================================
+        if (request.mode === "paper") {
+          // Paper capital is updated by DB trigger (trigger_update_session_state)
+          // which reads total_value (now stored in NOK for paper trades).
+          // Record successful decision
+          await recordTradeDecision(
+            supabase,
+            tradeRequest,
+            validationResult,
+            execResult.executedQuantity,
+            execResult.executedPrice,
+          );
+
+          return {
+            success: true,
+            tradeId: trade.id,
+            sessionId: session.id,
+            newBalance: currentBalance, // Balance updated by DB trigger only
+            orderId: execResult.orderId,
+            executedPrice: execResult.executedPrice,
+            executedQuantity: execResult.executedQuantity,
+            fee: execResult.fee,
+          };
+        }
+
+        // Live mode: update balance atomically via RPC (amount must be in NOK)
+        const netValueUsdt =
+          request.side === "buy"
+            ? execResult.executedQuantity * execResult.executedPrice +
+              (execResult.fee || 0)
+            : execResult.executedQuantity * execResult.executedPrice -
+              (execResult.fee || 0);
+        const netValueNok = usdtToNok(netValueUsdt, rate ?? undefined);
+
+        const { error: balanceError } = await supabase.rpc(
+          request.side === "buy" ? "decrement_capital" : "increment_capital",
+          {
+            p_session_id: session.id,
+            p_amount: netValueNok,
+            p_user_id: request.userId,
+          },
+        );
+
+        if (balanceError) {
+          console.error("[executeTrade] Failed to update balance:", balanceError);
+        }
+
+        await recordTradeDecision(
+          supabase,
+          tradeRequest,
+          validationResult,
+          execResult.executedQuantity,
+          execResult.executedPrice,
+        );
+
         return {
           success: true,
-          tradeId: undefined,
+          tradeId: trade.id,
           orderId: execResult.orderId,
           executedPrice: execResult.executedPrice,
           executedQuantity: execResult.executedQuantity,
           fee: execResult.fee,
-          error: "Trade executed but failed to save to database",
         };
-      }
-      return {
-        success: false,
-        error: "Failed to record trade",
-      };
-    }
-
-    // ========================================================================
-    // 8. Update balance
-    // ========================================================================
-    if (request.mode === "paper") {
-      // Paper capital is updated by DB trigger (trigger_update_session_state)
-      // which reads total_value (now stored in NOK for paper trades).
-      // Record successful decision
-      await recordTradeDecision(
-        supabase,
-        tradeRequest,
-        validationResult,
-        execResult.executedQuantity,
-        execResult.executedPrice,
-      );
-
-      return {
-        success: true,
-        tradeId: trade.id,
-        sessionId: session.id,
-        newBalance: currentBalance, // Balance updated by DB trigger only
-        orderId: execResult.orderId,
-        executedPrice: execResult.executedPrice,
-        executedQuantity: execResult.executedQuantity,
-        fee: execResult.fee,
-      };
-    }
-
-    // Live mode: update balance atomically via RPC (amount must be in NOK)
-    const netValueUsdt =
-      request.side === "buy"
-        ? execResult.executedQuantity * execResult.executedPrice +
-          (execResult.fee || 0)
-        : execResult.executedQuantity * execResult.executedPrice -
-          (execResult.fee || 0);
-    const netValueNok = usdtToNok(netValueUsdt, rate ?? undefined);
-
-    const { error: balanceError } = await supabase.rpc(
-      request.side === "buy" ? "decrement_capital" : "increment_capital",
-      {
-        p_session_id: session.id,
-        p_amount: netValueNok,
-        p_user_id: request.userId,
       },
     );
-
-    if (balanceError) {
-      console.error("[executeTrade] Failed to update balance:", balanceError);
-    }
-
-    await recordTradeDecision(
-      supabase,
-      tradeRequest,
-      validationResult,
-      execResult.executedQuantity,
-      execResult.executedPrice,
-    );
-
-    return {
-      success: true,
-      tradeId: trade.id,
-      orderId: execResult.orderId,
-      executedPrice: execResult.executedPrice,
-      executedQuantity: execResult.executedQuantity,
-      fee: execResult.fee,
-    };
   } catch (error) {
     console.error("[executeTrade] Unexpected error:", error);
     return {
