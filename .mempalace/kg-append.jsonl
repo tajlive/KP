@@ -199,3 +199,7 @@
 {"subject":"kimi-orchestrator","predicate":"depends_on","object":"agent-registry","validFrom":"2026-06-27T19:19:38.512Z"}
 {"subject":"kimi-orchestrator","predicate":"depends_on","object":"prompt-template","validFrom":"2026-06-27T19:19:38.512Z"}
 {"subject":"kimi-orchestrator","predicate":"integrated_with","object":"AGENTS.md","validFrom":"2026-06-27T19:19:38.512Z"}
+{"subject":"redesign-phase1","predicate":"completed","object":"onboarding-token-cleanup-and-stickycta-fix","validFrom":"2026-06-27T22:27:41.602Z"}
+{"subject":"lint-gate","predicate":"improved","object":"working-tree-and-staged-files-detection","validFrom":"2026-06-27T22:27:41.609Z"}
+{"subject":"onboarding-e2e","predicate":"hardened","object":"reset-helper-and-spec-locator-fixes","validFrom":"2026-06-27T22:27:41.610Z"}
+{"subject":"onboarding-step4-first-trade","predicate":"uses","object":"kp-tailwind-semantic-tokens","validFrom":"2026-06-28T02:23:49.940Z"}

@@ -263,8 +263,7 @@ export default function OnboardingStep4FirstTrade() {
     return (
       <div role="status" className="flex items-center justify-center py-12">
         <div
-          className="h-8 w-8 animate-spin rounded-full border-b-2"
-          style={{ borderColor: "var(--kp-ai)" }}
+          className="h-8 w-8 animate-spin rounded-full border-b-2 border-kp-brand"
         />
         <span className="sr-only">{t("loadingStatus")}</span>
       </div>
@@ -279,25 +278,25 @@ export default function OnboardingStep4FirstTrade() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <div className="w-16 h-16 bg-[var(--kp-positive)]/10 rounded-full flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8 text-[var(--kp-positive)]" />
+        <div className="w-16 h-16 bg-kp-success/10 rounded-full flex items-center justify-center">
+          <CheckCircle2 className="w-8 h-8 text-kp-success" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-[var(--kp-text-primary)]">
+          <h1 className="text-2xl font-bold text-kp-text-primary">
             {t("success.title")}
           </h1>
-          <p className="text-[var(--kp-text-secondary)]">
+          <p className="text-kp-text-secondary">
             {t("success.description")}
           </p>
         </div>
 
-        <Card className="w-full bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-6 gap-3 text-left">
+        <Card className="w-full bg-kp-bg-secondary border border-kp-border rounded-2xl p-6 gap-3 text-left">
           <div className="flex justify-between text-sm">
-            <span className="text-[var(--kp-text-secondary)]">
+            <span className="text-kp-text-secondary">
               {t("price")}
             </span>
-            <span className="font-medium text-[var(--kp-text-primary)]">
+            <span className="font-medium text-kp-text-primary">
               {tradeResult.executionPrice.toLocaleString(locale, {
                 maximumFractionDigits: 2,
               })}{" "}
@@ -305,10 +304,10 @@ export default function OnboardingStep4FirstTrade() {
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-[var(--kp-text-secondary)]">
+            <span className="text-kp-text-secondary">
               {t("amountLabel")}
             </span>
-            <span className="font-medium text-[var(--kp-text-primary)]">
+            <span className="font-medium text-kp-text-primary">
               {tradeResult.amount.toLocaleString(locale)}
               {t("currencySuffix")}
             </span>
@@ -336,21 +335,21 @@ export default function OnboardingStep4FirstTrade() {
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          <h1 className="text-2xl font-bold text-[var(--kp-text-primary)]">
+          <h1 className="text-2xl font-bold text-kp-text-primary">
             {t("title")}
           </h1>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--kp-positive)]/10 text-[var(--kp-positive)] px-2.5 py-1 text-xs font-medium">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-kp-success/10 text-kp-success px-2.5 py-1 text-xs font-medium">
             {t("badge")}
           </span>
           <RiskBadge level="medium" />
         </div>
-        <p className="text-[var(--kp-text-secondary)]">{t("subtitle")}</p>
+        <p className="text-kp-text-secondary">{t("subtitle")}</p>
       </div>
 
       {/* Balance & Price */}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-4 gap-2 text-center">
-          <p className="text-xs text-[var(--kp-text-secondary)] flex items-center justify-center gap-1">
+        <Card className="bg-kp-bg-secondary border border-kp-border rounded-2xl p-4 gap-2 text-center">
+          <p className="text-xs text-kp-text-secondary flex items-center justify-center gap-1">
             <Bitcoin className="w-3.5 h-3.5" />
             {t("balance")}
           </p>
@@ -358,12 +357,12 @@ export default function OnboardingStep4FirstTrade() {
             value={paperBalance}
             suffix=" kr"
             decimals={0}
-            className="text-xl font-bold text-[var(--kp-text-primary)]"
+            className="text-xl font-bold text-kp-text-primary"
           />
         </Card>
 
-        <Card className="bg-[var(--kp-bg-secondary)] border border-[var(--kp-border)] rounded-2xl p-4 gap-2 text-center">
-          <p className="text-xs text-[var(--kp-text-secondary)] flex items-center justify-center gap-1">
+        <Card className="bg-kp-bg-secondary border border-kp-border rounded-2xl p-4 gap-2 text-center">
+          <p className="text-xs text-kp-text-secondary flex items-center justify-center gap-1">
             <TrendingUp className="w-3.5 h-3.5" />
             {t("price")}
           </p>
@@ -373,10 +372,10 @@ export default function OnboardingStep4FirstTrade() {
                 value={btcPrice}
                 prefix="$"
                 decimals={2}
-                className="text-xl font-bold text-[var(--kp-text-primary)]"
+                className="text-xl font-bold text-kp-text-primary"
               />
             ) : (
-              <span className="text-xl font-bold text-[var(--kp-text-secondary)]">
+              <span className="text-xl font-bold text-kp-text-secondary">
                 —
               </span>
             )}
@@ -388,7 +387,7 @@ export default function OnboardingStep4FirstTrade() {
       <div className="space-y-3">
         <label
           htmlFor="first-trade-amount"
-          className="text-sm font-medium text-[var(--kp-text-primary)]"
+          className="text-sm font-medium text-kp-text-primary"
         >
           {t("amountLabel")}
         </label>
@@ -419,26 +418,26 @@ export default function OnboardingStep4FirstTrade() {
             value={customAmount}
             onChange={(e) => handleCustomChange(e.target.value)}
             placeholder={t("custom")}
-            className="w-full h-12 px-4 pr-16 rounded-lg border border-[var(--kp-border)] bg-[var(--kp-bg-primary)] text-[var(--kp-text-primary)] placeholder:text-[var(--kp-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--kp-ai)]"
+            className="w-full h-12 px-4 pr-16 rounded-lg border border-kp-border bg-kp-bg-primary text-kp-text-primary placeholder:text-kp-text-secondary focus:outline-none focus:ring-2 focus:ring-kp-brand"
           />
           <button
             type="button"
             onClick={handleMax}
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium rounded-md bg-[var(--kp-bg-secondary)] text-[var(--kp-ai)] hover:bg-[var(--kp-bg-tertiary)] transition-colors min-h-[44px]"
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium rounded-md bg-kp-bg-secondary text-kp-brand hover:bg-kp-bg-tertiary transition-colors min-h-[44px]"
           >
             {t("max")}
           </button>
         </div>
 
         {amount > paperBalance && (
-          <p className="text-sm text-[var(--kp-negative)]" role="alert">
+          <p className="text-sm text-kp-danger" role="alert">
             {t("errors.INSUFFICIENT_BALANCE")}
           </p>
         )}
       </div>
 
       {error && (
-        <p className="text-sm text-[var(--kp-negative)] text-center" role="alert">
+        <p className="text-sm text-kp-danger text-center" role="alert">
           {error}
         </p>
       )}

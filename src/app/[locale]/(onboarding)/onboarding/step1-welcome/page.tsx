@@ -102,10 +102,7 @@ export default function OnboardingStep1() {
   if (checking) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div
-          className="h-8 w-8 animate-spin rounded-full border-b-2"
-          style={{ borderColor: "var(--kp-ai)" }}
-        />
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-kp-brand" />
       </div>
     );
   }
@@ -114,7 +111,7 @@ export default function OnboardingStep1() {
     <div className="space-y-6">
       <AIMappingChat onComplete={handleComplete} onSkip={handleSkip} />
 
-      <p className="text-center text-sm" style={{ color: "var(--kp-text-secondary)" }}>
+      <p className="text-center text-sm text-kp-text-secondary">
         {t("timeEstimate")}
       </p>
     </div>

@@ -10,17 +10,17 @@ export default function ClientOnboarding() {
   const locale = useLocale();
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-b from-kp-bg-primary to-kp-bg-secondary flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-3">
-            <Zap className="w-8 h-8 text-indigo-500" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-kp-brand-subtle border border-kp-border-brand mb-3">
+            <Zap className="w-8 h-8 text-kp-brand" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">
+          <h1 className="text-3xl md:text-4xl font-black text-kp-text-primary">
             Kom i gang
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">
+          <p className="text-kp-text-secondary mt-2">
             Velg profil og start trading på under 60 sekunder
           </p>
         </div>

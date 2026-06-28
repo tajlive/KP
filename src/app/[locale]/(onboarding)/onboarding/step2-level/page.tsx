@@ -210,7 +210,7 @@ export default function Step2LevelPage() {
               <RadioGroupPrimitive.Item value={level.key} asChild>
                 <Card
                   className={cn(
-                    'cursor-pointer transition-colors hover:border-kp-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kp-ai)]',
+                    'cursor-pointer transition-colors hover:border-kp-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand',
                     isSelected ? 'border-kp-brand bg-kp-surface-highlight' : 'border-kp-border',
                   )}
                 >
