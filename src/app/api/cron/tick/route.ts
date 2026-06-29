@@ -94,7 +94,7 @@ export async function executeLiveTrade(
   pair: string,
   side: 'buy' | 'sell',
   quantity: number,
-): Promise<{ executedPrice: number; binanceOrderId: string; fee: number } | null> {
+): Promise<{ executedPrice: number; executedQuantity: number; binanceOrderId: string; fee: number } | null> {
   try {
     // 1. Validate user can trade live (tier + connected)
     const canTrade = await ExecutorFactory.canTradeLive(db, userId);
@@ -121,6 +121,7 @@ export async function executeLiveTrade(
     }
     return {
       executedPrice: result.executedPrice,
+      executedQuantity: result.executedQuantity,
       binanceOrderId: result.orderId,
       fee: result.fee,
     };
@@ -779,7 +780,7 @@ async function processSession(
   }
 
   // ─── LIVE TRADING EXECUTION ──────────────────────────────────────────
-  let liveResult: { executedPrice: number; binanceOrderId: string; fee: number } | null = null;
+  let liveResult: { executedPrice: number; executedQuantity: number; binanceOrderId: string; fee: number } | null = null;
   liveResult = await executeLiveTrade(db, session.user_id, pair, signal.action as 'buy' | 'sell', quantity);
 
   if (!liveResult) {
@@ -843,6 +844,7 @@ async function processSession(
       side: signal.action as TradeSide,
       order_type: "market",
       quantity,
+      filled_quantity: liveResult.executedQuantity,
       price: finalExecutedPrice,
       total_value: totalValue,
       fee: finalFee,
