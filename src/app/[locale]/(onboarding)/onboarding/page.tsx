@@ -39,7 +39,7 @@ function OnboardingErrorFallback({
             {retry}
           </Link>
           <Link
-            href={`/${locale}/innlogging`}
+            href={`/${locale}/login`}
             className="px-4 py-2 bg-kp-bg-tertiary hover:bg-kp-bg-elevated text-kp-text-primary rounded-lg transition-colors"
           >
             {backToLogin}

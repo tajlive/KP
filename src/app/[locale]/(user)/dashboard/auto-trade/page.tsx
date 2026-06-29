@@ -13,18 +13,19 @@ export const runtime = 'nodejs';
 
 export const dynamic = "force-dynamic";
 
+// TODO: Denne ruten overlapper med /handel. Vurder å slå sammen eller tydeliggjøre
+// skillet mellom auto-trade-oppsett og handelsarbeidsområdet før evt. fjerning.
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const isNo = locale === "no";
+  const t = await getTranslations({ locale, namespace: "autoTrade" });
   return {
-    title: isNo ? "Auto-handel" : "Auto Trading",
-    description: isNo
-      ? "Sett opp din automatiske trading-strategi."
-      : "Set up your automated trading strategy.",
+    title: t("page.title"),
+    description: t("page.description"),
   };
 }
 
@@ -62,6 +63,7 @@ export default async function AutoTradePage({
 }) {
   const { locale } = await params;
   const { mode } = await searchParams;
+  const t = await getTranslations({ locale, namespace: "autoTrade" });
   const { supabase, user } = await requireAuth(locale);
   if (!user) return <LoginRequired next={`/${locale}/dashboard/auto-trade`} />;
 
@@ -97,9 +99,7 @@ export default async function AutoTradePage({
             <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                {locale === "no"
-                  ? `Du har ${activeCount} aktiv${activeCount === 1 ? " bot" : "e bot-er"}`
-                  : `You have ${activeCount} active bot${activeCount === 1 ? "" : "s"}`}
+                {t("page.activeBots", { count: activeCount })}
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {activeSessions?.map((s) => (

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { Link2, SkipForward, Eye, EyeOff, Shield } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export default function OnboardingStep4() {
 
       if (!user) {
         router.push(
-          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step4-binance`)}`
+          `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step4-binance`)}`
         );
         return;
       }

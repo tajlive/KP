@@ -6,10 +6,9 @@ import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Bell, Settings, User, ChevronDown, Activity } from "lucide-react";
 import { ThemeToggle } from "@/shared/theme";
-import { HStack } from "@coinbase/cds-web/layout";
-import { Text } from "@coinbase/cds-web/typography";
-import { Button } from "@coinbase/cds-web/buttons";
+import { Button } from "@/shared/ui/button";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_COINBASE_TOP_NAV,
   DASHBOARD_MORE_NAV,
@@ -30,8 +29,8 @@ function TopNavLink({
       href={href}
       className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
         active
-          ? "bg-[#0052FF]/10 text-[#0052FF] dark:bg-[#0052FF]/20 dark:text-[#6FA3FF]"
-          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+          ? "bg-kp-brand/10 text-kp-brand"
+          : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
       }`}
     >
       {label}
@@ -69,15 +68,15 @@ function MoreDropdown({ locale, pathname }: { locale: string; pathname: string }
         onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
           anyActive
-            ? "bg-[#0052FF]/10 text-[#0052FF] dark:bg-[#0052FF]/20 dark:text-[#6FA3FF]"
-            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            ? "bg-kp-brand/10 text-kp-brand"
+            : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
         }`}
       >
         {t("mainMenu")}
         <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+        <div className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-kp-border bg-kp-bg-secondary py-1 shadow-lg">
           {DASHBOARD_MORE_NAV.map((item) => {
             const active = isDashboardSidebarLinkActive(
               pathname,
@@ -92,8 +91,8 @@ function MoreDropdown({ locale, pathname }: { locale: string; pathname: string }
                 onClick={() => setOpen(false)}
                 className={`block px-4 py-2 text-sm ${
                   active
-                    ? "bg-[#0052FF]/10 text-[#0052FF] dark:bg-[#0052FF]/20 dark:text-[#6FA3FF]"
-                    : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    ? "bg-kp-brand/10 text-kp-brand"
+                    : "text-kp-text-secondary hover:bg-kp-bg-hover"
                 }`}
               >
                 {t(item.labelKey)}
@@ -112,6 +111,7 @@ type ActiveTraderSession = {
 
 function ActiveTraderPill({ locale }: { locale: string }) {
   const [sessions, setSessions] = useState<ActiveTraderSession[]>([]);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     let cancelled = false;
@@ -140,7 +140,7 @@ function ActiveTraderPill({ locale }: { locale: string }) {
     };
 
     void load();
-    const interval = window.setInterval(load, 15_000);
+    const interval = window.setInterval(load, isMobile ? 60_000 : 30_000);
     window.addEventListener("focus", onFocusOrChange);
     window.addEventListener("klarpakke:trader-status-changed", onFocusOrChange);
 
@@ -150,7 +150,7 @@ function ActiveTraderPill({ locale }: { locale: string }) {
       window.removeEventListener("focus", onFocusOrChange);
       window.removeEventListener("klarpakke:trader-status-changed", onFocusOrChange);
     };
-  }, []);
+  }, [isMobile]);
 
   const activeCount = sessions.length;
   if (activeCount === 0) return null;
@@ -171,8 +171,8 @@ function ActiveTraderPill({ locale }: { locale: string }) {
       href={hrefWithLocale(locale, hasLive ? "/handel?mode=live" : "/handel")}
       className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors sm:flex ${
         hasLive
-          ? "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-500/40 dark:bg-red-500/15 dark:text-red-200"
-          : "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200"
+          ? "border-kp-danger/40 bg-kp-danger/15 text-kp-danger hover:bg-kp-danger/25"
+          : "border-kp-success/40 bg-kp-success/15 text-kp-success hover:bg-kp-success/25"
       }`}
       aria-label={`${label}${countLabel}`}
       title={`${label}${countLabel}`}
@@ -180,12 +180,12 @@ function ActiveTraderPill({ locale }: { locale: string }) {
       <span className="relative flex h-2.5 w-2.5" aria-hidden>
         <span
           className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${
-            hasLive ? "bg-red-400" : "bg-emerald-400"
+            hasLive ? "bg-kp-danger" : "bg-kp-success"
           }`}
         />
         <span
           className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
-            hasLive ? "bg-red-500" : "bg-emerald-500"
+            hasLive ? "bg-kp-danger" : "bg-kp-success"
           }`}
         />
       </span>
@@ -201,19 +201,16 @@ export function TopNav() {
   const t = useTranslations("dashboard.sidebar");
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
-        <HStack className="min-w-0 items-center gap-1 sm:gap-2">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
           <Link
             href={hrefWithLocale(locale, "/dashboard")}
             className="mr-1 shrink-0 sm:mr-4"
           >
-            <Text
-              as="span"
-              className="text-lg font-bold text-slate-900 sm:text-xl dark:text-white"
-            >
+            <span className="text-lg font-bold text-kp-text-primary sm:text-xl">
               Klarpakke
-            </Text>
+            </span>
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
@@ -232,48 +229,51 @@ export function TopNav() {
             ))}
             <MoreDropdown locale={locale} pathname={pathname} />
           </nav>
-        </HStack>
+        </div>
 
-        <HStack className="shrink-0 items-center gap-1 sm:gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <ActiveTraderPill locale={locale} />
           <ThemeToggle size="sm" />
           <Button
-            as={Link}
-            href={hrefWithLocale(locale, "/dashboard/settings")}
+            asChild
             variant="secondary"
-            compact
+            size="sm"
             aria-label={t("settings")}
             title={t("settings")}
             className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-            start={<Settings className="h-4 w-4" />}
           >
-            <span className="hidden sm:inline">{t("settings")}</span>
+            <Link href={hrefWithLocale(locale, "/dashboard/settings")}>
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("settings")}</span>
+            </Link>
           </Button>
           <Button
-            as={Link}
-            href={hrefWithLocale(locale, "/varsler")}
+            asChild
             variant="secondary"
-            compact
+            size="sm"
             aria-label={t("alerts")}
             title={t("alerts")}
             className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-            start={<Bell className="h-4 w-4" />}
           >
-            <span className="hidden sm:inline">{t("alerts")}</span>
+            <Link href={hrefWithLocale(locale, "/varsler")}>
+              <Bell className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("alerts")}</span>
+            </Link>
           </Button>
           <Button
-            as={Link}
-            href={hrefWithLocale(locale, "/profile")}
+            asChild
             variant="secondary"
-            compact
+            size="sm"
             aria-label={t("profile")}
             title={t("profile")}
             className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-            start={<User className="h-4 w-4" />}
           >
-            <span className="hidden sm:inline">{t("profile")}</span>
+            <Link href={hrefWithLocale(locale, "/profile")}>
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("profile")}</span>
+            </Link>
           </Button>
-        </HStack>
+        </div>
       </div>
     </header>
   );

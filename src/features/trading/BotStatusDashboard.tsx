@@ -562,7 +562,7 @@ export default function BotStatusDashboard({
                     <td className="px-6 py-4 text-right text-slate-500 text-xs">
                       {new Date(
                         trade.executed_at || trade.created_at,
-                      ).toLocaleTimeString(t("enus") || "no-NO", {
+                      ).toLocaleTimeString(lang === "en" ? "en-US" : "no-NO", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}

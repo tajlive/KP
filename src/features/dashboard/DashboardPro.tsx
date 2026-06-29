@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -69,10 +70,23 @@ interface DashboardProProps {
 
 function StatSkeleton() {
   return (
-    <div className="bg-[#161719] rounded-2xl p-4 sm:p-5 border border-white/[0.06] space-y-3">
+    <div className="bg-kp-bg-secondary rounded-2xl p-4 sm:p-5 border border-kp-border-light space-y-3">
       <SkeletonBlock className="w-8 h-8 rounded-xl" />
       <SkeletonBlock className="h-7 w-24" delay={0.1} />
       <SkeletonBlock className="h-3 w-16" delay={0.2} />
+    </div>
+  );
+}
+
+function SessionsSkeleton() {
+  return (
+    <div className="bg-kp-bg-secondary rounded-2xl p-4 sm:p-5 border border-kp-border-light space-y-4">
+      <div className="flex items-center justify-between">
+        <SkeletonBlock className="h-5 w-32" />
+        <SkeletonBlock className="h-4 w-16" delay={0.1} />
+      </div>
+      <SkeletonBlock className="h-16 w-full rounded-xl" delay={0.15} />
+      <SkeletonBlock className="h-16 w-full rounded-xl" delay={0.2} />
     </div>
   );
 }
@@ -127,6 +141,13 @@ export function DashboardPro({
   const t = useTranslations("dashboard.dashboardPro");
   const isPaperMode = preferredTradingMode === "paper";
   const { formatByMode } = useCurrency();
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!isLoading && !isError && stats) {
+      setLastUpdated(new Date());
+    }
+  }, [isLoading, isError, stats]);
 
   const effectiveStats = stats || {
     totalTrades: 0,
@@ -242,24 +263,39 @@ export function DashboardPro({
             <div className="space-y-4">
               <div className="flex items-center justify-between px-1">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {locale === "no" ? "Dine sesjoner" : "Your sessions"}
+                  {t("sessionsTitle")}
                 </h3>
-                {(effectiveStats.sessionCount || 0) > 5 && (
-                  <Link 
-                    href={`/${locale}/handel?view=sessions`} 
-                    className="text-sm text-emerald-600 hover:text-emerald-500 font-medium transition-colors"
-                  >
-                    {locale === "no" ? "Se alle" : "See all"}
-                  </Link>
-                )}
+                <div className="flex items-center gap-3">
+                  {lastUpdated && (
+                    <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                      {t("lastUpdated")}:{" "}
+                      {lastUpdated.toLocaleTimeString(
+                        locale === "no" ? "nb-NO" : "en-GB",
+                        { hour: "2-digit", minute: "2-digit" },
+                      )}
+                    </span>
+                  )}
+                  {(effectiveStats.sessionCount || 0) > 5 && (
+                    <Link 
+                      href={`/${locale}/handel?view=sessions`} 
+                      className="text-sm text-emerald-600 hover:text-emerald-500 font-medium transition-colors"
+                    >
+                      {t("seeAll")}
+                    </Link>
+                  )}
+                </div>
               </div>
-              <PaperTradingList 
-                sessions={effectiveStats.recentSessions || []} 
-                balance={effectiveStats.currentCapital} 
-                locale={locale}
-                userId={userId}
-                sessionMode={preferredTradingMode}
-              />
+              {isLoading ? (
+                <SessionsSkeleton />
+              ) : (
+                <PaperTradingList 
+                  sessions={effectiveStats.recentSessions || []} 
+                  balance={effectiveStats.currentCapital} 
+                  locale={locale}
+                  userId={userId}
+                  sessionMode={preferredTradingMode}
+                />
+              )}
             </div>
 
             {/* Stats Grid — skjult for helt nye brukere */}
@@ -344,18 +380,17 @@ export function DashboardPro({
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                  {cmsData?.upgradeBanner?.title ?? "Klar for neste nivå?"}
+                  {cmsData?.upgradeBanner?.title ?? t("upgradeTitle")}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-slate-400">
-                  {cmsData?.upgradeBanner?.description ??
-                    "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support."}
+                  {cmsData?.upgradeBanner?.description ?? t("upgradeDescription")}
                 </p>
               </div>
               <Link
                 href={`/${locale}${cmsData?.upgradeBanner?.ctaLink ?? "/priser"}`}
                 className="shrink-0 px-6 py-3 bg-gradient-to-r from-[#0052FF] to-[#0052FF]/80 rounded-xl text-white text-sm font-semibold shadow-lg shadow-[#0052FF]/20 hover:shadow-xl hover:shadow-[#0052FF]/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 whitespace-nowrap inline-flex items-center justify-center"
               >
-                {cmsData?.upgradeBanner?.ctaText ?? "Se priser"}
+                {cmsData?.upgradeBanner?.ctaText ?? t("upgradeCta")}
               </Link>
             </div>
           </div>

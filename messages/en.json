@@ -54,7 +54,25 @@
     "users": "Users",
     "students": "Students",
     "tradeSync": "Trade Sync",
-    "system": "System",
+    "system": {
+      "databaseInfo": "Database Info",
+      "emailStatus": "Email Status",
+      "security": "Security",
+      "deployment": "Deployment",
+      "tables": "Tables",
+      "region": "Region",
+      "plan": "Plan",
+      "provider": "Provider",
+      "sentToday": "Sent today",
+      "successRate": "Success rate",
+      "authProvider": "Auth provider",
+      "rateLimiting": "Rate limiting",
+      "enabled": "Enabled",
+      "tokenExpiry": "Token expiry",
+      "platform": "Platform",
+      "customDomain": "Custom domain",
+      "functions": "Functions"
+    },
     "settings": "Settings",
     "loggedInAs": "Logged in as",
     "logout": "Log out",
@@ -105,7 +123,20 @@
         "operational": "Operational",
         "degraded": "Degraded",
         "down": "Down"
-      }
+      },
+      "supabaseDB": "Supabase Database",
+      "supabaseAuth": "Supabase Auth",
+      "resendEmail": "Resend Email",
+      "cloudflareWorkers": "Cloudflare Workers",
+      "betaCapacity": "Beta Capacity",
+      "connectionFailed": "Connection failed",
+      "authValid": "Auth valid",
+      "authServiceUnreachable": "Auth service unreachable",
+      "apiKeyConfigured": "API key configured",
+      "workerDeploymentActive": "Worker deployment active",
+      "ofStudents": "{count} of 100 students ({percentage}% full)",
+      "couldNotFetchCount": "Could not fetch count",
+      "latency": "{ms}ms latency"
     },
     "adminPanel": "Admin Dashboard",
     "subtitle": "Advanced control panel connected to Supabase & Resend.",
@@ -317,7 +348,8 @@
         "successDesc": "Your password has been changed. You can now log in with the new password.",
         "goToLogin": "Go to login"
       }
-    }
+    },
+    "loginRequiredTitle": "Log in to continue"
   },
   "autoTrade": {
     "title": "AI Auto-Trading",
@@ -501,6 +533,11 @@
         "name": "AI Copy",
         "description": "Copy AI-generated signals"
       }
+    },
+    "page": {
+      "title": "Auto Trading",
+      "description": "Set up your automated trading strategy.",
+      "activeBots": "{count, plural, =1 {You have 1 active bot} other {You have # active bots}}"
     }
   },
   "autoTradingPage": {
@@ -1302,30 +1339,6 @@
       "modeLive": "Live",
       "modePaper": "Paper"
     },
-    "botStatus": {
-      "title": "Bot Status",
-      "justNow": "Just now",
-      "minutesAgo": "{count} minutes ago",
-      "hoursAgo": "{count} hours ago",
-      "daysAgo": "{count} days ago",
-      "notResponding": "Not responding",
-      "active": "Active",
-      "paused": "Paused",
-      "stopped": "Stopped",
-      "paperTrading": "Paper Trading",
-      "liveTrading": "Live Trading",
-      "started": "Started",
-      "pause": "Pause",
-      "resume": "Resume",
-      "viewDetails": "View details",
-      "noBot": "No bot active",
-      "noBotDescription": "Start your first trading bot to see status here.",
-      "startPaperTrading": "Start paper trading",
-      "whatToExpect": "What to expect",
-      "feature1": "Automatic 24/7 trading",
-      "feature2": "Real-time market analysis",
-      "feature3": "Risk management and stop-loss"
-    },
     "newUserHero": {
       "badge": "New student",
       "welcome": "Welcome, {name}!",
@@ -1542,7 +1555,13 @@
         "balance": "Account Balance",
         "balanceSub": "Available capital"
       },
-      "scopeLabel": "Based on active and completed {mode} sessions"
+      "scopeLabel": "Based on active and completed {mode} sessions",
+      "sessionsTitle": "Your sessions",
+      "lastUpdated": "Last updated",
+      "seeAll": "See all",
+      "upgradeTitle": "Ready for the next level?",
+      "upgradeDescription": "Upgrade to Bachelor for live trading, advanced strategies and priority support.",
+      "upgradeCta": "See pricing"
     },
     "nlqChat": {
       "openChat": "Open chat",
@@ -1589,9 +1608,31 @@
       "stoppedLC": "stopped"
     },
     "error": {
-      "title": "An error occurred",
-      "unexpectedError": "An unexpected error occurred",
-      "errorCode": "Error code: {{code}}"
+      "title": "Could not load dashboard",
+      "unexpectedError": "An error occurred. Please try again.",
+      "errorCode": "Error code: {{code}}",
+      "reload": "Reload"
+    },
+    "adaptive": {
+      "progress": "Progress",
+      "step1": "Create account",
+      "step2": "Start paper trading",
+      "step3": "Complete 5 trades",
+      "step4": "Go live",
+      "welcomeTitle": "Welcome{userName, select, '' {} other {, {userName}}}",
+      "welcomeSubtitle": "Start your trading journey here. Practice risk-free with paper trading before going live.",
+      "greatWorkTitle": "Great work{userName, select, '' {} other {, {userName}}}",
+      "greatWorkSubtitle": "You're off to a good start. Keep learning and building experience.",
+      "activeSessionsTitle": "Your active sessions",
+      "trades": "Trades",
+      "total": "Total",
+      "winRate": "Win Rate",
+      "ofTotal": "Of total",
+      "pnl": "P&L",
+      "return": "Return",
+      "leaderboardTitle": "🏆 Leaderboard",
+      "leaderboardDesc": "Compare yourself with other traders and climb the ranks.",
+      "leaderboardCta": "View ranking →"
     }
   },
   "footer": {
@@ -2174,8 +2215,8 @@
       "description": "Sign in to your Klarpakke account."
     },
     "dashboard": {
-      "title": "Dashboard - Your Trading Overview | Klarpakke",
-      "description": "Your personal crypto trading dashboard with paper trading, live trading and real-time portfolio analysis."
+      "title": "Dashboard",
+      "description": "Your portfolio, live prices and trading overview."
     }
   },
   "navigation": {
@@ -2220,7 +2261,26 @@
     "save": "Save settings",
     "saved": "Saved!",
     "forCompleteMembers": "For Complete members",
-    "tip": "You can change your settings here at any time."
+    "tip": "You can change your settings here at any time.",
+    "headerDescription": "Choose which reminders you want to receive about courses, webinars and learning activities",
+    "newCourses": "New courses",
+    "newCoursesDesc": "Get notified when new course modules become available",
+    "quizReminders": "Quiz reminders",
+    "streakReminders": "Daily streak reminders",
+    "streakRemindersDesc": "Get reminded to log in and continue learning",
+    "emailUpdates": "Email updates",
+    "emailUpdatesDesc": "Receive important updates via email",
+    "upcomingWebinars": "Upcoming webinars",
+    "setReminder": "Set reminder",
+    "forProMembers": "For Pro members",
+    "webinarBeginnersTitle": "Live Q&A: Technical analysis for beginners",
+    "webinarBeginnersDate": "Feb 15, 2026 at 7:00 PM • Duration: 60 minutes",
+    "webinarBeginnersDesc": "Questions about candlesticks, support/levels and basic indicators",
+    "webinarAdvancedTitle": "Deep dive: Advanced trading strategies",
+    "webinarAdvancedDate": "Mar 1, 2026 at 7:00 PM • Duration: 90 minutes",
+    "webinarAdvancedDesc": "Fibonacci, Elliott Wave and risk management in practice",
+    "tipLabel": "Tip:",
+    "toggleSettingAria": "{enabled, select, true {Turn off} other {Turn on}} {label}"
   },
   "onboarding": {
     "email": "Email",
@@ -3360,7 +3420,50 @@
     "welcomeStart": "Welcome! Start a strategy to begin.",
     "marketTitle": "Market",
     "marketSubtitle": "Market overview and watchlist",
-    "goToTrade": "Go to trade"
+    "goToTrade": "Go to trade",
+    "autoTradingConfig": {
+      "title": "Auto-Trading",
+      "subtitle": "Let AI trade on your behalf based on market analysis",
+      "loading": "Loading...",
+      "toggleLabel": "Auto-Trading",
+      "enabledDesc": "Enabled - AI trades automatically",
+      "disabledDesc": "Disabled - Manual trading",
+      "modeLabel": "Trading mode",
+      "paperDesc": "Paper trading uses simulated money. No real losses.",
+      "liveDesc": "Live trading uses real money. Start with paper trading first!",
+      "riskLabel": "Risk level",
+      "maxTradeSize": "Max trade size",
+      "minAmount": "1,000 NOK",
+      "maxAmount": "100,000 NOK",
+      "save": "Save settings",
+      "saving": "Saving...",
+      "saveSuccess": "Settings saved!",
+      "saveError": "Could not save settings",
+      "loginRequired": "You must be logged in",
+      "riskLevels": {
+        "low": {
+          "label": "Conservative",
+          "description": "Minimizes risk, lower returns"
+        },
+        "medium": {
+          "label": "Balanced",
+          "description": "Moderate risk and return"
+        },
+        "high": {
+          "label": "Aggressive",
+          "description": "Higher risk, potentially higher return"
+        }
+      }
+    },
+    "restart": {
+      "title": "Trading is stopped",
+      "description": "{stoppedCount} stopped + {crashedCount} crashed session(s). Likely circuit breaker (drawdown).",
+      "reloading": "Reloading…",
+      "success": "{count} session(s) restarted!",
+      "button": "Restart trading",
+      "unknownError": "An error occurred",
+      "networkError": "Network error"
+    }
   },
   "wallet": {
     "title": "Wallet",

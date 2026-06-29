@@ -8,6 +8,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { createClient } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
+import { EmptyState } from "@/shared/ui";
 import { Badge } from "@/shared/ui/badge";
 import {
   Dialog,
@@ -111,28 +112,53 @@ export function PaperTradingList({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Supabase realtime: oppdater listen når trading_sessions endres for denne brukeren
+  // Supabase realtime: oppdater listen når trading_sessions endres for denne brukeren.
+  // Abonnementet pauses når dokumentet er skjult for å spare batteri.
   useEffect(() => {
     if (!userId) return;
+
     const supabase = createClient();
-    const channel = supabase
-      .channel("paper-trading-sessions")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "trading_sessions",
-          filter: `user_id=eq.${userId}`,
-        },
-        () => {
-          setLastUpdated(new Date());
-          router.refresh();
-        },
-      )
-      .subscribe();
-    return () => {
+    let channel = supabase.channel("paper-trading-sessions");
+
+    const subscribe = () => {
+      channel = supabase
+        .channel("paper-trading-sessions")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "trading_sessions",
+            filter: `user_id=eq.${userId}`,
+          },
+          () => {
+            setLastUpdated(new Date());
+            router.refresh();
+          },
+        )
+        .subscribe();
+    };
+
+    const unsubscribe = () => {
       supabase.removeChannel(channel);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        unsubscribe();
+      } else {
+        subscribe();
+      }
+    };
+
+    if (document.visibilityState === "visible") {
+      subscribe();
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      unsubscribe();
     };
   }, [userId, router]);
 
@@ -385,7 +411,7 @@ export function PaperTradingList({
                 {t("lastUpdated")}:{" "}
                 {lastUpdated.toLocaleTimeString(
                   locale === "no" ? "nb-NO" : "en-GB",
-                  { hour: "2-digit", minute: "2-digit", second: "2-digit" },
+                  { hour: "2-digit", minute: "2-digit" },
                 )}
               </span>
             )}
@@ -470,29 +496,16 @@ export function PaperTradingList({
 
       {/* Liste over sesjoner */}
       {sessions.length === 0 ? (
-        <Card
-          className={`border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden ${cardBase}`}
-        >
-          <CardContent className="p-10 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-5">
-              <Wallet className="w-8 h-8 text-slate-500 dark:text-slate-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-              {t("noSessions")}
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm mx-auto">
-              {t("noSessionsDesc")}
-            </p>
-            <Button
-              size="lg"
-              className={`gap-2 min-h-12 px-6 text-sm font-semibold ${RADIUS.button} ${BRAND.primary} [&>span]:truncate [&>span]:max-w-[16rem]`}
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4 shrink-0" aria-hidden />
-              <span>{t("startFirst")}</span>
-            </Button>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<Wallet className="w-8 h-8" />}
+          title={t("noSessions")}
+          description={t("noSessionsDesc")}
+          action={{
+            label: t("startFirst"),
+            onClick: () => setIsModalOpen(true),
+            variant: "primary",
+          }}
+        />
       ) : (
         <div className="space-y-4">
           {hiddenHistoryCount > 0 && !showHistory && (
@@ -538,7 +551,7 @@ export function PaperTradingList({
               <Link
                 key={session.id}
                 href={href}
-                className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card} relative overflow-hidden ${
+                className={`block ${cardBase} p-4 min-h-[44px] transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card} relative overflow-hidden ${
                   isActive
                     ? "border-l-4 border-l-green-500 dark:border-l-green-400 shadow-[0_0_0_1px_rgba(34,197,94,0.08)] dark:shadow-[0_0_0_1px_rgba(34,197,94,0.15)]"
                     : ""

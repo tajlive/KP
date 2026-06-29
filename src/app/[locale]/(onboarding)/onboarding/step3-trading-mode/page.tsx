@@ -9,6 +9,7 @@ import { Card } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { RiskBadge } from "@/shared/ui/RiskBadge";
 import { createClient } from "@/lib/supabase/client";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { Gamepad2, Info } from "lucide-react";
 import {
   Tooltip,
@@ -39,7 +40,7 @@ export default function OnboardingStep3() {
         } = await supabase.auth.getUser();
 
         if (!user) {
-          router.push(`/${locale}/innlogging?next=/${locale}/onboarding/step3-trading-mode`);
+          router.push(`${hrefWithLocale(locale, "/login")}?next=/${locale}/onboarding/step3-trading-mode`);
           return;
         }
 

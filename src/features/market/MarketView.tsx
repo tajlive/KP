@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Card } from "@coinbase/cds-web/cards";
-import { Text } from "@coinbase/cds-web/typography";
-import { Button } from "@coinbase/cds-web/buttons";
+import { Button } from "@/shared/ui/button";
 import { usePrices } from "@/hooks/usePrices";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useDashboardNumberLocale } from "@/i18n/use-dashboard-number-locale";
@@ -40,14 +38,14 @@ export function MarketView({ userId }: { userId: string }) {
   return (
     <div className="space-y-6 pb-16">
       <header className="space-y-3">
-        <h1 className="text-3xl font-bold text-slate-900">{t("marketTitle")}</h1>
-        <p className="text-sm text-slate-500">{t("marketSubtitle")}</p>
+        <h1 className="text-3xl font-bold text-kp-text-primary">{t("marketTitle")}</h1>
+        <p className="text-sm text-kp-text-secondary">{t("marketSubtitle")}</p>
       </header>
 
-      <Card className="border border-slate-200 bg-white p-5 shadow-sm">
-        <Text as="h2" className="text-base font-semibold text-slate-900">
+      <div className="rounded-2xl border border-kp-border bg-kp-bg-card p-5 shadow-sm">
+        <h2 className="text-base font-semibold text-kp-text-primary">
           {t("topMovers")}
-        </Text>
+        </h2>
         <div className="mt-3 grid gap-2 md:grid-cols-5">
           {topMovers.map((row) => {
             const base = row.symbol.replace("USDT", "");
@@ -56,17 +54,17 @@ export function MarketView({ userId }: { userId: string }) {
               <Link
                 key={row.symbol}
                 href={hrefWithLocale(locale, `/dashboard/asset/${base}`)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50"
+                className="rounded-lg border border-kp-border bg-kp-bg-secondary px-3 py-2 hover:bg-kp-bg-hover"
               >
-                <p className="text-sm font-semibold text-slate-900">{base}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm font-semibold text-kp-text-primary">{base}</p>
+                <p className="text-xs text-kp-text-secondary">
                   {row.price.toLocaleString(numberLocale, {
                     maximumFractionDigits: 2,
                   })}
                 </p>
                 <p
                   className={`text-xs font-medium ${
-                    positive ? "text-emerald-600" : "text-rose-600"
+                    positive ? "text-kp-success" : "text-kp-danger"
                   }`}
                 >
                   {positive ? "+" : ""}
@@ -76,11 +74,13 @@ export function MarketView({ userId }: { userId: string }) {
             );
           })}
         </div>
-      </Card>
+      </div>
 
       <div className="flex justify-center">
-        <Button as={Link} href={hrefWithLocale(locale, "/handel")} variant="primary">
-          {t("goToTrade")}
+        <Button asChild className="bg-kp-brand hover:bg-kp-brand-hover text-white">
+          <Link href={hrefWithLocale(locale, "/handel")}>
+            {t("goToTrade")}
+          </Link>
         </Button>
       </div>
     </div>

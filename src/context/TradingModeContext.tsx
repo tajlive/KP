@@ -2,6 +2,7 @@
 
 import type { TradingMode } from "@/types/trading";
 import { createContext, useCallback, useContext, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -28,19 +29,20 @@ export function TradingModeProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations("dashboard.tradingMode");
   const [mode, setModeState] = useState<TradingMode>("paper");
 
   const setMode = useCallback((newMode: TradingMode) => {
     setModeState(newMode);
     const message =
       newMode === "paper"
-        ? "Byttet til lekepenger"
-        : "Byttet til Live Trading";
+        ? t("switchedToPaper")
+        : t("switchedToLive");
     toast.success(message, {
       id: "trading-mode-toast",
       duration: 2500,
     });
-  }, []);
+  }, [t]);
 
   return (
     <TradingModeContext.Provider value={{ mode, setMode }}>

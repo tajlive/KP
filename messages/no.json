@@ -54,7 +54,25 @@
     "users": "Brukere",
     "students": "Studenter",
     "tradeSync": "Trade Sync",
-    "system": "System",
+    "system": {
+      "databaseInfo": "Database Info",
+      "emailStatus": "Email Status",
+      "security": "Sikkerhet",
+      "deployment": "Deployment",
+      "tables": "Tabeller",
+      "region": "Region",
+      "plan": "Plan",
+      "provider": "Provider",
+      "sentToday": "Sendt i dag",
+      "successRate": "Suksessrate",
+      "authProvider": "Auth Provider",
+      "rateLimiting": "Rate Limiting",
+      "enabled": "Enabled",
+      "tokenExpiry": "Token Expiry",
+      "platform": "Platform",
+      "customDomain": "Custom Domain",
+      "functions": "Functions"
+    },
     "settings": "Innstillinger",
     "loggedInAs": "Logget inn som",
     "logout": "Logg ut",
@@ -105,7 +123,20 @@
         "operational": "Operativ",
         "degraded": "Degradert",
         "down": "Nede"
-      }
+      },
+      "supabaseDB": "Supabase Database",
+      "supabaseAuth": "Supabase Auth",
+      "resendEmail": "Resend Email",
+      "cloudflareWorkers": "Cloudflare Workers",
+      "betaCapacity": "Beta Capacity",
+      "connectionFailed": "Connection failed",
+      "authValid": "Auth valid",
+      "authServiceUnreachable": "Auth service unreachable",
+      "apiKeyConfigured": "API key configured",
+      "workerDeploymentActive": "Worker deployment active",
+      "ofStudents": "{count} av 100 students ({percentage}% full)",
+      "couldNotFetchCount": "Could not fetch count",
+      "latency": "{ms}ms latency"
     },
     "adminPanel": "Admin Kontrollpanel",
     "subtitle": "Avansert kontrollpanel koblet til Supabase & Resend.",
@@ -317,7 +348,8 @@
         "successDesc": "Ditt passord har blitt endret. Du kan nå logge inn med det nye passordet.",
         "goToLogin": "Gå til login"
       }
-    }
+    },
+    "loginRequiredTitle": "Logg inn for å fortsette"
   },
   "autoTrade": {
     "title": "AI Auto-Trading",
@@ -501,6 +533,11 @@
         "name": "AI Copy",
         "description": "Kopier AI-genererte signaler"
       }
+    },
+    "page": {
+      "title": "Auto-handel",
+      "description": "Sett opp din automatiske trading-strategi.",
+      "activeBots": "{count, plural, =1 {Du har 1 aktiv bot} other {Du har # aktive bot-er}}"
     }
   },
   "autoTradingPage": {
@@ -1302,30 +1339,6 @@
       "modeLive": "Ekte",
       "modePaper": "Øving"
     },
-    "botStatus": {
-      "title": "Bot Status",
-      "justNow": "Akkurat nå",
-      "minutesAgo": "{count} minutter siden",
-      "hoursAgo": "{count} timer siden",
-      "daysAgo": "{count} dager siden",
-      "notResponding": "Svarer ikke",
-      "active": "Aktiv",
-      "paused": "Pauset",
-      "stopped": "Stoppet",
-      "paperTrading": "Lekepenger",
-      "liveTrading": "Live-handel",
-      "started": "Startet",
-      "pause": "Pause",
-      "resume": "Fortsett",
-      "viewDetails": "Se detaljer",
-      "noBot": "Ingen bot aktiv",
-      "noBotDescription": "Start din første trading-bot for å se status her.",
-      "startPaperTrading": "Start øvingshandel",
-      "whatToExpect": "Forventet oppførsel",
-      "feature1": "Automatisk handel døgnet rundt",
-      "feature2": "Sanntids markedsanalyse",
-      "feature3": "Risikostyring og stop-loss"
-    },
     "newUserHero": {
       "badge": "Ny student",
       "welcome": "Velkommen, {name}!",
@@ -1542,7 +1555,13 @@
         "balance": "Kontobalanse",
         "balanceSub": "Tilgjengelig kapital"
       },
-      "scopeLabel": "Basert på aktive og fullførte {mode}-sessions"
+      "scopeLabel": "Basert på aktive og fullførte {mode}-sessions",
+      "sessionsTitle": "Dine sesjoner",
+      "lastUpdated": "Sist oppdatert",
+      "seeAll": "Se alle",
+      "upgradeTitle": "Klar for neste nivå?",
+      "upgradeDescription": "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support.",
+      "upgradeCta": "Se priser"
     },
     "nlqChat": {
       "openChat": "Åpne chat",
@@ -1589,9 +1608,31 @@
       "stoppedLC": "stoppete"
     },
     "error": {
-      "title": "Det oppstod en feil",
-      "unexpectedError": "En uventet feil oppstod",
-      "errorCode": "Feilkode: {{code}}"
+      "title": "Kunne ikke laste dashboard",
+      "unexpectedError": "Det oppstod en feil. Vennligst prøv igjen.",
+      "errorCode": "Feilkode: {{code}}",
+      "reload": "Last inn på nytt"
+    },
+    "adaptive": {
+      "progress": "Fremgang",
+      "step1": "Opprett konto",
+      "step2": "Start med lekepenger",
+      "step3": "Gjennomfør 5 trades",
+      "step4": "Gå live",
+      "welcomeTitle": "Velkommen{userName, select, '' {} other {, {userName}}}",
+      "welcomeSubtitle": "Start trading-reisen her. Øv risikofritt med lekepenger før du går live.",
+      "greatWorkTitle": "Godt jobbet{userName, select, '' {} other {, {userName}}}",
+      "greatWorkSubtitle": "Du har kommet i gang. Fortsett å lære og bygg erfaring.",
+      "activeSessionsTitle": "Dine aktive sesjoner",
+      "trades": "Trades",
+      "total": "Totalt",
+      "winRate": "Win Rate",
+      "ofTotal": "Av totalt",
+      "pnl": "P&L",
+      "return": "Avkastning",
+      "leaderboardTitle": "🏆 Leaderboard",
+      "leaderboardDesc": "Sammenlign deg med andre tradere og klatre på rangeringen.",
+      "leaderboardCta": "Se rangering →"
     }
   },
   "footer": {
@@ -2174,8 +2215,8 @@
       "description": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, lekepenger og automatiserte signaler."
     },
     "dashboard": {
-      "title": "Dashboard - Din Trading Oversikt | Klarpakke",
-      "description": "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse i sanntid."
+      "title": "Dashboard",
+      "description": "Din portefølje, live priser og trading-oversikt."
     }
   },
   "navigation": {
@@ -2220,7 +2261,26 @@
     "save": "Lagre innstillinger",
     "saved": "Lagret!",
     "forCompleteMembers": "For Complete-medlemmer",
-    "tip": "Du kan når som helst endre innstillingene dine her."
+    "tip": "Du kan når som helst endre innstillingene dine her.",
+    "headerDescription": "Velg hvilke påminnelser du vil motta om kurs, webinarer og læringsaktiviteter",
+    "newCourses": "Nye kurs",
+    "newCoursesDesc": "Bli varslet når nye kurs moduler blir tilgjengelig",
+    "quizReminders": "Quiz-påminnelser",
+    "streakReminders": "Daglige streak-påminnelser",
+    "streakRemindersDesc": "Få påminnelse om å logge inn og fortsette læringen",
+    "emailUpdates": "E-post oppdateringer",
+    "emailUpdatesDesc": "Motta viktige oppdateringer via e-post",
+    "upcomingWebinars": "Kommende webinarer",
+    "setReminder": "Sett påminnelse",
+    "forProMembers": "For Pro-medlemmer",
+    "webinarBeginnersTitle": "Live Q&A: Teknisk analyse for nybegynnere",
+    "webinarBeginnersDate": "15. februar 2026 kl. 19:00 • Varighet: 60 minutter",
+    "webinarBeginnersDesc": "Spørsmål om candlesticks, support/nivåer og grunnleggende indikatorer",
+    "webinarAdvancedTitle": "Dypdykk: Avanserte trading-strategier",
+    "webinarAdvancedDate": "1. mars 2026 kl. 19:00 • Varighet: 90 minutter",
+    "webinarAdvancedDesc": "Fibonacci, Elliott Wave og risikostyring i praksis",
+    "tipLabel": "Tips:",
+    "toggleSettingAria": "{enabled, select, true {Slå av} other {Slå på}} {label}"
   },
   "onboarding": {
     "email": "E-post",
@@ -3360,7 +3420,50 @@
     "welcomeStart": "Velkommen! Start en strategi for å begynne.",
     "marketTitle": "Marked",
     "marketSubtitle": "Oversikt over markeder og watchlist",
-    "goToTrade": "Gå til handel"
+    "goToTrade": "Gå til handel",
+    "autoTradingConfig": {
+      "title": "Auto-Trading",
+      "subtitle": "La AI handle på dine vegne basert på markedsanalyse",
+      "loading": "Laster...",
+      "toggleLabel": "Auto-Trading",
+      "enabledDesc": "Aktivert - AI handler automatisk",
+      "disabledDesc": "Deaktivert - Manuell handel",
+      "modeLabel": "Handelsmodus",
+      "paperDesc": "Lekepenger bruker simulerte penger. Ingen ekte tap.",
+      "liveDesc": "Live trading bruker ekte penger. Start med lekepenger først!",
+      "riskLabel": "Risikonivå",
+      "maxTradeSize": "Maks handelsstørrelse",
+      "minAmount": "1 000 NOK",
+      "maxAmount": "100 000 NOK",
+      "save": "Lagre innstillinger",
+      "saving": "Lagrer...",
+      "saveSuccess": "Innstillinger lagret!",
+      "saveError": "Kunne ikke lagre innstillinger",
+      "loginRequired": "Du må være logget inn",
+      "riskLevels": {
+        "low": {
+          "label": "Konservativ",
+          "description": "Minimerer risiko, lavere avkastning"
+        },
+        "medium": {
+          "label": "Balansert",
+          "description": "Middels risiko og avkastning"
+        },
+        "high": {
+          "label": "Aggressiv",
+          "description": "Høyere risiko, potensielt høyere avkastning"
+        }
+      }
+    },
+    "restart": {
+      "title": "Trading er stoppet",
+      "description": "{stoppedCount} stoppede + {crashedCount} crashed session(s). Sannsynligvis pga. circuit breaker (drawdown).",
+      "reloading": "Laster på nytt…",
+      "success": "{count} session(s) restartet!",
+      "button": "Restart handel",
+      "unknownError": "En feil oppstod",
+      "networkError": "Nettverksfeil"
+    }
   },
   "wallet": {
     "title": "Lommebok",

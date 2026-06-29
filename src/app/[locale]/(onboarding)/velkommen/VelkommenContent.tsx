@@ -20,6 +20,7 @@ import {
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BRAND } from "@/lib/design/tokens";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 export function VelkommenContent() {
   const params = useParams();
@@ -55,7 +56,7 @@ export function VelkommenContent() {
       title: t("steps.items.checkStatus.title"),
       description: t("steps.items.checkStatus.desc"),
       action: t("steps.items.checkStatus.action"),
-      href: "/LOCALE/innlogging",
+      href: "/LOCALE/login",
       primary: true,
     },
     {
@@ -102,7 +103,7 @@ export function VelkommenContent() {
               className={`${BRAND.gradient} hover:opacity-90 text-lg px-8`}
               asChild
             >
-              <a href={`/${locale}/innlogging`}>
+              <a href={hrefWithLocale(locale, "/login")}>
                 {t("steps.items.checkStatus.action")}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </a>
@@ -250,7 +251,7 @@ export function VelkommenContent() {
             className={`${BRAND.gradient} hover:opacity-90 text-lg px-8`}
             asChild
           >
-            <a href={`/${locale}/innlogging`}>
+            <a href={hrefWithLocale(locale, "/login")}>
               {t("cta.button")}
               <ArrowRight className="w-5 h-5 ml-2" />
             </a>

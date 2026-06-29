@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 interface SystemStatus {
-  name: string;
+  nameKey: string;
   status: 'operational' | 'degraded' | 'down';
   message: string;
   lastChecked: string;
@@ -48,16 +48,16 @@ export default function ClientAdminSystem() {
       const latency = Date.now() - start;
 
       results.push({
-        name: 'Supabase Database',
+        nameKey: 'systemHealth.supabaseDB',
         status: error ? 'down' : latency > 1000 ? 'degraded' : 'operational',
-        message: error ? error.message : `${latency}ms latency`,
+        message: error ? error.message : t('systemHealth.latency', { ms: latency }),
         lastChecked: new Date().toISOString(),
       });
     } catch (_error) {
       results.push({
-        name: 'Supabase Database',
+        nameKey: 'systemHealth.supabaseDB',
         status: 'down',
-        message: 'Connection failed',
+        message: t('systemHealth.connectionFailed'),
         lastChecked: new Date().toISOString(),
       });
     }
@@ -67,33 +67,33 @@ export default function ClientAdminSystem() {
       const supabase = getSupabase();
       const { error } = await supabase.auth.getUser();
       results.push({
-        name: 'Supabase Auth',
+        nameKey: 'systemHealth.supabaseAuth',
         status: error ? 'down' : 'operational',
-        message: error ? error.message : 'Auth valid',
+        message: error ? error.message : t('systemHealth.authValid'),
         lastChecked: new Date().toISOString(),
       });
     } catch (_error) {
       results.push({
-        name: 'Supabase Auth',
+        nameKey: 'systemHealth.supabaseAuth',
         status: 'down',
-        message: 'Auth service unreachable',
+        message: t('systemHealth.authServiceUnreachable'),
         lastChecked: new Date().toISOString(),
       });
     }
 
     // 3. Check Resend (via environment check - can't actually test without sending email)
     results.push({
-      name: 'Resend Email',
+      nameKey: 'systemHealth.resendEmail',
       status: 'operational',
-      message: 'API key configured',
+      message: t('systemHealth.apiKeyConfigured'),
       lastChecked: new Date().toISOString(),
     });
 
     // 4. Check Cloudflare Workers
     results.push({
-      name: 'Cloudflare Workers',
+      nameKey: 'systemHealth.cloudflareWorkers',
       status: 'operational',
-      message: 'Worker deployment active',
+      message: t('systemHealth.workerDeploymentActive'),
       lastChecked: new Date().toISOString(),
     });
 
@@ -108,16 +108,16 @@ export default function ClientAdminSystem() {
 
       const percentage = Math.round((count || 0) / 100 * 100);
       results.push({
-        name: 'Beta Capacity',
+        nameKey: 'systemHealth.betaCapacity',
         status: percentage >= 90 ? 'degraded' : 'operational',
-        message: `${count || 0} of 100 students (${percentage}% full)`,
+        message: t('systemHealth.ofStudents', { count: count || 0, percentage }),
         lastChecked: new Date().toISOString(),
       });
     } catch (_error) {
       results.push({
-        name: 'Beta Capacity',
+        nameKey: 'systemHealth.betaCapacity',
         status: 'down',
-        message: 'Could not fetch count',
+        message: t('systemHealth.couldNotFetchCount'),
         lastChecked: new Date().toISOString(),
       });
     }
@@ -141,11 +141,11 @@ export default function ClientAdminSystem() {
   const getStatusBadge = (status: SystemStatus['status']) => {
     switch (status) {
       case 'operational':
-        return <Badge className="bg-green-500/10 text-green-400 border-green-500/20">Operational</Badge>;
+        return <Badge className="bg-green-500/10 text-green-400 border-green-500/20">{t('systemHealth.status.operational')}</Badge>;
       case 'degraded':
-        return <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">Degraded</Badge>;
+        return <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">{t('systemHealth.status.degraded')}</Badge>;
       case 'down':
-        return <Badge className="bg-red-500/10 text-red-400 border-red-500/20">Down</Badge>;
+        return <Badge className="bg-red-500/10 text-red-400 border-red-500/20">{t('systemHealth.status.down')}</Badge>;
     }
   };
 
@@ -158,7 +158,7 @@ export default function ClientAdminSystem() {
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">{t('serviceStatus')}</h1>
           <p className="text-slate-400">
-            Sist sjekket: {lastCheck?.toLocaleString(locale === 'no' ? 'no-NO' : 'en-US') || 'Laster...'}
+            {t('systemHealth.lastChecked')}: {lastCheck?.toLocaleString(locale === 'no' ? 'no-NO' : 'en-US') || t('systemHealth.loading')}
           </p>
         </div>
         <button
@@ -166,7 +166,7 @@ export default function ClientAdminSystem() {
           disabled={loading}
           className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg disabled:opacity-50 transition-colors"
         >
-          {loading ? 'Sjekker...' : 'Sjekk på nytt'}
+          {loading ? t('systemHealth.checking') : t('systemHealth.checkAgain')}
         </button>
       </div>
 
@@ -179,12 +179,12 @@ export default function ClientAdminSystem() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">
-                {allOperational ? 'Alle systemer operasjonelle' : 'Noen systemer har problemer'}
+                {allOperational ? t('systemHealth.allOperational') : t('systemHealth.someIssues')}
               </h2>
               <p className="text-slate-400">
                 {allOperational
                   ? t('allServicesNormal')
-                  : 'Vennligst sjekk status nedenfor'}
+                  : t('systemHealth.checkStatusBelow')}
               </p>
             </div>
           </div>
@@ -194,13 +194,13 @@ export default function ClientAdminSystem() {
       {/* System Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {statuses.map((system) => (
-          <Card key={system.name} className="border-slate-700 bg-slate-800/50">
+          <Card key={system.nameKey} className="border-slate-700 bg-slate-800/50">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                   <div className="mt-1">{getStatusIcon(system.status)}</div>
                   <div>
-                    <h3 className="font-semibold text-white">{system.name}</h3>
+                    <h3 className="font-semibold text-white">{t(system.nameKey)}</h3>
                     <p className="text-slate-400 text-sm mt-1">{system.message}</p>
                     <p className="text-slate-600 text-xs mt-2">
                       <Clock className="w-3 h-3 inline mr-1" />
@@ -221,20 +221,20 @@ export default function ClientAdminSystem() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Database className="w-5 h-5" />
-              Database Info
+              {t('system.databaseInfo')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Tabeller</span>
+              <span className="text-slate-400">{t('system.tables')}</span>
               <span className="text-white">beta_signups, admin_password_resets</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Region</span>
+              <span className="text-slate-400">{t('system.region')}</span>
               <span className="text-white">eu-north-1 (Stockholm)</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Plan</span>
+              <span className="text-slate-400">{t('system.plan')}</span>
               <span className="text-white">Pro</span>
             </div>
           </CardContent>
@@ -244,20 +244,20 @@ export default function ClientAdminSystem() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Mail className="w-5 h-5" />
-              Email Status
+              {t('system.emailStatus')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Provider</span>
+              <span className="text-slate-400">{t('system.provider')}</span>
               <span className="text-white">Resend</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Sendt i dag</span>
+              <span className="text-slate-400">{t('system.sentToday')}</span>
               <span className="text-white">-</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Suksessrate</span>
+              <span className="text-slate-400">{t('system.successRate')}</span>
               <span className="text-white">-</span>
             </div>
           </CardContent>
@@ -267,20 +267,20 @@ export default function ClientAdminSystem() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Shield className="w-5 h-5" />
-              Sikkerhet
+              {t('system.security')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Auth Provider</span>
+              <span className="text-slate-400">{t('system.authProvider')}</span>
               <span className="text-white">Supabase Auth</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Rate Limiting</span>
-              <span className="text-green-400">Enabled</span>
+              <span className="text-slate-400">{t('system.rateLimiting')}</span>
+              <span className="text-green-400">{t('system.enabled')}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Token Expiry</span>
+              <span className="text-slate-400">{t('system.tokenExpiry')}</span>
               <span className="text-white">1 hour</span>
             </div>
           </CardContent>
@@ -290,20 +290,20 @@ export default function ClientAdminSystem() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Server className="w-5 h-5" />
-              Deployment
+              {t('system.deployment')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Platform</span>
+              <span className="text-slate-400">{t('system.platform')}</span>
               <span className="text-white">Cloudflare Workers</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Custom Domain</span>
+              <span className="text-slate-400">{t('system.customDomain')}</span>
               <span className="text-white">www.klarpakke.no</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Functions</span>
+              <span className="text-slate-400">{t('system.functions')}</span>
               <span className="text-white">Enabled</span>
             </div>
           </CardContent>

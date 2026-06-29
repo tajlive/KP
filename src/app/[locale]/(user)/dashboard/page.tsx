@@ -1,6 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { localizedPathname } from "@/middleware/locale-path";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { DashboardContent } from "@/features/dashboard/DashboardContent";
@@ -22,10 +21,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  const title = "Dashboard";
-  const description = locale === "no"
-    ? "Din portefølje, live priser og trading-oversikt."
-    : "Your portfolio, live prices and trading overview.";
+  const title = t("dashboard.title");
+  const description = t("dashboard.description");
 
   return {
     title,
@@ -42,23 +39,24 @@ export async function generateMetadata({
   };
 }
 
-function DashboardErrorFallback({ locale }: { locale: string }) {
+async function DashboardErrorFallback({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "dashboard" });
   return (
     <div className="p-6">
       <div className="max-w-4xl mx-auto">
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-red-800 mb-2">
-            Kunne ikke laste dashboard
+            {t("error.title")}
           </h2>
           <p className="text-red-600 mb-4">
-            Det oppstod en feil. Vennligst prøv igjen.
+            {t("error.unexpectedError")}
           </p>
           <Link
             href={`/${locale}/dashboard`}
             className={`px-4 py-2 ${BRAND.primary} rounded-lg transition-colors inline-block`}
           >
-            Last inn på nytt
+            {t("error.reload")}
           </Link>
         </div>
       </div>

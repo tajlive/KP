@@ -354,7 +354,6 @@ export default async function PortfolioPage({ params }: PageProps) {
           {/* Restart button if all sessions are stopped/crashed */}
           {stoppedSessions.length + crashedSessions.length > 0 && activeSessions.length === 0 && (
             <RestartTradingButton
-              locale={locale}
               stoppedCount={stoppedSessions.length}
               crashedCount={crashedSessions.length}
             />

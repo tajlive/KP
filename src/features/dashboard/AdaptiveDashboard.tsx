@@ -1,7 +1,7 @@
 "use client";
 
 import { m, AnimatePresence } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { TrendingUp, BarChart3, Wallet } from "lucide-react";
 import type { UserState } from "@/hooks/useUserState";
 import { SimplifiedHero } from "./SimplifiedHero";
@@ -45,19 +45,18 @@ export interface UserStats {
 /*  Progress indicator (onboarding)                                    */
 /* ------------------------------------------------------------------ */
 function OnboardingProgress({ step }: { step: number }) {
-  const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.adaptive");
   const steps = [
-    isNo ? "Opprett konto" : "Create account",
-    isNo ? "Start med lekepenger" : "Start paper trading",
-    isNo ? "Gjennomfør 5 trades" : "Complete 5 trades",
-    isNo ? "Gå live" : "Go live",
+    t("step1"),
+    t("step2"),
+    t("step3"),
+    t("step4"),
   ];
 
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-xs text-slate-400">
-        <span>{isNo ? "Fremgang" : "Progress"}</span>
+        <span>{t("progress")}</span>
         <span>
           {step}/{steps.length}
         </span>
@@ -80,8 +79,7 @@ function OnboardingProgress({ step }: { step: number }) {
 /*  Empty state hero (new users)                                       */
 /* ------------------------------------------------------------------ */
 function NewUserHero({ userName, preferredTradingMode }: { userName?: string | null; preferredTradingMode: "paper" | "live" }) {
-  const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.adaptive");
   const isLive = preferredTradingMode === "live";
 
   return (
@@ -93,14 +91,10 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
     >
       <div className="text-center space-y-2">
         <h2 className="text-2xl sm:text-3xl font-bold text-white">
-          {isNo
-            ? `Velkommen${userName ? `, ${userName}` : ""}`
-            : `Welcome${userName ? `, ${userName}` : ""}`}
+          {t("welcomeTitle", { userName: userName || "" })}
         </h2>
         <p className="text-slate-400 max-w-md mx-auto">
-          {isNo
-            ? "Start trading-reisen her. Øv risikofritt med lekepenger før du går live."
-            : "Start your trading journey here. Practice risk-free with paper trading before going live."}
+          {t("welcomeSubtitle")}
         </p>
       </div>
 
@@ -118,30 +112,30 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
 /* ------------------------------------------------------------------ */
 function OnboardedView({ userId, stats, userName, preferredTradingMode }: { userId: string; stats: UserStats | null; userName?: string | null; preferredTradingMode: "paper" | "live" }) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.adaptive");
   const isLive = preferredTradingMode === "live";
   const { formatByMode } = useCurrency();
 
   const displayStats = stats
     ? [
         {
-          label: isNo ? "Trades" : "Trades",
+          label: t("trades"),
           value: String(stats.totalTrades),
-          subtext: isNo ? "Totalt" : "Total",
+          subtext: t("total"),
           trend: "neutral" as const,
           icon: BarChart3,
         },
         {
-          label: isNo ? "Win Rate" : "Win Rate",
+          label: t("winRate"),
           value: `${Math.round(stats.winRate * 100)}%`,
-          subtext: isNo ? "Av totalt" : "Of total",
+          subtext: t("ofTotal"),
           trend: stats.winRate >= 50 ? ("up" as const) : ("down" as const),
           icon: TrendingUp,
         },
         {
-          label: isNo ? "P&L" : "P&L",
+          label: t("pnl"),
           value: `${stats.totalPnl >= 0 ? "+" : ""}${formatByMode(Math.abs(stats.totalPnl), preferredTradingMode)}`,
-          subtext: isNo ? "Avkastning" : "Return",
+          subtext: t("return"),
           trend: stats.totalPnl >= 0 ? ("up" as const) : ("down" as const),
           icon: Wallet,
         },
@@ -157,14 +151,10 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
     >
       <div className="space-y-1">
         <h2 className="text-xl font-semibold text-white">
-          {isNo
-            ? `Godt jobbet${userName ? `, ${userName}` : ""}`
-            : `Great work${userName ? `, ${userName}` : ""}`}
+          {t("greatWorkTitle", { userName: userName || "" })}
         </h2>
         <p className="text-sm text-slate-400">
-          {isNo
-            ? "Du har kommet i gang. Fortsett å lære og bygg erfaring."
-            : "You're off to a good start. Keep learning and building experience."}
+          {t("greatWorkSubtitle")}
         </p>
       </div>
 
@@ -176,7 +166,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
           
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-white">
-              {isNo ? "Dine aktive sesjoner" : "Your active sessions"}
+              {t("activeSessionsTitle")}
             </h3>
             <PaperTradingList 
               sessions={stats.recentSessions || []} 
@@ -236,7 +226,7 @@ function ActiveTraderView({
 function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userName"> & { userName?: string | null }) {
   const { stats } = props;
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.adaptive");
 
   return (
     <div className="space-y-5">
@@ -262,19 +252,17 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         <div className="flex items-center justify-between gap-4">
           <div>
             <h4 className="text-sm font-semibold text-amber-300">
-              {isNo ? "🏆 Leaderboard" : "🏆 Leaderboard"}
+              {t("leaderboardTitle")}
             </h4>
             <p className="text-xs text-slate-400 mt-0.5">
-              {isNo
-                ? "Sammenlign deg med andre tradere og klatre på rangeringen."
-                : "Compare yourself with other traders and climb the ranks."}
+              {t("leaderboardDesc")}
             </p>
           </div>
           <a
             href={`/${locale}/leaderboard`}
             className="shrink-0 rounded-lg bg-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/30 transition-colors"
           >
-            {isNo ? "Se rangering →" : "View ranking →"}
+            {t("leaderboardCta")}
           </a>
         </div>
       </m.div>

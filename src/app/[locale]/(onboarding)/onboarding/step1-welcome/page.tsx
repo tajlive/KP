@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import {
   AIMappingChat,
   AIMappingAnswers,
@@ -27,7 +28,7 @@ export default function OnboardingStep1() {
 
       if (!user) {
         router.push(
-          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step1-welcome`)}`,
+          `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step1-welcome`)}`,
         );
         return;
       }
