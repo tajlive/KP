@@ -1,4 +1,4 @@
-# Scripts Oversikt - 2026-06-24
+# Scripts Oversikt - 2026-06-29
 
 | Script | Beskrivelse |
 |--------|-------------|
@@ -26,7 +26,6 @@
 | bootstrap-github-secrets.sh | bootstrap-github-secrets.sh |
 | build-knowledge-graph.sh | Build Knowledge Graph for Klarpakke |
 | build-performance.mjs | Build Performance Tracker v1.0 |
-| cf-deploy.mjs | ⚠️  DEPRECATED / LEGACY — Cloudflare Pages proxy deploy |
 | cf-post-build.mjs | Post-build script for Cloudflare Pages |
 | cf-pre-build.mjs | Pre-build script for Cloudflare Pages |
 
