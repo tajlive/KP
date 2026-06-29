@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MonthlyCompetitionBanner } from "../MonthlyCompetitionBanner";
 
@@ -11,6 +11,14 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("MonthlyCompetitionBanner", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   it("renders banner with trophy icon", () => {
     render(<MonthlyCompetitionBanner />);
     expect(screen.getByText(/monthlyPrize/)).toBeInTheDocument();
