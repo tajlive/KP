@@ -157,7 +157,7 @@ export default async function PortfolioPage({ params }: PageProps) {
         )
         .eq("user_id", user.id)
         .is("archived", false)
-        .in("status", ["active", "stopped", "crashed"])
+        .in("status", ["active", "stopped", "crashed", "paused"])
         .order("started_at", { ascending: false });
       if (error) {
         errorLog.push(`Sessions query error: ${error.message} (${error.code})`);

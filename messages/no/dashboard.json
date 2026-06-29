@@ -526,6 +526,10 @@
     "errorFallback": "Prøv igjen, eller kontakt support hvis problemet vedvarer.",
     "retry": "Prøv igjen",
     "emptyState": "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk.",
+    "emptyStatePaper": "Ingen handler ennå. Start en papirhandel fra /handel for å se handler her.",
+    "emptyStateLive": "Ingen live-handler ennå. Koble til Binance og start live-trading fra /handel.",
+    "showingPaper": "Viser papirhandler",
+    "showingLive": "Viser livehandler",
     "stats": {
       "totalReturn": "Total avkastning",
       "totalReturnSub": "Akkumulert profitt",

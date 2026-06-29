@@ -267,6 +267,10 @@
     "paper": "Lekepenger",
     "paperShort": "Øv"
   },
+  "tradeHistory": {
+    "errorTitle": "Kunne ikke laste handler",
+    "errorDescription": "Noe gikk galt ved henting av handelshistorikken. Sjekk internettforbindelsen og prøv igjen."
+  },
   "tradingModeSelector": {
     "title": "Velg handelsmodus",
     "paper": {
@@ -656,7 +660,9 @@
       "currentBalance": "Gjeldende saldo",
       "startingCapital": "Startkapital",
       "pnl": "P&L"
-    }
+    },
+    "viewTrades": "Se handler",
+    "tradeHistory": "Handelshistorikk"
   },
   "ensembleAutoAdjustWeights": "Juster vekter automatisk",
   "botDetail": {

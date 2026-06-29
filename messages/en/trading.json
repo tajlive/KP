@@ -267,6 +267,10 @@
     "paper": "Paper",
     "paperShort": "Paper"
   },
+  "tradeHistory": {
+    "errorTitle": "Could not load trades",
+    "errorDescription": "Something went wrong while fetching your trade history. Check your internet connection and try again."
+  },
   "tradingModeSelector": {
     "title": "Select Trading Mode",
     "paper": {
@@ -656,7 +660,9 @@
       "currentBalance": "Current Balance",
       "startingCapital": "Starting Capital",
       "pnl": "P&L"
-    }
+    },
+    "viewTrades": "View trades",
+    "tradeHistory": "Trade history"
   },
   "ensembleAutoAdjustWeights": "Auto-adjust weights",
   "botDetail": {
