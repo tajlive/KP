@@ -75,7 +75,7 @@ console.log(`🔍 Linting ${changed.length} changed file(s)...`);
 
 const result = spawnSync(
   "npx",
-  ["eslint", "--max-warnings", "0", "--cache", ...changed],
+  ["eslint", "--max-warnings", "0", "--no-warn-ignored", "--cache", ...changed],
   { stdio: "inherit", shell: false }
 );
 

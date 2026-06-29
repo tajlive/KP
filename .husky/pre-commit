@@ -2,7 +2,7 @@
 # Klarpakke pre-commit gate — blokkerer commit ved TypeScript-feil
 # Kjøres automatisk av git før hver commit
 
-cd /Users/taj/klarpakke || exit 1
+cd "$(git rev-parse --show-toplevel)" || exit 1
 
 # ============================================================================
 # Hjelpefunksjoner

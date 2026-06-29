@@ -104,6 +104,7 @@ Filen `BuildFailed` finnes ikke i noen branch (`git log --all -- BuildFailed` er
 - Cloudflare Worker `klarpakke` er koblet til GitHub-repoet.
 - Build command: `npm ci --prefer-offline --legacy-peer-deps && npm run cf:build`.
 - Deploy command: `npm run cf:deploy:ci`.
+- Preview/non-main deploy command: `npx wrangler versions upload --minify`.
 - `APP_VERSION` settes fra `WORKERS_CI_COMMIT_SHA` (injisert av Workers Builds).
 - Kvalitetskontroller (lint/type/test) kjøres lokalt via `.husky/pre-push`.
 - `.github/workflows/deploy.yml` og `.github/workflows/pr-check.yml` er arkivert under `.github/workflows/archived/`.

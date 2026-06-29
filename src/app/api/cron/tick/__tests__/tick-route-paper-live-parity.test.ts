@@ -100,6 +100,12 @@ function createMockSupabase(capital: number): SupabaseClient {
           }),
         };
       }
+      if (table === "idempotency_keys") {
+        return {
+          ...chain,
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        };
+      }
       return chain;
     }),
     rpc: vi.fn().mockResolvedValue({ error: null }),
