@@ -52,25 +52,25 @@ export default async function OnboardingLayout({
   const displayStep = Math.min(dbStep, TOTAL_STEPS - 1);
 
   return (
-    <div className="min-h-screen bg-[var(--kp-bg-primary)]">
+    <div className="min-h-screen bg-kp-bg-primary">
       {/* Header */}
-      <header className="bg-[var(--kp-bg-secondary)] border-b border-[var(--kp-border)]">
+      <header className="bg-kp-bg-secondary border-b border-kp-border">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href={`/${locale}`}>
             <Logo className="h-8" />
           </Link>
-          <div className="text-sm text-[var(--kp-text-muted)]">
+          <div className="text-sm text-kp-text-muted">
             {t("stepIndicator", { current: displayStep + 1, total: TOTAL_STEPS })}
           </div>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="bg-[var(--kp-bg-secondary)]">
+      <div className="bg-kp-bg-secondary">
         <div className="max-w-2xl mx-auto">
-          <div className="h-1 bg-[var(--kp-bg-tertiary)]">
+          <div className="h-1 bg-kp-bg-tertiary">
             <div
-              className="h-full bg-[var(--kp-ai)] transition-all duration-500"
+              className="h-full bg-kp-ai transition-all duration-500"
               style={{ width: `${((displayStep + 1) / TOTAL_STEPS) * 100}%` }}
             />
           </div>
