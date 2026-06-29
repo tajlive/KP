@@ -1,7 +1,7 @@
 # MCP, CLI, CI og API — oversikt
 
 > Én plass for tilgang (MCP/CLI), pipelines (CI) og app-API.  
-> Oppdatert: 2026-03-26
+> Oppdatert: 2026-06-29
 
 **Full automasjon (forhåndsoppsett):** [FULL-AUTOMATION-PLAYBOOK.md](./FULL-AUTOMATION-PLAYBOOK.md) — MCP/CLI/CI/API, `CRON_SECRET`, GitHub secrets, `npm run auto:preflight`.
 
@@ -197,27 +197,60 @@ npm run verify:automation  # lint + type-check + test:unit + verify + test:mcp (
 
 ---
 
-## 3. CI (GitHub Actions)
+## 3. CI / Deploy
 
-### Viktige workflows
+### Primær deploy: Cloudflare Workers Builds
 
-| Workflow                | Trigger                          | Hovedsteg                                                                         |
-| ----------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
-| **test.yml**            | push/PR til main, develop        | Lint → type-check → i18n audit → build (SKIP_LINT_IN_BUILD) → E2E smoke           |
-| **pr-check.yml**        | PR mot main                      | Lint → build (SKIP_LINT_IN_BUILD) → artifact                                      |
-| **manual-deploy.yml**   | workflow_dispatch                | Build → deploy til Cloudflare Workers → verify mot prod                           |
-| **mcp-integration.yml** | push/PR ved endring av MCP-filer | `validate-mcp-config.mjs` (alle tre filer), sikkerhetssjekk                       |
-| **mcp-health.yml**      | Schedule + dispatch              | Sjekk Supabase REST, Stripe, Resend, Cloudflare (valgfri; bruker secrets)         |
+Klarpakke deployes automatisk til Cloudflare Workers når `main` pushes til GitHub.
 
-### Nødvendige secrets (CI)
+| Steg | Tjeneste | Beskrivelse |
+| ---- | -------- | ----------- |
+| Kvalitetskontroll | Husky pre-push hook (`.husky/pre-push`) | `lint:gate` → `type-check` → `test:unit` |
+| Build + deploy | Cloudflare Workers Builds | `npm run cf:build` → `wrangler deploy` |
+| Verifikasjon | Wrangler / produksjon | `npx wrangler deployments list` + `curl` mot prod |
 
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (eller vars/secrets som brukes i build)
-- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (mcp-health)
-- `STRIPE_SECRET_KEY`, `RESEND_API_KEY` (mcp-health)
-- `CLOUDFLARE_API_TOKEN` (deploy + mcp-health, valgfri – sjekk hoppes over hvis ikke satt)
-- For deploy: Cloudflare Workers knyttes via `wrangler.jsonc` og `CLOUDFLARE_API_TOKEN`
+**Konfigurasjon:**
+- Repo: `https://github.com/tajlive/KP`
+- Branch: `main`
+- Build-kommando: `npm run cf:build`
+- Deploy-kommando: `wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}`
 
-Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjører én gang; build skipper ESLint. Se **docs/archive/vercel-build-notes.md** §8.
+### Backup deploy: Wrangler CLI
+
+Hvis Cloudflare Workers Builds feiler:
+
+```bash
+npm run cf:deploy
+# Ekvivalent med:
+# npm run cf:build && wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
+```
+
+### Nødvendige secrets (Cloudflare Worker)
+
+Settes via Wrangler CLI eller Cloudflare Dashboard:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NEXTAUTH_URL` (`https://www.klarpakke.no`)
+- `NEXTAUTH_SECRET`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `RESEND_API_KEY`
+- `CRON_SECRET`
+
+```bash
+npx wrangler secret put MY_SECRET
+npx wrangler secret list
+```
+
+### GitHub Actions
+
+GitHub Actions workflows i `.github/workflows/` er **arkivert** (unntatt `purge-cache.yml` og `tool-updater.yml`). Kvalitetskontrollene kjøres via Husky pre-push, ikke GitHub Actions.
+
+Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjøres én gang; build skipper ESLint.
 
 ---
 
@@ -278,16 +311,16 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 
 ## 8. Release-flow (push → deploy)
 
-**Automatisert:** Push til `main` trigger Deploy-workflow → build → Cloudflare prod. Ingen manuell deploy nødvendig.
+**Automatisert:** Push til `main` trigger Cloudflare Workers Builds → build → Cloudflare prod. Ingen manuell deploy nødvendig.
 
-| Steg                | Kommando                                                       | Beskrivelse                                 |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------- |
-| 1. Valider før push | `npm run release`                                              | Lint + type-check + build (samme som CI)    |
-| 2. Commit & push    | `git add -A && git commit -m "..." && git push -u origin main` | Trigger Deploy workflow                     |
-| 3. Følg deploy      | `gh run watch` (valgfritt)                                     | Venter på at Deploy fullfører               |
-| 4. Verifiser prod   | `npm run verify`                                               | Tester domener, /api/health, kritiske paths |
+| Steg                | Kommando                                                       | Beskrivelse                                   |
+| ------------------- | -------------------------------------------------------------- | --------------------------------------------- |
+| 1. Valider før push | `npm run release`                                              | Lint + type-check + build (samme som pre-push)|
+| 2. Commit & push    | `git add -A && git commit -m "..." && git push -u origin main` | Trigger Cloudflare Workers Builds             |
+| 3. Følg deploy      | `npx wrangler deployments list`                                | Siste deployment viser status                 |
+| 4. Verifiser prod   | `npm run verify`                                               | Tester domener, /api/health, kritiske paths   |
 
-**Manuell Cloudflare-deploy (CLI):** `npm run cf:deploy` — nyttig hvis CI ikke brukes.
+**Manuell Cloudflare-deploy (CLI):** `npm run cf:deploy` — kun ved nødsituasjon / backup.
 
 ---
 
@@ -299,7 +332,7 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 | Linear uten MCP    | `npm run linear issues` / `create` / `update`                                                                                |
 | Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Cloudflare prod → **docs/SENTRY-PROD.md**                                                        |
 | Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (se AGENTS.md og docs/archive/vercel-build-notes.md)                              |
-| Release til prod   | `npm run release` → `git push origin main` → Deploy workflow                                                                 |
+| Release til prod   | `npm run release` → `git push origin main` → Cloudflare Workers Builds                                                       |
 | API-dokumentasjon  | **docs/api-routes.md**                                                                                                       |
 | Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md**                                 |
-| Release-flow       | `npm run release` → `git push origin main` → Deploy workflow kjører automatisk → Cloudflare prod. Se **.github/GITHUB_SETUP.md** |
+| Release-flow       | `npm run release` → `git push origin main` → Cloudflare Workers Builds deployer automatisk → Cloudflare prod. Se **.kimi/WORKFLOW_RULES.md** |
