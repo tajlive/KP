@@ -1,10 +1,14 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { RiskMetricsPanel } from "@/features/portfolio/RiskMetricsPanel";
 import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import { computeUserState } from "@/hooks/useUserState";
 import { AdaptiveDashboard } from "./AdaptiveDashboard";
+import TradingModeToggle from "@/features/trading/TradingModeToggle";
+import { Badge } from "@/shared/ui/badge";
 import type { DashboardMode } from "@/hooks/useDashboardMetrics";
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
@@ -50,20 +54,31 @@ export function DashboardContent({
   metrics: serverMetrics,
   isPriority = false,
 }: DashboardContentProps) {
+  const t = useTranslations("dashboard");
+  const [mode, setMode] = useState<DashboardMode>(preferredTradingMode);
+  const [hasSwitched, setHasSwitched] = useState(false);
+
+  const handleModeChange = useCallback((newMode: DashboardMode) => {
+    setMode(newMode);
+    setHasSwitched(true);
+  }, []);
+
+  const useServerMetrics = serverMetrics && !hasSwitched;
+
   const {
     data: clientData,
     isLoading: clientLoading,
     isError: clientError,
     error: clientErrorObj,
     refetch,
-  } = useDashboardMetrics(preferredTradingMode, "active_and_completed", {
-    enabled: !serverMetrics,
+  } = useDashboardMetrics(mode, "active_and_completed", {
+    enabled: !useServerMetrics,
   });
 
-  const data = serverMetrics ?? clientData;
-  const isLoading = serverMetrics ? false : clientLoading;
-  const isError = serverMetrics ? false : clientError;
-  const error = serverMetrics ? null : clientErrorObj;
+  const data = useServerMetrics ? serverMetrics : clientData;
+  const isLoading = useServerMetrics ? false : clientLoading;
+  const isError = useServerMetrics ? false : clientError;
+  const error = useServerMetrics ? null : clientErrorObj;
 
   const userState = computeUserState({
     tradesCount: data?.totalTrades ?? 0,
@@ -95,11 +110,25 @@ export function DashboardContent({
         className="bg-gray-50 dark:bg-slate-950 min-h-screen"
       >
         <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
+            <Badge variant="outline" className="w-fit text-xs">
+              {mode === "paper"
+                ? t("dashboardPro.showingPaper")
+                : t("dashboardPro.showingLive")}
+            </Badge>
+            <TradingModeToggle
+              mode={mode}
+              onToggle={handleModeChange}
+              paperLabel={t("tradingMode.paper")}
+              liveLabel={t("tradingMode.live")}
+            />
+          </div>
+
           <AdaptiveDashboard
             userId={userId}
             userState={userState}
             userName={userName}
-            preferredTradingMode={preferredTradingMode}
+            preferredTradingMode={mode}
             stats={stats}
             isLoading={isLoading}
             isError={isError}

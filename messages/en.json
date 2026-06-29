@@ -1549,6 +1549,10 @@
       "widgetErrorMessage": "We couldn't show this part of the dashboard right now. Try again, or reload the page if the issue persists.",
       "retry": "Try again",
       "emptyState": "No trades yet for the selected mode. Start a new session to see statistics.",
+      "emptyStatePaper": "No trades yet. Start a paper trade from /handel to see trades here.",
+      "emptyStateLive": "No live trades yet. Connect Binance and start live trading from /handel.",
+      "showingPaper": "Showing paper trades",
+      "showingLive": "Showing live trades",
       "stats": {
         "totalReturn": "Total Return",
         "totalReturnSub": "Accumulated profit",

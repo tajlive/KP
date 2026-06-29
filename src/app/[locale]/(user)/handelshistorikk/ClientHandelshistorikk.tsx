@@ -16,10 +16,11 @@ import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
 import {
   ArrowUp,
   ArrowDown,
-  Loader2,
+  AlertCircle,
   Clock3,
   ClipboardCopy,
 } from "lucide-react";
+import { Skeleton } from "@/shared/ui/skeleton";
 import type { Json } from "@/types/database.types";
 import {
   reportTradeHistoryEmptyWhileSignedIn,
@@ -45,6 +46,7 @@ import type { TradingMode } from "@/lib/trading-api";
 // Legacy local type — now imported from trade-history.types.ts
 export default function ClientHandelshistorikk() {
   const t = useTranslations("tradeHistory");
+  const tTrading = useTranslations("trading");
   const locale = useLocale();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [decisions, setDecisions] = useState<TradeDecisionRow[]>([]);
@@ -477,12 +479,26 @@ export default function ClientHandelshistorikk() {
 
         <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden dark:border-slate-800/80 dark:bg-slate-900/60 shadow-sm">
           {loading ? (
-            <div className="py-24 flex justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+            <div className="p-4 space-y-3">
+              <Skeleton variant="card" height="56px" />
+              <Skeleton variant="card" height="56px" />
+              <Skeleton variant="card" height="56px" />
+              <Skeleton variant="card" height="56px" />
+              <Skeleton variant="card" height="56px" />
             </div>
           ) : fetchError ? (
-            <div className="text-center py-12 px-4 space-y-3">
-              <p className="text-red-600 text-sm">{fetchError}</p>
+            <div className="text-center py-12 px-4 space-y-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto">
+                <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  {tTrading("tradeHistory.errorTitle")}
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
+                  {tTrading("tradeHistory.errorDescription")}
+                </p>
+              </div>
               <Button
                 className={BRAND.primary}
                 onClick={() => void fetchTrades(false)}

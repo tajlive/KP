@@ -343,7 +343,11 @@ export function DashboardPro({
                     emptyText={locale === "no" ? "Ingen data" : "No data"}
                   />
                 ) : effectiveStats.totalTrades === 0 ? (
-                  <EmptyState emptyText={t("emptyState")} />
+                  <EmptyState
+                    emptyText={
+                      isPaperMode ? t("emptyStatePaper") : t("emptyStateLive")
+                    }
+                  />
                 ) : (
                   <div className="space-y-2">
                     <StatsGrid stats={statItems} updatedAt={lastUpdated} />

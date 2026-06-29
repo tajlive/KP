@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/hooks/useCurrency";
 import { createClient } from "@/lib/utils";
@@ -28,7 +27,7 @@ import {
 } from "@/shared/ui/select";
 import {
   Plus,
-  ArrowRight,
+  Eye,
   TrendingUp,
   TrendingDown,
   Wallet,
@@ -43,6 +42,8 @@ import {
   PremiumPanel,
   PremiumStatusBanner,
 } from "@/features/trading/PremiumTradingLayout";
+import { PaperTradingSessionDetail } from "@/features/trading/paper/PaperTradingSessionDetail";
+import type { TradingSession as DetailSession } from "@/features/trading/paper/PaperTradingSessionDetail";
 
 /** Kort med skygge og 200ms overgang (tokens) */
 const cardBase = `bg-white dark:bg-slate-800/50 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-700 ${SHADOW.card}`;
@@ -104,8 +105,10 @@ export function PaperTradingList({
   userId,
 }: PaperTradingListProps) {
   const t = useTranslations("paperTrading");
+  const tt = useTranslations("trading.paperTrading");
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<TradingSession | null>(null);
   const [tradingPair, setTradingPair] = useState("BTC/USDT");
   const [startCapital, setStartCapital] = useState("100000");
   const [isLoading, setIsLoading] = useState(false);
@@ -560,10 +563,18 @@ export function PaperTradingList({
             }`;
 
             return (
-              <Link
+              <div
                 key={session.id}
-                href={href}
-                className={`block ${cardBase} p-4 min-h-[44px] transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card} relative overflow-hidden ${
+                role="link"
+                tabIndex={0}
+                onClick={() => router.push(href)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(href);
+                  }
+                }}
+                className={`block ${cardBase} p-4 min-h-[44px] transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card} relative overflow-hidden cursor-pointer ${
                   isActive
                     ? "border-l-4 border-l-green-500 dark:border-l-green-400 shadow-[0_0_0_1px_rgba(34,197,94,0.08)] dark:shadow-[0_0_0_1px_rgba(34,197,94,0.15)]"
                     : ""
@@ -653,17 +664,46 @@ export function PaperTradingList({
                         {t("trades")}: {session.total_trades ?? "—"}
                       </p>
                     </div>
-                    <ArrowRight
-                      className="w-5 h-5 text-slate-400 shrink-0"
-                      aria-hidden
-                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 shrink-0"
+                      aria-label={tt("viewTrades")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSession(session);
+                      }}
+                    >
+                      <Eye className="w-4 h-4" aria-hidden />
+                      <span className="hidden sm:inline">
+                        {tt("viewTrades")}
+                      </span>
+                    </Button>
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>
       )}
+
+      <Dialog
+        open={!!selectedSession}
+        onOpenChange={(open) => {
+          if (!open) setSelectedSession(null);
+        }}
+      >
+        <DialogContent className="w-full max-w-full sm:max-w-3xl h-full sm:h-auto max-h-[100dvh] sm:max-h-[90vh] overflow-y-auto p-0">
+          {selectedSession && (
+            <PaperTradingSessionDetail
+              session={selectedSession as unknown as DetailSession}
+              trades={[]}
+              locale={locale}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

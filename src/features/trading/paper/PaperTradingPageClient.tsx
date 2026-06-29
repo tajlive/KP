@@ -2,7 +2,7 @@
 
 import { useMemo, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, Wallet, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Wallet, LayoutDashboard, History } from "lucide-react";
 import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
 import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
 import { SURFACE } from "@/lib/design/tokens";
@@ -94,6 +94,7 @@ export function PaperTradingPageClient({
   mode = "",
 }: PaperTradingPageClientProps) {
   const t = useTranslations("paperTrading");
+  const tt = useTranslations("trading.paperTrading");
   const initialMode: TradingMode = mode === "live" ? "live" : "paper";
 
   const showSessionsList = view === "sessions";
@@ -144,6 +145,14 @@ export function PaperTradingPageClient({
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   {t("backToDashboard")}
+                </Link>
+                <Link
+                  href={hrefWithLocale(locale, "/dashboard/historikk")}
+                  className="inline-flex items-center gap-2 text-[#0052FF] hover:text-[#0047E0] dark:text-[#3d7aff] dark:hover:text-[#5c94ff] text-sm font-medium"
+                  data-testid="trade-history-link"
+                >
+                  <History className="w-4 h-4" />
+                  {tt("tradeHistory")}
                 </Link>
               </div>
               <PaperTradingList

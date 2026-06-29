@@ -38,7 +38,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { formatNumberFull } from "@/lib/utils/format-number";
 import { normalizeTier } from "@/lib/pricing/tiers";
 
-interface TradingSession {
+export interface TradingSession {
   id: string;
   mode: "paper" | "live";
   status: "active" | "paused" | "stopped" | "crashed";
