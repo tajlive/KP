@@ -1,10 +1,10 @@
 {
   "_meta": {
     "version": "2.9-minimal",
-    "lastOptimized": "2026-05-15",
-    "for": "KIMI CLI v1.44.0 + k2.6",
-    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere. MemPalace v3.4 (zero-dep, TF-IDF + bigram + cross-lingual) inkludert for prosjektkunnskap.",
-    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote). MemPalace v3.4 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt. All servers lokalt installert."
+    "lastOptimized": "2026-06-29",
+    "for": "KIMI CLI v1.44.0 + k2.6 / Cursor / Claude",
+    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere for Klarpakke på Cloudflare Workers. MemPalace v3.5.0 (delt server) inkludert for prosjektkunnskap.",
+    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote), vercel. All servers lokalt installert. Synkroniseres med npm run mcp:sync."
   },
   "mcpServers": {
     "filesystem": {
