@@ -311,4 +311,37 @@ export class BinanceExecutor implements OrderExecutor {
   async fetchOrderBook(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
     return marketDataProvider.getDepth(symbol, limit);
   }
+
+  /**
+   * Query the status of an existing order on Binance.
+   * Returns the exchange status and filled quantity, or null on failure.
+   * Protected by the Binance circuit breaker.
+   */
+  async getOrderStatus(symbol: string, orderId: string): Promise<{ status: string; filled: number } | null> {
+    try {
+      return await binanceCircuitBreaker.execute(() => this.getOrderStatusInternal(symbol, orderId));
+    } catch (error) {
+      if (error instanceof CircuitBreakerOpenError) {
+        console.warn(`[BinanceExecutor] getOrderStatus circuit breaker open for ${symbol}/${orderId}`);
+        return null;
+      }
+      console.error(`[BinanceExecutor] getOrderStatus failed for ${symbol}/${orderId}:`, error);
+      return null;
+    }
+  }
+
+  private async getOrderStatusInternal(symbol: string, orderId: string): Promise<{ status: string; filled: number } | null> {
+    const order = await this.makeRequest<{
+      orderId: number;
+      status: string;
+      executedQty: string;
+    }>('/api/v3/order', 'GET', {
+      symbol,
+      orderId,
+    });
+    return {
+      status: order.status,
+      filled: parseFloat(order.executedQty),
+    };
+  }
 }

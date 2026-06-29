@@ -5475,6 +5475,36 @@ export type Database = {
         }
         Relationships: []
       }
+      reconciliation_runs: {
+        Row: {
+          id: string
+          started_at: string
+          completed_at: string | null
+          trades_checked: number
+          divergences: number
+          errors: number
+          details: Json | null
+        }
+        Insert: {
+          id?: string
+          started_at?: string
+          completed_at?: string | null
+          trades_checked?: number
+          divergences?: number
+          errors?: number
+          details?: Json | null
+        }
+        Update: {
+          id?: string
+          started_at?: string
+          completed_at?: string | null
+          trades_checked?: number
+          divergences?: number
+          errors?: number
+          details?: Json | null
+        }
+        Relationships: []
+      }
       referral_tracking: {
         Row: {
           clicked_at: string | null
@@ -6777,6 +6807,7 @@ export type Database = {
           created_at: string
           executed_at: string
           fee: number
+          filled_quantity: number | null
           id: string
           idempotency_key: string
           indicator_snapshot: Json | null
@@ -6805,6 +6836,7 @@ export type Database = {
           created_at?: string
           executed_at?: string
           fee?: number
+          filled_quantity?: number | null
           id?: string
           idempotency_key: string
           indicator_snapshot?: Json | null
@@ -6833,6 +6865,7 @@ export type Database = {
           created_at?: string
           executed_at?: string
           fee?: number
+          filled_quantity?: number | null
           id?: string
           idempotency_key?: string
           indicator_snapshot?: Json | null
