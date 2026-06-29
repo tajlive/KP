@@ -227,6 +227,33 @@ klarpakke-mcp-server/node_modules/
 .mcp-cache/
 public/favicon.png
 
+# Autogenererte KIMI / MemPalace filer (skal ikke committes)
+.kimi/diary.jsonl
+.kimi/mempalace/
+.mempalace/kg-append.jsonl
+.mempalace/config.json
+
+# Script backup-filer
+scripts/*-backup.mjs
+
+# Engangs debug-artifakter og rapporter
+debug-*.png
+debug-*.webm
+debug-videos/
+i18n-audit-report.json
+lighthouse-*.json
+lint-report.json
+logs/*.log
+
+# Gamle engangs-rapportmapper ( behold mappen med .gitkeep hvis aktiv )
+audit/
+memory/*.md
+reports/*.json
+reports/*.txt
+reports/*.html
+watchdog-reports/*.json
+watchdog-reports/*.log
+
 # MCP Autentisering
 .env.mcp.local
 *.mcp.local
