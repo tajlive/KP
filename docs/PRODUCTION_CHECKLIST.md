@@ -2,26 +2,26 @@
 
 ## ✅ Pre-Launch
 
-- [x] Alle Vercel env vars satt (dokumentert i .env.local)
+- [x] Alle Cloudflare Workers secrets satt (dokumentert i `.env.local`)
 - [x] Stripe webhook konfigurert (verify-webhook.ts)
 - [ ] Resend domain verifisert (krever Resend-konto)
 - [x] Sentry fungerer (config eksisterer)
 - [x] MCP Server bygd og testet
-- [x] Cron jobs konfigurert (vercel.json)
+- [x] Cron jobs konfigurert (Supabase pg_cron)
 - [x] API-nøkler krypteres før lagring (encrypt-api-keys.ts)
 
 ## 🔐 Sikkerhet
 
 - [x] ENCRYPTION_KEY generert og dokumentert
 - [x] CRON_SECRET generert
-- [ ] CRON_SECRET satt i Vercel
-- [ ] STRIPE_WEBHOOK_SECRET satt i Vercel
+- [ ] CRON_SECRET satt i Wrangler secrets
+- [ ] STRIPE_WEBHOOK_SECRET satt i Wrangler secrets
 - [x] Ingen secrets i Git history
 - [x] RLS policies aktivert på alle tabeller
 
 ## 📧 Notifikasjoner
 
-- [ ] Resend API key satt i Vercel
+- [ ] Resend API key satt i Wrangler secrets
 - [x] Email templates opprettet
 - [x] Daily summary cron (kl. 19:00)
 
@@ -39,24 +39,24 @@
 
 ## ⚠️ MANUELLE STEG (må gjøres av Tom)
 
-### 1. Sett Vercel Environment Variables
+### 1. Sett Cloudflare Workers Secrets
 ```bash
-vercel env add ENCRYPTION_KEY production
+npx wrangler secret put ENCRYPTION_KEY
 # Value: 5b7640de632d4d679c2ed7366e946bc1c36a5439bc458deb27a37d0b1d742e34
 
-vercel env add CRON_SECRET production
+npx wrangler secret put CRON_SECRET
 # Value: a18a07d157e02cbe4f4efad46eec7dbcb456ac3e31ae51f67d7e2e73f09e2df8
 
-vercel env add NEXT_PUBLIC_SENTRY_DSN production
+npx wrangler secret put NEXT_PUBLIC_SENTRY_DSN
 # Hent fra sentry.io
 
-vercel env add SENTRY_AUTH_TOKEN production
+npx wrangler secret put SENTRY_AUTH_TOKEN
 # Hent fra sentry.io
 
-vercel env add STRIPE_WEBHOOK_SECRET production
+npx wrangler secret put STRIPE_WEBHOOK_SECRET
 # Hent fra Stripe Dashboard
 
-vercel env add RESEND_API_KEY production
+npx wrangler secret put RESEND_API_KEY
 # Hent fra resend.com
 ```
 
@@ -79,7 +79,8 @@ npm run build
 ### 5. Deploy til Produksjon
 ```bash
 git push origin main
-# Vercel deployer automatisk
+# Cloudflare Workers Builds deployer automatisk, eller kjør:
+npm run cf:deploy
 ```
 
 ## 📱 Neste Steg Etter Launch

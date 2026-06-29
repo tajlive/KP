@@ -59,7 +59,7 @@
     "title": "Din reise – steg for steg",
     "week1": {
       "title": "Uke 1: Forståelse",
-      "desc": "Lær det grunnleggende om krypto og trading. Sett opp din paper trading-konto."
+      "desc": "Lær det grunnleggende om krypto og trading. Sett opp din lekepenger-konto."
     },
     "week2": {
       "title": "Uke 2: Strategi",
@@ -83,7 +83,7 @@
     "title": "Alt du trenger for å mestre trading",
     "subtitle": "Vi har samlet de beste verktøyene for å lære trading på en trygg, strukturert og engasjerende måte.",
     "paperTrading": {
-      "title": "Paper Trading",
+      "title": "Lekepenger",
       "desc": "Start med 100 000 kr i lekepenger. Øv deg uten å risikere ekte sparepenger."
     },
     "aiTeacher": {
@@ -124,7 +124,7 @@
     "badge": "🇳🇴 Norges enkleste krypto-trading",
     "title": "Lær å handle med AI — risikofritt med lekepenger",
     "subtitle": "Øv i samme plattform som live trading. Fullfør oppdrag, få personlig feedback og gå fra nybegynner til trygg trader.",
-    "ctaPrimary": "Start gratis paper-trade-økt",
+    "ctaPrimary": "Start gratis lekepenge-trade-økt",
     "ctaSecondary": "Se priser",
     "description": "Øv med virtuelle penger, lær av eksperter, og handle trygt",
     "cta": {
@@ -153,17 +153,17 @@
     "titlePart2MutedPrefix": "for at ",
     "titlePart2Emphasis": "du skal tjene ",
     "titlePart2MutedSuffix": "penger.",
-    "subtitle": "Strukturerte kurs på norsk, papirhandel med 100 000 kr, og auto-handel når du er klar — du styrer alltid risikoen.",
+    "subtitle": "Strukturerte kurs på norsk, lekepenger med 100 000 kr, og auto-handel når du er klar — du styrer alltid risikoen.",
     "bullets": "Du sover, våre Roboter jobber 24/7 • Du bestemmer risiko • 100 000 kr lekepenger",
     "audienceAria": "Velg hvor du vil starte på siden",
     "audienceLabel": "Start her",
     "audienceCourses": "Kurs først",
     "audiencePaper": "Prøv lekepenger",
     "ctaPrimary": "Opprett gratis konto",
-    "ctaSecondary": "Åpne papirhandel",
+    "ctaSecondary": "Åpne lekepenger",
     "loggedInCtaPrimary": "Gå til min side",
-    "loggedInCtaSecondary": "Åpne papirhandel",
-    "loggedInCtaMicrocopy": "Dashbord, kurs og papirhandel er klart når du er.",
+    "loggedInCtaSecondary": "Åpne lekepenger",
+    "loggedInCtaMicrocopy": "Dashbord, kurs og lekepenger er klart når du er.",
     "ctaMicrocopy": "I gang på minutter · Ingen skjulte kursgebyrer · Avslutt når du vil",
     "mockupUrl": "klarpakke.no/lekepenger",
     "mockupPaperLabel": "Lekepenger",
@@ -186,20 +186,20 @@
     "sectionLead": "Vi vil ikke selge deg med tall som er vanskelige å etterprøve. Derfor unngår vi på forsiden ting som «X aktive brukere nå» eller «Y handler siste time» med mindre vi kan vise nøyaktig hvordan de er målt.",
     "point1": "Ingen samlet plattform-statistikk på forsiden som krever at du «bare må stole på oss».",
     "point2": "Når vi senere viser egne tall, skal det stå tydelig hva de måler og hvor de kommer fra.",
-    "point3": "Demo og papirhandel er merket som simulering eller lekepenger — aldri som garantert eller faktisk avkastning."
+    "point3": "Demo og lekepenger er merket som simulering — aldri som garantert eller faktisk avkastning."
   },
   "finalCta": {
     "titleLine1": "Start din trading-reise",
     "titleAccent": "i dag",
-    "subtitle": "Lær steg for steg med kurs, papirhandel og autotrade — i ditt eget tempo.",
+    "subtitle": "Lær steg for steg med kurs, lekepenger og autotrade — i ditt eget tempo.",
     "cta": "Start gratis nå",
     "loggedInTitleLine1": "Fortsett der du slapp",
     "loggedInTitleAccent": "på dashbordet",
-    "loggedInSubtitle": "Kurs, papirhandel og verktøyene dine er ett klikk unna.",
+    "loggedInSubtitle": "Kurs, lekepenger og verktøyene dine er ett klikk unna.",
     "loggedInCta": "Åpne dashbord",
     "guarantee1": "Ingen binding — avslutt når som helst",
     "guarantee2": "Ingen kredittkort nødvendig for å prøve",
-    "guarantee3": "Risikofri papirhandel",
+    "guarantee3": "Risikofri lekepenger",
     "guarantee4": "Alt innhold tilgjengelig umiddelbart",
     "pricingNote": "Student gratis · Bachelor fra 249 kr/mnd"
   },
@@ -212,10 +212,11 @@
     "sell": "Selg BTC",
     "overlay": "Registrer deg for å handle med ekte data",
     "overlayCta": "Start gratis nå",
-    "overlayLoggedIn": "Prøv full papirhandel i appen — samme følelse, fortsatt uten ekte penger",
-    "overlayLoggedInCta": "Gå til papirhandel",
+    "overlayLoggedIn": "Prøv lekepenger i appen — samme følelse, fortsatt uten ekte penger",
+    "overlayLoggedInCta": "Gå til lekepenger",
     "demoBadge": "Live simulering",
     "liveBadge": "Live markedsdata",
+    "livePrice": "Live pris",
     "paper": "Paper",
     "live": "Live",
     "virtualBalance": "Virtuell saldo",
@@ -323,7 +324,7 @@
     "colTradingskolen": "Tradingskolen",
     "colNordic": "Nordic Markets",
     "featureNorsk": "Norsk språk",
-    "featurePaper": "Paper trading med ekte data",
+    "featurePaper": "Lekepenger med ekte data",
     "featureAI": "Læringsassistent",
     "featureVideo": "Strukturerte videokurs",
     "featurePace": "Lær i ditt eget tempo",
@@ -427,13 +428,13 @@
     "emptyTitle": "Ingen tradere tilgjengelig for øyeblikket.",
     "emptyBody": "Sjekk tilbake senere for oppdatert leaderboard.",
     "copyButton": "KOPIER",
-    "disclaimer": "Resultater fra papirhandel. Ingen garanti for fremtidig avkastning."
+    "disclaimer": "Resultater fra lekepengehandel. Ingen garanti for fremtidig avkastning."
   },
   "backtestTeaser": {
     "badge": "Historisk test",
     "title": "Se historisk simulert ytelse",
     "titleAccent": "basert på backtest",
-    "subtitle": "Estimater fra simulert backtesting 2019–2025. Se hvordan strategien kan ha prestert i ulike markedssykluser. Resultater er ikke garantert.",
+    "subtitle": "Estimater fra simulert backtesting 2019–2026. Se hvordan strategien kan ha prestert i ulike markedssykluser. Resultater er ikke garantert.",
     "strategyLabel": "Strategi:",
     "amountLabel": "Beløp:",
     "periodLabel": "Periode:",
@@ -449,8 +450,8 @@
     "maxDrawdown": "Max Drawdown",
     "cta": "Prøv selv med dine egne innstillinger — gratis",
     "emptyStateTitle": "Klikk \"Kjør test\" for å se estimert ytelse",
-    "emptyStateSubtitle": "Basert på simulert backtesting 2019–2025 • Ingen registrering nødvendig",
-    "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning. Backtesting inkluderer ikke skatter, slippage eller fremtidige markedsendringer. Krypto innebærer risiko for tap av kapital. Estimater fra simulert backtesting 2019–2025 med {strategy}.",
+    "emptyStateSubtitle": "Basert på simulert backtesting 2019–2026 • Ingen registrering nødvendig",
+    "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning. Backtesting inkluderer ikke skatter, slippage eller fremtidige markedsendringer. Krypto innebærer risiko for tap av kapital. Estimater fra simulert backtesting 2019–2026 med {strategy}.",
     "tooltipValue": "Verdi",
     "monthLabel": "Måned",
     "simulatedEstimate": "Simulert estimat — {months} måneder"
@@ -490,7 +491,7 @@
     "badge": "Start din reise",
     "title": "Klar til å ",
     "titleAccent": "komme i gang?",
-    "description": "Begynn med paper trading for å teste strategier risikofritt. Når du er klar, kan du enkelt bytte til live trading.",
+    "description": "Begynn med lekepenger for å teste strategier risikofritt. Når du er klar, kan du enkelt bytte til live trading.",
     "ctaPrimary": "Opprett gratis konto",
     "ctaSecondary": "Se priser"
   }

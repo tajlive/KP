@@ -3,7 +3,7 @@
  * 💰 Cost Monitor
  * 
  * Overvåker infrastrukturkostnader:
- * - Estimerer Vercel kostnad basert på function usage
+ * - Estimerer Cloudflare Workers kostnad (basert på plan/requests)
  * - Sjekker Supabase storage limits
  * - Genererer alerts ved threshold overskridelse
  * - Logger historikk for trend-analyse
@@ -55,9 +55,9 @@ const COST_THRESHOLDS = {
     warning: 50000,   // 50K rows
     critical: 100000  // 100K rows
   },
-  vercel_estimate: {
-    warning: 40,   // $40/mo
-    critical: 50   // $50/mo
+  cloudflare_estimate: {
+    warning: 20,   // $20/mo
+    critical: 40   // $40/mo
   }
 };
 
@@ -116,29 +116,21 @@ async function getNotificationMetrics() {
   return data?.[0] || { total_rows: 0, unread_rows: 0, last_24h: 0, last_7d: 0 };
 }
 
-async function estimateVercelCost() {
-  // Les vercel.json for å estimere kostnad basert på function tiers
-  const vercelConfig = JSON.parse(readFileSync(resolve(process.cwd(), 'vercel.json'), 'utf8'));
-  
-  const tierEstimates = {
-    '3008': { executions: 5000, costPerExecution: 0.004 },  // Heavy tier
-    '1024': { executions: 15000, costPerExecution: 0.001 }, // Medium tier
-    '512':  { executions: 50000, costPerExecution: 0.0003 }, // Light tier
-    '256':  { executions: 30000, costPerExecution: 0.00015 } // Minimal tier
-  };
-  
-  let estimatedCost = 20; // Base Pro plan
-  
-  Object.entries(vercelConfig.functions || {}).forEach(([pattern, config]) => {
-    const memory = config.memory?.toString() || '1024';
-    const tier = tierEstimates[memory] || tierEstimates['1024'];
-    estimatedCost += tier.executions * tier.costPerExecution;
-  });
-  
+async function estimateCloudflareCost() {
+  // Cloudflare Workers Paid-plan estimat
+  // Base: $5/mo ( Workers Paid )
+  // Requests: $0.30 per million over 10M included
+  // CPU: $0.0125 per million GB-seconds (krever faktisk usage-data)
+  // Uten live usage bruker vi et konservativt estimat.
+  const baseCost = 5;
+  const estimatedRequests = 5; // millioner
+  const requestCost = Math.max(0, estimatedRequests - 10) * 0.30;
+  const estimatedCost = baseCost + requestCost + 2; // +$2 for CPU/reservasjon
+
   return {
     estimated_monthly: Math.round(estimatedCost * 100) / 100,
-    base_cost: 20,
-    function_cost: Math.round((estimatedCost - 20) * 100) / 100
+    base_cost: baseCost,
+    request_cost: Math.round(requestCost * 100) / 100
   };
 }
 
@@ -196,24 +188,24 @@ function checkThresholds(metrics) {
     });
   }
   
-  // Vercel estimate
-  if (metrics.vercel.estimated_monthly > COST_THRESHOLDS.vercel_estimate.critical) {
+  // Cloudflare estimate
+  if (metrics.cloudflare.estimated_monthly > COST_THRESHOLDS.cloudflare_estimate.critical) {
     alerts.push({
       level: 'critical',
-      service: 'vercel',
+      service: 'cloudflare',
       metric: 'estimated_cost',
-      value: '$' + metrics.vercel.estimated_monthly,
-      threshold: '$' + COST_THRESHOLDS.vercel_estimate.critical,
-      action: 'Migrer API routes til Supabase Edge Functions'
+      value: '$' + metrics.cloudflare.estimated_monthly,
+      threshold: '$' + COST_THRESHOLDS.cloudflare_estimate.critical,
+      action: 'Sjekk Workers dashboards for faktisk usage; vurder caching/optimisering'
     });
-  } else if (metrics.vercel.estimated_monthly > COST_THRESHOLDS.vercel_estimate.warning) {
+  } else if (metrics.cloudflare.estimated_monthly > COST_THRESHOLDS.cloudflare_estimate.warning) {
     alerts.push({
       level: 'warning',
-      service: 'vercel',
+      service: 'cloudflare',
       metric: 'estimated_cost',
-      value: '$' + metrics.vercel.estimated_monthly,
-      threshold: '$' + COST_THRESHOLDS.vercel_estimate.warning,
-      action: 'Optimaliser function memory allocation'
+      value: '$' + metrics.cloudflare.estimated_monthly,
+      threshold: '$' + COST_THRESHOLDS.cloudflare_estimate.warning,
+      action: 'Monitor request-volum og CPU-tid'
     });
   }
   
@@ -236,7 +228,7 @@ async function saveReport(report) {
     timestamp: report.timestamp,
     supabase_size: report.metrics.supabase.database_size_bytes,
     notifications: report.metrics.notifications.total_rows,
-    vercel_estimate: report.metrics.vercel.estimated_monthly
+    cloudflare_estimate: report.metrics.cloudflare.estimated_monthly
   };
   
   appendFileSync(
@@ -266,10 +258,10 @@ function printReport(report) {
   console.log(`   Last 24h:          ${report.metrics.notifications.last_24h?.toLocaleString()}`);
   console.log(`   Last 7 days:       ${report.metrics.notifications.last_7d?.toLocaleString()}`);
   
-  console.log('\n💸 VERCEL (estimert):');
-  console.log(`   Monthly estimate:  $${report.metrics.vercel.estimated_monthly}`);
-  console.log(`   Base cost (Pro):   $${report.metrics.vercel.base_cost}`);
-  console.log(`   Functions:         $${report.metrics.vercel.function_cost}`);
+  console.log('\n☁️  CLOUDFLARE WORKERS (estimert):');
+  console.log(`   Monthly estimate:  $${report.metrics.cloudflare.estimated_monthly}`);
+  console.log(`   Base cost (Paid):  $${report.metrics.cloudflare.base_cost}`);
+  console.log(`   Request overage:   $${report.metrics.cloudflare.request_cost}`);
   
   if (report.alerts.length > 0) {
     console.log('\n🚨 ALERTS:');
@@ -292,16 +284,16 @@ async function main() {
   try {
     console.log('💰 Henter kostnadsmetrikker...\n');
     
-    const [supabaseMetrics, notificationMetrics, vercelEstimate] = await Promise.all([
+    const [supabaseMetrics, notificationMetrics, cloudflareEstimate] = await Promise.all([
       getSupabaseMetrics(),
       getNotificationMetrics(),
-      estimateVercelCost()
+      estimateCloudflareCost()
     ]);
     
     const metrics = {
       supabase: supabaseMetrics,
       notifications: notificationMetrics,
-      vercel: vercelEstimate
+      cloudflare: cloudflareEstimate
     };
     
     const alerts = checkThresholds({ metrics });

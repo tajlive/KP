@@ -36,5 +36,7 @@
   "courseIsFree": "This course is free. No payment required.",
   "successTitle": "Payment Successful! 🎉",
   "successMessage": "You now have access to the course. Go to your dashboard to get started.",
-  "goToDashboard": "Go to Dashboard"
+  "goToDashboard": "Go to Dashboard",
+  "studentPlanFree": "The Student plan is free — no checkout required.",
+  "stripeNotConfigured": "Checkout is not configured for this plan and currency. Set NEXT_PUBLIC_STRIPE_PRICE_* with _NOK, _EUR, or _USD suffix in environment variables (or fill priceId in pricing.config), or contact support."
 }

@@ -46,10 +46,16 @@ export function createSupabaseClient(
 ) {
   const cookieDomain = getCookieDomain(request);
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+  if (!url || !key) {
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    );
+  }
+
+  return createServerClient(url, key, {
       cookieEncoding: "raw",
       cookies: {
         getAll() {
@@ -80,10 +86,10 @@ export function redirectWithCookies(
   url: URL,
   request: NextRequest,
   response: NextResponse,
+  status?: number,
 ): NextResponse {
-  const redirectResponse = NextResponse.redirect(url);
+  const redirectResponse = NextResponse.redirect(url, status);
   redirectResponse.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
-  redirectResponse.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
   redirectResponse.headers.set("CDN-Cache-Control", "no-store, max-age=0");
   const cookieDomain = getCookieDomain(request);
 
@@ -107,10 +113,10 @@ export function redirectWithCookies(
       if (!existing) {
         redirectResponse.cookies.set(cookie.name, cookie.value, {
           domain: cookieDomain,
-          path: '/',
+          path: "/",
           sameSite: "none" as const,
           secure: true,
-          httpOnly: false,
+          httpOnly: true,
         });
       }
     }

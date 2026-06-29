@@ -65,12 +65,12 @@ curl -X POST \
 
 ### [ ] Steg 2.3: Test snarveier
 ```bash
-# Aktiver cloud aliases
-source scripts/klarpakke-cloud-aliases.sh
+# Aktiver cloud aliases (arkivert)
+# source scripts/archive/klarpakke-cloud-aliases.sh
 
-# Test
-kphealth      # Skal vise API status
-kpgit         # Skal vise siste commits
+# Test med curl
+curl -s https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/api-gateway/health \
+  -H "Authorization: Bearer klarpakke-dev-token"
 ```
 
 ---

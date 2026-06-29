@@ -93,7 +93,7 @@ Skal du se:
 - `src/lib/pricing.config.ts` (NOK + EUR + USD + måned/år + `price_`-ID der satt)
 - Checkout: `NEXT_PUBLIC_STRIPE_PRICE_*` i `src/app/api/stripe/checkout/route.ts`
 
-**Stripe MCP** brukes til å opprette/justere **Price**-objekter i Dashboard-lignende flyt; repo + Vercel env forblir kilde for hva appen faktisk sender til Checkout.
+**Stripe MCP** brukes til å opprette/justere **Price**-objekter i Dashboard-lignende flyt; repo + Cloudflare Workers env forblir kilde for hva appen faktisk sender til Checkout.
 
 ---
 
@@ -148,7 +148,7 @@ Etter oppsett i denne filen kan assistenten (med MCP) f.eks.:
 
 - Liste eksisterende Products/Prices og avdekke manglende **år**-priser eller **EUR/USD**-priser.
 - Opprette nye Prices med riktig `recurring.interval: year` og beløp som tilsvarer ønsket rabatt.
-- **Må** deretter speiles i `pricing.config` + Vercel `NEXT_PUBLIC_*` (eller én konsolidert strategi uten duplikat-ID i kode).
+- **Må** deretter speiles i `pricing.config` + Cloudflare Workers `NEXT_PUBLIC_*` (eller én konsolidert strategi uten duplikat-ID i kode).
 
 ---
 

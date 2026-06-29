@@ -15,14 +15,14 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 
 | Variabel                             | Bruk                                                                           | Hvor                |
 | ------------------------------------ | ------------------------------------------------------------------------------ | ------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`           | Supabase client                                                                | .env.local / Vercel |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase client                                                                | .env.local / Vercel |
-| `SUPABASE_SERVICE_ROLE_KEY`          | Admin API, webhooks, Edge                                                      | .env.local / Vercel |
-| `STRIPE_SECRET_KEY`                  | Stripe SDK, checkout, webhooks                                                 | .env.local / Vercel |
-| `STRIPE_WEBHOOK_SECRET`              | Webhook-signatur                                                               | .env.local / Vercel |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe client                                                                  | .env.local / Vercel |
-| `ENCRYPTION_KEY`                     | encrypt-api-keys (32-byte hex)                                                 | .env.local / Vercel |
-| `CRON_SECRET`                        | Cron-ruter (tick, keepalive, update-usdt-nok, sync-prices, admin cron-trigger) | .env.local / Vercel |
+| `NEXT_PUBLIC_SUPABASE_URL`           | Supabase client                                                                | .env.local / Cloudflare |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase client                                                                | .env.local / Cloudflare |
+| `SUPABASE_SERVICE_ROLE_KEY`          | Admin API, webhooks, Edge                                                      | .env.local / Cloudflare |
+| `STRIPE_SECRET_KEY`                  | Stripe SDK, checkout, webhooks                                                 | .env.local / Cloudflare |
+| `STRIPE_WEBHOOK_SECRET`              | Webhook-signatur                                                               | .env.local / Cloudflare |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe client                                                                  | .env.local / Cloudflare |
+| `ENCRYPTION_KEY`                     | encrypt-api-keys (32-byte hex)                                                 | .env.local / Cloudflare |
+| `CRON_SECRET`                        | Cron-ruter (tick, keepalive, update-usdt-nok, sync-prices, admin cron-trigger) | .env.local / Cloudflare |
 
 ### Stripe-priser (planer)
 
@@ -37,13 +37,12 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 | `NEXT_PUBLIC_STRIPE_PROFESSOR_PRICE_MONTHLY` / `_ANNUAL` | lib/stripe.ts        |
 | `NEXT_PUBLIC_PRICE_*` (CRYPTO_COURSE, TRADING_COURSE, …) | lib/stripe-prices.ts |
 
-### Vercel / KV / Cache
+### Cloudflare / KV / Cache
 
 | Variabel                                                                                                   | Bruk                                          |
 | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (eller legacy `KV_REST_API_URL`, `KV_REST_API_TOKEN`) | @upstash/redis (cache.ts, rate-limit, health) |
-| `VERCEL`, `NEXT_PUBLIC_VERCEL_URL`                                                                         | Layout Analytics, getAppUrl fallback          |
-| `VERCEL_GIT_COMMIT_SHA`                                                                                    | /api/health version                           |
+| `APP_VERSION`                                                                                              | /api/health version (injisert av Wrangler)    |
 
 ### App-URL og Sentry
 
@@ -95,14 +94,11 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 | ----------------------------------------------- | ------------------------------------------------------------- |
 | `GITHUB_TOKEN`                                  | GitHub MCP                                                    |
 | `LINEAR_API_KEY`                                | Linear MCP + run-linear-mcp.mjs + /api/linear/\*              |
-| `VERCEL_TOKEN`                                  | vercel-api.mjs, test-mcp, deploy                              |
-| `VERCEL_PROJECT_ID`, `VERCEL_ORG_ID`            | vercel-api.mjs (valgfritt)                                    |
-| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | cloudflare-api.mjs, test-mcp, DNS-scripts                     |
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | cloudflare-api.mjs, test-mcp, DNS-scripts, deploy             |
 | `CURSOR_API_KEY`                                | cursor-api.mjs (Cloud Agents API)                             |
 | `STRIPE_SECRET_KEY`                             | stripe-api.mjs, check-stripe-prices.mjs, test-mcp, mcp-health |
 | `RESEND_API_KEY`                                | test-mcp, mcp-health                                          |
 | `CONTEXT7_API_KEY`                              | Context7 MCP (valgfri; run-context7-mcp.mjs)                  |
-| `CLOUDFLARE_API_TOKEN`                          | cloudflare-api.mjs, test-mcp, mcp-health (valgfri)            |
 
 ### Dev / test
 
@@ -126,10 +122,9 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 | Context7 (docs)       | context7    | node scripts/run-context7-mcp.mjs       | CONTEXT7_API_KEY (valgfri)  |
 | Resend                | resend      | npx resend-mcp@latest                   | RESEND_API_KEY              |
 | Vipps                 | vipps       | node scripts/run-vipps-mcp.mjs          | (i wrapper)                 |
-| Vercel                | vercel      | url: https://mcp.vercel.com             | OAuth (ingen token i repo)  |
 | Cloudflare            | cloudflare  | url: https://mcp.cloudflare.com/mcp     | OAuth                       |
 
-**Verifisere:** `npm run test:mcp` (Supabase REST, Stripe, Vercel, Resend, Cloudflare API, CF connectivity). Linear: `npm run linear:test`. Cursor: `npm run cursor:config` (uten token), `npm run cursor:test` (med CURSOR_API_KEY).
+**Verifisere:** `npm run test:mcp` (Supabase REST, Stripe, Resend, Cloudflare API, CF connectivity). Linear: `npm run linear:test`. Cursor: `npm run cursor:config` (uten token), `npm run cursor:test` (med CURSOR_API_KEY).
 
 ---
 
@@ -139,8 +134,7 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 | ---------- | ------------------------------------------------------------------------------------ | ----------------------------------- |
 | Linear     | teams, issues, create, update                                                        | scripts/linear-api.mjs              |
 | Supabase   | db:push, db:status, db:diff                                                          | supabase CLI                        |
-| Vercel     | vercel:test, projects, deployments, project, vercel:env, deploy:prod                 | scripts/vercel-api.mjs + npx vercel |
-| Cloudflare | cloudflare:test, zones, dns, account, pages                                          | scripts/cloudflare-api.mjs          |
+| Cloudflare | cloudflare:test, zones, dns, account, pages, deploy                                  | scripts/cloudflare-api.mjs          |
 | Stripe     | stripe:test, stripe test, stripe prices                                              | scripts/stripe-api.mjs              |
 | Vipps      | vipps:test, vipps test                                                               | scripts/vipps-api.mjs               |
 | Cursor     | cursor:test, me, agents, agent, models, config; cursor:agent, agent-ls, agent-resume | scripts/cursor-api.mjs + Cursor CLI |
@@ -157,7 +151,7 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 
 ## 4b. Cron (source of truth)
 
-**Cron skal alltid kjøres fra Supabase** (pg_cron eller Supabase scheduler). Vercel Cron er ikke source of truth. Nye tidsplanlegginger legges i Supabase; `/api/cron/*` kalles med CRON_SECRET. Se **docs/CRON-SOURCE-OF-TRUTH.md**.
+**Cron skal alltid kjøres fra Supabase** (pg_cron eller Supabase scheduler). Cloudflare Cron er ikke source of truth. Nye tidsplanlegginger legges i Supabase; `/api/cron/*` kalles med CRON_SECRET. Se **docs/CRON-SOURCE-OF-TRUTH.md**.
 
 ---
 
@@ -179,10 +173,10 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 ## 6. Optimalisering – sjekkliste
 
 - [x] **ENV:** Alle variabler som koden bruker er listet i §1; .env.local.example dekker de viktigste med kommentarer for resten.
-- [x] **MCP:** Alle domener (GitHub, Linear, Supabase, Supabase-DB, Playwright, Resend, Vipps, Vercel, Cloudflare) har enten MCP eller CLI.
-- [x] **CLI:** Linear, Vercel, Cloudflare, Cursor har dedikerte CLI-skript; Supabase bruker offisiell CLI.
+- [x] **MCP:** Alle domener (GitHub, Linear, Supabase, Supabase-DB, Playwright, Resend, Vipps, Cloudflare) har enten MCP eller CLI.
+- [x] **CLI:** Linear, Cloudflare, Cursor har dedikerte CLI-skript; Supabase bruker offisiell CLI.
 - [x] **API:** App-ruter dokumentert i api-routes.md; health brukes av verify og overvåking.
 - [x] **SQL/PSQL:** Kanonisk flyt er db:push / db:status / db:diff + supabase-db MCP for SQL; psql ved behov med DATABASE_URL.
-- [x] **test:mcp:** Tester Supabase REST, Stripe, Vercel, Cloudflare API, Cloudflare connectivity, Sentry, Resend; Linear og Cursor har egne tester.
+- [x] **test:mcp:** Tester Supabase REST, Stripe, Cloudflare API, CF connectivity, Sentry, Resend; Linear og Cursor har egne tester.
 
 **Konklusjon:** Oppsettet er superoptimalisert for prosjektet: ENV er kartlagt, MCP/CLI/API dekker alle domener, og SQL/PSQL har én tydelig anbefalt flyt.

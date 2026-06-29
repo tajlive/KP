@@ -24,8 +24,8 @@ export default {
       name: 'heroCtaLink',
       type: 'string',
       title: 'Hero CTA Lenke',
-      description: 'Relativ lenke (f.eks. /dashboard/trade?mode=paper)',
-      initialValue: '/dashboard/trade?mode=paper',
+      description: 'Relativ lenke (f.eks. /handel?mode=paper)',
+      initialValue: '/handel?mode=paper',
     },
     {
       name: 'smartActions',

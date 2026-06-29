@@ -21,7 +21,6 @@ describe("cspMiddleware", () => {
     const res = cspMiddleware(req);
 
     expect(res.headers.get("Cache-Control")).toBeNull();
-    expect(res.headers.get("Vercel-CDN-Cache-Control")).toBeNull();
     expect(res.headers.get("CDN-Cache-Control")).toBeNull();
   });
 

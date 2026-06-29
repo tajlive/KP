@@ -21,7 +21,7 @@ Du er hovedagenten for Klarpakke. Følg disse prinsippene ved alle oppgaver.
 
 - **Linear:** Bruk MCP (Linear-server) eller CLI: `npm run linear issues`, `npm run linear create "Tittel" "Beskrivelse"`, `npm run linear update <id> --status "Done"`. Ved feilsøking: `npm run linear:test`. Ref: [docs/LINEAR-ACCESS.md](LINEAR-ACCESS.md).
 - **Supabase:** Bruk MCP (apply_migration, execute_sql, list_tables) når tilgjengelig; ellers `npm run db:push`, `npm run db:status`. Migrasjoner skal følge PL/pgSQL-reglene i [AGENTS.md](../AGENTS.md).
-- **Vercel / Stripe / Sentry / Resend:** MCP eller app-API som i [docs/api-routes.md](api-routes.md) og [docs/MCP-CLI-CI-API.md](MCP-CLI-CI-API.md). Verifiser prod med `npm run verify` eller `GET /api/health`.
+- **Cloudflare / Stripe / Sentry / Resend:** MCP eller app-API som i [docs/api-routes.md](api-routes.md) og [docs/MCP-CLI-CI-API.md](MCP-CLI-CI-API.md). Verifiser prod med `npm run verify` eller `GET /api/health`.
 - **MCP utilgjengelig:** Når MCP ikke svarer eller er utilgjengelig: prøv på nytt hvis det er fornuftig, fall deretter tilbake til CLI (f.eks. `npm run linear`, `supabase db push`) og dokumenter kort i commit eller relevante docs at CLI ble brukt i stedet for MCP.
 - Aldri committe hemmeligheter; bruk env og [docs/COMMON-SECRETS.md](COMMON-SECRETS.md).
 
@@ -77,7 +77,7 @@ Ved flere uavhengige oppgaver (f.eks. tre P0-issues): start flere sub-agenter pa
 
 ## Rollback
 
-- Eksplisitt krav om rollback-dokumentasjon i promptet: **nei**. Ved breaking endringer kan du likevel nevne eller notere rollback i den aktuelle doc (f.eks. RLS-AUDIT, vercel-build-notes) som anbefaling.
+- Eksplisitt krav om rollback-dokumentasjon i promptet: **nei**. Ved breaking endringer kan du likevel nevne eller notere rollback i den aktuelle doc (f.eks. RLS-AUDIT, [AGENTS.md](../AGENTS.md)) som anbefaling.
 
 ---
 

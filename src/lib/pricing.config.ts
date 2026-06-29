@@ -473,7 +473,7 @@ export function subscriptionStripePriceEnvKeys(
 }
 
 /**
- * Stripe Price ID for abonnement: env overstyrer `TIER_CONFIGS` (for Vercel uten å committe price_).
+ * Stripe Price ID for abonnement: env overstyrer `TIER_CONFIGS` uten å committe price_.
  */
 export function getResolvedSubscriptionPriceId(
   tier: TierSlug,

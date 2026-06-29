@@ -359,7 +359,7 @@ export default function ClientAdminDashboard() {
           <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col items-center justify-center text-center">
             <div className="w-3 h-3 bg-green-500 rounded-full mb-2 animate-pulse" />
             <span className="text-slate-300 text-sm font-medium">
-              Vercel Edge
+              Cloudflare Workers
             </span>
             <span className="text-green-400 text-xs">
               {t("operational")}

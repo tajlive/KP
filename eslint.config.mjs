@@ -207,7 +207,6 @@ const eslintConfig = [
       "workers/**",
       "dist/**",
       "build/**",
-      ".vercel/**",
       "seed*.js",
       "seed*.mjs",
       "seed*.cjs",

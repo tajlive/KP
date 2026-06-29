@@ -24,7 +24,7 @@ const COIN_NAMES: { [key: string]: string } = {
   MATICUSDT: "Polygon",
 };
 
-const POLL_MS = 15_000; // Reduced from 5s to 15s to save Vercel Hobby plan resources
+const POLL_MS = 15_000; // Keep polling conservative to reduce runtime/API load.
 
 /**
  * Sanntidspriser (poll) via egen API-rute → Binance.

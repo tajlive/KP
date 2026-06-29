@@ -142,8 +142,8 @@ const grunnkursLessons: LearningLesson[] = [
     estimatedMinutes: 20,
     type: 'paper-trading',
     description: 'Gjør din første trade med lekepenger. Kjøp litt Bitcoin og se hva som skjer.',
-    ctaLabel: 'Start paper trading',
-    href: '/paper-trading?task=first-trade&track=grunnkurs',
+    ctaLabel: 'Start med lekepenger',
+    href: '/handel?task=first-trade&track=grunnkurs',
     prerequisites: ['gk-05-kalkulator'],
     icon: 'MousePointer',
   },
@@ -219,9 +219,9 @@ const risikostyringLessons: LearningLesson[] = [
     order: 4,
     estimatedMinutes: 25,
     type: 'paper-trading',
-    description: 'Sett opp en trade med stop-loss i paper trading. Se hva som skjer når prisen beveger seg.',
+    description: 'Sett opp en trade med stop-loss i lekepenger. Se hva som skjer når prisen beveger seg.',
     ctaLabel: 'Start øving',
-    href: '/paper-trading?task=stop-loss&track=risikostyring',
+    href: '/handel?task=stop-loss&track=risikostyring',
     prerequisites: ['rs-03-simulator-risk'],
     icon: 'Target',
   },
@@ -312,9 +312,9 @@ const tekniskAnalyseLessons: LearningLesson[] = [
     order: 5,
     estimatedMinutes: 30,
     type: 'paper-trading',
-    description: 'Gjør trades basert på teknisk analyse i paper trading. Bygg erfaring uten risiko.',
+    description: 'Gjør trades basert på teknisk analyse med lekepenger. Bygg erfaring uten risiko.',
     ctaLabel: 'Start øving',
-    href: '/paper-trading?task=technical-analysis&track=teknisk-analyse',
+    href: '/handel?task=technical-analysis&track=teknisk-analyse',
     prerequisites: ['ta-04-support'],
     icon: 'Target',
   },
@@ -377,7 +377,7 @@ const tradingStrategierLessons: LearningLesson[] = [
     type: 'paper-trading',
     description: 'Sett opp en smart DCA-strategi med lekepenger og se resultatene over tid.',
     ctaLabel: 'Start øving',
-    href: '/paper-trading?task=smart-dca&track=trading-strategier',
+    href: '/handel?task=smart-dca&track=trading-strategier',
     prerequisites: ['ts-02-dca'],
     icon: 'Target',
   },
@@ -666,7 +666,7 @@ export function getLessonTypeLabel(type: LessonType): string {
     case 'video': return 'Video';
     case 'quiz': return 'Quiz';
     case 'simulator': return 'Simulator';
-    case 'paper-trading': return 'Paper Trading';
+    case 'paper-trading': return 'Lekepenger';
     case 'tool': return 'Verktøy';
     case 'calculator': return 'Kalkulator';
     default: return type;

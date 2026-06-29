@@ -2,12 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-const APP_ROUTES = ["/dashboard", "/admin", "/paper-trading"];
+const APP_ROUTES = ["/dashboard", "/admin", "/handel"];
 
 function InlineFooter() {
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations("footer");
   useEffect(() => { setMounted(true); }, []);
 
   return (
@@ -20,9 +22,9 @@ function InlineFooter() {
             <span className="text-white/60 text-sm">Norges enkleste krypto-trading</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-white/70">
-            <Link href="/vilkar" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">Vilkår</Link>
-            <Link href="/personvern" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">Personvern</Link>
-            <Link href="/kontakt" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">Kontakt</Link>
+            <Link href="/vilkar" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.terms")}</Link>
+            <Link href="/personvern" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.privacy")}</Link>
+            <Link href="/kontakt" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.contact")}</Link>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-white/50">

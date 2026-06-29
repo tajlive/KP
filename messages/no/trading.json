@@ -653,7 +653,7 @@
       "title": "Lekepenger",
       "loading": "Henter saldo...",
       "error": "Kunne ikke hente saldo. Sjekk internettforbindelsen.",
-      "empty": "Ingen aktiv papirhandelssesjon. Start en ny for å se saldoen.",
+      "empty": "Ingen aktiv lekepenge-sesjon. Start en ny for å se saldoen.",
       "currentBalance": "Gjeldende saldo",
       "startingCapital": "Startkapital",
       "pnl": "P&L"
@@ -852,7 +852,7 @@
     "deleteTrade": "Slett trade",
     "clickForDetails": "— klikk for detaljer",
     "subtitle": "Alle funksjoner er åpne - ingen kredittkort påkrevd.",
-    "trialExpired": "Din 14-dagers trial er utløpt. Paper trading er fortsatt tilgjengelig gratis.",
+    "trialExpired": "Din 14-dagers trial er utløpt. Lekepenger er fortsatt tilgjengelig gratis.",
     "upgradePrompt": "Oppgrader til Bachelor (249 kr/mnd) for live trading.",
     "upgrade": "Oppgrader",
     "hoursRemaining": "⏰ Kun {{hours}} timer igjen av trial!",

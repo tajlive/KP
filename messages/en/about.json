@@ -63,7 +63,7 @@
     "partners": {
       "title": "Our Partners",
       "supabase": "Supabase (database and auth)",
-      "vercel": "Vercel (hosting and deployment)",
+      "cloudflare": "Cloudflare Workers (hosting and deployment)",
       "binance": "Binance (trading API)"
     }
   },

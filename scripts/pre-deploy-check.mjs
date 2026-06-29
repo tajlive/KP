@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Pre-deploy check - kjører alle tester før Vercel deploy
+ * Pre-deploy check - kjører alle tester før Cloudflare Workers deploy
  * Exit code 0 = OK, ellers feil
  */
 
@@ -112,10 +112,10 @@ if (process.argv.includes('--full-build')) {
 // Oppsummering
 console.log('\n╔═══════════════════════════════════════════════════════════╗');
 if (hasErrors) {
-  console.log('║  ' + RED + 'FAIL - Fix errors before deploying to Vercel' + RESET.padEnd(46) + '║');
+  console.log('║  ' + RED + 'FAIL - Fix errors before deploying to Cloudflare' + RESET.padEnd(46) + '║');
   process.exit(1);
 } else {
-  console.log('║  ' + GREEN + 'SUCCESS - Ready for Vercel deploy' + RESET.padEnd(46) + '║');
+  console.log('║  ' + GREEN + 'SUCCESS - Ready for Cloudflare deploy' + RESET.padEnd(46) + '║');
   process.exit(0);
 }
 console.log('╚═══════════════════════════════════════════════════════════╝');

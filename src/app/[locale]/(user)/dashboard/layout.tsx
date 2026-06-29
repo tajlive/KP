@@ -1,7 +1,7 @@
 /**
  * Server layout wrapper for /dashboard/*.
  * Force dynamic so Supabase client is never created at build time (avoids
- * "Your project's URL and API key are required" during Vercel prerender).
+ * missing-env failures during prerender/build).
  */
 export const dynamic = "force-dynamic";
 

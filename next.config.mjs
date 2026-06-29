@@ -7,7 +7,7 @@ const withNextIntl = createNextIntlPlugin({
 const nextConfig = {
   
   // BUILD OPTIMIZATIONS 2026-04-10
-  // Tuned for Hetzner VPS + Coolify Docker builds
+  // Tuned for Cloudflare Workers + OpenNext builds
   
   // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
   // Helps when .env loading order or Edge/build context differs.
@@ -25,7 +25,7 @@ const nextConfig = {
   },
   
   // distDir: 'dist',
-  output: 'standalone', // Required for Docker/Node.js hosting (Coolify/Hetzner)
+  output: 'standalone', // Required by the OpenNext/Workers build pipeline
 
   // Performance optimizations
   compress: true,
@@ -33,14 +33,14 @@ const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
 
-  // Cloudflare Pages compatibility
+  // Cloudflare Workers/OpenNext routing compatibility
   // Note: API routes should not be affected by trailingSlash
   trailingSlash: undefined,  // Let Next.js handle it automatically
 
   // Transpile packages to avoid webpack issues
   transpilePackages: ["next-intl", "@tanstack/react-query", "styled-components", "sanity", "@sanity/vision", "next-sanity"],
 
-  // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
+  // Default runtime is handled by OpenNext/Workers.
   // Individual API routes can opt into edge runtime if needed
 
   // ESLint config removed - handled by eslint.config.mjs (Next.js 16 standard)
@@ -92,12 +92,10 @@ const nextConfig = {
   },
 
   // Image optimization
-  // Coolify/Hetzner: unoptimized=false (Docker-host håndterer next/image)
-  // Cloudflare Pages: unoptimized=true (Cloudflare Pages støtter ikke next/image)
   // Cloudflare Workers + Images: custom loader når CLOUDFLARE_IMAGES_ACCOUNT_HASH er satt.
+  // Uten Images-hash bruker appen uoptimaliserte bilder for kompatibilitet i workerd.
   images: {
     unoptimized:
-      process.env.CLOUDFLARE_PAGES === "1" ||
       (!process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH && !process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH),
     loader: process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH ? "custom" : undefined,
     loaderFile: process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH
@@ -438,7 +436,7 @@ const nextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
         ],
       },
-      // NOTE: Cache-Control headers handled by Cloudflare + Coolify reverse proxy
+      // NOTE: Cache-Control headers handled by Cloudflare Workers/CDN
     ];
   },
 };

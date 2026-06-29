@@ -18,6 +18,11 @@ function assertValue<T>(v: T | undefined, errorMessage: string): T {
   return v
 }
 
+// NOTE: API version pinned to 2024-04-07. Sanity generally maintains backward
+// compatibility, but bumping this (e.g. to '2024-07-01' or the current date)
+// should only be done after verifying all existing GROQ queries and studio
+// functionality still work as expected. Leave unchanged until that verification
+// is performed.
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07'
 

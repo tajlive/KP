@@ -83,7 +83,14 @@ class CloudflareKvPipeline implements RedisPipeline {
   }
 
   async exec<T>(): Promise<T> {
-    const results = await Promise.all(this.commands.map((cmd) => cmd()));
+    // Run commands sequentially so that dependent commands (e.g. incr then
+    // expire) observe each other's side effects. Cloudflare KV does not
+    // support atomic transactions, but preserving order avoids leaving keys
+    // without a TTL when they are created in the same pipeline.
+    const results: unknown[] = [];
+    for (const cmd of this.commands) {
+      results.push(await cmd());
+    }
     return results as T;
   }
 }
@@ -214,8 +221,8 @@ function getCloudflareKvBinding(): KVNamespace | null {
 }
 
 /**
- * Upstash Redis via REST (erstatter deprecated @vercel/kv).
- * Støtter både nye Upstash-variabler og legacy Vercel KV (KV_REST_*).
+ * Upstash Redis via REST.
+ * Støtter både nye Upstash-variabler og eldre KV_REST_*-variabler.
  */
 const upstashUrl =
   process.env.UPSTASH_REDIS_REST_URL?.trim() ||

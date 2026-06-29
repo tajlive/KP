@@ -21,7 +21,7 @@ const defaultSteps: Step[] = [
   },
   {
     number: "02",
-    title: "Start paper-trading",
+    title: "Start med lekepenger",
     description: "Få umiddelbar tilgang til 100 000 kr i lekepenger og alle våre verktøy.",
   },
   {

@@ -2,7 +2,7 @@
  * GET /api/cron/health-check
  *
  * Cron-triggered health check for production monitoring.
- * Runs every 15 minutes via Vercel Cron or Supabase pg_cron.
+ * Runs every 15 minutes via Supabase pg_cron, Cloudflare cron, or another authorized scheduler.
  *
  * Environment:
  * - CRON_SECRET: Required for authorization

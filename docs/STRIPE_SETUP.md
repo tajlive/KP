@@ -2,7 +2,7 @@
 
 ## Required Environment Variables
 
-Add these to your `.env.local` (development) and Vercel (production):
+Add these to your `.env.local` (development) and Cloudflare Workers secrets (production):
 
 ```bash
 # Stripe API Keys
@@ -51,10 +51,18 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 # Use the webhook signing secret shown in terminal
 ```
 
-### 5. Add to Vercel
-- Vercel Dashboard → klarpakke → Settings → Environment Variables
-- Add all 4 variables
-- Redeploy
+### 5. Add to Cloudflare Workers
+```bash
+npx wrangler secret put STRIPE_SECRET_KEY
+npx wrangler secret put NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+npx wrangler secret put STRIPE_WEBHOOK_SECRET
+npx wrangler secret put NEXT_PUBLIC_SITE_URL
+```
+
+Redeploy:
+```bash
+npm run cf:deploy
+```
 
 ## Testing Payment Flow
 
@@ -78,7 +86,7 @@ Use any future date for expiry, any 3 digits for CVC, any 5 digits for postal co
 - Ensure raw body is being passed (Next.js does this automatically)
 
 ### "Course access not granted after payment"
-- Check Vercel logs for webhook errors
+- Check Cloudflare Workers logs for webhook errors
 - Verify user_course_progress table has RLS policies
 - Check metadata in Stripe dashboard includes userId and courseId
 

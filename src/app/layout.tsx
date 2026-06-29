@@ -86,7 +86,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // Google Search Console verification — konfigurer i Vercel env når kode er tilgjengelig
+  // Google Search Console verification — configure via Cloudflare Workers env/secrets when available.
   // verification: {
   //   google: process.env.GOOGLE_SITE_VERIFICATION,
   // }

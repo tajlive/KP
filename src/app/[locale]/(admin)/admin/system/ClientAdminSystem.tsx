@@ -89,11 +89,11 @@ export default function ClientAdminSystem() {
       lastChecked: new Date().toISOString(),
     });
 
-    // 4. Check Cloudflare Pages
+    // 4. Check Cloudflare Workers
     results.push({
-      name: 'Cloudflare Pages',
+      name: 'Cloudflare Workers',
       status: 'operational',
-      message: 'Build successful',
+      message: 'Worker deployment active',
       lastChecked: new Date().toISOString(),
     });
 
@@ -296,7 +296,7 @@ export default function ClientAdminSystem() {
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-slate-400">Platform</span>
-              <span className="text-white">Cloudflare Pages</span>
+              <span className="text-white">Cloudflare Workers</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-400">Custom Domain</span>

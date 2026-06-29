@@ -24,14 +24,14 @@ export function getTradingAlertEmail(data: {
           <strong>Tidspunkt:</strong> ${data.timestamp}
         </p>
         <p>
-          <a href="https://www.klarpakke.no/no/auto-trading" 
+          <a href="https://www.klarpakke.no/no/dashboard/auto-trade" 
              style="background: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
             Gå til Dashboard
           </a>
         </p>
       </div>
     `,
-    text: `Trading Alert\n\nHei ${data.userName},\n\n${data.message}\n\nSesjon: ${data.sessionId}\nStrategi: ${data.strategy}\nTidspunkt: ${data.timestamp}\n\nGå til: https://www.klarpakke.no/no/auto-trading`,
+    text: `Trading Alert\n\nHei ${data.userName},\n\n${data.message}\n\nSesjon: ${data.sessionId}\nStrategi: ${data.strategy}\nTidspunkt: ${data.timestamp}\n\nGå til: https://www.klarpakke.no/no/dashboard/auto-trade`,
   };
 }
 

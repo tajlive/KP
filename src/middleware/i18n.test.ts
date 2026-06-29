@@ -49,11 +49,13 @@ describe("i18nMiddleware", () => {
     expect(res.headers.get("location")).toBe("http://localhost/no/handel?mode=live");
   });
 
-  it("redirects root with ?code= to /callback", async () => {
+  it("redirects root with ?code= to canonical /callback", async () => {
     const req = new NextRequest(new URL("http://localhost/?code=abc"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(302);
-    expect(res.headers.get("location")).toBe("http://localhost/no/callback?code=abc");
+    expect(res.headers.get("location")).toBe(
+      "http://localhost:3000/no/callback?code=abc",
+    );
   });
 
   it("redirects /no/no/priser to /no/priser (duplicate locale)", async () => {

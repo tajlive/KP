@@ -21,10 +21,9 @@ Cursor bruker **Model Context Protocol** for å snakke med eksterne verktøy. Pr
 | chrome-devtools | npx   | chrome-devtools-mcp — konsoll, nettverk, performance, Lighthouse   |
 | resend          | npx   | RESEND_API_KEY                                                     |
 | vipps           | stdio | run-vipps-mcp.mjs                                                  |
-| vercel          | url   | https://mcp.vercel.com (OAuth)                                     |
 | cloudflare      | url   | https://mcp.cloudflare.com/mcp (OAuth)                             |
 
-Se **docs/MCP-CLI-CI-API.md** for full liste og **docs/VERCEL-MCP-CLI.md** / **docs/CLOUDFLARE-MCP-CLI.md** for Vercel og Cloudflare.
+Se **docs/MCP-CLI-CI-API.md** for full liste og **docs/CLOUDFLARE-MCP-CLI.md** for Cloudflare.
 
 ### Introspect konfigurasjon (CLI)
 

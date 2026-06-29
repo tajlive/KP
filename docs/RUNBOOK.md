@@ -7,14 +7,14 @@
 **ENCRYPTION_KEY:**
 ```bash
 npx tsx scripts/generate-encryption-key.ts
-vercel env add ENCRYPTION_KEY production
+npx wrangler secret put ENCRYPTION_KEY
 # Redeploy
 ```
 
 **CRON_SECRET:**
 ```bash
 NEW_SECRET=$(openssl rand -hex 32)
-vercel env add CRON_SECRET production
+echo -n "$NEW_SECRET" | npx wrangler secret put CRON_SECRET
 ```
 
 ### Manuell Cron Trigger
@@ -28,9 +28,9 @@ curl -X GET https://www.klarpakke.no/api/cron/daily-summary \
 
 ### Sjekke Logs
 
-**Vercel:**
+**Cloudflare Workers:**
 ```bash
-vercel logs --follow
+npx wrangler tail
 ```
 
 **Sentry:**
@@ -51,12 +51,12 @@ pg_dump -h db.xxx.supabase.co -U postgres -d postgres > backup.sql
 ## 🚨 Feilsøking
 
 ### "API keys not decrypting"
-- Sjekk at ENCRYPTION_KEY er satt i Vercel
+- Sjekk at ENCRYPTION_KEY er satt i Wrangler secrets
 - Verifiser at key er 64 hex chars
 - Sjekk at samme key brukes for kryptering og dekryptering
 
 ### "Cron not running"
-- Sjekk Vercel cron logs: `vercel logs --follow`
+- Sjekk Cloudflare Workers logs: `npx wrangler tail`
 - Verifiser CRON_SECRET er satt
 - Test manuelt med curl
 
@@ -80,7 +80,7 @@ pg_dump -h db.xxx.supabase.co -U postgres -d postgres > backup.sql
 
 ### Daglig Sjekkliste
 - [ ] Sjekk Sentry for nye errors
-- [ ] Verifiser Vercel deployment status
+- [ ] Verifiser Cloudflare Workers deployment status
 - [ ] Sjekk Supabase connection
 - [ ] Review cron execution logs
 
@@ -95,17 +95,17 @@ pg_dump -h db.xxx.supabase.co -U postgres -d postgres > backup.sql
 ## 🔄 Deployment
 
 ### Staging → Production
-1. Test på staging: `vercel --target=preview`
-2. Verifiser alle env vars
+1. Test lokalt: `npm run build`
+2. Verifiser alle env vars / Wrangler secrets
 3. Merge til main: `git push origin main`
-4. Monitor Vercel deployment
-5. Test health endpoint: `curl https://www.klarpakke.no/api/health`
+4. Deploy manuelt eller vent på Cloudflare Workers Builds: `npm run cf:deploy`
+5. Monitor Cloudflare Workers logs
+6. Test health endpoint: `curl https://www.klarpakke.no/api/health`
 
 ### Rollback
 ```bash
-# Finn forrige deployment
-vercel list
+# Redeploy forrige kjente gode commit
+npm run cf:deploy
 
-# Rollback til forrige
-vercel rollback
+# Eller bruk Cloudflare Dashboard → Workers & Pages → Rollback
 ```

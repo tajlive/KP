@@ -20,7 +20,7 @@ echo "----------------------------------------"
 if command -v sentry-cli &> /dev/null || [ -f node_modules/.bin/sentry-cli ]; then
     SENTRY_CLI="${SENTRY_CLI:-node_modules/.bin/sentry-cli}"
     echo "Sentry CLI funnet"
-    
+
     # Hent siste auth-relaterte issues (hvis SENTRY_AUTH_TOKEN finnes)
     if [ -n "$SENTRY_AUTH_TOKEN" ]; then
         echo "Henter siste auth-feil fra Sentry..."
@@ -53,23 +53,24 @@ fi
 
 echo ""
 
-# ===== METODE 3: Vercel Logs =====
-echo "🚀 METODE 3: Sjekker Vercel logs..."
+# ===== METODE 3: Cloudflare Workers Logs =====
+echo "🚀 METODE 3: Sjekker Cloudflare Workers logs..."
 echo "----------------------------------------"
 
-if command -v vercel &> /dev/null; then
-    if vercel whoami &> /dev/null; then
-        echo "Henter siste auth-relaterte logs..."
-        vercel logs klarpakke --since=10m 2>/dev/null | \
+if command -v wrangler &> /dev/null || [ -f node_modules/.bin/wrangler ]; then
+    WRANGLER="${WRANGLER:-node_modules/.bin/wrangler}"
+    if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+        echo "Henter siste auth-relaterte logs (avslutt med Ctrl+C)..."
+        "$WRANGLER" tail --format=short 2>/dev/null | \
             grep -iE "(auth|session|oauth|cookie|login)" | \
             tail -10 || echo "Ingen auth logs funnet"
     else
-        echo -e "${YELLOW}⚠️ Ikke logget inn i Vercel CLI${NC}"
-        echo "   Kjør: vercel login"
+        echo -e "${YELLOW}⚠️ CLOUDFLARE_API_TOKEN ikke satt${NC}"
+        echo "   Sjekk Wrangler logs manuelt: wrangler tail"
     fi
 else
-    echo -e "${YELLOW}⚠️ vercel CLI ikke installert${NC}"
-    echo "   Installer: npm i -g vercel"
+    echo -e "${YELLOW}⚠️ wrangler CLI ikke installert${NC}"
+    echo "   Installer: npm i -D wrangler"
 fi
 
 echo ""
@@ -85,21 +86,21 @@ echo ""
 echo "SQL å kjøre:"
 cat << 'SQL'
 -- Sjekk siste auth events
-SELECT 
+SELECT
     email,
     last_sign_in_at,
     confirmed_at,
     raw_app_meta_data->>'provider' as provider
-FROM auth.users 
+FROM auth.users
 WHERE email = 'tomarnejensen@gmail.com'
 ORDER BY last_sign_in_at DESC;
 
 -- Sjekk aktive sessions
-SELECT 
+SELECT
     user_id,
     created_at,
     updated_at
-FROM auth.sessions 
+FROM auth.sessions
 WHERE user_id IN (
     SELECT id FROM auth.users WHERE email = 'tomarnejensen@gmail.com'
 );

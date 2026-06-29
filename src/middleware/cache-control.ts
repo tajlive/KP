@@ -81,7 +81,6 @@ function setNoStoreHeaders(response: NextResponse): void {
     "private, no-store, max-age=0, must-revalidate",
   );
   response.headers.set("CDN-Cache-Control", "no-store, max-age=0");
-  response.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
 }
 
 const MARKETING_CACHE_CONTROL =

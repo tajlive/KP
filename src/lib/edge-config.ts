@@ -1,7 +1,7 @@
 /**
- * Edge Config stub — migrert fra Vercel Edge Config til Supabase/Redis.
+ * Edge Config stub — migrert fra tidligere Edge Config-løsning til Supabase/Redis.
  * Feature flags leses nå fra Redis eller Supabase (se src/lib/flags.ts).
- * @vercel/edge-config er avinstallert.
+ * Den opprinnelige edge-config-pakken er avinstallert.
  */
 
 export type EdgeFeatureFlags = {

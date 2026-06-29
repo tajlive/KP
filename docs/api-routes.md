@@ -63,7 +63,7 @@
 ## Dev-only ruter (blokkert i prod)
 
 | Rute                 | Status      | Notater                                  |
-| -------------------- | ----------- | ---------------------------------------- |
+| -------------------- | ----------- | -----------------------------------------|
 | `/api/debug-headers` | ⚠️ Dev only | KLA-108: Prod-guard lagt til             |
 | `/api/test/*`        | ⚠️ Dev only | KLA-108: Sjekk at prod-guard er på plass |
 | `/api/demo/*`        | ⚠️ Dev only | KLA-108: Sjekk at prod-guard er på plass |
@@ -79,7 +79,7 @@
 
 ---
 
-## Cron (Vercel)
+## Cron (Supabase pg_cron)
 
 | Rute                        | Schedule                          | Beskrivelse                                                                                                                                                                                          |
 | --------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -94,8 +94,8 @@
 
 - **Type**: SSE (Server-Sent Events)
 - **Status**: ✅ Prod
-- **Notat**: Fungerer på Vercel med 30s timeout. Client reconnecter automatisk.
-- **Erstatter**: WebSocket (ikke støttet på Vercel serverless)
+- **Notat**: Fungerer på Cloudflare Workers. Client reconnecter automatisk.
+- **Erstatter**: WebSocket (ikke støttet på alle serverless-plattformer)
 
 ---
 

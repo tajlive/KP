@@ -3,9 +3,6 @@ import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
-// Vercel Analytics/SpeedInsights removed — now on Fly.io
-// import { Analytics } from "@vercel/analytics/react";
-// import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const runtime = 'nodejs';
 

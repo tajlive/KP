@@ -21,6 +21,26 @@ interface PageProps {
   params: Promise<{ locale: string }>;
 }
 
+type RebalanceConfig = {
+  target_allocations: Record<string, number>;
+};
+
+type RebalanceConfigClient = {
+  from: (table: "portfolio_rebalance_configs") => {
+    select: (columns: string) => {
+      eq: (
+        column: "user_id",
+        value: string,
+      ) => {
+        maybeSingle: () => Promise<{
+          data: RebalanceConfig | null;
+          error: { message?: string; code?: string } | null;
+        }>;
+      };
+    };
+  };
+};
+
 // Fallback UI for når datahenting feiler
 function PortfolioErrorFallback({ locale, errorDetail }: { locale: string; errorDetail?: string }) {
   return (
@@ -80,7 +100,7 @@ export default async function PortfolioPage({ params }: PageProps) {
     let portfolios: { id: string; name: string | null; current_balance: number | null; initial_balance: number | null } | null = null;
     let sessions: SessionCardData[] | null = null;
     let profile: { paper_balance: number | null } | null = null;
-    let rebalanceConfig: any | null = null;
+    let rebalanceConfig: RebalanceConfig | null = null;
 
     // Query 1: Wallets
     try {
@@ -100,9 +120,9 @@ export default async function PortfolioPage({ params }: PageProps) {
 
     // Query 5: Rebalance Config
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await (supabase as unknown as RebalanceConfigClient)
         .from("portfolio_rebalance_configs")
-        .select("*")
+        .select("target_allocations")
         .eq("user_id", user.id)
         .maybeSingle();
       if (!error) rebalanceConfig = data;
@@ -321,7 +341,7 @@ export default async function PortfolioPage({ params }: PageProps) {
                   {t("noAssets.description")}
                 </p>
                 <a
-                  href={`/${locale}/paper-trading?mode=live`}
+                  href={`/${locale}/handel?mode=paper`}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all"
                 >
                   {t("noAssets.button")}

@@ -2,7 +2,7 @@
  * Stripe Price IDs for Klarpakke
  *
  * Price IDs leses fra environment variables.
- * Sett NEXT_PUBLIC_PRICE_* i Vercel Dashboard → Settings → Environment Variables.
+ * Sett NEXT_PUBLIC_PRICE_* i Cloudflare Workers env/secrets.
  * Hent verdiene fra: https://dashboard.stripe.com/products
  * Format: price_xxxxxxxxxxxxx
  */

@@ -109,7 +109,7 @@ These stay within semver and are safe to apply immediately.
 
 - **Status:** Maintenance-only; no new features.
 - **Issue:** Uses deprecated `punycode` via `whatwg-url@5.x` → deprecation warnings on Node 21+.
-- **Usage:** `scripts/verify-production.mjs`, `scripts/bootstrap.js`.
+- **Usage:** `scripts/verify-production.mjs`. `scripts/bootstrap.js` er arkivert.
 - **Action:** Replace with native `fetch` (Node 22). Minimal code change and no dependency.
 
 ### 4.2 react-is 18.x with React 19
@@ -150,8 +150,8 @@ npm update @sentry/nextjs @sentry/react @tanstack/react-query \
 ### Phase 3: Replace node-fetch with native fetch
 
 1. `scripts/verify-production.mjs`: `import fetch from "node-fetch"` → use global `fetch`.
-2. `scripts/bootstrap.js`: `const fetch = require('node-fetch')` → `const fetch = globalThis.fetch` or switch to ESM and use global `fetch`.
-3. Remove `node-fetch` from `package.json` dependencies.
+2. Remove `node-fetch` from `package.json` dependencies.
+   (`scripts/bootstrap.js` er arkivert og trenger ikke oppdatering.)
 
 ### Phase 4: Deferred (breaking changes)
 

@@ -133,7 +133,7 @@ legacy_headers=$(curl -sSI "$BASE_URL/no/login" 2>&1 || true)
 legacy_status=$(echo "$legacy_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE "[0-9]+$")
 
 if [ "$legacy_status" = "200" ]; then
-  # Cloudflare Workers / Next.js on Workers does not emit Vercel's x-matched-path header.
+  # Cloudflare Workers / Next.js on Workers does not emit a platform-specific x-matched-path header.
   # Just verify we got a real HTML response for the prefixed locale route.
   if assert_contains "$legacy_headers" "content-type: text/html" "prefixed default locale serves HTML"; then
     pass "prefixed default locale works (/no/login -> 200 OK)"

@@ -121,7 +121,7 @@ rl.on('line', async (line) => {
         try {
           const res = await fetch(url, { method: 'HEAD', redirect: 'follow' });
           const ms = Date.now() - start;
-          const text = `${url}: ${res.status} (${ms}ms)\nHeaders: ${res.headers.get('x-vercel-id') || 'N/A'}`;
+          const text = `${url}: ${res.status} (${ms}ms)\nHeaders: cf-ray=${res.headers.get('cf-ray') || 'N/A'}`;
           send({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text }] } });
         } catch (e) {
           send({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: `${url}: DOWN (${e.message})` }] } });

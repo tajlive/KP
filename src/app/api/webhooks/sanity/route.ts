@@ -26,7 +26,7 @@ function isValidSignature(
  * URL: https://klarpakke.no/api/webhooks/sanity
  * Trigger: Create, Update, Delete on documents
  * Projection: {_type, _id}
- * Secret: Set SANITY_WEBHOOK_SECRET in Vercel env
+ * Secret: Set SANITY_WEBHOOK_SECRET in Cloudflare Workers env/secrets
  */
 export async function POST(req: NextRequest) {
   if (!secret) {

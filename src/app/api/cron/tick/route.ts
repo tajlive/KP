@@ -46,7 +46,7 @@ import { validateCronSecret } from "@/lib/auth/cron";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// maxDuration arves fra vercel.json (300s) — overstyr ikke her
+// Execution timeout is controlled by the Cloudflare/OpenNext runtime configuration.
 
 interface TickResult {
   session_id: string;
