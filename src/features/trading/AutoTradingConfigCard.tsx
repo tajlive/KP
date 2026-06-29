@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Label } from "@/shared/ui/label";
 import { Switch } from "@/shared/ui/switch";
@@ -21,13 +22,15 @@ interface AutoTradingConfig {
   max_trade_size_nok: number;
 }
 
-const RISK_LEVELS: { value: RiskLevel; label: string; description: string; color: string }[] = [
-  { value: 'low', label: 'Konservativ', description: 'Minimerer risiko, lavere avkastning', color: 'text-green-600' },
-  { value: 'medium', label: 'Balansert', description: 'Middels risiko og avkastning', color: 'text-yellow-600' },
-  { value: 'high', label: 'Aggressiv', description: 'Høyere risiko, potensielt høyere avkastning', color: 'text-red-600' },
+const RISK_LEVELS: { value: RiskLevel; key: string; color: string }[] = [
+  { value: 'low', key: 'low', color: 'text-kp-success' },
+  { value: 'medium', key: 'medium', color: 'text-kp-warning' },
+  { value: 'high', key: 'high', color: 'text-kp-danger' },
 ];
 
 export function AutoTradingConfigCard() {
+  const t = useTranslations("trading.autoTradingConfig");
+  const trading = useTranslations("trading");
   const [config, setConfig] = useState<AutoTradingConfig>({
     enabled: false,
     mode: 'paper',
@@ -86,7 +89,7 @@ export function AutoTradingConfigCard() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("Du må være logget inn");
+        toast.error(t("loginRequired"));
         return;
       }
 
@@ -119,10 +122,10 @@ export function AutoTradingConfigCard() {
           });
       }
 
-      toast.success("Innstillinger lagret!");
+      toast.success(t("saveSuccess"));
     } catch (error) {
       console.error("Error saving config:", error);
-      toast.error("Kunne ikke lagre innstillinger");
+      toast.error(t("saveError"));
     } finally {
       setSaving(false);
     }
@@ -132,39 +135,39 @@ export function AutoTradingConfigCard() {
 
   if (loading) {
     return (
-      <Card className="bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+          <CardTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
-            Auto-Trading
+            {t("title")}
           </CardTitle>
-          <CardDescription className="text-gray-500 dark:text-slate-400">Laster...</CardDescription>
+          <CardDescription>{t("loading")}</CardDescription>
         </CardHeader>
-        <CardContent className="h-40 animate-pulse bg-gray-200 dark:bg-slate-800 rounded" />
+        <CardContent className="h-40 animate-pulse bg-kp-bg-tertiary rounded" />
       </Card>
     );
   }
 
   return (
-    <Card className="bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+        <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5" />
-          Auto-Trading
+          {t("title")}
         </CardTitle>
-        <CardDescription className="text-gray-500 dark:text-slate-400">
-          La AI handle på dine vegne basert på markedsanalyse
+        <CardDescription>
+          {t("subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Enable/Disable Toggle */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="auto-trading" className="text-base font-medium text-gray-900 dark:text-white">
-              Auto-Trading
+            <Label htmlFor="auto-trading" className="text-base font-medium text-kp-text-primary">
+              {t("toggleLabel")}
             </Label>
-            <p className="text-sm text-gray-500 dark:text-slate-400">
-              {config.enabled ? 'Aktivert - AI handler automatisk' : 'Deaktivert - Manuell handel'}
+            <p className="text-sm text-kp-text-secondary">
+              {config.enabled ? t("enabledDesc") : t("disabledDesc")}
             </p>
           </div>
           <Switch
@@ -176,44 +179,44 @@ export function AutoTradingConfigCard() {
 
         {/* Mode Toggle */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium text-gray-900 dark:text-white">Handelsmodus</Label>
+          <Label className="text-sm font-medium text-kp-text-primary">{t("modeLabel")}</Label>
           <div className="flex gap-2">
             <Button
               type="button"
               variant={config.mode === 'paper' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setConfig({ ...config, mode: 'paper' })}
-              className={config.mode === 'paper' 
-                ? "flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
-                : "flex-1 bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white"
+              className={config.mode === 'paper'
+                ? "flex-1 bg-kp-brand hover:bg-kp-brand-hover text-white"
+                : "flex-1 bg-kp-bg-tertiary border-kp-border text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
               }
             >
               <Shield className="h-4 w-4 mr-2" />
-              Lekepenger
+              {trading("paperMode")}
             </Button>
             <Button
               type="button"
               variant={config.mode === 'live' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setConfig({ ...config, mode: 'live' })}
-              className={config.mode === 'live' 
-                ? "flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
-                : "flex-1 bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white"
+              className={config.mode === 'live'
+                ? "flex-1 bg-kp-brand hover:bg-kp-brand-hover text-white"
+                : "flex-1 bg-kp-bg-tertiary border-kp-border text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
               }
             >
               <TrendingUp className="h-4 w-4 mr-2" />
-              Live Trading
+              {trading("liveMode")}
             </Button>
           </div>
           {config.mode === 'paper' ? (
-            <p className="text-xs text-gray-500 dark:text-slate-400 flex items-start gap-1">
+            <p className="text-xs text-kp-text-secondary flex items-start gap-1">
               <Shield className="h-3 w-3 mt-0.5" />
-              Lekepenger bruker simulerte penger. Ingen ekte tap.
+              {t("paperDesc")}
             </p>
           ) : (
-            <p className="text-xs text-amber-500 flex items-start gap-1">
+            <p className="text-xs text-kp-warning flex items-start gap-1">
               <AlertCircle className="h-3 w-3 mt-0.5" />
-              Live trading bruker ekte penger. Start med lekepenger først!
+              {t("liveDesc")}
             </p>
           )}
         </div>
@@ -221,9 +224,9 @@ export function AutoTradingConfigCard() {
         {/* Risk Level */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">Risikonivå</Label>
+            <Label className="text-sm font-medium text-kp-text-primary">{t("riskLabel")}</Label>
             <span className={cn("text-xs font-medium", currentRiskLevel?.color)}>
-              {currentRiskLevel?.label}
+              {currentRiskLevel ? t(`riskLevels.${currentRiskLevel.key}.label`) : null}
             </span>
           </div>
           <div className="flex gap-1">
@@ -232,31 +235,31 @@ export function AutoTradingConfigCard() {
                 key={risk.value}
                 type="button"
                 onClick={() => setConfig({ ...config, risk_level: risk.value })}
-                aria-label={risk.description || risk.label}
+                aria-label={t(`riskLevels.${risk.key}.description`)}
                 className={cn(
                   "flex-1 h-2 rounded-full transition-all",
                   config.risk_level === risk.value
-                    ? risk.value === 'low' 
-                      ? 'bg-green-500' 
+                    ? risk.value === 'low'
+                      ? 'bg-kp-success'
                       : risk.value === 'medium'
-                      ? 'bg-yellow-500'
-                      : 'bg-red-500'
-                    : 'bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600'
+                      ? 'bg-kp-warning'
+                      : 'bg-kp-danger'
+                    : 'bg-kp-bg-tertiary hover:bg-kp-bg-hover'
                 )}
-                title={risk.description}
+                title={t(`riskLevels.${risk.key}.description`)}
               />
             ))}
           </div>
-          <p className="text-xs text-gray-500 dark:text-slate-400">
-            {currentRiskLevel?.description}
+          <p className="text-xs text-kp-text-secondary">
+            {currentRiskLevel ? t(`riskLevels.${currentRiskLevel.key}.description`) : null}
           </p>
         </div>
 
         {/* Max Trade Size */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">Maks handelsstørrelse</Label>
-            <span className="text-sm font-medium text-gray-700 dark:text-slate-200">
+            <Label className="text-sm font-medium text-kp-text-primary">{t("maxTradeSize")}</Label>
+            <span className="text-sm font-medium text-kp-text-secondary">
               {config.max_trade_size_nok.toLocaleString('nb-NO')} NOK
             </span>
           </div>
@@ -267,19 +270,19 @@ export function AutoTradingConfigCard() {
             max={100000}
             step={1000}
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>1 000 NOK</span>
-            <span>100 000 NOK</span>
+          <div className="flex justify-between text-xs text-kp-text-muted">
+            <span>{t("minAmount")}</span>
+            <span>{t("maxAmount")}</span>
           </div>
         </div>
 
         {/* Save Button */}
-        <Button 
-          onClick={saveConfig} 
+        <Button
+          onClick={saveConfig}
           disabled={saving}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-kp-brand hover:bg-kp-brand-hover text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {saving ? 'Lagrer...' : 'Lagre innstillinger'}
+          {saving ? t("saving") : t("save")}
         </Button>
       </CardContent>
     </Card>

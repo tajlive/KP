@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui/button';
 import { RiskBadge, type RiskLevel } from '@/shared/ui/RiskBadge';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { hrefWithLocale } from '@/i18n/href-with-locale';
 import { ChevronLeft, Loader2, BookOpen, TrendingUp, Award } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -62,7 +63,7 @@ export default function Step2LevelPage() {
 
         if (!user) {
           router.push(
-            `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step2-level`)}`,
+            `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step2-level`)}`,
           );
           return;
         }
@@ -144,7 +145,7 @@ export default function Step2LevelPage() {
 
       if (!user) {
         router.push(
-          `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step2-level`)}`,
+          `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step2-level`)}`,
         );
         return;
       }

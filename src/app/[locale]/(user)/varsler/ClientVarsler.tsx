@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Bell, BookOpen, Calendar, Mail, Check } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface NotificationSetting {
   id: string;
@@ -17,7 +17,6 @@ interface NotificationSetting {
 
 export default function ClientVarsler() {
   const t = useTranslations('notifications');
-  const locale = useLocale();
   
   const [settings, setSettings] = useState<NotificationSetting[]>([
     {
@@ -31,15 +30,15 @@ export default function ClientVarsler() {
     {
       id: 'new-courses',
       type: 'course',
-      label: locale === 'no' ? 'Nye kurs' : 'New courses',
-      description: locale === 'no' ? 'Bli varslet når nye kurs moduler blir tilgjengelig' : 'Get notified when new course modules become available',
+      label: t('newCourses'),
+      description: t('newCoursesDesc'),
       enabled: true,
       icon: <BookOpen className="w-5 h-5" />
     },
     {
       id: 'quiz-reminders',
       type: 'quiz',
-      label: locale === 'no' ? 'Quiz-påminnelser' : 'Quiz reminders',
+      label: t('quizReminders'),
       description: t('courseRemindersDesc'),
       enabled: false,
       icon: <Check className="w-5 h-5" />
@@ -47,16 +46,16 @@ export default function ClientVarsler() {
     {
       id: 'streak-reminders',
       type: 'streak',
-      label: locale === 'no' ? 'Daglige streak-påminnelser' : 'Daily streak reminders',
-      description: locale === 'no' ? 'Få påminnelse om å logge inn og fortsette læringen' : 'Get reminded to log in and continue learning',
+      label: t('streakReminders'),
+      description: t('streakRemindersDesc'),
       enabled: true,
       icon: <Bell className="w-5 h-5" />
     },
     {
       id: 'email-updates',
       type: 'email',
-      label: locale === 'no' ? 'E-post oppdateringer' : 'Email updates',
-      description: locale === 'no' ? 'Motta viktige oppdateringer via e-post' : 'Receive important updates via email',
+      label: t('emailUpdates'),
+      description: t('emailUpdatesDesc'),
       enabled: true,
       icon: <Mail className="w-5 h-5" />
     }
@@ -84,9 +83,7 @@ export default function ClientVarsler() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">🔔 {t('title')}</h1>
           <p className="text-gray-600">
-            {locale === 'no' 
-              ? 'Velg hvilke påminnelser du vil motta om kurs, webinarer og læringsaktiviteter'
-              : 'Choose which reminders you want to receive about courses, webinars and learning activities'}
+            {t('headerDescription')}
           </p>
         </div>
 
@@ -128,7 +125,7 @@ export default function ClientVarsler() {
                 <button
                   type="button"
                   onClick={() => toggleSetting(setting.id)}
-                  aria-label={setting.enabled ? `Slå av ${setting.label}` : `Slå på ${setting.label}`}
+                  aria-label={t('toggleSettingAria', { label: setting.label, enabled: String(setting.enabled) })}
                   className={`relative w-12 h-6 rounded-full transition-colors ${
                     setting.enabled ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
@@ -157,7 +154,7 @@ export default function ClientVarsler() {
         {/* Upcoming Webinars */}
         <div className="mt-12">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            {locale === 'no' ? 'Kommende webinarer' : 'Upcoming webinars'}
+            {t('upcomingWebinars')}
           </h2>
           <div className="space-y-4">
             <Card>
@@ -168,23 +165,17 @@ export default function ClientVarsler() {
                       {t('forCompleteMembers')}
                     </span>
                     <h3 className="font-bold text-gray-900 mb-1">
-                      {locale === 'no' 
-                        ? 'Live Q&A: Teknisk analyse for nybegynnere'
-                        : 'Live Q&A: Technical analysis for beginners'}
+                      {t('webinarBeginnersTitle')}
                     </h3>
                     <p className="text-gray-600 text-sm mb-2">
-                      {locale === 'no' 
-                        ? '15. februar 2026 kl. 19:00 • Varighet: 60 minutter'
-                        : 'Feb 15, 2026 at 7:00 PM • Duration: 60 minutes'}
+                      {t('webinarBeginnersDate')}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      {locale === 'no' 
-                        ? 'Spørsmål om candlesticks, support/nivåer og grunnleggende indikatorer'
-                        : 'Questions about candlesticks, support/levels and basic indicators'}
+                      {t('webinarBeginnersDesc')}
                     </p>
                   </div>
                   <Button variant="outline">
-                    {locale === 'no' ? 'Sett påminnelse' : 'Set reminder'}
+                    {t('setReminder')}
                   </Button>
                 </div>
               </CardContent>
@@ -195,26 +186,20 @@ export default function ClientVarsler() {
                 <div className="flex items-start justify-between">
                   <div>
                     <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium mb-2">
-                      {locale === 'no' ? 'For Pro-medlemmer' : 'For Pro members'}
+                      {t('forProMembers')}
                     </span>
                     <h3 className="font-bold text-gray-900 mb-1">
-                      {locale === 'no' 
-                        ? 'Dypdykk: Avanserte trading-strategier'
-                        : 'Deep dive: Advanced trading strategies'}
+                      {t('webinarAdvancedTitle')}
                     </h3>
                     <p className="text-gray-600 text-sm mb-2">
-                      {locale === 'no' 
-                        ? '1. mars 2026 kl. 19:00 • Varighet: 90 minutter'
-                        : 'Mar 1, 2026 at 7:00 PM • Duration: 90 minutes'}
+                      {t('webinarAdvancedDate')}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      {locale === 'no' 
-                        ? 'Fibonacci, Elliott Wave og risikostyring i praksis'
-                        : 'Fibonacci, Elliott Wave and risk management in practice'}
+                      {t('webinarAdvancedDesc')}
                     </p>
                   </div>
                   <Button variant="outline">
-                    {locale === 'no' ? 'Sett påminnelse' : 'Set reminder'}
+                    {t('setReminder')}
                   </Button>
                 </div>
               </CardContent>
@@ -225,7 +210,7 @@ export default function ClientVarsler() {
         {/* Disclaimer */}
         <div className="mt-12 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
           <p className="text-sm text-yellow-800">
-            <strong>{locale === 'no' ? 'Tips:' : 'Tip:'}</strong> {t('tip')}
+            <strong>{t('tipLabel')}</strong> {t('tip')}
           </p>
         </div>
       </div>

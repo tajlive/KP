@@ -29,7 +29,7 @@ export default async function OnboardingLayout({
 
   if (!user) {
     redirect(
-      `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding`)}`,
+      `/${locale}/login?next=${encodeURIComponent(`/${locale}/onboarding`)}`,
     );
   }
 

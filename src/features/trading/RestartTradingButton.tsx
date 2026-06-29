@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Play, RefreshCw, AlertTriangle, CheckCircle } from "lucide-react";
 
 interface RestartTradingButtonProps {
-  locale: string;
   stoppedCount: number;
   crashedCount: number;
 }
 
 export function RestartTradingButton({
-  locale,
   stoppedCount,
   crashedCount,
 }: RestartTradingButtonProps) {
+  const t = useTranslations("trading.restart");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     success?: boolean;
@@ -37,23 +37,20 @@ export function RestartTradingButton({
         setResult({
           success: true,
           restarted: data.restarted,
-          message:
-            locale === "no"
-              ? `${data.restarted} session(s) restartet!`
-              : `${data.restarted} session(s) restarted!`,
+          message: t("success", { count: data.restarted }),
         });
         // Refresh page after 2 seconds
         setTimeout(() => window.location.reload(), 2000);
       } else {
         setResult({
           success: false,
-          message: data.error || "Failed",
+          message: data.error || t("unknownError"),
         });
       }
     } catch (err) {
       setResult({
         success: false,
-        message: err instanceof Error ? err.message : "Network error",
+        message: err instanceof Error ? err.message : t("networkError"),
       });
     } finally {
       setLoading(false);
@@ -68,7 +65,7 @@ export function RestartTradingButton({
           {result.message}
         </span>
         <span className="text-emerald-600 dark:text-emerald-400 text-sm">
-          {locale === "no" ? "Laster på nytt…" : "Reloading…"}
+          {t("reloading")}
         </span>
       </div>
     );
@@ -80,14 +77,10 @@ export function RestartTradingButton({
         <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
         <div>
           <p className="font-semibold text-amber-800 dark:text-amber-200">
-            {locale === "no"
-              ? "Trading er stoppet"
-              : "Trading is stopped"}
+            {t("title")}
           </p>
           <p className="text-sm text-amber-700 dark:text-amber-300/80">
-            {locale === "no"
-              ? `${stoppedCount} stoppede + ${crashedCount} crashed session(s). Sannsynligvis pga. circuit breaker (drawdown).`
-              : `${stoppedCount} stopped + ${crashedCount} crashed session(s). Likely circuit breaker (drawdown).`}
+            {t("description", { stoppedCount, crashedCount })}
           </p>
         </div>
       </div>
@@ -108,7 +101,7 @@ export function RestartTradingButton({
         ) : (
           <Play className="w-4 h-4" />
         )}
-        {locale === "no" ? "Restart handel" : "Restart trading"}
+        {t("button")}
       </button>
     </div>
   );

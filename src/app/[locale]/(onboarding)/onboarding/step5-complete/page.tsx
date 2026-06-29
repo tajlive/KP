@@ -7,6 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import { createClient } from "@/lib/supabase/client";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
@@ -33,7 +34,7 @@ export default function OnboardingStep5() {
 
         if (!user) {
           router.push(
-            `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding/step5-complete`)}`
+            `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step5-complete`)}`
           );
           return;
         }

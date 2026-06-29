@@ -5,6 +5,9 @@ import { PaperTradingPageClient } from "@/features/trading/paper/PaperTradingPag
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// TODO: Denne ruten overlapper med /dashboard/auto-trade. Vurder å slå sammen eller
+// tydeliggjøre skillet mellom handelsarbeidsområdet og auto-trade-oppsettet.
+
 type SessionRow = {
   id: string;
   mode: "paper" | "live";
