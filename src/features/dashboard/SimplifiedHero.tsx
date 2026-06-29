@@ -8,8 +8,8 @@ import { m, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 interface Props {
-  balance: number;
-  changePct: number;
+  balance?: number | null;
+  changePct?: number | null;
   ctaText?: string;
   ctaLink?: string;
   sessionMode?: "paper" | "live";
@@ -79,35 +79,47 @@ export function SimplifiedHero({
         </span>
       </m.div>
 
-      {/* Balance — animated counter */}
+      {/* Balance — animated counter or no-data dash */}
       <m.div
         className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white tracking-tight tabular-nums"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.4 }}
       >
-        <AnimatedNumber
-          value={balance}
-          duration={600}
-          decimals={0}
-          suffix=" kr"
-        />
+        {balance == null ? (
+          <span>— kr</span>
+        ) : (
+          <AnimatedNumber
+            value={balance}
+            duration={600}
+            decimals={0}
+            suffix=" kr"
+          />
+        )}
       </m.div>
 
       {/* Change percent */}
       <m.div
         className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-sm sm:text-base font-semibold tabular-nums ${
-          changePct >= 0
-            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-            : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+          changePct == null
+            ? "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+            : changePct >= 0
+              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+              : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
         }`}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25, duration: 0.4 }}
       >
-        {changePct > 0 ? "↑" : changePct < 0 ? "↓" : "→"}
-        {changePct > 0 ? "+" : ""}
-        {changePct.toFixed(2)}%
+        {changePct == null ? (
+          <span>—</span>
+        ) : (
+          <>
+            {changePct > 0 ? "↑" : changePct < 0 ? "↓" : "→"}
+            {changePct > 0 ? "+" : ""}
+            {changePct.toFixed(2)}%
+          </>
+        )}
         <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal ml-0.5">
           {locale === "no" ? "siste endring" : "latest change"}
         </span>

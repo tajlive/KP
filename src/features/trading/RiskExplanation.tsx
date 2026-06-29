@@ -1,6 +1,7 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { Shield, Scale, Zap, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatFromNOK, type Currency } from "@/lib/currency";
 
 export type RiskLevel = "safe" | "balanced" | "aggressive";
 
@@ -46,6 +47,8 @@ export async function RiskExplanation({
 }: RiskExplanationProps) {
   const t = await getTranslations("trading.riskExplanation");
   const tLevel = await getTranslations(`trading.riskExplanation.levels.${level}`);
+  const locale = await getLocale();
+  const displayCurrency: Currency = locale === "no" ? "NOK" : "USD";
   const config = LEVEL_CONFIG[level];
   const Icon = config.icon;
 
@@ -59,9 +62,7 @@ export async function RiskExplanation({
   const dailyLossPct = level === "safe" ? 1 : level === "balanced" ? 3 : 5;
   const dailyLossAmount = Math.floor((userBalance * dailyLossPct) / 100);
 
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("nb-NO");
-  };
+  const formatCurrency = (amount: number) => formatFromNOK(amount, displayCurrency);
 
   // Replace placeholders in system blocks
   const formatSystemBlock = (text: string) => {

@@ -460,9 +460,9 @@
     "levels": {
       "safe": {
         "headline": "Trygg",
-        "practicalExample": "Med {balance} kr kan du handle for inntil {maxAmount} kr per trade ({maxPct}% av saldoen)",
-        "autoSellExplanation": "Hvis en handel taper {stopLossAmount} kr ({stopLossPct}%), selger roboten automatisk for å beskytte deg",
-        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} kr i åpne handler samtidig ({maxExposurePct}% av saldoen)",
+        "practicalExample": "Med {balance} kan du handle for inntil {maxAmount} per trade ({maxPct}% av saldoen)",
+        "autoSellExplanation": "Hvis en handel taper {stopLossAmount} ({stopLossPct}%), selger roboten automatisk for å beskytte deg",
+        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} i åpne handler samtidig ({maxExposurePct}% av saldoen)",
         "moreLikely": [
           "Små, jevne gevinster (+200–500 kr per uke)",
           "Du sover godt uten å sjekke prisen hele tiden",
@@ -474,9 +474,9 @@
           "Følelsen av å være «i markedet»"
         ],
         "systemBlocks": [
-          "Handler over {maxAmount} kr per trade",
-          "Nye handler hvis du har tapt mer enn {dailyLoss} kr i dag",
-          "Handler hvis total eksponering overstiger {maxExposure} kr"
+          "Handler over {maxAmount} per trade",
+          "Nye handler hvis du har tapt mer enn {dailyLoss} i dag",
+          "Handler hvis total eksponering overstiger {maxExposure}"
         ],
         "copyForSavers": {
           "headline": "Perfekt for deg som vil lære uten å risikere",
@@ -485,9 +485,9 @@
       },
       "balanced": {
         "headline": "Balansert",
-        "practicalExample": "Med {balance} kr kan du handle for inntil {maxAmount} kr per trade ({maxPct}% av saldoen)",
-        "autoSellExplanation": "Hvis en handel taper {stopLossAmount} kr ({stopLossPct}%), selger roboten automatisk",
-        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} kr i åpne handler samtidig ({maxExposurePct}% av saldoen)",
+        "practicalExample": "Med {balance} kan du handle for inntil {maxAmount} per trade ({maxPct}% av saldoen)",
+        "autoSellExplanation": "Hvis en handel taper {stopLossAmount} ({stopLossPct}%), selger roboten automatisk",
+        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} i åpne handler samtidig ({maxExposurePct}% av saldoen)",
         "moreLikely": [
           "Varierte uker – noen med pluss, noen med minus",
           "Du merker at kontoen beveger seg mer",
@@ -499,9 +499,9 @@
           "Kjedelige, flate perioder"
         ],
         "systemBlocks": [
-          "Handler over {maxAmount} kr per trade",
-          "Nye handler hvis du har tapt mer enn {dailyLoss} kr i dag",
-          "Handler hvis total eksponering overstiger {maxExposure} kr"
+          "Handler over {maxAmount} per trade",
+          "Nye handler hvis du har tapt mer enn {dailyLoss} i dag",
+          "Handler hvis total eksponering overstiger {maxExposure}"
         ],
         "copyForSavers": {
           "headline": "For deg som har handlet litt før",
@@ -510,9 +510,9 @@
       },
       "aggressive": {
         "headline": "Aggressiv",
-        "practicalExample": "Med {balance} kr kan du handle for inntil {maxAmount} kr per trade ({maxPct}% av saldoen)",
-        "autoSellExplanation": "Roboten selger først når tapet når {stopLossAmount} kr ({stopLossPct}%)",
-        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} kr i åpne handler samtidig ({maxExposurePct}% av saldoen)",
+        "practicalExample": "Med {balance} kan du handle for inntil {maxAmount} per trade ({maxPct}% av saldoen)",
+        "autoSellExplanation": "Roboten selger først når tapet når {stopLossAmount} ({stopLossPct}%)",
+        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} i åpne handler samtidig ({maxExposurePct}% av saldoen)",
         "moreLikely": [
           "Spennende, aktive handelsdager",
           "Større svingninger (+/- 3 000–8 000 kr per uke)",
@@ -524,9 +524,9 @@
           "Å sove godt hvis markedet krasjer om natten"
         ],
         "systemBlocks": [
-          "Handler over {maxAmount} kr per trade",
-          "Nye handler hvis du har tapt mer enn {dailyLoss} kr i dag",
-          "Handler hvis total eksponering overstiger {maxExposure} kr"
+          "Handler over {maxAmount} per trade",
+          "Nye handler hvis du har tapt mer enn {dailyLoss} i dag",
+          "Handler hvis total eksponering overstiger {maxExposure}"
         ],
         "copyForSavers": {
           "headline": "For deg som tåler å se store svingninger",

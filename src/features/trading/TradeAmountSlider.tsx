@@ -7,6 +7,7 @@ import { AlertCircle, Wallet, TrendingUp, Shield } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Slider } from "@/shared/ui/slider";
 import { cn } from "@/lib/utils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface TradeAmountSliderProps {
   userBalance: number;
@@ -28,6 +29,7 @@ export function TradeAmountSlider({
   selectedAmount,
 }: TradeAmountSliderProps) {
   const t = useTranslations("trading.tradeAmountSlider");
+  const { format } = useCurrency();
   const [amount, setAmount] = useState(
     selectedAmount || Math.min(2000, maxPositionAmount)
   );
@@ -46,10 +48,6 @@ export function TradeAmountSlider({
     if (percentageOfBalance > maxPositionPct * 1.5) return "caution";
     return "ok";
   }, [amount, maxPositionAmount, remainingExposure, percentageOfBalance, maxPositionPct]);
-
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString("nb-NO");
-  };
 
   const handlePresetClick = (preset: number) => {
     const newAmount = Math.min(preset, userBalance);
@@ -99,7 +97,7 @@ export function TradeAmountSlider({
             <span className="text-sm text-kp-text-muted">{t("balance")}</span>
           </div>
           <span className="text-lg font-bold text-kp-text-primary">
-            {formatCurrency(userBalance)} kr
+            {format(userBalance)}
           </span>
         </div>
 
@@ -109,7 +107,7 @@ export function TradeAmountSlider({
             <span className="text-kp-text-muted">{t("maxPerTrade")}</span>
           </div>
           <span className="font-medium text-kp-brand">
-            {formatCurrency(maxPositionAmount)} kr ({maxPositionPct}%)
+            {format(maxPositionAmount)} ({maxPositionPct}%)
           </span>
         </div>
 
@@ -117,7 +115,7 @@ export function TradeAmountSlider({
           <div className="flex items-center justify-between text-sm mt-2 pt-2 border-t border-kp-border">
             <span className="text-kp-text-muted">{t("alreadyInMarket")}</span>
             <span className="font-medium text-kp-warning">
-              {formatCurrency(currentExposure)} kr
+              {format(currentExposure)}
             </span>
           </div>
         )}
@@ -130,7 +128,7 @@ export function TradeAmountSlider({
             {t("title")}
           </label>
           <span className={cn("text-2xl font-bold", getStatusColor())}>
-            {formatCurrency(amount)} kr
+            {format(amount)}
           </span>
         </div>
 
@@ -155,7 +153,7 @@ export function TradeAmountSlider({
                 <>
                   <span className={getStatusColor()}>
                     {t("status.blocked.title", {
-                      amount: formatCurrency(maxPositionAmount),
+                      amount: format(maxPositionAmount),
                     })}
                   </span>
                   <p className="text-kp-text-muted mt-1 text-xs">
@@ -170,7 +168,7 @@ export function TradeAmountSlider({
                   </span>
                   <p className="text-kp-text-muted mt-1 text-xs">
                     {t("status.warning.description", {
-                      remaining: formatCurrency(remainingExposure),
+                      remaining: format(remainingExposure),
                     })}
                   </p>
                 </>
@@ -211,15 +209,15 @@ export function TradeAmountSlider({
           <ul className="space-y-1.5 text-sm text-kp-text-secondary">
             <li className="flex items-center gap-2">
               <TrendingUp className="w-3.5 h-3.5 text-kp-success" />
-              {t("scenarios.gain", { amount: formatCurrency(amount * 0.1) })}
+              {t("scenarios.gain", { amount: format(amount * 0.1) })}
             </li>
             <li className="flex items-center gap-2">
               <AlertCircle className="w-3.5 h-3.5 text-kp-danger" />
-              {t("scenarios.loss", { amount: formatCurrency(amount * 0.1) })}
+              {t("scenarios.loss", { amount: format(amount * 0.1) })}
             </li>
             <li className="flex items-center gap-2">
               <Shield className="w-3.5 h-3.5 text-kp-brand" />
-              {t("scenarios.stopLoss", { amount: formatCurrency(amount * 0.15) })}
+              {t("scenarios.stopLoss", { amount: format(amount * 0.15) })}
             </li>
           </ul>
         </div>
@@ -245,7 +243,7 @@ export function TradeAmountSlider({
                   : "border-kp-border hover:bg-kp-brand-hover"
               )}
             >
-              {formatCurrency(preset)} kr
+              {format(preset)}
               {preset > maxPositionAmount && (
                 <span className="ml-1 text-[10px]">(max)</span>
               )}

@@ -34,6 +34,8 @@ import {
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { canUseAutoTradingNow } from "@/types/subscription";
+import { useCurrency } from "@/hooks/useCurrency";
+import { formatNumberFull } from "@/lib/utils/format-number";
 import { normalizeTier } from "@/lib/pricing/tiers";
 
 interface TradingSession {
@@ -100,6 +102,7 @@ export function PaperTradingSessionDetail({
   const td = useTranslations("trading.sessionDetail");
   const router = useRouter();
   const supabase = createClient();
+  const { format } = useCurrency();
 
   const [session, setSession] = useState<TradingSession>(initialSession);
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
@@ -363,7 +366,7 @@ export function PaperTradingSessionDetail({
           <CardContent>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                {session.current_capital_nok.toLocaleString("nb-NO")} kr
+                {format(session.current_capital_nok)}
               </span>
               <span
                 className={`text-sm font-medium ${
@@ -376,7 +379,7 @@ export function PaperTradingSessionDetail({
             </div>
             <p className="text-xs text-slate-500 mt-1">
               {t("startCapital")}:{" "}
-              {session.starting_capital_nok.toLocaleString("nb-NO")} kr
+              {format(session.starting_capital_nok)}
             </p>
           </CardContent>
         </Card>
@@ -414,7 +417,7 @@ export function PaperTradingSessionDetail({
                 }`}
               >
                 {isProfitable ? "+" : ""}
-                {(session.current_capital_nok - session.starting_capital_nok).toLocaleString("nb-NO")} kr
+                {format(session.current_capital_nok - session.starting_capital_nok)}
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
@@ -507,14 +510,11 @@ export function PaperTradingSessionDetail({
                       </span>
                       <span className="text-slate-500">@</span>
                       <span className="text-slate-900 dark:text-white">
-                        {trade.price.toLocaleString("nb-NO", {
-                          maximumFractionDigits: 2,
-                        })}{" "}
-                        USDT
+                        {formatNumberFull(trade.price, locale === "no" ? "nb-NO" : "en-US")} USDT
                       </span>
                       {nok != null && (
                         <span className="text-slate-500 text-sm">
-                          (~{nok.toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr)
+                          (~{format(Number(nok))})
                         </span>
                       )}
                       {trade.strategy_signal ? (
@@ -531,7 +531,7 @@ export function PaperTradingSessionDetail({
                           }`}
                         >
                           {isTradeProfitable ? "+" : ""}
-                          {pnl.toLocaleString("nb-NO")} kr
+                          {format(pnl)}
                         </span>
                       )}
                       {pnl != null &&
@@ -584,10 +584,10 @@ export function PaperTradingSessionDetail({
               [td("direction"), selectedTrade.side === "buy" ? td("directionBuy") : td("directionSell")],
               [td("orderType"), selectedTrade.order_type ?? "market"],
               [td("quantity"), qty.toFixed(8)],
-              [td("price"), `${selectedTrade.price.toLocaleString("nb-NO", { maximumFractionDigits: 2 })} USDT`],
-              [td("value"), selectedTrade.total_value != null ? `${Number(selectedTrade.total_value).toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr` : "—"],
-              [td("fee"), selectedTrade.fee != null ? `${Number(selectedTrade.fee).toLocaleString("nb-NO")} kr` : "0 kr"],
-              [td("pnl"), pnl != null ? `${pnl >= 0 ? "+" : ""}${pnl.toLocaleString("nb-NO")} kr` : "—"],
+              [td("price"), `${formatNumberFull(selectedTrade.price, locale === "no" ? "nb-NO" : "en-US")} USDT`],
+              [td("value"), selectedTrade.total_value != null ? format(Number(selectedTrade.total_value)) : "—"],
+              [td("fee"), selectedTrade.fee != null ? format(Number(selectedTrade.fee)) : format(0)],
+              [td("pnl"), pnl != null ? `${pnl >= 0 ? "+" : ""}${format(pnl)}` : "—"],
               [td("status"), selectedTrade.status ?? "filled"],
               [td("timestamp"), new Date(selectedTrade.created_at).toLocaleString("nb-NO")],
             ];

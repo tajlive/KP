@@ -38,6 +38,12 @@ export default async function TradingPage({
     return <LoginRequired next={`/${locale}/handel`} />;
   }
 
+  // TODO(data-source-audit): This page fetches trading_sessions and
+  // user_profiles.paper_balance directly instead of using getUserDashboardMetrics.
+  // This can cause balance/PnL to differ from /dashboard which uses the unified RPC.
+  // Consider consolidating to getUserDashboardMetrics for capital/balance figures while
+  // keeping session list fetching for the view.
+
   // Hent sessions
   const { data: sessions } = await supabase
     .from("trading_sessions")

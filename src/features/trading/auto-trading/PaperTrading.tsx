@@ -6,6 +6,7 @@ import { Bot, History, Loader2, PlayCircle, Square } from "lucide-react";
 import { useEffect, useState } from "react";
 import { STRATEGY_CATALOG_PAPER } from "@/lib/auto-trading/strategy-catalog";
 import { createClient } from "@/lib/utils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const DEFAULT_STRATEGIES = [...STRATEGY_CATALOG_PAPER];
 
@@ -67,6 +68,7 @@ export default function PaperTrading({
   const [openTrades, setOpenTrades] = useState<Trade[]>([]);
   const [recentTrades, setRecentTrades] = useState<Trade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { format } = useCurrency();
 
   // Supabase Realtime subscription for session updates
   useEffect(() => {
@@ -195,7 +197,7 @@ export default function PaperTrading({
               <div className="text-right">
                 <p className="text-sm text-slate-400">Kapital</p>
                 <p className="text-xl font-bold text-white">
-                  {session.current_capital_nok.toLocaleString("no-NO")} kr
+                  {format(session.current_capital_nok)}
                 </p>
               </div>
             )}
@@ -272,7 +274,7 @@ export default function PaperTrading({
                 className={`text-lg font-bold ${session.total_pnl_nok >= 0 ? "text-green-400" : "text-red-400"}`}
               >
                 {session.total_pnl_nok >= 0 ? "+" : ""}
-                {session.total_pnl_nok.toLocaleString("no-NO")} kr
+                {format(session.total_pnl_nok)}
               </p>
             </div>
             <div className="bg-slate-800 rounded-lg p-4">
@@ -356,7 +358,7 @@ export default function PaperTrading({
                       className={`text-sm font-medium ${(trade.pnl || 0) >= 0 ? "text-green-400" : "text-red-400"}`}
                     >
                       {(trade.pnl || 0) >= 0 ? "+" : ""}
-                      {(trade.pnl || 0).toLocaleString("no-NO")} kr
+                      {format(trade.pnl || 0)}
                     </p>
                   </div>
                 </div>

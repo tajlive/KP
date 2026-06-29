@@ -60,8 +60,8 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
           ? "Kumulativ profitt eller tap siden start."
           : "Cumulative profit or loss since start.",
         detailed: t
-          ? `Din totale avkastning på ${v.toLocaleString()} NOK reflekterer summen av alle realiserte gevinster og tap. Dette inkluderer ikke åpne posisjoner.`
-          : `Your total return of ${v.toLocaleString()} NOK reflects the sum of all realized gains and losses. This does not include open positions.`,
+          ? `Din totale avkastning på ${v.toLocaleString()} NOK er forskjellen mellom gjeldende kapital og startkapital: Startkapital → Gjeldende kapital → PnL. Tallet er basert på realiserte gevinster og tap, og inkluderer ikke åpne posisjoner (urealisert PnL).`
+          : `Your total return of ${v.toLocaleString()} NOK is the difference between current capital and starting capital: Starting Capital → Current Capital → PnL. The figure is based on realized gains and losses and does not include open positions (unrealized PnL).`,
         benchmark: t
           ? "Mål: Overgå indeks (f.eks. S&P 500 ~10% årlig)."
           : "Goal: Outperform index (e.g., S&P 500 ~10% annually).",
@@ -80,11 +80,11 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
       return {
         title: t ? "Kontobalanse" : "Account Balance",
         short: t
-          ? "Tilgjengelig kapital for trading."
-          : "Available capital for trading.",
+          ? "Gjeldende kapital: startkapital + realisert PnL."
+          : "Current capital: starting capital + realized PnL.",
         detailed: t
-          ? `Din kontobalanse på ${v.toLocaleString()} NOK er kapitalen du har tilgjengelig for nye trades. Hold alltid minst 30% i cash som buffer mot drawdown.`
-          : `Your account balance of ${v.toLocaleString()} NOK is the capital available for new trades. Always keep at least 30% in cash as a buffer against drawdown.`,
+          ? `Din kontobalanse på ${v.toLocaleString()} NOK er gjeldende kapital: Startkapital + Realisert PnL. Åpne posisjoner (urealisert PnL) er ikke inkludert før posisjonen lukkes.`
+          : `Your account balance of ${v.toLocaleString()} NOK is current capital: Starting Capital + Realized PnL. Open positions (unrealized PnL) are not included until the position is closed.`,
         benchmark: t
           ? "Regel: Risiker aldri mer enn 1-2% av total kapital per trade."
           : "Rule: Never risk more than 1-2% of total capital per trade.",
@@ -142,8 +142,8 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
           ? "Gevinst eller tap på en trade eller periode."
           : "Profit or loss on a trade or period.",
         detailed: t
-          ? `P&L på ${v.toLocaleString()} NOK er summen av alle gevinster minus alle tap i perioden. Positiv P&L = profittabel trading. `
-          : `P&L of ${v.toLocaleString()} NOK is the sum of all gains minus all losses in the period. Positive P&L = profitable trading.`,
+          ? `Realisert PnL er profitt/tap fra allerede lukkede trades. Urealisert PnL viser profitt/tap på åpne posisjoner og blir først realisert når posisjonen lukkes. Din P&L her er ${v.toLocaleString()} NOK.`
+          : `Realized PnL is profit/loss from already closed trades. Unrealized PnL shows profit/loss on open positions and is only realized when the position is closed. Your P&L here is ${v.toLocaleString()} NOK.`,
         benchmark: t
           ? "Mål: Konsistent positiv P&L over tid, ikke store svingninger."
           : "Goal: Consistently positive P&L over time, not large swings.",

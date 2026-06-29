@@ -23,9 +23,9 @@ function getHeatColor(pnl: number, capital: number): string {
   return "bg-rose-700";
 }
 
-function getHeatTooltip(pnl: number, capital: number, trades: number): string {
+function getHeatTooltip(pnl: number, capital: number, trades: number, formatNOK: (v: number) => string): string {
   const pct = capital > 0 ? ((pnl / capital) * 100).toFixed(2) : "0.00";
-  return `${pnl >= 0 ? "+" : ""}${pnl.toLocaleString("no-NO")} kr (${pct}%) — ${trades} handler`;
+  return `${pnl >= 0 ? "+" : ""}${formatNOK(pnl)} (${pct}%) — ${trades} handler`;
 }
 
 export function PerformanceSection({ trades, startingCapital = 100000, formatNOK }: PerformanceSectionProps) {
@@ -215,7 +215,7 @@ export function PerformanceSection({ trades, startingCapital = 100000, formatNOK
               <div
                 key={day.dayStr}
                 className={`aspect-square rounded-md ${getHeatColor(day.pnl, startingCapital)} relative group cursor-help transition-opacity hover:opacity-80`}
-                title={getHeatTooltip(day.pnl, startingCapital, day.trades)}
+                title={getHeatTooltip(day.pnl, startingCapital, day.trades, formatNOK)}
               >
                 <span className="absolute inset-0 flex items-center justify-center text-[9px] text-white/70 font-medium">
                   {day.date.getDate()}

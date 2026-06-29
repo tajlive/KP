@@ -30,6 +30,8 @@ export function PortfolioSection({
   }
 
   const isProfit = portfolio.total_pnl >= 0;
+  const winRateDisplay =
+    portfolio.win_rate != null ? `${portfolio.win_rate.toFixed(1)}%` : "—";
 
   return (
     <div className="space-y-6">
@@ -74,7 +76,7 @@ export function PortfolioSection({
             <span>{t("winRate")}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-white">
-            {(portfolio.win_rate ?? 0).toFixed(1)}%
+            {winRateDisplay}
           </p>
         </div>
       </div>

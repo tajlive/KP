@@ -204,6 +204,10 @@ export default async function PortfolioPage({ params }: PageProps) {
       );
     }
 
+    // TODO(data-source-audit): totalCapital/totalStarting are computed from raw
+    // trading_sessions here and mirror /dashboard's getUserDashboardMetrics. To
+    // guarantee a single source of truth, derive these from getUserDashboardMetrics
+    // and keep the detailed session query only for SessionCards/RestartTradingButton.
     // Calculate total capital from trading sessions (SAME as dashboard)
     const totalCapital = (sessions ?? []).reduce(
       (sum, s) => sum + Number(s.current_capital_nok ?? 0),

@@ -14,6 +14,12 @@ import {
 import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { SkeletonBlock } from "@/features/dashboard/loading-skeleton";
+import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
+
+// TODO(data-source-audit): This chart computes its own capital/PnL from trades for
+// visualization purposes, which may diverge from getUserDashboardMetrics (the dashboard
+// single source of truth). Consider accepting pre-aggregated start/current capital from
+// the parent or metrics endpoint to guarantee consistency.
 
 interface ChartDataPoint {
   date: string;
@@ -271,109 +277,117 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
   }
 
   return (
-    <m.div
-      className="h-[300px] sm:h-[380px] w-full rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.04] backdrop-blur-xl p-5 md:p-6 shadow-sm"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <WidgetErrorBoundary
+      title="Grafen kunne ikke vises"
+      message="Vi kunne ikke laste porteføljegrafen akkurat nå. Prøv på nytt."
+      retryLabel="Oppdater"
+      onReset={fetchPortfolioData}
+      resetKeys={[selectedPeriod, userId, sessionId]}
     >
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <div>
-          <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">Din portefølje</p>
-          <div className="flex items-center gap-3">
-            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              {formatCurrency(currentValue)}
-            </p>
-            <div
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-medium ${
-                changePercent >= 0
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : "bg-red-500/20 text-red-400"
-              }`}
-            >
-              {changePercent >= 0 ? (
-                <TrendingUp className="w-4 h-4" />
-              ) : (
-                <TrendingDown className="w-4 h-4" />
-              )}
-              {changePercent >= 0 ? "+" : ""}
-              {changePercent.toFixed(1)}%
-            </div>
-          </div>
-          <p className="text-gray-400 dark:text-slate-500 text-xs mt-1">
-            Startet med {formatCurrency(startingValue)}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <button
-            onClick={fetchPortfolioData}
-            className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0"
-            title="Oppdater"
-          >
-            <RefreshCw className="w-4 h-4 text-gray-400 dark:text-slate-400" />
-          </button>
-          <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
-            {TIME_PERIODS.map((period) => (
-              <button
-                key={period.key}
-                onClick={() => setSelectedPeriod(period.key)}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  selectedPeriod === period.key
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600"
+      <m.div
+        className="h-[300px] sm:h-[380px] w-full rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.04] backdrop-blur-xl p-5 md:p-6 shadow-sm"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+          <div>
+            <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">Din portefølje</p>
+            <div className="flex items-center gap-3">
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                {formatCurrency(currentValue)}
+              </p>
+              <div
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-medium ${
+                  changePercent >= 0
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-red-500/20 text-red-400"
                 }`}
               >
-                {period.label}
-              </button>
-            ))}
+                {changePercent >= 0 ? (
+                  <TrendingUp className="w-4 h-4" />
+                ) : (
+                  <TrendingDown className="w-4 h-4" />
+                )}
+                {changePercent >= 0 ? "+" : ""}
+                {changePercent.toFixed(1)}%
+              </div>
+            </div>
+            <p className="text-gray-400 dark:text-slate-500 text-xs mt-1">
+              Startet med {formatCurrency(startingValue)}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={fetchPortfolioData}
+              className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0"
+              title="Oppdater"
+            >
+              <RefreshCw className="w-4 h-4 text-gray-400 dark:text-slate-400" />
+            </button>
+            <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
+              {TIME_PERIODS.map((period) => (
+                <button
+                  key={period.key}
+                  onClick={() => setSelectedPeriod(period.key)}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                    selectedPeriod === period.key
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600"
+                  }`}
+                >
+                  {period.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="h-[250px]">
-        {mounted ? (
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0052FF" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#0052FF" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#1e293b"
-              vertical={false}
-            />
-            <XAxis
-              dataKey="formattedDate"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#64748b", fontSize: 11 }}
-              minTickGap={30}
-            />
-            <YAxis hide domain={["auto", "auto"]} />
-            <Tooltip content={<CustomTooltip />} />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="#0052FF"
-              strokeWidth={2}
-              fillOpacity={1}
-              fill="url(#colorValue)"
-              animationDuration={1000}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-        ) : (
-          <div className="h-full w-full bg-gray-100/5 dark:bg-white/[0.03] animate-pulse rounded-xl" />
-        )}
-      </div>
-    </m.div>
+        <div className="h-[250px]">
+          {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#0052FF" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#0052FF" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#1e293b"
+                vertical={false}
+              />
+              <XAxis
+                dataKey="formattedDate"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#64748b", fontSize: 11 }}
+                minTickGap={30}
+              />
+              <YAxis hide domain={["auto", "auto"]} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="#0052FF"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#colorValue)"
+                animationDuration={1000}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+          ) : (
+            <div className="h-full w-full bg-gray-100/5 dark:bg-white/[0.03] animate-pulse rounded-xl" />
+          )}
+        </div>
+      </m.div>
+    </WidgetErrorBoundary>
   );
 }
 

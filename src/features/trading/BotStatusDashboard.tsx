@@ -235,7 +235,7 @@ export default function BotStatusDashboard({
     [recentTrades],
   );
 
-  const totalValue = portfolio?.total_value || 0;
+  const totalValue = portfolio?.total_value ?? null;
   // Use unified dashboard metrics as single source of truth for win rate.
   // getUserDashboardMetrics returns 0-1; convert to 0-100 for display.
   // pnlToday/Week/Month still use trade-effective-pnl for time-bounded calculations.
@@ -604,7 +604,7 @@ export default function BotStatusDashboard({
                 {t("portfolioValue")}
               </p>
               <div className="text-3xl font-black text-white">
-                {formatNOK(portfolio?.total_value || 0)}
+                {totalValue != null ? formatNOK(totalValue) : "—"}
               </div>
             </div>
 

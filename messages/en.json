@@ -1545,15 +1545,20 @@
     "dashboardPro": {
       "errorTitle": "Could not load dashboard metrics",
       "errorFallback": "Please try again or contact support if the issue persists.",
+      "widgetErrorTitle": "Dashboard widget could not load",
+      "widgetErrorMessage": "We couldn't show this part of the dashboard right now. Try again, or reload the page if the issue persists.",
       "retry": "Try again",
       "emptyState": "No trades yet for the selected mode. Start a new session to see statistics.",
       "stats": {
         "totalReturn": "Total Return",
         "totalReturnSub": "Accumulated profit",
+        "totalReturnHelp": "Starting Capital → Current Capital → PnL. Shows realized gain/loss from closed trades.",
         "winRate": "Win rate",
         "winRateSub": "{totalTrades} trades total",
+        "winRateHelp": "Share of profitable trades out of all closed trades.",
         "balance": "Account Balance",
-        "balanceSub": "Available capital"
+        "balanceSub": "Available capital",
+        "balanceHelp": "Current capital = starting capital + realized PnL. Open positions are not included."
       },
       "scopeLabel": "Based on active and completed {mode} sessions",
       "sessionsTitle": "Your sessions",

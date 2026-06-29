@@ -29,6 +29,7 @@ import { LivePricePreview } from "@/features/trading/LivePricePreview";
 import { startTrading } from "@/app/actions/trading";
 import { useTradingMode } from "@/lib/hooks/useTradingMode";
 import TradingModeToggle from "@/features/trading/TradingModeToggle";
+import { useCurrency } from "@/hooks/useCurrency";
 import type { TradingMode } from "@/types/trading";
 import type { TierSlug } from "@/lib/pricing/tiers";
 import { canAccessLiveAutoTrading } from "@/types/subscription";
@@ -85,6 +86,7 @@ export function BotWizard({
   const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
   const { canSwitchToLive, isLoading: isModeLoading } = useTradingMode();
+  const { format } = useCurrency();
   const [wizardMode, setWizardMode] = useState<TradingMode>(initialMode);
   const isLive = wizardMode === "live";
   const hasLiveTier = canAccessLiveAutoTrading(tier as TierSlug);
@@ -686,7 +688,7 @@ export function BotWizard({
                 {t(isLive ? "liveStartingCapital" : "startingCapital")}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
-                {startingCapital.toLocaleString("nb-NO")} kr
+                {format(startingCapital)}
               </span>
             </div>
           </PremiumPanel>
