@@ -1,7 +1,7 @@
 # 🏗️ Klarpakke Systemarkitektur
 
-> **Sist oppdatert:** 20. juni 2026
-> **Status:** Auto Trade i produksjon på Hetzner + Coolify
+> **Sist oppdatert:** 2026-06-29 av Lead Architect  
+> **Status:** Produksjon på Cloudflare Workers (OpenNext.js + Wrangler)
 
 ---
 
@@ -9,12 +9,12 @@
 
 Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk handel:
 
-1. **Frontend**: Next.js 16 (App Router) hostet på **Hetzner VPS + Coolify**, med Cloudflare DNS/CDN/Proxy foran
-2. **Backend**: Supabase Edge Functions + Next.js API Routes
+1. **Frontend / API**: Next.js 16 (App Router) hostet på **Cloudflare Workers** via OpenNext.js + Wrangler
+2. **Backend**: Supabase Edge Functions + Next.js API Routes (kjører i Worker)
 3. **Database**: PostgreSQL med Row Level Security (RLS)
-4. **Scheduler**: **Supabase** (pg_cron / Supabase scheduler) som kilde for tidsplan — se [`docs/CRON-SOURCE-OF-TRUTH.md`](CRON-SOURCE-OF-TRUTH.md). App-ruter under `/api/cron/*` kalles med `CRON_SECRET`; Vercel Cron er ikke måltilstand som «motor» for grid/strategi.
+4. **Scheduler**: **Supabase** (`pg_cron` / Supabase scheduler) som kilde for tidsplan — se [`docs/CRON-SOURCE-OF-TRUTH.md`](CRON-SOURCE-OF-TRUTH.md). App-ruter under `/api/cron/*` kalles med `CRON_SECRET`.
 
-> **Migreringsstatus:** Plattformen er migrert fra Fly.io/Vercel/GitHub Actions til Hetzner VPS + Coolify + Woodpecker CI + GlitchTip. Enkelte kode- og dokumentasjonsrester ryddes fortsatt opp. Se `docs/SELF-HOSTED-SETUP.md` for detaljer.
+> **Migreringsstatus:** Plattformen er migrert fra Hetzner + Coolify til Cloudflare Workers (OpenNext.js + Wrangler) med automatisk deploy via Cloudflare Workers Builds. `docs/SELF-HOSTED-SETUP.md` er arkivert/utdatert.
 
 ---
 
@@ -28,23 +28,31 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
                                     │ HTTPS
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        COOLIFY / HETZNER PLATFORM                            │
-│                         (www.klarpakke.no / Hetzner VPS)                     │
+│                        CLOUDFLARE EDGE NETWORK                               │
 │                                                                              │
-│  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐  │
-│  │   Next.js App       │  │   API Routes        │  │   Statiske filer    │  │
-│  │   ├─ Dashboard      │  │   ├─ /api/binance/* │  │   ├─ _next/static   │  │
-│  │   ├─ Kurs           │  │   ├─ /api/webhooks  │  │   ├─ images         │  │
-│  │   ├─ Auto Trade     │  │   ├─ /api/health    │  │   └─ favicon        │  │
-│  │   └─ Admin          │  │   └─ /api/entitlements│ └─────────────────────┘  │
-│  └──────────┬──────────┘  └──────────┬──────────┘                          │
-└─────────────┼────────────────────────┼───────────────────────────────────────┘
-              │                        │
-              │ Auth (JWT)             │ SQL via REST
-              ▼                        ▼
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │              CLOUDFLARE WORKERS (OpenNext.js + Wrangler)              │   │
+│  │                                                                       │   │
+│  │  ┌─────────────────────┐  ┌─────────────────────┐  ┌──────────────┐  │   │
+│  │  │   Next.js App       │  │   API Routes        │  │   R2 Cache   │  │   │
+│  │  │   ├─ Dashboard      │  │   ├─ /api/binance/* │  │   (ISR)      │  │   │
+│  │  │   ├─ Kurs           │  │   ├─ /api/webhooks  │  ├─ D1 Tag Cache│  │   │
+│  │  │   ├─ Auto Trade     │  │   ├─ /api/health    │  ├─ DO Queue    │  │   │
+│  │  │   └─ Admin          │  │   └─ /api/entitlements│ ├─ KV Store   │  │   │
+│  │  └─────────────────────┘  └─────────────────────┘  └──────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  Bindinger:                                                                  │
+│  - KV_KLARPAKE (KV namespace)                                               │
+│  - NEXT_INC_CACHE_R2_BUCKET (valgfri, aktivert via OPENNEXT_ENABLE_R2_CACHE)│
+│  - NEXT_TAG_CACHE_D1 (valgfri)                                              │
+│  - WORKER_SELF_REFERENCE (valgfri, for DO queue)                            │
+└───────────────────────────┬─────────────────────────────────────────────────┘
+                            │ Auth (JWT) / SQL via REST
+                            ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           SUPABASE PLATFORM                                  │
-│                    (vuxbjlykgmzskxbclquf.supabase.co)                        │
+│                    (pskhryjzkobytnfwucrb.supabase.co)                        │
 │                                                                              │
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
 │  │                          SUPABASE AUTH                                  │  │
@@ -77,6 +85,7 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
 │  │  │ courses      │      │ grid_bot_state   │      │ tiers          │     │  │
 │  │  │ lessons      │      │ trade_history    │      └────────────────┘     │  │
 │  │  └──────────────┘      │ strategy_logs    │                             │  │
+│  │                        │ strategy_performance│                            │  │
 │  │                        └──────────────────┘                             │  │
 │  │                                                                          │  │
 │  │  RLS: Alle tabeller har Row Level Security aktivert                     │  │
@@ -97,16 +106,53 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
 │  │ klarpakke-multisignal│ 5 */4 * * *│ Multisignal (hver 4. time)         │  │
 │  │ klarpakke-grid-check│ * * * * *   │ Grid check (hvert minutt)          │  │
 │  │ klarpakke-aicopy-poll│ */5 * * * *│ AI Copy polling (hvert 5. min)     │  │
-│  └─────────────────────┴─────────────┴────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
+│  └─────────────────────┴─────────────┼────────────────────────────────────┘  │
+└──────────────────────────────────────┴──────────────────────────────────────┘
                                        ▲
                                        │ HTTP (Bearer CRON_SECRET)
 ┌──────────────────────────────────────┴──────────────────────────────────────┐
 │  Tidsplan (SoT): Supabase pg_cron / scheduler → kaller Next `/api/cron/*`    │
-│  Viktig: Ikke dokumenter Vercel Cron som primær motor for strategi/grid.     │
 │  Detaljer: docs/CRON-SOURCE-OF-TRUTH.md                                      │
-└─────────────────────────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Deploy & CI/CD
+
+### Primær kanal: Cloudflare Workers Builds
+
+- **Repo:** https://github.com/tajlive/KP
+- **Branch:** `main`
+- **Build-kommando:** `npm run cf:build`
+- **Deploy-kommando:** `wrangler deploy --minify --var APP_VERSION:${CI_COMMIT_SHA}`
+- **Trigger:** Push til `main`
+
+### Backup-kanal: Wrangler CLI
+
+```bash
+npm run cf:deploy
+# Ekvivalent med:
+# npm run cf:build && wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
+```
+
+### Verifikasjon
+
+```bash
+# Sjekk deployments
+npx wrangler deployment list
+
+# Live logs
+npx wrangler tail
+
+# Produksjon health
+curl -I https://www.klarpakke.no/no
+curl https://www.klarpakke.no/api/health
+```
+
+### Viktig: GitHub Actions
+
+GitHub Actions workflows i `.github/workflows/` er **arkivert** (unntatt `purge-cache.yml` og `tool-updater.yml`). Kvalitetskontroller (lint, type-check, unit tests) kjøres via **Husky pre-push hook** (`.husky/pre-push`). Se `.kimi/WORKFLOW_RULES.md` for detaljer.
 
 ---
 
@@ -125,33 +171,36 @@ src/app/
 │   │   └── glemt-passord/       # Forgot password
 │   ├── dashboard/               # Hoveddashboard
 │   │   ├── page.tsx             # Dashboard home
-│   │   ├── auto-trade/          # Auto Trade dashboard
-│   │   ├── paper-trading/       # Paper trading
+│   │   ├── handel/              # Unified trading workspace (paper/live)
 │   │   └── settings/            # Brukerinnstillinger
 │   ├── admin/                   # Admin-panel (f.eks. /no/admin/analytics, /no/admin/users)
 │   └── api/                     # API routes
 │       ├── binance/             # Binance API proxy
 │       ├── webhooks/            # Stripe webhooks
+│       ├── cron/                # Cron endpoints (pg_cron → CRON_SECRET)
 │       └── health/              # Health check
 ```
 
 #### Viktige Konfigurasjoner
 
-- **Output**: `standalone` (påkrevd for Coolify / Docker)
+- **Output**: OpenNext.js Cloudflare Worker (ikke standalone)
+- **Build**: `npm run cf:build` (`opennextjs-cloudflare build`)
 - **i18n**: next-intl + middleware; aktiv oversettelses-SoT **no + en** (`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`)
-- **Auth**: Supabase SSR med `getUser()`; session i cookies med `cookieEncoding: 'raw'`. Client: `createClient` fra `@/lib/utils`; server: `createServerClient` fra `@/lib/supabase/server`. Detaljer: [docs/auth-storage.md](auth-storage.md)
+- **Auth**: Supabase SSR med `getUser()`; session i cookies. Client: `createClient` fra `@/lib/utils`; server: `createServerClient` fra `@/lib/supabase/server`. Detaljer: [docs/auth-and-middleware.md](auth-and-middleware.md)
+- **Caching**: R2 incremental cache + D1 tag cache + DO revalidation queue (valgfri, aktiveres med `OPENNEXT_ENABLE_R2_CACHE=true`)
 
 ---
 
 ### 2. Backend Layer
 
-#### Next.js API Routes
+#### Next.js API Routes (kjører i Cloudflare Worker)
 
 | Route                  | Beskrivelse                 |
 | ---------------------- | --------------------------- |
-| `/api/binance/keys`    | CRUD for Binance API-nøkler |
+| `/api/binance/*`       | Binance API proxy / nøkkelhåndtering |
 | `/api/entitlements`    | Sjekk brukertilganger       |
 | `/api/webhooks/stripe` | Stripe webhook håndtering   |
+| `/api/cron/*`          | Scheduler-endpoints         |
 | `/api/health`          | Health check for monitoring |
 
 #### Supabase Edge Functions
@@ -162,105 +211,34 @@ src/app/
 | `strategy-runner`  | Kjør trading-strategier             | Scheduler/pg_cron                                                                   |
 | `signal-engine`    | Generer trading-signaler (Binance)  | pg_cron (hver time); skriver til `bot_signals` + `trading_signals` (dashboard-feed) |
 | `binance-connect`  | Valider og test Binance API         | HTTP                                                                                |
-| `position-monitor` | Overvåker SL/TP/Trailing-Stop        | pg_cron (hvert minutt); bruker shared `risk-engine.ts`                              |
+| `position-monitor` | Overvåker SL/TP/Trailing-Stop        | pg_cron (hvert minutt)                                                              |
 
 ---
 
 ### 3. Database Layer
 
+Alle tabeller har **Row Level Security (RLS)** aktivert. Edge Functions bruker `SUPABASE_SERVICE_ROLE_KEY` for å omgå RLS der det er nødvendig.
+
 #### Core Tabeller
 
-**users / profiles**
-
-```sql
-- id (UUID, PK)
-- email (TEXT)
-- subscription_tier (TEXT: student/bachelor/master/professor)
-- created_at (TIMESTAMPTZ)
-```
-
-**subscription_tiers**
-
-```sql
-- tier_name (TEXT, PK)
-- auto_trade_limit (INTEGER)
-- live_trading_enabled (BOOLEAN)
-- max_positions (INTEGER)
-```
+- `users` / `profiles`
+- `subscription_tiers`
+- `courses`, `lessons`
 
 #### Auto Trade Tabeller
 
-**user_binance_keys**
+- `user_binance_keys`
+- `user_strategies`
+- `grid_bot_state`
+- `trade_history`
+- `strategy_logs`
+- `strategy_performance`
+- `bot_health`
+- `paper_orders`
+- `auto_trading_strategies`
+- `binance_connections`
 
-```sql
-- id (UUID, PK)
-- user_id (UUID, FK → auth.users)
-- api_key_encrypted (TEXT)
-- api_secret_encrypted (TEXT)
-- is_testnet (BOOLEAN)
-- created_at (TIMESTAMPTZ)
--- RLS: Bruker ser kun egne nøkler
-```
-
-**user_strategies**
-
-```sql
-- id (UUID, PK)
-- user_id (UUID, FK)
-- name (TEXT)
-- strategy_type (TEXT: dca/trend/multisignal/grid/aicopy)
-- mode (TEXT: paper/live)
-- status (TEXT: active/paused/stopped)
-- config (JSONB)
-- created_at (TIMESTAMPTZ)
-```
-
-**grid_bot_state**
-
-```sql
-- strategy_id (UUID, FK)
-- grid_levels (JSONB)
-- open_orders (JSONB)
-- last_check_at (TIMESTAMPTZ)
-```
-
-**trade_history**
-
-```sql
-- id (UUID, PK)
-- user_id (UUID, FK)
-- strategy_id (UUID, FK)
-- symbol (TEXT)
-- side (TEXT: buy/sell)
-- quantity (DECIMAL)
-- price (DECIMAL)
-- executed_at (TIMESTAMPTZ)
-```
-
-**strategy_logs**
-
-```sql
-- id (UUID, PK)
-- strategy_id (UUID, FK)
-- strategy_type (TEXT)
-- action (TEXT)
-- details (JSONB)
-- executed_at (TIMESTAMPTZ)
-```
-
-**strategy_performance**
-
-```sql
-- id (UUID, PK)
-- user_id (UUID, FK)
-- strategy_id (UUID, FK)
-- win_rate (DECIMAL)
-- avg_win_pct (DECIMAL)
-- avg_loss_pct (DECIMAL)
-- kelly_fraction (DECIMAL)
-- last_calculated_at (TIMESTAMPTZ)
--- RLS: Bruker ser kun egen statistikk
-```
+Se `docs/trading/V3-0-ARCHITECTURE.md` for trading-spesifikk arkitektur.
 
 ---
 
@@ -269,7 +247,7 @@ src/app/
 ### Auto Trade Aktivering
 
 ```
-1. Bruker går til /dashboard/auto-trade
+1. Bruker går til /dashboard/handel
 2. Middleware sjekker auth (getUser())
 3. Frontend henter entitlements fra get-entitlements
 4. Viser tillatte strategier basert på tier
@@ -304,9 +282,9 @@ src/app/
 
 #### Lag 1: Nettverk
 
-- HTTPS kun (håndhevet av Cloudflare + Coolify + Supabase)
+- HTTPS kun (håndhevet av Cloudflare + Supabase)
 - CORS konfigurert i Edge Functions
-- Rate limiting i middleware.ts
+- Rate limiting i `middleware.ts`
 
 #### Lag 2: Autentisering
 
@@ -336,26 +314,27 @@ src/app/
 #### Lag 6: Audit Logging
 
 - Alle handlinger logges
-- strategy_logs for trading
-- **`admin_audit_log`** for utvalgte admin-mutasjoner (service role insert fra API)
+- `strategy_logs` for trading
+- `admin_audit_log` for utvalgte admin-mutasjoner
 
 ---
 
 ## Teknologistack
 
-| Komponent   | Teknologi                                                                          |
-| ----------- | ---------------------------------------------------------------------------------- |
-| Frontend    | Next.js 16, React 19, TypeScript 5.9, Tailwind CSS                                 |
-| Runtime     | Node.js 24.x (jfr. `engines` / Coolify)                                            |
-| Backend     | Supabase Edge Functions (Deno) + Next.js API Routes                                |
-| Database    | PostgreSQL 15 (Supabase)                                                           |
-| Auth        | Supabase Auth                                                                      |
-| Betaling    | Stripe                                                                             |
-| Hosting     | Hetzner VPS + Coolify + Cloudflare DNS/CDN/Proxy                                   |
-| Scheduler   | Supabase pg_cron / scheduler → `/api/cron/*` (SoT: `docs/CRON-SOURCE-OF-TRUTH.md`) |
-| Trading API | Binance API                                                                        |
-| Error Tracking | GlitchTip (selv-hostet)                                                         |
-| CI/CD       | Woodpecker CI                                                                      |
+| Komponent   | Teknologi                                                                 |
+| ----------- | ------------------------------------------------------------------------- |
+| Frontend    | Next.js 16, React 19, TypeScript 5.9, Tailwind CSS 4                      |
+| Runtime     | Cloudflare Workers (OpenNext.js + Wrangler)                               |
+| Backend     | Supabase Edge Functions (Deno) + Next.js API Routes                       |
+| Database    | PostgreSQL 15 (Supabase)                                                  |
+| Auth        | Supabase Auth                                                             |
+| Betaling    | Stripe                                                                    |
+| Hosting     | Cloudflare Workers + Cloudflare DNS/CDN/Proxy                             |
+| Scheduler   | Supabase pg_cron / scheduler → `/api/cron/*`                              |
+| Trading API | Binance API                                                               |
+| Error Tracking | Selv-hostet GlitchTip (`docker-compose.glitchtip.yml`)                 |
+| CI/CD       | Cloudflare Workers Builds (primær) + Wrangler CLI (backup)                |
+| Caching     | R2 incremental cache + D1 tag cache + DO revalidation queue (valgfri)     |
 
 ---
 
@@ -363,27 +342,27 @@ src/app/
 
 ### Nåværende (MVP)
 
-- **Coolify / Hetzner VPS**: Docker-basert deploy, manuell/skalert via Coolify UI
+- **Hosting**: Cloudflare Workers (global edge)
 - **Database**: Supabase PostgreSQL, single instance (tilstrekkelig for <10k brukere)
-- **Rate Limiting**: In-memory per instans
-- **Scheduler**: Supabase → `/api/cron/*` (se `docs/CRON-SOURCE-OF-TRUTH.md`)
-- **Error Tracking**: Selv-hostet GlitchTip (`docker-compose.glitchtip.yml`)
+- **Rate Limiting**: In-memory per Worker-instans (vurder Upstash/redis for distribuert)
+- **Scheduler**: Supabase → `/api/cron/*`
+- **Error Tracking**: Selv-hostet GlitchTip
 
 ### Fremtidig (ved behov)
 
 1. **Database**: Connection pooling, read replicas
-2. **Caching**: Redis for hyppige queries
-3. **Rate Limiting**: Distribuert (Redis)
-4. **Monitoring**: Real-time alerts via GlitchTip, P99 latency tracking
+2. **Caching**: Full R2/D1-cache aktivering for ISR
+3. **Rate Limiting**: Distribuert (Upstash / Cloudflare Rate Limiting)
+4. **Monitoring**: Real-time alerts via GlitchTip, P99 latency tracking via Cloudflare Observability
 
 ---
 
 ## Kilder
 
-- [docs/admin/ADMIN-AUTH-SOURCE-OF-TRUTH.md](./admin/ADMIN-AUTH-SOURCE-OF-TRUTH.md) — sentral admin-auth
-- [docs/admin/PAPER-BALANCE-SOURCE-OF-TRUTH.md](./admin/PAPER-BALANCE-SOURCE-OF-TRUTH.md) — lekepenger SoT
-- [docs/CRON-SOURCE-OF-TRUTH.md](./CRON-SOURCE-OF-TRUTH.md) — tidsplanlegging
 - [.kimi/MASTER_PROMPT.md](../.kimi/MASTER_PROMPT.md) — AI-agent instruksjoner
-- [auto-trade.md](./auto-trade.md) — Auto Trade-detaljer
-- [docs/SELF-HOSTED-SETUP.md](./SELF-HOSTED-SETUP.md) — Hetzner + Coolify + Woodpecker + GlitchTip-oppsett
-- [auth-and-middleware.md](./auth-and-middleware.md) — Auth-oppsett
+- [.kimi/WORKFLOW_RULES.md](../.kimi/WORKFLOW_RULES.md) — Arbeidsflyt og deploy-regler
+- [docs/CRON-SOURCE-OF-TRUTH.md](./CRON-SOURCE-OF-TRUTH.md) — Tidsplanlegging
+- [docs/auth-and-middleware.md](./auth-and-middleware.md) — Auth-oppsett
+- [docs/trading/V3-0-ARCHITECTURE.md](./trading/V3-0-ARCHITECTURE.md) — Trading-arkitektur
+- [docs/admin/ADMIN-AUTH-SOURCE-OF-TRUTH.md](./admin/ADMIN-AUTH-SOURCE-OF-TRUTH.md) — Admin-auth
+- [docs/admin/PAPER-BALANCE-SOURCE-OF-TRUTH.md](./admin/PAPER-BALANCE-SOURCE-OF-TRUTH.md) — Papirbalanse

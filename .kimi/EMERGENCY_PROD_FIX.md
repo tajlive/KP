@@ -1,7 +1,10 @@
 # 🚨 KIMI EMERGENCY TASK - GET ALL PAGES LIVE NOW!
 
-**STATUS:** 🔴 KRITISK - Nettsider er nede eller fungerer ikke
-**TIDSFRIST:** ⚡ SÅ FORT SOM MULIG
+> **Sist oppdatert:** 2026-06-29 av Lead Architect  
+> **Gjelder for:** Klarpakke på Cloudflare Workers (www.klarpakke.no)
+
+**STATUS:** 🔴 KRITISK - Nettsider er nede eller fungerer ikke  
+**TIDSFRIST:** ⚡ SÅ FORT SOM MULIG  
 **MÅL:** ✅ Alle nettsider skal være oppe og funksjonelle på https://www.klarpakke.no
 
 ---
@@ -9,7 +12,7 @@
 ## 📋 OPPGAVEOVERSIKT
 
 ### Del 1: DIAGNOSE (5 min)
-1. Sjekk produksjonsstatus
+1. Sjekk Cloudflare Workers deployment-status
 2. Identifiser hvilke sider som er nede
 3. Finn feilårsaker
 
@@ -20,7 +23,7 @@
 
 ### Del 3: DEPLOY (10 min)
 1. Push til GitHub
-2. Verifiser GitHub Actions
+2. Vent på Cloudflare Workers Builds
 3. Test produksjon
 
 ### Del 4: VERIFISER (5 min)
@@ -32,15 +35,18 @@
 
 ## 🔍 DEL 1: DIAGNOSE - KJØR DISSE KOMMANDOENE
 
-### 1.1 Sjekk GitHub Actions status
+### 1.1 Sjekk Cloudflare Workers deployment status
+
 ```bash
-gh run list --repo tajlive/KP --limit 5
+npx wrangler deployment list
+npx wrangler tail | head -50
 ```
 
-**Forventet:** Siste run skal være ✅ grønn
-**Hvis rød:** Se logs med `gh run view --log`
+**Forventet:** Siste deployment skal være ✅ `Success`  
+**Hvis feil:** Se logs med `npx wrangler tail`
 
 ### 1.2 Test produksjonsider
+
 ```bash
 # Test hovedside
 curl -sI https://www.klarpakke.no/no | head -1
@@ -52,23 +58,26 @@ for path in "" "priser" "kalkulator" "om-oss" "hjelp" "kurs" "dashboard" "innlog
 done
 ```
 
-**Forventet:** Alle skal returnere `200`
+**Forventet:** Alle skal returnere `200`  
 **Hvis 404/500:** Side feiler - se logs
 
 ### 1.3 Sjekk build lokalt
+
 ```bash
-npm run build 2>&1 | tee build.log
+npm run type-check 2>&1 | tee typecheck.log
+npm run cf:build 2>&1 | tee cf-build.log
 ```
 
-**Forventet:** `✓ Compiled successfully`
+**Forventet:** `✓ Compiled successfully`  
 **Hvis feil:** Fiks før push!
 
 ### 1.4 Valider i18n
+
 ```bash
 node scripts/validate-i18n.js 2>&1 | tee i18n-validation.log
 ```
 
-**Forventet:** `✅ All keys validated successfully!`
+**Forventet:** `✅ All keys validated successfully!`  
 **Hvis feil:** Fiks manglende nøkler
 
 ---
@@ -78,6 +87,7 @@ node scripts/validate-i18n.js 2>&1 | tee i18n-validation.log
 ### 2.1 Fiks kritiske build-feil (FØRST)
 
 **Problem A: TypeScript-feil**
+
 ```bash
 # Finn TypeScript-feil
 npm run type-check 2>&1 | grep "error TS"
@@ -86,13 +96,14 @@ npm run type-check 2>&1 | grep "error TS"
 **Vanlige feil og løsninger:**
 
 #### Feil: `params is not a Promise`
+
 ```typescript
 // ❌ Gammelt (Next.js 14)
 export default function Page({ params }: { params: { locale: string } }) {
   const t = useTranslations(params.locale);
 }
 
-// ✅ Nytt (Next.js 15)
+// ✅ Nytt (Next.js 15/16)
 export default async function Page({ 
   params 
 }: { 
@@ -108,6 +119,7 @@ export default async function Page({
 - `src/app/[locale]/dashboard/*/page.tsx`
 
 #### Feil: `getTranslations is not a function`
+
 ```typescript
 // ❌ Feil import
 import { useTranslations } from 'next-intl';
@@ -123,33 +135,14 @@ import { useTranslations } from 'next-intl';
 ### 2.2 Fiks manglende i18n-nøkler
 
 **Sjekk validation output:**
+
 ```bash
 node scripts/validate-i18n.js 2>&1 | grep "Missing keys"
 ```
 
 **For HVER manglende nøkkel:**
 1. Finn hvilken side som bruker den: `grep -r "t('nøkkel')" src/app/`
-2. Legg til i `messages/{locale}/{namespace}.json` for ALLE 4 språk (no, en, th, zh)
-
-**Eksempel:**
-```json
-// messages/no/pricing.json
-{
-  "title": "Priser",
-  "description": "Velg rett plan for deg",
-  "tiers": {
-    "basic": {
-      "name": "Gratis",
-      "price": "0",
-      "features": [
-        "Papirhandel",
-        "Grunnleggende analyse",
-        "Historiske data (30 dager)"
-      ]
-    }
-  }
-}
-```
+2. Legg til i `messages/{locale}/{namespace}.json` for ALLE aktive språk (**no + en**)
 
 **Kritiske filer å sjekke:**
 - `pricing.json` (priser-side)
@@ -163,6 +156,7 @@ node scripts/validate-i18n.js 2>&1 | grep "Missing keys"
 **Problem:** Middleware blokkerer alle requests
 
 **Fiks i `src/middleware.ts`:**
+
 ```typescript
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
@@ -209,11 +203,9 @@ export const config = {
 **Problem:** `STRIPE_SECRET_KEY is not set` ved build
 
 **Fiks i `src/lib/stripe/config.ts`:**
+
 ```typescript
 import Stripe from 'stripe';
-
-// ❌ ALDRI dette (feiler ved build-tid)
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 // ✅ Lazy initialization
 let stripeInstance: Stripe | null = null;
@@ -239,20 +231,23 @@ export const getStripe = () => {
 ## 🚀 DEL 3: DEPLOY
 
 ### 3.1 Test lokalt FØR push
+
 ```bash
 # ALLE disse må være grønne
 npm run test:unit
-npm run build
+npm run type-check
+npm run cf:build
 node scripts/validate-i18n.js
 ```
 
 ### 3.2 Commit og push
+
 ```bash
 git add -A
 git commit -m "fix: critical production fixes - all pages now working
 
-- Fixed Next.js 15 async params in all pages
-- Added missing i18n keys for all languages
+- Fixed Next.js 15/16 async params in all pages
+- Added missing i18n keys for no/en
 - Fixed Supabase auth middleware (use getUser())
 - Fixed Stripe lazy initialization
 - Validated all translations
@@ -262,30 +257,36 @@ Closes #16"
 git push origin main
 ```
 
-### 3.3 Monitor deployment
-```bash
-# Watch live
-gh run watch
+### 3.3 Monitor Cloudflare Workers Builds deployment
 
-# Eller poll hvert 10. sekund
+```bash
+# Sjekk deployment status
+npx wrangler deployment list
+
+# Poll hvert 10. sekund
 while true; do
-  status=$(gh run list --limit 1 --json status,conclusion -q '.[0].status')
+  status=$(npx wrangler deployment list --json 2>/dev/null | head -1)
   echo "Status: $status"
-  [[ "$status" == "completed" ]] && break
+  echo "$status" | grep -q "Success" && break
   sleep 10
 done
-
-gh run list --limit 1 --json conclusion -q '.[0].conclusion'
 ```
 
-**Forventet:** `success`
-**Hvis `failure`:** Se logs med `gh run view --log`
+**Forventet:** Siste deployment skal være `Success`  
+**Hvis `failure`:** Se logs med `npx wrangler tail`
+
+### 3.4 Manuell deploy som backup (kun hvis Workers Builds feiler)
+
+```bash
+npm run cf:deploy
+```
 
 ---
 
 ## ✅ DEL 4: VERIFISER PRODUKSJON
 
 ### 4.1 Test alle sider
+
 ```bash
 #!/bin/bash
 echo "Testing all pages..."
@@ -310,11 +311,13 @@ done
 ```
 
 ### 4.2 Test API health
+
 ```bash
 curl -s https://www.klarpakke.no/api/health | jq .
 ```
 
 **Forventet:**
+
 ```json
 {
   "status": "ok",
@@ -323,6 +326,7 @@ curl -s https://www.klarpakke.no/api/health | jq .
 ```
 
 ### 4.3 Test i nettleser
+
 1. Åpne https://www.klarpakke.no/no
 2. Sjekk console for JavaScript-feil (F12)
 3. Test navigasjon mellom sider
@@ -333,11 +337,11 @@ curl -s https://www.klarpakke.no/api/health | jq .
 
 ## 📊 SUKSESSKRITERIER - ALLE MÅ VÆRE GRØNNE
 
-- [ ] `npm run build` → ✅ ingen feil
+- [ ] `npm run type-check` → ✅ ingen feil
+- [ ] `npm run cf:build` → ✅ ingen feil
 - [ ] `npm run test:unit` → ✅ alle tester grønne
 - [ ] `node scripts/validate-i18n.js` → ✅ ingen manglende nøkler
-- [ ] GitHub Actions CI → ✅ grønn
-- [ ] GitHub Actions Deploy → ✅ grønn
+- [ ] Cloudflare Workers Builds deployment → ✅ grønn
 - [ ] Alle sider returnerer HTTP 200
 - [ ] Sidestørrelse > 10KB (ikke tom HTML)
 - [ ] Ingen JavaScript-feil i console
@@ -349,6 +353,7 @@ curl -s https://www.klarpakke.no/api/health | jq .
 ## 🚨 HVIS TING FORTSATT FEILER
 
 ### Quick rollback
+
 ```bash
 # Gå tilbake til siste fungerende commit
 git log --oneline -10  # finn SHA
@@ -357,6 +362,7 @@ git push origin main
 ```
 
 ### Emergency hotfix branch
+
 ```bash
 git checkout -b hotfix/critical-prod-fix
 # Gjør endringer
@@ -364,12 +370,24 @@ git push origin hotfix/critical-prod-fix
 gh pr create --title "HOTFIX: Critical production fix" --body "Emergency fix"
 ```
 
+### Manuell rollback via Wrangler
+
+Hvis push til `main` ikke hjelper og du må rulle tilbake raskt:
+
+```bash
+# List deployments og finn forrige fungerende version
+npx wrangler deployment list
+
+# Rollback til forrige deployment (bytt ut <DEPLOYMENT_ID>)
+npx wrangler rollback <DEPLOYMENT_ID>
+```
+
 ---
 
 ## 📞 KONTAKT VED KRITISKE PROBLEMER
 
-**GitHub Issue:** https://github.com/tajlive/KP/issues/16
-**Status dashboard:** https://github.com/tajlive/KP/actions
+**GitHub Issue:** https://github.com/tajlive/KP/issues/16  
+**Cloudflare Dashboard:** https://dash.cloudflare.com
 
 ---
 
@@ -380,7 +398,7 @@ gh pr create --title "HOTFIX: Critical production fix" --body "Emergency fix"
 3. ✅ Fiks én ting av gangen (ikke alt på en gang)
 4. ✅ Test lokalt før push
 5. ✅ Commit med beskrivende melding
-6. ✅ Monitor deployment
+6. ✅ Monitor Cloudflare Workers Builds deployment
 7. ✅ Verifiser i produksjon
 8. ✅ Oppdater Issue #16 med status
 
@@ -392,15 +410,15 @@ Hvis du ikke vet hvor du skal starte, gjør dette:
 
 ```bash
 # 1. Sjekk hva som feiler
-npm run build 2>&1 | grep "error"
+npm run type-check 2>&1 | grep "error"
 
 # 2. Fiks den første feilen
 # (TypeScript-feil er vanligst)
 
 # 3. Test
-npm run build
+npm run type-check
 
-# 4. Gjenta til build er grønn
+# 4. Gjenta til type-check er grønn
 
 # 5. Push
 git add -A && git commit -m "fix: resolve build errors" && git push
