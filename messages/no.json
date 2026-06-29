@@ -2378,6 +2378,30 @@
         "goToDashboard": "Gå til dashboard",
         "viewActivity": "Se aktivitet"
       }
+    },
+    "step5": {
+      "title": "Du er klar!",
+      "subtitle": "Din lekepenger-konto er nå aktiv. Ingen ekte penger er i sikte.",
+      "paperBalance": "Din startkapital",
+      "botReady": "Bot klar",
+      "loading": "Laster...",
+      "cta": "Gå til dashboard",
+      "initializing": "Setter opp din konto...",
+      "features": {
+        "paperTrading": "Øv med lekepenger",
+        "strategies": "Test strategier",
+        "analytics": "Følg resultatene"
+      },
+      "safetyNotice": {
+        "title": "Du handler med lekepenger",
+        "description": "Ingen ekte penger er i sikte. Øv trygt så lenge du vil."
+      },
+      "nextSteps": {
+        "title": "Hva skjer nå?",
+        "step1": "Utforsk dashboardet",
+        "step2": "Start din første papirhandel",
+        "step3": "Fullfør kurset «Din første papirhandel»"
+      }
     }
   },
   "orderHistory": {

@@ -9,7 +9,7 @@ import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, Shield, ListChecks } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -114,7 +114,14 @@ export default function OnboardingStep5() {
                 key={i}
                 className="absolute w-2 h-2 rounded-full animate-ping"
                 style={{
-                  backgroundColor: ["#3B82F6", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"][i],
+                  backgroundColor: [
+                    "var(--kp-brand)",
+                    "var(--kp-success)",
+                    "var(--kp-warning)",
+                    "var(--kp-negative)",
+                    "var(--kp-learning)",
+                    "var(--kp-ai)",
+                  ][i],
                   transform: `rotate(${i * 60}deg) translateY(-40px)`,
                   animationDelay: `${i * 0.1}s`,
                   animationDuration: "1s",
@@ -151,8 +158,23 @@ export default function OnboardingStep5() {
         </div>
       </Card>
 
+      {/* Safety notice — builds trust with small savers */}
+      <div className="bg-[var(--kp-brand-subtle)] border border-[var(--kp-border-brand)] rounded-xl p-4 w-full md:max-w-sm mx-auto text-left">
+        <div className="flex items-start gap-3">
+          <Shield className="w-5 h-5 text-[var(--kp-brand)] shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-[var(--kp-text-primary)]">
+              {t("safetyNotice.title")}
+            </p>
+            <p className="text-sm text-[var(--kp-text-secondary)]">
+              {t("safetyNotice.description")}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Features list */}
-      <div className="text-left space-y-3 max-w-sm mx-auto">
+      <div className="text-left space-y-3 w-full md:max-w-sm mx-auto">
         <div className="flex items-center gap-3 text-[var(--kp-text-secondary)]">
           <CheckCircle2 className="w-5 h-5 text-[var(--kp-success)] shrink-0" />
           <span>{t("features.paperTrading")}</span>
@@ -165,6 +187,34 @@ export default function OnboardingStep5() {
           <CheckCircle2 className="w-5 h-5 text-[var(--kp-success)] shrink-0" />
           <span>{t("features.analytics")}</span>
         </div>
+      </div>
+
+      {/* Next steps — clarity for first-time users */}
+      <div className="text-left space-y-3 w-full md:max-w-sm mx-auto">
+        <div className="flex items-center gap-2 text-[var(--kp-text-primary)] font-medium mb-3">
+          <ListChecks className="w-5 h-5 text-[var(--kp-brand)]" />
+          <span>{t("nextSteps.title")}</span>
+        </div>
+        <ol className="space-y-2">
+          <li className="flex items-start gap-3 text-sm text-[var(--kp-text-secondary)]">
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[var(--kp-bg-tertiary)] text-[var(--kp-text-primary)] text-xs font-medium flex items-center justify-center">
+              1
+            </span>
+            {t("nextSteps.step1")}
+          </li>
+          <li className="flex items-start gap-3 text-sm text-[var(--kp-text-secondary)]">
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[var(--kp-bg-tertiary)] text-[var(--kp-text-primary)] text-xs font-medium flex items-center justify-center">
+              2
+            </span>
+            {t("nextSteps.step2")}
+          </li>
+          <li className="flex items-start gap-3 text-sm text-[var(--kp-text-secondary)]">
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[var(--kp-bg-tertiary)] text-[var(--kp-text-primary)] text-xs font-medium flex items-center justify-center">
+              3
+            </span>
+            {t("nextSteps.step3")}
+          </li>
+        </ol>
       </div>
 
       {/* CTA */}

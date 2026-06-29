@@ -107,7 +107,7 @@ export function DashboardContent({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="bg-gray-50 dark:bg-slate-950 min-h-screen"
+        className="bg-kp-bg-primary min-h-screen"
       >
         <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
@@ -139,7 +139,7 @@ export function DashboardContent({
           />
         </div>
 
-        <div className="bg-gray-50 dark:bg-slate-950 px-0 sm:px-4 md:px-8 pb-8">
+        <div className="bg-kp-bg-primary px-0 sm:px-4 md:px-8 pb-8">
           <div className="max-w-7xl mx-auto">
             <RiskMetricsPanel />
           </div>
