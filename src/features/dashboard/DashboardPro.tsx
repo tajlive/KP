@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
+import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
 
 // Nye WOW-komponenter
 import { PortfolioChart } from "@/features/portfolio/PortfolioChart";
@@ -32,6 +33,7 @@ import { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 import { NLQChat } from "./NLQChat";
 import { AIInsightCard } from "./AIInsightCard";
 import { FeatureGate } from "@/lib/feature-flags";
+import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
 
 // Adaptive state machine
 import { computeUserState, type UserState } from "@/hooks/useUserState";
@@ -43,10 +45,10 @@ import {
 
 interface UserStats {
   totalTrades: number;
-  winRate: number;
-  totalPnl: number;
-  currentCapital: number;
-  startingCapital: number;
+  winRate?: number;
+  totalPnl?: number;
+  currentCapital?: number;
+  startingCapital?: number;
   winningTrades?: number;
   sessionCount?: number;
   recentSessions?: TradingSession[];
@@ -151,66 +153,98 @@ export function DashboardPro({
 
   const effectiveStats = stats || {
     totalTrades: 0,
-    winRate: 0,
-    totalPnl: 0,
-    currentCapital: 0,
-    startingCapital: 0,
     winningTrades: 0,
     sessionCount: 0,
     recentSessions: [],
   };
 
+  const formatByModeOrDash = (
+    value: number | null | undefined,
+    mode: "paper" | "live",
+  ) => (value == null ? "—" : formatByMode(value, mode));
+
+  const formatWinRateOrDash = (value: number | null | undefined) =>
+    value == null ? "—" : `${Math.round(value * 100)}%`;
+
   const totalReturn =
+    effectiveStats.startingCapital != null &&
+    effectiveStats.currentCapital != null &&
     effectiveStats.startingCapital > 0
       ? ((effectiveStats.currentCapital - effectiveStats.startingCapital) /
           effectiveStats.startingCapital) *
         100
-      : 0;
+      : undefined;
 
   // Adaptive user state — konsolidert til én maskin (NyBruker / Onboarded / AktivTrader / PowerUser)
   const { state: userState } = computeUserState({
     tradesCount: effectiveStats.totalTrades,
     // signupDays proxy: anta 0 hvis ingen trades, ellers 7+ (de har kommet forbi onboarding)
     signupDays: effectiveStats.totalTrades === 0 ? 0 : 7,
-    totalPnlPct: totalReturn,
+    totalPnlPct: totalReturn ?? 0,
     sessionCount: effectiveStats.sessionCount || 0,
   });
 
   const statItems = [
     {
       label: t("stats.totalReturn"),
-      value: `${effectiveStats.totalPnl > 0 ? "+" : ""}${formatByMode(Math.abs(effectiveStats.totalPnl), preferredTradingMode)}`,
+      value:
+        effectiveStats.totalPnl == null
+          ? "—"
+          : `${effectiveStats.totalPnl >= 0 ? "+" : ""}${formatByMode(
+              Math.abs(effectiveStats.totalPnl),
+              preferredTradingMode,
+            )}`,
       subtext: t("stats.totalReturnSub"),
-      trend: effectiveStats.totalPnl >= 0 ? ("up" as const) : ("down" as const),
+      trend:
+        effectiveStats.totalPnl == null
+          ? ("neutral" as const)
+          : effectiveStats.totalPnl >= 0
+            ? ("up" as const)
+            : ("down" as const),
       icon: TrendingUp,
       highlight: true,
+      help: t("stats.totalReturnHelp"),
     },
     {
       label: t("stats.winRate"),
-      value: `${Math.round(effectiveStats.winRate * 100)}%`,
+      value: formatWinRateOrDash(effectiveStats.winRate),
       subtext: t("stats.winRateSub", { totalTrades: effectiveStats.totalTrades }),
-      trend: effectiveStats.winRate >= 50 ? ("up" as const) : ("down" as const),
+      trend:
+        effectiveStats.winRate == null
+          ? ("neutral" as const)
+          : effectiveStats.winRate >= 0.5
+            ? ("up" as const)
+            : ("down" as const),
       icon: Target,
+      help: t("stats.winRateHelp"),
     },
     {
       label: t("stats.balance"),
-      value: formatByMode(effectiveStats.currentCapital, preferredTradingMode),
+      value: formatByModeOrDash(effectiveStats.currentCapital, preferredTradingMode),
       subtext: t("stats.balanceSub"),
       trend: "neutral" as const,
       icon: Wallet,
+      help: t("stats.balanceHelp"),
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 px-3 py-4 sm:p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-5 sm:space-y-6">
-        {/* Personalized Greeting — Enterprise 2026 */}
-        <PersonalizedGreeting
-          userName={userName}
-          totalPnl={effectiveStats.totalPnl}
-          winRate={effectiveStats.winRate}
-          isPriority={isPriority}
-        />
+    <WidgetErrorBoundary
+      title={t("widgetErrorTitle")}
+      message={t("widgetErrorMessage")}
+      retryLabel={t("retry")}
+      onReset={onRetry}
+      resetKeys={[userId ?? "", preferredTradingMode]}
+    >
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 px-3 py-4 sm:p-4 md:p-8">
+        <div className="max-w-7xl mx-auto space-y-5 sm:space-y-6">
+          {/* Personalized Greeting — Enterprise 2026 */}
+          <PersonalizedGreeting
+            userName={userName}
+            totalPnl={effectiveStats.totalPnl}
+            winRate={effectiveStats.winRate}
+            isPriority={isPriority}
+          />
 
         {/* Hero - Simplified balance */}
         <m.div
@@ -266,15 +300,10 @@ export function DashboardPro({
                   {t("sessionsTitle")}
                 </h3>
                 <div className="flex items-center gap-3">
-                  {lastUpdated && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                      {t("lastUpdated")}:{" "}
-                      {lastUpdated.toLocaleTimeString(
-                        locale === "no" ? "nb-NO" : "en-GB",
-                        { hour: "2-digit", minute: "2-digit" },
-                      )}
-                    </span>
-                  )}
+                  <DataFreshnessBadge
+                    timestamp={lastUpdated}
+                    variant="positions"
+                  />
                   {(effectiveStats.sessionCount || 0) > 5 && (
                     <Link 
                       href={`/${locale}/handel?view=sessions`} 
@@ -309,15 +338,25 @@ export function DashboardPro({
                     <StatSkeleton />
                     <StatSkeleton />
                   </div>
+                ) : stats == null ? (
+                  <EmptyState
+                    emptyText={locale === "no" ? "Ingen data" : "No data"}
+                  />
                 ) : effectiveStats.totalTrades === 0 ? (
                   <EmptyState emptyText={t("emptyState")} />
                 ) : (
                   <div className="space-y-2">
-                    <StatsGrid stats={statItems} />
+                    <StatsGrid stats={statItems} updatedAt={lastUpdated} />
                     <div className="flex items-center gap-3 px-1">
-                      <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
-                      <ExplainStatButton statType="winRate" value={effectiveStats.winRate} />
-                      <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
+                      {effectiveStats.totalPnl != null && (
+                        <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
+                      )}
+                      {effectiveStats.winRate != null && (
+                        <ExplainStatButton statType="winRate" value={effectiveStats.winRate} />
+                      )}
+                      {effectiveStats.currentCapital != null && (
+                        <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
+                      )}
                     </div>
                   </div>
                 )}
@@ -397,6 +436,7 @@ export function DashboardPro({
         </m.div>
       </div>
     </div>
+    </WidgetErrorBoundary>
   );
 }
 

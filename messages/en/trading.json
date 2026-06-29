@@ -460,9 +460,9 @@
     "levels": {
       "safe": {
         "headline": "Safe",
-        "practicalExample": "With {balance} kr you can trade up to {maxAmount} kr per trade ({maxPct}% of balance)",
-        "autoSellExplanation": "If a trade loses {stopLossAmount} kr ({stopLossPct}%), the bot automatically sells to protect you",
-        "maxOpenPositions": "You can have maximum {maxExposure} kr in open trades at once ({maxExposurePct}% of balance)",
+        "practicalExample": "With {balance} you can trade up to {maxAmount} per trade ({maxPct}% of balance)",
+        "autoSellExplanation": "If a trade loses {stopLossAmount} ({stopLossPct}%), the bot automatically sells to protect you",
+        "maxOpenPositions": "You can have maximum {maxExposure} in open trades at once ({maxExposurePct}% of balance)",
         "moreLikely": [
           "Small, steady gains (+200-500 kr per week)",
           "You sleep well without checking price constantly",
@@ -474,9 +474,9 @@
           "Feeling of being «in the market»"
         ],
         "systemBlocks": [
-          "Trades over {maxAmount} kr per trade",
-          "New trades if you've lost more than {dailyLoss} kr today",
-          "Trades if total exposure exceeds {maxExposure} kr"
+          "Trades over {maxAmount} per trade",
+          "New trades if you've lost more than {dailyLoss} today",
+          "Trades if total exposure exceeds {maxExposure}"
         ],
         "copyForSavers": {
           "headline": "Perfect for learning without risking",
@@ -485,9 +485,9 @@
       },
       "balanced": {
         "headline": "Balanced",
-        "practicalExample": "With {balance} kr you can trade up to {maxAmount} kr per trade ({maxPct}% of balance)",
-        "autoSellExplanation": "If a trade loses {stopLossAmount} kr ({stopLossPct}%), the bot automatically sells",
-        "maxOpenPositions": "You can have maximum {maxExposure} kr in open trades at once ({maxExposurePct}% of balance)",
+        "practicalExample": "With {balance} you can trade up to {maxAmount} per trade ({maxPct}% of balance)",
+        "autoSellExplanation": "If a trade loses {stopLossAmount} ({stopLossPct}%), the bot automatically sells",
+        "maxOpenPositions": "You can have maximum {maxExposure} in open trades at once ({maxExposurePct}% of balance)",
         "moreLikely": [
           "Varied weeks – some with gains, some with losses",
           "You notice the account moves more",
@@ -499,9 +499,9 @@
           "Boring, flat periods"
         ],
         "systemBlocks": [
-          "Trades over {maxAmount} kr per trade",
-          "New trades if you've lost more than {dailyLoss} kr today",
-          "Trades if total exposure exceeds {maxExposure} kr"
+          "Trades over {maxAmount} per trade",
+          "New trades if you've lost more than {dailyLoss} today",
+          "Trades if total exposure exceeds {maxExposure}"
         ],
         "copyForSavers": {
           "headline": "For those who have traded a bit before",
@@ -510,9 +510,9 @@
       },
       "aggressive": {
         "headline": "Aggressive",
-        "practicalExample": "With {balance} kr you can trade up to {maxAmount} kr per trade ({maxPct}% of balance)",
-        "autoSellExplanation": "Bot only sells when loss reaches {stopLossAmount} kr ({stopLossPct}%)",
-        "maxOpenPositions": "You can have maximum {maxExposure} kr in open trades at once ({maxExposurePct}% of balance)",
+        "practicalExample": "With {balance} you can trade up to {maxAmount} per trade ({maxPct}% of balance)",
+        "autoSellExplanation": "Bot only sells when loss reaches {stopLossAmount} ({stopLossPct}%)",
+        "maxOpenPositions": "You can have maximum {maxExposure} in open trades at once ({maxExposurePct}% of balance)",
         "moreLikely": [
           "Exciting, active trading days",
           "Larger swings (+/- 3,000-8,000 kr per week)",
@@ -524,9 +524,9 @@
           "Sleeping well if market crashes at night"
         ],
         "systemBlocks": [
-          "Trades over {maxAmount} kr per trade",
-          "New trades if you've lost more than {dailyLoss} kr today",
-          "Trades if total exposure exceeds {maxExposure} kr"
+          "Trades over {maxAmount} per trade",
+          "New trades if you've lost more than {dailyLoss} today",
+          "Trades if total exposure exceeds {maxExposure}"
         ],
         "copyForSavers": {
           "headline": "For those who tolerate seeing large swings",

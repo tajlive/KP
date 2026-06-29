@@ -1545,15 +1545,20 @@
     "dashboardPro": {
       "errorTitle": "Kunne ikke laste dashboard-tall",
       "errorFallback": "Prøv igjen, eller kontakt support hvis problemet vedvarer.",
+      "widgetErrorTitle": "Dashboard-widgeten kunne ikke lastes",
+      "widgetErrorMessage": "Vi kunne ikke vise denne delen av dashboardet akkurat nå. Prøv på nytt, eller last siden på nytt hvis problemet vedvarer.",
       "retry": "Prøv igjen",
       "emptyState": "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk.",
       "stats": {
         "totalReturn": "Total avkastning",
         "totalReturnSub": "Akkumulert profitt",
+        "totalReturnHelp": "Startkapital → Gjeldende kapital → PnL. Viser realisert gevinst/tap fra lukkede trades.",
         "winRate": "Vinnrate",
         "winRateSub": "{totalTrades} handler totalt",
+        "winRateHelp": "Andel profitable trades av alle lukkede trades.",
         "balance": "Kontobalanse",
-        "balanceSub": "Tilgjengelig kapital"
+        "balanceSub": "Tilgjengelig kapital",
+        "balanceHelp": "Gjeldende kapital = startkapital + realisert PnL. Åpne posisjoner er ikke inkludert."
       },
       "scopeLabel": "Basert på aktive og fullførte {mode}-sessions",
       "sessionsTitle": "Dine sesjoner",

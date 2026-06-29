@@ -10,6 +10,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui";
 import { Badge } from "@/shared/ui/badge";
+import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,7 @@ import {
   Banknote,
   RefreshCw,
   Info,
+  Minus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
@@ -80,7 +82,7 @@ export interface TradingSession {
 
 interface PaperTradingListProps {
   sessions: TradingSession[];
-  balance: number;
+  balance?: number | null;
   locale: string;
   /** Paper eller live — styrer POST /api/trading-sessions/create */
   sessionMode?: "paper" | "live";
@@ -109,6 +111,10 @@ export function PaperTradingList({
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { formatByMode } = useCurrency();
+  const formatByModeOrDash = (
+    value: number | null | undefined,
+    mode: "paper" | "live",
+  ) => (value == null ? "—" : formatByMode(value, mode));
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -358,7 +364,7 @@ export function PaperTradingList({
                   {t("stats.availableBalance")}
                 </p>
                 <p className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white truncate">
-                  {formatByMode(balance, "paper")}
+                  {formatByModeOrDash(balance, "paper")}
                 </p>
               </div>
             </div>
@@ -407,13 +413,10 @@ export function PaperTradingList({
         {sessions.length > 0 && (
           <div className="flex items-center gap-3 shrink-0">
             {lastUpdated && (
-              <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                {t("lastUpdated")}:{" "}
-                {lastUpdated.toLocaleTimeString(
-                  locale === "no" ? "nb-NO" : "en-GB",
-                  { hour: "2-digit", minute: "2-digit" },
-                )}
-              </span>
+              <DataFreshnessBadge
+                timestamp={lastUpdated}
+                variant="positions"
+              />
             )}
             <Button
               variant="outline"
@@ -536,12 +539,21 @@ export function PaperTradingList({
           )}
 
           {visibleSessions.map((session) => {
-            const pnlPercent = session.starting_capital_nok
-              ? ((session.current_capital_nok - session.starting_capital_nok) /
-                  session.starting_capital_nok) *
-                100
-              : 0;
-            const isProfitable = pnlPercent >= 0;
+            const pnlValue =
+              session.current_capital_nok != null &&
+              session.starting_capital_nok != null
+                ? session.current_capital_nok - session.starting_capital_nok
+                : undefined;
+            const pnlPercent =
+              session.current_capital_nok != null &&
+              session.starting_capital_nok != null &&
+              session.starting_capital_nok > 0
+                ? ((session.current_capital_nok - session.starting_capital_nok) /
+                    session.starting_capital_nok) *
+                  100
+                : undefined;
+            const hasPnl = pnlValue != null;
+            const isProfitable = hasPnl && pnlValue >= 0;
             const isActive = session.status === "active";
             const href = `/${locale}/handel?view=sessions${
               session.mode === "live" ? "&mode=live" : ""
@@ -570,12 +582,16 @@ export function PaperTradingList({
                   <div className="flex items-center gap-4">
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                        isProfitable
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                          : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                        !hasPnl
+                          ? "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                          : isProfitable
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                            : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                       }`}
                     >
-                      {isProfitable ? (
+                      {!hasPnl ? (
+                        <Minus className="w-5 h-5" />
+                      ) : isProfitable ? (
                         <TrendingUp className="w-5 h-5" />
                       ) : (
                         <TrendingDown className="w-5 h-5" />
@@ -606,26 +622,35 @@ export function PaperTradingList({
                     <div className="min-w-0">
                       <p
                         className={`text-sm font-bold tabular-nums truncate ${
-                          isProfitable
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-600 dark:text-red-400"
+                          !hasPnl
+                            ? "text-slate-500 dark:text-slate-400"
+                            : isProfitable
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
                         }`}
                       >
-                        {isProfitable ? "+" : ""}
-                        {formatByMode(Math.abs(session.current_capital_nok - session.starting_capital_nok), "paper")}
+                        {!hasPnl
+                          ? "—"
+                          : `${isProfitable ? "+" : ""}${formatByMode(
+                              Math.abs(pnlValue),
+                              "paper",
+                            )}`}
                       </p>
                       <p
                         className={`text-sm tabular-nums truncate ${
-                          isProfitable
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-600 dark:text-red-400"
+                          !hasPnl
+                            ? "text-slate-500 dark:text-slate-400"
+                            : isProfitable
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
                         }`}
                       >
-                        {isProfitable ? "+" : ""}
-                        {pnlPercent.toFixed(1)}%
+                        {pnlPercent == null
+                          ? "—"
+                          : `${isProfitable ? "+" : ""}${pnlPercent.toFixed(1)}%`}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        {t("trades")}: {session.total_trades}
+                        {t("trades")}: {session.total_trades ?? "—"}
                       </p>
                     </div>
                     <ArrowRight

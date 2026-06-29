@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export interface PulseEventFeedProps {
   events: PulseEvent[];
@@ -18,6 +19,7 @@ export interface PulseEventFeedProps {
 export function PulseEventFeed({ events }: PulseEventFeedProps) {
   const t = useTranslations("dashboard.pulse");
   const locale = useLocale();
+  const { format } = useCurrency();
 
   const getEventIcon = (type: PulseEvent["type"]) => {
     switch (type) {
@@ -83,7 +85,7 @@ export function PulseEventFeed({ events }: PulseEventFeedProps) {
                   {event.amount.toFixed(4)}
                 </p>
                 <p className="text-slate-500 text-[10px]">
-                  @{event.price.toLocaleString("nb-NO")} kr
+                  @{format(event.price)}
                 </p>
               </div>
 

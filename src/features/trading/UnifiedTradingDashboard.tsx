@@ -20,6 +20,7 @@ import { DashboardLoadingSkeleton } from "./components/DashboardLoadingSkeleton"
 import { DashboardBotStatusView } from "./components/DashboardBotStatusView";
 
 import { useTranslations } from "next-intl";
+import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
 import {
   AlertTriangle,
   BarChart3,
@@ -54,6 +55,12 @@ import { ConnectBinanceModal } from "@/shared/ui/modals/ConnectBinanceModal";
 import { toast } from "sonner";
 import { ActiveStrategiesSection } from "./components/ActiveStrategiesSection";
 import { StrategySelectorSection } from "./components/StrategySelectorSection";
+import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
+
+// TODO(data-source-audit): PortfolioSection shows portfolio.total_pnl from useDashboardData
+// while dashboardMetrics.totalPnl (from getUserDashboardMetrics) is shown in
+// DashboardBotStatusView. These can differ; consolidate to one source when refactoring
+// the trading desk.
 
 const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
   dca_trygg: <Shield className="w-5 h-5" />,
@@ -107,6 +114,7 @@ export default function UnifiedTradingDashboard({
   }, [mode, pathname, router]);
 
   const [userId] = useState<string | null>(initialUserId ?? null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [expandedStrategy, setExpandedStrategy] = useState<StrategyType | null>(
     null,
   );
@@ -135,6 +143,12 @@ export default function UnifiedTradingDashboard({
     initialTrades: initialTrades as Trade[],
     initialStrategies: initialStrategies as UserStrategy[],
   });
+
+  useEffect(() => {
+    if (!loading) {
+      setLastUpdated(new Date());
+    }
+  }, [loading]);
 
   const { isStarting, handleStartStrategy, handleStopStrategy } = useStrategyActions({
     mode,
@@ -216,13 +230,20 @@ export default function UnifiedTradingDashboard({
   }
 
   return (
-    <div
-      className={`min-h-screen ${SURFACE.BG} p-6`}
-      data-testid="dashboard-root"
+    <WidgetErrorBoundary
+      title="Handelspanelet kunne ikke lastes"
+      message="Vi kunne ikke vise handelsdashbordet akkurat nå. Prøv på nytt."
+      retryLabel="Last på nytt"
+      onReset={loadData}
+      resetKeys={[mode, userId ?? ""]}
     >
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div
+        className={`min-h-screen ${SURFACE.BG} p-6`}
+        data-testid="dashboard-root"
+      >
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1
               className={`text-2xl font-bold ${SURFACE.TEXT} flex items-center gap-2`}
@@ -235,6 +256,7 @@ export default function UnifiedTradingDashboard({
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
+            <DataFreshnessBadge timestamp={lastUpdated} variant="pnl" />
             <a
               href={`/${(pathname ?? "").split("/")[1] ?? "no"}/dashboard`}
               className={`text-sm font-medium ${SURFACE.TEXT_MUTED} hover:text-white transition-colors`}
@@ -350,6 +372,7 @@ export default function UnifiedTradingDashboard({
         />
       </div>
     </div>
+    </WidgetErrorBoundary>
   );
 }
 

@@ -77,7 +77,8 @@ export function DashboardContent({
   const stats = data
     ? {
         totalTrades: data.totalTrades,
-        winRate: Math.round(data.winRate * 100),
+        // Keep winRate as a 0-1 fraction; DashboardPro/AdaptiveDashboard multiply by 100 for display.
+        winRate: data.winRate,
         totalPnl: data.totalPnl,
         currentCapital: data.totalCapital,
         startingCapital: data.startingCapital,

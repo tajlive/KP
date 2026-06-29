@@ -11,6 +11,7 @@ import { createClient } from "@/lib/utils";
 import { toast } from "sonner";
 import { Bot, Shield, AlertCircle, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 type RiskLevel = 'low' | 'medium' | 'high';
 type Mode = 'paper' | 'live';
@@ -31,6 +32,7 @@ const RISK_LEVELS: { value: RiskLevel; key: string; color: string }[] = [
 export function AutoTradingConfigCard() {
   const t = useTranslations("trading.autoTradingConfig");
   const trading = useTranslations("trading");
+  const { format } = useCurrency();
   const [config, setConfig] = useState<AutoTradingConfig>({
     enabled: false,
     mode: 'paper',
@@ -260,7 +262,7 @@ export function AutoTradingConfigCard() {
           <div className="flex items-center justify-between">
             <Label className="text-sm font-medium text-kp-text-primary">{t("maxTradeSize")}</Label>
             <span className="text-sm font-medium text-kp-text-secondary">
-              {config.max_trade_size_nok.toLocaleString('nb-NO')} NOK
+              {format(config.max_trade_size_nok)}
             </span>
           </div>
           <Slider

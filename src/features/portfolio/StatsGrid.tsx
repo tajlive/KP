@@ -4,19 +4,28 @@ import { m } from "framer-motion";
 import {
   TrendingUp,
   TrendingDown,
+  Info,
 } from "lucide-react";
+import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/ui/tooltip";
 
 interface StatItem {
   label: string;
-  value: string;
+  value: React.ReactNode;
   subtext: string;
   trend: "up" | "down" | "neutral";
   icon: React.ElementType;
   highlight?: boolean;
+  help?: string;
 }
 
 interface StatsGridProps {
   stats: StatItem[];
+  updatedAt?: Date | string | number | null;
 }
 
 const trendConfig = {
@@ -50,9 +59,15 @@ const highlightConfig = {
   glow: "hover:shadow-[#0052FF]/8",
 };
 
-export function StatsGrid({ stats }: StatsGridProps) {
+export function StatsGrid({ stats, updatedAt }: StatsGridProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+    <div className="space-y-2">
+      {updatedAt && (
+        <div className="flex justify-end">
+          <DataFreshnessBadge timestamp={updatedAt} variant="pnl" />
+        </div>
+      )}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
       {stats.map((stat, index) => {
         const config = stat.highlight ? null : trendConfig[stat.trend];
 
@@ -110,12 +125,28 @@ export function StatsGrid({ stats }: StatsGridProps) {
                   : config!.text
               }`}
             >
-              {stat.value}
+              {stat.value ?? "—"}
             </p>
 
             {/* Label */}
-            <p className="text-gray-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5 font-medium">
+            <p className="text-gray-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5 font-medium flex items-center gap-1">
               {stat.label}
+              {stat.help && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-full p-0.5 text-gray-400 hover:text-blue-500 hover:bg-blue-500/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      aria-label={`Info: ${stat.label}`}
+                    >
+                      <Info className="w-3.5 h-3.5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[240px] text-xs">
+                    {stat.help}
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </p>
 
             {/* Subtext */}
@@ -125,6 +156,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
           </m.div>
         );
       })}
+    </div>
     </div>
   );
 }
@@ -157,7 +189,7 @@ export function StatsGridMini({ stats }: StatsGridProps) {
                   : "text-gray-900 dark:text-white"
             }`}
           >
-            {stat.value}
+            {stat.value ?? "—"}
           </p>
         </m.div>
       ))}
