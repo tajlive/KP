@@ -41,6 +41,11 @@ vi.mock("@/lib/trading/core/distributed-lock", () => ({
   }),
 }));
 
+vi.mock("@/lib/trading/idempotency", () => ({
+  makeIdempotencyKey: vi.fn().mockReturnValue("test-idempotency-key"),
+  withIdempotency: vi.fn((_db, _key, _scope, _hash, operation) => operation()),
+}));
+
 describe("Trade Currency Audit Trail", () => {
   let mockSupabase: Partial<SupabaseClient<Database>>;
   let insertCalls: Array<{ table: string; payload: Record<string, unknown> }>;

@@ -144,6 +144,7 @@ export async function POST(request: NextRequest) {
       strategyName,
       symbol: finalSymbol,
       period,
+      candlesAnalyzed: candles.length,
       methodology: STRATEGY_METHODOLOGY[strategy as keyof typeof STRATEGY_METHODOLOGY] || null,
       disclaimer: 'Historisk avkastning er ingen garanti for fremtidig avkastning',
     });
