@@ -6,28 +6,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
-import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
-import { normalizeTier } from "@/lib/pricing/tiers";
-import type { Database, Json } from "@/types/database.types";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { verifyLiveEntitlement } from "@/lib/auth/live-trading";
+import type { Json } from "@/types/database.types";
 import { z } from "zod";
-
-async function userMayUseLiveTrading(
-  supabase: SupabaseClient<Database>,
-  userId: string,
-  tier: TierSlug,
-): Promise<boolean> {
-  if (!canAccessLiveAutoTrading(tier)) return false;
-  const { data: entitlements, error } = await supabase.rpc(
-    "get_user_entitlements",
-    { p_user_id: userId },
-  );
-  if (!error && entitlements?.length) {
-    const row = entitlements[0] as { auto_trade_allow_live?: boolean };
-    return Boolean(row.auto_trade_allow_live);
-  }
-  return canAccessLiveAutoTrading(tier);
-}
 
 const tradingModeSchema = z.object({
   mode: z.enum(["paper", "live"]),
@@ -72,10 +53,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const tier = normalizeTier(profileRow?.tier);
     const binanceConnected = Boolean(profileRow?.binance_connected);
-    const allowLiveTier = await userMayUseLiveTrading(supabase, user.id, tier);
-    const canSwitchToLive = binanceConnected && allowLiveTier;
+    const canSwitchToLive = await verifyLiveEntitlement(supabase, user.id);
 
     const stored = profileRow?.preferred_trading_mode;
     const mode = stored === "live" || stored === "paper" ? stored : "paper";
