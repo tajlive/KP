@@ -3,7 +3,7 @@
  * Migrert fra: src/app/api/dashboard/metrics/route.ts
  * 
  * NOTE: Types previously exported from API routes are now centralized here
- * to support Cloudflare Pages migration (API routes run as Workers/Edge Functions).
+ * to support the Cloudflare Workers/OpenNext runtime.
  */
 
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";

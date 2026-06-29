@@ -239,9 +239,7 @@ export default function CheckoutContent() {
             <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
               {planId === "student" ? (
                 <p className="text-slate-400 text-sm">
-                  {locale === "no"
-                    ? "Student-planen er gratis — du trenger ikke checkout."
-                    : "The Student plan is free — no checkout required."}
+                  {t("studentPlanFree")}
                 </p>
               ) : plan.stripePriceId ? (
                 <PaymentMethodSelector
@@ -252,9 +250,7 @@ export default function CheckoutContent() {
                 />
               ) : (
                 <p className="text-amber-200 text-sm leading-relaxed">
-                  {locale === "no"
-                    ? "Betaling for denne planen er ikke koblet til Stripe for valgt valuta. Sett NEXT_PUBLIC_STRIPE_PRICE_* med suffiks _NOK, _EUR eller _USD i Vercel (eller fyll priceId i pricing.config), eller kontakt support."
-                    : "Checkout is not configured for this plan and currency. Set NEXT_PUBLIC_STRIPE_PRICE_* with _NOK, _EUR, or _USD suffix in Vercel, or contact support."}
+                  {t("stripeNotConfigured")}
                 </p>
               )}
             </div>

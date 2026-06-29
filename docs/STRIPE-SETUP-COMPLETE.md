@@ -132,11 +132,12 @@ Stripe sender automatisk email med:
 
 4. **Deploy til Produksjon**
    ```bash
-   # Legg til production webhook secret i Vercel
-   vercel env add STRIPE_WEBHOOK_SECRET
+   # Legg til production webhook secret i Cloudflare Workers secrets
+   wrangler secret put STRIPE_WEBHOOK_SECRET
 
    # Deploy
    git push origin main
+   # Cloudflare Workers Builds deployer automatisk
    ```
 
 ---

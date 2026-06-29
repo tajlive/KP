@@ -147,7 +147,7 @@ These secrets are configured as Woodpecker secrets and referenced in `.woodpecke
 | `BINANCE_USE_TESTNET` | server | Set `true` to use Binance testnet | `src/lib/binance/client.ts` |
 | `NEXT_PUBLIC_BINANCE_WS_URL` | public | Binance WebSocket URL | `.env.local.example` |
 | `BINANCE_ENCRYPTION_SECRET` | server | Legacy alias for `EXCHANGE_ENCRYPTION_SECRET` | `src/lib/exchanges/secret-crypto.ts` |
-| `ENCRYPTION_KEY` | server | Generic 64-char hex encryption key (legacy fallback) | `src/lib/crypto/encrypt-api-keys.ts`, `scripts/bootstrap.js` |
+| `ENCRYPTION_KEY` | server | Generic 64-char hex encryption key (legacy fallback) | `src/lib/crypto/encrypt-api-keys.ts` |
 | `USDT_NOK_RATE` | server | Manual USDT→NOK rate override (fallback 10.8) | `src/lib/trading/currency.ts` |
 
 ### Trading / Dark Fleet & signals
@@ -435,7 +435,7 @@ These variables are tied to platforms or services that Klarpakke has migrated aw
 | `SUPABASE_PUBLISHABLE_KEY` | server | Legacy naming, use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env.local` |
 | `SUPABASE_JWT_SECRET` | server | Legacy/internal JWT secret, no runtime usage found | `.env.local` |
 | `NEXT_PUBLIC_ENCRYPTION_KEY` | public | Legacy encryption key (was accidentally public) | `src/lib/crypto/legacy-decrypt.server.ts` |
-| `ENCRYPTION_KEY` | server | Generic legacy fallback for exchange-key encryption | `src/lib/crypto/encrypt-api-keys.ts`, `scripts/bootstrap.js` |
+| `ENCRYPTION_KEY` | server | Generic legacy fallback for exchange-key encryption | `src/lib/crypto/encrypt-api-keys.ts` |
 | `BINANCE_ENCRYPTION_SECRET` | server | Legacy alias for `EXCHANGE_ENCRYPTION_SECRET` | `src/lib/exchanges/secret-crypto.ts` |
 | `POSTGRES_HOST` | server | Vercel/Prisma-style Postgres config | `.env.local` |
 | `POSTGRES_DATABASE` | server | Vercel/Prisma-style Postgres config | `.env.local` |

@@ -116,7 +116,7 @@ echo ""
 
 scripts=(
     "setup-mcp-automation.sh:Setup tokens & config"
-    "mcp-auto-deploy.sh:Full CI/CD pipeline"
+    "archive/mcp-auto-deploy.sh:Full CI/CD pipeline (arkivert)"
     "mcp-sql-executor.py:SQL executor"
     "mcp-status.sh:Denne statussjekken"
 )

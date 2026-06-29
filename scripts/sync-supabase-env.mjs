@@ -182,7 +182,7 @@ async function main() {
       "   Uten PAT: kopier «anon public» manuelt fra Dashboard → Project Settings → API",
     );
     console.error(
-      "   (eller npm run vercel:env hvis Vercel allerede har riktige nøkler)",
+      "   (eller kopier fra Cloudflare Workers Dashboard hvis secrets allerede er satt)",
     );
     process.exit(1);
   }

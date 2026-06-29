@@ -36,5 +36,7 @@
   "courseIsFree": "Dette kurset er gratis. Ingen betaling nødvendig.",
   "successTitle": "Betaling Vellykket! 🎉",
   "successMessage": "Du har nå tilgang til kurset. Gå til dashboard for å begynne.",
-  "goToDashboard": "Gå til Dashboard"
+  "goToDashboard": "Gå til Dashboard",
+  "studentPlanFree": "Student-planen er gratis — du trenger ikke checkout.",
+  "stripeNotConfigured": "Betaling for denne planen er ikke koblet til Stripe for valgt valuta. Sett NEXT_PUBLIC_STRIPE_PRICE_* med suffiks _NOK, _EUR eller _USD i miljøvariabler (eller fyll priceId i pricing.config), eller kontakt support."
 }

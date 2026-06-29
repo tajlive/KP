@@ -12,7 +12,6 @@ function redirectNoCache(location: string | URL): NextResponse {
     "private, no-store, max-age=0, must-revalidate",
   );
   res.headers.set("CDN-Cache-Control", "no-store");
-  res.headers.set("Vercel-CDN-Cache-Control", "no-store");
   return res;
 }
 

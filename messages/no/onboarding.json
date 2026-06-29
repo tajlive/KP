@@ -132,7 +132,7 @@
   "paperSetup": {
     "title": "Øv med lekepenger",
     "subtitle": "Du får 100 000 kr i virtuelle midler. Ingen ekte penger er i spill.",
-    "badge": "Paper Trading",
+    "badge": "Lekepenger",
     "balanceLabel": "Din start-saldo",
     "virtual": "Virtuell valuta",
     "tooltip": "Lekepenger simulerer ekte markedsforhold, men du taper aldri ekte penger.",
@@ -143,9 +143,9 @@
     "currencySuffix": " kr"
   },
   "firstTrade": {
-    "title": "Din første paper trade",
+    "title": "Din første lekepenge-trade",
     "subtitle": "Kjøp litt Bitcoin med lekepenger. Ingen ekte penger er i spill.",
-    "badge": "Paper Trading",
+    "badge": "Lekepenger",
     "balance": "Tilgjengelig",
     "price": "BTC-pris",
     "amountLabel": "Hvor mye vil du kjøpe for?",
@@ -163,7 +163,7 @@
     "buying": "Gjennomfører...",
     "success": {
       "title": "Gratulerer! 🎉",
-      "description": "Du har gjort din første paper trade. Nå er du klar for å fortsette.",
+      "description": "Du har gjort din første lekepenge-trade. Nå er du klar for å fortsette.",
       "cta": "Fullfør onboarding"
     },
     "error": "Kunne ikke gjennomføre trade. Prøv igjen.",
@@ -172,7 +172,7 @@
       "BAD_REQUEST": "Ugyldig trade-forespørsel.",
       "MARKET_PRICE_ERROR": "Kunne ikke hente markedspris.",
       "INTERNAL_ERROR": "Kunne ikke gjennomføre trade. Prøv igjen.",
-      "INSUFFICIENT_BALANCE": "Beløpet overstiger din paper-saldo.",
+      "INSUFFICIENT_BALANCE": "Beløpet overstiger din lekepenge-saldo.",
       "ALREADY_COMPLETED": "Onboarding er allerede fullført."
     }
   },
@@ -258,7 +258,7 @@
       "title": "Velg dine coins",
       "subtitle": "Du kan velge flere — DCA fordeler kapitalen automatisk",
       "startingCapital": "Din startkapital",
-      "paperTradingZeroRisk": "Paper trading — null risiko for ekte penger",
+      "paperTradingZeroRisk": "Lekepenger — null risiko for ekte penger",
       "starting": "Starter...",
       "startTrading": "START TRADING!"
     },
@@ -278,7 +278,7 @@
     "step1": {
       "title1": "Klar til å la boten",
       "title2": "jobbe for deg?",
-      "description": "For å se live bevegelser i dashboardet må du først velge en strategi. Vi setter opp din første paper trade på under 60 sekunder. Ingen ekte penger, kun ren læring.",
+      "description": "For å se live bevegelser i dashboardet må du først velge en strategi. Vi setter opp din første lekepenge-trade på under 60 sekunder. Ingen ekte penger, kun ren læring.",
       "howItWorksTitle": "💡 Slik fungerer det:",
       "list1": "Velg din risikoprofil nedenfor",
       "list2": "Velg hvor mye lekepenger du vil teste med",
@@ -308,14 +308,14 @@
       }
     },
     "step3": {
-      "title": "Paper Trade Oppsett",
+      "title": "Oppsett av lekepenge-trade",
       "subtitle": "Vi tildeler deg 100 000 NOK i lekepenger for å teste strategien.",
       "goalStrategy": "Mål-strategi:",
       "playMoney": "Lekepenger:",
       "currencySuffix": "kr",
       "tooltip": "💡 Dette er lekepenger for testing. Velg beløp du ville vurdert i ekte trading.",
       "tradingMode": "Handelsmodus:",
-      "tradingModeValue": "Simulert / Paper",
+      "tradingModeValue": "Simulert / lekepenger",
       "status": "Status:",
       "statusValue": "Klar",
       "initializing": "Initialiserer bot...",
@@ -323,7 +323,7 @@
     },
     "step4": {
       "title": "Wow! 🎉",
-      "subtitle": "Boten har gjort sin første paper trade.",
+      "subtitle": "Boten har gjort sin første lekepenge-trade.",
       "redirecting": "Sender deg til dashboardet..."
     }
   },

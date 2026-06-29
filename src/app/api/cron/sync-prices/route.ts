@@ -32,7 +32,7 @@ interface BinanceTicker {
 /**
  * GET /api/cron/sync-prices
  * Syncs prices from Binance API to Supabase
- * Called by Vercel Cron or external scheduler
+ * Called by Supabase pg_cron, Cloudflare cron, or another authorized scheduler
  */
 export async function GET(request: NextRequest) {
   if (!validateCronSecret(request)) {

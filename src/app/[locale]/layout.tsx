@@ -14,9 +14,6 @@ import {
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
-// Vercel Analytics/SpeedInsights removed — now on Fly.io (legacy import kept for rollback)
-// import { Analytics } from "@vercel/analytics/react";
-// import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { isAppShellPath } from "@/lib/navigation/config";
@@ -41,7 +38,7 @@ import "../globals.css";
  *    (available in /dashboard layout)
  *
  * 3. REMOVED TradingModeProvider - Only for trading features
- *    (available in /paper-trading, /auto-trading layouts)
+ *    (available in app trading areas)
  *
  * 4. REMOVED ToastProvider - Not critical for marketing
  *    (available in app areas)
@@ -64,8 +61,8 @@ import "../globals.css";
  *
  * APP ROUTES with full providers:
  * - /[locale]/dashboard/* - has AuthProvider, OnboardingProvider
- * - /[locale]/paper-trading/* - has AuthProvider, TradingModeProvider
- * - /[locale]/auto-trading/* - has AuthProvider, TradingModeProvider
+ * - /[locale]/handel/* - has AuthProvider, TradingModeProvider
+ * - /[locale]/dashboard/auto-trade/* - has AuthProvider, TradingModeProvider
  * - /[locale]/copy-trading/* - has AuthProvider, TradingModeProvider
  * - /[locale]/marketplace/* - has AuthProvider
  * - /[locale]/checkout/* - has AuthProvider
@@ -315,13 +312,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           {children}
         </RootProviders>
         <PlausibleScript />
-        {/* Analytics/SpeedInsights disabled on Fly.io — use Cloudflare Analytics */}
-        {/* <Analytics /> */}
-        {/* <SpeedInsights /> */}
+        {/* Analytics handled via Plausible/Cloudflare. */}
         <SanityLiveWrapper />
       </body>
     </html>
   );
 }
-
-

@@ -23,10 +23,17 @@ curl https://www.klarpakke.no/api/health
 
 ### 2. Execute Rollback
 
+For Cloudflare Workers, redeploy the last known good commit:
+
 ```bash
-export VERCEL_TOKEN=your_token_here
-./scripts/rollback-deployment.sh
+export CLOUDFLARE_API_TOKEN=your_token_here
+git checkout <last-good-commit>
+npm run cf:deploy
 ```
+
+Or use the Cloudflare Dashboard:
+- Workers & Pages → klarpakke → Deployments
+- Select the previous deployment and click "Rollback"
 
 ### 3. Verify Rollback
 
@@ -65,21 +72,21 @@ Action Required: [what needs to be fixed]
 Test rollback procedure monthly:
 
 ```bash
-# Dry-run test
-./scripts/test-rollback.sh
+# Verify you can build and deploy a known good commit
+git checkout main
+npm run cf:build
 ```
 
-## Manual Rollback (if script fails)
+## Manual Rollback (if automated deploy fails)
 
 ```bash
-# 1. List deployments
-npx vercel@latest ls --token=$VERCEL_TOKEN
+# 1. List recent deployments in Cloudflare Dashboard
+#    https://dash.cloudflare.com → Workers & Pages → klarpakke
 
-# 2. Find previous deployment URL
-PREVIOUS_URL=klarpakke-xyz.vercel.app
+# 2. Find previous deployment
 
-# 3. Alias to production
-npx vercel@latest alias $PREVIOUS_URL www.klarpakke.no --token=$VERCEL_TOKEN --yes
+# 3. Roll back via Wrangler CLI
+npx wrangler rollback
 
 # 4. Verify
 curl https://www.klarpakke.no/api/health

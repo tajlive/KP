@@ -189,7 +189,7 @@
 - [ ] Run `./scripts/setup-stripe-prices-v2.sh` again for live prices
 - [ ] Update `.env.local` with live price IDs
 - [ ] Set up production webhook endpoint
-- [ ] Add `STRIPE_WEBHOOK_SECRET` to Vercel env vars
+- [ ] Add `STRIPE_WEBHOOK_SECRET` to Cloudflare Workers secrets
 - [ ] Test with real credit card (small amount)
 
 #### Application Configuration

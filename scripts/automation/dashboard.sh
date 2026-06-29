@@ -23,13 +23,13 @@ show_status() {
     echo "📊 System Status"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    
+
     # Git status
     if git rev-parse --git-dir > /dev/null 2>&1; then
         BRANCH=$(git branch --show-current)
         COMMITS=$(git rev-list --count HEAD)
         echo -e "  ${CYAN}Git:${NC} $BRANCH (${COMMITS} commits)"
-        
+
         UNCOMMITTED=$(git status --porcelain | wc -l)
         if [ $UNCOMMITTED -gt 0 ]; then
             echo -e "  ${YELLOW}⚠️  $UNCOMMITTED uncommitted changes${NC}"
@@ -37,18 +37,18 @@ show_status() {
             echo -e "  ${GREEN}✅ Clean working tree${NC}"
         fi
     fi
-    
+
     # Node dependencies
     if [ -d "node_modules" ]; then
         DEPS=$(ls node_modules | wc -l)
         echo -e "  ${CYAN}Dependencies:${NC} ~$DEPS packages"
     fi
-    
-    # Siste deploy
-    if [ -f ".vercel/project.json" ]; then
-        echo -e "  ${CYAN}Vercel:${NC} Connected"
+
+    # Cloudflare / Wrangler status
+    if [ -f "wrangler.jsonc" ] || [ -f "wrangler.toml" ]; then
+        echo -e "  ${CYAN}Cloudflare Workers:${NC} Configured"
     fi
-    
+
     echo ""
 }
 
@@ -73,8 +73,7 @@ show_menu() {
     echo "     • Seed testdata"
     echo ""
     echo "  ${CYAN}4)${NC} Deploy"
-    echo "     • Deploy preview"
-    echo "     • Deploy production"
+    echo "     • Deploy production (Cloudflare Workers)"
     echo "     • Deploy Edge Functions"
     echo ""
     echo "  ${CYAN}5)${NC} Monitoring"
@@ -86,11 +85,12 @@ show_menu() {
     echo "     • AI code review"
     echo "     • AI commit"
     echo "     • Generer changelog"
+    echo "     • Status sjekk"
     echo ""
     echo "  ${CYAN}7)${NC} Security"
-    echo "     • Security scan"
+    echo "     • Full security scan"
     echo "     • Secrets check"
-    echo "     • Dependency audit"
+    echo "     • NPM audit"
     echo ""
     echo "  ${CYAN}8)${NC} Full Pipeline"
     echo "     • QA + Test + Deploy"
@@ -153,31 +153,27 @@ handle_choice() {
             echo ""
             echo "${CYAN}Deploy${NC}"
             echo ""
-            echo "1) Deploy preview"
-            echo "2) Deploy production"
-            echo "3) Deploy Edge Functions"
-            echo "4) Full auto-deploy"
-            echo "5) Tilbake"
+            echo "1) Deploy production (Cloudflare Workers)"
+            echo "2) Deploy Edge Functions"
+            echo "3) Tilbake"
             read -p "Velg: " deploy_choice
             case $deploy_choice in
-                1) npx vercel ;;
-                2) npx vercel --prod ;;
-                3) supabase functions deploy ;;
-                4) bash scripts/mcp-auto-deploy.sh ;;
+                1) npm run cf:deploy ;;
+                2) supabase functions deploy ;;
             esac
             ;;
         5)
             echo ""
             echo "${CYAN}Monitoring${NC}"
             echo ""
-            echo "1) Vercel logs"
+            echo "1) Cloudflare Workers logs"
             echo "2) Edge Function logs"
             echo "3) Health check"
             echo "4) Sentry"
             echo "5) Tilbake"
             read -p "Velg: " mon_choice
             case $mon_choice in
-                1) npx vercel logs ;;
+                1) npx wrangler tail ;;
                 2) supabase functions logs ;;
                 3) curl -s https://www.klarpakke.no/api/health | jq . ;;
                 4) open https://sentry.io/organizations/klarpakke/issues/ ;;
@@ -240,10 +236,10 @@ while true; do
     show_header
     show_status
     show_menu
-    
+
     read -p "Velg alternativ (1-8, q): " choice
     handle_choice $choice
-    
+
     echo ""
     read -p "Trykk Enter for å fortsette..."
 done

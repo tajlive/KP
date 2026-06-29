@@ -22,7 +22,7 @@ export const ONBOARDING_TIPS: OnboardingTip[] = [
     condition: (u) => !u.hasTraded,
     title: "Start med lekepenger",
     description: "Øv risikofritt med 100 000 kr i lekepenger",
-    cta: { label: "Prøv nå", href: "/dashboard/paper-trading" },
+    cta: { label: "Prøv nå", href: "/handel" },
     icon: Wallet,
     priority: 1,
   },

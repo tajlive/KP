@@ -61,7 +61,7 @@
 ```typescript
 // costs.ts
 - getSupabaseCosts()     // Supabase bruk/kostnad
-- getVercelCosts()       // Vercel bruk/kostnad
+- getCloudflareCosts()   // Cloudflare Workers bruk/kostnad
 - getAIAPICosts()        // AI API kostnader
 - predictMonthlyCost()   // Prediker månedlig kostnad
 - setBudgetAlert()       // Varsel ved budsjett

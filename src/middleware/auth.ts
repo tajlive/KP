@@ -14,7 +14,6 @@ import { handleTierGate } from "./tier-gate";
 function redirectNoCache(url: string | URL, status?: number): NextResponse {
   const res = NextResponse.redirect(url, status);
   res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
-  res.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
   res.headers.set("CDN-Cache-Control", "no-store, max-age=0");
   return res;
 }
@@ -26,8 +25,7 @@ const PROTECTED_PATHS = [
   "/admin",
   "/checkout",
   "/akademi",
-  "/auto-trading",
-  "/paper-trading",
+  "/handel",
   "/konto",
   "/handelshistorikk",
   "/varsler",
@@ -103,7 +101,7 @@ export async function authMiddleware(
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
     console.warn(
-      "[middleware] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY missing — skipping session refresh. Check .env.local and Vercel env vars.",
+      "[middleware] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY missing — skipping session refresh. Check .env.local and Cloudflare Workers env/secrets.",
     );
     return response;
   }
@@ -123,8 +121,10 @@ export async function authMiddleware(
 
   // Authenticated users on auth pages -> dashboard
   if (user && isAuthPage) {
-    return redirectNoCache(
+    return redirectWithCookies(
       new URL(localizedPathname(locale, "/dashboard"), request.url),
+      request,
+      response,
       302,
     );
   }

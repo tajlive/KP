@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 
-// Vercel Cron handler
+// Legacy cron handler retained for compatibility; canonical scheduling runs through Supabase/Cloudflare.
 export async function GET(request: Request) {
   if (!validateCronSecret(request)) {
     return NextResponse.json(

@@ -13,7 +13,7 @@
 **Ansvarsområder:**
 
 - Shell-operasjoner og skripting
-- Vercel CLI deploy
+- Cloudflare Workers / Wrangler deploy
 - Database-operasjoner (psql, supabase CLI)
 - Filmanipulasjon
 - Verifisering etter deploy
@@ -23,7 +23,7 @@
 - Shell (bash/zsh)
 - ReadFile/WriteFile
 - Grep
-- vercel CLI
+- wrangler CLI
 - supabase CLI
 
 **Kjennetegn:**
@@ -176,22 +176,22 @@ MCP (Model Context Protocol) er et protokoll for å gi AI-agenter tilgang til ek
 
 ---
 
-### Vercel Integration (MCP-tilgang)
+### Cloudflare Integration (MCP-tilgang)
 
-**Formål:** Gi Claude/Perplexity tilgang til live Vercel-data
+**Formål:** Gi Claude/Perplexity tilgang til live Cloudflare-data
 
-**Mekanisme:** Bruker Vercel MCP-server for direkte tilgang
+**Mekanisme:** Bruker Cloudflare MCP-server for direkte tilgang
 
 **Data som er tilgjengelig:**
 
-- Vercel project info
-- Deployments
-- Environment variables
+- Cloudflare account info
+- Workers deployments
+- DNS / Zone settings
 - Build logs
 
 **Bruk:**
 
-- Bruk `vercel` MCP-server verktøy
+- Bruk `cloudflare` MCP-server verktøy
 
 **Bruk:**
 
@@ -217,7 +217,7 @@ Bruker: "Deploy til produksjon"
   ↓
 KIMI:
   1. Les DEPLOY_STRATEGY.md
-  2. Kjør gcloud run deploy
+  2. Kjør npm run cf:deploy
   3. Verifiser med curl
   4. Rapporter resultat
 ```
@@ -237,7 +237,7 @@ KIMI:
   1. Opprett filer
   2. Deploy database-migrasjoner
   3. Deploy Edge Functions
-  4. Deploy til Cloud Run
+  4. Deploy til Cloudflare Workers
   5. Verifiser
 ```
 
@@ -248,7 +248,7 @@ Bruker: "Auth loop etter deploy"
   ↓
 KIMI:
   1. Les FIX_AUTH_LOOP.md
-  2. Sjekk Cloud Run env vars
+  2. Sjekk Cloudflare Workers env vars
   3. Kjør rask fix
   4. Verifiser
   ↓
@@ -291,7 +291,7 @@ Hvis kompleks:
 
 - ✅ Database struktur (ikke sensitive data uten spørring)
 - ✅ Kodebase (åpen kildekode)
-- ✅ Cloud Run metadata
+- ✅ Cloudflare Workers metadata
 - ✅ GitHub commits og PRs
 
 ---
@@ -300,7 +300,7 @@ Hvis kompleks:
 
 ```bash
 cd ~/klarpakke
-vercel login
+npx wrangler login
 ```
 
 ---

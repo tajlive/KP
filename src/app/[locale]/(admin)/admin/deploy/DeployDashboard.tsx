@@ -50,7 +50,7 @@ export function DeployDashboard() {
   const [deploymentSteps, setDeploymentSteps] = useState<DeploymentStep[]>([
     { id: "preflight", name: "Pre-flight Checks", status: "pending" },
     { id: "oauth", name: "OAuth Verification", status: "pending" },
-    { id: "coolify", name: "Coolify Deploy", status: "pending" },
+    { id: "workers", name: "Cloudflare Workers Deploy", status: "pending" },
     { id: "glitchtip", name: "GlitchTip Alerts", status: "pending" },
     { id: "health", name: "Health Check", status: "pending" },
     { id: "notify", name: "Slack Notification", status: "pending" },
@@ -73,7 +73,7 @@ export function DeployDashboard() {
     );
 
     // Simulate deployment steps
-    const steps = ["preflight", "oauth", "coolify", "glitchtip", "health", "notify"];
+    const steps = ["preflight", "oauth", "workers", "glitchtip", "health", "notify"];
     
     for (const stepId of steps) {
       // Update step to running

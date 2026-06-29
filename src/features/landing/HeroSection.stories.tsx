@@ -68,7 +68,7 @@ const HeroSectionClient = ({ locale = 'no' }: { locale?: string }) => {
 
             {/* Bullets/features */}
             <p className="text-sm sm:text-base lg:text-lg text-blue-100/90 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0">
-              ✓ {isEnglish ? 'Paper trading with realistic market conditions' : 'Paper trading med realistiske markedsforhold'}
+              ✓ {isEnglish ? 'Paper trading with realistic market conditions' : 'Lekepenger med realistiske markedsforhold'}
               <br />
               ✓ {isEnglish ? 'Auto-trading with your own strategies' : 'Auto-trading med egne strategier'}
               <br />
@@ -99,7 +99,7 @@ const HeroSectionClient = ({ locale = 'no' }: { locale?: string }) => {
                 </div>
                 <div className="flex-1 ml-2 sm:ml-4 bg-slate-800 rounded px-2 sm:px-3 py-1 min-w-0">
                   <span className="text-slate-400 text-xs font-mono truncate block">
-                    app.klarpakke.no/paper-trading
+                    app.klarpakke.no/handel
                   </span>
                 </div>
               </div>

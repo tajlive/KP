@@ -128,7 +128,7 @@ function createSitemapEntry(path: string): SitemapEntry | null {
     return { path, priority: 1.0, changeFrequency: "daily" };
   }
 
-  if (path === "priser" || path === "copy-trading" || path === "paper-trading" || path === "live-trading") {
+  if (path === "priser" || path === "copy-trading" || path === "handel") {
     return { path, priority: 0.9, changeFrequency: "weekly" };
   }
 

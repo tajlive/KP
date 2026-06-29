@@ -24,8 +24,6 @@ import { ThemeProvider } from "@/shared/theme";
 import { QueryProvider } from "@/shared/providers/query-provider";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 // Analytics/SpeedInsights disabled on self-hosted stack
-// import { Analytics } from "@vercel/analytics/react";
-// import { SpeedInsights } from "@vercel/speed-insights/next";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
@@ -36,16 +34,32 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   useProgress();
 
   useEffect(() => {
-    if (user?.id) {
+    if (!user?.id) return;
+
+    const updateOnboarding = async () => {
       const supabase = createClient();
-      supabase
-        .from("user_profiles")
-        .update({ onboarding_completed: true })
-        .eq("id", user.id)
-        .then();
-      document.cookie =
-        "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
-    }
+      try {
+        const res = await supabase
+          .from("user_profiles")
+          .update({ onboarding_completed: true })
+          .eq("id", user.id);
+        if (res.error) {
+          console.error(
+            "[DashboardClientLayout] Failed to update onboarding:",
+            res.error,
+          );
+        }
+      } catch (err) {
+        console.error(
+          "[DashboardClientLayout] Onboarding update exception:",
+          err,
+        );
+      }
+    };
+
+    updateOnboarding();
+    document.cookie =
+      "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
   }, [user?.id]);
 
   return <>{children}</>;

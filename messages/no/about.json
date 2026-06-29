@@ -43,7 +43,7 @@
   "different": {
     "title": "Hva gjør oss annerledes",
     "subtitle": "Vi fokuserer på utdanning og sikker øving før ekte trading",
-    "paperTrading": "Øv med papirhandel før du risikerer ekte penger",
+    "paperTrading": "Øv med lekepenger før du risikerer ekte penger",
     "norwegian": "Den eneste norskspråklige krypto-utdanningsplattformen",
     "education": "Omfattende kurs fra nybegynner til avansert",
     "transparency": "Klar informasjon om gebyrer, risiko og strategier",
@@ -63,7 +63,7 @@
     "partners": {
       "title": "Våre partnere",
       "supabase": "Supabase (database og auth)",
-      "vercel": "Vercel (hosting og deployment)",
+      "cloudflare": "Cloudflare Workers (hosting og deployment)",
       "binance": "Binance (trading API)"
     }
   },

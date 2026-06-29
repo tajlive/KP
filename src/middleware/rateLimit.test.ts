@@ -76,4 +76,35 @@ describe("rateLimitMiddleware", () => {
     expect(out.status).toBe(200);
     expect(out.headers.get("X-RateLimit-Remaining")).toBe("50");
   });
+
+  it("returns 503 when Redis/KV backend fails by default", async () => {
+    mockPipeline.exec.mockRejectedValue(new Error("redis unavailable"));
+    delete process.env.RATE_LIMIT_FAIL_OPEN;
+
+    const req = new NextRequest(new URL("http://localhost/api/test"), {
+      headers: { "x-forwarded-for": "1.2.3.4" },
+    });
+    const res = NextResponse.next();
+    const out = await rateLimitMiddleware(req, res);
+
+    expect(out.status).toBe(503);
+    expect(out.headers.get("Retry-After")).toBe("10");
+    expect(out.headers.get("x-middleware-stop")).toBe("true");
+  });
+
+  it("allows API requests when Redis/KV backend fails and RATE_LIMIT_FAIL_OPEN is set", async () => {
+    mockPipeline.exec.mockRejectedValue(new Error("redis unavailable"));
+    process.env.RATE_LIMIT_FAIL_OPEN = "true";
+
+    const req = new NextRequest(new URL("http://localhost/api/test"), {
+      headers: { "x-forwarded-for": "1.2.3.4" },
+    });
+    const res = NextResponse.next();
+    const out = await rateLimitMiddleware(req, res);
+
+    expect(out.status).toBe(200);
+    expect(out.headers.get("X-RateLimit-Remaining")).toBeNull();
+
+    delete process.env.RATE_LIMIT_FAIL_OPEN;
+  });
 });

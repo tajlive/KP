@@ -277,7 +277,7 @@ export async function GET() {
 
   const statusCode = status === "unhealthy" ? 503 : 200;
 
-  // Cache result in Redis (legacy Vercel KV removed)
+  // Cache result in Redis (legacy KV provider removed)
   if (isRedisRestConfigured()) {
     try {
       const redis = getRedisRest();

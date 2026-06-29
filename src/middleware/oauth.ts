@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { getCallbackUrl } from "@/lib/auth/config";
 import { SUPPORTED_LOCALES } from "./i18n";
 
 export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
@@ -20,7 +21,9 @@ export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
     const localePart = parts[1];
     const locale = SUPPORTED_LOCALES.includes(localePart as typeof SUPPORTED_LOCALES[number]) ? localePart : "no";
 
-    const callbackUrl = new URL(`/${locale}/callback`, request.url);
+    // Use the canonical callback URL from auth config (never request.url) to
+    // avoid open-redirect issues and keep OAuth redirect_uri consistent.
+    const callbackUrl = new URL(getCallbackUrl(locale));
     if (code) callbackUrl.searchParams.set("code", code);
     if (error) callbackUrl.searchParams.set("error", error);
 
@@ -31,7 +34,6 @@ export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
 
     const res = NextResponse.redirect(callbackUrl);
     res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
-    res.headers.set("Vercel-CDN-Cache-Control", "no-store, max-age=0");
     res.headers.set("CDN-Cache-Control", "no-store, max-age=0");
     return res;
   }

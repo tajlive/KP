@@ -6,7 +6,7 @@ import type { MiddlewareFn } from "./types";
  * When a page is deleted, add an entry here so the middleware returns
  * a proper redirect instead of letting stale CDN cache serve 200 OK.
  *
- * NOTE: Vercel CDN caches HTML with s-maxage. When a page is deleted,
+ * NOTE: Cloudflare CDN caches HTML with s-maxage. When a page is deleted,
  * the prerendered HTML may still be cached at the edge. next.config.mjs
  * redirects run AFTER CDN cache lookup, so they don't help. Middleware
  * runs at the edge BEFORE routing, which is why this registry exists.

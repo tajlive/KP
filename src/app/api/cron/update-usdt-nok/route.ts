@@ -1,6 +1,6 @@
 /**
  * Cron: Update USDT/NOK rate in global_settings (USDT ≈ USD).
- * Call daily from Vercel Cron or external scheduler.
+ * Call daily from Supabase pg_cron, Cloudflare cron, or another authorized scheduler.
  * Secured with CRON_SECRET.
  */
 

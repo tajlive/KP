@@ -5,7 +5,7 @@
  * - Active sessions
  * - trades performance
  * - Database latency
- * - Vercel Speed Insights
+ * - Cloudflare/Plausible observability
  * 
  * Security: Professor-tier only
  */

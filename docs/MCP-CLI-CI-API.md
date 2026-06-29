@@ -19,7 +19,7 @@
 
 **Hemmeligheter:** Aldri committe tokens. Bruk miljøvariabler:
 
-- **Cursor:** Linear → `run-linear-mcp.mjs`; Supabase → `run-official-supabase-mcp.mjs`; GitHub → `run-github-mcp.mjs` (leser **GITHUB_TOKEN** eller **GH_PAT** fra `.env.local`). For Vercel, Stripe, Sentry, Resend: sett variabler i Cursor / shell (f.eks. `VERCEL_TOKEN`).
+- **Cursor:** Linear → `run-linear-mcp.mjs`; Supabase → `run-official-supabase-mcp.mjs`; GitHub → `run-github-mcp.mjs` (leser **GITHUB_TOKEN** eller **GH_PAT** fra `.env.local`). For Cloudflare, Stripe, Sentry, Resend: sett variabler i Cursor / shell (f.eks. `CLOUDFLARE_API_TOKEN`).
 - **Referanse:** `docs/COMMON-SECRETS.md`, `.env.local.example`, `docs/MCP-SECRETS-SETUP.md`
 
 ### Servere i `.cursor/mcp.json`
@@ -34,7 +34,6 @@
 | **context7**        | `node scripts/run-context7-mcp.mjs` — [@upstash/context7-mcp](https://www.npmjs.com/package/@upstash/context7-mcp): versjonsspesifikk docs for biblioteker. Valgfri **`CONTEXT7_API_KEY`** i `.env.local` (høyere limits). I prompt: _«… use context7»_ eller regel i Cursor Settings → Rules for auto-oppslag.                |
 | **chrome-devtools** | `npx -y chrome-devtools-mcp@latest --no-usage-statistics` — **offisiell Google**-MCP: ekte Chrome + DevTools (konsoll, nettverk, performance trace, Lighthouse, minne). Krever **Chrome** installert. Se [§ Nettleser-feilsøking](#13-nettleser-feilsøking-chrome-devtools-mcp--alternativer).                                 |
 | resend              | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY`                                                                                                                                                                                                                                                                             |
-| **vercel**          | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`.                                                                                                                                                                                                                            |
 | **cloudflare**      | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`.                                                                                                                                                                                                                |
 
 **Merk:** Cursor er selv MCP-klient; prosjektets MCP-er står i `.cursor/mcp.json`. Full oversikt for Cursor (MCP-oppsett, CLI, API): **docs/CURSOR-MCP-CLI-API.md**.
@@ -48,7 +47,7 @@
 | **Dyp frontend-debug** (konsoll, nettverk, CWV-trace, minne) | **chrome-devtools-mcp** — sterkest for «levende» Chrome med DevTools.                                      |
 | **Reproduserbar brukerreise / samme stack som CI**           | **@playwright/mcp** + `npm run dev` / Playwright `webServer`.                                              |
 | **Feil i produksjon** (stack traces, releases)               | **Sentry MCP** (`@sentry/mcp-server`) — komplementært, ikke erstatning.                                    |
-| **Deploy / runtime-logger**                                  | **Vercel MCP** (remote) — komplementært.                                                                   |
+| **Deploy / runtime-logger**                                  | **Cloudflare MCP** (remote) — komplementært.                                                               |
 | **Enkel side i Cursor**                                      | **Cursor Browser** (innebygd MCP der Cursor tilbyr det) — praktisk, færre verktøy enn chrome-devtools-mcp. |
 
 **Krav:** Node **≥ 20.19** (allerede i prosjektet), **Google Chrome** stabil. Finner ikke Chrome: sett `CHROME_PATH` til full sti til binæren (se [upstream troubleshooting](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/troubleshooting.md)).
@@ -72,7 +71,7 @@ Krever: nettverk, Playwright-browsere (`npm run playwright:install`), Supabase/N
 ### Playwright (lokal E2E)
 
 - **Nettlesere:** Første gang etter `npm ci` / oppgradering: `npm run playwright:install` (eller `npx playwright install chromium` for kun smoke).
-- **Supabase + Next:** Middleware og klient krever **`NEXT_PUBLIC_SUPABASE_URL`** og **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**. **Automatisk inn i `.env.local`:** `npm run env:sync:supabase` (PAT `SUPABASE_ACCESS_TOKEN` + ref fra URL eller `SUPABASE_PROJECT_REF`) — henter legacy anon + service*role via Management API. Alternativ: `npm run vercel:env` når nøkler allerede ligger i Vercel. `vercel env pull` kan gi `SUPABASE_URL` uten `NEXT_PUBLIC*\*`— da feiler`next dev`under Playwright. Se`.env.local.example`.
+- **Supabase + Next:** Middleware og klient krever **`NEXT_PUBLIC_SUPABASE_URL`** og **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**. **Automatisk inn i `.env.local`:** `npm run env:sync:supabase` (PAT `SUPABASE_ACCESS_TOKEN` + ref fra URL eller `SUPABASE_PROJECT_REF`) — henter legacy anon + service*role via Management API. Se `.env.local.example`.
 
 ### Verifisere MCP
 
@@ -85,13 +84,12 @@ npm run env:sync:supabase   # URL + anon + service_role → .env.local (SUPABASE
 npm run env:sync:supabase:verify # + test:e2e:check-env
 npm run test:robot          # lint + type-check + unit + E2E prepare + critical-chromium
 npm run cloud:bootstrap # Fyller kritiske cloud-keys i .env.local automatisk
-npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
-npm run cloud:ready:deploy # Sjekk deploy-krav (Vercel) + auto-resolve av ORG_ID
+npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Cloudflare)
+npm run cloud:ready:deploy # Sjekk deploy-krav (Cloudflare) + auto-resolve av account
 npm run cloud:ready:manual:prod # Sjekk manuell production deploy-krav (inkl. Supabase)
 npm run linear:test   # Linear API (leser .env.local)
-npm run test:mcp      # test-mcp-connections.sh (Supabase, Stripe, Vercel, Resend, Cloudflare API)
+npm run test:mcp      # test-mcp-connections.sh (Supabase, Stripe, Resend, Cloudflare API)
 npm run cursor:config # MCP-server-navn + .cursor/rules (uten API-nøkkel)
-npm run vercel:test   # Vercel API (VERCEL_TOKEN)
 npm run cloudflare:test # Cloudflare API (CLOUDFLARE_API_TOKEN)
 npm run stripe:test   # Stripe API (STRIPE_SECRET_KEY)
 npm run vipps:test    # Vipps API (VIPPS_CLIENT_ID/SECRET)
@@ -137,19 +135,6 @@ npm run diagnose:user-trades -- --email=user@example.com
 ```
 
 **Krever** `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` i `.env.local`. **Kanonisk app-API (JWT, ikke service role):** `GET /api/user/trades`, `GET /api/user/trading-diagnostics`. Triage og stopp-regel: **`docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`**.
-
-### Vercel
-
-```bash
-npm run vercel:test   # Test Vercel API (VERCEL_TOKEN fra .env.local)
-npm run vercel projects
-npm run vercel deployments [limit]
-npm run vercel project [projectId]
-npm run vercel:env    # npx vercel env pull .env.local
-npm run deploy:prod   # npx vercel --prod
-```
-
-MCP: I Cursor brukes offisiell Vercel MCP (`https://mcp.vercel.com/klarpakke/klarpakke`). Ved første bruk: klikk «Needs login» og autoriser. **Vercel env:** Agenten har tilgang til Vercel env via MCP og via `npm run vercel:env` (pull til .env.local). Full oversikt: **docs/VERCEL-MCP-CLI.md**. Dashboard-sjekkliste: **docs/VERCEL-SETTINGS.md**.
 
 ### Cloudflare
 
@@ -220,21 +205,19 @@ npm run verify:automation  # lint + type-check + test:unit + verify + test:mcp (
 | ----------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
 | **test.yml**            | push/PR til main, develop        | Lint → type-check → i18n audit → build (SKIP_LINT_IN_BUILD) → E2E smoke           |
 | **pr-check.yml**        | PR mot main                      | Lint → build (SKIP_LINT_IN_BUILD) → artifact                                      |
-| **manual-deploy.yml**   | workflow_dispatch                | Build → deploy til Vercel → verify mot prod                                       |
+| **manual-deploy.yml**   | workflow_dispatch                | Build → deploy til Cloudflare Workers → verify mot prod                           |
 | **mcp-integration.yml** | push/PR ved endring av MCP-filer | `validate-mcp-config.mjs` (alle tre filer), sikkerhetssjekk                       |
-| **mcp-health.yml**      | Schedule + dispatch              | Sjekk Supabase REST, Stripe, Vercel, Resend, Cloudflare (valgfri; bruker secrets) |
+| **mcp-health.yml**      | Schedule + dispatch              | Sjekk Supabase REST, Stripe, Resend, Cloudflare (valgfri; bruker secrets)         |
 
 ### Nødvendige secrets (CI)
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (eller vars/secrets som brukes i build)
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (mcp-health)
-- `STRIPE_SECRET_KEY`, `VERCEL_TOKEN`, `RESEND_API_KEY` (mcp-health)
-- `CLOUDFLARE_API_TOKEN` (mcp-health, valgfri – sjekk hoppes over hvis ikke satt)
-- For deploy: Vercel-prosjekt knyttes via `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` og token
+- `STRIPE_SECRET_KEY`, `RESEND_API_KEY` (mcp-health)
+- `CLOUDFLARE_API_TOKEN` (deploy + mcp-health, valgfri – sjekk hoppes over hvis ikke satt)
+- For deploy: Cloudflare Workers knyttes via `wrangler.jsonc` og `CLOUDFLARE_API_TOKEN`
 
-Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjører én gang; build skipper ESLint. Se **docs/vercel-build-notes.md** §8.
-
-`cloud-readiness.mjs` forsøker automatisk å resolve `VERCEL_ORG_ID` fra Vercel API når `VERCEL_PROJECT_ID` og `VERCEL_TOKEN` er satt.
+Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjører én gang; build skipper ESLint. Se **docs/archive/vercel-build-notes.md** §8.
 
 ---
 
@@ -275,7 +258,7 @@ Migrasjon som aktiverer RLS på 8 tabeller:
 
 ## 6. Cron (source of truth)
 
-Cron kjøres alltid fra **Supabase** (pg_cron/scheduler), ikke fra Vercel Cron. Se **docs/CRON-SOURCE-OF-TRUTH.md**.
+Cron kjøres alltid fra **Supabase** (pg_cron/scheduler), ikke fra Cloudflare Cron. Se **docs/CRON-SOURCE-OF-TRUTH.md**.
 
 ---
 
@@ -295,7 +278,7 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 
 ## 8. Release-flow (push → deploy)
 
-**Automatisert:** Push til `main` trigger Deploy-workflow → build → Vercel prod. Ingen manuell deploy nødvendig.
+**Automatisert:** Push til `main` trigger Deploy-workflow → build → Cloudflare prod. Ingen manuell deploy nødvendig.
 
 | Steg                | Kommando                                                       | Beskrivelse                                 |
 | ------------------- | -------------------------------------------------------------- | ------------------------------------------- |
@@ -304,7 +287,7 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 | 3. Følg deploy      | `gh run watch` (valgfritt)                                     | Venter på at Deploy fullfører               |
 | 4. Verifiser prod   | `npm run verify`                                               | Tester domener, /api/health, kritiske paths |
 
-**Manuell Vercel-deploy (CLI):** `npm run deploy:prod` — nyttig hvis CI ikke brukes.
+**Manuell Cloudflare-deploy (CLI):** `npm run cf:deploy` — nyttig hvis CI ikke brukes.
 
 ---
 
@@ -314,9 +297,9 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | Linear i Cursor    | `.env.local` med `LINEAR_API_KEY` → omstart Cursor → `npm run linear:test`                                                   |
 | Linear uten MCP    | `npm run linear issues` / `create` / `update`                                                                                |
-| Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md**                                                        |
-| Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes)                                                            |
+| Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Cloudflare prod → **docs/SENTRY-PROD.md**                                                        |
+| Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (se AGENTS.md og docs/archive/vercel-build-notes.md)                              |
 | Release til prod   | `npm run release` → `git push origin main` → Deploy workflow                                                                 |
 | API-dokumentasjon  | **docs/api-routes.md**                                                                                                       |
 | Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md**                                 |
-| Release-flow       | `npm run release` → `git push origin main` → Deploy workflow kjører automatisk → Vercel prod. Se **.github/GITHUB_SETUP.md** |
+| Release-flow       | `npm run release` → `git push origin main` → Deploy workflow kjører automatisk → Cloudflare prod. Se **.github/GITHUB_SETUP.md** |

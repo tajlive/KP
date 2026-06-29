@@ -98,13 +98,13 @@ else
   pass "6-LOOP" "Ingen loop: $LOOP_HOPS redirects → ferdig på $LOOP_FINAL"
 fi
 
-# ── TEST 7: Vercel Analytics ─────────────────────────────────────────────
-echo -e "\n${BOLD}7. FIX Bug1 — Vercel Analytics blokkert${NC}"
-VERCEL_STATUS=$(curl -so /dev/null -w "%{http_code}" --max-time 5 "$BASE/_vercel/insights/script.js" 2>/dev/null)
-if [ "$VERCEL_STATUS" = "200" ]; then
-  fail "7-VERCEL" "Vercel Analytics script.js returnerer 200 (uventet på Cloud Run!)"
+# ── TEST 7: Cloudflare Analytics / tredjepartsskript ─────────────────────
+echo -e "\n${BOLD}7. Tredjeparts analytics-skript${NC}"
+CF_STATUS=$(curl -so /dev/null -w "%{http_code}" --max-time 5 "$BASE/_vercel/insights/script.js" 2>/dev/null)
+if [ "$CF_STATUS" = "200" ]; then
+  fail "7-ANALYTICS" "Legacy Vercel analytics script returnerer 200 (uventet!)"
 else
-  pass "7-VERCEL" "Vercel Analytics script.js returnerer $VERCEL_STATUS (404 forventet på Cloud Run)"
+  pass "7-ANALYTICS" "Legacy Vercel analytics script returnerer $CF_STATUS (404 forventet)"
 fi
 
 # ── TEST 8: innlogging?error= params stabile ─────────────────────────────
@@ -120,4 +120,4 @@ done
 
 echo -e "\n${BOLD}${BLUE}═══════════════════════════════════════════════════${NC}"
 echo -e "${BOLD}  Quick debug ferdig!${NC}"
-echo -e "  For fullstendig rapport: ${BOLD}node scripts/debug-auth-kimi.mjs${NC}\n"
+echo -e "  For fullstendig rapport: ${BOLD}node scripts/debug-auth.mjs${NC}\n"

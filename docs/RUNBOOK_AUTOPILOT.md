@@ -30,7 +30,7 @@ Hva skriptet gjør, i rekkefølge:
 2. **TypeScript** — `tsc --noEmit`, 0 feil kreves
 3. **Lint** — `eslint`, 0 errors kreves
 4. **Git** — `add -A`, commit med auto-generert melding, push til `main`
-5. **Vercel prod** — `vercel --prod --archive=tgz`
+5. **Cloudflare prod** — `npm run cf:deploy`
 6. **Post-deploy health** — `signals:health`, `deploy:check`
 7. **MemPalace** — `mempalace:sync` for å indeksere nye beslutninger
 
@@ -38,7 +38,7 @@ Abort-betingelser (skriptet stopper):
 - TS-feil
 - Lint errors
 - Git push feiler
-- Vercel deploy feiler
+- Cloudflare deploy feiler
 
 ---
 
@@ -116,7 +116,7 @@ Ved stale heartbeat (>10 min):
 | P1 | `/leaderboard` + `/leagues` 404 | Lag `page.tsx` placeholder |
 | P1 | Hardkodede `/no/`-lenker | `grep -r 'href="/no/'` → fiks til `/${locale}/` |
 | P1 | Sitemap engelske paths | `src/app/sitemap.ts` |
-| P2 | Cloudflare API token | Vercel env → `CF_API_TOKEN` |
+| P2 | Cloudflare API token | Cloudflare env → `CF_API_TOKEN` |
 | P2 | `as any` → riktige typer | Supabase type refactor |
 
 ---
@@ -147,11 +147,11 @@ Hva som skal indekseres:
 ## 🔴 ROLLBACK
 
 ```bash
-# Rollback Vercel til forrige deployment
-npx vercel rollback
+# Rollback Cloudflare til forrige deployment
+npx wrangler rollback
 
 # Sjekk siste deployments
-npx vercel ls
+npx wrangler deployments list
 
 # Rollback DB migrasjon
 # OBS: Krever manuell SQL — snakk med Perplexity først

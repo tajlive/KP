@@ -42,6 +42,6 @@ Kjør fra worktree-rot for å kopiere `.env.mcp.local` fra hovedrepo hvis den ma
 
 ## Referanser
 
-- `scripts/mcp-with-auth.sh` – laster `.env.mcp.local` og aktiverer Cursor MCP-config
+- `scripts/archive/mcp-with-auth.sh` – arkivert; bruk `.cursor/mcp.json` direkte
 - `scripts/setup-mcp-auth.sh` – oppretter `.env.mcp.local` fra template
 - `.env.mcp` – template (uten hemmelige verdier)

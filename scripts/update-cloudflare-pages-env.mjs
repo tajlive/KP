@@ -114,7 +114,7 @@ async function main() {
   console.log("✅ Cloudflare Pages env vars updated.");
   console.log("");
   console.log("Next step: trigger a new deployment for the changes to take effect.");
-  console.log(`   node scripts/cf-deploy.mjs`);
+  console.log(`   npm run cf:deploy   ( Cloudflare Workers, cf-deploy.mjs er arkivert )`);
 }
 
 main().catch((err) => {

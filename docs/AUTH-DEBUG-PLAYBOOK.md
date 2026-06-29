@@ -114,14 +114,14 @@ open https://klarpakke.sentry.io/issues/?query=is%3Aunresolved+auth
 
 ---
 
-### 6. **Vercel MCP** (deployment logs)
+### 6. **Cloudflare MCP** (deployment logs)
 
 ```bash
 # Sjekk produksjonslogs
-vercel logs klarpakke --since=10m
+npx wrangler tail --format=pretty
 
-# Eller i Vercel Dashboard
-open https://vercel.com/dashboard
+# Eller i Cloudflare Dashboard
+open https://dash.cloudflare.com
 ```
 
 ---
@@ -216,7 +216,7 @@ npm run verify:google-oauth
 |------|-----|
 | Sentry | https://klarpakke.sentry.io/issues/ |
 | Supabase | https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf |
-| Vercel | https://vercel.com/dashboard |
+| Cloudflare | https://dash.cloudflare.com |
 | Google Console | https://console.cloud.google.com/apis/credentials |
 
 ---

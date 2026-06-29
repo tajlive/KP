@@ -66,7 +66,32 @@ export async function rateLimitMiddleware(
   }
 
   const ip = getIp(request);
-  const { success, limit, remaining, reset } = await limiter.limit(ip);
+  let limitResult: Awaited<ReturnType<typeof limiter.limit>>;
+  try {
+    limitResult = await limiter.limit(ip);
+  } catch (error) {
+    console.error("[rateLimit] backend unavailable", {
+      path: request.nextUrl.pathname,
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    // Fail closed by default: if a Redis/KV backend is configured but errors,
+    // do not silently disable rate limiting. Operators can opt into fail-open
+    // behavior by setting RATE_LIMIT_FAIL_OPEN=true (useful for local dev).
+    if (process.env.RATE_LIMIT_FAIL_OPEN === "true") {
+      return response;
+    }
+
+    const res = NextResponse.json(
+      { error: "Rate limiter unavailable" },
+      { status: 503 },
+    );
+    res.headers.set("Retry-After", "10");
+    res.headers.set("x-middleware-stop", "true");
+    return res;
+  }
+
+  const { success, limit, remaining, reset } = limitResult;
 
   if (!success) {
     const res = NextResponse.json(

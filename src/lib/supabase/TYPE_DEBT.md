@@ -107,7 +107,7 @@ These are **non-blocking**:
 ### Production Monitoring
 
 - **Sentry:** https://sentry.io/klarpakke
-- **Vercel Analytics:** https://vercel.com/tom-jensens-projects/klarpakke
+- **Cloudflare Analytics / Plausible:** https://dash.cloudflare.com / https://plausible.io/klarpakke.no
 - **Uptime:** Target 99.9%
 
 ### Type-Related Error Tracking
@@ -177,7 +177,7 @@ Synk kode mot gjeldende Supabase-skjema ved å regenerere typer:
 npx supabase gen types typescript --project-id vuxbjlykgmzskxbclquf > src/types/supabase-generated.ts
 ```
 
-Etter regenerering: kjør `npm run build` og fiks eventuelle nye type-feil. Se også `scripts/morning-setup.sh` og `deploy-now.sh`.
+Etter regenerering: kjør `npm run build` og fiks eventuelle nye type-feil. Se også AGENTS.md for deploy-flyt.
 
 ---
 

@@ -51,13 +51,13 @@
       "env": [],
       "secrets": []
     },
-    "npm:deploy:coolify": {
+    "npm:cf:deploy": {
       "type": "npm",
-      "command": "npm run deploy:coolify",
-      "description": "Trigger Coolify deploy",
+      "command": "npm run cf:deploy",
+      "description": "Deploy to Cloudflare Workers",
       "timeout": 120,
-      "env": ["COOLIFY_DEPLOY_WEBHOOK", "COOLIFY_TOKEN"],
-      "secrets": ["COOLIFY_TOKEN"]
+      "env": ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"],
+      "secrets": ["CLOUDFLARE_API_TOKEN"]
     },
     "npm:health:prod:gate": {
       "type": "npm",
@@ -133,15 +133,6 @@
       "timeout": 120,
       "env": [],
       "secrets": []
-    },
-    "script:coolify-deploy": {
-      "type": "script",
-      "path": "scripts/coolify-deploy.mjs",
-      "args": [],
-      "description": "Trigger Coolify deploy",
-      "timeout": 120,
-      "env": ["COOLIFY_DEPLOY_WEBHOOK", "COOLIFY_TOKEN"],
-      "secrets": ["COOLIFY_TOKEN"]
     },
     "script:agent-bridge": {
       "type": "script",
@@ -289,7 +280,7 @@
         "npm:type-check",
         "npm:test:unit",
         "npm:build",
-        "npm:deploy:coolify",
+        "npm:cf:deploy",
         "npm:health:prod:gate"
       ]
     }

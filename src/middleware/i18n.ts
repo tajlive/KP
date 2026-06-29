@@ -1,6 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing.config";
+import { getCallbackUrl } from "@/lib/auth/config";
 import { CANONICAL_REDIRECTS } from "@/lib/routing/canonical-redirects";
 import {
   localizedPathname,
@@ -43,9 +44,13 @@ export function i18nMiddleware(
 
   // 2. PKCE callback on root with ?code=
   if (strippedPath === "/" && request.nextUrl.searchParams.has("code")) {
-    const url = request.nextUrl.clone();
-    url.pathname = localizedPathname(locale, "/callback");
-    return NextResponse.redirect(url, 302);
+    // Use the canonical callback URL from auth config (never request.url) to
+    // avoid open-redirect issues and keep OAuth redirect_uri consistent.
+    const callbackUrl = new URL(getCallbackUrl(locale));
+    request.nextUrl.searchParams.forEach((value, key) => {
+      callbackUrl.searchParams.set(key, value);
+    });
+    return NextResponse.redirect(callbackUrl, 302);
   }
 
   // 3. Beta removal redirects

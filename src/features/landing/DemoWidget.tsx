@@ -41,7 +41,7 @@ export function DemoWidget() {
   const locale = useLocale();
   const { user } = useAuth();
   const signupHref = hrefWithLocale(locale, "/register");
-  const paperHref = hrefWithLocale(locale, "/paper-trading");
+  const paperHref = hrefWithLocale(locale, "/handel");
 
   const [prices, setPrices] = useState<number[]>([]);
   const [ticker, setTicker] = useState<BinanceTicker | null>(null);
@@ -213,7 +213,7 @@ export function DemoWidget() {
                 <div className="min-w-0">
                   <div className="font-bold text-white">BTC / USDT</div>
                   <div className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                    LIVE PRIS
+                    {t("livePrice")}
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                       <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
