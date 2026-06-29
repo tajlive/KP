@@ -335,7 +335,7 @@ async function executeTradeWithLock(
     // `Date.now()` and is intended mainly for local/manual calls.
     const idempotencyKey =
       request.idempotencyKey ??
-      makeIdempotencyKey([
+      await makeIdempotencyKey([
         request.userId,
         request.botId ?? request.signalContext?.strategy ?? "manual",
         request.symbol,
@@ -344,7 +344,7 @@ async function executeTradeWithLock(
         Date.now(),
       ]);
 
-    const requestHash = makeIdempotencyKey([
+    const requestHash = await makeIdempotencyKey([
       request.userId,
       request.sessionId ?? "",
       request.symbol,

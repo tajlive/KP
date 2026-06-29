@@ -145,16 +145,16 @@ function createMockClient(
 }
 
 describe("makeIdempotencyKey", () => {
-  it("is deterministic for the same inputs", () => {
-    const a = makeIdempotencyKey(["scope", "id", 42]);
-    const b = makeIdempotencyKey(["scope", "id", 42]);
+  it("is deterministic for the same inputs", async () => {
+    const a = await makeIdempotencyKey(["scope", "id", 42]);
+    const b = await makeIdempotencyKey(["scope", "id", 42]);
     expect(a).toBe(b);
     expect(a).toHaveLength(64);
   });
 
-  it("changes when input order changes", () => {
-    const a = makeIdempotencyKey(["a", "b"]);
-    const b = makeIdempotencyKey(["b", "a"]);
+  it("changes when input order changes", async () => {
+    const a = await makeIdempotencyKey(["a", "b"]);
+    const b = await makeIdempotencyKey(["b", "a"]);
     expect(a).not.toBe(b);
   });
 });
