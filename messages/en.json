@@ -2378,6 +2378,30 @@
         "goToDashboard": "Go to dashboard",
         "viewActivity": "View activity"
       }
+    },
+    "step5": {
+      "title": "You're ready!",
+      "subtitle": "Your paper trading account is now active. No real money is at stake.",
+      "paperBalance": "Your starting capital",
+      "botReady": "Bot ready",
+      "loading": "Loading...",
+      "cta": "Go to dashboard",
+      "initializing": "Setting up your account...",
+      "features": {
+        "paperTrading": "Practice with paper money",
+        "strategies": "Test strategies",
+        "analytics": "Track results"
+      },
+      "safetyNotice": {
+        "title": "You're trading with paper money",
+        "description": "No real money is at stake. Practice safely for as long as you want."
+      },
+      "nextSteps": {
+        "title": "What happens next?",
+        "step1": "Explore the dashboard",
+        "step2": "Start your first paper trade",
+        "step3": "Complete the 'Your First Paper Trade' course"
+      }
     }
   },
   "orderHistory": {
