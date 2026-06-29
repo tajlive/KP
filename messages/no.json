@@ -979,7 +979,9 @@
       "badge": "Valgfritt · Pro-funksjon"
     },
     "ctaButton": "Start gratis i dag",
-    "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst"
+    "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst",
+    "ctaButtonLoggedIn": "Gå til dashboard",
+    "ctaSubtextLoggedIn": "Fortsett din læringsreise"
   },
   "coursePreview": {
     "sectionTitle": "Kom i gang på under én time",
@@ -2396,11 +2398,22 @@
         "title": "Du handler med lekepenger",
         "description": "Ingen ekte penger er i sikte. Øv trygt så lenge du vil."
       },
+      "error": {
+        "completeFailed": "Kunne ikke fullføre onboarding. Sjekk nettverket og prøv igjen.",
+        "retry": "Prøv igjen"
+      },
       "nextSteps": {
         "title": "Hva skjer nå?",
         "step1": "Utforsk dashboardet",
         "step2": "Start din første papirhandel",
         "step3": "Fullfør kurset «Din første papirhandel»"
+      }
+    },
+    "step1": {
+      "timeEstimate": "Tar under 1 minutt",
+      "error": {
+        "saveFailed": "Kunne ikke lagre svarene dine. Sjekk nettverket og prøv igjen.",
+        "retryHint": "Klikk «Fortsett» for å prøve på nytt."
       }
     }
   },

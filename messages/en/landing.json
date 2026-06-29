@@ -309,7 +309,12 @@
     "description3": "24/7 continuous",
     "label4": "Focus",
     "description4": "Education first",
-    "paymentLabel": "Secure payment methods"
+    "paymentLabel": "Secure payment methods",
+    "security": {
+      "ssl": "256-bit SSL",
+      "gdpr": "GDPR secured",
+      "fastExecution": "Lightning fast execution"
+    }
   },
   "leaderboard": {
     "title": "Top Performing Traders",
@@ -433,7 +438,16 @@
     "feature6Title": "The trading bot trades while you sleep",
     "feature6Desc": "Auto-trading follows your strategy around the clock. No need to stare at charts all day.",
     "feature7Title": "Norwegian community",
-    "feature7Desc": "Join a growing community of Norwegian traders. Support in Norwegian when you need it."
+    "feature7Desc": "Join a growing community of Norwegian traders. Support in Norwegian when you need it.",
+    "liveSignalCard": {
+      "title": "AI signals in real-time",
+      "description": "Our AI continuously analyses the market and gives you clear buy, sell, or hold signals based on technical analysis.",
+      "latestSignal": "BTC/USDT — Latest signal",
+      "updatedEveryMinute": "Updated every minute",
+      "buy": "BUY",
+      "sell": "SELL",
+      "hold": "HOLD"
+    }
   },
   "copyTradingSection": {
     "badge": "SOCIAL TRADING",

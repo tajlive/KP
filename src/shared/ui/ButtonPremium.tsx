@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { Slot } from '@radix-ui/react-slot';
 import React, { ReactNode, ButtonHTMLAttributes, forwardRef } from 'react';
 
 interface ButtonPremiumProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -10,6 +11,7 @@ interface ButtonPremiumProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconPosition?: 'left' | 'right';
   fullWidth?: boolean;
   glow?: boolean;
+  asChild?: boolean;
 }
 
 const ButtonPremium = forwardRef<HTMLButtonElement, ButtonPremiumProps>(
@@ -25,6 +27,7 @@ const ButtonPremium = forwardRef<HTMLButtonElement, ButtonPremiumProps>(
       fullWidth = false,
       glow = false,
       disabled,
+      asChild = false,
       ...props
     },
     ref
@@ -77,11 +80,13 @@ const ButtonPremium = forwardRef<HTMLButtonElement, ButtonPremiumProps>(
       className
     );
 
+    const Comp = asChild ? Slot : 'button';
+
     return (
-      <button
+      <Comp
         ref={ref}
         className={baseClasses}
-        disabled={disabled || isLoading}
+        disabled={asChild ? undefined : disabled || isLoading}
         {...props}
       >
         {/* Loading spinner */}
@@ -107,20 +112,20 @@ const ButtonPremium = forwardRef<HTMLButtonElement, ButtonPremiumProps>(
             />
           </svg>
         )}
-        
+
         {/* Icon left */}
         {icon && iconPosition === 'left' && !isLoading && (
           <span className="flex-shrink-0">{icon}</span>
         )}
-        
+
         {/* Button text */}
         <span>{children}</span>
-        
+
         {/* Icon right */}
         {icon && iconPosition === 'right' && (
           <span className="flex-shrink-0">{icon}</span>
         )}
-      </button>
+      </Comp>
     );
   }
 );

@@ -979,7 +979,9 @@
       "badge": "Optional · Pro feature"
     },
     "ctaButton": "Start free today",
-    "ctaSubtext": "No credit card needed · Cancel anytime"
+    "ctaSubtext": "No credit card needed · Cancel anytime",
+    "ctaButtonLoggedIn": "Go to dashboard",
+    "ctaSubtextLoggedIn": "Continue your learning journey"
   },
   "coursePreview": {
     "sectionTitle": "Get started in under one hour",
@@ -2396,11 +2398,22 @@
         "title": "You're trading with paper money",
         "description": "No real money is at stake. Practice safely for as long as you want."
       },
+      "error": {
+        "completeFailed": "Could not complete onboarding. Check your connection and try again.",
+        "retry": "Try again"
+      },
       "nextSteps": {
         "title": "What happens next?",
         "step1": "Explore the dashboard",
         "step2": "Start your first paper trade",
         "step3": "Complete the 'Your First Paper Trade' course"
+      }
+    },
+    "step1": {
+      "timeEstimate": "Takes under 1 minute",
+      "error": {
+        "saveFailed": "Could not save your answers. Check your connection and try again.",
+        "retryHint": "Click 'Continue' to try again."
       }
     }
   },

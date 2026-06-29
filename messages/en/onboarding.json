@@ -167,6 +167,7 @@
       "cta": "Complete onboarding"
     },
     "error": "Could not execute trade. Please try again.",
+    "priceError": "Could not fetch BTC price. Check your connection and try again.",
     "errors": {
       "UNAUTHORIZED": "You must log in again.",
       "BAD_REQUEST": "Invalid trade request.",

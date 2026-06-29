@@ -18,6 +18,8 @@ export default function OnboardingStep1() {
   const router = useRouter();
   const supabase = createClient();
   const [checking, setChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Check auth and onboarding status
   useEffect(() => {
@@ -73,23 +75,42 @@ export default function OnboardingStep1() {
   }, [router, supabase, locale]);
 
   const handleComplete = async (answers: AIMappingAnswers) => {
-    localStorage.setItem("kp-onboarding-answers", JSON.stringify(answers));
+    setSaving(true);
+    setError(null);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      localStorage.setItem("kp-onboarding-answers", JSON.stringify(answers));
 
-    if (!user) return;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    await supabase
-      .from("user_profiles")
-      .update({
-        onboarding_step: 1,
-        onboarding_started_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+      if (!user) {
+        router.push(
+          `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step1-welcome`)}`,
+        );
+        return;
+      }
 
-    router.push(`/${locale}/onboarding/step2-level`);
+      const { error: updateError } = await supabase
+        .from("user_profiles")
+        .update({
+          onboarding_step: 1,
+          onboarding_started_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      router.push(`/${locale}/onboarding/step2-level`);
+    } catch (err) {
+      console.error("Failed to save onboarding step 1:", err);
+      setError(t("error.saveFailed"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSkip = () => {
@@ -111,6 +132,13 @@ export default function OnboardingStep1() {
   return (
     <div className="space-y-6">
       <AIMappingChat onComplete={handleComplete} onSkip={handleSkip} />
+
+      {error && (
+        <div className="rounded-xl border border-kp-danger/20 bg-kp-danger-bg p-4 text-center" role="alert">
+          <p className="text-sm text-kp-danger">{error}</p>
+          <p className="text-xs text-kp-text-secondary mt-1">{t("error.retryHint")}</p>
+        </div>
+      )}
 
       <p className="text-center text-sm text-kp-text-secondary">
         {t("timeEstimate")}

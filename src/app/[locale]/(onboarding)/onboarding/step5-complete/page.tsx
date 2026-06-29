@@ -23,11 +23,13 @@ export default function OnboardingStep5() {
   const [initializing, setInitializing] = useState(true);
   const [paperBalance, setPaperBalance] = useState<number>(100000);
   const [sessionCreated, setSessionCreated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Sjekk auth og fullfør onboarding
   useEffect(() => {
     const completeOnboarding = async () => {
       try {
+        setError(null);
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -74,12 +76,13 @@ export default function OnboardingStep5() {
         setInitializing(false);
       } catch (err) {
         console.error("Failed to complete onboarding:", err);
+        setError(t("error.completeFailed"));
         setInitializing(false);
       }
     };
 
     completeOnboarding();
-  }, [router, supabase, locale]);
+  }, [router, supabase, locale, t]);
 
   const handleGoToDashboard = () => {
     setLoading(true);
@@ -216,6 +219,25 @@ export default function OnboardingStep5() {
           </li>
         </ol>
       </div>
+
+      {/* Error message with retry */}
+      {error && (
+        <div className="rounded-xl border border-kp-danger/20 bg-kp-danger-bg p-4 text-center" role="alert">
+          <p className="text-sm text-kp-danger mb-2">{error}</p>
+          <Button
+            onClick={() => {
+              setInitializing(true);
+              setError(null);
+              window.location.reload();
+            }}
+            variant="outline"
+            size="sm"
+            className="h-10"
+          >
+            {t("error.retry")}
+          </Button>
+        </div>
+      )}
 
       {/* CTA */}
       <Button

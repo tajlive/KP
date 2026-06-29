@@ -94,6 +94,7 @@ export default function OnboardingStep4FirstTrade() {
   const [customAmount, setCustomAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [priceError, setPriceError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [tradeResult, setTradeResult] = useState<TradeResult | null>(null);
 
@@ -179,7 +180,10 @@ export default function OnboardingStep4FirstTrade() {
     const loadPrice = async () => {
       if (typeof document !== "undefined" && document.hidden) return;
       const price = await fetchBtcPrice(FIRST_TRADE_SYMBOL);
-      if (mounted) setBtcPrice(price);
+      if (mounted) {
+        setBtcPrice(price);
+        setPriceError(price == null);
+      }
     };
 
     void loadPrice();
@@ -380,6 +384,11 @@ export default function OnboardingStep4FirstTrade() {
               </span>
             )}
           </div>
+          {priceError && (
+            <p className="text-xs text-kp-danger mt-1" role="alert">
+              {t("priceError")}
+            </p>
+          )}
         </Card>
       </div>
 
