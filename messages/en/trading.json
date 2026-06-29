@@ -791,6 +791,19 @@
     "title": "Risk Metrics",
     "loadError": "Could not load risk metrics",
     "panelTooltip": "Advanced risk measures based on actual trading history",
+    "scoreTitle": "Risk Score",
+    "scoreDescription": {
+      "low": "Your strategy shows low risk. Keep following disciplined position sizing.",
+      "moderate": "Your strategy has moderate risk. Consider reducing position size during drawdowns.",
+      "high": "Your strategy shows high risk. Review stop-loss and risk settings."
+    },
+    "scoreLabel": {
+      "low": "Low risk",
+      "moderate": "Moderate risk",
+      "high": "High risk"
+    },
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
     "sortinoRatio": "Sortino Ratio",
     "sortinoTooltip": "Risk-adjusted return — only penalizes downside volatility. Higher is better.",
     "calmarRatio": "Calmar Ratio",

@@ -24,16 +24,23 @@ const TradingModeContext = createContext<TradingModeContextValue | null>(null);
 // Provider
 // ─────────────────────────────────────────────────────────────────────────────
 
+interface TradingModeProviderProps {
+  children: React.ReactNode;
+  initialMode?: TradingMode;
+  onChange?: (mode: TradingMode) => void;
+}
+
 export function TradingModeProvider({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  initialMode = "paper",
+  onChange,
+}: TradingModeProviderProps) {
   const t = useTranslations("dashboard.tradingMode");
-  const [mode, setModeState] = useState<TradingMode>("paper");
+  const [mode, setModeState] = useState<TradingMode>(initialMode);
 
   const setMode = useCallback((newMode: TradingMode) => {
     setModeState(newMode);
+    onChange?.(newMode);
     const message =
       newMode === "paper"
         ? t("switchedToPaper")
@@ -42,7 +49,7 @@ export function TradingModeProvider({
       id: "trading-mode-toast",
       duration: 2500,
     });
-  }, [t]);
+  }, [t, onChange]);
 
   return (
     <TradingModeContext.Provider value={{ mode, setMode }}>

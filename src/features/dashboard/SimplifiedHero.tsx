@@ -3,9 +3,10 @@
 import { BRAND } from "@/lib/design/tokens";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
-import { useLocale } from "next-intl";
-import { m, useMotionValue, useTransform, animate } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { m } from "framer-motion";
+
+import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 
 interface Props {
   balance?: number | null;
@@ -15,8 +16,6 @@ interface Props {
   sessionMode?: "paper" | "live";
 }
 
-import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
-
 export function SimplifiedHero({
   balance,
   changePct,
@@ -25,7 +24,9 @@ export function SimplifiedHero({
   sessionMode = "paper",
 }: Props) {
   const locale = useLocale();
+  const t = useTranslations("dashboard.hero");
   const isPaper = sessionMode === "paper";
+  const href = ctaLink ?? `/${locale}/handel?mode=${isPaper ? "paper" : "live"}`;
 
   return (
     <m.div
@@ -69,13 +70,7 @@ export function SimplifiedHero({
               }`}
             />
           </span>
-          {isPaper
-            ? locale === "no"
-              ? "Øvingsmodus"
-              : "Paper Mode"
-            : locale === "no"
-              ? "Live-modus"
-              : "Live Mode"}
+          {isPaper ? t("paperMode") : t("liveMode")}
         </span>
       </m.div>
 
@@ -87,7 +82,7 @@ export function SimplifiedHero({
         transition={{ delay: 0.15, duration: 0.4 }}
       >
         {balance == null ? (
-          <span>— kr</span>
+          <span>{t("noData")}</span>
         ) : (
           <AnimatedNumber
             value={balance}
@@ -112,7 +107,7 @@ export function SimplifiedHero({
         transition={{ delay: 0.25, duration: 0.4 }}
       >
         {changePct == null ? (
-          <span>—</span>
+          <span>{t("noData")}</span>
         ) : (
           <>
             {changePct > 0 ? "↑" : changePct < 0 ? "↓" : "→"}
@@ -121,7 +116,7 @@ export function SimplifiedHero({
           </>
         )}
         <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal ml-0.5">
-          {locale === "no" ? "siste endring" : "latest change"}
+          {t("latestChange")}
         </span>
       </m.div>
 
@@ -131,13 +126,13 @@ export function SimplifiedHero({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.4 }}
       >
-        <Link href={ctaLink ?? `/${locale}/handel?mode=paper`}>
+        <Link href={href}>
           <Button
             asChild
             className={`${BRAND.gradient} mt-6 px-8 py-5 text-base md:text-lg font-semibold rounded-xl shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200`}
           >
             <span>
-              {ctaText ?? (locale === "no" ? "Start trading" : "Start trading")}
+              {ctaText ?? (isPaper ? t("ctaPaper") : t("ctaLive"))}
             </span>
           </Button>
         </Link>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react";
+import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw, Zap, Flame } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
 
@@ -19,6 +19,7 @@ import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
 // Eksisterende komponenter
 import { SimplifiedHero } from "./SimplifiedHero";
 import { SmartActions } from "./SmartActions";
+import { DashboardWidget } from "./DashboardWidget";
 import { AutoTradingConfigCard } from "@/features/trading";
 
 // Nye onboarding & retention komponenter
@@ -276,7 +277,13 @@ export function DashboardPro({
         )}
 
         {/* Smart Actions — context-aware CTA-kort */}
-        <SmartActions userState={userState} cmsData={cmsData} />
+        <DashboardWidget
+          title={t("smartActionsTitle")}
+          icon={<Zap className="w-5 h-5" />}
+          defaultOpen={userState === "NyBruker" || userState === "Onboarded"}
+        >
+          <SmartActions userState={userState} cmsData={cmsData} />
+        </DashboardWidget>
 
         {/* Paper to Live Progress — kun for AktivTrader+ i paper mode */}
         {isPaperMode && userState !== "NyBruker" && userState !== "Onboarded" && (
@@ -392,7 +399,13 @@ export function DashboardPro({
 
             {/* Live Trade Feed — kun for aktive tradere */}
             {userState !== "NyBruker" && userState !== "Onboarded" && (
-              <LiveTradeFeed limit={8} />
+              <DashboardWidget
+                title={t("liveFeedTitle")}
+                icon={<Flame className="w-5 h-5" />}
+                defaultOpen={false}
+              >
+                <LiveTradeFeed limit={8} showHeader={false} />
+              </DashboardWidget>
             )}
 
             {/* Top Traders — fjernet: viste fake/mock-data */}

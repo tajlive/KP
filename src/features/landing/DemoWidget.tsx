@@ -6,6 +6,7 @@ import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { BRAND } from "@/lib/design/tokens";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { WifiOff, AlertTriangle } from "lucide-react";
 
 const INITIAL_BALANCE = 100_000;
 
@@ -46,12 +47,15 @@ export function DemoWidget() {
   const [prices, setPrices] = useState<number[]>([]);
   const [ticker, setTicker] = useState<BinanceTicker | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
   const [balance, setBalance] = useState(INITIAL_BALANCE);
   const [position, setPosition] = useState(0);
   const [entryPrice, setEntryPrice] = useState(0);
   const [pnl, setPnl] = useState(0);
   const [flash, setFlash] = useState<"buy" | "sell" | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   const currentPrice = prices.length > 0 ? prices[prices.length - 1] : 0;
 
@@ -76,11 +80,16 @@ export function DemoWidget() {
         // Map kline close prices to number array
         const closePrices = klinesData.map((k) => parseFloat(k[4] as string));
         setPrices(closePrices);
+        setHasError(false);
+        setLastUpdatedAt(Date.now());
         setLoading(false);
       } catch (err) {
         console.error("[DemoWidget] Failed to fetch Binance data:", err);
+        setHasError(true);
         // Fallback: start with a reasonable BTC price if API fails
-        setPrices(Array(24).fill(95_000));
+        if (prices.length === 0) {
+          setPrices(Array(24).fill(95_000));
+        }
         setLoading(false);
       }
     }
@@ -94,21 +103,40 @@ export function DemoWidget() {
       const res = await fetch(
         "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
       );
-      if (!res.ok) return;
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = (await res.json()) as { price: string };
       const price = parseFloat(data.price);
       setPrices((prev) => [...prev.slice(-23), price]);
+      setLastUpdatedAt(Date.now());
+      setHasError(false);
     } catch {
-      // Silently ignore polling errors
+      setHasError(true);
     }
   }, []);
 
   useEffect(() => {
-    intervalRef.current = setInterval(tick, 10_000);
+    intervalRef.current = window.setInterval(tick, 10_000);
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current != null) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, [tick]);
+
+  // Track online/offline state
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    setIsOffline(typeof navigator !== "undefined" && !navigator.onLine);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (position !== 0 && currentPrice > 0) {
@@ -167,6 +195,8 @@ export function DemoWidget() {
   const priceChangePercent = ticker ? parseFloat(ticker.priceChangePercent) : 0;
   const portfolioValue = balance + (position > 0 ? pnl : 0);
 
+  const isStale = !loading && (isOffline || (lastUpdatedAt != null && Date.now() - lastUpdatedAt > 60_000));
+
   return (
     <section
       id="land-demo"
@@ -186,6 +216,20 @@ export function DemoWidget() {
             </span>
             {t("liveBadge")}
           </div>
+
+          {isStale && (
+            <div className="mb-4 inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-300">
+              {isOffline ? (
+                <WifiOff className="w-4 h-4" aria-hidden="true" />
+              ) : (
+                <AlertTriangle className="w-4 h-4" aria-hidden="true" />
+              )}
+              <span>
+                {isOffline ? t("offlineNotice") : t("staleNotice")}
+              </span>
+            </div>
+          )}
+
           <h2 className="mb-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
             {t("title")}
           </h2>
@@ -316,7 +360,7 @@ export function DemoWidget() {
               <button
                 type="button"
                 onClick={handleBuy}
-                disabled={position > 0 || loading}
+                disabled={position > 0 || loading || isStale}
                 aria-label={t("buy")}
                 data-testid="demo-widget-buy"
                 className="py-3.5 rounded-xl font-bold text-white transition-all duration-200 bg-emerald-700 hover:bg-emerald-600 shadow-lg shadow-emerald-700/20 disabled:opacity-30 disabled:cursor-not-allowed"

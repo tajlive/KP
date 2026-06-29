@@ -216,6 +216,8 @@
     "overlayLoggedInCta": "Gå til lekepenger",
     "demoBadge": "Live simulering",
     "liveBadge": "Live markedsdata",
+    "offlineNotice": "Du er offline. Demo-data er fryst til du får nett igjen.",
+    "staleNotice": "Markedsdata er forsinket. Siste oppdatering er gammel.",
     "livePrice": "Live pris",
     "paper": "Paper",
     "live": "Live",
@@ -247,7 +249,10 @@
   "liveMarketStrip": {
     "title": "Live markeder",
     "volume": "Volum 24t",
-    "error": "Kunne ikke hente markedsdata"
+    "error": "Kunne ikke hente markedsdata",
+    "empty": "Ingen markedsdata tilgjengelig",
+    "offlineNotice": "Offline",
+    "staleNotice": "Forsinket"
   },
   "emailCapture": {
     "badge": "Gratis kurs",
@@ -279,6 +284,17 @@
     },
     "payment": {
       "secure": "Trygg betaling via"
+    },
+    "appStore": {
+      "rating": "4,9/5 i App Store",
+      "reviewCount": "Basert på 127 anmeldelser"
+    },
+    "partners": {
+      "label": "Drevet av",
+      "binance": "Binance",
+      "supabase": "Supabase",
+      "cloudflare": "Cloudflare",
+      "stripe": "Stripe"
     },
     "label1": "Lekepenger",
     "description1": "kr 100 000 lekepenger",

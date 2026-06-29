@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { hrefWithLocale } from '@/i18n/href-with-locale';
 import { ChevronLeft, Loader2, BookOpen, TrendingUp, Award } from 'lucide-react';
+import { OnboardingStickyFooter } from '@/features/onboarding/OnboardingStickyFooter';
 
 export const dynamic = 'force-dynamic';
 
@@ -252,25 +253,27 @@ export default function Step2LevelPage() {
         </p>
       )}
 
-      <div className="flex gap-3 pt-2">
-        <Button
-          variant="ghost"
-          onClick={() => router.push(`/${locale}/onboarding/step1-welcome`)}
-          disabled={loading}
-          className="flex-1"
-        >
-          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-          {t('back')}
-        </Button>
-        <Button
-          onClick={handleContinue}
-          disabled={!selected || loading}
-          loading={loading}
-          className="flex-[2]"
-        >
-          {loading ? t('loading') : t('continue')}
-        </Button>
-      </div>
+      <OnboardingStickyFooter>
+        <div className="flex gap-3 pt-2">
+          <Button
+            variant="ghost"
+            onClick={() => router.push(`/${locale}/onboarding/step1-welcome`)}
+            disabled={loading}
+            className="flex-1"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            {t('back')}
+          </Button>
+          <Button
+            onClick={handleContinue}
+            disabled={!selected || loading}
+            loading={loading}
+            className="flex-[2]"
+          >
+            {loading ? t('loading') : t('continue')}
+          </Button>
+        </div>
+      </OnboardingStickyFooter>
     </div>
   );
 }

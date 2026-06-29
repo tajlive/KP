@@ -11,6 +11,7 @@ import { RiskBadge } from "@/shared/ui/RiskBadge";
 import { createClient } from "@/lib/supabase/client";
 import { FIRST_TRADE_SYMBOL } from "@/lib/onboarding/constants";
 import { Bitcoin, TrendingUp, CheckCircle2 } from "lucide-react";
+import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -318,13 +319,15 @@ export default function OnboardingStep4FirstTrade() {
           </div>
         </Card>
 
-        <Button
-          onClick={() => router.push(`/${locale}/onboarding/step5-complete`)}
-          className="w-full h-12 text-lg font-semibold"
-          size="lg"
-        >
-          {t("success.cta")}
-        </Button>
+        <OnboardingStickyFooter>
+          <Button
+            onClick={() => router.push(`/${locale}/onboarding/step5-complete`)}
+            className="w-full h-12 text-lg font-semibold"
+            size="lg"
+          >
+            {t("success.cta")}
+          </Button>
+        </OnboardingStickyFooter>
       </m.div>
     );
   }
@@ -451,16 +454,17 @@ export default function OnboardingStep4FirstTrade() {
         </p>
       )}
 
-      {/* CTA */}
-      <Button
-        onClick={handleBuy}
-        disabled={!canSubmit}
-        loading={loading}
-        className="w-full h-12 text-lg font-semibold"
-        size="lg"
-      >
-        {loading ? t("buying") : t("buyCta")}
-      </Button>
+      <OnboardingStickyFooter>
+        <Button
+          onClick={handleBuy}
+          disabled={!canSubmit}
+          loading={loading}
+          className="w-full h-12 text-lg font-semibold"
+          size="lg"
+        >
+          {loading ? t("buying") : t("buyCta")}
+        </Button>
+      </OnboardingStickyFooter>
     </m.div>
   );
 }

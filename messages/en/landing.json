@@ -216,6 +216,8 @@
     "overlayLoggedInCta": "Go to paper trading",
     "demoBadge": "Live simulation",
     "liveBadge": "Live market data",
+    "offlineNotice": "You are offline. Demo data is frozen until you reconnect.",
+    "staleNotice": "Market data is delayed. Last update is old.",
     "livePrice": "Live price",
     "paper": "Paper",
     "live": "Live",
@@ -268,7 +270,10 @@
   "liveMarketStrip": {
     "title": "Live markets",
     "volume": "Volume 24h",
-    "error": "Could not fetch market data"
+    "error": "Could not fetch market data",
+    "empty": "No market data available",
+    "offlineNotice": "Offline",
+    "staleNotice": "Delayed"
   },
   "emailCapture": {
     "badge": "Free course",
@@ -300,6 +305,17 @@
     },
     "payment": {
       "secure": "Secure payment via"
+    },
+    "appStore": {
+      "rating": "4.9/5 on the App Store",
+      "reviewCount": "Based on 127 reviews"
+    },
+    "partners": {
+      "label": "Powered by",
+      "binance": "Binance",
+      "supabase": "Supabase",
+      "cloudflare": "Cloudflare",
+      "stripe": "Stripe"
     },
     "label1": "Paper Trading",
     "description1": "100,000 NOK practice funds",
