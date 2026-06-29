@@ -50,7 +50,7 @@ Du er KIMI Code 2.5, primær AI-utvikler for **Klarpakke** — en norsk SaaS-pla
 klarpakke/
 │
 ├── src/
-│ ├── app/ ← Next.js 14 App Router (UI)
+│ ├── app/ ← Next.js 16 App Router (UI)
 │ │ └── auto-trading/ ← Hauptside for trading-funksjonalitet
 │ │     ├── BotActivationWizard.tsx ← 4-stegs aktiveringsWizard [S8] ⭐
 │ │     ├── LiveModeToggle.tsx ← Paper→Live bytte + sikkerhet [S10] ⭐
@@ -261,16 +261,17 @@ MAX_PORTFOLIO_DRAWDOWN_PCT = 0.20    // 20% total → stopp alt
 ## 🔧 Tech Stack
 
 | Lag | Teknologi | Versjon |
-|---|---|---|
-| Frontend | Next.js App Router | 14 |
-| Språk | TypeScript | 5+ |
+|---|---|---|---|
+| Frontend | Next.js App Router | 16 |
+| Runtime | Cloudflare Workers (OpenNext.js + Wrangler) | — |
+| Språk | TypeScript | 5.9+ |
 | Database | Supabase (Postgres) | — |
 | Edge Functions | Deno (Supabase) | 1.x |
 | Scheduler | pg_cron + pg_net | — |
 | Validering | Zod | 3+ |
 | State | Zustand | 4+ |
-| Styling | Tailwind CSS | 3+ |
-| Feilsporing | Sentry | — |
+| Styling | Tailwind CSS | 4+ |
+| Feilsporing | GlitchTip (selv-hostet) | — |
 
 ---
 
