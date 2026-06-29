@@ -229,3 +229,32 @@
 {"subject":"migration-20260704000000","predicate":"creates","object":"user_binance_keys","validFrom":"2026-06-28T20:45:04.814Z"}
 {"subject":"user_binance_keys","predicate":"backfilled_from","object":"trading_api_keys","validFrom":"2026-06-28T20:45:04.814Z"}
 {"subject":"trading_signals","predicate":"has_migration","object":"20260705000000_add_trading_signals.sql","validFrom":"2026-06-28T20:51:01.884Z"}
+{"subject":"idempotency","predicate":"uses","object":"SupabaseClient<Database>","validFrom":"2026-06-28T22:41:51.409Z"}
+{"subject":"idempotency","predicate":"handles","object":"race-condition-via-23505-retry","validFrom":"2026-06-28T22:41:51.411Z"}
+{"subject":"idempotency","predicate":"allows","object":"retry-after-failed-state","validFrom":"2026-06-28T22:41:51.411Z"}
+{"subject":"idempotency_keys","predicate":"accessed_by","object":"service_role-only","validFrom":"2026-06-28T22:41:51.411Z"}
+{"subject":"idempotency","predicate":"tested_by","object":"src/lib/trading/idempotency.test.ts","validFrom":"2026-06-28T22:41:51.411Z"}
+{"subject":"trades","predicate":"has","object":"idempotency_key nullable","validFrom":"2026-06-28T23:02:29.859Z"}
+{"subject":"trades","predicate":"has","object":"idempotency_scope NOT NULL DEFAULT 'trade'","validFrom":"2026-06-28T23:02:29.860Z"}
+{"subject":"trades","predicate":"has","object":"composite partial unique index on (idempotency_scope, idempotency_key)","validFrom":"2026-06-28T23:02:29.860Z"}
+{"subject":"ai_decision_log","predicate":"has","object":"idempotency_scope NOT NULL DEFAULT 'signal'","validFrom":"2026-06-28T23:02:29.861Z"}
+{"subject":"migration","predicate":"fixed","object":"20260702000001_trade_idempotency_columns.sql reconciles pre-existing objects","validFrom":"2026-06-28T23:02:29.861Z"}
+{"subject":"execute-trade","predicate":"uses-idempotency-key","object":"userId, botId|strategy|manual, symbol, action|reasonCode|trade, side, Date.now()","validFrom":"2026-06-28T23:16:59.627Z"}
+{"subject":"executeTrade","predicate":"uses","object":"withIdempotency with separate requestHash","validFrom":"2026-06-28T23:29:11.580Z"}
+{"subject":"executeTrade","predicate":"has","object":"distributed lock TTL 35 seconds","validFrom":"2026-06-28T23:29:11.581Z"}
+{"subject":"executeTrade idempotency","predicate":"tested by","object":"execute-trade-idempotency.test.ts","validFrom":"2026-06-28T23:29:11.581Z"}
+{"subject":"auto-trading","predicate":"routed-through","object":"/api/cron/tick","validFrom":"2026-06-28T23:42:58.825Z"}
+{"subject":"/api/cron/tick","predicate":"creates-paper-session-for","object":"auto-trading users without active session","validFrom":"2026-06-28T23:42:58.825Z"}
+{"subject":"auto_trade_settings","predicate":"is-source-of-truth-for","object":"auto_trading_enabled users","validFrom":"2026-06-28T23:42:58.825Z"}
+{"subject":"trade_status enum","predicate":"has_values","object":"pending, filled, partially_filled, cancelled, failed","validFrom":"2026-06-29T00:17:34.340Z"}
+{"subject":"reconciliation","predicate":"uses","object":"trading_pair instead of symbol","validFrom":"2026-06-29T00:17:34.340Z"}
+{"subject":"trades table","predicate":"has_column","object":"filled_quantity NUMERIC(18,8)","validFrom":"2026-06-29T00:17:34.341Z"}
+{"subject":"BinanceExecutor.getOrderStatus","predicate":"wrapped_in","object":"binanceCircuitBreaker","validFrom":"2026-06-29T00:17:34.341Z"}
+{"subject":"Binance REJECTED","predicate":"maps_to_local","object":"failed","validFrom":"2026-06-29T00:17:34.341Z"}
+{"subject":"reconciliation query","predicate":"orders_by","object":"created_at ascending","validFrom":"2026-06-29T00:17:34.341Z"}
+{"subject":"run-backtest-edge-function","predicate":"delegates_to","object":"/api/backtest","validFrom":"2026-06-29T00:42:56.840Z"}
+{"subject":"/api/backtest","predicate":"uses","object":"canonical backtest engine (shared strategies + FIFO + fill model + risk limits)","validFrom":"2026-06-29T00:42:56.841Z"}
+{"subject":"run-backtest-edge-function","predicate":"maps_legacy_strategy_type","object":"SMA_CROSSOVER/MULTI_SIGNAL/DCA/GRID/AI_SIGNALS","validFrom":"2026-06-29T00:42:56.842Z"}
+{"subject":"backtest-parity-test","predicate":"verifies","object":"deterministic output for identical canonical engine inputs","validFrom":"2026-06-29T00:42:56.842Z"}
+{"subject":"tick-route-paper-live-parity-test","predicate":"mock_fixed_for","object":"idempotency_keys.maybeSingle returning null","validFrom":"2026-06-29T00:42:56.843Z"}
+{"subject":"lint-changed.mjs","predicate":"uses","object":"--no-warn-ignored flag","validFrom":"2026-06-29T00:42:56.847Z"}

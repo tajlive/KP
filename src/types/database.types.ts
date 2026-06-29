@@ -6830,6 +6830,7 @@ export type Database = {
           total_value: number
           trading_pair: string
           user_id: string
+          usdt_nok_rate: number | null
         }
         Insert: {
           binance_order_id?: string | null
@@ -6859,6 +6860,7 @@ export type Database = {
           total_value: number
           trading_pair: string
           user_id: string
+          usdt_nok_rate?: number | null
         }
         Update: {
           binance_order_id?: string | null
@@ -6888,6 +6890,7 @@ export type Database = {
           total_value?: number
           trading_pair?: string
           user_id?: string
+          usdt_nok_rate?: number | null
         }
         Relationships: [
           {
