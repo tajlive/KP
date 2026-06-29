@@ -508,7 +508,7 @@ async function executeTradeWithLock(
 
         const { data: trade, error: tradeError } = await supabase
           .from("trades")
-          .insert(tradeInsert as any)
+          .insert(tradeInsert as unknown as Database["public"]["Tables"]["trades"]["Insert"])
           .select()
           .single();
 
