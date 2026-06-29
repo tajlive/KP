@@ -3,8 +3,7 @@ import { validateCronSecret } from './cron'
 
 /**
  * Verifiser at request har gyldig CRON_SECRET.
- * Tidligere aksepterte vi også x-vercel-cron header og ?secret= query param —
- * fjernet ved migrering til Fly.io.
+ * x-vercel-cron er en legacy Vercel/Fly.io-header og ignoreres.
  */
 export function verifyCronRequest(req: NextRequest): NextResponse | null {
   if (!validateCronSecret(req)) {

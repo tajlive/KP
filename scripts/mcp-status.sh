@@ -61,7 +61,6 @@ if [ -f .env.mcp.local ]; then
 fi
 
 check_token "Supabase" "SUPABASE_ACCESS_TOKEN" "https://app.supabase.com/account/tokens"
-check_token "Vercel" "VERCEL_TOKEN" "https://vercel.com/account/tokens"
 check_token "Linear" "LINEAR_API_KEY" "https://linear.app/settings/api"
 check_token "Sentry" "SENTRY_AUTH_TOKEN" "https://sentry.io/settings/account/api/auth-tokens/"
 
@@ -74,7 +73,6 @@ echo ""
 echo "${BLUE}Cursor (.cursor/mcp.json):${NC}"
 if [ -f .cursor/mcp.json ]; then
     check_mcp_config .cursor/mcp.json "supabase"
-    check_mcp_config .cursor/mcp.json "vercel"
     check_mcp_config .cursor/mcp.json "linear"
     check_mcp_config .cursor/mcp.json "sentry"
 else
@@ -85,7 +83,6 @@ echo ""
 echo "${BLUE}Kimi (.kimi/mcp_config.json):${NC}"
 if [ -f .kimi/mcp_config.json ]; then
     check_mcp_config .kimi/mcp_config.json "supabase"
-    check_mcp_config .kimi/mcp_config.json "vercel"
     check_mcp_config .kimi/mcp_config.json "linear"
     check_mcp_config .kimi/mcp_config.json "sentry"
 else
@@ -108,7 +105,6 @@ check_tool() {
 }
 
 check_tool "supabase"
-check_tool "vercel"
 check_tool "node"
 check_tool "git"
 
@@ -141,7 +137,6 @@ echo ""
 echo "📚 Bruk i Kimi CLI:"
 echo ""
 echo "  @supabase list_tables          # List databasetabeller"
-echo "  @vercel create_deployment      # Deploy til Vercel"
 echo "  @linear create_issue           # Opprett Linear issue"
 echo "  @sentry get_errors             # Hent Sentry feil"
 echo ""

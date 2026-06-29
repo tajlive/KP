@@ -1,6 +1,6 @@
 /**
  * Vipps tilbys kun i markeder der produktet er ment brukt (Norden).
- * Geo hentes fra Vercel / CloudFront / Cloudflare der tilgjengelig.
+ * Geo hentes fra Cloudflare der tilgjengelig.
  */
 
 const VIPPS_MARKETS = new Set(["NO", "SE", "DK", "FI"]);
@@ -14,7 +14,6 @@ export function isVippsMarketCountry(
 
 export function countryFromRequestHeaders(headers: Headers): string | null {
   const raw =
-    headers.get("x-vercel-ip-country") ||
     headers.get("cf-ipcountry") ||
     headers.get("CloudFront-Viewer-Country") ||
     "";

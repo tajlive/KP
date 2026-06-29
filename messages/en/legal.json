@@ -106,7 +106,6 @@
     },
     "thirdParty": {
       "title": "Third-party services",
-      "vercel": "Used for website analytics and performance.",
       "sentry": "Used to monitor errors and performance.",
       "google": "Used for traffic and user behavior analytics.",
       "supabase": "Used for authentication and data storage."

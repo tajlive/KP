@@ -16,7 +16,7 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
   
-  // PRO: Increased memory for builds (matches vercel.json function memory)
+  // PRO: Increased memory for builds (matches Cloudflare Workers memory target)
   onDemandEntries: {
     // period (in ms) where the server will keep pages in the buffer
     maxInactiveAge: 60 * 60 * 1000,

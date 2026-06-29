@@ -90,7 +90,7 @@ load_env() {
   fi
 }
 
-for env_file in .env.local .env.vercel; do
+for env_file in .env.local; do
   load_env "$env_file"
 done
 
@@ -174,17 +174,7 @@ else
   skip "Linear API" "Legg LINEAR_API_KEY i .env.local (linear.app/settings/api)"
 fi
 
-# ── 5. VERCEL ─────────────────────────────
-if [ -n "${VERCEL_TOKEN:-}" ]; then
-  check "Vercel API" \
-    "curl -sf 'https://api.vercel.com/v9/projects' \
-      -H 'Authorization: Bearer ${VERCEL_TOKEN}' | jq -r '.projects[0].name'" \
-    ""
-else
-  skip "Vercel API" "Legg VERCEL_TOKEN i .env.local (vercel.com/account/tokens)"
-fi
-
-# ── 6. STRIPE ─────────────────────────────
+# ── 5. STRIPE ─────────────────────────────
 if [ -n "${STRIPE_SECRET_KEY:-}" ]; then
   check "Stripe API" \
     "curl -sf https://api.stripe.com/v1/account -u '${STRIPE_SECRET_KEY}:' | jq -r .object" \

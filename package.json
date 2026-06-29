@@ -31,8 +31,6 @@
     "sanity:verify": "node scripts/sanity-check.mjs",
     "sanity:guard": "node scripts/sanity-check.mjs --strict",
     "sanity:guard:json": "node scripts/sanity-check.mjs --json",
-    "sanity:bootstrap": "node scripts/sanity-auto-setup.mjs",
-    "sanity:bootstrap:dry": "node scripts/sanity-auto-setup.mjs --dry-run",
     "sanity:seed": "node scripts/seed-sanity.mjs",
     "sanity:migrate": "tsx scripts/migrate-to-sanity.ts",
     "sanity:import": "sanity import",

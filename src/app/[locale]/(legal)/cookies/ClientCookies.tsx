@@ -61,7 +61,6 @@ export default function ClientCookies() {
         <section>
           <h2 className="text-xl font-semibold mb-4">{t("thirdParty.title")}</h2>
           <ul className="list-disc pl-5 space-y-2 text-gray-600">
-            <li><strong>Vercel Analytics:</strong> {t("thirdParty.vercel")}</li>
             <li><strong>Sentry:</strong> {t("thirdParty.sentry")}</li>
             <li><strong>Google Analytics:</strong> {t("thirdParty.google")}</li>
             <li><strong>Supabase:</strong> {t("thirdParty.supabase")}</li>

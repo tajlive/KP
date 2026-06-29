@@ -34,23 +34,23 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════════════════════════"
-echo "📝 STEG 1: VERCEL TOKEN"
+echo "📝 STEG 1: CLOUDFLARE API TOKEN"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "1. Åpne: ${BLUE}https://vercel.com/account/tokens${NC}"
+echo "1. Åpne: ${BLUE}https://dash.cloudflare.com/profile/api-tokens${NC}"
 echo "2. Klikk: ${GREEN}Create Token${NC}"
-echo "3. Velg:  ${YELLOW}Full Account${NC} (eller kun ditt team)"
+echo "3. Velg:  ${YELLOW}Edit Cloudflare Workers${NC} (eller en tilpasset token med Workers-edit + Zone-read)"
 echo "4. Kopier token og kjør:"
 echo ""
-echo "   ${BLUE}export VERCEL_TOKEN='din-token-her'${NC}"
-echo "   ${BLUE}echo \"VERCEL_TOKEN=\$VERCEL_TOKEN\" >> .env.mcp.local${NC}"
+echo "   ${BLUE}export CLOUDFLARE_API_TOKEN='din-token-her'${NC}"
+echo "   ${BLUE}echo \"CLOUDFLARE_API_TOKEN=\$CLOUDFLARE_API_TOKEN\" >> .env.mcp.local${NC}"
 echo ""
 
 # Sjekk om token allerede finnes
-if grep -q "VERCEL_TOKEN=your_" .env.mcp.local 2>/dev/null || ! grep -q "VERCEL_TOKEN=" .env.mcp.local 2>/dev/null; then
-  echo -e "${YELLOW}⚠️  VERCEL_TOKEN mangler i .env.mcp.local${NC}"
+if grep -q "CLOUDFLARE_API_TOKEN=your_" .env.mcp.local 2>/dev/null || ! grep -q "CLOUDFLARE_API_TOKEN=" .env.mcp.local 2>/dev/null; then
+  echo -e "${YELLOW}⚠️  CLOUDFLARE_API_TOKEN mangler i .env.mcp.local${NC}"
 else
-  echo -e "${GREEN}✅ VERCEL_TOKEN funnet${NC}"
+  echo -e "${GREEN}✅ CLOUDFLARE_API_TOKEN funnet${NC}"
 fi
 
 echo ""
@@ -120,19 +120,19 @@ echo "════════════════════════�
 echo ""
 
 # Sjekk status
-VERCEL_OK=false
+CLOUDFLARE_OK=false
 SUPABASE_OK=false
 
 if [ -f ".env.mcp.local" ]; then
-  if ! grep -q "VERCEL_TOKEN=your_" .env.mcp.local 2>/dev/null && grep -q "VERCEL_TOKEN=" .env.mcp.local 2>/dev/null; then
-    VERCEL_OK=true
+  if ! grep -q "CLOUDFLARE_API_TOKEN=your_" .env.mcp.local 2>/dev/null && grep -q "CLOUDFLARE_API_TOKEN=" .env.mcp.local 2>/dev/null; then
+    CLOUDFLARE_OK=true
   fi
   if ! grep -q "SUPABASE_ACCESS_TOKEN=your_" .env.mcp.local 2>/dev/null && grep -q "SUPABASE_ACCESS_TOKEN=" .env.mcp.local 2>/dev/null; then
     SUPABASE_OK=true
   fi
 fi
 
-if [ "$VERCEL_OK" = true ] && [ "$SUPABASE_OK" = true ]; then
+if [ "$CLOUDFLARE_OK" = true ] && [ "$SUPABASE_OK" = true ]; then
   echo -e "${GREEN}🎉 Alt er konfigurert!${NC}"
   echo ""
   echo "Neste steg:"
@@ -142,8 +142,8 @@ if [ "$VERCEL_OK" = true ] && [ "$SUPABASE_OK" = true ]; then
 else
   echo -e "${YELLOW}⚠️  Setup ikke fullført${NC}"
   echo ""
-  if [ "$VERCEL_OK" = false ]; then
-    echo -e "   ${RED}❌ VERCEL_TOKEN mangler${NC}"
+  if [ "$CLOUDFLARE_OK" = false ]; then
+    echo -e "   ${RED}❌ CLOUDFLARE_API_TOKEN mangler${NC}"
   fi
   if [ "$SUPABASE_OK" = false ]; then
     echo -e "   ${RED}❌ SUPABASE_ACCESS_TOKEN mangler${NC}"

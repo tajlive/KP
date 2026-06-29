@@ -25,18 +25,6 @@ export function i18nMiddleware(
     return res;
   }
 
-  const host = request.headers.get("host") || "";
-
-  // 1. Canonical redirect for *.vercel.app
-  if (host.endsWith(".vercel.app") && process.env.NEXT_PUBLIC_APP_URL) {
-    const canonical = new URL(process.env.NEXT_PUBLIC_APP_URL);
-    const url = request.nextUrl.clone();
-    url.hostname = canonical.hostname;
-    url.port = "";
-    url.protocol = canonical.protocol;
-    return NextResponse.redirect(url, { status: 308 });
-  }
-
   const { locale, strippedPath } = parseLocalePath(pathname);
 
   // Detect duplicate locale prefix (e.g. /no/no/priser → /no/priser)

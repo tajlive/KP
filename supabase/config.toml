@@ -39,7 +39,7 @@ project_id = "pskhryjzkobytnfwucrb"
 # [auth]
 # enabled = true
 # site_url = "https://www.klarpakke.no"
-# additional_redirect_urls = ["https://www.klarpakke.no/**", "https://klarpakke.no/**", "https://*.vercel.app/**", "http://localhost:3000/**"]
+# additional_redirect_urls = ["https://www.klarpakke.no/**", "https://klarpakke.no/**", "http://localhost:3000/**"]
 # jwt_expiry = 3600
 # enable_refresh_token_rotation = true
 # refresh_token_reuse_interval = 10

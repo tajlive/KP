@@ -19,7 +19,6 @@ const AUTH_CONFIG = {
   redirect_urls: [
     "https://www.klarpakke.no/**",
     "https://klarpakke.no/**",
-    "https://*.vercel.app/**", // Preview deployments
   ],
   // JWT og session innstillinger
   jwt_expiry: 3600, // 1 time
