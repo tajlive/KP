@@ -67,8 +67,10 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 
 export default function DashboardClientLayout({
   children,
+  initialTradingMode = "paper",
 }: {
   children: React.ReactNode;
+  initialTradingMode?: "paper" | "live";
 }) {
   return (
     <>
@@ -84,7 +86,7 @@ export default function DashboardClientLayout({
             <ErrorBoundary>
               <AuthProvider>
                 <ToastProvider>
-                  <TradingModeProvider>
+                  <TradingModeProvider initialMode={initialTradingMode}>
                     <TradeSuccessProvider>
                       <ProtectedRoute>
                         <OnboardingFlow />

@@ -8,6 +8,9 @@ import { FeaturesBentoGrid } from "@/features/landing/FeaturesBentoGrid";
 import { ThreeSteps } from "@/features/landing/ThreeSteps";
 import SanityFAQSection from "@/features/landing/SanityFAQSection";
 import { StickyCTA } from "@/features/landing/StickyCTA";
+import SanityTestimonials from "@/features/landing/SanityTestimonials";
+import { AboutKlarpakkeSection } from "@/features/landing/AboutKlarpakkeSection";
+import FinalCTASection from "@/features/landing/FinalCTASection";
 
 import {
   MarketingPageShell,
@@ -49,7 +52,10 @@ export default async function HomePage({ params }: HomePageProps) {
       <TrustStrip />
       <FeaturesBentoGrid />
       <ThreeSteps />
+      <SanityTestimonials />
+      <FinalCTASection />
       <SanityFAQSection />
+      <AboutKlarpakkeSection locale={locale} />
       <StickyCTA />
     </MarketingPageShell>
   );

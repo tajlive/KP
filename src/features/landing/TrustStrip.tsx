@@ -7,7 +7,7 @@
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { GlassCard } from '@/shared/ui/GlassCard';
-import { Shield, Zap } from 'lucide-react';
+import { Shield, Zap, Star, Database, Cloud, Bitcoin, CreditCard } from 'lucide-react';
 
 interface TrustStripProps {
   locale?: string;
@@ -87,6 +87,44 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
               </div>
             </GlassCard>
           ))}
+        </div>
+
+        {/* App rating + partners */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+          <GlassCard variant="subtle" padding="md" className="flex items-center gap-4">
+            <div className="flex -space-x-1">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-5 h-5 ${i < 4 || i === 4 ? 'text-yellow-400 fill-yellow-400' : 'text-kp-text-tertiary'}`}
+                  aria-hidden="true"
+                />
+              ))}
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-kp-text-primary">{t('appStore.rating')}</div>
+              <div className="text-xs text-kp-text-tertiary">{t('appStore.reviewCount')}</div>
+            </div>
+          </GlassCard>
+
+          <GlassCard variant="subtle" padding="md">
+            <div className="text-xs font-medium text-kp-text-tertiary uppercase tracking-wide mb-2">
+              {t('partners.label')}
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              {[
+                { name: t('partners.binance'), icon: Bitcoin },
+                { name: t('partners.supabase'), icon: Database },
+                { name: t('partners.cloudflare'), icon: Cloud },
+                { name: t('partners.stripe'), icon: CreditCard },
+              ].map((partner) => (
+                <div key={partner.name} className="flex items-center gap-1.5 text-sm text-kp-text-secondary">
+                  <partner.icon className="w-4 h-4 text-kp-brand" aria-hidden="true" />
+                  <span>{partner.name}</span>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
         </div>
 
         {/* Payment Methods */}

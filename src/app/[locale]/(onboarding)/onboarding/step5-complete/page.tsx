@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { CheckCircle2, Loader2, Shield, ListChecks } from "lucide-react";
+import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -220,41 +221,45 @@ export default function OnboardingStep5() {
         </ol>
       </div>
 
-      {/* Error message with retry */}
-      {error && (
-        <div className="rounded-xl border border-kp-danger/20 bg-kp-danger-bg p-4 text-center" role="alert">
-          <p className="text-sm text-kp-danger mb-2">{error}</p>
+      <OnboardingStickyFooter>
+        <div className="space-y-4">
+          {/* Error message with retry */}
+          {error && (
+            <div className="rounded-xl border border-kp-danger/20 bg-kp-danger-bg p-4 text-center" role="alert">
+              <p className="text-sm text-kp-danger mb-2">{error}</p>
+              <Button
+                onClick={() => {
+                  setInitializing(true);
+                  setError(null);
+                  window.location.reload();
+                }}
+                variant="outline"
+                size="sm"
+                className="h-10"
+              >
+                {t("error.retry")}
+              </Button>
+            </div>
+          )}
+
+          {/* CTA */}
           <Button
-            onClick={() => {
-              setInitializing(true);
-              setError(null);
-              window.location.reload();
-            }}
-            variant="outline"
-            size="sm"
-            className="h-10"
+            onClick={handleGoToDashboard}
+            className="w-full h-12 text-lg font-semibold"
+            size="lg"
+            disabled={loading || !sessionCreated}
           >
-            {t("error.retry")}
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                {t("loading")}
+              </>
+            ) : (
+              t("cta")
+            )}
           </Button>
         </div>
-      )}
-
-      {/* CTA */}
-      <Button
-        onClick={handleGoToDashboard}
-        className="w-full h-12 text-lg font-semibold"
-        size="lg"
-        disabled={loading || !sessionCreated}
-      >
-        {loading ? (
-          <>
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            {t("loading")}
-          </>
-        ) : (
-          t("cta")
-        )}
-      </Button>
+      </OnboardingStickyFooter>
     </div>
   );
 }

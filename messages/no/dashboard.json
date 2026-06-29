@@ -73,6 +73,21 @@
     }
   },
   "welcome": "Velkommen til Klarpakke",
+  "hero": {
+    "paperMode": "Øvingsmodus",
+    "liveMode": "Live-modus",
+    "latestChange": "siste endring",
+    "ctaPaper": "Start trading",
+    "ctaLive": "Start live trading",
+    "noData": "—"
+  },
+  "topBar": {
+    "paperMode": "Øvingsmodus",
+    "liveMode": "Live-modus",
+    "ctaPaper": "Trade",
+    "ctaLive": "Trade live",
+    "noData": "—"
+  },
   "tradingMode": {
     "paper": "Lekepenger",
     "live": "Live-handel",
@@ -538,7 +553,9 @@
       "balance": "Kontobalanse",
       "balanceSub": "Tilgjengelig kapital"
     },
-    "scopeLabel": "Basert på aktive og fullførte {mode}-sessions"
+    "scopeLabel": "Basert på aktive og fullførte {mode}-sessions",
+    "smartActionsTitle": "Hurtighandlinger",
+    "liveFeedTitle": "Live handler"
   },
   "nlqChat": {
     "openChat": "Åpne chat",

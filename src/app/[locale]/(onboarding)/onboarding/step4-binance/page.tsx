@@ -8,6 +8,7 @@ import { Input } from "@/shared/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { Link2, SkipForward, Eye, EyeOff, Shield } from "lucide-react";
+import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -217,25 +218,27 @@ export default function OnboardingStep4() {
         </div>
       </div>
 
-      {/* Connect Button */}
-      <Button
-        onClick={handleConnect}
-        className="w-full h-12 text-lg font-semibold"
-        size="lg"
-        disabled={!apiKey || !apiSecret || connecting}
-      >
-        {connecting ? t("connecting") : t("cta")}
-      </Button>
+      <OnboardingStickyFooter>
+        <div className="space-y-2">
+          <Button
+            onClick={handleConnect}
+            className="w-full h-12 text-lg font-semibold"
+            size="lg"
+            disabled={!apiKey || !apiSecret || connecting}
+          >
+            {connecting ? t("connecting") : t("cta")}
+          </Button>
 
-      {/* Skip Link */}
-      <button
-        onClick={handleSkip}
-        disabled={loading}
-        className="w-full flex items-center justify-center gap-2 text-kp-text-secondary hover:text-kp-text-primary transition-colors py-2"
-      >
-        <SkipForward className="w-4 h-4" />
-        {loading ? t("skipping") : t("skip")}
-      </button>
+          <button
+            onClick={handleSkip}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 text-kp-text-secondary hover:text-kp-text-primary transition-colors py-2"
+          >
+            <SkipForward className="w-4 h-4" />
+            {loading ? t("skipping") : t("skip")}
+          </button>
+        </div>
+      </OnboardingStickyFooter>
     </div>
   );
 }

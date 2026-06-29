@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, WifiOff, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/format-number";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
@@ -109,6 +109,8 @@ export function LiveMarketStrip() {
   const [assets, setAssets] = useState<DisplayAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
 
   const fetchSnapshot = useCallback(async () => {
     try {
@@ -119,6 +121,7 @@ export function LiveMarketStrip() {
       if (data.assets && data.assets.length > 0) {
         setAssets(mapAssets(data.assets));
         setHasError(false);
+        setLastUpdatedAt(Date.now());
       } else {
         setHasError(true);
       }
@@ -135,6 +138,21 @@ export function LiveMarketStrip() {
     const interval = setInterval(fetchSnapshot, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [fetchSnapshot]);
+
+  // Track online/offline state
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    setIsOffline(typeof navigator !== "undefined" && !navigator.onLine);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -160,21 +178,40 @@ export function LiveMarketStrip() {
     );
   }
 
-  if (hasError && assets.length === 0) {
-    return null;
-  }
+  const isStale =
+    !loading &&
+    (isOffline ||
+      (lastUpdatedAt != null && Date.now() - lastUpdatedAt > 60_000));
 
   return (
     <section className="border-y border-kp-border bg-kp-bg-secondary">
       <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-kp-text-primary">
-            {t("title")}
-          </h2>
-          {hasError && (
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-semibold text-kp-text-primary">
+              {t("title")}
+            </h2>
+            {isStale && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-amber-500">
+                {isOffline ? (
+                  <WifiOff className="w-3.5 h-3.5" aria-hidden="true" />
+                ) : (
+                  <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
+                )}
+                {isOffline ? t("offlineNotice") : t("staleNotice")}
+              </span>
+            )}
+          </div>
+          {hasError && assets.length === 0 && (
             <span className="text-xs text-kp-text-muted">{t("error")}</span>
           )}
         </div>
+
+        {assets.length === 0 && (
+          <div className="rounded-xl border border-kp-border bg-kp-bg-primary p-6 text-center text-sm text-kp-text-secondary">
+            {t("empty")}
+          </div>
+        )}
 
         <div className="flex gap-4 overflow-x-auto pb-2">
           {assets.map((asset, index) => (

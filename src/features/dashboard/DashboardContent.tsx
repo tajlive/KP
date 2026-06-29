@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { RiskMetricsPanel } from "@/features/portfolio/RiskMetricsPanel";
 import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
@@ -9,6 +8,8 @@ import { computeUserState } from "@/hooks/useUserState";
 import { AdaptiveDashboard } from "./AdaptiveDashboard";
 import TradingModeToggle from "@/features/trading/TradingModeToggle";
 import { Badge } from "@/shared/ui/badge";
+import { DashboardTopBar } from "./DashboardTopBar";
+import { useTradingMode } from "@/context/TradingModeContext";
 import type { DashboardMode } from "@/hooks/useDashboardMetrics";
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
@@ -55,13 +56,18 @@ export function DashboardContent({
   isPriority = false,
 }: DashboardContentProps) {
   const t = useTranslations("dashboard");
-  const [mode, setMode] = useState<DashboardMode>(preferredTradingMode);
-  const [hasSwitched, setHasSwitched] = useState(false);
+  const { mode, setMode } = useTradingMode();
 
-  const handleModeChange = useCallback((newMode: DashboardMode) => {
-    setMode(newMode);
-    setHasSwitched(true);
-  }, []);
+  // Keep server metrics only until the user actively switches mode; after that,
+  // fetch client-side data for the newly selected mode.
+  const hasSwitched = mode !== preferredTradingMode;
+
+  const handleModeChange = useCallback(
+    (newMode: DashboardMode) => {
+      setMode(newMode);
+    },
+    [setMode],
+  );
 
   const useServerMetrics = serverMetrics && !hasSwitched;
 
@@ -80,13 +86,16 @@ export function DashboardContent({
   const isError = useServerMetrics ? false : clientError;
   const error = useServerMetrics ? null : clientErrorObj;
 
+  const totalReturn = useMemo(() => {
+    if (!data || data.startingCapital <= 0) return undefined;
+    return ((data.totalCapital - data.startingCapital) / data.startingCapital) * 100;
+  }, [data]);
+
   const userState = computeUserState({
     tradesCount: data?.totalTrades ?? 0,
     signupDays: signupDays ?? 30,
     sessionCount: data?.sessionCount ?? 0,
-    totalPnlPct: data && data.startingCapital > 0
-      ? ((data.totalCapital - data.startingCapital) / data.startingCapital) * 100
-      : 0,
+    totalPnlPct: totalReturn ?? 0,
   }).state;
 
   const stats = data
@@ -102,29 +111,31 @@ export function DashboardContent({
     : null;
 
   return (
-    <div suppressHydrationWarning>
-      <m.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="bg-kp-bg-primary min-h-screen"
-      >
-        <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
-            <Badge variant="outline" className="w-fit text-xs">
-              {mode === "paper"
-                ? t("dashboardPro.showingPaper")
-                : t("dashboardPro.showingLive")}
-            </Badge>
-            <TradingModeToggle
-              mode={mode}
-              onToggle={handleModeChange}
-              paperLabel={t("tradingMode.paper")}
-              liveLabel={t("tradingMode.live")}
-            />
-          </div>
+    <div suppressHydrationWarning className="bg-kp-bg-primary min-h-screen"
+    >
+      <DashboardTopBar
+        balance={data?.totalCapital}
+        changePct={totalReturn}
+        mode={mode}
+        ctaLink={cmsData?.heroCtaLink}
+      />
 
-          <AdaptiveDashboard
+      <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
+          <Badge variant="outline" className="w-fit text-xs">
+            {mode === "paper"
+              ? t("dashboardPro.showingPaper")
+              : t("dashboardPro.showingLive")}
+          </Badge>
+          <TradingModeToggle
+            mode={mode}
+            onToggle={handleModeChange}
+            paperLabel={t("tradingMode.paper")}
+            liveLabel={t("tradingMode.live")}
+          />
+        </div>
+
+        <AdaptiveDashboard
             userId={userId}
             userState={userState}
             userName={userName}
@@ -137,14 +148,13 @@ export function DashboardContent({
             cmsData={cmsData}
             isPriority={isPriority}
           />
-        </div>
+      </div>
 
-        <div className="bg-kp-bg-primary px-0 sm:px-4 md:px-8 pb-8">
-          <div className="max-w-7xl mx-auto">
-            <RiskMetricsPanel />
-          </div>
+      <div className="bg-kp-bg-primary px-0 sm:px-4 md:px-8 pb-8">
+        <div className="max-w-7xl mx-auto">
+          <RiskMetricsPanel />
         </div>
-      </m.div>
+      </div>
     </div>
   );
 }

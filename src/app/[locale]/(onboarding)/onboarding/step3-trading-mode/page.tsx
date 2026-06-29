@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
+import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -201,15 +202,16 @@ export default function OnboardingStep3() {
           </p>
         )}
 
-        {/* CTA */}
-        <Button
-          onClick={handleContinue}
-          className="w-full h-12 text-lg font-semibold"
-          size="lg"
-          disabled={loading}
-        >
-          {loading ? t("loading") : t("cta")}
-        </Button>
+        <OnboardingStickyFooter>
+          <Button
+            onClick={handleContinue}
+            className="w-full h-12 text-lg font-semibold"
+            size="lg"
+            disabled={loading}
+          >
+            {loading ? t("loading") : t("cta")}
+          </Button>
+        </OnboardingStickyFooter>
       </m.div>
     </TooltipProvider>
   );

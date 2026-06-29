@@ -14,6 +14,11 @@
   "bankid": "BankID",
   "video": "Welcome Video",
   "done": "Done",
+  "trustBar": {
+    "bankid": "BankID",
+    "encrypted": "256-bit encrypted",
+    "regulated": "Regulated in Norway"
+  },
   "startFree": "Start now – completely free",
   "noCreditCard": "No credit card needed",
   "virtualCapital": "100,000 NOK virtual capital included",

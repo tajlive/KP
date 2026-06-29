@@ -14,6 +14,11 @@
   "bankid": "BankID",
   "video": "Velkomstvideo",
   "done": "Ferdig",
+  "trustBar": {
+    "bankid": "BankID",
+    "encrypted": "256-bit kryptering",
+    "regulated": "Regulert i Norge"
+  },
   "startFree": "Start nå – helt gratis",
   "noCreditCard": "Ingen kort nødvendig",
   "virtualCapital": "100 000 kr virtuell kapital inkludert",

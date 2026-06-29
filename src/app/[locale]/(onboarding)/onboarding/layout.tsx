@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Logo } from "@/shared/ui/Logo";
+import { OnboardingTrustBar } from "@/features/onboarding/OnboardingTrustBar";
 
 export const runtime = 'nodejs';
 
@@ -65,6 +66,9 @@ export default async function OnboardingLayout({
         </div>
       </header>
 
+      {/* Trust signals */}
+      <OnboardingTrustBar />
+
       {/* Progress bar */}
       <div className="bg-kp-bg-secondary">
         <div className="max-w-2xl mx-auto">
@@ -78,7 +82,7 @@ export default async function OnboardingLayout({
       </div>
 
       {/* Main content */}
-      <main className="max-w-2xl mx-auto px-4 py-8">
+      <main className="max-w-2xl mx-auto px-4 py-8 pb-28 md:pb-8">
         <div className="bg-[var(--kp-bg-secondary)] rounded-2xl shadow-sm border border-[var(--kp-border)] p-6 md:p-8">
           {children}
         </div>

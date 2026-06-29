@@ -791,6 +791,19 @@
     "title": "Risikometrikker",
     "loadError": "Kunne ikke laste risikometrikker",
     "panelTooltip": "Avanserte risikomålinger basert på faktisk handelshistorikk",
+    "scoreTitle": "Risikoscore",
+    "scoreDescription": {
+      "low": "Din strategi viser lav risiko. Fortsett med disiplinert posisjonsstyring.",
+      "moderate": "Din strategi har moderat risiko. Vurder å redusere posisjonsstørrelse ved tap.",
+      "high": "Din strategi viser høy risiko. Gå gjennom stop-loss og risikoinnstillinger."
+    },
+    "scoreLabel": {
+      "low": "Lav risiko",
+      "moderate": "Moderat risiko",
+      "high": "Høy risiko"
+    },
+    "showDetails": "Vis detaljer",
+    "hideDetails": "Skjul detaljer",
     "sortinoRatio": "Sortino-ratio",
     "sortinoTooltip": "Risikojustert avkastning — kun straffer nedsidevolatilitet. Høyere er bedre.",
     "calmarRatio": "Calmar-ratio",
