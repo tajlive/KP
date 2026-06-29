@@ -446,7 +446,7 @@
       "subscriptionAccess": "Abonnement & Tilgang",
       "currentTier": "Nåværende tier",
       "maxStrategies": "Maks strategier",
-      "paperTrading": "Paper trading",
+      "paperTrading": "Lekepenger",
       "liveTrading": "Live trading",
       "activeTrial": "Aktiv Trial",
       "upgradeSubscription": "Oppgrader abonnement",
@@ -795,7 +795,7 @@
     "monthly": "Månedlig",
     "allTime": "Totalt",
     "weeklyPrize": "Ukentlig vinner får 1 måned gratis abonnement",
-    "monthlyPrize": "Månedlig konkurranse med paper trading",
+    "monthlyPrize": "Månedlig konkurranse med lekepenger",
     "yourPosition": "Din plassering",
     "topPercent": "Topp {percent}%",
     "return": "Avkastning",
@@ -1332,7 +1332,7 @@
       "defaultName": "trader",
       "subtitle": "La oss få deg i gang med din første trading-bot.",
       "step1": "Velg strategi",
-      "step2": "Start paper bot",
+      "step2": "Start lekepengebot",
       "step3": "Følg med på resultater",
       "cta": "Start din første bot",
       "demoHint": "Du handler med 100 000 NOK virtuell kapital"
@@ -1345,7 +1345,7 @@
       "stats": "{count} trade(s) fullført"
     },
     "paperToLive": {
-      "title": "Paper trading fremgang",
+      "title": "Lekepenger fremgang",
       "progress": "{current}/{target} trades fullført",
       "unlockText": "Fullfør {remaining} trades for å låse opp live trading preview",
       "unlocked": "Live trading preview er ulåst!",
@@ -1353,7 +1353,7 @@
     },
     "emptyBotState": {
       "title": "Velg din første strategi",
-      "subtitle": "Velg en strategi for å komme i gang med paper trading",
+      "subtitle": "Velg en strategi for å komme i gang med lekepenger",
       "dca": {
         "name": "DCA",
         "description": "Dollar-Cost Averaging: Bygg posisjoner gradvis over tid"
@@ -1485,7 +1485,7 @@
     },
     "smartActions": {
       "newUser": {
-        "title": "Start Paper Trading",
+        "title": "Start Lekepenger",
         "description": "Øv deg risikofritt med 100 000 kr i virtuell kapital.",
         "cta": "Kom i gang"
       },
@@ -1632,7 +1632,7 @@
       "accuracy": "Handlingsnøyaktighet",
       "lessonsAvailable": "Tilgjengelige leksjoner"
     },
-    "monthlyPrize": "Månedlig konkurranse med paper trading",
+    "monthlyPrize": "Månedlig konkurranse med lekepenger",
     "monthlyCompetitionOngoing": "pågår",
     "daysLeft": "dager igjen"
   },
@@ -1905,7 +1905,7 @@
       },
       "3": {
         "title": "Øv med lekepenger",
-        "description": "Bruk paper trading til å teste strategier uten risiko. Se hvordan markedet fungerer i praksis."
+        "description": "Bruk lekepenger til å teste strategier uten risiko. Se hvordan markedet fungerer i praksis."
       },
       "4": {
         "title": "Aktiver auto-trading",
@@ -1935,7 +1935,7 @@
     "leaderboard": {
       "badge": "Toppliste",
       "title": "Mest lønnsomme tradere",
-      "subtitle": "Se hvem som leder denne uken i vår paper-trading konkurranse. Start din egen reise mot toppen!",
+      "subtitle": "Se hvem som leder denne uken i vår lekepenger konkurranse. Start din egen reise mot toppen!",
       "ctaPrimary": "Se full leaderboard",
       "ctaSecondary": "Bli med",
       "trustNote": "Resultater fra simulert trading. Ikke finansiell rådgivning."
@@ -2303,7 +2303,7 @@
       },
       "step3": {
         "title": "Du er klar!",
-        "line1": "Din paper trading-konto med",
+        "line1": "Din lekepenger-konto med",
         "line2": "er aktiv.",
         "line3": "Gå til dashboardet for å følge med på resultatene.",
         "goToDashboard": "Gå til dashboard",
@@ -2333,10 +2333,19 @@
     "description": "Øv deg på trading uten risiko",
     "workspaceHeader": {
       "title": "Trading-arbeidsflate",
-      "subtitle": "Øv deg på trading med lekepenger"
+      "subtitle": "Øv deg på trading med lekepenger",
+      "eyebrowPaper": "Lekepenger arbeidsflate",
+      "eyebrowLive": "Live arbeidsflate",
+      "badge": "Handelsflate"
     },
+    "modeBanner": {
+      "paper": "Lekepenger — ingen ekte penger",
+      "live": "Live — ekte penger. Handle med omhu."
+    },
+    "modePaper": "Lekepenger",
+    "modeLive": "Live",
     "balance": "Saldo",
-    "newSession": "Ny trade",
+    "newSession": "Ny øving",
     "tradingPair": "Handelspar",
     "startCapital": "Startkapital",
     "cancel": "Avbryt",
@@ -2416,6 +2425,8 @@
     },
     "resetSession": "Nullstill øving",
     "mySessions": "Mine sesjoner",
+    "backToOverview": "Tilbake til oversikt",
+    "backToDashboard": "Tilbake til dashboard",
     "noSessions": "Ingen sesjoner",
     "noSessionsDesc": "Start din første øvingshandel for å øve uten risiko.",
     "startFirst": "Start første øving",
@@ -2424,11 +2435,14 @@
     "binanceUpdateInfo": "Priser oppdateres fra Binance i sanntid",
     "trades": "Handler",
     "now": "Nå",
-    "confirmResetAll": "Nullstill alle øvishandelsesjoner? Alle handler slettes og saldo tilbakestilles til 100 000 kr.",
-    "resetSuccess": "Øvishandel nullstilt. Saldo: 100 000 kr.",
+    "confirmResetAll": "Nullstill alle øvingssesjoner? Alle handler slettes og saldo tilbakestilles til 100 000 kr.",
+    "resetSuccess": "Lekepenger nullstilt. Saldo: 100 000 kr.",
     "sessions": {
       "maxActiveReached": "Maks aktive sesjoner nådd. Omdirigerer...",
-      "maxActiveStudent": "Du har nådd maksimalt antall aktive sesjoner for din plan."
+      "maxActiveStudent": "Du har nådd maksimalt antall aktive sesjoner for din plan.",
+      "activeOverview": "{active, plural, =0 {Ingen aktive tradere akkurat nå} =1 {1 aktiv trader kjører} other {# aktive tradere kjører}}",
+      "historyHidden": "{count, plural, =1 {1 eldre krasjet/stoppet økt er skjult for å holde oversikten ryddig.} other {# eldre krasjede/stoppede økter er skjult for å holde oversikten ryddig.}}",
+      "showHistory": "Vis historikk"
     },
     "errors": {
       "validationFailed": "Ugyldig input – sjekk feltene og prøv igjen.",
@@ -2688,7 +2702,7 @@
     "stopLossPercentLabel": "Stop-loss (%)",
     "submit": "Kopier strategi",
     "submitting": "Kopierer…",
-    "successToast": "Strategien er kopiert til paper trading.",
+    "successToast": "Strategien er kopiert til lekepenger.",
     "errorGeneric": "Noe gikk galt. Prøv igjen.",
     "errorNotSignedIn": "Du må logge inn for å kopiere.",
     "validation_capitalMin": "Minimum 1 000 NOK",
@@ -3563,8 +3577,21 @@
   "BotWizard": {
     "startBotTitle": "Start trading-bot",
     "startBotSubtitle": "Sett strategi, risiko og kapital. Boten starter i Lekepenger og viser handler fortløpende i historikken.",
+    "startBotSubtitleLive": "Sett strategi, risiko og kapital. Boten starter i Live-modus med ekte penger.",
     "upgradeNotice": "Du har 1 strategi inkludert. Oppgrader for flere strategier og flere valutaer.",
     "seePlans": "Se planer",
+    "modeLabel": "Handelsmodus",
+    "modeLabelPaper": "Øv med lekepenger uten risiko",
+    "modeLabelLive": "Handel med ekte penger",
+    "paperModeLabel": "Lekepenger",
+    "liveModeLabel": "Live",
+    "liveWarningTitle": "Ekte penger",
+    "liveWarningDesc": "Denne boten vil handle med ekte midler fra din Binance-konto. Tap er reelle.",
+    "liveConfirmWarning": "Bekreft: Du er i ferd med å starte en live-bot med ekte penger.",
+    "connectBinanceToStart": "Koble til Binance for å starte live-handel.",
+    "upgradeToStartLive": "Oppgrader til Bachelor eller høyere for å starte live-handel.",
+    "connectBinanceCta": "Koble Binance",
+    "upgradeCta": "Se planer",
     "stepStrategy": "Strategi",
     "stepAmount": "Beløp & valuta",
     "stepStart": "Start",
@@ -3582,6 +3609,10 @@
     "riskHighDesc": "Aggressiv strategi",
     "startingCapital": "Startkapital (lekepenger)",
     "startingCapitalDesc": "Beløpet boten handler med i papirmodus.",
+    "liveStartingCapital": "Startkapital (ekte penger)",
+    "liveStartingCapitalDesc": "Beløpet boten handler med fra din Binance-konto.",
+    "liveBalanceUnknownWarning": "Vi kjenner ikke din Binance-saldo. Sjekk at beløpet er tilgjengelig før du starter.",
+    "liveCapitalHighWarning": "Stort beløp. Vurder å starte med mindre kapital for å begrense risiko.",
     "customAmount": "Eget beløp:",
     "selectCoins": "Velg kryptovaluta",
     "maxCoinsNotice": "Maks {limit} valutaer for {tier}-nivå",
@@ -3590,6 +3621,7 @@
     "kellyNotice": "🛡️ Sikret av Kelly-kriteriet. Vår KI justerer automatisk risiko basert på profitt for å matematisk forhindre at du taper innsatsen din.",
     "starting": "Starter...",
     "startBotAction": "Start bot",
+    "startLiveBotAction": "Start live-bot",
     "back": "Tilbake",
     "next": "Neste",
     "strategyDcaDesc": "Dollar Cost Averaging — kjøp automatisk til fast tid",
@@ -3597,6 +3629,19 @@
     "strategyGridDesc": "Kjøp lavt, selg høyt i et prisbånd",
     "strategyMultiDesc": "Kombiner flere indikatorer for signaler",
     "strategyAiDesc": "Kopier topphandlernes strategier med AI",
+    "sessionLimitTitle": "Sesjonsgrense nådd",
+    "sessionLimitDesc": "Du kan maksimalt ha {max} aktive sesjoner",
+    "duplicateSessionTitle": "Duplikat sesjon",
+    "duplicateSessionDesc": "Du har allerede en bot som kjører for denne strategien",
+    "liveNotAllowedTitle": "Live-handel ikke aktivert",
+    "liveNotAllowedDesc": "Live-handel krever Bachelor-nivå eller høyere og tilkoblet Binance-konto.",
+    "binanceNotConnectedTitle": "Binance ikke tilkoblet",
+    "binanceNotConnectedDesc": "Koble til Binance API-nøkler i innstillinger for å starte live-handel.",
+    "startedTitle": "Bot startet",
+    "startedDesc": "Din trading-bot kjører nå",
+    "liveStartedTitle": "Live-bot startet",
+    "liveStartedDesc": "Din live trading-bot kjører nå med ekte penger",
+    "startFailedTitle": "Kunne ikke starte bot",
     "low": "Lav",
     "medium": "Middels",
     "high": "Høy"
@@ -3747,6 +3792,9 @@
     "sortByPlaceholder": "Sorter etter",
     "reviewLabel": "Skriv din anmeldelse",
     "reviewPlaceholder": "Skriv din anmeldelse (valgfritt)…"
+  },
+  "funding": {
+    "historicalPerformanceTitle": "Historisk Ytelse"
   },
   "gapAnalysis": {
     "title": "Handelsanalyse",

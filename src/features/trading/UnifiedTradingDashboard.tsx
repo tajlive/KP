@@ -30,7 +30,7 @@ import {
   Bot,
   Brain,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useTradingMode } from "@/lib/hooks/useTradingMode";
@@ -49,8 +49,9 @@ import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import { RecentTradesTable } from "@/features/trading/components/RecentTradesTable";
 import { TradeDetailsDrawer } from "@/features/trading/components/TradeDetailsDrawer";
 import { TopAIInsightsRow } from "@/features/trading/TopAIInsightsRow";
-import { TradingModeSelector } from "@/features/trading/components/TradingModeSelector";
 import { PortfolioSection } from "./components/PortfolioSection";
+import { ConnectBinanceModal } from "@/shared/ui/modals/ConnectBinanceModal";
+import { toast } from "sonner";
 import { ActiveStrategiesSection } from "./components/ActiveStrategiesSection";
 import { StrategySelectorSection } from "./components/StrategySelectorSection";
 
@@ -142,9 +143,29 @@ export default function UnifiedTradingDashboard({
   });
   const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
   const [tradeModeFilter, setTradeModeFilter] = useState<TradingMode | "all">("all");
+  const [showConnectModal, setShowConnectModal] = useState(false);
   const tTrading = useTranslations("trading");
   const { format: formatNOK } = useCurrency();
   const { canSwitchToLive, switchMode } = useTradingMode();
+
+  // Enforce live requirements (tier + Binance) before switching mode
+  const handleModeChange = useCallback(
+    (newMode: TradingMode) => {
+      if (newMode === "live" && !canSwitchToLive) {
+        toast.error(tTrading("connectBinanceRequired"), {
+          description: tTrading("connectBinanceDescription"),
+          action: {
+            label: tTrading("connectNow"),
+            onClick: () => setShowConnectModal(true),
+          },
+        });
+        return;
+      }
+      setMode(newMode);
+      void switchMode(newMode);
+    },
+    [canSwitchToLive, switchMode, tTrading, setShowConnectModal],
+  );
 
   const STRATEGIES = STRATEGY_DEFS.map((s) => ({
     ...s,
@@ -229,7 +250,7 @@ export default function UnifiedTradingDashboard({
             <CurrencySwitcher layoutId="unified-trading-currency" />
             <TradingModeToggle
               mode={mode}
-              onToggle={setMode}
+              onToggle={handleModeChange}
               paperLabel={tTrading("paperModeShort")}
               liveLabel={tTrading("liveModeShort")}
               ariaLabel={tTrading("toggleAria")}
@@ -289,17 +310,6 @@ export default function UnifiedTradingDashboard({
           strategies={STRATEGIES}
         />
 
-        {/* Trading Mode Selector */}
-        <TradingModeSelector
-          mode={mode}
-          onChange={(newMode) => {
-            setMode(newMode);
-            void switchMode(newMode);
-          }}
-          hasExchangeConnection={canSwitchToLive}
-          isLiveEnabled={canSwitchToLive}
-        />
-
         {/* Recent Trades */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -332,6 +342,11 @@ export default function UnifiedTradingDashboard({
           onStop={handleStopStrategy}
           mode={mode}
           isStarting={isStarting}
+        />
+
+        <ConnectBinanceModal
+          isOpen={showConnectModal}
+          onClose={() => setShowConnectModal(false)}
         />
       </div>
     </div>

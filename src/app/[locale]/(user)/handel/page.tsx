@@ -28,6 +28,7 @@ export default async function TradingPage({
 }) {
   const { locale } = await params;
   const { mode = "paper", view = "" } = await searchParams;
+  const isLiveMode = mode === "live";
 
   const { supabase, user } = await requireAuth(locale);
   if (!user) {
@@ -39,7 +40,7 @@ export default async function TradingPage({
     .from("trading_sessions")
     .select("*")
     .eq("user_id", user.id)
-    .eq("mode", mode === "live" ? "live" : "paper")
+    .eq("mode", isLiveMode ? "live" : "paper")
     .order("created_at", { ascending: false });
 
   // Hent balance
@@ -52,11 +53,10 @@ export default async function TradingPage({
   return (
     <PaperTradingPageClient
       sessions={(sessions || []) as unknown as SessionRow[]}
-      balance={profile?.paper_balance || 100000}
+      balance={profile?.paper_balance ?? 0}
       locale={locale}
       userId={user.id}
-      listMode={mode === "live" ? "live" : "paper"}
-      contextBannerText={mode === "live" ? "Live Trading" : "Paper Trading"}
+      listMode={isLiveMode ? "live" : "paper"}
       view={view}
       mode={mode}
     />

@@ -119,7 +119,7 @@ export function SimplifiedHero({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.4 }}
       >
-        <Link href={ctaLink ?? `/${locale}/dashboard/trade?mode=paper`}>
+        <Link href={ctaLink ?? `/${locale}/handel?mode=paper`}>
           <Button
             asChild
             className={`${BRAND.gradient} mt-6 px-8 py-5 text-base md:text-lg font-semibold rounded-xl shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200`}

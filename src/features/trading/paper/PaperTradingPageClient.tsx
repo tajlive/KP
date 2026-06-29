@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, Wallet, LayoutDashboard } from "lucide-react";
 import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
@@ -37,11 +37,47 @@ interface PaperTradingPageClientProps {
   userId: string;
   /** Server-liste filtrert på denne modusen (paper | live) */
   listMode: "paper" | "live";
-  contextBannerText: string;
   /** view fra searchParams (?view=sessions) */
   view?: string;
   /** mode fra searchParams (?mode=live) */
   mode?: string;
+}
+
+function ModeBanner({
+  variant,
+  children,
+}: {
+  variant: "paper" | "live";
+  children: ReactNode;
+}) {
+  const isLive = variant === "live";
+  return (
+    <div
+      className={
+        isLive
+          ? "bg-red-500/15 border-b border-red-500/20 dark:border-red-500/30 px-4 py-3 flex items-center justify-center gap-2"
+          : "bg-blue-500/10 border-b border-blue-500/20 dark:bg-blue-500/10 dark:border-blue-500/30 px-4 py-3 flex items-center justify-center gap-2"
+      }
+    >
+      <Wallet
+        className={
+          isLive
+            ? "w-5 h-5 text-red-600 dark:text-red-400 shrink-0"
+            : "w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0"
+        }
+        aria-hidden
+      />
+      <p
+        className={
+          isLive
+            ? "text-red-800 dark:text-red-200 text-sm font-medium text-center"
+            : "text-blue-800 dark:text-blue-200 text-sm font-medium text-center"
+        }
+      >
+        {children}
+      </p>
+    </div>
+  );
 }
 
 /**
@@ -54,7 +90,6 @@ export function PaperTradingPageClient({
   locale,
   userId,
   listMode,
-  contextBannerText,
   view = "",
   mode = "",
 }: PaperTradingPageClientProps) {
@@ -72,101 +107,74 @@ export function PaperTradingPageClient({
     <ToastProvider>
       <TradingModeProvider>
         <div className={`min-h-screen ${SURFACE.BG_LIGHT} dark:bg-slate-950`}>
-      {/* Tydelig UX: modus-banner kun på session-liste; dashboard har egen header */}
-      {showSessionsList && (
-        <div
-          className={
-            bannerVariant === "live"
-              ? "bg-red-500/15 border-b border-red-500/20 dark:border-red-500/30 px-4 py-3 flex items-center justify-center gap-2"
-              : "bg-[#0052FF]/10 border-b border-[#0052FF]/20 dark:bg-[#0052FF]/10 dark:border-[#0052FF]/30 px-4 py-3 flex items-center justify-center gap-2"
-          }
-        >
-          <Wallet
-            className={
-              bannerVariant === "live"
-                ? "w-5 h-5 text-red-600 dark:text-red-400 shrink-0"
-                : "w-5 h-5 text-[#0052FF] dark:text-[#3d7aff] shrink-0"
-            }
-            aria-hidden
-          />
-          <p
-            className={
-              bannerVariant === "live"
-                ? "text-red-800 dark:text-red-200 text-sm font-medium text-center"
-                : "text-[#0047E0] dark:text-[#3d7aff] text-sm font-medium text-center"
-            }
-          >
+          {/* Tydelig modus-banner på begge visninger: paper = blå/info, live = rød/advarsel */}
+          <ModeBanner variant={bannerVariant}>
             {bannerVariant === "live"
-              ? locale === "no"
-                ? "Live — ekte penger. Handle med omhu."
-                : "Live — real money. Trade carefully."
-              : contextBannerText}
-          </p>
-        </div>
-      )}
+              ? t("modeBanner.live")
+              : t("modeBanner.paper")}
+          </ModeBanner>
 
-      {showSessionsList ? (
-        <main className="container mx-auto px-4 py-8 pb-16 max-w-4xl space-y-6">
-          <PremiumTradingHero
-            eyebrow={
-              initialMode === "live"
-                ? locale === "no"
-                  ? "Live arbeidsflate"
-                  : "Live workspace"
-                : locale === "no"
-                  ? "Lekepenger arbeidsflate"
-                  : "Paper trading workspace"
-            }
-            title={t("mySessions")}
-            subtitle={t("workspaceHeader.subtitle")}
-          />
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href={hrefWithLocale(locale, "/paper-trading")}
-              className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium"
-              data-testid="back-to-overview"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t("backToOverview")}
-            </Link>
-            <Link
-              href={hrefWithLocale(locale, "/dashboard")}
-              className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium"
-              data-testid="back-to-dashboard"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              {t("backToDashboard")}
-            </Link>
-          </div>
-          <PaperTradingList
-            sessions={sessions}
-            balance={balance}
-            locale={locale}
-            userId={userId}
-            sessionMode={listMode}
-          />
-        </main>
-      ) : (
-        <div className="space-y-6 pb-16">
-          <div
-            className="px-4 py-5 md:py-6"
-            data-testid="paper-trading-workspace-header"
-          >
-            <PremiumStatusBanner>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
-                {locale === "no" ? "Trading workspace" : "Trading workspace"}
-              </p>
-              <p className="text-base font-semibold text-slate-900 dark:text-slate-100 tracking-tight mt-1">
-                {t("workspaceHeader.title")}
-              </p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-                {t("workspaceHeader.subtitle")}
-              </p>
-            </PremiumStatusBanner>
-          </div>
-          <UnifiedTradingDashboard initialMode={initialMode} />
-        </div>
-      )}
+          {showSessionsList ? (
+            <main className="container mx-auto px-4 py-8 pb-16 max-w-4xl space-y-6">
+              <PremiumTradingHero
+                eyebrow={t(
+                  initialMode === "live"
+                    ? "workspaceHeader.eyebrowLive"
+                    : "workspaceHeader.eyebrowPaper",
+                )}
+                title={t("mySessions")}
+                subtitle={t("workspaceHeader.subtitle")}
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href={hrefWithLocale(
+                    locale,
+                    initialMode === "live" ? "/handel?mode=live" : "/handel",
+                  )}
+                  className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium"
+                  data-testid="back-to-overview"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {t("backToOverview")}
+                </Link>
+                <Link
+                  href={hrefWithLocale(locale, "/dashboard")}
+                  className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium"
+                  data-testid="back-to-dashboard"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  {t("backToDashboard")}
+                </Link>
+              </div>
+              <PaperTradingList
+                sessions={sessions}
+                balance={balance}
+                locale={locale}
+                userId={userId}
+                sessionMode={listMode}
+              />
+            </main>
+          ) : (
+            <div className="space-y-6 pb-16">
+              <div
+                className="px-4 py-5 md:py-6"
+                data-testid="paper-trading-workspace-header"
+              >
+                <PremiumStatusBanner>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+                    {t("workspaceHeader.badge")}
+                  </p>
+                  <p className="text-base font-semibold text-slate-900 dark:text-slate-100 tracking-tight mt-1">
+                    {t("workspaceHeader.title")}
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+                    {t("workspaceHeader.subtitle")}
+                  </p>
+                </PremiumStatusBanner>
+              </div>
+              <UnifiedTradingDashboard initialMode={initialMode} />
+            </div>
+          )}
         </div>
       </TradingModeProvider>
     </ToastProvider>

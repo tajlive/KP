@@ -27,7 +27,7 @@ export function WatchlistCard() {
       </ul>
       <Button
         as={Link}
-        href={hrefWithLocale(locale, "/dashboard/trade")}
+        href={hrefWithLocale(locale, "/handel")}
         variant="secondary"
         className="mt-4"
         block

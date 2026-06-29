@@ -21,7 +21,7 @@ describe("cacheControlMiddleware", () => {
 
   it.each([
     "/no/dashboard",
-    "/en/dashboard/trade",
+    "/en/handel",
     "/no/admin",
     "/no/marked",
   ])("sets no-store for dashboard/admin route %s", (path) => {

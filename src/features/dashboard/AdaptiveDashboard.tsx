@@ -12,6 +12,10 @@ import { useCurrency } from "@/hooks/useCurrency";
 
 import { DashboardPro } from "./DashboardPro";
 import type { DashboardCmsData } from "./DashboardContent";
+import {
+  PaperTradingList,
+  type TradingSession,
+} from "@/features/trading/paper/PaperTradingList";
 
 interface AdaptiveDashboardProps {
   userId: string;
@@ -34,10 +38,8 @@ export interface UserStats {
   currentCapital: number;
   startingCapital: number;
   winningTrades: number;
-  recentSessions?: any[];
+  recentSessions?: TradingSession[];
 }
-
-import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
 
 /* ------------------------------------------------------------------ */
 /*  Progress indicator (onboarding)                                    */
@@ -47,7 +49,7 @@ function OnboardingProgress({ step }: { step: number }) {
   const isNo = locale === "no";
   const steps = [
     isNo ? "Opprett konto" : "Create account",
-    isNo ? "Start paper-trading" : "Start paper trading",
+    isNo ? "Start med lekepenger" : "Start paper trading",
     isNo ? "Gjennomfør 5 trades" : "Complete 5 trades",
     isNo ? "Gå live" : "Go live",
   ];
@@ -97,7 +99,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
         </h2>
         <p className="text-slate-400 max-w-md mx-auto">
           {isNo
-            ? "Start din trading-reise her. Øv deg risikofritt med paper-trading før du går live."
+            ? "Start trading-reisen her. Øv risikofritt med lekepenger før du går live."
             : "Start your trading journey here. Practice risk-free with paper trading before going live."}
         </p>
       </div>

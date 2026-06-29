@@ -203,7 +203,7 @@ export default function GetStartedCard({
     {
       id: "first-trade",
       label: { no: "Gjør første trade", en: "Make first trade" },
-      href: `/${locale}/dashboard/trade?mode=paper`,
+      href: `/${locale}/handel?mode=paper`,
       completed: totalTrades > 0,
     },
     {

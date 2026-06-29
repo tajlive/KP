@@ -144,7 +144,7 @@ export function QuizClient() {
               </p>
               <div className="grid sm:grid-cols-2 gap-3">
                 <Link
-                  href={`/${locale}/dashboard/trade?mode=paper`}
+                  href={`/${locale}/handel?mode=paper`}
                   className={`flex items-center justify-center gap-2 px-4 py-3 ${BRAND.primary} font-medium rounded-xl transition-colors`}
                 >
                   <TrendingUp className="w-4 h-4" />

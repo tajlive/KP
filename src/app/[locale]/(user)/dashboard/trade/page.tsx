@@ -1,13 +1,7 @@
-import { requireAuth } from "@/lib/auth-guard";
-import { LoginRequired } from "@/shared/ui/LoginRequired";
-import nextDynamic from "next/dynamic";
+import { redirect } from "next/navigation";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
-const TradeHub = nextDynamic(() =>
-  import("@/features/market/coinbase/TradeHub").then((mod) => mod.TradeHub),
-);
-
-export const runtime = 'nodejs';
-
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardTradePage({
@@ -18,13 +12,9 @@ export default async function DashboardTradePage({
   searchParams: Promise<{ mode?: string }>;
 }) {
   const { locale } = await params;
-  const query = await searchParams;
-
-  const { user } = await requireAuth(locale);
-  if (!user) {
-    return <LoginRequired next={`/${locale}/dashboard/trade`} />;
-  }
-
-  const initialMode = query?.mode === "live" ? "live" : "paper";
-  return <TradeHub userId={user.id} initialMode={initialMode} />;
+  const { mode } = await searchParams;
+  const target = mode
+    ? `/handel?mode=${encodeURIComponent(mode)}`
+    : "/handel";
+  redirect(hrefWithLocale(locale, target));
 }

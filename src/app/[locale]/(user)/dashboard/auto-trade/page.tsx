@@ -2,10 +2,12 @@ import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { BotWizard } from "@/features/trading/auto-trading/BotWizard";
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import Link from "next/link";
 import { Bot } from "lucide-react";
+import type { TradingMode } from "@/types/trading";
 
 export const runtime = 'nodejs';
 
@@ -26,29 +28,60 @@ export async function generateMetadata({
   };
 }
 
+function resolveDefaultMode(
+  searchMode: string | undefined,
+  preferredMode: string | null | undefined
+): TradingMode {
+  if (searchMode === "live" || searchMode === "paper") return searchMode;
+  if (preferredMode === "live" || preferredMode === "paper") return preferredMode;
+  return "paper";
+}
+
+async function ModeBadge({ mode }: { mode: "paper" | "live" }) {
+  const t = await getTranslations("paperTrading");
+  const isPaper = mode === "paper";
+  return (
+    <span
+      className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+        isPaper
+          ? "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+          : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+      }`}
+    >
+      {isPaper ? t("modePaper") : t("modeLive")}
+    </span>
+  );
+}
+
 export default async function AutoTradePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { locale } = await params;
+  const { mode } = await searchParams;
   const { supabase, user } = await requireAuth(locale);
   if (!user) return <LoginRequired next={`/${locale}/dashboard/auto-trade`} />;
 
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("tier, paper_balance")
+    .select("tier, paper_balance, real_balance, preferred_trading_mode")
     .eq("id", user.id)
     .single();
 
   const tier = normalizeTier(profile?.tier);
+  const defaultMode = resolveDefaultMode(
+    typeof mode === "string" ? mode : undefined,
+    profile?.preferred_trading_mode
+  );
 
-  // Fetch active paper sessions to show banner if user already has bots running
+  // Fetch active sessions for both paper and live modes to show banner if user already has bots running
   const { data: activeSessions } = await supabase
     .from("trading_sessions")
-    .select("id, strategy_id, trading_pair, current_capital_nok")
+    .select("id, mode, strategy_id, trading_pair, current_capital_nok")
     .eq("user_id", user.id)
-    .eq("mode", "paper")
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
@@ -75,6 +108,7 @@ export default async function AutoTradePage({
                     href={`/${locale}/dashboard/bot/${s.id}`}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700/50 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors"
                   >
+                    <ModeBadge mode={s.mode as "paper" | "live"} />
                     <span className="capitalize">{s.strategy_id}</span>
                     <span className="text-blue-400">·</span>
                     <span>{s.trading_pair?.replace("USDT", "")}</span>
@@ -94,7 +128,9 @@ export default async function AutoTradePage({
         userId={user.id}
         locale={locale}
         tier={tier}
+        mode={defaultMode}
         paperBalance={profile?.paper_balance ?? null}
+        liveBalance={profile?.real_balance ?? null}
       />
     </div>
   );

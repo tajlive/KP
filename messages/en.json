@@ -2333,8 +2333,17 @@
     "description": "Practice trading without risk",
     "workspaceHeader": {
       "title": "Trading workspace",
-      "subtitle": "Practice trading with paper money"
+      "subtitle": "Practice trading with paper money",
+      "eyebrowPaper": "Practice workspace",
+      "eyebrowLive": "Live workspace",
+      "badge": "Trading workspace"
     },
+    "modeBanner": {
+      "paper": "Practice mode — no real money",
+      "live": "Live — real money. Trade carefully."
+    },
+    "modePaper": "Paper",
+    "modeLive": "Live",
     "balance": "Balance",
     "newSession": "New Trade",
     "tradingPair": "Trading Pair",
@@ -2416,6 +2425,8 @@
     },
     "resetSession": "Reset Session",
     "mySessions": "My Sessions",
+    "backToOverview": "Back to overview",
+    "backToDashboard": "Back to dashboard",
     "noSessions": "No Sessions",
     "noSessionsDesc": "Start your first paper trading session to practice without risk.",
     "startFirst": "Start First Session",
@@ -2428,7 +2439,10 @@
     "resetSuccess": "Paper trading reset. Balance: 100 000 kr.",
     "sessions": {
       "maxActiveReached": "Max active sessions reached. Redirecting...",
-      "maxActiveStudent": "You have reached the maximum number of active sessions for your plan."
+      "maxActiveStudent": "You have reached the maximum number of active sessions for your plan.",
+      "activeOverview": "{active, plural, =0 {No active traders running right now} =1 {1 active trader running} other {# active traders running}}",
+      "historyHidden": "{count, plural, =1 {1 older crashed/stopped session is hidden to keep this view clean.} other {# older crashed/stopped sessions are hidden to keep this view clean.}}",
+      "showHistory": "Show history"
     },
     "errors": {
       "validationFailed": "Invalid input – check fields and try again.",
@@ -3563,8 +3577,21 @@
   "BotWizard": {
     "startBotTitle": "Start trading bot",
     "startBotSubtitle": "Set strategy, risk and capital. The bot starts in Paper trading and updates trade history continuously.",
+    "startBotSubtitleLive": "Set strategy, risk and capital. The bot starts in Live mode with real money.",
     "upgradeNotice": "You get 1 strategy included. Upgrade for more strategies and coins.",
     "seePlans": "See plans",
+    "modeLabel": "Trading mode",
+    "modeLabelPaper": "Practice with paper funds without risk",
+    "modeLabelLive": "Trade with real money",
+    "paperModeLabel": "Paper",
+    "liveModeLabel": "Live",
+    "liveWarningTitle": "Real money",
+    "liveWarningDesc": "This bot will trade with real funds from your Binance account. Losses are real.",
+    "liveConfirmWarning": "Confirm: You are about to start a live bot with real money.",
+    "connectBinanceToStart": "Connect Binance to start live trading.",
+    "upgradeToStartLive": "Upgrade to Bachelor or higher to start live trading.",
+    "connectBinanceCta": "Connect Binance",
+    "upgradeCta": "See plans",
     "stepStrategy": "Strategy",
     "stepAmount": "Amount & coins",
     "stepStart": "Start",
@@ -3582,6 +3609,10 @@
     "riskHighDesc": "Aggressive strategy",
     "startingCapital": "Starting capital (paper)",
     "startingCapitalDesc": "Amount the bot trades with in paper mode.",
+    "liveStartingCapital": "Starting capital (real money)",
+    "liveStartingCapitalDesc": "Amount the bot trades with from your Binance account.",
+    "liveBalanceUnknownWarning": "We don't know your Binance balance. Make sure this amount is available before starting.",
+    "liveCapitalHighWarning": "Large amount. Consider starting with less capital to limit risk.",
     "customAmount": "Custom amount:",
     "selectCoins": "Select coins",
     "maxCoinsNotice": "Max {limit} coins for {tier} tier",
@@ -3590,6 +3621,7 @@
     "kellyNotice": "🛡️ Secured by the Kelly Criterion. Our AI automatically adjusts risk based on profit to mathematically prevent you from losing your stake.",
     "starting": "Starting...",
     "startBotAction": "Start bot",
+    "startLiveBotAction": "Start live bot",
     "back": "Back",
     "next": "Next",
     "strategyDcaDesc": "Dollar Cost Averaging — buy automatically on schedule",
@@ -3597,6 +3629,19 @@
     "strategyGridDesc": "Buy low, sell high within a price range",
     "strategyMultiDesc": "Combine multiple indicators for signals",
     "strategyAiDesc": "Copy top traders with AI",
+    "sessionLimitTitle": "Session limit reached",
+    "sessionLimitDesc": "You can only have {max} active sessions",
+    "duplicateSessionTitle": "Duplicate session",
+    "duplicateSessionDesc": "You already have a bot running for this strategy",
+    "liveNotAllowedTitle": "Live trading not enabled",
+    "liveNotAllowedDesc": "Live trading requires Bachelor tier or higher and a connected Binance account.",
+    "binanceNotConnectedTitle": "Binance not connected",
+    "binanceNotConnectedDesc": "Connect your Binance API keys in settings to start live trading.",
+    "startedTitle": "Bot started",
+    "startedDesc": "Your trading bot is now running",
+    "liveStartedTitle": "Live bot started",
+    "liveStartedDesc": "Your live trading bot is now running with real money",
+    "startFailedTitle": "Failed to start bot",
     "low": "Low",
     "medium": "Medium",
     "high": "High"
@@ -3747,6 +3792,9 @@
     "sortByPlaceholder": "Sort by",
     "reviewLabel": "Write your review",
     "reviewPlaceholder": "Write your review (optional)…"
+  },
+  "funding": {
+    "historicalPerformanceTitle": "Historical Performance"
   },
   "gapAnalysis": {
     "title": "Trade Analysis",

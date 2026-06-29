@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, TrendingUp, ArrowRightLeft, Shield, Info, ExternalLink } from 'lucide-react';
 import { GlassCard } from '@/shared/ui/GlassCard';
 import { identifyCrossExchangeArbitrage, getHistoricalArbitragePerformance, calculateArbitragePosition } from '@/lib/futures/cross-exchange-arb';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 const RISK_PROFILES_NO = [
   { key: 'conservative', label: 'Konservativ', maxAlloc: '5%', color: 'text-green-400', bg: 'bg-green-500/10' },
@@ -28,6 +28,7 @@ const RISK_PROFILES = [
 
 export default function FundingArbitrageDashboard() {
   const locale = useLocale();
+  const t = useTranslations('funding');
   const isEn = locale === 'en';
   const RISK_PROFILES = isEn ? RISK_PROFILES_EN : RISK_PROFILES_NO;
   const [opportunities, setOpportunities] = useState<any[]>([]);
@@ -83,7 +84,7 @@ export default function FundingArbitrageDashboard() {
         <GlassCard variant="elevated" className="p-8">
           <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-3">
             <TrendingUp className="w-6 h-6 text-emerald-400" />
-            {isEn ? 'Historical Performance (2024-2026)' : 'Historisk Ytelse (2024-2026)'}
+            {t('historicalPerformanceTitle')}
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

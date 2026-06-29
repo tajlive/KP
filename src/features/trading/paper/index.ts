@@ -1,5 +1,5 @@
 /**
- * Paper Trading Module Exports
+ * Practice trading module exports
  */
 
 export { PaperTradingList } from './PaperTradingList';

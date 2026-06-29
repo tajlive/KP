@@ -259,7 +259,7 @@ export function PaperTradingSessionDetail({
       setSession(data.session);
 
       if (newStatus === "stopped") {
-        router.push(hrefWithLocale(locale, "/paper-trading"));
+        router.push(hrefWithLocale(locale, "/handel?view=sessions"));
       }
     } catch (err) {
       console.error("Failed to change status:", err);
@@ -305,7 +305,7 @@ export function PaperTradingSessionDetail({
   return (
     <PremiumTradingShell>
       <Link
-        href={`${hrefWithLocale(locale, "/paper-trading")}?view=sessions`}
+        href={hrefWithLocale(locale, "/handel?view=sessions")}
         className={`inline-flex items-center gap-1.5 text-sm font-medium ${BRAND.link}`}
       >
         <ArrowLeft className="w-4 h-4" />

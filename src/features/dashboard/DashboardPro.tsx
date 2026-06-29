@@ -35,7 +35,10 @@ import { FeatureGate } from "@/lib/feature-flags";
 // Adaptive state machine
 import { computeUserState, type UserState } from "@/hooks/useUserState";
 
-import { PaperTradingList } from "@/features/trading/paper/PaperTradingList";
+import {
+  PaperTradingList,
+  type TradingSession,
+} from "@/features/trading/paper/PaperTradingList";
 
 interface UserStats {
   totalTrades: number;
@@ -45,7 +48,7 @@ interface UserStats {
   startingCapital: number;
   winningTrades?: number;
   sessionCount?: number;
-  recentSessions?: any[];
+  recentSessions?: TradingSession[];
 }
 
 import type { DashboardCmsData } from "./DashboardContent";
@@ -243,7 +246,7 @@ export function DashboardPro({
                 </h3>
                 {(effectiveStats.sessionCount || 0) > 5 && (
                   <Link 
-                    href={`/${locale}/paper-trading`} 
+                    href={`/${locale}/handel?view=sessions`} 
                     className="text-sm text-emerald-600 hover:text-emerald-500 font-medium transition-colors"
                   >
                     {locale === "no" ? "Se alle" : "See all"}

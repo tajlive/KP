@@ -411,7 +411,7 @@ export function SessionDetailDialog({
             <span className="text-[10px] text-green-500 font-mono">[v2-fix]</span>
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            {session.strategy_id} · {session.mode === "paper" ? "Paper Trading" : "Live"}
+            {session.strategy_id} · {session.mode === "paper" ? "Lekepenger" : "Live"}
           </p>
         </DialogHeader>
 

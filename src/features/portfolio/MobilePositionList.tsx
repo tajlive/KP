@@ -103,7 +103,7 @@ export function MobilePositionList({
                   onAction: () => {
                     haptic("heavy");
                     // Navigate to trading page for this symbol
-                    router.push(`/${locale}/dashboard/trade?symbol=${shortSym}&action=sell`);
+                    router.push(`/${locale}/handel?symbol=${shortSym}&action=sell`);
                   },
                 },
               ]}
@@ -115,7 +115,7 @@ export function MobilePositionList({
                   color: "#22c55e",
                   onAction: () => {
                     haptic("medium");
-                    router.push(`/${locale}/dashboard/trade?symbol=${shortSym}&action=buy`);
+                    router.push(`/${locale}/handel?symbol=${shortSym}&action=buy`);
                   },
                 },
                 {
@@ -125,7 +125,7 @@ export function MobilePositionList({
                   color: "#3b82f6",
                   onAction: () => {
                     haptic("light");
-                    router.push(`/${locale}/dashboard/trade?symbol=${shortSym}`);
+                    router.push(`/${locale}/handel?symbol=${shortSym}`);
                   },
                 },
               ]}
@@ -140,15 +140,15 @@ export function MobilePositionList({
                 changePercent={pnlPercent}
                 onPress={() => {
                   haptic("light");
-                  router.push(`/${locale}/dashboard/trade?symbol=${shortSym}`);
+                  router.push(`/${locale}/handel?symbol=${shortSym}`);
                 }}
                 onBuy={() => {
                   haptic("medium");
-                  router.push(`/${locale}/dashboard/trade?symbol=${shortSym}&action=buy`);
+                  router.push(`/${locale}/handel?symbol=${shortSym}&action=buy`);
                 }}
                 onSell={() => {
                   haptic("medium");
-                  router.push(`/${locale}/dashboard/trade?symbol=${shortSym}&action=sell`);
+                  router.push(`/${locale}/handel?symbol=${shortSym}&action=sell`);
                 }}
               />
             </SwipeAction>
