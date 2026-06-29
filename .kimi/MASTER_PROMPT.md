@@ -8,19 +8,19 @@
 
 ## 🚨 AKUTT SITUASJON - LES FØRST!
 
-**STATUS:** ✅ OPERATIONAL - Vercel hosting aktiv
+**STATUS:** ✅ OPERATIONAL - Cloudflare Workers hosting aktiv
 
-📢 **SIST OPPDATERT:** 25. Februar 2026 - Migrert til Vercel
-⚡ **INFRASTRUKTUR:** GitHub → Vercel (auto-deploy)  
-⏱️ **REGION:** arn1 (Stockholm, Sverige)
+📢 **SIST OPPDATERT:** 29. Juni 2026 - Migrert til Cloudflare Workers (OpenNext.js + Wrangler)
+⚡ **INFRASTRUKTUR:** GitHub → Cloudflare Workers Builds (auto-deploy)  
+⏱️ **REGION:** Global (Cloudflare Edge)
 
 Hvis du ikke vet hva som feiler, start her:
 
 ```bash
 # Quick diagnose
-gh run list --limit 1  # Sjekk CI/CD status
+npx wrangler deployment list  # Sjekk CI/CD status
 curl -I https://www.klarpakke.no/no  # Sjekk produksjon
-npm run build  # Sjekk build lokalt
+npm run cf:build  # Sjekk build lokalt
 ```
 
 ---
@@ -29,7 +29,7 @@ npm run build  # Sjekk build lokalt
 
 1. **[WORKFLOW_RULES.md](./WORKFLOW_RULES.md)** ← **STRENGT REGELVERK**
    - ✅ ALLTID gjør / ❌ ALDRI gjør
-   - GitHub → Vercel → KIMI arbeidsflyt
+   - GitHub → Cloudflare Workers → KIMI arbeidsflyt
    - Secrets management
 2. **[EMERGENCY_PROD_FIX.md](./EMERGENCY_PROD_FIX.md)** ← **AKUTT FIKS**
    - Diagnose og fiks produksjonsproblemer
@@ -37,8 +37,8 @@ npm run build  # Sjekk build lokalt
    - Alle kommandoer klar til bruk
 
 3. **[DEPLOY_STRATEGY.md](./DEPLOY_STRATEGY.md)** ← **DEPLOY-STRATEGI**
-   - GitHub → Vercel (automatisk)
-   - Vercel CLI (backup)
+   - GitHub → Cloudflare Workers Builds (automatisk)
+   - Wrangler CLI (backup)
    - Verifisering
 
 4. **[AUTO_TRADE_MASTER_PROMPT.md](./AUTO_TRADE_MASTER_PROMPT.md)**
@@ -63,12 +63,12 @@ gh run watch
 ### ✅ ALLTID GJØR:
 
 1. Push til GitHub først
-2. Vent på GitHub Actions deployment
+2. Vent på Cloudflare Workers Builds deployment
 3. La KIMI lese via MCP
 
 ### ❌ ALDRI GJØR:
 
-1. ❌ Rediger Vercel Dashboard direkte (unntatt env vars)
+1. ❌ Rediger Cloudflare Dashboard direkte (unntatt env vars)
 2. ❌ Commit secrets (`.env`, `.mcp-cache/`)
 3. ❌ Force push til main
 4. ❌ Hopp over tester
@@ -85,7 +85,7 @@ gh run watch
 5. **ALDRI bruk `npm install`** — alltid `npm ci --legacy-peer-deps`
 6. **ALDRI fjern `output: 'standalone'`** fra `next.config.mjs` — påkrevd for optimal ytelse
 7. **ALDRI sett ekte Stripe-nøkler som build-args** — bruk `sk_test_build_only`
-8. **ALDRI rediger Vercel Dashboard direkte** — GitHub overskriver ved neste deploy (bruk alltid Git som source of truth)
+8. **ALDRI rediger Cloudflare Dashboard direkte** — GitHub overskriver ved neste deploy (bruk alltid Git som source of truth)
 9. **ALDRI commit `.mcp-cache/`** — inneholder sensitive data fra MCP-servere
 
 ---
@@ -99,8 +99,8 @@ gh run watch
 | **Beskrivelse**      | Norsk kryptovaluta-læringsplattform med Auto Trading |
 | **Repo**             | https://github.com/tajlive/KP           |
 | **Owner**            | tomarnejensen@gmail.com / tom@klarpakke.no           |
-| **Hosting**          | Vercel (Edge Network)                                |
-| **Region**           | arn1 (Stockholm, Sverige)                            |
+| **Hosting**          | Cloudflare Workers (OpenNext.js + Wrangler)          |
+| **Region**           | Global (Cloudflare Edge)                             |
 | **Supabase Project** | pskhryjzkobytnfwucrb                                 |
 
 ---
@@ -113,11 +113,11 @@ gh run watch
 | Database   | Supabase (PostgreSQL + Row Level Security)                 |
 | Auth       | Supabase Auth (`createServerClient` + `getUser()`)         |
 | Betaling   | Stripe (Checkout + webhooks)                               |
-| Hosting    | **Vercel** (Edge Network, arn1 region)                     |
-| Scheduler  | Vercel Cron Jobs + pg_cron                                 |
+| Hosting    | **Cloudflare Workers** (OpenNext.js + Wrangler)            |
+| Scheduler  | Cloudflare Cron Triggers + pg_cron                         |
 | Trading    | Binance API (brukere kobler egne nøkler)                   |
 | **SQL**    | **AI SQL Runner** (auto via `exec_sql` RPC) → se .kimi/SQL_BRAIN.md |
-| **Deploy** | **GitHub → Vercel** (automatisk) → **Vercel CLI** (backup) |
+| **Deploy** | **GitHub → Cloudflare Workers Builds** (automatisk) → **Wrangler CLI** (backup) |
 
 ---
 
@@ -159,48 +159,50 @@ node scripts/ai-sql-runner.js supabase/migrations/din-fil.sql
 
 ```
 1. GitHub (Source of Truth)
-   ↓ (automatisk via Vercel Git Integration)
-2. Vercel Edge Network (Produksjon, arn1)
+   ↓ (automatisk via Cloudflare Workers Builds)
+2. Cloudflare Workers Edge Network (Produksjon, global)
    ↓ (KIMI leser via MCP)
 3. KIMI AI Agent (Leser og analyserer)
 ```
 
-### Primær metode: GitHub → Vercel (automatisk)
+### Primær metode: GitHub → Cloudflare Workers Builds (automatisk)
 
 ```bash
-# Push til GitHub - Vercel deployer automatisk
+# Push til GitHub - Cloudflare Workers Builds deployer automatisk
 git push origin main
 
-# Monitor deployment (Vercel Dashboard eller CLI)
-vercel ls
+# Monitor deployment (Cloudflare Dashboard eller Wrangler CLI)
+npx wrangler deployment list
 ```
 
-### Backup: Vercel CLI (hvis auto-deploy feiler)
+### Backup: Wrangler CLI (hvis auto-deploy feiler)
 
 ```bash
-# Deploy direkte via Vercel CLI
-vercel --prod --force
+# Deploy direkte via Wrangler CLI
+npm run cf:deploy
+# eller: npm run cf:build && npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
 ```
 
 ---
 
 ## 🔑 MILJØVARIABLER
 
-### Runtime (Vercel Environment Variables)
+### Runtime (Cloudflare Worker Secrets / Environment Variables)
 
 ```
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 NEXTAUTH_URL=https://www.klarpakke.no
-NEXTAUTH_SECRET  (Vercel Dashboard → Settings → Environment Variables)
-STRIPE_SECRET_KEY  (Vercel Dashboard → Settings → Environment Variables)
-SUPABASE_SERVICE_ROLE_KEY  (Vercel Dashboard → Settings → Environment Variables)
-RESEND_API_KEY  (Vercel Dashboard → Settings → Environment Variables)
-CRON_SECRET  (Vercel Dashboard → Settings → Environment Variables)
+NEXTAUTH_SECRET  (Cloudflare Dashboard → Workers & Pages → klarpakke → Settings → Variables)
+STRIPE_SECRET_KEY  (Cloudflare Dashboard → Variables)
+SUPABASE_SERVICE_ROLE_KEY  (Cloudflare Dashboard → Variables)
+RESEND_API_KEY  (Cloudflare Dashboard → Variables)
+CRON_SECRET  (Cloudflare Dashboard → Variables)
 ```
 
-### Build-time (GitHub Actions)
+### Build-time (Cloudflare Workers Builds / lokalt)
 
 ```
 STRIPE_SECRET_KEY=sk_test_build_only   # Dummy
@@ -211,6 +213,11 @@ NEXT_TELEMETRY_DISABLED=1
 ### Sette secrets via CLI
 
 ```bash
+# Cloudflare Worker secrets (Wrangler)
+npx wrangler secret put NEXTAUTH_SECRET
+npx wrangler secret list
+
+# GitHub repository secrets
 gh secret set MY_SECRET --body "value" --repo tajlive/KP
 gh secret list --repo tajlive/KP
 ```
@@ -261,7 +268,7 @@ klarpakke/
 
 | Agent                 | Primær rolle           | Verktøy                     |
 | --------------------- | ---------------------- | --------------------------- |
-| **KIMI Code**         | Operasjonsagent (DU)   | Shell, vercel, psql, deploy |
+| **KIMI Code**         | Operasjonsagent (DU)   | Shell, wrangler, psql, deploy |
 | **Perplexity/Claude** | Arkitekt/Dokumentasjon | MCP, kodeanalyse            |
 | **Antigravity**       | Fremtidig hoved-IDE    | Store implementation plans  |
 
@@ -280,25 +287,33 @@ klarpakke/
 
 | Server                 | Formål                                   |
 | ---------------------- | ---------------------------------------- |
-| **supabase-database**  | Direkte PostgreSQL-tilgang               |
-| **klarpakke-codebase** | Lokal filsystem                          |
-| **github-klarpakke**   | Repo-operasjoner                         |
-| **vercel**             | Deployments, logs, environment variables |
+| **filesystem**         | Lokal filsystem                          |
+| **supabase-db**        | Direkte PostgreSQL-tilgang               |
+| **sanity**             | CMS read/write                           |
+| **github**             | Repo-operasjoner                         |
+| **context7**           | Bibliotekdokumentasjon                   |
+| **perplexity**         | AI-søk og research                       |
+| **mempalace**          | Prosjektkunnskap og knowledge graph      |
+| **chrome**             | Lokal browser-automasjon                 |
 
-### Vercel Integration
+### Cloudflare Integration
 
-Vercel er koblet til GitHub repo for automatisk deployment:
+Produksjon kjører på Cloudflare Workers via OpenNext.js + Wrangler. Deploy skjer
+automatisk via Cloudflare Workers Builds på hver push til `main`.
 
-- Production deploys på hver push til `main`
-- Preview deploys på Pull Requests
-- Environment variables konfigureres i Vercel Dashboard
+- Worker: `klarpakke`
+- Routes: `www.klarpakke.no/*`
+- KV: `KV_KLARPAKKE`
+- Manuell deploy: `npm run cf:deploy`
 
 **⚠️ VIKTIG:** `.mcp-cache/` inneholder sensitive data og skal ALDRI committes!
 
 **Scripts:**
 
-- `vercel` — CLI for manuell deploy
-- `vercel env` — Håndtere environment variables
+- `npm run cf:build` — Bygg for Cloudflare Workers
+- `npm run cf:deploy` — Manuell deploy via Wrangler
+- `npx wrangler deployment list` — Se deployments
+- `npx wrangler tail` — Live logs
 
 ---
 
@@ -317,16 +332,16 @@ npm run type-check
 node scripts/validate-i18n.js
 npm run build
 
-# Deploy (primær metode - GitHub → Vercel automatisk)
+# Deploy (primær metode - GitHub → Cloudflare Workers Builds automatisk)
 git push origin main
-vercel ls  # Se deployment status
+npx wrangler deployment list  # Se deployment status
 
-# Deploy (backup - Vercel CLI)
-vercel --prod --force
+# Deploy (backup - Wrangler CLI)
+npm run cf:deploy
 
 # Verifiser produksjon
 curl https://www.klarpakke.no/api/health
-gh run list --limit 3
+npm run verify:prod
 
 # Edge Functions
 supabase functions deploy
@@ -349,12 +364,12 @@ gh secret list --repo tajlive/KP
 | ---------------------------------------- | ------------------------------------------------------------ |
 | `STRIPE_SECRET_KEY is not set` ved build | Sett `sk_test_build_only` som build-env                      |
 | `npm install` feiler                     | Alltid bruk `--legacy-peer-deps`                             |
-| Vercel cold start                        | Bruk Edge Functions for API routes                           |
+| Cloudflare Workers cold start            | Bruk KV for cache og unngå store synkrone initialiseringer   |
 | Auth loop etter deploy                   | Se [FIX_AUTH_LOOP.md](./FIX_AUTH_LOOP.md)                    |
 | Supabase auth feil                       | Bruk `createServerClient` + `getUser()`, ikke `getSession()` |
 | GitHub push rejected (secrets)           | Fjern `.mcp-cache/` fra commit                               |
-| Deploy feiler                            | Sjekk at alle GitHub Secrets er satt                         |
-| KIMI ser ikke endringer                  | Vent på deployment (5-10 min), sjekk Actions                 |
+| Deploy feiler                            | Sjekk at alle Cloudflare secrets/vars er satt                |
+| KIMI ser ikke endringer                  | Vent på deployment (1-2 min), sjekk `npx wrangler deployment list` |
 
 ---
 
@@ -363,16 +378,16 @@ gh secret list --repo tajlive/KP
 ### Quick diagnose
 
 ```bash
-# Sjekk CI/CD
-gh run list --limit 1
-gh run view --log | grep -i error
+# Sjekk CI/CD / Cloudflare Workers Builds
+npx wrangler deployment list
+npx wrangler tail | head -50
 
 # Sjekk produksjon
 curl -I https://www.klarpakke.no/no
 curl https://www.klarpakke.no/api/health
 
 # Sjekk build lokalt
-npm run build 2>&1 | grep error
+npm run cf:build 2>&1 | grep error
 
 # Sjekk tester
 npm run test:unit 2>&1 | tail -20
@@ -381,17 +396,18 @@ npm run test:unit 2>&1 | tail -20
 node scripts/validate-i18n.js 2>&1 | grep -i missing
 ```
 
-### GitHub Actions feiler?
+### Cloudflare Workers Builds feiler?
 
 ```bash
-# Se logs
-gh run view --log
+# Se deployments og logs
+npx wrangler deployment list
+npx wrangler tail
 
-# Re-run
-gh run rerun <run-id>
+# Manuell deploy som fallback
+npm run cf:deploy
 
 # Sjekk secrets
-gh secret list --repo tajlive/KP
+npx wrangler secret list
 ```
 
 ### Produksjon nede?
@@ -408,9 +424,9 @@ gh secret list --repo tajlive/KP
 2. **Les relevant kode** før du endrer
 3. **Kjør diagnostikk** hvis noe er galt
 4. **Test lokalt** før push: `npm run test:unit && npm run build`
-5. **Push til GitHub** - deployment skjer automatisk
-6. **Monitor** med `gh run watch`
-7. **Verifiser** med `curl https://www.klarpakke.no/api/health`
+5. **Push til GitHub** - Cloudflare Workers Builds deployer automatisk
+6. **Monitor** med `npx wrangler deployment list`
+7. **Verifiser** med `npm run verify:prod`
 8. **Ikke lag rapport-filer** — dokumenter i koden eller her
 
 ---
@@ -432,24 +448,24 @@ gh secret list --repo tajlive/KP
 ### Eksterne lenker
 
 - **GitHub:** https://github.com/tajlive/KP
-- **Actions:** https://github.com/tajlive/KP/actions
+- **Actions (arkivert):** https://github.com/tajlive/KP/actions
 - **Issue #16:** https://github.com/tajlive/KP/issues/16
 - **Produksjon:** https://www.klarpakke.no
-- **Vercel Dashboard:** https://vercel.com/tom-jensens-projects/klarpakke
+- **Cloudflare Dashboard:** https://dash.cloudflare.com (Worker: klarpakke)
 - **Supabase:** https://supabase.com/dashboard/project/pskhryjzkobytnfwucrb
 
 ---
 
 ## 🎯 HUSKEREGEL
 
-**"GitHub er sannheten, Vercel er speilet, KIMI er rådgiveren"**
+**"GitHub er sannheten, Cloudflare Workers er speilet, KIMI er rådgiveren"**
 
 ```text
 👨‍💻 Developer
   ↓ git push
 🐙 GitHub (Source of Truth)
-  ↓ auto-deploy
-▲ Vercel Edge Network
+  ↓ auto-deploy (Cloudflare Workers Builds)
+☁️ Cloudflare Workers Edge Network
   ↓ MCP reads
 🤖 KIMI AI
 ```
@@ -458,4 +474,4 @@ gh secret list --repo tajlive/KP
 
 ---
 
-_Sist oppdatert: 2026-02-25 08:45 CET av KIMI Code - Migrert til Vercel_
+_Sist oppdatert: 2026-06-29 21:15 CET av KIMI Code - Migrert til Cloudflare Workers (OpenNext.js + Wrangler)_
