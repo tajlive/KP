@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createHash } from "crypto";
 import type { Database, Json } from "@/types/database.types";
 
 export type IdempotencyState = "pending" | "completed" | "failed";
@@ -12,6 +11,7 @@ export type IdempotencyRecord =
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const encoder = new TextEncoder();
 
 export async function withIdempotency<T>(
   db: SupabaseClient<Database>,
@@ -97,8 +97,23 @@ export async function withIdempotency<T>(
   );
 }
 
-export function makeIdempotencyKey(
+function toHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function makeIdempotencyKey(
   parts: (string | number | null | undefined)[]
-): string {
-  return createHash("sha256").update(parts.map(String).join("|")).digest("hex");
+): Promise<string> {
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle) {
+    throw new Error("Web Crypto API is required to create idempotency keys");
+  }
+
+  const digest = await subtle.digest(
+    "SHA-256",
+    encoder.encode(parts.map(String).join("|")),
+  );
+  return toHex(digest);
 }
