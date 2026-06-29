@@ -87,8 +87,6 @@ export const cspMiddleware: MiddlewareFn = (
       ...(isDev ? ["'unsafe-eval'"] : []),
       "https://pskhryjzkobytnfwucrb.supabase.co",
       "https://*.tradingview.com",
-      "https://*.vercel-scripts.com",
-      "https://vercel.live",
       "https://plausible.io",
     ],
     "style-src": [
@@ -102,14 +100,12 @@ export const cspMiddleware: MiddlewareFn = (
       "https://pskhryjzkobytnfwucrb.supabase.co",
       "https://*.tradingview.com",
       "https://*.coingecko.com",
-      "https://vercel.com",
       "https://klarpakke.no",
       "https://www.klarpakke.no",
     ],
     "font-src": [
       "'self'",
       "data:",
-      "https://vercel.live",
       "https://r2cdn.perplexity.ai",
     ],
     "worker-src": ["'self'", "blob:"],
@@ -125,7 +121,6 @@ export const cspMiddleware: MiddlewareFn = (
       "wss://stream.binance.com:9443",
       "https://*.sanity.io",
       "wss://*.sanity.io",
-      "https://vercel.live",
       "https://plausible.io",
       "https://o4509555622608896.ingest.de.sentry.io",
       ...(isDev 
@@ -137,7 +132,7 @@ export const cspMiddleware: MiddlewareFn = (
           ]
         : []),
     ],
-    "frame-src": ["'self'", "https://vercel.live"],
+    "frame-src": ["'self'"],
     "upgrade-insecure-requests": [],
   };
 

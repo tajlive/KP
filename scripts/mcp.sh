@@ -7,7 +7,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 ENV_FILE="$PROJECT_DIR/.env.local"
-ENV_VERCEL_FILE="$PROJECT_DIR/.env.vercel"
 LEGACY_ENV_FILE="$PROJECT_DIR/klarpakke-mcp-server/.env"
 
 RED='\033[0;31m'
@@ -42,7 +41,6 @@ load_env_file() {
 
 load_env() {
   load_env_file "$ENV_FILE"
-  load_env_file "$ENV_VERCEL_FILE"
   load_env_file "$LEGACY_ENV_FILE"
 }
 
@@ -125,19 +123,6 @@ cmd_deploy() {
   local action="${2:-status}"
 
   case "$action" in
-    status)
-      require_var VERCEL_TOKEN || exit 1
-      log_info "Henter siste deploy fra Vercel API..."
-      curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-        "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID:-}" | \
-        jq -r '.deployments[0] | "Status: \(.state) | URL: \(.url) | Target: \(.target)"'
-      ;;
-    logs)
-      require_var VERCEL_TOKEN || exit 1
-      curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-        "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID:-}" | \
-        jq -r '.deployments[0:5] | .[] | "\(.state) | \(.url) | \(.created)"'
-      ;;
     trigger)
       require_var GITHUB_TOKEN || exit 1
       local repo
@@ -150,43 +135,10 @@ cmd_deploy() {
         -d '{"ref":"main","inputs":{"environment":"production"}}' >/dev/null
       log_success "Deploy workflow trigget"
       ;;
-    full)
-      require_var VERCEL_TOKEN || exit 1
-      require_var VERCEL_ORG_ID || exit 1
-      require_var VERCEL_PROJECT_ID || exit 1
-      cd "$PROJECT_DIR"
-      log_info "Steg 1/3: kvalitetssjekker..."
-      npm run lint
-      npm run type-check
-      npm run build
-
-      log_info "Steg 2/3: deploy til Vercel prod..."
-      local out
-      out="$(npx vercel deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1)"
-      echo "$out"
-      local deploy_url
-      deploy_url="$(echo "$out" | grep -Eo 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1 || true)"
-
-      log_info "Steg 3/3: enkel health-verifisering..."
-      if [ -n "$deploy_url" ]; then
-        local code
-        code="$(curl -s -o /dev/null -w "%{http_code}" "$deploy_url" || true)"
-        if [ "$code" = "200" ] || [ "$code" = "401" ] || [ "$code" = "403" ]; then
-          log_success "Deploy verifisert ($code) - $deploy_url"
-        else
-          log_warning "Uventet statuskode ($code) - $deploy_url"
-        fi
-      else
-        log_warning "Fant ikke deploy-URL i output, sjekk loggene manuelt"
-      fi
-      ;;
     *)
       cat <<'EOF'
 Deploy:
-  ./mcp.sh deploy status
-  ./mcp.sh deploy logs
-  ./mcp.sh deploy trigger
-  ./mcp.sh deploy full
+  ./mcp.sh deploy trigger   # Trigger GitHub Actions deploy workflow
 EOF
       ;;
   esac
@@ -230,7 +182,7 @@ cmd_check() {
   echo ""
   echo "Tilgjengelige kategorier:"
   echo "  ./mcp.sh database [check|query|tables|migrate]"
-  echo "  ./mcp.sh deploy   [status|logs|trigger|full]"
+  echo "  ./mcp.sh deploy   [trigger]"
   echo "  ./mcp.sh github   [status|workflows]"
 }
 
@@ -247,7 +199,7 @@ Bruk: ./mcp.sh [kategori] [handling] [args...]
 
 Kategorier:
   database (db)  SQL operasjoner
-  deploy         Vercel deploy management
+  deploy         GitHub deploy trigger
   github (gh)    GitHub status/workflows
   check          Sky-readiness status
 EOF

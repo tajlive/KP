@@ -1,12 +1,10 @@
 /**
  * Unified conversion funnel tracking
- * Tracks the complete user journey across Plausible and Vercel Analytics.
+ * Tracks the complete user journey via Plausible only.
  * Integrates with src/lib/analytics.ts - does not replace existing analytics.
  */
 
-
 import { trackEvent } from '@/lib/analytics';
-// Vercel Analytics removed — bruker kun Plausible (trackEvent) nå
 
 export const FUNNEL_STEPS = [
   'landing_view',
@@ -22,7 +20,7 @@ export const FUNNEL_STEPS = [
 export type FunnelStep = (typeof FUNNEL_STEPS)[number];
 
 /**
- * Track a funnel step to both Plausible and Vercel Analytics.
+ * Track a funnel step to Plausible.
  * Safe to call from client components. No-op on server.
  */
 export function trackFunnelStep(

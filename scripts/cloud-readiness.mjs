@@ -3,20 +3,18 @@
  * Cloud Readiness Checker
  *
  * Verifies that the environment has the secrets/tokens needed for a given
- * automation profile. The project is hosted on Fly.io, so the primary
- * deploy profile requires FLY_API_TOKEN. A legacy `vercel` profile is kept
- * for backwards compatibility / migration scenarios.
+ * automation profile. The project is hosted on Cloudflare Workers, so the
+ * primary deploy profile requires CLOUDFLARE_API_TOKEN.
  *
- * Loads .env, .env.local, .env.development.local, .env.production.local and
- * .env.vercel so local development works without exporting everything to the
- * shell. process.env always wins, so CI/production keeps working unchanged.
+ * Loads .env, .env.local, .env.development.local and .env.production.local so
+ * local development works without exporting everything to the shell.
+ * process.env always wins, so CI/production keeps working unchanged.
  *
  * Usage:
  *   node scripts/cloud-readiness.mjs --profile preflight
  *   node scripts/cloud-readiness.mjs --profile agent
  *   node scripts/cloud-readiness.mjs --profile deploy
  *   node scripts/cloud-readiness.mjs --profile manual-deploy --environment production
- *   node scripts/cloud-readiness.mjs --profile vercel
  *   node scripts/cloud-readiness.mjs --profile agent --export-github-env
  */
 
@@ -53,7 +51,6 @@ const envFromFiles = {
   ...loadEnvFile(resolve(rootDir, ".env.local")),
   ...loadEnvFile(resolve(rootDir, ".env.development.local")),
   ...loadEnvFile(resolve(rootDir, ".env.production.local")),
-  ...loadEnvFile(resolve(rootDir, ".env.vercel")),
 };
 
 function mask(value) {
@@ -75,7 +72,6 @@ function hasFlag(flag) {
 const profile = parseArg("--profile") || "agent";
 const environment = parseArg("--environment") || "preview";
 const exportGithubEnv = hasFlag("--export-github-env");
-const autoResolveVercel = !hasFlag("--no-auto-resolve-vercel");
 
 const resolvedVars = {};
 const resolveNotes = [];
@@ -90,68 +86,52 @@ function setResolvedVar(name, value, source) {
 
 const profiles = {
   /**
-   * Daglig lokal / automation:check — Linear + MCP. Deploy skjer via CI på Fly.io,
-   * så Vercel-variabler er valgfrie/legacy.
+   * Daglig lokal / automation:check — Linear + MCP. Deploy skjer via CI til
+   * Cloudflare Workers.
    */
   preflight: {
     required: ["LINEAR_API_KEY"],
     optional: [
-      "FLY_API_TOKEN",
       "GITHUB_TOKEN",
       "SUPABASE_ACCESS_TOKEN",
       "SUPABASE_SERVICE_ROLE_KEY",
       "CLOUDFLARE_API_TOKEN",
+      "CLOUDFLARE_ZONE_ID",
       "RESEND_API_KEY",
       "STRIPE_SECRET_KEY",
       "SENTRY_AUTH_TOKEN",
-      // Legacy Vercel tokens — kept optional for transition period
-      "VERCEL_TOKEN",
-      "VERCEL_ORG_ID",
-      "VERCEL_PROJECT_ID",
     ],
   },
   /**
-   * Agent-profil: alt som kreves for KIMI/automation-agenter. Fly.io er primær
-   * hosting, så FLY_API_TOKEN kreves. Vercel er valgfritt.
+   * Agent-profil: alt som kreves for KIMI/automation-agenter. Cloudflare Workers
+   * er primær hosting, så CLOUDFLARE_API_TOKEN kreves.
    */
   agent: {
-    required: ["LINEAR_API_KEY", "FLY_API_TOKEN"],
+    required: ["LINEAR_API_KEY", "CLOUDFLARE_API_TOKEN"],
     optional: [
       "GITHUB_TOKEN",
       "SUPABASE_ACCESS_TOKEN",
       "SUPABASE_SERVICE_ROLE_KEY",
-      "CLOUDFLARE_API_TOKEN",
+      "CLOUDFLARE_ZONE_ID",
       "RESEND_API_KEY",
       "STRIPE_SECRET_KEY",
       "SENTRY_AUTH_TOKEN",
-      // Legacy optional Vercel tokens
-      "VERCEL_TOKEN",
-      "VERCEL_ORG_ID",
-      "VERCEL_PROJECT_ID",
     ],
   },
   /**
-   * Deploy-profil for Fly.io. Krever FLY_API_TOKEN (fra `fly tokens create deploy`).
+   * Deploy-profil for Cloudflare Workers. Krever CLOUDFLARE_API_TOKEN.
    */
   deploy: {
-    required: ["FLY_API_TOKEN"],
-    optional: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ZONE_ID"],
+    required: ["CLOUDFLARE_API_TOKEN"],
+    optional: ["CLOUDFLARE_ZONE_ID"],
   },
   /**
-   * Manuell deploy/prod-ops. Krever Fly-token; Supabase-tokens kreves i production
+   * Manuell deploy/prod-ops. Krever Cloudflare-token; Supabase-tokens kreves i production
    * for drift-operasjoner (db push, edge functions, osv.).
    */
   "manual-deploy": {
-    required: ["FLY_API_TOKEN"],
-    optional: ["SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN"],
-  },
-  /**
-   * Legacy Vercel-profil for prosjekter som fortsatt deployes til Vercel,
-   * eller for migreringsscenarioer.
-   */
-  vercel: {
-    required: ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
-    optional: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ZONE_ID"],
+    required: ["CLOUDFLARE_API_TOKEN"],
+    optional: ["SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN", "CLOUDFLARE_ZONE_ID"],
   },
 };
 
@@ -163,62 +143,6 @@ if (!profiles[profile]) {
 
 function getEnv(name) {
   return resolvedVars[name] || process.env[name] || envFromFiles[name] || "";
-}
-
-function readLocalVercelProjectConfig() {
-  const vercelProjectPath = resolve(rootDir, ".vercel", "project.json");
-  if (!existsSync(vercelProjectPath)) return {};
-
-  try {
-    const content = JSON.parse(readFileSync(vercelProjectPath, "utf8"));
-    return {
-      orgId: content.orgId || "",
-      projectId: content.projectId || "",
-    };
-  } catch {
-    return {};
-  }
-}
-
-async function fetchVercel(path, token) {
-  const response = await fetch(`https://api.vercel.com${path}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) return null;
-  return response.json();
-}
-
-async function resolveVercelContext() {
-  const token = getEnv("VERCEL_TOKEN");
-  if (!token) return;
-
-  const localConfig = readLocalVercelProjectConfig();
-  if (!getEnv("VERCEL_PROJECT_ID") && localConfig.projectId) {
-    setResolvedVar("VERCEL_PROJECT_ID", localConfig.projectId, ".vercel/project.json");
-  }
-  if (!getEnv("VERCEL_ORG_ID") && localConfig.orgId) {
-    setResolvedVar("VERCEL_ORG_ID", localConfig.orgId, ".vercel/project.json");
-  }
-
-  const projectId = getEnv("VERCEL_PROJECT_ID");
-  if (!getEnv("VERCEL_ORG_ID") && projectId) {
-    const project = await fetchVercel(`/v9/projects/${encodeURIComponent(projectId)}`, token);
-    const orgIdFromProject = project?.accountId || project?.teamId || project?.orgId || "";
-    if (orgIdFromProject) {
-      setResolvedVar("VERCEL_ORG_ID", orgIdFromProject, "Vercel project lookup");
-    }
-  }
-
-  if (!getEnv("VERCEL_ORG_ID")) {
-    const user = await fetchVercel("/v2/user", token);
-    const personalOrgId = user?.user?.id || "";
-    if (personalOrgId) {
-      setResolvedVar("VERCEL_ORG_ID", personalOrgId, "Vercel user lookup");
-    }
-  }
 }
 
 function exportResolvedToGithubEnv() {
@@ -234,11 +158,6 @@ async function main() {
 
   if (profile === "manual-deploy" && environment === "production") {
     required.push("SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN");
-  }
-
-  // Only auto-resolve Vercel IDs for the legacy vercel profile.
-  if (autoResolveVercel && profile === "vercel") {
-    await resolveVercelContext();
   }
 
   const missing = required.filter((name) => !getEnv(name));

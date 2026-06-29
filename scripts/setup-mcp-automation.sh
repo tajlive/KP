@@ -6,7 +6,7 @@ set -e
 
 echo "╔══════════════════════════════════════════════════════════════╗"
 echo "║  🔧 MCP AUTOMATISERING SETUP                                  ║"
-echo "║     Inkluderer: Supabase + Vercel + Linear + Sentry          ║"
+echo "║     Inkluderer: Supabase + Linear + Sentry                   ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -28,11 +28,6 @@ echo "📦 Sjekker verktøy..."
 if ! command -v supabase &> /dev/null; then
     echo -e "${YELLOW}⚠️  Supabase CLI ikke funnet. Installerer...${NC}"
     brew install supabase/tap/supabase 2>/dev/null || curl -sSL https://get.supabase.com/install | sh
-fi
-
-if ! command -v vercel &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Vercel CLI ikke funnet. Installerer...${NC}"
-    npm i -g vercel
 fi
 
 log_success "Verktøy OK"
@@ -79,16 +74,7 @@ if [ $? -eq 0 ] && [ -n "$SUPABASE_TOKEN" ]; then
 fi
 echo ""
 
-# 2. Vercel Token
-VERCEL_TKN=$(prompt_for_token "VERCEL" "https://vercel.com/account/tokens" "${VERCEL_TOKEN}")
-if [ $? -eq 0 ] && [ -n "$VERCEL_TKN" ]; then
-    export VERCEL_TOKEN="$VERCEL_TKN"
-    sed -i '' "s/VERCEL_TOKEN=.*/VERCEL_TOKEN=$VERCEL_TKN/" .env.mcp.local 2>/dev/null || echo "VERCEL_TOKEN=$VERCEL_TKN" >> .env.mcp.local
-    log_success "Vercel token lagret"
-fi
-echo ""
-
-# 3. Linear Token
+# 2. Linear Token
 LINEAR_TKN=$(prompt_for_token "LINEAR" "https://linear.app/settings/api" "${LINEAR_API_KEY}")
 if [ $? -eq 0 ] && [ -n "$LINEAR_TKN" ]; then
     export LINEAR_API_KEY="$LINEAR_TKN"
@@ -104,7 +90,7 @@ if [ $? -eq 0 ] && [ -n "$LINEAR_TKN" ]; then
 fi
 echo ""
 
-# 4. Sentry Token
+# 3. Sentry Token
 SENTRY_TKN=$(prompt_for_token "SENTRY" "https://sentry.io/settings/account/api/auth-tokens/" "${SENTRY_AUTH_TOKEN}")
 if [ $? -eq 0 ] && [ -n "$SENTRY_TKN" ]; then
     export SENTRY_AUTH_TOKEN="$SENTRY_TKN"
@@ -131,10 +117,6 @@ cat > .cursor/mcp.json << 'EOF'
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=vuxbjlykgmzskxbclquf"
     },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com/tom-jensens-projects/klarpakke"
-    },
     "linear": {
       "type": "http",
       "url": "https://mcp.linear.app"
@@ -160,13 +142,6 @@ cat > .kimi/mcp_config.json << EOF
       "url": "https://mcp.supabase.com/mcp?project_ref=vuxbjlykgmzskxbclquf",
       "env": {
         "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN:-}"
-      }
-    },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com/tom-jensens-projects/klarpakke",
-      "env": {
-        "VERCEL_TOKEN": "${VERCEL_TOKEN:-}"
       }
     },
     "linear": {
@@ -200,7 +175,6 @@ if ! grep -q "SUPABASE_ACCESS_TOKEN" "$SHELL_RC" 2>/dev/null; then
     echo "" >> "$SHELL_RC"
     echo "# MCP Tokens - Klarpakke" >> "$SHELL_RC"
     echo "export SUPABASE_ACCESS_TOKEN=\"${SUPABASE_ACCESS_TOKEN:-}\"" >> "$SHELL_RC"
-    echo "export VERCEL_TOKEN=\"${VERCEL_TOKEN:-}\"" >> "$SHELL_RC"
     echo "export LINEAR_API_KEY=\"${LINEAR_API_KEY:-}\"" >> "$SHELL_RC"
     echo "export SENTRY_AUTH_TOKEN=\"${SENTRY_AUTH_TOKEN:-}\"" >> "$SHELL_RC"
     log_success "Tokens lagret til $SHELL_RC"
@@ -214,14 +188,12 @@ echo ""
 echo "Tilkoblede MCP Servere:"
 echo ""
 echo "  📊 Supabase      → SQL, Edge Functions, Logs"
-echo "  🚀 Vercel        → Deploy, Env Vars, Logs"
 echo "  📋 Linear        → Issues, Projects, Teams"
 echo "  🐛 Sentry        → Errors, Performance, Releases"
 echo "  🔧 Klarpakke     → 170+ custom verktøy"
 echo ""
 echo "Bruk i Kimi CLI:"
 echo "  @supabase execute_sql 'SELECT * FROM users'"
-echo "  @vercel create_deployment"
 echo "  @linear create_issue"
 echo "  @sentry get_errors"
 echo ""

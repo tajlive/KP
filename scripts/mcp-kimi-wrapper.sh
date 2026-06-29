@@ -39,10 +39,6 @@ if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ "$SUPABASE_ACCESS_TOKEN" = "sbp_your_sup
   echo -e "${YELLOW}⚠️  SUPABASE_ACCESS_TOKEN ikke satt${NC}"
 fi
 
-if [ -z "$VERCEL_TOKEN" ] || [ "$VERCEL_TOKEN" = "your_vercel_token_here" ]; then
-  echo -e "${YELLOW}⚠️  VERCEL_TOKEN ikke satt${NC}"
-fi
-
 # Sett KIMI_MCP_CONFIG for å bruke vår config
 export KIMI_MCP_CONFIG="$PROJECT_ROOT/.kimi/mcp_config.json"
 

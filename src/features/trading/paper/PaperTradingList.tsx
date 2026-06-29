@@ -109,6 +109,7 @@ export function PaperTradingList({
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { formatByMode } = useCurrency();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Supabase realtime: oppdater listen når trading_sessions endres for denne brukeren
   useEffect(() => {
@@ -146,6 +147,18 @@ export function PaperTradingList({
       );
     });
   }, [sessions]);
+  const activeSessions = useMemo(
+    () => sortedSessions.filter((session) => session.status === "active"),
+    [sortedSessions],
+  );
+  const historySessions = useMemo(
+    () => sortedSessions.filter((session) => session.status !== "active"),
+    [sortedSessions],
+  );
+  const visibleSessions = showHistory
+    ? sortedSessions
+    : [...activeSessions, ...historySessions.slice(0, 3)];
+  const hiddenHistoryCount = Math.max(0, historySessions.length - 3);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -289,6 +302,15 @@ export function PaperTradingList({
           </Badge>
         );
     }
+  };
+
+  const formatTradingPair = (pair: string) => {
+    const normalized = pair.trim().toUpperCase();
+    if (normalized.includes("/")) return normalized;
+    if (normalized.endsWith("USDT")) {
+      return `${normalized.slice(0, -4)}/USDT`;
+    }
+    return normalized;
   };
 
   return (
@@ -469,7 +491,34 @@ export function PaperTradingList({
         </Card>
       ) : (
         <div className="space-y-4">
-          {sortedSessions.map((session) => {
+          {hiddenHistoryCount > 0 && !showHistory && (
+            <PremiumStatusBanner>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    {t("sessions.activeOverview", {
+                      active: activeSessions.length,
+                    })}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t("sessions.historyHidden", {
+                      count: hiddenHistoryCount,
+                    })}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowHistory(true)}
+                >
+                  {t("sessions.showHistory")}
+                </Button>
+              </div>
+            </PremiumStatusBanner>
+          )}
+
+          {visibleSessions.map((session) => {
             const pnlPercent = session.starting_capital_nok
               ? ((session.current_capital_nok - session.starting_capital_nok) /
                   session.starting_capital_nok) *
@@ -517,7 +566,7 @@ export function PaperTradingList({
                       <div className="flex items-center gap-2">
                         {getStatusBadge(session.status)}
                         <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                          {session.trading_pair}
+                          {formatTradingPair(session.trading_pair)}
                         </span>
                       </div>
                       <p className="text-sm text-slate-500 dark:text-slate-400 truncate">

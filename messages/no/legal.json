@@ -106,7 +106,6 @@
     },
     "thirdParty": {
       "title": "Tredjepartstjenester",
-      "vercel": "Brukes til analyse og ytelse av nettstedet.",
       "sentry": "Brukes til å overvåke feil og ytelse.",
       "google": "Brukes til analyse av trafikk og brukeratferd.",
       "supabase": "Brukes til autentisering og lagring av data."

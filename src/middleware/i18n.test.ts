@@ -56,16 +56,6 @@ describe("i18nMiddleware", () => {
     expect(res.headers.get("location")).toBe("http://localhost/no/callback?code=abc");
   });
 
-  it("redirects vercel.app to canonical domain", async () => {
-    process.env.NEXT_PUBLIC_APP_URL = "https://www.klarpakke.no";
-    const req = new NextRequest("http://klarpakke.vercel.app/some-path", {
-      headers: { host: "klarpakke.vercel.app" },
-    });
-    const res = await i18nMiddleware(req);
-    expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("https://www.klarpakke.no/some-path");
-  });
-
   it("redirects /no/no/priser to /no/priser (duplicate locale)", async () => {
     const req = new NextRequest(new URL("http://localhost/no/no/priser"));
     const res = await i18nMiddleware(req);

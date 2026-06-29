@@ -28,13 +28,6 @@ else
 fi
 
 # Check required env vars for deploy
-if [ -n "${VERCEL_TOKEN:-}" ]; then
-  echo "✅ VERCEL_TOKEN set"
-else
-  echo "❌ VERCEL_TOKEN not set (required for deploy)"
-  ERRORS=$((ERRORS + 1))
-fi
-
 if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
   echo "✅ CLOUDFLARE_API_TOKEN set"
 else

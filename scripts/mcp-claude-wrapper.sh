@@ -48,11 +48,6 @@ if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ "$SUPABASE_ACCESS_TOKEN" = "sbp_your_sup
   MISSING=1
 fi
 
-if [ -z "$VERCEL_TOKEN" ] || [ "$VERCEL_TOKEN" = "your_vercel_token_here" ]; then
-  echo -e "${RED}❌ VERCEL_TOKEN ikke satt${NC}"
-  MISSING=1
-fi
-
 if [ $MISSING -eq 1 ]; then
   echo ""
   echo "Kjør: ./scripts/setup-mcp-auth.sh"

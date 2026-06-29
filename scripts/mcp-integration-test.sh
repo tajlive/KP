@@ -82,33 +82,7 @@ fi
 echo ""
 
 # ============================================================================
-# MCP 2: VERCEL
-# ============================================================================
-log_mcp "Vercel (Deployment)"
-echo "───────────────────────────────────────────────────────────────"
-
-# Check env config
-if grep -q "VERCEL_PROJECT_ID" .env.local 2>/dev/null || [ -d ".vercel" ]; then
-    check_pass "Vercel: Project configured"
-else
-    check_warn "Vercel: Project not configured"
-fi
-
-if command -v vercel &> /dev/null; then
-    # Check auth
-    if vercel whoami &>/dev/null; then
-        check_pass "Vercel CLI: Authenticated"
-    else
-        check_warn "Vercel CLI: Not authenticated"
-    fi
-else
-    check_warn "Vercel CLI: Not installed"
-fi
-
-echo ""
-
-# ============================================================================
-# MCP 3: LINEAR
+# MCP 2: LINEAR
 # ============================================================================
 log_mcp "Linear (Issue Tracking)"
 echo "───────────────────────────────────────────────────────────────"
