@@ -7,13 +7,12 @@ import {
   Rocket,
   LayoutDashboard,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 export function ThreeSteps() {
-  const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("threeSteps");
   const { user } = useAuth();
@@ -107,12 +106,9 @@ export function ThreeSteps() {
 
       {/* CTA */}
       <div className="text-center mt-8">
-        <button
-          type="button"
-          onClick={() =>
-            router.push(hrefWithLocale(locale, user ? "/dashboard" : "/register"))
-          }
-          className="bg-teal-700 hover:bg-teal-800 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
+        <Link
+          href={hrefWithLocale(locale, user ? "/dashboard" : "/register")}
+          className="bg-kp-brand hover:bg-kp-brand-hover text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
         >
           {user ? (
             <LayoutDashboard className="w-5 h-5" aria-hidden />
@@ -120,7 +116,7 @@ export function ThreeSteps() {
             <UserPlus className="w-5 h-5" aria-hidden />
           )}
           {user ? t("ctaButtonLoggedIn") : t("ctaButton")}
-        </button>
+        </Link>
         <p className="font-lexend text-slate-400 text-sm mt-4">
           {user ? t("ctaSubtextLoggedIn") : t("ctaSubtext")}
         </p>

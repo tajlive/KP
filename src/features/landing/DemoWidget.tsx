@@ -194,7 +194,7 @@ export function DemoWidget() {
           </p>
         </div>
 
-        <div className="relative group">
+        <div className="relative">
           <div
             className={`rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_60px_-20px_rgba(0,82,255,0.35)] backdrop-blur-md transition-colors duration-300 sm:p-8 ${
               flash === "buy"
@@ -334,21 +334,19 @@ export function DemoWidget() {
                 {t("sell")}
               </button>
             </div>
-          </div>
 
-          {/* CTA overlay on hover */}
-          <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px] rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
-            <div className="text-center px-6">
-              <p className="text-white font-bold text-xl mb-4">
+            {/* Inline CTA banner — always visible on mobile and desktop */}
+            <div className="mt-5 rounded-xl border border-kp-border bg-kp-bg-secondary/80 p-4 text-center">
+              <p className="text-kp-text-primary font-semibold text-sm mb-3">
                 {user ? t("overlayLoggedIn") : t("overlay")}
               </p>
               <Link
                 href={user ? paperHref : signupHref}
-                className={`inline-flex items-center gap-2 px-8 py-4 ${BRAND.primary} font-bold rounded-xl shadow-lg shadow-[#0052FF]/30 transition-all duration-200`}
+                className={`inline-flex items-center gap-2 px-6 py-3 ${BRAND.primary} font-bold rounded-lg shadow-lg shadow-[#0052FF]/30 transition-all duration-200 text-sm`}
               >
                 {user ? t("overlayLoggedInCta") : t("overlayCta")}
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"

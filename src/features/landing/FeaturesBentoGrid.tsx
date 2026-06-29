@@ -4,7 +4,8 @@
  * @deprecated Refactor into shared page/section components when redesigning this page.
  */
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import Link from "next/link";
 import {
   GraduationCap,
   Wallet,
@@ -59,6 +60,7 @@ function FeatureCard({
 }
 
 function LiveSignalCard({ delay = 0 }: { delay?: number }) {
+  const t = useTranslations("landing.liveSignalCard");
   const [signal, setSignal] = useState<"BUY" | "HOLD" | "SELL" | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,9 +85,9 @@ function LiveSignalCard({ delay = 0 }: { delay?: number }) {
   }, []);
 
   const signalConfig = {
-    BUY: { color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30", label: "KJØP" },
-    SELL: { color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/30", label: "SALG" },
-    HOLD: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30", label: "HOLD" },
+    BUY: { color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30", label: t("buy") },
+    SELL: { color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/30", label: t("sell") },
+    HOLD: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30", label: t("hold") },
   };
 
   const config = signal ? signalConfig[signal] : signalConfig.HOLD;
@@ -104,10 +106,9 @@ function LiveSignalCard({ delay = 0 }: { delay?: number }) {
           <div className="w-14 h-14 rounded-xl bg-kp-surface-highlight flex items-center justify-center mb-4">
             <Bot className="w-7 h-7 text-kp-brand" />
           </div>
-          <h3 className="text-2xl font-bold text-kp-text-primary mb-3">AI-signaler i sanntid</h3>
+          <h3 className="text-2xl font-bold text-kp-text-primary mb-3">{t("title")}</h3>
           <p className="text-kp-text-secondary mb-6 leading-relaxed">
-            Vår AI analyserer markedet kontinuerlig og gir deg tydelige kjøps-, salgs- eller hold-signaler
-            basert på teknisk analyse.
+            {t("description")}
           </p>
 
           <div className="mt-auto">
@@ -118,10 +119,10 @@ function LiveSignalCard({ delay = 0 }: { delay?: number }) {
                 <Activity className={`w-5 h-5 ${config.color}`} />
                 <div>
                   <p className={`text-sm font-medium ${config.color}`}>
-                    BTC/USDT — Siste signal
+                    {t("latestSignal")}
                   </p>
                   <p className="text-xs text-kp-text-tertiary">
-                    Oppdateres hvert minutt
+                    {t("updatedEveryMinute")}
                   </p>
                 </div>
               </div>
@@ -143,6 +144,7 @@ function LiveSignalCard({ delay = 0 }: { delay?: number }) {
 export function FeaturesBentoGrid() {
   const t = useTranslations("landing.bentoGrid");
   const tc = useTranslations("landing.common");
+  const locale = useLocale();
 
   const features = [
     {
@@ -238,12 +240,15 @@ export function FeaturesBentoGrid() {
               <h3 className="text-xl font-bold text-white mb-3">{tc("bentoCtaTitle")}</h3>
               <p className="text-white/80 mb-6">{tc("bentoCtaDesc")}</p>
               <ButtonPremium
+                asChild
                 variant="secondary"
                 size="lg"
                 icon={<ArrowRight className="w-5 h-5" />}
                 iconPosition="right"
               >
-                {tc("bentoCtaButton")}
+                <Link href={`/${locale}/onboarding/step1-welcome`}>
+                  {tc("bentoCtaButton")}
+                </Link>
               </ButtonPremium>
             </GlassCard>
           </motion.div>

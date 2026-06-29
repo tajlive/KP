@@ -167,6 +167,7 @@
       "cta": "Fullfør onboarding"
     },
     "error": "Kunne ikke gjennomføre trade. Prøv igjen.",
+    "priceError": "Kunne ikke hente BTC-pris. Sjekk nettverket og prøv igjen.",
     "errors": {
       "UNAUTHORIZED": "Du må logge inn på nytt.",
       "BAD_REQUEST": "Ugyldig trade-forespørsel.",

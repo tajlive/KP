@@ -288,7 +288,12 @@
     "description3": "Døgnkontinuerlig",
     "label4": "Fokus",
     "description4": "Utdanning først",
-    "paymentLabel": "Trygge betalingsmåter"
+    "paymentLabel": "Trygge betalingsmåter",
+    "security": {
+      "ssl": "256-bit SSL",
+      "gdpr": "GDPR-sikret",
+      "fastExecution": "Lynrask utførelse"
+    }
   },
   "leaderboard": {
     "title": "Mest lønnsomme tradere",
@@ -412,7 +417,16 @@
     "feature6Title": "Handelsboten handler mens du sover",
     "feature6Desc": "Auto-trading følger din strategi døgnet rundt. Du slipper å stirre på grafer hele dagen.",
     "feature7Title": "Norsk fellesskap",
-    "feature7Desc": "Bli med i et voksende fellesskap av norske tradere. Støtte på norsk når du trenger det."
+    "feature7Desc": "Bli med i et voksende fellesskap av norske tradere. Støtte på norsk når du trenger det.",
+    "liveSignalCard": {
+      "title": "AI-signaler i sanntid",
+      "description": "Vår AI analyserer markedet kontinuerlig og gir deg tydelige kjøps-, salgs- eller hold-signaler basert på teknisk analyse.",
+      "latestSignal": "BTC/USDT — Siste signal",
+      "updatedEveryMinute": "Oppdateres hvert minutt",
+      "buy": "KJØP",
+      "sell": "SALG",
+      "hold": "HOLD"
+    }
   },
   "copyTradingSection": {
     "badge": "SOCIAL TRADING",
