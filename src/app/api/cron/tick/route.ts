@@ -293,31 +293,35 @@ async function processSession(
     if (signal.indicators?.new_grid_upper && signal.indicators?.new_grid_lower) {
       const newUpper = signal.indicators.new_grid_upper as number;
       const newLower = signal.indicators.new_grid_lower as number;
-      const stratCfg = session.strategy_config as Record<string, any>;
-      
+      const stratCfg = session.strategy_config as Record<string, unknown>;
+      const existingGridConfig =
+        typeof stratCfg.grid_config === "object" && stratCfg.grid_config !== null
+          ? (stratCfg.grid_config as Record<string, unknown>)
+          : {};
+
       const newGridConfig = {
-        ...(stratCfg.grid_config || {}),
+        ...existingGridConfig,
         upper_price: newUpper,
         lower_price: newLower,
       };
-      
+
       const newStrategyConfig = {
         ...stratCfg,
-        grid_config: newGridConfig
+        grid_config: newGridConfig,
       };
-      
+
       // Update config asynchronously but catch errors
       try {
         await db.from("trading_sessions")
           .update({ strategy_config: newStrategyConfig } as never)
           .eq("id", session.id);
         console.info(`[Tick] Updated grid config for session ${session.id} (Trailing Up: upper=${newUpper}, lower=${newLower})`);
-      } catch (err: any) {
+      } catch (err) {
         console.error(`[Tick] Failed to persist new grid config for ${session.id}`, err);
       }
-        
+
       // Update local session config for the rest of the tick
-      session.strategy_config = newStrategyConfig as any;
+      session.strategy_config = newStrategyConfig as TradingSession["strategy_config"];
     }
   }
 
