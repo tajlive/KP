@@ -70,7 +70,7 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => router.push(`/${locale}/dashboard/trade?mode=live`)}
+          onClick={() => router.push(`/${locale}/handel?mode=live`)}
         >
           Prøv live trading
         </Button>

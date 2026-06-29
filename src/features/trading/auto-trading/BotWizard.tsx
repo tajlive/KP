@@ -15,8 +15,9 @@ import {
   Target,
   Bot,
   Shield,
+  AlertTriangle,
 } from "lucide-react";
-import { BRAND, SURFACE } from "@/lib/design/tokens";
+import { BRAND } from "@/lib/design/tokens";
 import {
   PremiumPanel,
   PremiumTradingHero,
@@ -24,19 +25,27 @@ import {
 } from "@/features/trading/PremiumTradingLayout";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { useAnimatedPrice } from "@/hooks/usePrices";
 import { LivePricePreview } from "@/features/trading/LivePricePreview";
-import { startPaperTrading } from "@/app/actions/trading";
+import { startTrading } from "@/app/actions/trading";
+import { useTradingMode } from "@/lib/hooks/useTradingMode";
+import TradingModeToggle from "@/features/trading/TradingModeToggle";
+import type { TradingMode } from "@/types/trading";
+import type { TierSlug } from "@/lib/pricing/tiers";
+import { canAccessLiveAutoTrading } from "@/types/subscription";
 
 interface BotWizardProps {
   userId: string;
   locale: string;
   tier: string;
+  /** Startmodus for veiviseren */
+  mode?: TradingMode;
   /** Saldo fra profil (lekepenger) — brukes som forslag til startkapital */
   paperBalance?: number | string | null;
+  /** Saldo fra profil (ekte penger) — brukes som forslag til live-startkapital */
+  liveBalance?: number | string | null;
 }
 
-function clampPaperCapital(n: number) {
+function clampCapital(n: number) {
   return Math.max(10_000, Math.min(1_000_000, Math.round(n)));
 }
 
@@ -66,26 +75,33 @@ export function BotWizard({
   userId: _userId,
   locale,
   tier: rawTier,
+  mode: initialMode = "paper",
   paperBalance,
+  liveBalance,
 }: BotWizardProps) {
   const tToast = useTranslations("common");
   const tSidebar = useTranslations("dashboard.sidebar");
   const t = useTranslations("BotWizard");
   const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
+  const { canSwitchToLive, isLoading: isModeLoading } = useTradingMode();
+  const [wizardMode, setWizardMode] = useState<TradingMode>(initialMode);
+  const isLive = wizardMode === "live";
+  const hasLiveTier = canAccessLiveAutoTrading(tier as TierSlug);
   const [step, setStep] = useState(1);
   const [strategy, setStrategy] = useState<"dca" | "trend" | "grid" | "multi" | "ai-copy">("dca");
   const [riskLevel, setRiskLevel] = useState<"low" | "medium" | "high">("low");
   const [selectedPairs, setSelectedPairs] = useState<string[]>(["BTCUSDT"]);
   const [startingCapital, setStartingCapital] = useState(() => {
+    const balance = isLive ? liveBalance : paperBalance;
     const raw =
-      paperBalance === null || paperBalance === undefined
+      balance === null || balance === undefined
         ? NaN
-        : typeof paperBalance === "number"
-          ? paperBalance
-          : Number(paperBalance);
-    const base = Number.isFinite(raw) && raw > 0 ? raw : 100_000;
-    return clampPaperCapital(base);
+        : typeof balance === "number"
+          ? balance
+          : Number(balance);
+    const base = Number.isFinite(raw) && raw > 0 ? raw : isLive ? 10_000 : 100_000;
+    return clampCapital(base);
   });
   /** Tillat tom/mellomtilstand i feltet uten at tall «forsvinner» visuelt */
   const [capitalDraft, setCapitalDraft] = useState<string | null>(null);
@@ -100,13 +116,13 @@ export function BotWizard({
     if (cleaned === "" || cleaned === "-") return;
     const v = Number(cleaned);
     if (!Number.isNaN(v)) {
-      setStartingCapital(clampPaperCapital(v));
+      setStartingCapital(clampCapital(v));
     }
   }, []);
 
   const onCapitalInputBlur = useCallback(() => {
     setCapitalDraft(null);
-    setStartingCapital((prev) => clampPaperCapital(prev));
+    setStartingCapital((prev) => clampCapital(prev));
   }, []);
 
   const coinLimit = TIER_COIN_LIMIT[tier] ?? 3;
@@ -118,7 +134,6 @@ export function BotWizard({
     Icon: React.ElementType;
     tier: string;
     recommended?: boolean;
-    backtestStats?: { label: string; value: string; positive: boolean };
   }[] = [
     {
       id: "dca",
@@ -134,7 +149,6 @@ export function BotWizard({
       description: t("strategyTrendDesc"),
       Icon: TrendingUp,
       tier: "bachelor",
-      backtestStats: { label: "5-års Alpha (ETH)", value: "+23.4%", positive: true },
     },
     {
       id: "grid",
@@ -142,7 +156,6 @@ export function BotWizard({
       description: t("strategyGridDesc"),
       Icon: Grid3X3,
       tier: "bachelor",
-      backtestStats: { label: "5-års Alpha (BTC)", value: "+6.7%", positive: true },
     },
     {
       id: "multi",
@@ -199,7 +212,8 @@ export function BotWizard({
   const handleStart = async () => {
     setLoading(true);
     try {
-      const data = await startPaperTrading({
+      const data = await startTrading({
+        mode: wizardMode,
         strategy,
         risk_level: riskLevel,
         pairs: selectedPairs,
@@ -207,21 +221,33 @@ export function BotWizard({
       });
 
       if (!data.ok) {
-        if (data.code === "PAPER_BOT_SESSION_LIMIT") {
-          toast.error(tToast("toasts.paperBot.sessionLimitTitle"), {
-            description: tToast("toasts.paperBot.sessionLimitDesc", {
+        if (data.code === "PAPER_BOT_SESSION_LIMIT" || data.code === "LIVE_BOT_SESSION_LIMIT") {
+          toast.error(t("sessionLimitTitle"), {
+            description: t("sessionLimitDesc", {
               max: data.max_sessions ?? 0,
             }),
           });
           return;
         }
-        if (data.code === "PAPER_BOT_DUPLICATE") {
-          toast.error(tToast("toasts.paperBot.duplicateSessionTitle"), {
-            description: tToast("toasts.paperBot.duplicateSessionDesc"),
+        if (data.code === "PAPER_BOT_DUPLICATE" || data.code === "LIVE_BOT_DUPLICATE") {
+          toast.error(t("duplicateSessionTitle"), {
+            description: t("duplicateSessionDesc"),
           });
           return;
         }
-        toast.error(tToast("toasts.paperBot.startFailedTitle"), {
+        if (data.code === "LIVE_NOT_ALLOWED") {
+          toast.error(t("liveNotAllowedTitle"), {
+            description: t("liveNotAllowedDesc"),
+          });
+          return;
+        }
+        if (data.code === "BINANCE_NOT_CONNECTED") {
+          toast.error(t("binanceNotConnectedTitle"), {
+            description: t("binanceNotConnectedDesc"),
+          });
+          return;
+        }
+        toast.error(t("startFailedTitle"), {
           description:
             typeof data.error === "string"
               ? data.error
@@ -234,8 +260,8 @@ export function BotWizard({
 
       if (data.session_id) {
         const botPath = `/${locale}/dashboard/bot/${data.session_id}`;
-        toast.success(tToast("toasts.paperBot.startedTitle"), {
-          description: tToast("toasts.paperBot.startedDesc"),
+        toast.success(t(isLive ? "liveStartedTitle" : "startedTitle"), {
+          description: t(isLive ? "liveStartedDesc" : "startedDesc"),
         });
         router.push(botPath);
         return;
@@ -243,7 +269,7 @@ export function BotWizard({
       router.push(`/${locale}/dashboard/auto-trade`);
     } catch (err) {
       console.error(err);
-      toast.error(tToast("toasts.paperBot.startFailedTitle"), {
+      toast.error(t("startFailedTitle"), {
         description: tToast("toasts.paperBot.networkError"),
       });
     } finally {
@@ -269,7 +295,7 @@ export function BotWizard({
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
             <Link
-              href={hrefWithLocale(locale, "/dashboard/trade")}
+              href={hrefWithLocale(locale, "/handel")}
               className={`font-medium ${BRAND.link}`}
             >
               {tSidebar("sectionTrading")}
@@ -290,8 +316,61 @@ export function BotWizard({
       <PremiumTradingHero
         eyebrow="Auto-trade"
         title={t("startBotTitle")}
-        subtitle={t("startBotSubtitle")}
+        subtitle={t(isLive ? "startBotSubtitleLive" : "startBotSubtitle")}
       />
+
+      {/* Mode selector */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-[#E2E5EC] dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+        <div>
+          <p className="text-sm font-semibold text-[#1A1D26] dark:text-white">
+            {t("modeLabel")}
+          </p>
+          <p className="text-xs text-[#5E6478] dark:text-slate-400">
+            {t(isLive ? "modeLabelLive" : "modeLabelPaper")}
+          </p>
+        </div>
+        <TradingModeToggle
+          mode={wizardMode}
+          onToggle={setWizardMode}
+          paperLabel={t("paperModeLabel")}
+          liveLabel={t("liveModeLabel")}
+          ariaLabel={t("modeLabel")}
+        />
+      </div>
+
+      {isLive && !canSwitchToLive && !isModeLoading && (
+        <div className="mb-6 rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/20 p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+              {t("liveNotAllowedTitle")}
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              {hasLiveTier ? t("connectBinanceToStart") : t("upgradeToStartLive")}
+            </p>
+            <Link
+              href={hrefWithLocale(locale, hasLiveTier ? "/dashboard/settings" : "/priser")}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
+            >
+              {hasLiveTier ? t("connectBinanceCta") : t("upgradeCta")}
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {isLive && canSwitchToLive && (
+        <div className="mb-6 rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+              {t("liveWarningTitle")}
+            </p>
+            <p className="text-xs text-red-700 dark:text-red-300 mt-1">
+              {t("liveWarningDesc")}
+            </p>
+          </div>
+        </div>
+      )}
 
       {tier === "student" && (
         <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-[#E8F0FE] dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 px-4 py-3">
@@ -414,24 +493,6 @@ export function BotWizard({
                   <span className="text-xs text-[#5E6478] dark:text-slate-400 leading-relaxed block">
                     {s.description}
                   </span>
-                  {s.backtestStats && (
-                    <div className={`mt-3 inline-flex flex-col gap-0.5 rounded-lg px-2.5 py-1.5 border w-full text-left transition-colors ${
-                      s.backtestStats.positive 
-                        ? "bg-[#DCFCE7]/50 dark:bg-green-900/20 border-[#16A34A]/20 dark:border-green-800/30 group-hover:border-[#16A34A]/40" 
-                        : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30"
-                    }`}>
-                      <span className={`text-[9px] font-bold uppercase tracking-wider ${
-                        s.backtestStats.positive ? "text-[#16A34A] dark:text-green-500" : "text-red-600 dark:text-red-400"
-                      }`}>
-                        {s.backtestStats.label}
-                      </span>
-                      <span className={`text-sm font-black ${
-                        s.backtestStats.positive ? "text-[#15803D] dark:text-green-400" : "text-red-700 dark:text-red-300"
-                      }`}>
-                        {s.backtestStats.value}
-                      </span>
-                    </div>
-                  )}
                 </button>
               );
             })}
@@ -480,10 +541,10 @@ export function BotWizard({
 
           <div>
             <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
-              {t("startingCapital")}
+              {t(isLive ? "liveStartingCapital" : "startingCapital")}
             </h2>
             <p className="text-xs text-[#5E6478] dark:text-slate-400 mb-3">
-              {t("startingCapitalDesc")}
+              {t(isLive ? "liveStartingCapitalDesc" : "startingCapitalDesc")}
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
               {CAPITAL_PRESETS.map((preset) => {
@@ -507,7 +568,7 @@ export function BotWizard({
                 );
               })}
             </div>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-3">
               <label
                 htmlFor="capital-input"
                 className="text-sm text-[#5E6478] dark:text-slate-400 shrink-0"
@@ -528,6 +589,20 @@ export function BotWizard({
                 kr
               </span>
             </div>
+            {isLive && (
+              <div className="space-y-2 mb-6">
+                {(liveBalance === null || liveBalance === undefined) && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    {t("liveBalanceUnknownWarning")}
+                  </p>
+                )}
+                {startingCapital > 100_000 && (
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {t("liveCapitalHighWarning")}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div>
@@ -608,7 +683,7 @@ export function BotWizard({
             <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478] dark:text-slate-400">
-                {t("startingCapital")}
+                {t(isLive ? "liveStartingCapital" : "startingCapital")}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {startingCapital.toLocaleString("nb-NO")} kr
@@ -626,6 +701,15 @@ export function BotWizard({
             </p>
           </div>
 
+          {isLive && canSwitchToLive && (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800/50 p-4 flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-800 dark:text-red-200 leading-relaxed">
+                {t("liveConfirmWarning")}
+              </p>
+            </div>
+          )}
+
           {/* Live price for selected pair — RIGHT ABOVE ACTION */}
           <div className="mt-4">
             <LivePricePreview symbol={selectedPairs[0] || "BTCUSDT"} showInNok />
@@ -637,12 +721,14 @@ export function BotWizard({
               type="button"
               data-testid="bot-wizard-start-inline"
               onClick={handleStart}
-              disabled={loading}
+              disabled={loading || (isLive && !canSwitchToLive)}
               className={`${BRAND.primary} w-full font-semibold rounded-xl px-6 py-3.5 min-h-[52px] touch-manipulation transition-colors disabled:opacity-60 shadow-sm`}
             >
               {loading
                 ? t("starting")
-                : t("startBotAction")}
+                : isLive
+                  ? t("startLiveBotAction")
+                  : t("startBotAction")}
             </button>
           </div>
         </div>

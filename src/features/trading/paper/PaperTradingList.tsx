@@ -63,7 +63,7 @@ type ResetResponse = {
   message?: string;
 };
 
-interface TradingSession {
+export interface TradingSession {
   id: string;
   mode: "paper" | "live";
   status: "active" | "paused" | "stopped" | "crashed";
@@ -186,7 +186,9 @@ export function PaperTradingList({
       if (response.status === 409 && data?.code === "MAX_ACTIVE_SESSIONS") {
         if (data.session_id) {
           toast.info(t("sessions.maxActiveReached"));
-          router.push(`/${locale}/paper-trading/${data.session_id}`);
+          router.push(
+            `/${locale}/handel?view=sessions${sessionMode === "live" ? "&mode=live" : ""}`,
+          );
         } else {
           toast.error(t("sessions.maxActiveStudent"));
         }
@@ -218,7 +220,9 @@ export function PaperTradingList({
         return;
       }
 
-      router.push(`/${locale}/paper-trading/${data.session_id}`);
+      router.push(
+        `/${locale}/handel?view=sessions${sessionMode === "live" ? "&mode=live" : ""}`,
+      );
     } catch (err) {
       console.error("Failed to create session:", err);
       toast.error(t("errors.network"));
@@ -526,7 +530,9 @@ export function PaperTradingList({
               : 0;
             const isProfitable = pnlPercent >= 0;
             const isActive = session.status === "active";
-            const href = `/${locale}/paper-trading/${session.id}`;
+            const href = `/${locale}/handel?view=sessions${
+              session.mode === "live" ? "&mode=live" : ""
+            }`;
 
             return (
               <Link
@@ -565,6 +571,15 @@ export function PaperTradingList({
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         {getStatusBadge(session.status)}
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                            session.mode === "paper"
+                              ? "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+                              : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                          }`}
+                        >
+                          {session.mode === "paper" ? t("modePaper") : t("modeLive")}
+                        </span>
                         <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
                           {formatTradingPair(session.trading_pair)}
                         </span>

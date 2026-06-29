@@ -72,7 +72,7 @@ export default function TradingModeToggle({
         role="switch"
         aria-checked={isLive}
         aria-label={
-          ariaLabel ?? `Handelsmodus: ${isLive ? "Live Trading" : "Paper Trading"}`
+          ariaLabel ?? `Handelsmodus: ${isLive ? "Live" : "Lekepenger"}`
         }
         className="relative w-full h-full rounded-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0B0D] cursor-pointer select-none [-webkit-tap-highlight-color:transparent]"
         animate={{

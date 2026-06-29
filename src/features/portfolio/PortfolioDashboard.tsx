@@ -322,8 +322,8 @@ export default function PortfolioDashboard({
 
   const tradingDeskPath =
     activeSession?.mode === "live"
-      ? "/paper-trading?mode=live"
-      : "/paper-trading";
+      ? "/handel?mode=live"
+      : "/handel";
 
   type Position = { symbol: string; qty: number; value: number };
   const positions = displayTrades.reduce(
@@ -1053,7 +1053,7 @@ export default function PortfolioDashboard({
         </div>
       ) : (
         <Link
-          href={hrefWithLocale(locale, "/dashboard/trade")}
+          href={hrefWithLocale(locale, "/handel")}
           className="block rounded-xl border-2 border-dashed border-[#E2E5EC] p-5 text-center hover:border-[#0052FF]/40 hover:bg-[#0052FF]/[0.02] transition-all group animate-fade-in-up stagger-6"
         >
           <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center mx-auto">

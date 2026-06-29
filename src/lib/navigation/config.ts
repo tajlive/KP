@@ -247,7 +247,7 @@ export const DASHBOARD_MAIN_NAV: readonly DashboardMainNavItem[] = [
 ];
 
 export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
-  { href: "/dashboard/trade", labelKey: "trade" },
+  { href: "/handel", labelKey: "trade" },
   {
     href: "/dashboard/auto-trade",
     labelKey: "autoTrade",
@@ -259,7 +259,7 @@ export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
 
 export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
-  { href: "/dashboard/trade", labelKey: "trade" },
+  { href: "/handel", labelKey: "trade" },
   { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
 ];
@@ -335,14 +335,14 @@ export interface NavigationData {
 export const FALLBACK_NAVIGATION: NavigationData = {
   loggedOutLinks: [
     { label: "Lær", path: "/kurs", order: 0 },
-    { label: "Trade", path: "/handel?mode=paper", order: 1 },
+    { label: "Trade", path: "/handel", order: 1 },
     { label: "Bots", path: "/dashboard/auto-trade", order: 2 },
     { label: "Priser", path: "/priser", order: 3 },
   ],
   loggedInLinks: [
     { label: "Dashboard", path: "/dashboard", order: 0 },
     { label: "Portefølje", path: "/dashboard/portfolio", order: 1 },
-    { label: "Trade", path: "/dashboard/trade", order: 2 },
+    { label: "Trade", path: "/handel", order: 2 },
     { label: "Bots", path: "/dashboard/auto-trade", order: 3 },
     { label: "Lær", path: "/kurs", order: 4 },
     { label: "Priser", path: "/priser", order: 5 },
@@ -375,11 +375,6 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/quiz",
   "/innstillinger",
   "/callback",
-  // Legacy alias routes som redirectes i middleware før de når routing.
-  // Beholdes her for sikkerhet dersom noen lenker fortsatt peker på dem.
-  "/paper-trading",
-  "/live-trading",
-  "/auto-trading",
 ];
 
 /** Returns true when `strippedPath` is (or lives under) an app-shell route. */

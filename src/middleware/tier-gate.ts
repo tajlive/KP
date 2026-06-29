@@ -8,12 +8,12 @@ import {
 } from "./auth-guard";
 import { parseLocalePath } from "./locale-path";
 
-/** Én trading-side: live gated via /dashboard/trade?mode=live */
+/** Én trading-side: live gated via /handel?mode=live */
 const TIER_GATED_ROUTES: Array<
   | { path: string; minLevel: number }
   | { path: string; minLevel: number; requireQuery: Record<string, string> }
 > = [
-  { path: "/dashboard/trade", minLevel: 1, requireQuery: { mode: "live" } },
+  { path: "/handel", minLevel: 1, requireQuery: { mode: "live" } },
   { path: "/dashboard/bots", minLevel: 2 },
 ];
 

@@ -95,7 +95,7 @@ export function AssetDetailView({ symbol }: { symbol: string }) {
         </div>
         <Button
           as={Link}
-          href={hrefWithLocale(locale, "/dashboard/trade")}
+          href={hrefWithLocale(locale, "/handel")}
           variant="secondary"
         >
           {t("backToTrade")}

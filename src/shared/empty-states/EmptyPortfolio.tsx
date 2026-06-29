@@ -93,7 +93,7 @@ export function EmptyPortfolio({
           className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl px-8 shadow-lg shadow-blue-600/20"
           asChild
         >
-          <Link href={`/${locale}/dashboard/trade?mode=paper`}>
+          <Link href={`/${locale}/handel?mode=paper`}>
             {isNorwegian ? "Start lekepenger" : "Start Paper Trading"}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Link>

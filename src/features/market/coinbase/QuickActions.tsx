@@ -22,7 +22,7 @@ export function QuickActions() {
     >
       <Button
         as={Link}
-        href={hrefWithLocale(locale, "/dashboard/trade")}
+        href={hrefWithLocale(locale, "/handel")}
         variant="primary"
         className={actionClass}
         start={<CircleDollarSign className="h-4 w-4 shrink-0" />}
@@ -31,7 +31,7 @@ export function QuickActions() {
       </Button>
       <Button
         as={Link}
-        href={hrefWithLocale(locale, "/dashboard/trade")}
+        href={hrefWithLocale(locale, "/handel")}
         variant="secondary"
         className={actionClass}
         start={<ArrowRightLeft className="h-4 w-4 shrink-0" />}

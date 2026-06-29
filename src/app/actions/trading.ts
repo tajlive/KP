@@ -3,12 +3,14 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import type { TierSlug } from "@/lib/pricing/tiers";
+import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import { mapRiskLevelToConfig, RISK_LEVELS } from "@/lib/auto-trading/risk-levels";
 import { getOptimizedRiskProfile } from "@/lib/config/optimized-risk-profiles";
 import { executeTrade } from "@/lib/trading/core/execute-trade";
 import { z } from "zod";
 
-const paperTradeSchema = z.object({
+const tradingStartSchema = z.object({
+  mode: z.enum(["paper", "live"]),
   strategy: z.enum(["dca", "trend", "grid", "multi", "ai-copy"]).default("dca"),
   risk_level: z
     .enum(["low", "medium", "high", "safe", "balanced", "offensive", "aggressive"])
@@ -29,14 +31,21 @@ const paperTradeSchema = z.object({
   starting_capital_nok: z.number().min(10000).max(1000000).default(100000),
 });
 
-export type PaperTradeInput = z.input<typeof paperTradeSchema>;
+/** @deprecated Use TradingStartInput instead. */
+export type PaperTradeInput = z.input<typeof tradingStartSchema>;
+export type TradingStartInput = z.input<typeof tradingStartSchema>;
 
-export type StartPaperBotResponse = {
+export type StartTradingBotResponse = {
   ok: boolean;
   code:
     | "PAPER_BOT_STARTED"
+    | "LIVE_BOT_STARTED"
     | "PAPER_BOT_SESSION_LIMIT"
+    | "LIVE_BOT_SESSION_LIMIT"
     | "PAPER_BOT_DUPLICATE"
+    | "LIVE_BOT_DUPLICATE"
+    | "LIVE_NOT_ALLOWED"
+    | "BINANCE_NOT_CONNECTED"
     | "UNAUTHORIZED"
     | "VALIDATION_FAILED"
     | "INTERNAL_ERROR";
@@ -48,9 +57,12 @@ export type StartPaperBotResponse = {
   details?: unknown;
 };
 
-export async function startPaperTrading(
-  data: PaperTradeInput
-): Promise<StartPaperBotResponse> {
+/** @deprecated Use StartTradingBotResponse instead. */
+export type StartPaperBotResponse = StartTradingBotResponse;
+
+export async function startTrading(
+  data: TradingStartInput
+): Promise<StartTradingBotResponse> {
   try {
     const supabase = await createServerClient();
 
@@ -68,7 +80,7 @@ export async function startPaperTrading(
       };
     }
 
-    const parsed = paperTradeSchema.safeParse(data);
+    const parsed = tradingStartSchema.safeParse(data);
     if (!parsed.success) {
       return {
         ok: false,
@@ -81,6 +93,7 @@ export async function startPaperTrading(
     }
 
     const {
+      mode,
       strategy,
       risk_level,
       pairs,
@@ -98,13 +111,49 @@ export async function startPaperTrading(
     }
 
     const tier = (profRow?.tier ?? "student") as TierSlug;
-    const maxSessions = maxActiveTradingSessions(tier, "paper");
+
+    // Live trading requires Bachelor+ tier and a connected Binance account.
+    if (mode === "live") {
+      const canLive = await ExecutorFactory.canTradeLive(supabase, user.id);
+      if (!canLive) {
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("tier, binance_connected")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        const allowedTiers = ["bachelor", "master", "phd", "professor"];
+        const tierAllowed = allowedTiers.includes(profile?.tier ?? "");
+        const binanceConnected = profile?.binance_connected ?? false;
+
+        if (!tierAllowed) {
+          return {
+            ok: false,
+            code: "LIVE_NOT_ALLOWED",
+            message: "Live trading requires Bachelor tier or higher",
+            error: "Live trading requires Bachelor tier or higher",
+            next_step: "retry",
+          };
+        }
+        if (!binanceConnected) {
+          return {
+            ok: false,
+            code: "BINANCE_NOT_CONNECTED",
+            message: "Binance API keys not configured. Please connect your exchange first.",
+            error: "Binance API keys not configured. Please connect your exchange first.",
+            next_step: "retry",
+          };
+        }
+      }
+    }
+
+    const maxSessions = maxActiveTradingSessions(tier, mode);
 
     const { count: activeCount, error: countErr } = await supabase
       .from("trading_sessions")
       .select("*", { count: "exact", head: true })
       .eq("user_id", user.id)
-      .eq("mode", "paper")
+      .eq("mode", mode)
       .eq("status", "active");
 
     if (countErr) {
@@ -115,9 +164,9 @@ export async function startPaperTrading(
     if (nActive >= maxSessions) {
       return {
         ok: false,
-        code: "PAPER_BOT_SESSION_LIMIT",
-        message: "Maximum number of active paper bot sessions reached",
-        error: "Maximum number of active paper bot sessions reached",
+        code: mode === "live" ? "LIVE_BOT_SESSION_LIMIT" : "PAPER_BOT_SESSION_LIMIT",
+        message: `Maximum number of active ${mode} bot sessions reached`,
+        error: `Maximum number of active ${mode} bot sessions reached`,
         max_sessions: maxSessions,
         next_step: "retry",
       };
@@ -171,7 +220,7 @@ export async function startPaperTrading(
       .from("trading_sessions")
       .select("id")
       .eq("user_id", user.id)
-      .eq("mode", "paper")
+      .eq("mode", mode)
       .eq("status", "active")
       .eq("trading_pair", pairs[0] || "BTCUSDT")
       .maybeSingle();
@@ -215,7 +264,7 @@ export async function startPaperTrading(
         .from("trading_sessions")
         .insert({
           user_id: user.id,
-          mode: "paper",
+          mode,
           status: "active",
           strategy_id: strategy,
           strategy_config: strategyConfig as Record<string, unknown> as never,
@@ -292,8 +341,8 @@ export async function startPaperTrading(
 
     return {
       ok: true,
-      code: "PAPER_BOT_STARTED",
-      message: "Paper bot started successfully",
+      code: mode === "live" ? "LIVE_BOT_STARTED" : "PAPER_BOT_STARTED",
+      message: `${mode === "live" ? "Live" : "Paper"} bot started successfully`,
       session_id: sessionId,
       next_step: "open_bot_details",
     };
@@ -309,6 +358,16 @@ export async function startPaperTrading(
       next_step: "retry",
     };
   }
+}
+
+/**
+ * Backward-compatible alias for starting a paper trading bot.
+ * @deprecated Use startTrading({ mode: "paper", ... }) instead.
+ */
+export async function startPaperTrading(
+  data: Omit<TradingStartInput, "mode">
+): Promise<StartTradingBotResponse> {
+  return startTrading({ ...data, mode: "paper" });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

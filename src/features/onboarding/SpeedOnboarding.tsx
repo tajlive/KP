@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { RiskDisclaimer } from "./RiskDisclaimer";
-import { startPaperTrading } from "@/app/actions/trading";
+import { startTrading } from "@/app/actions/trading";
 import { useCallback, useEffect, useState } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -202,7 +202,8 @@ export default function SpeedOnboarding({
           .eq("id", user.id);
 
         // Start paper trading session
-        await startPaperTrading({
+        await startTrading({
+          mode: "paper",
           strategy: "dca",
           risk_level: selectedRisk,
           pairs: selectedCoins.map((c) => `${c}USDT`),
