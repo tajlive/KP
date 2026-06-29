@@ -9411,6 +9411,72 @@ export type Database = {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: number
       }
+      get_trades_paginated: {
+        Args: {
+          p_cursor?: string | null
+          p_from?: string | null
+          p_limit?: number
+          p_mode?: string
+          p_pair?: string | null
+          p_search?: string | null
+          p_session_statuses?: string[] | null
+          p_side?: string | null
+          p_to?: string | null
+          p_trade_statuses?: string[] | null
+          p_user_id?: string
+        }
+        Returns: {
+          created_at: string
+          effective_pnl: number | null
+          executed_at: string
+          fee: number
+          id: string
+          next_cursor: string | null
+          price: number
+          quantity: number
+          realized_pnl: number | null
+          session_id: string
+          side: string
+          status: string
+          symbol: string | null
+          total_value: number
+          trading_pair: string
+        }[]
+      }
+      get_trading_analytics: {
+        Args: {
+          p_from?: string | null
+          p_mode?: string
+          p_pair?: string | null
+          p_search?: string | null
+          p_session_statuses?: string[] | null
+          p_side?: string | null
+          p_to?: string | null
+          p_trade_statuses?: string[] | null
+          p_user_id?: string
+        }
+        Returns: {
+          best_pair: string | null
+          best_pair_pnl: number | null
+          best_session_id: string | null
+          best_session_pnl: number | null
+          losing_trades: number
+          max_drawdown_pct: number | null
+          profit_factor: number | null
+          starting_capital: number
+          total_fees: number
+          total_pnl: number
+          total_trades: number
+          trades_by_day: Json
+          trades_by_symbol: Json
+          win_rate: number | null
+          winning_trades: number
+          worst_pair: string | null
+          worst_pair_pnl: number | null
+          worst_session_id: string | null
+          worst_session_pnl: number | null
+        }[]
+      }
       get_user_entitlements: {
         Args: { p_user_id: string }
         Returns: {
@@ -9432,6 +9498,10 @@ export type Database = {
           subscription_tier: string
           trial_days_remaining: number
         }[]
+      }
+      trading_session_status_counts: {
+        Args: { p_mode?: string; p_user_id?: string }
+        Returns: { count: number; status: string }[]
       }
       get_user_paper_trading_rank: {
         Args: { p_user_id: string }
