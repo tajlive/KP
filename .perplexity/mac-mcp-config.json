@@ -3,7 +3,7 @@
     "version": "2.1",
     "for": "Perplexity Mac Desktop + KIMI CLI v1.40.0 + k2.6",
     "project": "Klarpakke",
-    "lastOptimized": "2026-04-30",
+    "lastOptimized": "2026-06-29",
     "description": "Perplexity Desktop kan kalle KIMI og lokale verktøy. KIMI v1.40.0 med async MCP startup, 750 max_steps, 262k kontekst."
   },
   "mcpServers": {
@@ -27,20 +27,19 @@
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-official-supabase-mcp.mjs"]
     },
-    "vercel": {
-      "description": "▲ Vercel — Deployments, domains, logs",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-vercel-mcp.mjs"]
-    },
     "context7": {
       "description": "📚 Context7 — Bibliotekdokumentasjon (krever CONTEXT7_API_KEY i .env.local)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-context7-mcp.mjs"]
     },
     "mempalace": {
-      "description": "🏛️ MemPalace v3.3.0 — Prosjektkunnskap, KG, diary (zero-dep, SuperKIMI-optimalisert)",
+      "description": "🏛️ MemPalace MCP v3.5.0 — delt prosjekt-spesifikk server med config override",
       "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v3.mjs"]
+      "args": ["/Users/taj/.kimi/mempalace-server.mjs"],
+      "env": {
+        "MEMPALACE_ROOT": "/Users/taj/klarpakke",
+        "MEMPALACE_CONFIG": "/Users/taj/klarpakke/.mempalace/config.json"
+      }
     },
     "sanity": {
       "description": "🎨 Sanity CMS v2 — Read + write (krever SANITY_API_READ_TOKEN / SANITY_API_WRITE_TOKEN)",
