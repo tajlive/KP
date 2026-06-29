@@ -277,3 +277,4 @@ backups/
 
 # Superpowers skill-generated workspace/output
 .superpowers/
+.kimi/archive/
