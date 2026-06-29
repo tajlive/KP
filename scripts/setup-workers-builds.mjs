@@ -46,7 +46,7 @@ const WORKER_NAME = "klarpakke";
 const PRODUCTION_BRANCH = "main";
 const BUILD_COMMAND = "npm run cf:build";
 const PROD_DEPLOY_COMMAND = "npm run cf:deploy:ci";
-const PREVIEW_DEPLOY_COMMAND = "npx wrangler versions upload";
+const PREVIEW_DEPLOY_COMMAND = "npx wrangler versions upload --minify";
 
 // Build-time variabler som skal injectes i Workers Builds triggers.
 // Verdier hentes fra --env-file eller fra eksisterende env.
