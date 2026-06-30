@@ -55,6 +55,7 @@ export async function getCockpitInitialData(
     )
     .eq("user_id", userId)
     .eq("mode", mode)
+    .is("archived", false)
     .order("created_at", { ascending: false })
     .limit(20);
 
