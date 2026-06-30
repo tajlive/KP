@@ -256,7 +256,7 @@ export default defineConfig({
     // ============================================
     {
       name: "regression-chromium",
-      testMatch: /regression\/.*\.spec\.ts/,
+      testMatch: /regression\/.*\.spec\.ts|trading-cockpit\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: e2eAuthStoragePath,

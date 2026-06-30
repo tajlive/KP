@@ -884,5 +884,90 @@
     "upgradeNow": "Upgrade now",
     "seePlans": "See plans",
     "trialExpiredTitle": "Trial Expired"
+  },
+  "cockpit": {
+    "header": {
+      "title": "Trading Cockpit",
+      "subtitle": "Overview, trades and analysis in one place"
+    },
+    "mode": {
+      "paper": "Paper Trading",
+      "paperShort": "Paper",
+      "live": "Live Trading",
+      "liveShort": "Live",
+      "paperDescription": "Practice with virtual capital",
+      "liveDescription": "Trade with real money",
+      "locked": "Locked",
+      "lockedTooltip": "Live trading requires a connected exchange and valid subscription."
+    },
+    "tab": {
+      "overview": "Overview",
+      "trades": "Trades",
+      "analysis": "Analysis"
+    },
+    "kpi": {
+      "totalCapital": "Total Capital",
+      "startingCapital": "Starting Capital",
+      "totalPnl": "P&L",
+      "winRate": "Win Rate",
+      "totalTrades": "Trades",
+      "winningTrades": "Winning",
+      "losingTrades": "Losing",
+      "activeSessions": "Active Sessions",
+      "maxDrawdown": "Max Drawdown",
+      "bestPair": "Best Pair"
+    },
+    "sessions": {
+      "title": "Sessions",
+      "titleCount": "Sessions ({count})",
+      "columns": {
+        "pair": "Pair",
+        "status": "Status",
+        "mode": "Mode",
+        "startingCapital": "Starting Capital",
+        "currentCapital": "Current Capital",
+        "pnl": "P&L",
+        "createdAt": "Created",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "stopped": "Stopped",
+        "crashed": "Crashed"
+      },
+      "loadMore": "Load more",
+      "loading": "Loading sessions..."
+    },
+    "quickActions": {
+      "refresh": "Refresh",
+      "newSession": "New session",
+      "export": "Export",
+      "viewHistory": "View history",
+      "connectExchange": "Connect exchange",
+      "startRobot": "Start robot",
+      "pauseAll": "Pause all"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "Could not load cockpit data. Please try again.",
+      "retry": "Try again",
+      "metricsFailed": "Could not load KPIs",
+      "sessionsFailed": "Could not load sessions",
+      "analyticsFailed": "Could not load analytics"
+    },
+    "empty": {
+      "sessionsTitle": "No sessions yet",
+      "sessionsDescription": "Start your first trading session to see it here.",
+      "tradesTitle": "No trades",
+      "tradesDescription": "No trades to show for the selected mode.",
+      "analysisTitle": "No data yet",
+      "analysisDescription": "There is not enough data for analysis yet.",
+      "newSessionCta": "Start new session"
+    },
+    "loading": "Loading cockpit...",
+    "liveBanner": "You are trading with real money. Losses are possible. Manage your own risk.",
+    "lastUpdated": "Updated {time}"
   }
 }
