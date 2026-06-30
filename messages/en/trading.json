@@ -932,6 +932,7 @@
         "actions": "Actions"
       },
       "status": {
+        "all": "All",
         "active": "Active",
         "paused": "Paused",
         "stopped": "Stopped",
@@ -1038,6 +1039,7 @@
         "sell": "Sell"
       },
       "status": {
+        "all": "All",
         "filled": "Filled",
         "partially_filled": "Partial",
         "pending": "Pending",

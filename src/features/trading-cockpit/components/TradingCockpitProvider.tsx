@@ -482,9 +482,9 @@ export function TradingCockpitProvider({
           const body = await res.json().catch(() => ({}));
           throw new Error(body.error || res.statusText);
         }
-        const data = (await res.json()) as TradingAnalytics;
+        const data = (await res.json()) as { analytics: TradingAnalytics };
         if (cancelled) return;
-        dispatch({ type: "SET_ANALYTICS", analytics: data, key });
+        dispatch({ type: "SET_ANALYTICS", analytics: data.analytics, key });
       } catch (err) {
         if (cancelled) return;
         dispatch({
