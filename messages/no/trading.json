@@ -952,6 +952,15 @@
       "startRobot": "Start robot",
       "pauseAll": "Pause alle"
     },
+    "activation": {
+      "missingTitle": "Auto-handel er ikke satt opp",
+      "missingDescription": "Aktiver auto-handel så roboten kan administrere papirsesjoner for deg.",
+      "pausedTitle": "Auto-handel er pauset",
+      "pausedDescription": "Auto-handel er slått av. Aktiver det for å fortsette automatisk handel.",
+      "activateButton": "Aktiver auto-handel",
+      "success": "Auto-handel aktivert",
+      "error": "Kunne ikke aktivere auto-handel"
+    },
     "error": {
       "title": "Noe gikk galt",
       "description": "Kunne ikke laste cockpit-data. Prøv igjen.",

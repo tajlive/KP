@@ -75,6 +75,7 @@ const baseInitialData: CockpitInitialData = {
   sessions: [],
   statusCounts: {},
   canUseLive: false,
+  autoTradeSettings: { auto_trading_enabled: false, risk_profile: "moderate" },
 };
 
 function TestConsumer() {

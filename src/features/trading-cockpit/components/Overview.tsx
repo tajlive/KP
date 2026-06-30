@@ -7,6 +7,7 @@ import { KpiCards } from "./KpiCards";
 import { QuickActions } from "./QuickActions";
 import { StatusSummary } from "./StatusSummary";
 import { SessionList } from "./SessionList";
+import { AutoTradingActivation } from "./AutoTradingActivation";
 import type {
   DashboardMetrics,
   TradingAnalytics,
@@ -18,12 +19,15 @@ interface OverviewProps {
   analytics?: TradingAnalytics | null;
   sessions: TradingSessionSummary[];
   statusCounts: Record<string, number>;
+  autoTradeSettings: { auto_trading_enabled: boolean | null; risk_profile: string | null; } | null;
   hasMoreSessions?: boolean;
   isLoadingMoreSessions?: boolean;
   onLoadMoreSessions?: () => void;
   onStartRobot?: () => void;
   onPauseAll?: () => void;
   onViewHistory?: () => void;
+  onActivateAutoTrading?: () => void;
+  isActivatingAutoTrading?: boolean;
   className?: string;
 }
 
@@ -32,18 +36,27 @@ export function Overview({
   analytics,
   sessions,
   statusCounts,
+  autoTradeSettings,
   hasMoreSessions,
   isLoadingMoreSessions,
   onLoadMoreSessions,
   onStartRobot,
   onPauseAll,
   onViewHistory,
+  onActivateAutoTrading,
+  isActivatingAutoTrading,
   className,
 }: OverviewProps) {
   const t = useTranslations("trading");
 
   return (
     <div className={cn("space-y-6", className)}>
+      <AutoTradingActivation
+        autoTradeSettings={autoTradeSettings}
+        isLoading={Boolean(isActivatingAutoTrading)}
+        onActivate={onActivateAutoTrading ?? (() => {})}
+      />
+
       <KpiCards metrics={metrics} analytics={analytics} />
 
       <section className="space-y-3">

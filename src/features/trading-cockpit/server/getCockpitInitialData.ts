@@ -72,6 +72,19 @@ export async function getCockpitInitialData(
     statusCounts[row.status] = Number(row.count);
   }
 
+  const { data: autoTradeSettings } = await supabase
+    .from("auto_trade_settings")
+    .select("auto_trading_enabled, risk_profile")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const mappedAutoTradeSettings = autoTradeSettings
+    ? {
+        auto_trading_enabled: autoTradeSettings.auto_trading_enabled ?? false,
+        risk_profile: autoTradeSettings.risk_profile ?? null,
+      }
+    : null;
+
   return {
     mode,
     defaultMode: storedMode,
@@ -80,5 +93,6 @@ export async function getCockpitInitialData(
     sessions: (sessions ?? []) as TradingSessionSummary[],
     statusCounts,
     canUseLive,
+    autoTradeSettings: mappedAutoTradeSettings,
   };
 }

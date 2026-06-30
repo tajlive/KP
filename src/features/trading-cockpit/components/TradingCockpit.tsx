@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { CockpitHeader } from "./CockpitHeader";
@@ -23,6 +24,7 @@ export function TradingCockpit({ className }: { className?: string }) {
     sessions,
     statusCounts,
     canUseLive,
+    autoTradeSettings,
     isLoading,
     error,
     setMode,
@@ -31,6 +33,34 @@ export function TradingCockpit({ className }: { className?: string }) {
     loadMoreSessions,
     hasMoreSessions,
   } = useCockpit();
+
+  const [isActivating, setIsActivating] = React.useState(false);
+
+  const handleActivateAutoTrading = React.useCallback(async () => {
+    setIsActivating(true);
+    try {
+      const res = await fetch("/api/trading/auto-trade/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ risk_level: "medium" }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(body.error || res.statusText);
+      }
+
+      await refresh();
+      toast.success(t("cockpit.activation.success"));
+    } catch (err) {
+      console.error("[TradingCockpit] activate auto-trading failed:", err);
+      toast.error(
+        err instanceof Error ? err.message : t("cockpit.activation.error"),
+      );
+    } finally {
+      setIsActivating(false);
+    }
+  }, [refresh, t]);
 
   if (isLoading) {
     return (
@@ -83,11 +113,14 @@ export function TradingCockpit({ className }: { className?: string }) {
           metrics={metrics}
           sessions={sessions}
           statusCounts={statusCounts}
+          autoTradeSettings={autoTradeSettings}
           hasMoreSessions={hasMoreSessions}
           onLoadMoreSessions={loadMoreSessions}
           onStartRobot={() => window.alert(t("cockpit.quickActions.startRobot"))}
           onPauseAll={() => window.alert(t("cockpit.quickActions.pauseAll"))}
           onViewHistory={() => window.alert(t("cockpit.quickActions.viewHistory"))}
+          onActivateAutoTrading={handleActivateAutoTrading}
+          isActivatingAutoTrading={isActivating}
         />
       )}
 
