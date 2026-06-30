@@ -5,26 +5,74 @@
  * - siste pris (/api/v3/ticker/price)
  * - order book depth (/api/v3/depth)
  * - OHLCV-lys (/api/v3/klines)
+ *
+ * Failover: mainnet (api.binance.com) blokkeres fra enkelte sky-egress-IP-er
+ * (observert fra Cloudflare Workers). Vi prøver deretter api[1-4].binance.com,
+ * deretter data-api.binance.vision, og til slutt testnet.binance.vision.
+ * Testnet er en siste nødløsning for å holde tick i live.
  */
 
-import type {
-  Kline,
-  MarketDataProvider,
-  OrderBookSnapshot,
-} from "./types";
+import type { Kline, MarketDataProvider, OrderBookSnapshot } from "./types";
 
-const BINANCE_API_BASE = "https://api.binance.com";
+// Prioritert liste. Mainnet først for paper/live-paritet; .vision-endepunkter
+// er tilbakefall hvis CloudFront/WAF blokkerer egress-IP-en.
+const BINANCE_API_BASES = [
+  "https://api.binance.com",
+  "https://api1.binance.com",
+  "https://api2.binance.com",
+  "https://api3.binance.com",
+  "https://api4.binance.com",
+  "https://data-api.binance.vision",
+  "https://testnet.binance.vision",
+];
 
-async function binanceFetch<T>(url: string, timeoutMs: number): Promise<T> {
+// Statuser som kan være midlertidige; 403 prøves ikke på nytt samme endpoint.
+const RETRYABLE_STATUSES: Record<number, true> = {
+  429: true,
+  500: true,
+  502: true,
+  503: true,
+  504: true,
+};
+
+class BinanceApiError extends Error {
+  status: number;
+  responseBody?: string;
+  constructor(status: number, responseBody?: string) {
+    super(`Binance API error: ${status}`);
+    this.status = status;
+    this.responseBody = responseBody;
+  }
+}
+
+async function fetchFromEndpoint<T>(
+  base: string,
+  path: string,
+  timeoutMs: number,
+): Promise<T> {
+  const url = `${base}${path}`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "Klarpakke/1.0",
+      },
+    });
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`Binance API error: ${response.status}`);
+      const body =
+        typeof response.text === "function"
+          ? await response.text().catch(() => "")
+          : "";
+      console.warn(
+        `[BinanceMarketDataProvider] ${url} failed HTTP ${response.status}: ${body.slice(0, 200)}`,
+      );
+      throw new BinanceApiError(response.status, body);
     }
 
     return (await response.json()) as T;
@@ -34,21 +82,50 @@ async function binanceFetch<T>(url: string, timeoutMs: number): Promise<T> {
   }
 }
 
+async function binanceFetch<T>(path: string, timeoutMs: number): Promise<T> {
+  let lastError: Error | undefined;
+
+  for (const base of BINANCE_API_BASES) {
+    try {
+      return await fetchFromEndpoint<T>(base, path, timeoutMs);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+
+      // 5xx/429 kan være transient; prøv samme endpoint én gang til.
+      if (err instanceof BinanceApiError && RETRYABLE_STATUSES[err.status]) {
+        try {
+          return await fetchFromEndpoint<T>(base, path, timeoutMs);
+        } catch (retryErr) {
+          lastError =
+            retryErr instanceof Error ? retryErr : new Error(String(retryErr));
+        }
+      }
+
+      console.warn(
+        `[BinanceMarketDataProvider] ${base} failed: ${lastError.message}; trying next endpoint`,
+      );
+    }
+  }
+
+  throw lastError ?? new Error("All Binance API endpoints failed");
+}
+
 export class BinanceMarketDataProvider implements MarketDataProvider {
   async getPrice(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
-    const url = `${BINANCE_API_BASE}/api/v3/ticker/price?symbol=${normalized}`;
-    const data = await binanceFetch<{ price: string }>(url, 5000);
+    const data = await binanceFetch<{ price: string }>(
+      `/api/v3/ticker/price?symbol=${normalized}`,
+      5000,
+    );
     return parseFloat(data.price);
   }
 
   async getDepth(symbol: string, limit = 20): Promise<OrderBookSnapshot> {
     const normalized = symbol.toUpperCase();
-    const url = `${BINANCE_API_BASE}/api/v3/depth?symbol=${normalized}&limit=${limit}`;
     const data = await binanceFetch<{
       bids: [string, string][];
       asks: [string, string][];
-    }>(url, 5000);
+    }>(`/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000);
 
     return {
       bids: data.bids.map(([p, q]) => ({
@@ -71,14 +148,14 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     endTime?: number,
   ): Promise<Kline[]> {
     const normalized = symbol.toUpperCase();
-    let url = `${BINANCE_API_BASE}/api/v3/klines?symbol=${normalized}&interval=${interval}&limit=${limit}`;
+    let path = `/api/v3/klines?symbol=${normalized}&interval=${interval}&limit=${limit}`;
     if (startTime !== undefined) {
-      url += `&startTime=${Math.floor(startTime)}`;
+      path += `&startTime=${Math.floor(startTime)}`;
     }
     if (endTime !== undefined) {
-      url += `&endTime=${Math.floor(endTime)}`;
+      path += `&endTime=${Math.floor(endTime)}`;
     }
-    const data = await binanceFetch<unknown[]>(url, 15000);
+    const data = await binanceFetch<unknown[]>(path, 15000);
 
     return data.map((candle) => {
       const c = candle as unknown[];
@@ -95,8 +172,10 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
 
   async get24hChange(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
-    const url = `${BINANCE_API_BASE}/api/v3/ticker/24hr?symbol=${normalized}`;
-    const data = await binanceFetch<{ priceChangePercent: string }>(url, 5000);
+    const data = await binanceFetch<{ priceChangePercent: string }>(
+      `/api/v3/ticker/24hr?symbol=${normalized}`,
+      5000,
+    );
     return parseFloat(data.priceChangePercent);
   }
 }

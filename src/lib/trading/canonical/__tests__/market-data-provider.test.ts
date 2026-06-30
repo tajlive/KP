@@ -2,8 +2,21 @@
  * Tester for kanonisk markedsdata-provider (Binance implementasjon).
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  type Mock,
+} from "vitest";
 import { BinanceMarketDataProvider } from "../market-data/binance-provider";
+
+const EXPECTED_HEADERS = {
+  Accept: "application/json",
+  "User-Agent": "Klarpakke/1.0",
+};
 
 describe("BinanceMarketDataProvider", () => {
   let provider: BinanceMarketDataProvider;
@@ -14,6 +27,56 @@ describe("BinanceMarketDataProvider", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  describe("failover", () => {
+    it("uses the next endpoint when mainnet returns 403", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi
+          .fn()
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 403,
+            text: async () => "",
+          })
+          .mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ price: "50000" }),
+          }),
+      );
+
+      const price = await provider.getPrice("BTCUSDT");
+      expect(price).toBe(50000);
+
+      const mockFetch = fetch as Mock;
+      const calls = mockFetch.mock.calls;
+      expect(calls).toHaveLength(2);
+      expect(calls[0][0]).toBe(
+        "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+      );
+      expect(calls[1][0]).toBe(
+        "https://api1.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+      );
+      expect(calls[0][1]).toMatchObject({ headers: EXPECTED_HEADERS });
+    });
+
+    it("throws after exhausting all endpoints", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 403,
+          text: async () => "",
+        }),
+      );
+
+      await expect(provider.getPrice("BTCUSDT")).rejects.toThrow(
+        "Binance API error: 403",
+      );
+      const mockFetch = fetch as Mock;
+      expect(mockFetch).toHaveBeenCalledTimes(7);
+    });
   });
 
   describe("getPrice", () => {
@@ -30,7 +93,10 @@ describe("BinanceMarketDataProvider", () => {
       expect(price).toBe(42345.67);
       expect(fetch).toHaveBeenCalledWith(
         "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          headers: EXPECTED_HEADERS,
+        }),
       );
     });
 
@@ -165,7 +231,10 @@ describe("BinanceMarketDataProvider", () => {
       expect(change).toBe(-2.45);
       expect(fetch).toHaveBeenCalledWith(
         "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT",
-        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          headers: EXPECTED_HEADERS,
+        }),
       );
     });
 
