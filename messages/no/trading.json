@@ -932,6 +932,7 @@
         "actions": "Handlinger"
       },
       "status": {
+        "all": "Alle",
         "active": "Aktiv",
         "paused": "Pauset",
         "stopped": "Stoppet",
@@ -1038,6 +1039,7 @@
         "sell": "Salg"
       },
       "status": {
+        "all": "Alle",
         "filled": "Fylt",
         "partially_filled": "Delfylt",
         "pending": "Venter",
