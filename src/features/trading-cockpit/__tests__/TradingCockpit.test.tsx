@@ -27,6 +27,7 @@ vi.mock("../hooks/useCockpit", () => ({
     sessions: [],
     statusCounts: { active: 0, paused: 0, stopped: 0, crashed: 0 },
     canUseLive: false,
+    autoTradeSettings: { auto_trading_enabled: false, risk_profile: "moderate" },
     isLoading: false,
     error: null,
     analytics: null,
@@ -63,5 +64,11 @@ describe("TradingCockpit", () => {
     expect(screen.getByTestId("cockpit-tab-overview")).toBeInTheDocument();
     expect(screen.getByTestId("cockpit-tab-trades")).toBeInTheDocument();
     expect(screen.getByTestId("cockpit-tab-analysis")).toBeInTheDocument();
+  });
+
+  it("shows auto-trading activation CTA when auto-trading is disabled", () => {
+    render(<TradingCockpit />);
+    expect(screen.getByTestId("auto-trading-activation")).toBeInTheDocument();
+    expect(screen.getByTestId("auto-trading-activate-button")).toBeInTheDocument();
   });
 });

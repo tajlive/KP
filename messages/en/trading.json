@@ -952,6 +952,15 @@
       "startRobot": "Start robot",
       "pauseAll": "Pause all"
     },
+    "activation": {
+      "missingTitle": "Auto-trading not set up",
+      "missingDescription": "Activate auto-trading to let the bot manage paper sessions for you.",
+      "pausedTitle": "Auto-trading is paused",
+      "pausedDescription": "Auto-trading is currently disabled. Activate it to resume automated trading.",
+      "activateButton": "Activate auto-trading",
+      "success": "Auto-trading activated",
+      "error": "Could not activate auto-trading"
+    },
     "error": {
       "title": "Something went wrong",
       "description": "Could not load cockpit data. Please try again.",

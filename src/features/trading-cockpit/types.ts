@@ -1,5 +1,7 @@
-import type { getUserDashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
+import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 import type { CockpitDatabase } from "./cockpit-database.types";
+
+export { type DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
 export type CockpitMode = "paper" | "live";
 export type CockpitTab = "overview" | "trades" | "analysis";
@@ -48,9 +50,6 @@ export interface TradingCockpitState {
   error: CockpitError | null;
 }
 
-export type DashboardMetrics = Awaited<
-  ReturnType<typeof getUserDashboardMetrics>
->;
 
 export type TradingSessionSummary = Pick<
   CockpitDatabase["public"]["Tables"]["trading_sessions"]["Row"],
@@ -111,4 +110,8 @@ export interface CockpitInitialData {
   sessions: TradingSessionSummary[];
   statusCounts: Record<string, number>;
   canUseLive: boolean;
+  autoTradeSettings: {
+    auto_trading_enabled: boolean | null;
+    risk_profile: string | null;
+  } | null;
 }
