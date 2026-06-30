@@ -96,6 +96,8 @@ function createMockValue(overrides: Partial<CockpitContextValue> = {}): CockpitC
     resetFilters: vi.fn(),
     loadTrades: vi.fn(),
     loadMoreTrades: vi.fn(),
+    unreadTradeCount: 0,
+    markTradesAsSeen: vi.fn(),
     ...overrides,
   };
 }
@@ -195,6 +197,16 @@ describe("TradesTab", () => {
     render(<TradesTab />);
     fireEvent.click(screen.getByTestId("trade-load-more"));
     expect(mockCockpitValue.loadMoreTrades).toHaveBeenCalled();
+  });
+
+  it("renders unread badge when unreadTradeCount is greater than zero", () => {
+    mockCockpitValue = createMockValue({ unreadTradeCount: 3 });
+    render(<TradesTab />);
+    const badge = screen.getByTestId("trades-unread-badge");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent("cockpit.trades.unread(3)");
+    fireEvent.click(badge);
+    expect(mockCockpitValue.markTradesAsSeen).toHaveBeenCalled();
   });
 
   it("does not render pagination when hasMoreTrades is false", () => {

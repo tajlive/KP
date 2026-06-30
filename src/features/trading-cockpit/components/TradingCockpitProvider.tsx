@@ -10,6 +10,8 @@ import {
   useRef,
 } from "react";
 import type { ReactNode } from "react";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useCockpitUrlSync } from "@/features/trading-cockpit/hooks/useCockpitUrlSync";
 import { useCockpitRealtime } from "@/features/trading-cockpit/hooks/useCockpitRealtime";
 import { DEFAULT_FILTERS } from "@/features/trading-cockpit/constants";
@@ -47,6 +49,7 @@ interface State {
   hasMoreTrades: boolean;
   isLoadingTrades: boolean;
   tradesError: CockpitError | null;
+  unreadTradeCount: number;
 }
 
 type Action =
@@ -77,7 +80,9 @@ type Action =
       nextCursor: string | null;
       hasMore: boolean;
     }
-  | { type: "LOAD_MORE_TRADES_ERROR"; error: CockpitError };
+  | { type: "LOAD_MORE_TRADES_ERROR"; error: CockpitError }
+  | { type: "INCREMENT_UNREAD_TRADES" }
+  | { type: "MARK_TRADES_SEEN" };
 
 function buildSessionsCursor(
   sessions: TradingSessionSummary[],
@@ -175,6 +180,10 @@ function reducer(state: State, action: Action): State {
       };
     case "LOAD_MORE_TRADES_ERROR":
       return { ...state, isLoadingTrades: false, tradesError: action.error };
+    case "INCREMENT_UNREAD_TRADES":
+      return { ...state, unreadTradeCount: state.unreadTradeCount + 1 };
+    case "MARK_TRADES_SEEN":
+      return { ...state, unreadTradeCount: 0 };
     default:
       return state;
   }
@@ -200,6 +209,7 @@ function createInitialState(data: CockpitInitialData): State {
     hasMoreTrades: false,
     isLoadingTrades: false,
     tradesError: null,
+    unreadTradeCount: 0,
   };
 }
 
@@ -234,6 +244,8 @@ export interface CockpitContextValue {
   resetFilters: () => void;
   loadTrades: () => Promise<void>;
   loadMoreTrades: () => Promise<void>;
+  markTradesAsSeen: () => void;
+  unreadTradeCount: number;
 }
 
 const TradingCockpitContext = createContext<CockpitContextValue | null>(null);
@@ -245,6 +257,7 @@ export function TradingCockpitProvider({
   locale,
 }: TradingCockpitProviderProps) {
   const { mode: urlMode, tab: urlTab, updateUrl } = useCockpitUrlSync();
+  const t = useTranslations("trading");
   const [state, dispatch] = useReducer(reducer, initialData, createInitialState);
 
   const currentModeRef = useRef(state.mode);
@@ -430,6 +443,28 @@ export function TradingCockpitProvider({
     dispatch({ type: "INVALIDATE_ANALYTICS" });
   }, []);
 
+  const handleTradeInsert = useCallback(
+    (trade: Trade) => {
+      dispatch({ type: "INCREMENT_UNREAD_TRADES" });
+      const sideLabel =
+        trade.side === "buy"
+          ? t("cockpit.trades.side.buy")
+          : t("cockpit.trades.side.sell");
+      toast.success(t("cockpit.realtime.newTrade.title"), {
+        description: t("cockpit.realtime.newTrade.description", {
+          side: sideLabel,
+          symbol: trade.trading_pair,
+        }),
+        duration: 4000,
+      });
+    },
+    [t],
+  );
+
+  const markTradesAsSeen = useCallback(() => {
+    dispatch({ type: "MARK_TRADES_SEEN" });
+  }, []);
+
   // Load trades whenever the active tab becomes trades or filters/mode change while on trades.
   useEffect(() => {
     if (state.activeTab !== "trades") return;
@@ -517,6 +552,7 @@ export function TradingCockpitProvider({
     onRefresh: refresh,
     onRefreshTrades: loadTrades,
     onInvalidateAnalytics: invalidateAnalytics,
+    onTradeInsert: handleTradeInsert,
     enabled: !state.isLoading,
   });
 
@@ -536,6 +572,7 @@ export function TradingCockpitProvider({
       hasMoreTrades: state.hasMoreTrades,
       isLoadingTrades: state.isLoadingTrades,
       tradesError: state.tradesError,
+      unreadTradeCount: state.unreadTradeCount,
       hasMoreSessions: state.hasMoreSessions,
       setMode,
       setTab,
@@ -545,6 +582,7 @@ export function TradingCockpitProvider({
       resetFilters,
       loadTrades,
       loadMoreTrades,
+      markTradesAsSeen,
     }),
     [
       state,
@@ -556,6 +594,7 @@ export function TradingCockpitProvider({
       resetFilters,
       loadTrades,
       loadMoreTrades,
+      markTradesAsSeen,
     ],
   );
 

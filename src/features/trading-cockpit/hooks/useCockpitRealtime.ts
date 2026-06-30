@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { CockpitMode, CockpitTab } from "@/features/trading-cockpit/types";
+import type { CockpitMode, CockpitTab, Trade } from "@/features/trading-cockpit/types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 const REALTIME_DEBOUNCE_MS = 800;
@@ -14,6 +14,8 @@ interface UseCockpitRealtimeOptions {
   onRefresh: () => Promise<void>;
   onRefreshTrades: () => Promise<void>;
   onInvalidateAnalytics: () => void;
+  onTradeInsert?: (trade: Trade) => void;
+  onTradeUpdate?: (trade: Trade) => void;
   enabled?: boolean;
 }
 
@@ -33,6 +35,8 @@ export function useCockpitRealtime({
   onRefresh,
   onRefreshTrades,
   onInvalidateAnalytics,
+  onTradeInsert,
+  onTradeUpdate,
   enabled = true,
 }: UseCockpitRealtimeOptions): UseCockpitRealtimeResult {
   const [isSubscribed, setIsSubscribed] = React.useState(false);
@@ -42,12 +46,16 @@ export function useCockpitRealtime({
     onRefresh,
     onRefreshTrades,
     onInvalidateAnalytics,
+    onTradeInsert,
+    onTradeUpdate,
   });
 
   callbacksRef.current = {
     onRefresh,
     onRefreshTrades,
     onInvalidateAnalytics,
+    onTradeInsert,
+    onTradeUpdate,
   };
 
   const refreshAll = React.useCallback(() => {
@@ -84,7 +92,11 @@ export function useCockpitRealtime({
           table: "trades",
           filter: `user_id=eq.${userId}`,
         },
-        () => scheduleRefresh(),
+        (payload) => {
+          const trade = payload.new as Trade;
+          callbacksRef.current.onTradeInsert?.(trade);
+          scheduleRefresh();
+        },
       )
       .on(
         "postgres_changes",
@@ -94,7 +106,11 @@ export function useCockpitRealtime({
           table: "trades",
           filter: `user_id=eq.${userId}`,
         },
-        () => scheduleRefresh(),
+        (payload) => {
+          const trade = payload.new as Trade;
+          callbacksRef.current.onTradeUpdate?.(trade);
+          scheduleRefresh();
+        },
       )
       .on(
         "postgres_changes",

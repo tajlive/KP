@@ -3,7 +3,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useCockpit, CockpitProvider } from "../hooks/useCockpit";
 import type { CockpitInitialData } from "../types";
+import { toast } from "sonner";
 
+let mockUrlTab = "overview";
+let mockUrlMode = "paper";
 let mockSearchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
@@ -12,8 +15,25 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParams,
 }));
 
+vi.mock("../hooks/useCockpitUrlSync", () => ({
+  useCockpitUrlSync: () => ({
+    mode: mockUrlMode,
+    tab: mockUrlTab,
+    hasModeParam: false,
+    hasTabParam: mockUrlTab !== "overview",
+    updateUrl: vi.fn(),
+  }),
+}));
+
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/supabase/client", () => ({
@@ -70,6 +90,10 @@ function TestConsumer() {
       <span data-testid="isLoadingTrades">
         {cockpit.isLoadingTrades ? "yes" : "no"}
       </span>
+      <span data-testid="unreadTradeCount">{cockpit.unreadTradeCount}</span>
+      <button data-testid="markTradesAsSeen" onClick={cockpit.markTradesAsSeen}>
+        Mark Seen
+      </button>
       <button data-testid="refresh" onClick={cockpit.refresh}>
         Refresh
       </button>
@@ -93,6 +117,8 @@ describe("useCockpit", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     mockSearchParams = new URLSearchParams();
+    mockUrlTab = "overview";
+    mockUrlMode = "paper";
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(baseInitialData),
@@ -210,8 +236,22 @@ describe("useCockpit", () => {
     );
   });
 
+  it("exposes unread trade count and mark-as-seen action", () => {
+    render(
+      <CockpitProvider
+        initialData={baseInitialData}
+        userId="user-1"
+        locale="no"
+      >
+        <TestConsumer />
+      </CockpitProvider>,
+    );
+
+    expect(screen.getByTestId("unreadTradeCount")).toHaveTextContent("0");
+    expect(screen.getByTestId("markTradesAsSeen")).toBeEnabled();
+  });
   it("loads trades when url tab is trades", async () => {
-    mockSearchParams = new URLSearchParams("tab=trades");
+    mockUrlTab = "trades";
 
     const tradesResponse = {
       trades: [

@@ -1066,6 +1066,7 @@
       "loading": "Loading trades...",
       "noTradesTitle": "No trades",
       "noTradesDescription": "No trades match the selected filters.",
+      "unread": "{count, plural, =1 {1 new} other {# new}}",
       "details": {
         "title": "Trade details",
         "description": "Full details for selected trade.",
@@ -1076,6 +1077,12 @@
         "title": "Something went wrong",
         "description": "Could not load trades. Please try again.",
         "retry": "Try again"
+      },
+      "realtime": {
+        "newTrade": {
+          "title": "New trade",
+          "description": "{side} {symbol}"
+        }
       }
     }
   }
