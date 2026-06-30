@@ -11,7 +11,9 @@ import {
 } from '@/lib/trading/confluent-signal-engine';
 import { logger } from '@/lib/logger';
 import { logSignalGeneration } from '@/lib/ai/sonar/metrics';
-import { getMarketData } from '@/lib/ai/market-data';
+import { createBinanceMarketDataProvider } from '@/lib/trading/canonical/market-data';
+
+// ...
 
 // Validation schema for query params
 const QuerySchema = z.object({
@@ -20,37 +22,26 @@ const QuerySchema = z.object({
 });
 
 /**
- * Henter reelle priser fra CoinLore (gratis, sanntid).
- * Bygger en 50-punkts prisserie forankret til faktisk markedspris.
- * TODO P1: Erstatt med Binance Klines API for ekte OHLC-historikk.
+ * Henter priser fra Binance public API (api.binance.com med failover).
+ * Bruker 50 siste 1h-lys for reell OHLC-historikk.
  */
 async function fetchPrices(symbol: string): Promise<number[]> {
-  const coins = await getMarketData([symbol.toUpperCase()]);
-  const coin = coins[0];
+  const provider = createBinanceMarketDataProvider();
+  const klines = await provider.getKlines(symbol.toUpperCase(), '1h', 50);
 
-  if (!coin || !coin.price_usd) {
+  if (!klines || klines.length === 0) {
     throw new Error(`Ingen prisdata tilgjengelig for ${symbol}`);
   }
 
-  const currentPrice = parseFloat(coin.price_usd);
-  const change24h = parseFloat(coin.percent_change_24h) / 100 || 0;
+  const prices = klines.map((k) => k.close);
 
-  if (!isFinite(currentPrice) || currentPrice <= 0) {
-    throw new Error(`Ugyldig prisdata for ${symbol}: ${coin.price_usd}`);
+  // Siste punkt er alltid siste close
+  if (prices.length < 50) {
+    // Hvis færre enn 50, fyll ut med første verdi foran
+    while (prices.length < 50) {
+      prices.unshift(prices[0]);
+    }
   }
-
-  // Bygg 50-punkts prisserie: fra pris 24t siden → nåværende pris
-  const price24hAgo = currentPrice / (1 + change24h);
-  const prices: number[] = [];
-
-  for (let i = 0; i < 50; i++) {
-    const t = i / 49;
-    const baseAtT = price24hAgo + (currentPrice - price24hAgo) * t;
-    // Svak støy < 0.05% per punkt
-    const noise = (Math.random() - 0.5) * baseAtT * 0.0005;
-    prices.push(Math.max(0, baseAtT + noise));
-  }
-  prices[49] = currentPrice; // Siste punkt er alltid faktisk pris
 
   return prices;
 }
