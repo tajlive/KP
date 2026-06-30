@@ -82,11 +82,19 @@ const ButtonPremium = forwardRef<HTMLButtonElement, ButtonPremiumProps>(
 
     const Comp = asChild ? Slot : 'button';
 
+    if (asChild) {
+      return (
+        <Comp ref={ref} className={baseClasses} {...props}>
+          {children}
+        </Comp>
+      );
+    }
+
     return (
       <Comp
         ref={ref}
         className={baseClasses}
-        disabled={asChild ? undefined : disabled || isLoading}
+        disabled={disabled || isLoading}
         {...props}
       >
         {/* Loading spinner */}
