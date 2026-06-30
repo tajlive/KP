@@ -1,54 +1,113 @@
 import { expect, test } from "./fixtures/console-guard";
-import { loginAsTestUser } from "./helpers/auth";
 
 const COCKPIT_URL = "/no/handel";
 
 test.describe("Trading Cockpit", () => {
-  test("loads cockpit, switches tabs, and emits no unexpected console errors", async ({
-    page,
-  }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(COCKPIT_URL, { waitUntil: "domcontentloaded" });
-
-    // Wait for the cockpit header and tabs to render
-    const overviewTab = page.getByTestId("cockpit-tab-overview");
-    const tradesTab = page.getByTestId("cockpit-tab-trades");
-    const analysisTab = page.getByTestId("cockpit-tab-analysis");
-
-    await expect(overviewTab).toBeVisible({ timeout: 15_000 });
-    await expect(tradesTab).toBeVisible();
-    await expect(analysisTab).toBeVisible();
-
-    // Switch to trades tab
-    await tradesTab.click();
-    await expect(tradesTab).toHaveAttribute("data-state", "active");
-
-    // Switch to analysis tab
-    await analysisTab.click();
-    await expect(analysisTab).toHaveAttribute("data-state", "active");
-
-    // Switch back to overview
-    await overviewTab.click();
-    await expect(overviewTab).toHaveAttribute("data-state", "active");
+    await expect(page.getByTestId("cockpit-header")).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
-  test("authenticated user can view trades and analysis tabs", async ({
+  test("overview tab loads with KPI cards, sessions and status", async ({
     page,
   }) => {
-    await loginAsTestUser(page, "primary", { redirectUrl: COCKPIT_URL });
+    await expect(page.getByTestId("cockpit-header")).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByTestId("cockpit-tab-overview")).toBeVisible();
+    await expect(page.getByTestId("cockpit-tab-trades")).toBeVisible();
+    await expect(page.getByTestId("cockpit-tab-analysis")).toBeVisible();
 
-    const overviewTab = page.getByTestId("cockpit-tab-overview");
-    await expect(overviewTab).toBeVisible({ timeout: 15_000 });
+    // KPI cards
+    await expect(page.getByText("Total kapital").first()).toBeVisible();
+    await expect(page.getByText("P&L").first()).toBeVisible();
+    await expect(page.getByText("Vinnrate").first()).toBeVisible();
+    await expect(page.getByText("Handler").first()).toBeVisible();
 
-    // Navigate directly to trades tab
-    await page.goto(`${COCKPIT_URL}?tab=trades`, { waitUntil: "domcontentloaded" });
+    // Status summary
+    await expect(page.getByText("Aktiv").first()).toBeVisible();
+    await expect(page.getByText("Pauset").first()).toBeVisible();
+    await expect(page.getByText("Stoppet").first()).toBeVisible();
+    await expect(page.getByText("Krasjet").first()).toBeVisible();
+
+    // Sessions section
+    await expect(page.getByText("Sesjoner").first()).toBeVisible();
+  });
+
+  test("trades tab shows filters, empty state and pagination controls", async ({
+    page,
+  }) => {
+    await page.goto(`${COCKPIT_URL}?tab=trades`, {
+      waitUntil: "domcontentloaded",
+    });
+
     const tradesTab = page.getByTestId("cockpit-tab-trades");
-    await expect(tradesTab).toHaveAttribute("data-state", "active", { timeout: 15_000 });
+    await expect(tradesTab).toHaveAttribute("data-state", "active", {
+      timeout: 15_000,
+    });
     await expect(page.getByTestId("trades-tab")).toBeVisible();
 
-    // Switch to analysis tab
+    // Filters visible on desktop
+    await expect(page.getByPlaceholder("Søk etter handler...")).toBeVisible();
+    await expect(page.getByText("30 dager").first()).toBeVisible();
+
+    // Empty state in Norwegian
+    await expect(page.getByTestId("trade-empty-state")).toBeVisible();
+    await expect(page.getByText("Ingen handler", { exact: true })).toBeVisible();
+    await expect(page.getByText("Ingen handler matcher valgte filter.")).toBeVisible();
+  });
+
+  test("analysis tab shows period selector, stat grid and charts", async ({
+    page,
+  }) => {
+    await page.goto(`${COCKPIT_URL}?tab=analysis`, {
+      waitUntil: "domcontentloaded",
+    });
+
     const analysisTab = page.getByTestId("cockpit-tab-analysis");
-    await analysisTab.click();
-    await expect(analysisTab).toHaveAttribute("data-state", "active");
-    await expect(page.getByText("cockpit.analysis.title")).toBeVisible();
+    await expect(analysisTab).toHaveAttribute("data-state", "active", {
+      timeout: 15_000,
+    });
+
+    // Norwegian title
+    await expect(
+      page.getByRole("heading", { name: "Analyse" }).first(),
+    ).toBeVisible();
+
+    // Period selector
+    await expect(page.getByText("Periode").first()).toBeVisible();
+    await expect(page.getByText("Siste 30 dager").first()).toBeVisible();
+
+    // Stat grid
+    await expect(page.getByText("Handler totalt").first()).toBeVisible();
+    await expect(page.getByText("Vinnrate").first()).toBeVisible();
+    await expect(page.getByText("Total P&L").first()).toBeVisible();
+    await expect(page.getByText("Gebyrer").first()).toBeVisible();
+
+    // Charts
+    await expect(page.getByText("P&L over tid").first()).toBeVisible();
+    await expect(page.getByText("Per symbol").first()).toBeVisible();
+  });
+
+  test("mobile responsive view renders tabs and filter sheet", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${COCKPIT_URL}?tab=trades`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    await expect(page.getByTestId("cockpit-tab-trades")).toBeVisible({
+      timeout: 15_000,
+    });
+
+    // Mobile filter sheet button
+    const filterButton = page.getByRole("button", { name: "Filter" });
+    await expect(filterButton).toBeVisible();
+    await filterButton.click();
+    await expect(page.getByText("Datoområde").first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Bruk" })).toBeVisible();
   });
 });

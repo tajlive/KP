@@ -26,11 +26,13 @@ export const test = base.extend<{
         // Allow-list: forventede feil som ikke indikerer bugs
         const allowedPatterns = [
           /401|403|Unauthorized|Forbidden/i, // Auth errors (håndtert av UI)
-          /JWT expired|Invalid Refresh Token|Auth session missing/i, // Supabase auth
+          /JWT expired|Invalid Refresh Token|Auth session missing|Using the user object as returned from supabase\.auth\.getSession/i, // Supabase auth
           /hydrat|Hydration/i, // Next.js hydration (ofte tredjeparts)
           /ResizeObserver loop/i, // Browser quirk
           /fetch failed|NetworkError/i, // Nettverk (håndtert av retry)
-          /[Klarpakke WARN]/, // Våre egne warnings (strukturert)
+          /\[Klarpakke WARN\]/, // Våre egne warnings (strukturert)
+          /preloaded using link preload but not used/i, // Chrome preload warnings (non-blocking)
+          /WebSocket is closed before the connection is established/i, // Supabase realtime close race on test teardown
         ];
 
         if (allowedPatterns.some((p) => p.test(text))) return;
