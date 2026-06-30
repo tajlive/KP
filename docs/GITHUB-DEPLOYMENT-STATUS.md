@@ -25,10 +25,11 @@
 
 ### Verification
 
-- ✅ Production `/api/health` reports version `cab0f95` (commit `cab0f958`) before the latest push.
-- ✅ Latest push to `main` (`d3fe4cde0`) auto-built via Workers Builds and completed with outcome `success` at 2026-06-30T20:18:35Z.
-- ✅ Production `/api/health` now reports version `d3fe4cd` (commit `d3fe4cde0`), confirming automatic deploy works.
-- Fallback workflow was not executed yet because primary auto-deploy is operational.
+- ✅ Production `/api/health` reported version `cab0f95` (commit `cab0f958`) before the latest push.
+- ✅ Push `d3fe4cde0` auto-built via Workers Builds and completed with outcome `success` at 2026-06-30T20:18:35Z; `/api/health` flipped to version `d3fe4cd`.
+- ✅ Push `3323c77b` (Binance 403 failover fix) auto-built via Workers Builds and completed with outcome `success` at 2026-06-30T20:31:40Z; `/api/health` flipped to version `3323c77`.
+- ✅ Fallback workflow `deploy-cloudflare-workers.yml` is registered and active on GitHub (workflow ID 304931761).
+- Fallback workflow was not executed because primary auto-deploy is operational.
 
 ---
 >
