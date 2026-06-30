@@ -4,10 +4,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useCockpit, CockpitProvider } from "../hooks/useCockpit";
 import type { CockpitInitialData } from "../types";
 
+let mockSearchParams = new URLSearchParams();
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: vi.fn() }),
   usePathname: () => "/no/handel",
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mockSearchParams,
 }));
 
 vi.mock("next-intl", () => ({
@@ -44,8 +46,25 @@ function TestConsumer() {
       <span data-testid="tab">{cockpit.tab}</span>
       <span data-testid="canUseLive">{cockpit.canUseLive ? "yes" : "no"}</span>
       <span data-testid="isLoading">{cockpit.isLoading ? "yes" : "no"}</span>
+      <span data-testid="filters">{JSON.stringify(cockpit.filters)}</span>
+      <span data-testid="tradesCount">{cockpit.trades.length}</span>
+      <span data-testid="isLoadingTrades">
+        {cockpit.isLoadingTrades ? "yes" : "no"}
+      </span>
       <button data-testid="refresh" onClick={cockpit.refresh}>
         Refresh
+      </button>
+      <button
+        data-testid="setFilter"
+        onClick={() => cockpit.setFilters({ side: "buy" })}
+      >
+        Set Filter
+      </button>
+      <button data-testid="resetFilters" onClick={cockpit.resetFilters}>
+        Reset Filters
+      </button>
+      <button data-testid="loadMoreTrades" onClick={cockpit.loadMoreTrades}>
+        Load More Trades
       </button>
     </div>
   );
@@ -54,6 +73,7 @@ function TestConsumer() {
 describe("useCockpit", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    mockSearchParams = new URLSearchParams();
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(baseInitialData),
@@ -128,6 +148,95 @@ describe("useCockpit", () => {
       expect(screen.getByTestId("tab")).toHaveTextContent("analysis");
       expect(screen.getByTestId("canUseLive")).toHaveTextContent("yes");
       expect(screen.getByTestId("isLoading")).toHaveTextContent("no");
+    });
+  });
+
+  it("exposes default filters and updates them via setFilters", () => {
+    render(
+      <CockpitProvider
+        initialData={baseInitialData}
+        userId="user-1"
+        locale="no"
+      >
+        <TestConsumer />
+      </CockpitProvider>,
+    );
+
+    expect(screen.getByTestId("filters")).toHaveTextContent(
+      '"dateRange":"30d"',
+    );
+
+    fireEvent.click(screen.getByTestId("setFilter"));
+
+    expect(screen.getByTestId("filters")).toHaveTextContent('"side":"buy"');
+  });
+
+  it("resets filters to defaults", () => {
+    render(
+      <CockpitProvider
+        initialData={baseInitialData}
+        userId="user-1"
+        locale="no"
+      >
+        <TestConsumer />
+      </CockpitProvider>,
+    );
+
+    fireEvent.click(screen.getByTestId("setFilter"));
+    expect(screen.getByTestId("filters")).toHaveTextContent('"side":"buy"');
+
+    fireEvent.click(screen.getByTestId("resetFilters"));
+    expect(screen.getByTestId("filters")).toHaveTextContent(
+      '"dateRange":"30d","pair":null,"sessionStatus":"all","side":"all","tradeStatus":"all","search":""',
+    );
+  });
+
+  it("loads trades when url tab is trades", async () => {
+    mockSearchParams = new URLSearchParams("tab=trades");
+
+    const tradesResponse = {
+      trades: [
+        {
+          id: "trade-1",
+          session_id: "session-1",
+          trading_pair: "BTCUSDT",
+          side: "buy",
+          status: "filled",
+          price: 100_000,
+          quantity: 0.5,
+          fee: 10,
+          total_value: 50_010,
+          realized_pnl: 1_200,
+          effective_pnl: 1_150,
+          executed_at: "2026-06-29T12:00:00Z",
+          created_at: "2026-06-29T11:59:00Z",
+        },
+      ],
+      next_cursor: null,
+    };
+
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(tradesResponse),
+    } as Response);
+
+    render(
+      <CockpitProvider
+        initialData={{ ...baseInitialData, tab: "trades" }}
+        userId="user-1"
+        locale="no"
+      >
+        <TestConsumer />
+      </CockpitProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("isLoadingTrades")).toHaveTextContent("yes");
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("tradesCount")).toHaveTextContent("1");
+      expect(screen.getByTestId("isLoadingTrades")).toHaveTextContent("no");
     });
   });
 });

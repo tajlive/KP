@@ -966,8 +966,113 @@
       "analysisDescription": "Det finnes ikke nok data for analyse ennå.",
       "newSessionCta": "Start ny sesjon"
     },
+    "analysis": {
+      "title": "Analyse",
+      "description": "Dypdykk i handler og resultater",
+      "period": {
+        "label": "Periode",
+        "7d": "Siste 7 dager",
+        "30d": "Siste 30 dager",
+        "90d": "Siste 90 dager",
+        "1y": "Siste år",
+        "all": "All tid"
+      },
+      "stats": {
+        "totalTrades": "Handler totalt",
+        "winRate": "Vinnrate",
+        "totalPnl": "Total P&L",
+        "totalFees": "Gebyrer",
+        "profitFactor": "Profit factor",
+        "maxDrawdown": "Maks drawdown",
+        "bestPair": "Beste par",
+        "worstPair": "Verste par",
+        "bestSession": "Beste sesjon",
+        "worstSession": "Verste sesjon"
+      },
+      "chart": {
+        "pnlTitle": "P&L over tid",
+        "pnlXAxis": "Dato",
+        "symbolTitle": "Per symbol",
+        "symbolXAxis": "Symbol",
+        "trades": "Antall handler",
+        "pnl": "P&L",
+        "togglePnl": "P&L",
+        "toggleTrades": "Handler"
+      },
+      "empty": {
+        "title": "Ingen data",
+        "description": "Det finnes ikke nok data for analyse ennå."
+      }
+    },
     "loading": "Laster cockpit...",
     "liveBanner": "Du handler med ekte penger. Tap kan skje. Følg egen risiko.",
-    "lastUpdated": "Oppdatert {time}"
+    "lastUpdated": "Oppdatert {time}",
+    "trades": {
+      "title": "Handler",
+      "titleCount": "Handler ({count})",
+      "filters": {
+        "title": "Filter",
+        "dateRange": "Datoområde",
+        "pair": "Par",
+        "sessionStatus": "Sesjonstatus",
+        "side": "Side",
+        "tradeStatus": "Handelsstatus",
+        "search": "Søk",
+        "all": "Alle",
+        "buy": "Kjøp",
+        "sell": "Salg",
+        "placeholder": "Søk etter handler...",
+        "apply": "Bruk",
+        "reset": "Tilbakestill",
+        "open": "Filter"
+      },
+      "dateRange": {
+        "7d": "7 dager",
+        "30d": "30 dager",
+        "90d": "90 dager",
+        "1y": "1 år",
+        "all": "All tid"
+      },
+      "side": {
+        "buy": "Kjøp",
+        "sell": "Salg"
+      },
+      "status": {
+        "filled": "Fylt",
+        "partially_filled": "Delfylt",
+        "pending": "Venter",
+        "cancelled": "Kansellert",
+        "failed": "Feilet"
+      },
+      "columns": {
+        "pair": "Par",
+        "side": "Side",
+        "status": "Status",
+        "price": "Pris",
+        "quantity": "Antall",
+        "fee": "Gebyr",
+        "totalValue": "Total",
+        "realizedPnl": "Realisert P&L",
+        "effectivePnl": "Effektiv P&L",
+        "executedAt": "Utført",
+        "createdAt": "Opprettet",
+        "actions": "Handlinger"
+      },
+      "loadMore": "Last flere",
+      "loading": "Laster handler...",
+      "noTradesTitle": "Ingen handler",
+      "noTradesDescription": "Ingen handler matcher valgte filter.",
+      "details": {
+        "title": "Handelsdetaljer",
+        "description": "Fullstendige detaljer for valgt handel.",
+        "sessionId": "Sesjons-ID",
+        "id": "Handels-ID"
+      },
+      "error": {
+        "title": "Noe gikk galt",
+        "description": "Kunne ikke laste handler. Prøv igjen.",
+        "retry": "Prøv igjen"
+      }
+    }
   }
 }

@@ -9,6 +9,8 @@ import { CockpitHeader } from "./CockpitHeader";
 import { CockpitTabs } from "./CockpitTabs";
 import { Overview } from "./Overview";
 import { SessionList } from "./SessionList";
+import { TradesTab } from "./trades/TradesTab";
+import { AnalysisTab } from "./analysis/AnalysisTab";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
 import { SURFACE } from "@/lib/design/tokens";
 
@@ -89,33 +91,9 @@ export function TradingCockpit({ className }: { className?: string }) {
         />
       )}
 
-      {tab === "trades" && (
-        <div
-          className={cn(
-            SURFACE.BG_CARD,
-            "border-white/[0.06] rounded-2xl p-8 text-center",
-          )}
-        >
-          <p className="text-white font-medium">{t("cockpit.empty.tradesTitle")}</p>
-          <p className="text-sm text-gray-400 mt-1">
-            {t("cockpit.empty.tradesDescription")}
-          </p>
-        </div>
-      )}
+      {tab === "trades" && <TradesTab />}
 
-      {tab === "analysis" && (
-        <div
-          className={cn(
-            SURFACE.BG_CARD,
-            "border-white/[0.06] rounded-2xl p-8 text-center",
-          )}
-        >
-          <p className="text-white font-medium">{t("cockpit.empty.analysisTitle")}</p>
-          <p className="text-sm text-gray-400 mt-1">
-            {t("cockpit.empty.analysisDescription")}
-          </p>
-        </div>
-      )}
+      {tab === "analysis" && <AnalysisTab />}
     </div>
   );
 }
