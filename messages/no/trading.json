@@ -884,5 +884,90 @@
     "upgradeNow": "Oppgrader nå",
     "seePlans": "Se planer",
     "trialExpiredTitle": "Trial Utløpt"
+  },
+  "cockpit": {
+    "header": {
+      "title": "Trading Cockpit",
+      "subtitle": "Oversikt, handler og analyse på ett sted"
+    },
+    "mode": {
+      "paper": "Lekepenger",
+      "paperShort": "Øving",
+      "live": "Live Trading",
+      "liveShort": "Live",
+      "paperDescription": "Øv med virtuell kapital",
+      "liveDescription": "Handel med ekte penger",
+      "locked": "Låst",
+      "lockedTooltip": "Live trading krever tilkoblet børs og gyldig abonnement."
+    },
+    "tab": {
+      "overview": "Oversikt",
+      "trades": "Handler",
+      "analysis": "Analyse"
+    },
+    "kpi": {
+      "totalCapital": "Total kapital",
+      "startingCapital": "Startkapital",
+      "totalPnl": "P&L",
+      "winRate": "Vinnrate",
+      "totalTrades": "Handler",
+      "winningTrades": "Vinnende",
+      "losingTrades": "Tapende",
+      "activeSessions": "Aktive sesjoner",
+      "maxDrawdown": "Maks drawdown",
+      "bestPair": "Beste par"
+    },
+    "sessions": {
+      "title": "Sesjoner",
+      "titleCount": "Sesjoner ({count})",
+      "columns": {
+        "pair": "Par",
+        "status": "Status",
+        "mode": "Modus",
+        "startingCapital": "Startkapital",
+        "currentCapital": "Nåværende kapital",
+        "pnl": "P&L",
+        "createdAt": "Opprettet",
+        "updatedAt": "Oppdatert",
+        "actions": "Handlinger"
+      },
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pauset",
+        "stopped": "Stoppet",
+        "crashed": "Krasjet"
+      },
+      "loadMore": "Last flere",
+      "loading": "Laster sesjoner..."
+    },
+    "quickActions": {
+      "refresh": "Oppdater",
+      "newSession": "Ny sesjon",
+      "export": "Eksporter",
+      "viewHistory": "Se historikk",
+      "connectExchange": "Koble til børs",
+      "startRobot": "Start robot",
+      "pauseAll": "Pause alle"
+    },
+    "error": {
+      "title": "Noe gikk galt",
+      "description": "Kunne ikke laste cockpit-data. Prøv igjen.",
+      "retry": "Prøv igjen",
+      "metricsFailed": "Kunne ikke laste KPI-er",
+      "sessionsFailed": "Kunne ikke laste sesjoner",
+      "analyticsFailed": "Kunne ikke laste analyse"
+    },
+    "empty": {
+      "sessionsTitle": "Ingen sesjoner ennå",
+      "sessionsDescription": "Start din første handelssesjon for å se den her.",
+      "tradesTitle": "Ingen handler",
+      "tradesDescription": "Ingen handler å vise for valgt modus.",
+      "analysisTitle": "Ingen data",
+      "analysisDescription": "Det finnes ikke nok data for analyse ennå.",
+      "newSessionCta": "Start ny sesjon"
+    },
+    "loading": "Laster cockpit...",
+    "liveBanner": "Du handler med ekte penger. Tap kan skje. Følg egen risiko.",
+    "lastUpdated": "Oppdatert {time}"
   }
 }

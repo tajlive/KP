@@ -76,7 +76,7 @@ export async function getCockpitInitialData(
     defaultMode: storedMode,
     tab,
     metrics,
-    sessions: sessions ?? [],
+    sessions: (sessions ?? []) as TradingSessionSummary[],
     statusCounts,
     canUseLive,
   };

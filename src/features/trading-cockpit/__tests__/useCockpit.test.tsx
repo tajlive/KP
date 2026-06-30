@@ -1,0 +1,133 @@
+import * as React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { useCockpit, CockpitProvider } from "../hooks/useCockpit";
+import type { CockpitInitialData } from "../types";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => "/no/handel",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
+const mockMetrics = {
+  totalPnl: 0,
+  totalTrades: 0,
+  winRate: 0,
+  totalCapital: 100_000,
+  startingCapital: 100_000,
+  winningTrades: 0,
+  losingTrades: 0,
+  sessionCount: 0,
+  recentSessions: [],
+};
+
+const baseInitialData: CockpitInitialData = {
+  mode: "paper",
+  defaultMode: "paper",
+  tab: "overview",
+  metrics: mockMetrics,
+  sessions: [],
+  statusCounts: {},
+  canUseLive: false,
+};
+
+function TestConsumer() {
+  const cockpit = useCockpit();
+  return (
+    <div>
+      <span data-testid="mode">{cockpit.mode}</span>
+      <span data-testid="tab">{cockpit.tab}</span>
+      <span data-testid="canUseLive">{cockpit.canUseLive ? "yes" : "no"}</span>
+      <span data-testid="isLoading">{cockpit.isLoading ? "yes" : "no"}</span>
+      <button data-testid="refresh" onClick={cockpit.refresh}>
+        Refresh
+      </button>
+    </div>
+  );
+}
+
+describe("useCockpit", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(baseInitialData),
+    } as Response);
+  });
+
+  it("returns the provided initial context value", () => {
+    render(
+      <CockpitProvider
+        initialData={baseInitialData}
+        userId="user-1"
+        locale="no"
+      >
+        <TestConsumer />
+      </CockpitProvider>,
+    );
+
+    expect(screen.getByTestId("mode")).toHaveTextContent("paper");
+    expect(screen.getByTestId("tab")).toHaveTextContent("overview");
+    expect(screen.getByTestId("canUseLive")).toHaveTextContent("no");
+    expect(screen.getByTestId("isLoading")).toHaveTextContent("no");
+  });
+
+  it("throws when used outside a CockpitProvider", () => {
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    expect(() => render(<TestConsumer />)).toThrow();
+
+    consoleError.mockRestore();
+  });
+
+  it("updates state after refresh fetches new data", async () => {
+    const refreshedData: CockpitInitialData = {
+      ...baseInitialData,
+      mode: "live",
+      tab: "analysis",
+      canUseLive: true,
+      metrics: {
+        ...mockMetrics,
+        totalCapital: 75_000,
+      },
+    };
+
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(refreshedData),
+    } as Response);
+
+    render(
+      <CockpitProvider
+        initialData={baseInitialData}
+        userId="user-1"
+        locale="no"
+      >
+        <TestConsumer />
+      </CockpitProvider>,
+    );
+
+    expect(screen.getByTestId("mode")).toHaveTextContent("paper");
+    expect(screen.getByTestId("tab")).toHaveTextContent("overview");
+
+    fireEvent.click(screen.getByTestId("refresh"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("isLoading")).toHaveTextContent("yes");
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("mode")).toHaveTextContent("live");
+      expect(screen.getByTestId("tab")).toHaveTextContent("analysis");
+      expect(screen.getByTestId("canUseLive")).toHaveTextContent("yes");
+      expect(screen.getByTestId("isLoading")).toHaveTextContent("no");
+    });
+  });
+});

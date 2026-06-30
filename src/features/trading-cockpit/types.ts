@@ -1,5 +1,5 @@
 import type { getUserDashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
-import type { Database } from "@/types/database.types";
+import type { CockpitDatabase } from "./cockpit-database.types";
 
 export type CockpitMode = "paper" | "live";
 export type CockpitTab = "overview" | "trades" | "analysis";
@@ -53,7 +53,7 @@ export type DashboardMetrics = Awaited<
 >;
 
 export type TradingSessionSummary = Pick<
-  Database["public"]["Tables"]["trading_sessions"]["Row"],
+  CockpitDatabase["public"]["Tables"]["trading_sessions"]["Row"],
   | "id"
   | "status"
   | "mode"
