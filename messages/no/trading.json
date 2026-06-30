@@ -99,6 +99,8 @@
   "unrealizedPnL": "Urealisert P&L",
   "realizedPnL": "Realisert P&L",
   "closePosition": "Lukk posisjon",
+  "shares": "aksjer",
+  "avg": "gj.sn.",
   "aiAssessment": "AI-vurdering",
   "analysisError": "Kunne ikke fullføre analysen. Vennligst prøv igjen.",
   "analyzingTrade": "Analyserer handel...",
