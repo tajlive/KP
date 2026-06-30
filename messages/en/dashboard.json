@@ -324,7 +324,11 @@
     "liveMode": "Live Mode",
     "ctaPaper": "Trade",
     "ctaLive": "Trade live",
-    "noData": "—"
+    "noData": "—",
+    "myOverview": "My Overview",
+    "systemOnline": "System Online",
+    "allSystemsOperational": "All systems operational",
+    "systemStatus": "System Status"
   },
   "tradingMode": {
     "paper": "Paper Trading",
@@ -332,13 +336,7 @@
     "switchedToPaper": "Switched to Paper Trading",
     "switchedToLive": "Switched to Live Trading"
   },
-  "topBar": {
-    "myOverview": "My Overview",
-    "systemOnline": "System Online",
-    "allSystemsOperational": "All systems operational",
-    "systemStatus": "System Status"
-  },
-  "statusDesc": "System status updated live",
+
   "stats": {
     "totalValue": "Total Value",
     "totalValueDesc": "Total portfolio value",

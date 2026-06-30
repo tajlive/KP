@@ -38,6 +38,29 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
+// Mock canonical market data provider
+vi.mock('@/lib/trading/canonical/market-data', () => ({
+  createBinanceMarketDataProvider: vi.fn().mockReturnValue({
+    getKlines: vi.fn().mockResolvedValue(
+      Array.from({ length: 50 }, (_, i) => ({
+        timestamp: Date.now() - (50 - i) * 3600000,
+        open: 50000 + i,
+        high: 50100 + i,
+        low: 49900 + i,
+        close: 50000 + i,
+        volume: 1,
+      })),
+    ),
+    getPrice: vi.fn().mockResolvedValue(50000),
+    getDepth: vi.fn().mockResolvedValue({
+      bids: [],
+      asks: [],
+      timestamp: new Date(),
+    }),
+    get24hChange: vi.fn().mockResolvedValue(0),
+  }),
+}));
+
 // Mock explainSignal
 const mockExplainSignalWithFallback = vi.fn();
 vi.mock('@/lib/ai/sonar/explainSignal', () => ({

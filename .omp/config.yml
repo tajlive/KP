@@ -1,0 +1,12 @@
+# Klarpakke OMP-only project configuration.
+# Keep project behavior independent from Cursor/Claude/Gemini/Copilot/.agent discovery.
+# Global modelRoles and MCP auth still come from ~/.omp/agent/config.yml and MCP config.
+disabledProviders:
+  - cursor
+  - claude
+  - codex
+  - gemini
+  - opencode
+  - github
+  - agents
+  - agents-md
