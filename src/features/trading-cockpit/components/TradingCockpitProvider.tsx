@@ -11,6 +11,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import { useCockpitUrlSync } from "@/features/trading-cockpit/hooks/useCockpitUrlSync";
+import { useCockpitRealtime } from "@/features/trading-cockpit/hooks/useCockpitRealtime";
 import { DEFAULT_FILTERS } from "@/features/trading-cockpit/constants";
 import type {
   CockpitError,
@@ -63,6 +64,7 @@ type Action =
   | { type: "LOAD_MORE_ERROR"; error: CockpitError }
   | { type: "SET_ANALYTICS"; analytics: TradingAnalytics; key: string }
   | { type: "SET_ANALYTICS_ERROR"; error: CockpitError }
+  | { type: "INVALIDATE_ANALYTICS" }
   | { type: "SET_FILTERS"; filters: Partial<CockpitFilters> }
   | { type: "RESET_FILTERS" }
   | { type: "FETCH_TRADES_START" }
@@ -131,6 +133,8 @@ function reducer(state: State, action: Action): State {
       };
     case "SET_ANALYTICS_ERROR":
       return { ...state, error: action.error };
+    case "INVALIDATE_ANALYTICS":
+      return { ...state, analyticsKey: null };
     case "SET_FILTERS":
       return {
         ...state,
@@ -422,6 +426,10 @@ export function TradingCockpitProvider({
     dispatch({ type: "RESET_FILTERS" });
   }, []);
 
+  const invalidateAnalytics = useCallback(() => {
+    dispatch({ type: "INVALIDATE_ANALYTICS" });
+  }, []);
+
   // Load trades whenever the active tab becomes trades or filters/mode change while on trades.
   useEffect(() => {
     if (state.activeTab !== "trades") return;
@@ -501,6 +509,16 @@ export function TradingCockpitProvider({
       cancelled = true;
     };
   }, [state.activeTab, state.filters, state.mode, state.analyticsKey]);
+
+  useCockpitRealtime({
+    userId,
+    mode: state.mode,
+    activeTab: state.activeTab,
+    onRefresh: refresh,
+    onRefreshTrades: loadTrades,
+    onInvalidateAnalytics: invalidateAnalytics,
+    enabled: !state.isLoading,
+  });
 
   const value = useMemo<CockpitContextValue>(
     () => ({

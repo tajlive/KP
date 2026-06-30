@@ -16,6 +16,25 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+vi.mock("@/lib/supabase/client", () => ({
+  getSupabaseClient: () => ({
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+      onAuthStateChange: vi.fn().mockReturnValue({
+        subscription: { unsubscribe: vi.fn() },
+      }),
+    },
+    realtime: {
+      setAuth: vi.fn().mockResolvedValue(undefined),
+    },
+    channel: vi.fn().mockReturnValue({
+      on: vi.fn().mockReturnThis(),
+      subscribe: vi.fn().mockReturnThis(),
+    }),
+    removeChannel: vi.fn().mockResolvedValue("ok"),
+  }),
+}));
+
 const mockMetrics = {
   totalPnl: 0,
   totalTrades: 0,
