@@ -99,6 +99,8 @@
   "unrealizedPnL": "Unrealized P&L",
   "realizedPnL": "Realized P&L",
   "closePosition": "Close Position",
+  "shares": "shares",
+  "avg": "avg",
   "aiAssessment": "AI Assessment",
   "analysisError": "Could not complete analysis. Please try again.",
   "analyzingTrade": "Analyzing trade...",
