@@ -1,52 +1,49 @@
 # GitHub Actions Workflows
 
-This directory contains the CI/CD workflows for Klarpakke. They run on GitHub Actions and deploy to Cloudflare Workers via Wrangler.
+This directory contains the CI/CD workflows for Klarpakke.
 
-## Workflows
+## Primary deploy: Cloudflare Workers Builds
 
-### `deploy.yml`
+Production is auto-deployed via **Cloudflare Workers Builds** (Git integration). Every push to `main` triggers a build that runs `npm run cf:build` and then `npm run cf:deploy:ci`.
 
-- **Trigger:** Push to `main`
-- **Job:** `build-and-deploy`
-- **What it does:**
-  1. Checks out the repository
-  2. Sets up Node.js using the version in `.nvmrc`
-  3. Installs dependencies with `npm ci`
-  4. Runs `npm run type-check`
-  5. Runs `npm run test:unit`
-  6. Builds the app with `npm run cf:build`
-  7. Deploys to Cloudflare Workers with `npx wrangler deploy --minify --var APP_VERSION:${{ github.sha }}`
-  8. Polls `https://www.klarpakke.no/api/health` until the deployed version is live
+- Trigger name: `Deploy default branch`
+- Production URL: `https://www.klarpakke.no`
+- Build configuration is managed by `scripts/setup-workers-builds.mjs`
 
-### `pr-check.yml`
+To inspect or repair the Workers Builds trigger:
 
-- **Trigger:** Pull request to `main`
-- **Job:** `check`
-- **What it does:**
-  1. Checks out the PR branch
-  2. Sets up Node.js using the version in `.nvmrc`
-  3. Installs dependencies with `npm ci`
-  4. Runs `npm run lint:gate`
-  5. Runs `npm run type-check`
-  6. Runs `npm run test:unit`
+```bash
+export CLOUDFLARE_API_TOKEN=<token>
+export CLOUDFLARE_ACCOUNT_ID=80d5b1d56a3e907150ba7348b6182894
+export GH_PAT=<github-token>
+node scripts/setup-workers-builds.mjs --env-file .env.local
+```
 
-## Configuration
+## Fallback deploy: GitHub Actions
 
-The workflows read public configuration from GitHub `vars` and secrets from GitHub `secrets`.
+`.github/workflows/deploy-cloudflare-workers.yml` is a **manual fallback** triggered via `workflow_dispatch`. Use it when Workers Builds is disabled, stuck, or needs to be bypassed for a hotfix.
 
 Required secrets:
 
-- `CLOUDFLARE_API_TOKEN` — Used by Wrangler to deploy the Worker
+- `CLOUDFLARE_API_TOKEN` — Wrangler deploy token
+- `NEXT_PUBLIC_SUPABASE_URL` — public Supabase URL (stored as secret for historical reasons)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — public Supabase anon key (stored as secret for historical reasons)
 
-Required vars (used by both workflows):
+Required vars:
 
-- `NEXT_PUBLIC_APP_URL`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_APP_URL` — e.g. `https://www.klarpakke.no`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`
 - `NEXT_PUBLIC_SANITY_DATASET`
 - `NEXT_PUBLIC_SANITY_API_VERSION`
-- `NEXT_PUBLIC_GLITCHTIP_DSN`
+- `NEXT_PUBLIC_GLITCHTIP_DSN` — optional
 
-`NEXT_TELEMETRY_DISABLED` is hardcoded to `"1"` in both workflows.
+`NEXT_TELEMETRY_DISABLED` is hardcoded to `"1"` in the workflow.
+
+## PR checks
+
+`.github/workflows/pr-check.yml` runs lint, type-check, and unit tests on pull requests to `main`. It is currently archived; see `archived/README.md` for history.
+
+## Other workflows
+
+- `purge-cache.yml` — purges Cloudflare cache manually.

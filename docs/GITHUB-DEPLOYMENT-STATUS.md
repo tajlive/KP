@@ -1,3 +1,41 @@
+# 🚀 Cloudflare Deployment Status
+
+> **Current status (2026-06-30):** Klarpakke auto-deploys to Cloudflare Workers via **Workers Builds** (Git integration). The GitHub Actions workflows in `.github/workflows/archived/` are retired. A new fallback workflow `.github/workflows/deploy-cloudflare-workers.yml` is available for manual `workflow_dispatch` deploys when Workers Builds is unavailable.
+
+## What was fixed / improved (2026-06-30)
+
+### Investigation
+
+- Commit `cab0f958` was reported as "not auto-deployed". Cloudflare Builds API shows that a build (`ec3ac518-d682-4d31-84aa-6683da42bb7d`) for commit `cab0f958` **did** trigger via a Git push event, completed with outcome `success`, and ran `npm run cf:deploy:ci` (`wrangler deploy`).
+- The `Deploy default branch` trigger is connected to `tajlive/KP` `main` (repo connection `9e2d4c67-f377-42c6-b19c-efd3e9fb56ee`).
+- Root cause of the perceived failure: the auto-deploy took ~12 minutes and was either not noticed or a manual `npm run cf:deploy` was run in parallel before it completed.
+
+### Actions taken
+
+1. **Verified Workers Builds configuration** via `scripts/setup-workers-builds.mjs` (dry-run). Production trigger (`adf47fe7-af8d-49f4-b366-41f256521f26`) and preview trigger (`7740149b-9169-4d05-a9a6-7366df8b2281`) are present and correctly configured.
+2. **Created fallback GitHub Actions workflow** `.github/workflows/deploy-cloudflare-workers.yml` that can be triggered manually via `workflow_dispatch` if Workers Builds is stuck.
+3. **Set GitHub Actions variables** required by the fallback workflow:
+   - `NEXT_PUBLIC_APP_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   - `NEXT_PUBLIC_SANITY_PROJECT_ID`
+   - `NEXT_PUBLIC_SANITY_DATASET`
+   - `NEXT_PUBLIC_SANITY_API_VERSION`
+   Existing secrets `CLOUDFLARE_API_TOKEN`, `NEXT_PUBLIC_SUPABASE_URL`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are already configured.
+4. **Updated `.github/workflows/README.md`** to reflect that Workers Builds is the primary deploy path and document the fallback workflow.
+
+### Verification
+
+- ✅ Production `/api/health` reports version `cab0f95` (commit `cab0f958`) before the latest push.
+- ✅ Latest push to `main` (`d3fe4cde0`) auto-built via Workers Builds and completed with outcome `success` at 2026-06-30T20:18:35Z.
+- ✅ Production `/api/health` now reports version `d3fe4cd` (commit `d3fe4cde0`), confirming automatic deploy works.
+- Fallback workflow was not executed yet because primary auto-deploy is operational.
+
+---
+>
+> **Historical content below** describes the Webflow MVP (2026-01-31) and is kept for reference only.
+
+---
+
 # 🚀 GitHub Deployment Status: Webflow MVP Ready
 
 > **⚠️ ARCHIVED / UTDATERT (2026-06-24)**
@@ -6,9 +44,10 @@
 >
 > Gjeldende deploy-dokumentasjon:
 > - `AGENTS.md` — hurtigstart, hosting-arkitektur og deploy-kommandoer
-> - `.github/workflows/deploy.yml` — aktiv Cloudflare Workers deploy-workflow
+> - `.github/workflows/README.md` — aktiv CI/CD-oppsett
+> - `.github/workflows/deploy-cloudflare-workers.yml` — manuell fallback-deploy
 > - `docs/PRODUCTION_RELEASE_CHECKLIST.md` — sjekkliste før/etter produksjonsdeploy
-> - Issue #96 — GitHub Actions phantom `BuildFailed` workflow blocker
+> - `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` — siste verifisering
 >
 > Filen beholdes kun som historisk referanse.
 

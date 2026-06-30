@@ -1,0 +1,135 @@
+name: 🚀 Deploy to Cloudflare Workers (fallback)
+
+on:
+  # Primary auto-deploy is Cloudflare Workers Builds. Use this workflow as a fallback when:
+  #   - Workers Builds is disabled/broken
+  #   - A hotfix must be deployed immediately without waiting for Builds
+  #   - The production version is stale and the Builds trigger has not fired
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or commit SHA to deploy'
+        required: true
+        default: 'main'
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - preview
+      skip_tests:
+        description: 'Skip type-check and unit tests'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: cloudflare-workers-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
+jobs:
+  deploy:
+    name: Build and deploy Worker
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.ref || github.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --legacy-peer-deps
+
+      - name: Type check
+        if: ${{ !github.event.inputs.skip_tests }}
+        run: npm run type-check
+
+      - name: Run unit tests
+        if: ${{ !github.event.inputs.skip_tests }}
+        run: npm run test:unit
+
+      - name: Build for Cloudflare Workers
+        run: npm run cf:build
+        env:
+          NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://www.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID || '63qn23si' }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET || 'production' }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07' }}
+          NEXT_PUBLIC_GLITCHTIP_DSN: ${{ vars.NEXT_PUBLIC_GLITCHTIP_DSN || '' }}
+
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy --minify --var APP_VERSION:${{ github.sha }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://www.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID || '63qn23si' }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET || 'production' }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07' }}
+          NEXT_PUBLIC_GLITCHTIP_DSN: ${{ vars.NEXT_PUBLIC_GLITCHTIP_DSN || '' }}
+
+      - name: Wait for production health check
+        if: ${{ github.event.inputs.environment == 'production' || github.event.inputs.environment == null }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const expected = context.sha.substring(0, 7);
+            const healthUrl = 'https://www.klarpakke.no/api/health';
+            const maxAttempts = 30;
+            const delayMs = 10000;
+
+            for (let i = 1; i <= maxAttempts; i++) {
+              try {
+                const response = await fetch(`${healthUrl}?deploy=${expected}&attempt=${i}`, {
+                  headers: { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (compatible; KlarpakkeHealth/1.0)' },
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (['healthy', 'degraded'].includes(data.status) && data.version === expected) {
+                  core.info(`Production is running ${expected} after ${i} attempt(s).`);
+                  return;
+                }
+
+                core.info(`Attempt ${i}/${maxAttempts} — current version: ${data.version ?? 'unavailable'}`);
+              } catch (error) {
+                core.info(`Attempt ${i}/${maxAttempts} — health endpoint unavailable: ${error.message}`);
+              }
+
+              if (i < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+              }
+            }
+
+            throw new Error(`Production did not expose expected commit ${expected} within ${maxAttempts * delayMs / 1000} seconds.`);
+
+      - name: Deploy summary
+        if: always()
+        run: |
+          echo "## 🚀 Cloudflare Workers Deploy (fallback)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment || 'production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Ref:** ${{ github.event.inputs.ref || github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** https://www.klarpakke.no" >> $GITHUB_STEP_SUMMARY
