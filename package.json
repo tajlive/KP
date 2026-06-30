@@ -281,6 +281,7 @@
     "health:prod": "node scripts/health-check.mjs prod",
     "health:prod:gate": "node scripts/prod-health-gate.mjs",
     "health:recover": "node scripts/health-recovery.mjs",
+    "diagnose:crash": "node scripts/diagnose-crash.mjs",
     "domain:guard": "node scripts/domain-cloudbase-guard.mjs",
     "all:klarpakke": "npm run health:prod:gate && npm run verify",
     "watchdog:repair": "node scripts/watchdog-auto-repair.mjs",
