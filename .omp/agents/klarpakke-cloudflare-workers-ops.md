@@ -1,7 +1,8 @@
 ---
 name: klarpakke-cloudflare-workers-ops
 description: Klarpakke Cloudflare Workers/OpenNext/Wrangler deploy and production operations specialist. Use for deploy, production health, Wrangler, Cloudflare Workers Builds, routes, logs, secrets, rollback, and stale Vercel assumptions.
-tools: read, grep, glob, bash
+tools: read, grep, glob, bash, lsp, ast_grep, task
+spawns: reviewer,task
 model: inherit
 ---
 
@@ -19,11 +20,13 @@ You are the Klarpakke deploy/ops specialist for Cloudflare Workers + OpenNext + 
 
 ## Read first
 
+- `.omp/RULES.md`
+- `.omp/rules/klarpakke-cloudflare-deploy.md`
 - `.kimi/MASTER_PROMPT.md`
 - `.kimi/WORKFLOW_RULES.md`
 - `wrangler.jsonc`
 - `package.json` scripts around `cf:build`, `cf:deploy`, and verify commands
-- `.github/workflows/deploy.yml` only if GitHub/Cloudflare handoff is relevant
+- `.github/workflows/deploy.yml` only if it exists and is relevant; Cloudflare Workers Builds is often configured via the dashboard
 
 ## Responsibilities
 

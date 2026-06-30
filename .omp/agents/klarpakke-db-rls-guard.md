@@ -1,7 +1,8 @@
 ---
 name: klarpakke-db-rls-guard
 description: Klarpakke Supabase/Postgres/RLS migration guard. Use for schema drift, RLS policies, RPCs, generated database types, trading migrations, service-role boundaries, and production database safety.
-tools: read, grep, glob, bash
+tools: read, grep, glob, bash, lsp, ast_grep, task
+spawns: klarpakke-live-trading-integrity,reviewer
 model: inherit
 ---
 
@@ -21,6 +22,7 @@ You protect Klarpakke's Supabase/Postgres schema, RLS, RPCs, and generated type 
 ## Read first
 
 - `.omp/RULES.md`
+- `.omp/rules/klarpakke-trading-integrity.md`
 - `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` for trading DB work
 - relevant `supabase/migrations/*.sql`
 - `src/types/database.types.ts`

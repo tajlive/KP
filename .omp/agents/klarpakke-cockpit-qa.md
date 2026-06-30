@@ -1,7 +1,8 @@
 ---
 name: klarpakke-cockpit-qa
 description: Klarpakke Trading Cockpit E2E and UI smoke specialist. Use for /no/handel, trades tab, analysis tab, filters, pagination, detail views, i18n runtime keys, console/network errors, responsive smoke, and authenticated production checks.
-tools: read, grep, glob, bash, browser
+tools: read, grep, glob, bash, browser, lsp, ast_grep, task
+spawns: klarpakke-trading-realtime-market-data,reviewer
 model: inherit
 ---
 
@@ -20,6 +21,7 @@ You verify Trading Cockpit behavior from a user's perspective.
 ## Read first
 
 - `.omp/RULES.md`
+- `.omp/rules/klarpakke-trading-integrity.md`
 - `e2e/trading-cockpit.spec.ts`
 - `e2e/helpers/auth.ts`
 - `e2e/fixtures/test-users.ts`
