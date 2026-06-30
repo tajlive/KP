@@ -7,11 +7,12 @@
  * - Real-time order placement
  * - Balance queries
  * - Position tracking
+ * - Multi-endpoint failover for egress-IP blocks (Cloudflare Workers)
  *
  * Security:
  * - API keys are passed in (not stored in this class)
- * - All requests are signed with timestamp
- * - Rate limiting is respected
+ * - All requests are signed with timestamp + recvWindow
+ * - Rate limiting and circuit breaker are respected
  */
 
 import type {
@@ -22,10 +23,10 @@ import type {
   Position,
   OrderBookSnapshot,
 } from './order-executor';
-import { calculateFee } from './order-executor';
 import { createBinanceMarketDataProvider } from './canonical/market-data';
 import { binanceCircuitBreaker, CircuitBreakerOpenError } from './circuit-breaker';
 import { signBinanceQuery } from './binance-signer';
+import { roundToLotSize } from './canonical/symbols/lot-sizes';
 import type { NormalizedWalletBalance } from '@/lib/exchanges/types';
 
 const marketDataProvider = createBinanceMarketDataProvider();
@@ -55,15 +56,54 @@ interface BinanceOrderResponse {
   }>;
 }
 
+// Mainnet endpoints. Binance/WAF sometimes blocks datacenter/cloud egress IPs
+// (observed from Cloudflare Workers), so we rotate through the official mirrors.
+const BINANCE_SIGNED_API_BASES = [
+  'https://api.binance.com',
+  'https://api1.binance.com',
+  'https://api2.binance.com',
+  'https://api3.binance.com',
+  'https://api4.binance.com',
+];
+
+const BINANCE_TESTNET_BASES = ['https://testnet.binance.vision'];
+
+const DEFAULT_RECV_WINDOW_MS = 5000;
+const DEFAULT_TIMEOUT_MS = 10000;
+
+// Statuses that may be transient and worth retrying once on the same mirror.
+const RETRYABLE_STATUSES: Record<number, true> = {
+  429: true,
+  500: true,
+  502: true,
+  503: true,
+  504: true,
+};
+
+function buildSignedQueryString(params: { [key: string]: unknown }): string {
+  return Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => [key, String(value)] as [string, string])
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+}
+
+function safeJsonParse(text: string): { msg?: string } | null {
+  try {
+    return JSON.parse(text) as { msg?: string };
+  } catch {
+    return null;
+  }
+}
+
 export class BinanceExecutor implements OrderExecutor {
-  private baseUrl: string;
+  private baseUrls: string[];
   private keys: BinanceApiKeys;
 
   constructor(keys: BinanceApiKeys) {
     this.keys = keys;
-    this.baseUrl = keys.testnet
-      ? 'https://testnet.binance.vision'
-      : 'https://api.binance.com';
+    this.baseUrls = keys.testnet ? BINANCE_TESTNET_BASES : BINANCE_SIGNED_API_BASES;
   }
 
   /**
@@ -74,49 +114,88 @@ export class BinanceExecutor implements OrderExecutor {
   }
 
   /**
-   * Make authenticated request to Binance API
+   * Single fetch attempt with timeout and safe error parsing.
+   */
+  private async fetchOnce<T>(
+    url: string,
+    method: 'GET' | 'POST',
+  ): Promise<{ success: true; data: T } | { success: false; error: Error; status?: number }> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'X-MBX-APIKEY': this.keys.apiKey,
+          Accept: 'application/json',
+          'User-Agent': 'Klarpakke/1.0',
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        const parsed = safeJsonParse(body);
+        const message = parsed?.msg ?? response.statusText;
+        const error = new Error(`Binance API error: ${response.status} ${message}`);
+        return { success: false, error, status: response.status };
+      }
+
+      const data = (await response.json()) as T;
+      return { success: true, data };
+    } catch (error) {
+      clearTimeout(timeoutId);
+      return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
+    }
+  }
+
+  /**
+   * Make an authenticated, signed request to Binance API with mirror failover.
    */
   private async makeRequest<T>(
     endpoint: string,
     method: 'GET' | 'POST' = 'GET',
-    params: { [key: string]: unknown } = {}
+    params: { [key: string]: unknown } = {},
   ): Promise<T> {
     const timestamp = Date.now();
-    const queryParams = { ...params, timestamp };
-
-    // Build query string
-    const queryString = Object.entries(queryParams)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
-
-    // Sign request
+    const queryParams = { ...params, recvWindow: DEFAULT_RECV_WINDOW_MS, timestamp };
+    const queryString = buildSignedQueryString(queryParams);
     const signature = await this.generateSignature(queryString);
-    const url = `${this.baseUrl}${endpoint}?${queryString}&signature=${signature}`;
+    const signedQuery = `${queryString}&signature=${signature}`;
 
-    // Make request
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'X-MBX-APIKEY': this.keys.apiKey,
-      },
-      signal: AbortSignal.timeout(10000),
-    });
+    let lastError: Error | undefined;
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`Binance API error: ${error.msg || response.statusText}`);
+    for (const base of this.baseUrls) {
+      const url = `${base}${endpoint}?${signedQuery}`;
+      const result = await this.fetchOnce<T>(url, method);
+
+      if (result.success) {
+        return result.data;
+      }
+
+      lastError = result.error;
+
+      // Retry once on the same mirror for transient failures.
+      if (result.status && RETRYABLE_STATUSES[result.status]) {
+        const retryResult = await this.fetchOnce<T>(url, method);
+        if (retryResult.success) {
+          return retryResult.data;
+        }
+        lastError = retryResult.error;
+      }
     }
 
-    return response.json();
+    throw lastError ?? new Error('All Binance API endpoints failed');
   }
 
   /**
-   * Execute a real trade order on Binance
-   * Protected by circuit breaker for resilience
+   * Execute a real trade order on Binance.
+   * Protected by circuit breaker and lot-size validation.
    */
   async executeOrder(params: OrderParams): Promise<OrderResult> {
     try {
-      // Execute through circuit breaker
       return await binanceCircuitBreaker.execute(() => this.executeOrderInternal(params));
     } catch (error) {
       if (error instanceof CircuitBreakerOpenError) {
@@ -130,39 +209,54 @@ export class BinanceExecutor implements OrderExecutor {
           timestamp: new Date(),
         };
       }
-      throw error;
+
+      return {
+        success: false,
+        orderId: '',
+        error: error instanceof Error ? error.message : 'Binance order failed',
+        executedPrice: 0,
+        executedQuantity: 0,
+        fee: 0,
+        timestamp: new Date(),
+      };
     }
   }
 
   /**
-   * Internal order execution (called through circuit breaker)
+   * Internal order execution (called through circuit breaker).
    */
   private async executeOrderInternal(params: OrderParams): Promise<OrderResult> {
-    // Build order parameters
+    const normalizedSymbol = params.symbol.toUpperCase();
+    const roundedQuantity = roundToLotSize(normalizedSymbol, params.quantity);
+
+    if (roundedQuantity <= 0) {
+      throw new Error(
+        `Order quantity ${params.quantity} is below minimum lot size for ${normalizedSymbol}`,
+      );
+    }
+
     const orderParams: { [key: string]: unknown } = {
-      symbol: params.symbol,
+      symbol: normalizedSymbol,
       side: params.side.toUpperCase(),
       type: params.orderType.toUpperCase(),
-      quantity: params.quantity,
+      quantity: roundedQuantity,
     };
 
-    // Add price for limit orders
     if (params.orderType === 'limit' && params.price) {
       orderParams.price = params.price;
       orderParams.timeInForce = 'GTC'; // Good Till Cancel
     }
 
-    // Place order
     const order = await this.makeRequest<BinanceOrderResponse>(
       '/api/v3/order',
       'POST',
-      orderParams
+      orderParams,
     );
 
     // Calculate average execution price
     const totalValue = order.fills?.reduce(
       (sum, fill) => sum + parseFloat(fill.price) * parseFloat(fill.qty),
-      0
+      0,
     ) || 0;
     const executedQty = parseFloat(order.executedQty);
     const executedPrice = executedQty > 0 ? totalValue / executedQty : parseFloat(order.price);
@@ -170,7 +264,7 @@ export class BinanceExecutor implements OrderExecutor {
     // Calculate total fees
     const fee = order.fills?.reduce(
       (sum, fill) => sum + parseFloat(fill.commission),
-      0
+      0,
     ) || 0;
 
     return {
@@ -235,6 +329,8 @@ export class BinanceExecutor implements OrderExecutor {
    */
   async getPosition(symbol: string): Promise<Position | null> {
     try {
+      const normalizedSymbol = symbol.toUpperCase();
+
       // Get open orders for symbol
       const orders = await this.makeRequest<Array<{
         orderId: number;
@@ -245,7 +341,7 @@ export class BinanceExecutor implements OrderExecutor {
         executedQty: string;
         status: string;
         time: number;
-      }>>('/api/v3/openOrders', 'GET', { symbol });
+      }>>('/api/v3/openOrders', 'GET', { symbol: normalizedSymbol });
 
       if (orders.length === 0) {
         return null;
@@ -260,19 +356,19 @@ export class BinanceExecutor implements OrderExecutor {
       const totalQty = buyOrders.reduce((sum, o) => sum + parseFloat(o.executedQty), 0);
       const totalValue = buyOrders.reduce(
         (sum, o) => sum + parseFloat(o.price) * parseFloat(o.executedQty),
-        0
+        0,
       );
       const entryPrice = totalValue / totalQty;
 
       // Calculate unrealized P&L
-      const currentPrice = await this.getMarketPrice(symbol);
+      const currentPrice = await this.getMarketPrice(normalizedSymbol);
       const currentValue = totalQty * currentPrice;
       const entryValue = totalValue;
       const unrealizedPnL = currentValue - entryValue;
       const unrealizedPnLPct = entryValue > 0 ? (unrealizedPnL / entryValue) * 100 : 0;
 
       return {
-        symbol,
+        symbol: normalizedSymbol,
         quantity: totalQty,
         entryPrice,
         entryTime: new Date(buyOrders[0].time),
@@ -336,7 +432,7 @@ export class BinanceExecutor implements OrderExecutor {
       status: string;
       executedQty: string;
     }>('/api/v3/order', 'GET', {
-      symbol,
+      symbol: symbol.toUpperCase(),
       orderId,
     });
     return {

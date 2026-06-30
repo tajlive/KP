@@ -1,7 +1,8 @@
 ---
 name: klarpakke-trading-realtime-market-data
 description: Klarpakke trading realtime, market-data, Binance, heartbeat, and Trading Cockpit freshness specialist. Use for Supabase Realtime, useCockpitRealtime, websocket auth, candles, Binance 403, cron tick heartbeat, crash detection, and stale cockpit data.
-tools: read, grep, glob, bash
+tools: read, grep, glob, bash, lsp, ast_grep, task
+spawns: klarpakke-db-rls-guard,klarpakke-cockpit-qa,reviewer
 model: inherit
 ---
 
@@ -20,11 +21,12 @@ You own realtime freshness and market-data reliability for Klarpakke trading sur
 ## Read first
 
 - `.omp/RULES.md`
+- `.omp/rules/klarpakke-trading-integrity.md`
 - `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`
 - `src/features/trading-cockpit/hooks/useCockpitRealtime.ts` when present
 - `src/features/trading-cockpit/components/TradingCockpitProvider.tsx`
 - `src/app/api/cron/tick/route.ts`
-- Binance/market-data provider files under `src/lib/trading/**` and `src/lib/trading/canonical-market-data/**`
+- Binance/market-data provider files under `src/lib/trading/**` and `src/lib/trading/canonical/market-data/**`
 
 ## Responsibilities
 

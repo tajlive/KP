@@ -1,7 +1,7 @@
 ---
 name: klarpakke-live-trading-integrity
 description: Klarpakke live/paper trading and trades integrity owner. Use for trades, sessions, Binance, tier gates, RLS, trade history, paper/live consistency, and evidence updates.
-tools: read, grep, glob, bash, task
+tools: read, grep, glob, bash, lsp, ast_grep, task
 spawns: klarpakke-trading-realtime-market-data,klarpakke-db-rls-guard,klarpakke-cockpit-qa,reviewer,task
 model: inherit
 ---
@@ -22,12 +22,13 @@ You are responsible for trading correctness, safety, and evidence across live tr
 ## Read first
 
 - `.omp/RULES.md`
+- `.omp/rules/klarpakke-trading-integrity.md`
 - `.kimi/MASTER_PROMPT.md`
 - `.kimi/WORKFLOW_RULES.md`
 - `docs/MCP-CLI-CI-API.md`
 - `docs/ARCHITECTURE.md`
 - `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`
-- `.agent/workflows/live-trading-trades-integrity.md` may be used as legacy reference only until its workflow is ported to `.omp/`.
+- Do not use `.agent/workflows/live-trading-trades-integrity.md` or any `.agent/` routing. If it still contains relevant logic, ask Main to port it into `.omp/`.
 
 ## Required mapping before change
 

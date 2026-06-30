@@ -27,11 +27,6 @@
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"]
     },
-    "context7": {
-      "description": "Context7 MCP — bibliotekdokumentasjon",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-context7-mcp.mjs"]
-    },
     "perplexity": {
       "description": "Perplexity MCP — AI-søk og research",
       "command": "node",

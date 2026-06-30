@@ -3,7 +3,7 @@ description: Cloudflare Workers/OpenNext/Wrangler production workflow for Klarpa
 globs:
   - wrangler.jsonc
   - package.json
-  - .github/workflows/deploy.yml
+  - .github/workflows/deploy.yml  # only if it exists; Cloudflare Workers Builds may use dashboard integration
   - src/app/api/health/**/*
   - open-next.config.*
   - next.config.*
