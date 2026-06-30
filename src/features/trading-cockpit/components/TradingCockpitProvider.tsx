@@ -19,11 +19,13 @@ import type {
   CockpitMode,
   CockpitTab,
   DashboardMetrics,
+  Trade,
   TradingAnalytics,
   TradingSessionSummary,
 } from "@/features/trading-cockpit/types";
 
 const SESSIONS_LIMIT = 20;
+const TRADES_LIMIT = 25;
 
 interface State {
   mode: CockpitMode;
@@ -39,6 +41,11 @@ interface State {
   analytics: TradingAnalytics | null;
   analyticsKey: string | null;
   filters: CockpitFilters;
+  trades: Trade[];
+  tradesCursor: string | null;
+  hasMoreTrades: boolean;
+  isLoadingTrades: boolean;
+  tradesError: CockpitError | null;
 }
 
 type Action =
@@ -54,7 +61,21 @@ type Action =
       hasMore: boolean;
     }
   | { type: "LOAD_MORE_ERROR"; error: CockpitError }
-  | { type: "SET_ANALYTICS"; analytics: TradingAnalytics; key: string };
+  | { type: "SET_ANALYTICS"; analytics: TradingAnalytics; key: string }
+  | { type: "SET_ANALYTICS_ERROR"; error: CockpitError }
+  | { type: "SET_FILTERS"; filters: Partial<CockpitFilters> }
+  | { type: "RESET_FILTERS" }
+  | { type: "FETCH_TRADES_START" }
+  | { type: "FETCH_TRADES_SUCCESS"; trades: Trade[]; nextCursor: string | null; hasMore: boolean }
+  | { type: "FETCH_TRADES_ERROR"; error: CockpitError }
+  | { type: "LOAD_MORE_TRADES_START" }
+  | {
+      type: "LOAD_MORE_TRADES_SUCCESS";
+      trades: Trade[];
+      nextCursor: string | null;
+      hasMore: boolean;
+    }
+  | { type: "LOAD_MORE_TRADES_ERROR"; error: CockpitError };
 
 function buildSessionsCursor(
   sessions: TradingSessionSummary[],
@@ -108,6 +129,48 @@ function reducer(state: State, action: Action): State {
         analytics: action.analytics,
         analyticsKey: action.key,
       };
+    case "SET_ANALYTICS_ERROR":
+      return { ...state, error: action.error };
+    case "SET_FILTERS":
+      return {
+        ...state,
+        filters: { ...state.filters, ...action.filters },
+        tradesCursor: null,
+        hasMoreTrades: false,
+      };
+    case "RESET_FILTERS":
+      return {
+        ...state,
+        filters: DEFAULT_FILTERS,
+        tradesCursor: null,
+        hasMoreTrades: false,
+      };
+    case "FETCH_TRADES_START":
+      return { ...state, isLoadingTrades: true, tradesError: null };
+    case "FETCH_TRADES_SUCCESS":
+      return {
+        ...state,
+        trades: action.trades,
+        tradesCursor: action.nextCursor,
+        hasMoreTrades: action.hasMore,
+        isLoadingTrades: false,
+        tradesError: null,
+      };
+    case "FETCH_TRADES_ERROR":
+      return { ...state, isLoadingTrades: false, tradesError: action.error };
+    case "LOAD_MORE_TRADES_START":
+      return { ...state, isLoadingTrades: true, tradesError: null };
+    case "LOAD_MORE_TRADES_SUCCESS":
+      return {
+        ...state,
+        trades: [...state.trades, ...action.trades],
+        tradesCursor: action.nextCursor,
+        hasMoreTrades: action.hasMore,
+        isLoadingTrades: false,
+        tradesError: null,
+      };
+    case "LOAD_MORE_TRADES_ERROR":
+      return { ...state, isLoadingTrades: false, tradesError: action.error };
     default:
       return state;
   }
@@ -128,6 +191,11 @@ function createInitialState(data: CockpitInitialData): State {
     analytics: null,
     analyticsKey: null,
     filters: DEFAULT_FILTERS,
+    trades: [],
+    tradesCursor: null,
+    hasMoreTrades: false,
+    isLoadingTrades: false,
+    tradesError: null,
   };
 }
 
@@ -148,11 +216,20 @@ export interface CockpitContextValue {
   isLoading: boolean;
   error: CockpitError | null;
   analytics: TradingAnalytics | null;
+  filters: CockpitFilters;
+  trades: Trade[];
+  hasMoreTrades: boolean;
+  isLoadingTrades: boolean;
+  tradesError: CockpitError | null;
+  hasMoreSessions: boolean;
   setMode: (mode: CockpitMode) => void;
   setTab: (tab: CockpitTab) => void;
   refresh: () => Promise<void>;
   loadMoreSessions: () => Promise<void>;
-  hasMoreSessions: boolean;
+  setFilters: (filters: Partial<CockpitFilters>) => void;
+  resetFilters: () => void;
+  loadTrades: () => Promise<void>;
+  loadMoreTrades: () => Promise<void>;
 }
 
 const TradingCockpitContext = createContext<CockpitContextValue | null>(null);
@@ -160,194 +237,270 @@ const TradingCockpitContext = createContext<CockpitContextValue | null>(null);
 export function TradingCockpitProvider({
   children,
   initialData,
-  userId: _userId,
+  userId,
   locale,
 }: TradingCockpitProviderProps) {
   const { mode: urlMode, tab: urlTab, updateUrl } = useCockpitUrlSync();
-  const [state, dispatch] = useReducer(
-    reducer,
-    initialData,
-    createInitialState,
-  );
-  const abortRef = useRef<AbortController | null>(null);
+  const [state, dispatch] = useReducer(reducer, initialData, createInitialState);
 
-  const fetchInitial = useCallback(
-    async (mode: CockpitMode, tab: CockpitTab, signal?: AbortSignal) => {
-      dispatch({ type: "FETCH_START" });
+  const currentModeRef = useRef(state.mode);
+  const currentTabRef = useRef(state.activeTab);
+  const filtersRef = useRef(state.filters);
+
+  useEffect(() => {
+    currentModeRef.current = state.mode;
+  }, [state.mode]);
+
+  useEffect(() => {
+    currentTabRef.current = state.activeTab;
+  }, [state.activeTab]);
+
+  useEffect(() => {
+    filtersRef.current = state.filters;
+  }, [state.filters]);
+
+  // Sync external URL changes into state.
+  useEffect(() => {
+    if (urlMode !== state.mode || urlTab !== state.activeTab) {
+      dispatch({ type: "SET_URL", mode: urlMode, tab: urlTab });
+    }
+  }, [urlMode, urlTab, state.mode, state.activeTab]);
+
+  const setMode = useCallback(
+    (mode: CockpitMode) => {
+      updateUrl({ mode });
+    },
+    [updateUrl],
+  );
+
+  const setTab = useCallback(
+    (tab: CockpitTab) => {
+      updateUrl({ tab });
+    },
+    [updateUrl],
+  );
+
+  const fetchInitialData = useCallback(async () => {
+    dispatch({ type: "FETCH_START" });
+    try {
+      const res = await fetch(
+        `/api/trading-cockpit/initial?mode=${currentModeRef.current}&tab=${currentTabRef.current}&locale=${locale}`,
+        { cache: "no-store" },
+      );
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || res.statusText);
+      }
+      const data = (await res.json()) as CockpitInitialData;
+      dispatch({ type: "FETCH_SUCCESS", payload: data });
+    } catch (err) {
+      dispatch({
+        type: "FETCH_ERROR",
+        error: {
+          message: err instanceof Error ? err.message : "Unknown error",
+          code: "FETCH_FAILED",
+        },
+      });
+    }
+  }, [locale]);
+
+  const refresh = useCallback(async () => {
+    await fetchInitialData();
+  }, [fetchInitialData]);
+
+  const loadMoreSessions = useCallback(async () => {
+    if (!state.sessionsCursor) return;
+    dispatch({ type: "LOAD_MORE_START" });
+    try {
+      const params = new URLSearchParams({
+        mode: currentModeRef.current,
+        cursor: state.sessionsCursor,
+        limit: String(SESSIONS_LIMIT),
+      });
+      const res = await fetch(`/api/trading-cockpit/sessions?${params.toString()}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || res.statusText);
+      }
+      const data = (await res.json()) as {
+        sessions: TradingSessionSummary[];
+        next_cursor: string | null;
+      };
+      dispatch({
+        type: "LOAD_MORE_SUCCESS",
+        sessions: data.sessions,
+        nextCursor: data.next_cursor,
+        hasMore: data.sessions.length >= SESSIONS_LIMIT,
+      });
+    } catch (err) {
+      dispatch({
+        type: "LOAD_MORE_ERROR",
+        error: {
+          message: err instanceof Error ? err.message : "Unknown error",
+          code: "LOAD_MORE_FAILED",
+        },
+      });
+    }
+  }, [state.sessionsCursor]);
+
+  const fetchTrades = useCallback(
+    async (cursor: string | null, isLoadMore: boolean) => {
+      const filters = filtersRef.current;
+      const params = new URLSearchParams();
+      params.set("mode", currentModeRef.current);
+      params.set("limit", String(TRADES_LIMIT));
+      if (cursor) params.set("cursor", cursor);
+      if (filters.dateRange !== "all") params.set("dateRange", filters.dateRange);
+      if (filters.pair) params.set("pair", filters.pair);
+      if (filters.sessionStatus !== "all") params.set("sessionStatus", filters.sessionStatus);
+      if (filters.side !== "all") params.set("side", filters.side);
+      if (filters.tradeStatus !== "all") params.set("status", filters.tradeStatus);
+      if (filters.search) params.set("search", filters.search);
+
+      const res = await fetch(`/api/trading-cockpit/trades?${params.toString()}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || res.statusText);
+      }
+      return res.json() as Promise<{ trades: Trade[]; next_cursor: string | null }>;
+    },
+    [],
+  );
+
+  const loadTrades = useCallback(async () => {
+    dispatch({ type: "FETCH_TRADES_START" });
+    try {
+      const data = await fetchTrades(null, false);
+      dispatch({
+        type: "FETCH_TRADES_SUCCESS",
+        trades: data.trades,
+        nextCursor: data.next_cursor,
+        hasMore: data.trades.length >= TRADES_LIMIT,
+      });
+    } catch (err) {
+      dispatch({
+        type: "FETCH_TRADES_ERROR",
+        error: {
+          message: err instanceof Error ? err.message : "Unknown error",
+          code: "FETCH_TRADES_FAILED",
+        },
+      });
+    }
+  }, [fetchTrades]);
+
+  const loadMoreTrades = useCallback(async () => {
+    if (!state.tradesCursor) return;
+    dispatch({ type: "LOAD_MORE_TRADES_START" });
+    try {
+      const data = await fetchTrades(state.tradesCursor, true);
+      dispatch({
+        type: "LOAD_MORE_TRADES_SUCCESS",
+        trades: data.trades,
+        nextCursor: data.next_cursor,
+        hasMore: data.trades.length >= TRADES_LIMIT,
+      });
+    } catch (err) {
+      dispatch({
+        type: "LOAD_MORE_TRADES_ERROR",
+        error: {
+          message: err instanceof Error ? err.message : "Unknown error",
+          code: "LOAD_MORE_TRADES_FAILED",
+        },
+      });
+    }
+  }, [fetchTrades, state.tradesCursor]);
+
+  const setFilters = useCallback((filters: Partial<CockpitFilters>) => {
+    dispatch({ type: "SET_FILTERS", filters });
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    dispatch({ type: "RESET_FILTERS" });
+  }, []);
+
+  // Load trades whenever the active tab becomes trades or filters/mode change while on trades.
+  useEffect(() => {
+    if (state.activeTab !== "trades") return;
+
+    let cancelled = false;
+    const run = async () => {
+      dispatch({ type: "FETCH_TRADES_START" });
       try {
-        const params = new URLSearchParams({ mode, tab });
-        const res = await fetch(`/api/trading-cockpit/initial?${params.toString()}`, {
-          signal,
-          credentials: "same-origin",
-          headers: { "Accept-Language": locale },
-        });
-        if (!res.ok) {
-          const body = (await res.json().catch(() => ({ error: res.statusText }))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? `HTTP ${res.status}`);
-        }
-        const data = (await res.json()) as CockpitInitialData;
-        dispatch({ type: "FETCH_SUCCESS", payload: data });
-        if (data.mode !== mode || data.tab !== tab) {
-          updateUrl({ mode: data.mode, tab: data.tab });
-        }
-      } catch (err) {
-        if (signal?.aborted) return;
+        const data = await fetchTrades(null, false);
+        if (cancelled) return;
         dispatch({
-          type: "FETCH_ERROR",
+          type: "FETCH_TRADES_SUCCESS",
+          trades: data.trades,
+          nextCursor: data.next_cursor,
+          hasMore: data.trades.length >= TRADES_LIMIT,
+        });
+      } catch (err) {
+        if (cancelled) return;
+        dispatch({
+          type: "FETCH_TRADES_ERROR",
           error: {
             message: err instanceof Error ? err.message : "Unknown error",
-            code: "FETCH_INITIAL_FAILED",
+            code: "FETCH_TRADES_FAILED",
           },
         });
       }
-    },
-    [locale, updateUrl],
-  );
-
-  // React to external URL changes (back/forward, direct links).
-  useEffect(() => {
-    if (urlMode === state.mode && urlTab === state.activeTab) return;
-
-    const controller = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = controller;
-
-    void fetchInitial(urlMode, urlTab, controller.signal);
-
-    return () => {
-      controller.abort();
     };
-  }, [urlMode, urlTab, state.mode, state.activeTab, fetchInitial]);
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.activeTab, state.filters, state.mode, fetchTrades]);
 
-  // Load analytics when the analysis tab is active and stale.
+  // Load analytics whenever the active tab becomes analysis or filters/mode change while on analysis.
   useEffect(() => {
     if (state.activeTab !== "analysis") return;
 
-    const key = `${state.mode}:${state.filters.dateRange}`;
-    if (state.analytics && state.analyticsKey === key) return;
+    const key = `${state.mode}:${state.filters.dateRange}:${state.filters.pair ?? ""}:${state.filters.sessionStatus}:${state.filters.side}:${state.filters.tradeStatus}:${state.filters.search}`;
+    if (key === state.analyticsKey) return;
 
-    const controller = new AbortController();
+    let cancelled = false;
+    const run = async () => {
+      const filters = filtersRef.current;
+      const params = new URLSearchParams();
+      params.set("mode", currentModeRef.current);
+      params.set("dateRange", filters.dateRange);
+      if (filters.pair) params.set("pair", filters.pair);
+      if (filters.sessionStatus !== "all") params.set("sessionStatus", filters.sessionStatus);
+      if (filters.side !== "all") params.set("side", filters.side);
+      if (filters.tradeStatus !== "all") params.set("status", filters.tradeStatus);
+      if (filters.search) params.set("search", filters.search);
 
-    async function load() {
       try {
-        const params = new URLSearchParams({
-          mode: state.mode,
-          dateRange: state.filters.dateRange,
-        });
         const res = await fetch(`/api/trading-cockpit/analytics?${params.toString()}`, {
-          signal: controller.signal,
-          credentials: "same-origin",
-          headers: { "Accept-Language": locale },
+          cache: "no-store",
         });
         if (!res.ok) {
-          const body = (await res.json().catch(() => ({ error: res.statusText }))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? `HTTP ${res.status}`);
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || res.statusText);
         }
-        const { analytics } = (await res.json()) as { analytics: TradingAnalytics };
-        dispatch({ type: "SET_ANALYTICS", analytics, key });
+        const data = (await res.json()) as TradingAnalytics;
+        if (cancelled) return;
+        dispatch({ type: "SET_ANALYTICS", analytics: data, key });
       } catch (err) {
-        if (controller.signal.aborted) return;
+        if (cancelled) return;
         dispatch({
-          type: "FETCH_ERROR",
+          type: "SET_ANALYTICS_ERROR",
           error: {
             message: err instanceof Error ? err.message : "Unknown error",
             code: "FETCH_ANALYTICS_FAILED",
           },
         });
       }
-    }
-
-    void load();
-
-    return () => {
-      controller.abort();
     };
-  }, [state.activeTab, state.mode, state.filters.dateRange, state.analytics, state.analyticsKey, locale]);
-
-  const setMode = useCallback(
-    (mode: CockpitMode) => {
-      if (mode === state.mode) return;
-      if (mode === "live" && !state.canUseLive) {
-        dispatch({
-          type: "FETCH_ERROR",
-          error: {
-            message: "Live trading is not available for your account.",
-            code: "LIVE_NOT_ALLOWED",
-          },
-        });
-        return;
-      }
-      dispatch({ type: "SET_URL", mode, tab: state.activeTab });
-      updateUrl({ mode });
-      const controller = new AbortController();
-      abortRef.current?.abort();
-      abortRef.current = controller;
-      void fetchInitial(mode, state.activeTab, controller.signal);
-    },
-    [state.canUseLive, state.mode, state.activeTab, updateUrl, fetchInitial],
-  );
-
-  const setTab = useCallback(
-    (tab: CockpitTab) => {
-      if (tab === state.activeTab) return;
-      dispatch({ type: "SET_URL", mode: state.mode, tab });
-      updateUrl({ tab });
-      const controller = new AbortController();
-      abortRef.current?.abort();
-      abortRef.current = controller;
-      void fetchInitial(state.mode, tab, controller.signal);
-    },
-    [state.mode, state.activeTab, updateUrl, fetchInitial],
-  );
-
-  const refresh = useCallback(async () => {
-    const controller = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = controller;
-    await fetchInitial(state.mode, state.activeTab, controller.signal);
-  }, [state.mode, state.activeTab, fetchInitial]);
-
-  const loadMoreSessions = useCallback(async () => {
-    if (!state.hasMoreSessions || state.isLoading) return;
-    dispatch({ type: "LOAD_MORE_START" });
-    try {
-      const params = new URLSearchParams({
-        mode: state.mode,
-        limit: String(SESSIONS_LIMIT),
-      });
-      if (state.sessionsCursor) {
-        params.set("cursor", state.sessionsCursor);
-      }
-      const res = await fetch(`/api/trading-cockpit/sessions?${params.toString()}`, {
-        credentials: "same-origin",
-        headers: { "Accept-Language": locale },
-      });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => ({ error: res.statusText }))) as {
-          error?: string;
-        };
-        throw new Error(body.error ?? `HTTP ${res.status}`);
-      }
-      const { sessions, nextCursor, hasMore } = (await res.json()) as {
-        sessions: TradingSessionSummary[];
-        nextCursor: string | null;
-        hasMore: boolean;
-      };
-      dispatch({ type: "LOAD_MORE_SUCCESS", sessions, nextCursor, hasMore });
-    } catch (err) {
-      dispatch({
-        type: "LOAD_MORE_ERROR",
-        error: {
-          message: err instanceof Error ? err.message : "Unknown error",
-          code: "FETCH_SESSIONS_FAILED",
-        },
-      });
-    }
-  }, [state.hasMoreSessions, state.isLoading, state.mode, state.sessionsCursor, locale]);
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.activeTab, state.filters, state.mode, state.analyticsKey]);
 
   const value = useMemo<CockpitContextValue>(
     () => ({
@@ -360,27 +513,31 @@ export function TradingCockpitProvider({
       isLoading: state.isLoading,
       error: state.error,
       analytics: state.analytics,
+      filters: state.filters,
+      trades: state.trades,
+      hasMoreTrades: state.hasMoreTrades,
+      isLoadingTrades: state.isLoadingTrades,
+      tradesError: state.tradesError,
+      hasMoreSessions: state.hasMoreSessions,
       setMode,
       setTab,
       refresh,
       loadMoreSessions,
-      hasMoreSessions: state.hasMoreSessions,
+      setFilters,
+      resetFilters,
+      loadTrades,
+      loadMoreTrades,
     }),
     [
-      state.mode,
-      state.activeTab,
-      state.metrics,
-      state.sessions,
-      state.statusCounts,
-      state.canUseLive,
-      state.isLoading,
-      state.error,
-      state.analytics,
-      state.hasMoreSessions,
+      state,
       setMode,
       setTab,
       refresh,
       loadMoreSessions,
+      setFilters,
+      resetFilters,
+      loadTrades,
+      loadMoreTrades,
     ],
   );
 
@@ -395,7 +552,7 @@ export function useCockpitContext(): CockpitContextValue {
   const ctx = useContext(TradingCockpitContext);
   if (!ctx) {
     throw new Error(
-      "useCockpitContext must be used within TradingCockpitProvider",
+      "useCockpitContext must be used within a TradingCockpitProvider",
     );
   }
   return ctx;

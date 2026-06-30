@@ -966,8 +966,113 @@
       "analysisDescription": "There is not enough data for analysis yet.",
       "newSessionCta": "Start new session"
     },
+    "analysis": {
+      "title": "Analysis",
+      "description": "Deep dive into trades and results",
+      "period": {
+        "label": "Period",
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days",
+        "1y": "Last year",
+        "all": "All time"
+      },
+      "stats": {
+        "totalTrades": "Total trades",
+        "winRate": "Win rate",
+        "totalPnl": "Total P&L",
+        "totalFees": "Fees",
+        "profitFactor": "Profit factor",
+        "maxDrawdown": "Max drawdown",
+        "bestPair": "Best pair",
+        "worstPair": "Worst pair",
+        "bestSession": "Best session",
+        "worstSession": "Worst session"
+      },
+      "chart": {
+        "pnlTitle": "P&L over time",
+        "pnlXAxis": "Date",
+        "symbolTitle": "By symbol",
+        "symbolXAxis": "Symbol",
+        "trades": "Trade count",
+        "pnl": "P&L",
+        "togglePnl": "P&L",
+        "toggleTrades": "Trades"
+      },
+      "empty": {
+        "title": "No data",
+        "description": "There is not enough data for analysis yet."
+      }
+    },
     "loading": "Loading cockpit...",
     "liveBanner": "You are trading with real money. Losses are possible. Manage your own risk.",
-    "lastUpdated": "Updated {time}"
+    "lastUpdated": "Updated {time}",
+    "trades": {
+      "title": "Trades",
+      "titleCount": "Trades ({count})",
+      "filters": {
+        "title": "Filters",
+        "dateRange": "Date range",
+        "pair": "Pair",
+        "sessionStatus": "Session status",
+        "side": "Side",
+        "tradeStatus": "Trade status",
+        "search": "Search",
+        "all": "All",
+        "buy": "Buy",
+        "sell": "Sell",
+        "placeholder": "Search trades...",
+        "apply": "Apply",
+        "reset": "Reset",
+        "open": "Filters"
+      },
+      "dateRange": {
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days",
+        "1y": "1 year",
+        "all": "All time"
+      },
+      "side": {
+        "buy": "Buy",
+        "sell": "Sell"
+      },
+      "status": {
+        "filled": "Filled",
+        "partially_filled": "Partial",
+        "pending": "Pending",
+        "cancelled": "Cancelled",
+        "failed": "Failed"
+      },
+      "columns": {
+        "pair": "Pair",
+        "side": "Side",
+        "status": "Status",
+        "price": "Price",
+        "quantity": "Qty",
+        "fee": "Fee",
+        "totalValue": "Total",
+        "realizedPnl": "Realized P&L",
+        "effectivePnl": "Effective P&L",
+        "executedAt": "Executed",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "loadMore": "Load more",
+      "loading": "Loading trades...",
+      "noTradesTitle": "No trades",
+      "noTradesDescription": "No trades match the selected filters.",
+      "details": {
+        "title": "Trade details",
+        "description": "Full details for selected trade.",
+        "sessionId": "Session ID",
+        "id": "Trade ID"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "description": "Could not load trades. Please try again.",
+        "retry": "Try again"
+      }
+    }
   }
 }
