@@ -60,7 +60,7 @@ function FeatureCard({
 }
 
 function LiveSignalCard({ delay = 0 }: { delay?: number }) {
-  const t = useTranslations("landing.liveSignalCard");
+  const t = useTranslations("landing.bentoGrid.liveSignalCard");
   const [signal, setSignal] = useState<"BUY" | "HOLD" | "SELL" | null>(null);
   const [loading, setLoading] = useState(true);
 
