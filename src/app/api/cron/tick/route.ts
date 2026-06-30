@@ -1415,6 +1415,24 @@ export async function GET(req: NextRequest) {
       } catch (err) {
         const errorMessage = (err as Error).message;
         console.error(`Error processing session ${session.id}:`, errorMessage);
+
+        // Update heartbeat even on processing errors so that transient failures
+        // (e.g. Binance 403) do not cause the session to be marked as crashed.
+        try {
+          await db
+            .from("trading_sessions")
+            .update({
+              last_heartbeat: new Date().toISOString(),
+              last_tick_at: new Date().toISOString(),
+            } as never)
+            .eq("id", session.id);
+        } catch (heartbeatErr) {
+          console.error(
+            `[Tick] Failed to update heartbeat for session ${session.id}:`,
+            heartbeatErr,
+          );
+        }
+
         results.push({
           session_id: session.id,
           action: "error",
