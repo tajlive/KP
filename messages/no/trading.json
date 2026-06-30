@@ -1066,6 +1066,7 @@
       "loading": "Laster handler...",
       "noTradesTitle": "Ingen handler",
       "noTradesDescription": "Ingen handler matcher valgte filter.",
+      "unread": "{count, plural, =1 {1 ny} other {# nye}}",
       "details": {
         "title": "Handelsdetaljer",
         "description": "Fullstendige detaljer for valgt handel.",
@@ -1076,6 +1077,12 @@
         "title": "Noe gikk galt",
         "description": "Kunne ikke laste handler. Prøv igjen.",
         "retry": "Prøv igjen"
+      },
+      "realtime": {
+        "newTrade": {
+          "title": "Ny handel",
+          "description": "{side} {symbol}"
+        }
       }
     }
   }

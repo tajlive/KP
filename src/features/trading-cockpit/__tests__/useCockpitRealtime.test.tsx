@@ -8,7 +8,7 @@ interface MockChannel {
   on: (
     event: string,
     config: Record<string, unknown>,
-    handler: () => void,
+    handler: (payload?: { new: Record<string, unknown> }) => void,
   ) => MockChannel;
   subscribe: (callback?: (status: string) => void) => MockChannel;
 }
@@ -16,7 +16,7 @@ interface MockChannel {
 let mockHidden = false;
 let channelListeners: Array<{
   config: Record<string, unknown>;
-  handler: () => void;
+  handler: (payload?: { new: Record<string, unknown> }) => void;
 }> = [];
 let subscribeStatus: string | null = null;
 let currentChannel: MockChannel | null = null;
@@ -76,6 +76,8 @@ function TestComponent({
   onRefresh,
   onRefreshTrades,
   onInvalidateAnalytics,
+  onTradeInsert,
+  onTradeUpdate,
 }: {
   userId: string;
   mode: "paper" | "live";
@@ -83,6 +85,8 @@ function TestComponent({
   onRefresh: () => Promise<void>;
   onRefreshTrades: () => Promise<void>;
   onInvalidateAnalytics: () => void;
+  onTradeInsert?: (trade: Record<string, unknown>) => void;
+  onTradeUpdate?: (trade: Record<string, unknown>) => void;
 }) {
   const { isSubscribed } = useCockpitRealtime({
     userId,
@@ -91,6 +95,8 @@ function TestComponent({
     onRefresh,
     onRefreshTrades,
     onInvalidateAnalytics,
+    onTradeInsert,
+    onTradeUpdate,
   });
 
   return <span data-testid="subscribed">{isSubscribed ? "yes" : "no"}</span>;
@@ -158,7 +164,7 @@ describe("useCockpitRealtime", () => {
     await waitFor(() => expect(channelListeners.length).toBeGreaterThan(0));
 
     act(() => {
-      channelListeners[0].handler();
+      channelListeners[0].handler({ new: {} });
     });
 
     expect(onRefresh).not.toHaveBeenCalled();
@@ -190,7 +196,7 @@ describe("useCockpitRealtime", () => {
     await waitFor(() => expect(channelListeners.length).toBeGreaterThan(0));
 
     act(() => {
-      channelListeners[0].handler();
+      channelListeners[0].handler({ new: {} });
     });
 
     act(() => {
@@ -220,7 +226,7 @@ describe("useCockpitRealtime", () => {
     await waitFor(() => expect(channelListeners.length).toBeGreaterThan(0));
 
     act(() => {
-      channelListeners[0].handler();
+      channelListeners[0].handler({ new: {} });
     });
 
     act(() => {
@@ -264,6 +270,81 @@ describe("useCockpitRealtime", () => {
 
     await waitFor(() => {
       expect(mockChannel).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it("calls onTradeInsert with the new trade payload", async () => {
+    const onTradeInsert = vi.fn();
+    const onRefresh = vi.fn().mockResolvedValue(undefined);
+    const onRefreshTrades = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <TestComponent
+        userId="user-1"
+        mode="paper"
+        activeTab="overview"
+        onRefresh={onRefresh}
+        onRefreshTrades={onRefreshTrades}
+        onInvalidateAnalytics={vi.fn()}
+        onTradeInsert={onTradeInsert}
+      />,
+    );
+
+    await waitFor(() => expect(channelListeners.length).toBeGreaterThan(0));
+
+    const insertListener = channelListeners.find(
+      (l) => l.config.table === "trades" && l.config.event === "INSERT",
+    );
+    expect(insertListener).toBeDefined();
+
+    const tradePayload = { new: { id: "trade-1", trading_pair: "BTCUSDT", side: "buy" } };
+    act(() => {
+      insertListener?.handler(tradePayload);
+    });
+
+    await waitFor(() => {
+      expect(onTradeInsert).toHaveBeenCalledWith(tradePayload.new);
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
+
+    await waitFor(() => {
+      expect(onRefresh).toHaveBeenCalledTimes(1);
+      expect(onRefreshTrades).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("calls onTradeUpdate with the updated trade payload", async () => {
+    const onTradeUpdate = vi.fn();
+
+    render(
+      <TestComponent
+        userId="user-1"
+        mode="paper"
+        activeTab="overview"
+        onRefresh={vi.fn().mockResolvedValue(undefined)}
+        onRefreshTrades={vi.fn().mockResolvedValue(undefined)}
+        onInvalidateAnalytics={vi.fn()}
+        onTradeUpdate={onTradeUpdate}
+      />,
+    );
+
+    await waitFor(() => expect(channelListeners.length).toBeGreaterThan(0));
+
+    const updateListener = channelListeners.find(
+      (l) => l.config.table === "trades" && l.config.event === "UPDATE",
+    );
+    expect(updateListener).toBeDefined();
+
+    const tradePayload = { new: { id: "trade-1", trading_pair: "BTCUSDT", side: "sell" } };
+    act(() => {
+      updateListener?.handler(tradePayload);
+    });
+
+    await waitFor(() => {
+      expect(onTradeUpdate).toHaveBeenCalledWith(tradePayload.new);
     });
   });
 });

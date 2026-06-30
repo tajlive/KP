@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
@@ -31,6 +31,8 @@ export function TradesTab({ pairs = [], className }: TradesTabProps) {
     tradesError,
     hasMoreTrades,
     loadMoreTrades,
+    unreadTradeCount,
+    markTradesAsSeen,
   } = useCockpit();
 
   const [selectedTrade, setSelectedTrade] = React.useState<Trade | null>(null);
@@ -89,9 +91,25 @@ export function TradesTab({ pairs = [], className }: TradesTabProps) {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
           {t("cockpit.trades.titleCount", { count: trades.length })}
         </h2>
-        {isLoadingTrades && (
-          <Loader2 className="w-4 h-4 animate-spin text-gray-500" data-testid="trades-loading-indicator" />
-        )}
+        <div className="flex items-center gap-2">
+          {unreadTradeCount > 0 && (
+            <button
+              type="button"
+              onClick={markTradesAsSeen}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+                "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors",
+              )}
+              data-testid="trades-unread-badge"
+            >
+              <Bell className="w-3.5 h-3.5" />
+              {t("cockpit.trades.unread", { count: unreadTradeCount })}
+            </button>
+          )}
+          {isLoadingTrades && (
+            <Loader2 className="w-4 h-4 animate-spin text-gray-500" data-testid="trades-loading-indicator" />
+          )}
+        </div>
       </header>
 
       <TradeFilters
