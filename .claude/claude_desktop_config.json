@@ -11,13 +11,6 @@
       "headers": {
         "Authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
       }
-    },
-    "vercel-secure": {
-      "type": "http",
-      "url": "https://mcp.vercel.com/tom-jensens-projects/klarpakke",
-      "headers": {
-        "Authorization": "Bearer ${VERCEL_TOKEN}"
-      }
     }
   }
 }

@@ -579,7 +579,6 @@ perplexity_search "@supabase/ssr PKCE cookie implementation Next.js 15"
 2. **Next.js Middleware Docs**
 3. **Google OAuth 2.0 Troubleshooting**
 4. **GitHub Issues**: supabase/gotrue-js, supabase/supabase-js
-5. **Vercel Edge Runtime Docs**
 
 ---
 
@@ -696,8 +695,8 @@ export async function GET(request: Request) {
 ### Network Log Analysis:
 
 ```bash
-# Filter for auth-related requests in Vercel logs
-vercel logs --json | jq 'select(.message | contains("auth") or contains("session") or contains("cookie"))'
+# Filter for auth-related requests in Cloudflare / application logs
+# Use wrangler logs or your observability stack: grep 'auth\|session\|cookie'
 ```
 
 ---
@@ -763,7 +762,7 @@ If auth is completely broken in production:
 If issue cannot be resolved:
 
 1. **Document everything** in MemPalace
-2. **Create Linear issue** with:
+2. **Create a GitHub issue or ADR** with:
    - Error screenshots
    - Network logs
    - HAR files

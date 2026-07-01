@@ -88,7 +88,7 @@ Skal du se:
 
 **Ikke bruk produktlisten under som sannhet** — den er eldre. Dagens planer og Stripe-env er dokumentert i:
 
-- `docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md` (Linear **KLA-236**)
+- `docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md`
 - `src/lib/pricing/tiers.ts` (NOK / features)
 - `src/lib/pricing.config.ts` (NOK + EUR + USD + måned/år + `price_`-ID der satt)
 - Checkout: `NEXT_PUBLIC_STRIPE_PRICE_*` i `src/app/api/stripe/checkout/route.ts`

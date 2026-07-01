@@ -25,29 +25,20 @@ cp /Users/taj/klarpakke/.perplexity/mac-mcp-config.json \
    ~/Library/Application\ Support/Perplexity/mcp.json
 ```
 
-> **Merk:** KIMI-wrapperen er nå dramatisk forenklet (`run-kimi-mcp-simple.mjs`, ~100 linjer). Filer, git, shell og DB går via dedikerte MCPs, ikke via KIMI.
+> **Merk:** Custom KIMI MCP-server er fjernet fra config (krasjet OpenCode/Kimi pga. ugyldige MCP-verktøyskjemaer). Perplexity bruker nå kun lokale verktøy-MCP-er: filesystem, GitHub, Supabase, MemPalace, Sanity.
 
-### Eller legg til manuelt:
+### Aktive servere
 
-#### 1. KIMI (Essensiell)
-```json
-{
-  "description": "KIMI CLI - Hovedorkestrator",
-  "command": "node",
-  "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
-}
-```
-
-#### 2. Filsystem
+#### 1. Filsystem
 ```json
 {
   "description": "Filsystem - Direkte filoperasjoner",
-  "command": "node", 
+  "command": "node",
   "args": ["/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"]
 }
 ```
 
-#### 3. GitHub
+#### 2. GitHub
 ```json
 {
   "description": "GitHub - Repo og issues",
@@ -56,7 +47,7 @@ cp /Users/taj/klarpakke/.perplexity/mac-mcp-config.json \
 }
 ```
 
-#### 4. Supabase
+#### 3. Supabase
 ```json
 {
   "description": "Supabase - DB og Edge Functions",
@@ -65,12 +56,25 @@ cp /Users/taj/klarpakke/.perplexity/mac-mcp-config.json \
 }
 ```
 
-#### 5. Vercel
+#### 4. MemPalace
 ```json
 {
-  "description": "Vercel - Deployments",
+  "description": "MemPalace - Prosjektkunnskap",
   "command": "node",
-  "args": ["/Users/taj/klarpakke/scripts/run-vercel-mcp.mjs"]
+  "args": ["/Users/taj/.kimi/mempalace-server.mjs"],
+  "env": {
+    "MEMPALACE_ROOT": "/Users/taj/klarpakke",
+    "MEMPALACE_CONFIG": "/Users/taj/klarpakke/.mempalace/config.json"
+  }
+}
+```
+
+#### 5. Sanity
+```json
+{
+  "description": "Sanity - CMS read/write",
+  "command": "node",
+  "args": ["/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"]
 }
 ```
 
@@ -79,35 +83,34 @@ cp /Users/taj/klarpakke/.perplexity/mac-mcp-config.json \
 1. **Ny Space** → Navn: `Klarpakke Arkitektur`
 2. **Pin prompt**: Lim inn fra `.perplexity/klarpakke-space-prompt.md`
 3. **Aktiver Sources**:
-   - ✅ KIMI (alltid på)
    - ✅ Filsystem (ved fil-operasjoner)
    - ✅ GitHub (ved repo-sjekk)
    - ✅ Supabase (ved DB-operasjoner)
-   - ✅ Vercel (ved deploy-sjekk)
+   - ✅ MemPalace (ved prosjektkunnskap)
+   - ✅ Sanity (ved CMS-operasjoner)
+   - ⭕ Perplexity-search (valgfritt, ved research)
 
 ## 4. Standard Arbeidsflyt
 
 ### Daglig Start
 ```
-"Bruk kimi_medium: Gi meg en statusrapport for Klarpakke. 
+"Gi meg en statusrapport for Klarpakke.
 Sjekk: 1) Git status, 2) Siste commits, 3) Er det noen åpne PRs?"
 ```
 
 ### Før kodeendring
 ```
-"Bruk kimi_small: Verifiser at npm run type-check og npm run lint 
-passerer i /Users/taj/klarpakke"
+"Verifiser at npm run type-check og npm run lint passerer i /Users/taj/klarpakke"
 ```
 
 ### Etter kodeendring
 ```
-"Bruk kimi_test: Kjør test:unit for å verifisere at endringene ikke 
-brøt noe"
+"Kjør test:unit for å verifisere at endringene ikke brøt noe"
 ```
 
 ### Før deploy
 ```
-"Bruk kimi_shell: cd /Users/taj/klarpakke && npm run verify && npm run health:prod:gate"
+"cd /Users/taj/klarpakke && npm run verify && npm run health:prod:gate"
 ```
 
 ## 5. Tasks (Pro-funksjon)
@@ -145,10 +148,10 @@ Klarpakke Pre-Deploy
 ### Hurtigkommandoer
 | Hva | Kommando |
 |-----|----------|
-| Les fil | "Bruk kimi_read med path=src/lib/api.ts" |
-| Søk kode | "Bruk kimi_grep med pattern=useAuth" |
-| Git status | "Bruk kimi_git med command=status" |
-| Sjekk build | "Bruk kimi_shell: npm run build" |
+| Les fil | "Les filen src/lib/api.ts" |
+| Søk kode | "Søk etter useAuth i koden" |
+| Git status | "Kjør git status i /Users/taj/klarpakke" |
+| Sjekk build | "Kjør npm run build i /Users/taj/klarpakke" |
 
 ### Kontekst-håndtering
 - **Space = Langtidshukommelse**: Historikk beholdes
@@ -157,7 +160,7 @@ Klarpakke Pre-Deploy
 
 ### Sources-håndtering
 - Skru på kun det du trenger (raskere responstid)
-- KIMI bør nesten alltid være på
+- MemPalace bør nesten alltid være på
 - Filsystem/GitHub kun ved relevante operasjoner
 
 ## 7. Feilsøking
@@ -167,21 +170,10 @@ Klarpakke Pre-Deploy
 # Test individuell MCP
 cd /Users/taj/klarpakke
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | \
-  node scripts/run-kimi-mcp-optimized.mjs
+  node scripts/run-filesystem-mcp.mjs
 ```
 
-### PerplexityXPC issues
-```bash
-# Restart helper
-killall PerplexityXPC 2>/dev/null
-# Deretter restart Perplexity Mac-app
-```
-
-### Node ikke funnet
-```bash
-# Sørg for at node er i PATH
-export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
-```
+> **Kjent problem:** Custom KIMI MCP-server er fjernet fra config. Hvis du får krasj ved oppstart, sørg for at `~/Library/Application Support/Perplexity/mcp.json` er kopiert fra `.perplexity/mac-mcp-config.json` og ikke inneholder en `kimi`-server.
 
 ## 8. Vedlikehold
 

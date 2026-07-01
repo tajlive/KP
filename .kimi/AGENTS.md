@@ -264,21 +264,19 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
 - **Incremental KG**: Append-only writes med auto-compact ved 50KB
 - **Ekte semantic search**: KG-basert synonym-ekspansjon
 
-### Perplexity Desktop ↔ KIMI dataflyt
+### Perplexity Desktop ↔ Klarpakke dataflyt
 ```
 Perplexity Desktop (MCP-klient)
-  → KIMI MCP-server (run-kimi-mcp-simple.mjs)
-    → KIMI Code CLI (--quiet, stdin-piping)
-      → Filoperasjoner, kode, analyse
-
-KIMI Code CLI (MCP-klient)
-  → Perplexity MCP-server (run-perplexity-mcp.mjs)
-    → Perplexity API (PERPLEXITY_API_KEY)
-      → Research, web-søk, reasoning
+  → Lokale MCP-servere:
+      filesystem  → filoperasjoner
+      github      → repo, issues, PRs
+      supabase    → database, Edge Functions, auth
+      mempalace   → prosjektkunnskap, diary, knowledge graph
+      sanity      → CMS read/write
+      perplexity  → research, web-søk (valgfritt)
 ```
 - Perplexity Desktop config: `.perplexity/mac-mcp-config.json`
-- KIMI MCP config: `~/.kimi/mcp.json` (minimal = aktiv)
-- Wrapper: `scripts/run-kimi-mcp-simple.mjs` (2 verktøy: `kimi_prompt`, `kimi_code`)
+- **Fjernet:** Custom KIMI MCP-server (`scripts/run-kimi-mcp-simple.mjs`) pga. krasj med OpenCode/Kimi pga. ugyldige MCP-verktøyskjemaer (se github.com/anomalyco/opencode/issues/23887).
 
 ### Rask diagnose
 ```bash

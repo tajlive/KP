@@ -12,7 +12,7 @@
 | Premium per side                                        | `ux-saas-lead.md`                                     |
 | Visuell UI (tokens)                                     | `ui-ux-designer.md`                                   |
 | Teknisk gjeld / Next / TS                               | `klarpakke-modernization-lead.md`                     |
-| CI, MCP, Linear, verify                                 | `klarpakke-automation-orchestrator.md`                |
+| CI, MCP, verify                                 | `klarpakke-automation-orchestrator.md`                |
 | **Live trading + handler + bevis + ansvar**             | **`klarpakke-live-trading-trades-agent.md`**          |
 | **Auto-trade strategier (forskning/tuning/forum+data)** | **`klarpakke-auto-trade-strategy-research-agent.md`** |
 | **Auth / OAuth / Sessions**                             | **`.kimi/auth-agent.yaml`** (aktiver: `kimi --agent-file .kimi/auth-agent.yaml`) |

@@ -15,9 +15,9 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 | Innstilling                            | Anbefalt verdi                                                              |
 | -------------------------------------- | --------------------------------------------------------------------------- |
 | **Repository name**                    | `KP` (eller beholde nåværende)                                              |
-| **Description**                        | `Norges første krypto-trading skole. Next.js, Supabase, Vercel.`            |
+| **Description**                        | `Norges første krypto-trading skole. Next.js, Supabase, Cloudflare Workers.` |
 | **Website**                            | `https://www.klarpakke.no`                                                  |
-| **Topics**                             | `nextjs`, `supabase`, `vercel`, `crypto`, `trading`, `norway`, `typescript` |
+| **Topics**                             | `nextjs`, `supabase`, `cloudflare-workers`, `crypto`, `trading`, `norway`, `typescript` |
 | **Default branch**                     | `main`                                                                      |
 | **Allow merge commits**                | Valgfritt (squash anbefales for ren historikk)                              |
 | **Allow squash merging**               | ✅ Anbefalt                                                                 |
@@ -51,9 +51,6 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Build + Preview/Production                                                                                                  |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Build + Preview/Production                                                                                                  |
-| `VERCEL_TOKEN`                  | Deploy til Vercel (CI + manuell)                                                                                            |
-| `VERCEL_ORG_ID`                 | **Påkrevd for Deploy** – unngår Vercel 400 "Project names cannot contain ---". Finn i Vercel Dashboard → Settings → General |
-| `VERCEL_PROJECT_ID`             | **Påkrevd for Deploy** – brukes sammen med VERCEL_ORG_ID. Finn i Vercel Dashboard → Project Settings                        |
 | `SENTRY_AUTH_TOKEN`             | Build (source maps til Sentry)                                                                                              |
 | `SUPABASE_PROJECT_REF`          | DB Push on merge – Supabase-projekt-ID (f.eks. `vuxbjlykgmzskxbclquf`). Alternativ: `SUPABASE_PROJECT_ID`                   |
 | `SUPABASE_ACCESS_TOKEN`         | DB Push on merge + **DB lint (PR)** – Supabase Personal Access Token fra Dashboard                                          |
@@ -80,7 +77,7 @@ Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** l
 
 | Variable      | Bruk                                                               |
 | ------------- | ------------------------------------------------------------------ |
-| `PREVIEW_URL` | Valgfritt: base URL for E2E/Lighthouse (f.eks. Vercel preview-URL) |
+| `PREVIEW_URL` | Valgfritt: base URL for E2E/Lighthouse (f.eks. Cloudflare preview-URL) |
 
 ---
 
@@ -111,7 +108,7 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 | Workflow       | Fil              | Trigger                                   | Formål                                                                                                                                |
 | -------------- | ---------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **PR Check**   | `pr-check.yml`   | PR mot `main`                             | Lint, type-check, unit tests, build. Auto-fix lint + PR-kommentar ved feil. **Required status check.**                                |
-| **Deploy**     | `deploy.yml`     | Push til `main` (auto) + manuell dispatch | Lint, build, Vercel deploy, verify, Cloudflare purge. Erstatter `manual-deploy.yml` + deploy-jobs fra `test.yml`.                     |
+| **Deploy**     | `deploy.yml`     | Push til `main` (auto) + manuell dispatch | Lint, build, Cloudflare Workers deploy, verify.                                                                                         |
 | **Auto-merge** | `auto-merge.yml` | Dependabot PR                             | Auto-approve + squash-merge patch/minor Dependabot PRs etter CI passerer.                                                             |
 | **Auto-label** | `auto-label.yml` | PR opened/sync                            | Labels PR basert på endrede filer (frontend, backend, trading, auth, ci, database, i18n, docs, tests). Config: `.github/labeler.yml`. |
 
@@ -122,7 +119,7 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 | **E2E Critical**     | `e2e-critical.yml`     | Push/PR til `main`, daglig 06:00, manuell             | Playwright kritiske flows (Chromium + Firefox). Slack-varsling ved feil.                                                                                        |
 | **Security Audit**   | `security-audit.yml`   | Mandager 09:00, manuell                               | npm audit, secret-scan, valgfritt Snyk                                                                                                                          |
 | **Dependency Check** | `dependency-check.yml` | 1. i måneden, manuell                                 | depcheck, knip                                                                                                                                                  |
-| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                              | Sjekker Supabase, Stripe, Vercel, Resend, Cloudflare                                                                                                            |
+| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                              | Sjekker Supabase, Stripe, Resend, Cloudflare                                                                                                            |
 | **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer                      | Validerer MCP-konfigurasjon                                                                                                                                     |
 | **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00           | Dumper DB-skjema til docs                                                                                                                                       |
 | **DB Push**          | `db-push.yml`          | Manuell                                               | Kjører `supabase db push`                                                                                                                                       |
@@ -189,7 +186,7 @@ Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for
 
 | Workflow             | Vanlig feil                                                          | Løsning                                                                                                      |
 | -------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Deploy**           | `Project names cannot contain ---` (400)                             | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` (se §3).                                                     |
+| **Deploy**           | `Project names cannot contain ---` (400)                             | N/A — gjelder ikke lenger Cloudflare Workers.                                                                  |
 | **Deploy**           | Build feiler                                                         | Sjekk at `NEXT_PUBLIC_SUPABASE_*` er satt.                                                                   |
 | **Auto-create PR**   | `GitHub Actions is not permitted to create or approve pull requests` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions**. Lagre. |
 | **DB Push on merge** | `Mangler SUPABASE_PROJECT_REF`                                       | Legg til `SUPABASE_PROJECT_REF` eller `SUPABASE_PROJECT_ID` (begge støttes).                                 |
@@ -201,7 +198,7 @@ Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for
 - [ ] Default branch er `main`
 - [ ] Branch protection på `main` med status checks
 - [ ] **Workflow permissions:** Settings → Actions → General → **Read and write permissions** (påkrevd for Auto-create PR)
-- [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `SENTRY_AUTH_TOKEN`, `SUPABASE_PROJECT_REF`
+- [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `SENTRY_AUTH_TOKEN`, `SUPABASE_PROJECT_REF`
 - [ ] CODEOWNERS aktiv hvis du vil bruke review-krav
 - [ ] Squash merge eller merge strategy valgt
 - [ ] Automatisk sletting av head branches (valgfritt)

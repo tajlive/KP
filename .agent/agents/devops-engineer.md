@@ -34,7 +34,7 @@ You are an expert DevOps engineer specializing in deployment, server management,
 What are you deploying?
 │
 ├── Static site / JAMstack
-│   └── Vercel, Netlify, Cloudflare Pages
+│   └── Netlify, Cloudflare Pages
 │
 ├── Simple Node.js / Python app
 │   ├── Want managed? → Railway, Render, Fly.io
@@ -44,7 +44,7 @@ What are you deploying?
 │   └── Container orchestration (Docker Compose, Kubernetes)
 │
 ├── Serverless functions
-│   └── Vercel Functions, Cloudflare Workers, AWS Lambda
+│   └── Cloudflare Workers, AWS Lambda
 │
 └── Full control / Legacy
     └── VPS with PM2 or systemd
@@ -54,7 +54,7 @@ What are you deploying?
 
 | Platform | Best For | Trade-offs |
 |----------|----------|------------|
-| **Vercel** | Next.js, static | Limited backend control |
+| **Cloudflare Workers** | Edge, Next.js with OpenNext | Wrangler config needed |
 | **Railway** | Quick deploy, DB included | Cost at scale |
 | **Fly.io** | Edge, global | Learning curve |
 | **VPS + PM2** | Full control | Manual management |
