@@ -1,6 +1,12 @@
-# GitHub Actions Workflows
+# GitHub Actions Workflows — CURRENTLY DISABLED
 
-This directory contains the CI/CD workflows for Klarpakke.
+> ⚠️ **Status 2026-07-01:** GitHub Actions is disabled for the `tajlive-KP` organization due to the `$5` Actions budget with "Stop usage" enabled. All workflows fail with `startup_failure` because zero runners are available.
+>
+> **Deployment still works via Cloudflare Workers Builds.** Every push to `main` triggers a build that runs `npm run cf:build` and then `npm run cf:deploy:ci`.
+>
+> The workflow files below are preserved in `archived/` for reference if the budget is increased later.
+
+This directory previously contained CI/CD workflows for Klarpakke. Active deployment and CI are now handled by Cloudflare Workers Builds.
 
 ## Primary deploy: Cloudflare Workers Builds
 
@@ -19,31 +25,13 @@ export GH_PAT=<github-token>
 node scripts/setup-workers-builds.mjs --env-file .env.local
 ```
 
-## Fallback deploy: GitHub Actions
+## Archived workflows
 
-`.github/workflows/deploy-cloudflare-workers.yml` is a **manual fallback** triggered via `workflow_dispatch`. Use it when Workers Builds is disabled, stuck, or needs to be bypassed for a hotfix.
+All GitHub Actions workflows are currently archived/disabled because Actions cannot start:
 
-Required secrets:
+- `archived/deploy-cloudflare-workers-actions-disabled.yml` — was a manual fallback deploy (workflow_dispatch). Required `CLOUDFLARE_API_TOKEN` plus build vars.
+- `archived/purge-cache-actions-disabled.yml` — was a manual Cloudflare cache purge.
+- `archived/tool-updater-actions-disabled.yml` — was a weekly KIMI/MemPalace tool update.
+- `archived/pr-check-cloudflare-2026-06-25.yml` — was PR lint/type-check/test.
 
-- `CLOUDFLARE_API_TOKEN` — Wrangler deploy token
-- `NEXT_PUBLIC_SUPABASE_URL` — public Supabase URL (stored as secret for historical reasons)
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — public Supabase anon key (stored as secret for historical reasons)
-
-Required vars:
-
-- `NEXT_PUBLIC_APP_URL` — e.g. `https://www.klarpakke.no`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- `NEXT_PUBLIC_SANITY_PROJECT_ID`
-- `NEXT_PUBLIC_SANITY_DATASET`
-- `NEXT_PUBLIC_SANITY_API_VERSION`
-- `NEXT_PUBLIC_GLITCHTIP_DSN` — optional
-
-`NEXT_TELEMETRY_DISABLED` is hardcoded to `"1"` in the workflow.
-
-## PR checks
-
-`.github/workflows/pr-check.yml` runs lint, type-check, and unit tests on pull requests to `main`. It is currently archived; see `archived/README.md` for history.
-
-## Other workflows
-
-- `purge-cache.yml` — purges Cloudflare cache manually.
+Re-enable by moving a file back to `workflows/` **and** increasing the GitHub Actions budget in the `tajlive-KP` organization settings.

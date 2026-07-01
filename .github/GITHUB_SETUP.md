@@ -1,4 +1,8 @@
-# GitHub-oppsett for KP (Klarpakke)
+# GitHub-oppsett for KP (Klarpakke) — OUTDATED / ACTIONS DISABLED
+
+> ⚠️ **Status 2026-07-01:** GitHub Actions is disabled for the `tajlive-KP` organization due to the `$5` Actions budget with "Stop usage" enabled. All workflows fail with `startup_failure`. Deployment is now handled by **Cloudflare Workers Builds** (Git integration), not GitHub Actions.
+>
+> This document is preserved for historical reference, but the workflow/secret instructions below do **not** reflect the current Cloudflare-only setup.
 
 **Repo:** [https://github.com/tajlive/KP](https://github.com/tajlive/KP)
 
