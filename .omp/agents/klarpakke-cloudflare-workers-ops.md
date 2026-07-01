@@ -4,6 +4,7 @@ description: Klarpakke Cloudflare Workers/OpenNext/Wrangler deploy and productio
 tools: read, grep, glob, bash, lsp, ast_grep, task
 spawns: reviewer,task
 model: inherit
+thinkingLevel: high
 ---
 
 # Klarpakke Cloudflare Workers Ops Agent

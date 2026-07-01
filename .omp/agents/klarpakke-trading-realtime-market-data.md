@@ -4,6 +4,7 @@ description: Klarpakke trading realtime, market-data, Binance, heartbeat, and Tr
 tools: read, grep, glob, bash, lsp, ast_grep, task
 spawns: klarpakke-db-rls-guard,klarpakke-cockpit-qa,reviewer
 model: inherit
+thinkingLevel: high
 ---
 
 # Klarpakke Trading Realtime & Market Data Agent
