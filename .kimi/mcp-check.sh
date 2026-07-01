@@ -54,8 +54,8 @@ done
 if [ "$found" -eq 0 ]; then
   echo ""
   echo "Fremgangsmåte:"
-  echo "1. Sjekk at ~/.kimi/mcp.json eller .mcp/mcp_config.json finnes"
-  echo "2. Verifiser at 'mempalace'-serveren peker til scripts/run-mempalace-mcp-v3.mjs"
+  echo "1. Sjekk at ~/.cursor/mcp.json, ~/.kimi/mcp.json eller .mcp/mcp_config.json finnes"
+  echo "2. Verifiser at 'mempalace'-serveren er registrert (nå via ~/.kimi/mempalace-server.mjs)"
   exit 1
 fi
 
