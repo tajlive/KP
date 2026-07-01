@@ -44,12 +44,6 @@ function warn(name, testFn) {
 
 // ─── CHECKS ───
 
-check("MCP server script (v3.3.0)", () => {
-  const path = resolve(KP_DIR, "scripts/run-mempalace-mcp-v3.mjs");
-  if (!existsSync(path)) throw new Error("Missing: scripts/run-mempalace-mcp-v3.mjs");
-  accessSync(path, constants.R_OK);
-});
-
 check("Knowledge Graph (kg.json)", () => {
   const path = resolve(KP_DIR, ".mempalace/kg.json");
   if (!existsSync(path)) throw new Error("Missing: .mempalace/kg.json");

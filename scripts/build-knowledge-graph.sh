@@ -39,14 +39,6 @@ add_triple "tester" "triggers" "post-implementation"
 add_triple "knowledge" "syncs_to" "mempalace"
 add_triple "security" "audits" "auth-system"
 
-# Linear Issues
-echo ""
-echo "📋 Linear Issues..."
-add_triple "KLA-91" "is_epic" "marketplace"
-add_triple "KLA-231" "is_epic" "linear-integration"
-add_triple "KLA-229" "tracks" "type-debt"
-add_triple "KLA-236" "defines" "pricing-tiers"
-
 # Teknisk gjeld
 echo ""
 echo "🔧 Technical Debt..."

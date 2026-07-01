@@ -167,13 +167,6 @@ const PROD_ENV_VARS: EnvVar[] = [
     example: "random-secret-string-32-chars",
     validate: (v) => v.length >= 32,
   },
-  {
-    name: "LINEAR_API_KEY",
-    required: false,
-    description: "Linear API key for auto-issue creation",
-    example: "lin_api_xxx",
-    validate: (v) => v.startsWith("lin_api_"),
-  },
 ];
 
 function log(message: string, level: "info" | "success" | "warning" | "error" = "info") {

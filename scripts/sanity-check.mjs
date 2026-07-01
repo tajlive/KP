@@ -170,7 +170,6 @@ function checkSourceCode() {
   const allowedHardcodeFiles = [
     "sanity.cli.ts",
     "env.ts",
-    "run-sanity-mcp.mjs",
     "sanity-check.mjs",
     "migrate-to-sanity.ts",
     "sanity.config.ts",

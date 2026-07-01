@@ -50,7 +50,7 @@ echo "- MemPalace: Node.js MCP v3.4.0 (zero-dep, TF-IDF + bigram + cross-lingual
 echo ""
 
 echo "## Usage"
-echo "- MCP server: auto-started by KIMI via ~/.kimi/mcp.json -> scripts/run-mempalace-mcp-v3.mjs"
+echo "- MCP server: auto-started by Cursor/Claude via ~/.cursor/mcp.json -> ~/.kimi/mempalace-server.mjs"
 echo "- Manual status: npm run mempalace:status"
 echo "- Search knowledge: node scripts/mempalace-search.mjs 'auth pattern'"
 echo "- Sync knowledge: npm run knowledge:sync"

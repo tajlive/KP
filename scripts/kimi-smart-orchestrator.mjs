@@ -74,7 +74,7 @@ const AGENTS = {
   deploy: {
     skillsDir: '.kimi/skills/klarpakke-architect',
     cmd: 'kimi --skills-dir .kimi/skills/klarpakke-architect',
-    patterns: ['deploy', 'vercel', 'github', 'action', 'workflow', 'ci', 'cd', 'production', 'build', 'pipeline'],
+    patterns: ['deploy', 'cloudflare', 'github', 'action', 'workflow', 'ci', 'cd', 'production', 'build', 'pipeline'],
     mcp: 'medium',
     description: '🚀 Deploy & CI/CD',
     color: '\x1b[31m'

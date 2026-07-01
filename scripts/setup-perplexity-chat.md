@@ -11,21 +11,24 @@ Chat-roboten krever `PERPLEXITY_API_KEY` for å fungere.
 3. Klikk "Create API Key"
 4. Kopier API-nøkkelen (starter med `pplx-...`)
 
-### Steg 2: Legg til i Vercel
+### Steg 2: Legg til i Cloudflare
 ```bash
-# Via Vercel CLI
-vercel env add PERPLEXITY_API_KEY
+# Via Wrangler CLI
+npx wrangler secret put PERPLEXITY_API_KEY
 # Lim inn API-nøkkelen når du blir spurt
 
+# For lokal utvikling, legg til i .dev.vars:
+echo "PERPLEXITY_API_KEY=din-api-nøkkel-her" >> .dev.vars
+
 # Deploy på nytt
-vercel --prod
+npm run cf:deploy
 ```
 
-Eller via Vercel Dashboard:
-1. Gå til https://vercel.com/dashboard
-2. Velg "klarpakke" prosjektet
-3. Settings → Environment Variables
-4. Add New:
+Eller via Cloudflare Dashboard:
+1. Gå til https://dash.cloudflare.com
+2. Velg Workers & Pages → klarpakke-prosjektet
+3. Gå til Settings → Variables and Secrets
+4. Add variable:
    - Name: `PERPLEXITY_API_KEY`
    - Value: `pplx-din-api-nøkkel-her`
 5. Save → Redeploy

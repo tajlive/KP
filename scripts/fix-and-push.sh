@@ -20,4 +20,4 @@ ReturnType<...[\"from\"]> kollapser til never for ukjente tabeller.
 Løsning: flat MarketDataBuilder + UnTypedSupabaseClient interface
 uten Database-generics, ingen any, ingen migrasjoner."
 git push origin main
-echo "=== DONE — Vercel bygger nå ==="
+echo "=== DONE — push fullført ==="

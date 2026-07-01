@@ -22,7 +22,6 @@
  * Integrasjon:
  *   - Kjøres fra hourly-watchdog ved stale signaler
  *   - Kan trigges fra GitHub Actions
- *   - Integrert med Linear for incident-tracking
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -117,8 +116,6 @@ const CONFIG = {
   redisUrl: process.env.UPSTASH_REDIS_REST_URL,
   redisToken: process.env.UPSTASH_REDIS_REST_TOKEN,
   slackWebhook: process.env.SLACK_WEBHOOK_URL,
-  linearApiKey: process.env.LINEAR_API_KEY,
-  linearTeamId: process.env.LINEAR_TEAM_ID,
   ...DEFAULTS,
 };
 

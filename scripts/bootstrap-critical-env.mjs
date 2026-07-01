@@ -34,22 +34,18 @@ function main() {
 
   const merged = { ...envLocal };
 
-  if (!merged.LINEAR_API_KEY) {
-    merged.LINEAR_API_KEY = process.env.LINEAR_API_KEY || "";
-  }
-
   if (!merged.GITHUB_TOKEN) {
     merged.GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT || "";
   }
 
   // Remove empty keys to avoid writing blank assignments.
-  for (const key of ["LINEAR_API_KEY", "GITHUB_TOKEN"]) {
+  for (const key of ["GITHUB_TOKEN"]) {
     if (!merged[key]) delete merged[key];
   }
 
   writeFileSync(envLocalPath, serializeEnv(merged));
 
-  const status = ["LINEAR_API_KEY", "GITHUB_TOKEN"].map(
+  const status = ["GITHUB_TOKEN"].map(
     (key) => `${key}:${merged[key] ? "set" : "missing"}`
   );
   console.log(`Bootstrapped .env.local -> ${status.join(" ")}`);

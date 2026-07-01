@@ -88,9 +88,6 @@ install_if_missing() {
 # Supabase CLI
 install_if_missing "supabase" "brew install supabase/tap/supabase 2>/dev/null || curl -sSL https://get.supabase.com/install | sh"
 
-# Vercel CLI
-install_if_missing "vercel" "npm i -g vercel"
-
 # Playwright
 install_if_missing "playwright" "npm i -g @playwright/test && npx playwright install"
 
@@ -244,6 +241,5 @@ echo ""
 echo "Nyttige kommandoer:"
 echo "  make help              - Vis alle kommandoer"
 echo "  make qa                - Kjør full QA"
-echo "  make deploy            - Deploy til Vercel"
 echo "  make status            - Sjekk system status"
 echo ""

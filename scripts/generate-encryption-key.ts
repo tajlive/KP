@@ -9,8 +9,9 @@ async function main() {
     console.log('1. Kopier nøkkelen over')
     console.log('2. Legg til i .env.local (for lokal testing):')
     console.log(`   ENCRYPTION_KEY=${key}`)
-    console.log('3. Legg til i Vercel:')
-    console.log('   vercel env add ENCRYPTION_KEY production')
+    console.log('3. Legg til i Cloudflare/Wrangler:')
+    console.log('   npx wrangler secret put ENCRYPTION_KEY')
+    console.log('   Eller legg til i .dev.vars for lokal Cloudflare-utvikling.')
     console.log('4. ALDRI commit denne nøkkelen til Git!\n')
   } catch (error) {
     console.error('❌ Feil ved generering:', error)

@@ -151,7 +151,7 @@ const COMMAND_MAP: Record<string, Record<string, CommandMapping>> = {
     preview: {
       command: "npm",
       args: ["run", "deploy:preview"],
-      description: "Deploy til Vercel preview",
+      description: "Deploy til Cloudflare preview",
       timeout: 300000,
     },
     prod: {

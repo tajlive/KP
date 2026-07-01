@@ -55,15 +55,6 @@ cmd_status() {
         echo -e "${RED}✗ npm:${NC} Ikke installert"
     fi
     
-    # Sjekk Vercel CLI
-    if command -v vercel &> /dev/null; then
-        echo -e "${GREEN}✓ Vercel CLI:${NC} $(vercel --version)"
-    else
-        echo -e "${RED}✗ Vercel CLI:${NC} Ikke installert"
-    fi
-    
-    echo ""
-    
     # Sjekk miljøvariabler
     if [ -f "$PROJECT_DIR/.env.local" ]; then
         echo -e "${GREEN}✓ .env.local:${NC} Finnes"
@@ -130,9 +121,9 @@ cmd_deploy() {
     echo ""
     
     # Deploy
-    echo -e "${BLUE}Deployer med Vercel...${NC}"
-    vercel --prod --yes
-    
+    echo -e "${BLUE}Deployer med Cloudflare/Wrangler...${NC}"
+    npm run cf:deploy
+
     echo ""
     echo -e "${GREEN}✓ Deploy fullført!${NC}"
     echo "  URL: https://www.klarpakke.no"

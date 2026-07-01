@@ -68,7 +68,7 @@ async function createProducts() {
   }
   
   console.log('✅ Ferdig!\n');
-  console.log('📋 Oppdater disse i Vercel:');
+  console.log('\n📋 Oppdater disse i miljøet:');
   results.forEach(r => {
     console.log('NEXT_PUBLIC_STRIPE_PRICE_' + r.tier.toUpperCase() + '=' + r.priceId);
   });

@@ -86,10 +86,6 @@ kpsrc() {
   _kp_api GET "/search/code?q=$1&pattern=$pattern" | jq
 }
 
-# --- VERCEL ---
-alias kpvs='_kp_api GET /vercel/status | jq'
-alias kpvd='_kp_api POST /vercel/deploy | jq'
-
 # --- PROSJEKT INFO ---
 alias kpinfo='_kp_api GET /project/info | jq'
 alias kpenv='_kp_api GET /env/check | jq'

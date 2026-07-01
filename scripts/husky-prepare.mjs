@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Kjører `husky` kun når repo har `.git` (lokal utvikling).
- * På Vercel/CI er `.git` ikke med i deploy-artefakt → unngår «.git can't be found» i build-logg.
+ * På CI/build-miljøer er `.git` ikke med i deploy-artefakt → unngår «.git can't be found» i build-logg.
  */
 import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";

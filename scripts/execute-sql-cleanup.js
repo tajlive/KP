@@ -22,7 +22,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!SUPABASE_SERVICE_ROLE_KEY) {
   console.error('❌ ERROR: SUPABASE_SERVICE_ROLE_KEY ikke satt');
   console.error('Sett environment variable: export SUPABASE_SERVICE_ROLE_KEY=your_key');
-  console.error('Eller: vercel env pull (henter fra Vercel)');
+  console.error('Eller hent fra Cloudflare Worker secrets / Wrangler.');
   process.exit(1);
 }
 
