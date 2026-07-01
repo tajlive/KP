@@ -1,8 +1,7 @@
+import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
 import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 5;
-
-type BinancePriceRow = { symbol: string; price: string };
 
 export async function GET(request: NextRequest) {
   const raw = request.nextUrl.searchParams.get("symbols") ?? "";
@@ -23,29 +22,22 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Binance supports: /api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT"]
-  const encoded = encodeURIComponent(JSON.stringify(symbolList));
+  const provider = createBinanceMarketDataProvider();
 
   try {
-    const res = await fetch(
-      `https://api.binance.com/api/v3/ticker/price?symbols=${encoded}`,
-      {
-        next: { revalidate: 5 },
-        signal: AbortSignal.timeout(8000),
-      },
+    const prices = await Promise.all(
+      symbolList.map(async (symbol) => {
+        const price = await provider.getPrice(symbol);
+        return { symbol, price };
+      }),
     );
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: "Binance error", status: res.status },
-        { status: 502 },
-      );
-    }
-    const rows = (await res.json()) as BinancePriceRow[];
-    const prices = rows
-      .map((r) => ({ symbol: r.symbol, price: Number(r.price) }))
-      .filter((r) => Number.isFinite(r.price) && r.price > 0);
+
+    const validPrices = prices.filter(
+      (r) => Number.isFinite(r.price) && r.price > 0,
+    );
+
     return NextResponse.json(
-      { prices },
+      { prices: validPrices },
       {
         headers: {
           // Cache short-lived market data at the CDN level
@@ -53,11 +45,12 @@ export async function GET(request: NextRequest) {
         },
       },
     );
-  } catch {
+  } catch (error) {
+    const symbol = symbolList[0];
+    console.error("[market/binance-prices] Failed to fetch prices:", error);
     return NextResponse.json(
-      { error: "Failed to fetch Binance prices" },
+      { error: "Binance error", symbol, status: 502 },
       { status: 502 },
     );
   }
 }
-
