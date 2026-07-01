@@ -84,6 +84,19 @@ interface HealthCheckResult {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  try {
+    return await getHealthCheck(request);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[TradingHealth] Unhandled exception:', err);
+    return NextResponse.json(
+      { status: 'unhealthy', error: message, stack: err instanceof Error ? err.stack : undefined },
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
+}
+
+async function getHealthCheck(request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now();
   
   const results: HealthCheckResult = {
