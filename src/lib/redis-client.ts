@@ -72,7 +72,7 @@ class CloudflareKvPipeline implements RedisPipeline {
     this.commands.push(async () => {
       const raw = await this.kv.get(key);
       if (raw === null) return 0;
-      await this.kv.put(key, raw, { expirationTtl: seconds });
+      await this.kv.put(key, raw, { expirationTtl: Math.max(seconds, 60) });
       return 1;
     });
     return this;
@@ -103,9 +103,8 @@ class CloudflareKvRedis implements RedisLike {
   }
 
   async set(key: string, value: unknown, opts?: { ex?: number }): Promise<string> {
-    await this.kv.put(key, serialize(value), {
-      expirationTtl: opts?.ex,
-    });
+    const expirationTtl = opts?.ex !== undefined ? Math.max(opts.ex, 60) : undefined;
+    await this.kv.put(key, serialize(value), { expirationTtl });
     return "OK";
   }
 
@@ -130,7 +129,7 @@ class CloudflareKvRedis implements RedisLike {
   async expire(key: string, seconds: number): Promise<number> {
     const raw = await this.kv.get(key);
     if (raw === null) return 0;
-    await this.kv.put(key, raw, { expirationTtl: seconds });
+    await this.kv.put(key, raw, { expirationTtl: Math.max(seconds, 60) });
     return 1;
   }
 

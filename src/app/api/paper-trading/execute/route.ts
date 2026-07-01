@@ -8,6 +8,7 @@ import { executeTrade } from "@/lib/trading/safety";
 import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-execute-success-response";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 import { createServerClient } from "@/lib/supabase/server";
+import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -81,22 +82,19 @@ export async function POST(request: NextRequest) {
       const { pair, amount_nok } = parsed.data;
       symbol = pair.toUpperCase().replace("/", "");
 
-      const [priceRes, rate] = await Promise.all([
-        fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`, {
-          signal: AbortSignal.timeout(5000),
-        }),
-        getUsdtToNokRateAsync(supabase),
-      ]);
-
-      if (!priceRes.ok) {
+      let fetchedPrice: number;
+      try {
+        const provider = createBinanceMarketDataProvider();
+        fetchedPrice = await provider.getPrice(symbol);
+      } catch (priceErr) {
+        console.error(`[paper-trading/execute] Failed to fetch price for ${symbol}:`, priceErr);
         return NextResponse.json(
           { error: "Kunne ikke hente pris for " + symbol },
           { status: 502 },
         );
       }
 
-      const priceData = await priceRes.json();
-      const fetchedPrice = parseFloat(priceData?.price);
+      const rate = await getUsdtToNokRateAsync(supabase);
       if (!Number.isFinite(fetchedPrice) || fetchedPrice <= 0) {
         return NextResponse.json(
           { error: "Ugyldig pris for " + symbol },

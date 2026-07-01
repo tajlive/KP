@@ -11,6 +11,7 @@
  */
 
 import { getRiskStateStore } from '@/lib/trading/risk/risk-state-store';
+import { getKvRedisAdapter } from '@/lib/redis-kv-adapter';
 
 export interface LockResult {
   acquired: boolean;
@@ -73,13 +74,11 @@ export async function acquireLock(
   options: LockOptions = {}
 ): Promise<LockResult> {
   const opts = { ...DEFAULT_OPTIONS, ...options };
-  const store = getRiskStateStore();
-  
-  // Access Redis through the store (using internal Redis client)
-  const redis = store.redis as {
+  // Try KV first (production), then fall back to the risk-store Redis client.
+  const redis = getKvRedisAdapter() ?? (getRiskStateStore().redis as {
     set(key: string, value: string, ttl?: number): Promise<void>;
     get(key: string): Promise<string | null>;
-  };
+  });
   
   if (!redis) {
     throw new Error(
@@ -143,12 +142,10 @@ export async function releaseLock(
   key: string,
   lockId: string
 ): Promise<boolean> {
-  const store = getRiskStateStore();
-  
-  const redis = store.redis as {
+  const redis = getKvRedisAdapter() ?? (getRiskStateStore().redis as {
     get(key: string): Promise<string | null>;
     del(key: string): Promise<void>;
-  };
+  });
   
   if (!redis) {
     console.warn('[DistributedLock] Redis not available for lock release');
@@ -193,12 +190,10 @@ export async function extendLock(
   lockId: string,
   additionalSeconds: number
 ): Promise<boolean> {
-  const store = getRiskStateStore();
-  
-  const redis = store.redis as {
+  const redis = getKvRedisAdapter() ?? (getRiskStateStore().redis as {
     get(key: string): Promise<string | null>;
     set(key: string, value: string, ttl?: number): Promise<void>;
-  };
+  });
   
   if (!redis) {
     return false;
@@ -275,11 +270,9 @@ export async function withLock<T>(
 export async function getLockInfo(
   key: string
 ): Promise<{ lockId: string; acquiredAt: Date; expiresAt: Date } | null> {
-  const store = getRiskStateStore();
-  
-  const redis = store.redis as {
+  const redis = getKvRedisAdapter() ?? (getRiskStateStore().redis as {
     get(key: string): Promise<string | null>;
-  };
+  });
   
   if (!redis) {
     return null;
