@@ -1,18 +1,18 @@
 /**
- * Unified AI Chat API - Perplexity PRO Edition
+ * Unified AI Chat API - KIMI K2.6 Primary Edition
  * 
  * Støtter:
- * 1. Perplexity PRO (primær)
- * 2. KIMI (Moonshot) 
- * 3. NVIDIA NIM
+ * 1. KIMI K2.6 (primær, maks intelligens)
+ * 2. Perplexity PRO (websearch / fallback)
+ * 3. NVIDIA NIM (fallback)
  * 
  * Endepunkter:
  * POST /api/ai/chat - Send melding til AI
  * GET /api/ai/chat?path=providers - List tilgjengelige providere
  * 
  * Miljøvariabler:
- * - PERPLEXITY_API_KEY (påkrevd for Perplexity PRO)
- * - MOONSHOT_API_KEY eller KIMI_API_KEY (for KIMI)
+ * - MOONSHOT_API_KEY eller KIMI_API_KEY (påkrevd for KIMI K2.6)
+ * - PERPLEXITY_API_KEY (for websearch / fallback)
  * - NVIDIA_API_KEY eller NVIDIA_NIM_API_KEY (for NVIDIA)
  */
 
@@ -22,6 +22,7 @@ import {
   streamAIResponse,
   getAvailableProviders,
   SYSTEM_PROMPTS,
+  isKimiOAuthConfigured,
   type AIProvider,
   type AIMessage,
 } from '@/lib/ai/providers';
@@ -102,6 +103,7 @@ interface ChatRequest {
   systemPrompt?: string;
   useCase?: 'crypto' | 'trading' | 'market' | 'general';
   forceProvider?: 'perplexity' | 'kimi' | 'nvidia' | 'auto';
+  websearch?: boolean;
 }
 
 export async function POST(req: Request) {
@@ -109,12 +111,13 @@ export async function POST(req: Request) {
     const body: ChatRequest = await req.json();
     const {
       messages,
-      temperature = 0.7,
-      maxTokens = 2000,
+      temperature = 0.3,
+      maxTokens = 4096,
       stream = false,
       systemPrompt,
       useCase = 'general',
       forceProvider = 'auto',
+      websearch = false,
     } = body;
 
     // Validering
@@ -143,15 +146,16 @@ export async function POST(req: Request) {
 
     // Sjekk hvilke providere som er tilgjengelige
     const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-    const hasKimi = !!(process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY);
+    const hasKimiStatic = !!(process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY);
+    const hasKimiOAuth = isKimiOAuthConfigured();
     const hasNvidia = !!(process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY);
 
     // Velg provider
-    let usePerplexity = hasPerplexity;
+    let usePerplexity = false;
     let useKimi = false;
     let useNvidia = false;
 
-    if (forceProvider === 'perplexity') {
+    if (forceProvider === 'perplexity' || websearch) {
       usePerplexity = hasPerplexity;
       if (!hasPerplexity) {
         return NextResponse.json(
@@ -160,16 +164,14 @@ export async function POST(req: Request) {
         );
       }
     } else if (forceProvider === 'kimi') {
-      usePerplexity = false;
-      useKimi = hasKimi;
-      if (!hasKimi) {
+      useKimi = hasKimiStatic || hasKimiOAuth;
+      if (!useKimi) {
         return NextResponse.json(
-          { error: 'KIMI er ikke konfigurert. Sett MOONSHOT_API_KEY.' },
+          { error: 'KIMI er ikke konfigurert. Sett MOONSHOT_API_KEY, KIMI_API_KEY eller KIMI_OAUTH_CLIENT_ID.' },
           { status: 503 }
         );
       }
     } else if (forceProvider === 'nvidia') {
-      usePerplexity = false;
       useNvidia = hasNvidia;
       if (!hasNvidia) {
         return NextResponse.json(
@@ -178,9 +180,10 @@ export async function POST(req: Request) {
         );
       }
     } else {
-      // Auto-select: Perplexity -> KIMI -> NVIDIA
-      useKimi = !hasPerplexity && hasKimi;
-      useNvidia = !hasPerplexity && !hasKimi && hasNvidia;
+      // Auto-select: KIMI K2.6 -> Perplexity (websearch) -> NVIDIA
+      useKimi = hasKimiStatic || hasKimiOAuth;
+      usePerplexity = !useKimi && hasPerplexity;
+      useNvidia = !useKimi && !usePerplexity && hasNvidia;
     }
 
     // ==================== PERPLEXITY PRO ====================
@@ -223,8 +226,8 @@ export async function POST(req: Request) {
           error: 'Ingen AI provider konfigurert',
           message: 'Sett PERPLEXITY_API_KEY, MOONSHOT_API_KEY eller NVIDIA_API_KEY',
           setup: {
-            perplexity: { url: 'https://perplexity.ai/', recommended: true },
             kimi: 'https://platform.moonshot.cn/',
+            perplexity: { url: 'https://perplexity.ai/', recommended: 'websearch' },
             nvidia: 'https://build.nvidia.com/',
           }
         },
@@ -314,42 +317,54 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get('path');
+  const providers = await getAvailableProviders();
+  const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
 
   // GET /api/ai/chat?path=providers - List tilgjengelige providere
   if (path === 'providers') {
-    const providers = getAvailableProviders();
-    const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-
     return NextResponse.json({
-      primary: 'perplexity',
+      primary: 'kimi',
+      websearchFallback: 'perplexity',
       providers: {
+        kimi: {
+          available: providers.some((p: { provider: AIProvider; available: boolean }) => p.provider === 'kimi' && p.available),
+          priority: 1,
+          models: providers.find((p: { provider: AIProvider; available: boolean; models: string[] }) => p.provider === 'kimi')?.models || [],
+          recommended: true,
+          defaultModel: 'kimi-k2-6',
+        },
         perplexity: {
           available: hasPerplexity,
-          priority: 1,
+          priority: 2,
           models: Object.values(PERPLEXITY_MODELS),
-          recommended: true,
+          recommended: 'websearch',
         },
-        ...providers.reduce((acc, p) => ({ ...acc, [p.provider]: p }), {}),
+        ...providers
+          .filter((p: { provider: AIProvider }) => p.provider !== 'kimi')
+          .reduce<Record<string, { provider: AIProvider; available: boolean; models: string[] }>>(
+            (acc, p) => ({ ...acc, [p.provider]: p }),
+            {}
+          ),
       },
       systemPrompts: Object.keys(SYSTEM_PROMPTS),
     });
   }
 
   // Default: Returner API-info
-  const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-  
   return NextResponse.json({
-    name: 'Klarpakke AI Chat API - Perplexity PRO Edition',
-    version: '1.0.0',
-    primaryProvider: 'perplexity',
-    perplexityStatus: hasPerplexity ? '✅ Konfigurert' : '❌ Ikke konfigurert',
+    name: 'Klarpakke AI Chat API - KIMI K2.6 Primary Edition',
+    version: '2.0.0',
+    primaryProvider: 'kimi',
+    defaultModel: 'kimi-k2-6',
+    perplexityStatus: hasPerplexity ? 'Konfigurert (websearch fallback)' : 'Ikke konfigurert',
     endpoints: {
       POST: '/api/ai/chat - Send melding til AI',
       'GET /api/ai/chat?path=providers': 'List tilgjengelige providere og modeller',
     },
-    supportedProviders: ['perplexity', 'kimi', 'nvidia'],
+    supportedProviders: ['kimi', 'perplexity', 'nvidia'],
+    kimiModels: providers.find((p: { provider: AIProvider; models: string[] }) => p.provider === 'kimi')?.models || [],
     perplexityModels: Object.values(PERPLEXITY_MODELS),
     useCases: ['crypto', 'trading', 'market', 'general'],
-    features: ['streaming', 'non-streaming', 'citations', 'auto-provider-selection'],
+    features: ['streaming', 'non-streaming', 'citations', 'auto-provider-selection', 'websearch-fallback'],
   });
 }

@@ -15,6 +15,14 @@
  */
 
 import { opik, traceLLMCall } from './opik-client';
+import {
+  getValidKimiAccessToken,
+  getKimiCommonHeaders,
+  resolveKimiModel,
+  isKimiOAuthConfigured,
+} from './kimi-oauth';
+
+export { isKimiOAuthConfigured } from './kimi-oauth';
 
 // ==================== TYPES ====================
 
@@ -49,6 +57,7 @@ export interface AIOptions {
   maxTokens?: number;
   stream?: boolean;
   systemPrompt?: string;
+  reasoningEffort?: 'low' | 'medium' | 'high';
 }
 
 // ==================== KIMI (MOONSHOT) CONFIG ====================
@@ -60,6 +69,7 @@ export const KIMI_MODELS = {
   MEDIUM: 'moonshot-v1-32k',
   LARGE: 'moonshot-v1-128k',
   REASONING: 'kimi-k2-5',
+  HIGH: 'kimi-k2-6',
 } as const;
 
 export type KimiModel = typeof KIMI_MODELS[keyof typeof KIMI_MODELS];
@@ -97,6 +107,23 @@ interface KimiStreamChunk {
     };
     finish_reason: string | null;
   }[];
+}
+
+async function getKimiAuthHeader(): Promise<Record<string, string>> {
+  const oauthToken = await getValidKimiAccessToken();
+  if (oauthToken) {
+    return getKimiCommonHeaders(oauthToken);
+  }
+
+  const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY;
+  if (!apiKey) {
+    throw new Error('MOONSHOT_API_KEY, KIMI_API_KEY eller Kimi OAuth må være satt i miljøvariabler');
+  }
+
+  return {
+    Authorization: `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+  };
 }
 
 // ==================== NVIDIA NIM CONFIG ====================
@@ -253,29 +280,26 @@ async function chatWithKimiInternal(
   options: AIOptions = {}
 ): Promise<AIResponse> {
   const startTime = Date.now();
-  const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('MOONSHOT_API_KEY eller KIMI_API_KEY må være satt i miljøvariabler');
-  }
+  const headers = await getKimiAuthHeader();
+  const { model, reasoningEffort } = resolveKimiModel(options.model || KIMI_MODELS.HIGH);
+  const temperature = options.temperature ?? 0.3;
+  const maxTokens = options.maxTokens || 4096;
 
-  const model = options.model || KIMI_MODELS.MEDIUM;
-  const temperature = options.temperature ?? 0.7;
-  const maxTokens = options.maxTokens || 2048;
+  const body: Record<string, unknown> = {
+    model,
+    messages,
+    temperature,
+    max_tokens: maxTokens,
+    stream: false,
+  };
+  if (reasoningEffort) {
+    body.reasoning_effort = reasoningEffort;
+  }
 
   const response = await fetch(KIMI_API_URL, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature,
-      max_tokens: maxTokens,
-      stream: false,
-    }),
+    headers,
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -314,29 +338,26 @@ async function* streamKimiResponse(
   messages: AIMessage[],
   options: AIOptions = {}
 ): AsyncGenerator<AIStreamChunk, void, unknown> {
-  const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('MOONSHOT_API_KEY eller KIMI_API_KEY må være satt');
-  }
+  const headers = await getKimiAuthHeader();
+  const { model, reasoningEffort } = resolveKimiModel(options.model || KIMI_MODELS.HIGH);
+  const temperature = options.temperature ?? 0.3;
+  const maxTokens = options.maxTokens || 4096;
 
-  const model = options.model || KIMI_MODELS.MEDIUM;
-  const temperature = options.temperature ?? 0.7;
-  const maxTokens = options.maxTokens || 2048;
+  const body: Record<string, unknown> = {
+    model,
+    messages,
+    temperature,
+    max_tokens: maxTokens,
+    stream: true,
+  };
+  if (reasoningEffort) {
+    body.reasoning_effort = reasoningEffort;
+  }
 
   const response = await fetch(KIMI_API_URL, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature,
-      max_tokens: maxTokens,
-      stream: true,
-    }),
+    headers,
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -531,22 +552,23 @@ async function* streamNvidiaResponse(
 // ==================== UNIFIED INTERFACE ====================
 
 /**
- * Velg beste tilgjengelige provider basert på API-nøkler
+ * Velg beste tilgjengelige provider basert på API-nøkler eller OAuth
  */
 export function selectBestProvider(preferred?: AIProvider): AIProvider {
-  const hasKimi = !!process.env.MOONSHOT_API_KEY || !!process.env.KIMI_API_KEY;
-  const hasNvidia = !!process.env.NVIDIA_API_KEY || !!process.env.NVIDIA_NIM_API_KEY;
+  const hasKimiStatic = !!process.env.MOONSHOT_API_KEY?.trim() || !!process.env.KIMI_API_KEY?.trim();
+  const hasKimiOAuth = isKimiOAuthConfigured();
+  const hasNvidia = !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
 
   if (preferred && preferred !== 'auto') {
-    if (preferred === 'kimi' && hasKimi) return 'kimi';
+    if (preferred === 'kimi' && (hasKimiStatic || hasKimiOAuth)) return 'kimi';
     if (preferred === 'nvidia' && hasNvidia) return 'nvidia';
   }
 
-  // Auto-select: prioriter KIMI for norsk, NVIDIA for kompleks reasoning
-  if (hasKimi) return 'kimi';
+  // Auto-select: KIMI K2.6 (max intelligence) -> NVIDIA (fallback)
+  if (hasKimiStatic || hasKimiOAuth) return 'kimi';
   if (hasNvidia) return 'nvidia';
 
-  throw new Error('Ingen AI provider konfigurert. Sett MOONSHOT_API_KEY eller NVIDIA_API_KEY.');
+  throw new Error('Ingen AI provider konfigurert. Sett MOONSHOT_API_KEY, KIMI_API_KEY, KIMI_OAUTH_CLIENT_ID eller NVIDIA_API_KEY.');
 }
 
 /**
@@ -607,14 +629,23 @@ export async function* streamAIResponse(
 /**
  * Sjekk hvilke providere som er tilgjengelige
  */
-export function getAvailableProviders(): { provider: AIProvider; available: boolean; models: string[] }[] {
-  const hasKimi = !!process.env.MOONSHOT_API_KEY || !!process.env.KIMI_API_KEY;
-  const hasNvidia = !!process.env.NVIDIA_API_KEY || !!process.env.NVIDIA_NIM_API_KEY;
+export async function getAvailableProviders(): Promise<{ provider: AIProvider; available: boolean; models: string[] }[]> {
+  const hasKimiStatic = !!process.env.MOONSHOT_API_KEY?.trim() || !!process.env.KIMI_API_KEY?.trim();
+  const hasKimiOAuth = isKimiOAuthConfigured();
+  let hasKimiValidOAuth = false;
+  if (hasKimiOAuth) {
+    try {
+      hasKimiValidOAuth = !!(await getValidKimiAccessToken());
+    } catch {
+      hasKimiValidOAuth = false;
+    }
+  }
+  const hasNvidia = !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
 
   return [
     {
       provider: 'kimi',
-      available: hasKimi,
+      available: hasKimiStatic || hasKimiValidOAuth,
       models: Object.values(KIMI_MODELS),
     },
     {
