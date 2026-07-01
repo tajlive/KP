@@ -12,7 +12,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import { getRiskStateStore } from "@/lib/trading/risk/risk-state-store";
+import { getRiskStateStore, createRiskRedisClientAsync } from "@/lib/trading/risk/risk-state-store";
 import { getAuditStore } from "@/lib/trading/execution/audit-store";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
 import { getKillSwitchStatus, getThresholds } from "@/lib/trading/core/outbox-monitor";
@@ -140,7 +140,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   // 2. Redis Check
   try {
     const checkStart = Date.now();
-    const store = getRiskStateStore();
+    const redisClient = await createRiskRedisClientAsync();
+    const store = getRiskStateStore(redisClient);
     results.checks.redis.ok = await store.isHealthy();
     results.checks.redis.latency = Date.now() - checkStart;
     
