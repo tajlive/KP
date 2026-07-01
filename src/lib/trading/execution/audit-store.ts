@@ -28,15 +28,17 @@ interface AuditStorageConfig {
   s3RetentionDays: number; // 2555 days = 7 years
 }
 
-const DEFAULT_CONFIG: AuditStorageConfig = {
-  s3: {
-    bucket: process.env.AUDIT_S3_BUCKET || 'klarpakke-audit-logs',
-    region: process.env.AUDIT_S3_REGION || 'eu-north-1',
-    prefix: 'execution-evidence'
-  },
-  supabaseRetentionDays: 90,
-  s3RetentionDays: 2555 // 7 years
-};
+function getDefaultConfig(): AuditStorageConfig {
+  return {
+    s3: {
+      bucket: process.env.AUDIT_S3_BUCKET || 'klarpakke-audit-logs',
+      region: process.env.AUDIT_S3_REGION || 'eu-north-1',
+      prefix: 'execution-evidence'
+    },
+    supabaseRetentionDays: 90,
+    s3RetentionDays: 2555 // 7 years
+  };
+}
 
 export interface AuditQueryOptions {
   userId?: string;
@@ -70,7 +72,7 @@ export class AuditStore {
   // private s3: S3Client; // Would initialize in constructor
   
   constructor(config: Partial<AuditStorageConfig> = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.config = { ...getDefaultConfig(), ...config };
     // this.s3 = new S3Client({ region: this.config.s3.region });
   }
   
