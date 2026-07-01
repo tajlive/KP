@@ -19,7 +19,7 @@ import { getKillSwitchStatus, getThresholds } from "@/lib/trading/core/outbox-mo
 import { createRiskKernel } from "@/lib/trading/risk/risk-kernel";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /** Health thresholds – P0 hardening */
