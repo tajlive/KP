@@ -1,6 +1,6 @@
 # 🚨 KIMI EMERGENCY TASK - GET ALL PAGES LIVE NOW!
 
-> **Sist oppdatert:** 2026-06-29 av Lead Architect  
+> **Sist oppdatert:** 2026-07-01 av KIMI Code  
 > **Gjelder for:** Klarpakke på Cloudflare Workers (www.klarpakke.no)
 
 **STATUS:** 🔴 KRITISK - Nettsider er nede eller fungerer ikke  
@@ -38,7 +38,7 @@
 ### 1.1 Sjekk Cloudflare Workers deployment status
 
 ```bash
-npx wrangler deployment list
+npx wrangler deployments list
 npx wrangler tail | head -50
 ```
 
@@ -261,11 +261,11 @@ git push origin main
 
 ```bash
 # Sjekk deployment status
-npx wrangler deployment list
+npx wrangler deployments list
 
 # Poll hvert 10. sekund
 while true; do
-  status=$(npx wrangler deployment list --json 2>/dev/null | head -1)
+  status=$(npx wrangler deployments list --json 2>/dev/null | head -1)
   echo "Status: $status"
   echo "$status" | grep -q "Success" && break
   sleep 10
@@ -376,13 +376,81 @@ Hvis push til `main` ikke hjelper og du må rulle tilbake raskt:
 
 ```bash
 # List deployments og finn forrige fungerende version
-npx wrangler deployment list
+npx wrangler deployments list
 
 # Rollback til forrige deployment (bytt ut <DEPLOYMENT_ID>)
 npx wrangler rollback <DEPLOYMENT_ID>
 ```
 
 ---
+
+## 🚨 HVIS GITHUB ACTIONS ER DØD (startup_failure / 401 API Key)
+
+Scenario: `git push` trigger ikke bygg, manuelle workflows starter aldri, eller du får `401 The API Key appears to be invalid or may have expired`.  
+Symptom: `gh run list` viser `startup_failure` for alle runs, og `gh run view <ID> --json` viser `jobs: []`.
+
+### 1. Diagnostikk
+
+```bash
+# 1. Sjekk at problemet er på GitHub Actions-nivå, ikke workflow-kode
+gh run list --repo tajlive/KP --limit 10
+gh run view <RUN_ID> --repo tajlive/KP --json status,conclusion,jobs
+
+# 2. Sjekk at Actions er enabled og at det ikke finnes selv-hosted runners
+gh api repos/tajlive/KP/actions/permissions
+gh api repos/tajlive/KP/actions/runners
+
+# 3. Sjekk global GitHub-status (Actions skal være operational)
+curl -s https://www.githubstatus.com/api/v2/summary.json | \
+  python3 -c "import json,sys; d=json.load(sys.stdin); [print(c['name'], c['status']) for c in d.get('components',[])]"
+
+# 4. Verifiser lokal Cloudflare-auth (hvis dette fungerer, er CLOUDFLARE_API_TOKEN i GitHub secrets sannsynligvis utløpt)
+npx wrangler whoami
+```
+
+**Hvis alle runs får `startup_failure` og GitHub-status er operational:**  
+Problemet ligger hos GitHub-kontoen (billing, abuse-flagg, suspensjon, runner-kø). Dette kan **ikke** løses ved å endre kode. Gå til:
+- https://github.com/settings/billing – se etter utestående faktura / betalingsverifikasjon
+- https://github.com/settings/actions – se etter suspensjon/varsel
+- Sjekk e-post fra GitHub for abuse/suspensjon-varsel
+- Kontakt GitHub Support med run ID og repo `tajlive/KP`
+
+### 2. Hvis workflowen kommer seg forbi startup men feiler med 401
+
+`401 The API Key appears to be invalid or may have expired` betyr at `CLOUDFLARE_API_TOKEN` i GitHub secrets er utløpt, revokert, eller har feil permissions.
+
+Roter tokenet:
+
+1. **Lag nytt token i Cloudflare Dashboard** → My Profile → API Tokens → Create Token  
+   Minimum permissions for deploy + cache purge:
+   - Account: Cloudflare Workers:Edit
+   - Zone: Zone:Edit, Zone Settings:Edit, Cache Purge:Edit (for `klarpakke.no`)
+   - User: User Details:Read (anbefalt, for `wrangler whoami`)
+2. **Oppdater GitHub secret:**
+   ```bash
+   gh secret set CLOUDFLARE_API_TOKEN --repo tajlive/KP
+   ```
+3. **Verifiser:** Trigger en manuell workflow_dispatch (f.eks. Purge Cloudflare cache) etter at GitHub Actions er gjenopprettet.
+
+### 3. Nøddeploy via Wrangler CLI (når GitHub Actions er nede)
+
+Hvis Cloudflare Workers Builds fortsatt auto-deployer fra push, er dette ikke nødvendig. Hvis ikke:
+
+```bash
+# 1. Sørg for at alt er grønt lokalt
+npm run test:unit
+npm run type-check
+node scripts/validate-i18n.js
+npm run cf:build
+
+# 2. Manuell deploy (fallback)
+npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
+
+# 3. Verifiser
+sleep 60 && npx wrangler deployments list --limit 3 && curl -I https://www.klarpakke.no/no
+```
+
+⚠️ **Husk:** GitHub er source of truth. Når GitHub Actions er oppe igjen, må neste push gå til `main` slik at Cloudflare Workers Builds tar over og gjenoppretter GitHub som deploy-kilde.
 
 ## 📞 KONTAKT VED KRITISKE PROBLEMER
 
