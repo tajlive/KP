@@ -219,20 +219,23 @@ function getCloudflareKvBinding(): KVNamespace | null {
   return null;
 }
 
-/**
- * Upstash Redis via REST.
- * Støtter både nye Upstash-variabler og eldre KV_REST_*-variabler.
- */
-const upstashUrl =
-  process.env.UPSTASH_REDIS_REST_URL?.trim() ||
-  process.env.KV_REST_API_URL?.trim()?.replace(/^"|"$/g, "");
-const upstashToken =
-  process.env.UPSTASH_REDIS_REST_TOKEN?.trim() ||
-  process.env.KV_REST_API_TOKEN?.trim()?.replace(/^"|"$/g, "");
+function getUpstashUrl(): string | undefined {
+  return (
+    process.env.UPSTASH_REDIS_REST_URL?.trim() ||
+    process.env.KV_REST_API_URL?.trim()?.replace(/^"|"$/g, "")
+  );
+}
+
+function getUpstashToken(): string | undefined {
+  return (
+    process.env.UPSTASH_REDIS_REST_TOKEN?.trim() ||
+    process.env.KV_REST_API_TOKEN?.trim()?.replace(/^"|"$/g, "")
+  );
+}
 
 export function isRedisRestConfigured(): boolean {
   if (getCloudflareKvBinding()) return true;
-  return Boolean(upstashUrl && upstashToken);
+  return Boolean(getUpstashUrl() && getUpstashToken());
 }
 
 let singleton: RedisLike | null = null;
@@ -246,6 +249,8 @@ export function getRedisRest(): RedisLike | null {
     return singleton;
   }
 
+  const upstashUrl = getUpstashUrl();
+  const upstashToken = getUpstashToken();
   if (upstashUrl && upstashToken) {
     singleton = new UpstashRedisWrapper(new UpstashRedis({ url: upstashUrl, token: upstashToken }));
     return singleton;
