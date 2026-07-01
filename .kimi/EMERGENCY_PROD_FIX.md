@@ -447,7 +447,7 @@ npm run cf:build
 npx wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)
 
 # 3. Verifiser
-sleep 60 && npx wrangler deployments list --limit 3 && curl -I https://www.klarpakke.no/no
+sleep 60 && npx wrangler deployments list | head -20 && curl -I https://www.klarpakke.no/no
 ```
 
 ⚠️ **Husk:** GitHub er source of truth. Når GitHub Actions er oppe igjen, må neste push gå til `main` slik at Cloudflare Workers Builds tar over og gjenoppretter GitHub som deploy-kilde.
