@@ -17,7 +17,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { getRedisRest, isRedisRestConfigured, type RedisLike } from '@/lib/redis-client';
-import { getKvRedisAdapter } from '@/lib/redis-kv-adapter';
+import { getKvRedisAdapter, getKvRedisAdapterAsync } from '@/lib/redis-kv-adapter';
 import { RiskState, RiskLimits, DEFAULT_RISK_LIMITS } from './risk-kernel';
 
 // Simple Redis client wrapper used by RiskStateStore
@@ -142,6 +142,32 @@ export function createRiskRedisClient(): RedisClient {
   // Upstash endpoint is no longer resolvable. KV is still a real store with
   // TTLs, so it satisfies the fail-closed requirement.
   const kvAdapter = getKvRedisAdapter();
+  if (kvAdapter) {
+    return kvAdapter;
+  }
+
+  if (isRedisRestConfigured()) {
+    const upstash = getRedisRest();
+    if (upstash) {
+      return new UpstashRedisClient(upstash);
+    }
+  }
+
+  return new FailClosedRedisClient();
+}
+
+/**
+ * Async variant for use in edge/runtime handlers where `getCloudflareContext`
+ * may only be available via the async API.
+ */
+export async function createRiskRedisClientAsync(): Promise<RedisClient> {
+  const env = process.env.NODE_ENV;
+
+  if (env === 'test' || env === 'development') {
+    return new MockRedis();
+  }
+
+  const kvAdapter = await getKvRedisAdapterAsync();
   if (kvAdapter) {
     return kvAdapter;
   }
