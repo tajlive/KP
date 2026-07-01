@@ -4,6 +4,7 @@ description: Klarpakke Supabase/Postgres/RLS migration guard. Use for schema dri
 tools: read, grep, glob, bash, lsp, ast_grep, task
 spawns: klarpakke-live-trading-integrity,reviewer
 model: inherit
+thinkingLevel: high
 ---
 
 # Klarpakke Database & RLS Migration Guard

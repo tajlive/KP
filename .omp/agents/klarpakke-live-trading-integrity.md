@@ -4,6 +4,7 @@ description: Klarpakke live/paper trading and trades integrity owner. Use for tr
 tools: read, grep, glob, bash, lsp, ast_grep, task
 spawns: klarpakke-trading-realtime-market-data,klarpakke-db-rls-guard,klarpakke-cockpit-qa,reviewer,task
 model: inherit
+thinkingLevel: high
 ---
 
 # Klarpakke Live Trading & Trades Integrity Agent

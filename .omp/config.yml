@@ -1,6 +1,9 @@
-# Klarpakke OMP-only project configuration.
-# Keep project behavior independent from Cursor/Claude/Gemini/Copilot/.agent discovery.
-# Global modelRoles and MCP auth still come from ~/.omp/agent/config.yml and MCP config.
+# Klarpakke OMP 16.2.12 + KIMI 2.5 project overlay
+# This overlay locks project sessions to KIMI 2.5 and tunes tool/verbosity
+# settings for the Klarpakke codebase. Values here override the global
+# ~/.omp/agent/config.yml only for this repository.
+
+# Keep the project independent of Cursor/Claude/Gemini/Antigravity/.agent discovery.
 disabledProviders:
   - cursor
   - claude
@@ -10,3 +13,26 @@ disabledProviders:
   - github
   - agents
   - agents-md
+
+# Lock every model role to KIMI 2.5. High-thinking for reasoning roles;
+# plain kimi-k2.5 for smol/fast work.
+modelRoles:
+  default: kimi-code/kimi-k2.5:high
+  plan: kimi-code/kimi-k2.5:high
+  slow: kimi-code/kimi-k2.5:high
+  advisor: kimi-code/kimi-k2.5:high
+  vision: kimi-code/kimi-k2.5:high
+  designer: kimi-code/kimi-k2.5:high
+  task: kimi-code/kimi-k2.5:high
+  smol: kimi-code/kimi-k2.5
+  commit: kimi-code/kimi-k2.5:high
+
+# Leverage KIMI 2.5's reasoning by default for architect/integrity work.
+defaultThinkingLevel: high
+
+# Keep engineering output concise; KIMI 2.5 is strong enough to be terse.
+textVerbosity: medium
+
+# Native KIMI tool format gives the most reliable tool-use fidelity.
+tools:
+  format: kimi

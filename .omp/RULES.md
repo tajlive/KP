@@ -6,3 +6,16 @@
 - Do not commit secrets. Do not disable RLS as a shortcut. Do not put service-role credentials in client code.
 - Do not delete or alter `.kimi/`, `.agent/`, `CLAUDE.md`, or `.github/`; OMP disables their discovery instead.
 - For live/paper trading, trades, sessions, Binance, tier, RLS, or trade history work: maintain full context, full evidence, and update `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` after verification.
+- Cross-cutting, full-stack implementation work goes to `klarpakke-coder`; narrow specialist work goes to the relevant `klarpakke-*` agent.
+
+## KIMI 2.5 / OMP 16.2.12 tuning
+
+This project is tuned for KIMI 2.5:
+
+- `modelRoles` locks every role to `kimi-code/kimi-k2.5` (high-thinking for reasoning roles, plain for `smol`).
+- `defaultThinkingLevel: high` so architect/integrity reasoning is on by default.
+- `tools.format: kimi` for native KIMI tool-use fidelity.
+- `textVerbosity: medium` for concise engineering output.
+- Specialist agents have `thinkingLevel: high` except `klarpakke-cockpit-qa` (`medium`).
+- `klarpakke-coder` is the full-stack generalist for work that spans multiple domains; it has full tool access and delegates to the narrow specialists when one domain dominates.
+- Use subagents and swarms frequently for independent bounded work; Main synthesizes and verifies.

@@ -4,6 +4,7 @@ description: Klarpakke Trading Cockpit E2E and UI smoke specialist. Use for /no/
 tools: read, grep, glob, bash, browser, lsp, ast_grep, task
 spawns: klarpakke-trading-realtime-market-data,reviewer
 model: inherit
+thinkingLevel: medium
 ---
 
 # Klarpakke Cockpit QA Agent
