@@ -17,10 +17,16 @@ ALTER TABLE public.auto_trade_settings
   ADD COLUMN IF NOT EXISTS notify_on_sl_tp BOOLEAN,
   ADD COLUMN IF NOT EXISTS notify_on_trade BOOLEAN;
 
--- 2. Copy is_enabled -> auto_trading_enabled for existing rows.
-UPDATE public.auto_trade_settings
-SET auto_trading_enabled = COALESCE(is_enabled, false)
-WHERE auto_trading_enabled IS NULL;
+-- 2. Copy is_enabled -> auto_trading_enabled for existing rows (only if is_enabled still exists).
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'auto_trade_settings' AND column_name = 'is_enabled'
+  ) THEN
+    EXECUTE 'UPDATE public.auto_trade_settings SET auto_trading_enabled = COALESCE(is_enabled, false) WHERE auto_trading_enabled IS NULL';
+  END IF;
+END $$;
 
 -- 3. Set sensible defaults for newly added nullable columns.
 ALTER TABLE public.auto_trade_settings
@@ -31,13 +37,19 @@ ALTER TABLE public.auto_trade_settings
   ALTER COLUMN notify_on_sl_tp SET DEFAULT true,
   ALTER COLUMN notify_on_trade SET DEFAULT true;
 
--- 4. Rename old columns to match generated types/code.
-ALTER TABLE public.auto_trade_settings
-  RENAME COLUMN max_position_size_percent TO max_position_percent;
-ALTER TABLE public.auto_trade_settings
-  RENAME COLUMN max_daily_trades TO daily_trade_limit;
-ALTER TABLE public.auto_trade_settings
-  RENAME COLUMN min_confidence_threshold TO min_confidence;
+-- 4. Rename old columns to match generated types/code (only if old columns still exist).
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'auto_trade_settings' AND column_name = 'max_position_size_percent') THEN
+    EXECUTE 'ALTER TABLE public.auto_trade_settings RENAME COLUMN max_position_size_percent TO max_position_percent';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'auto_trade_settings' AND column_name = 'max_daily_trades') THEN
+    EXECUTE 'ALTER TABLE public.auto_trade_settings RENAME COLUMN max_daily_trades TO daily_trade_limit';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'auto_trade_settings' AND column_name = 'min_confidence_threshold') THEN
+    EXECUTE 'ALTER TABLE public.auto_trade_settings RENAME COLUMN min_confidence_threshold TO min_confidence';
+  END IF;
+END $$;
 
 -- 5. Drop the old is_enabled column now that auto_trading_enabled holds the data.
 ALTER TABLE public.auto_trade_settings
@@ -47,10 +59,14 @@ ALTER TABLE public.auto_trade_settings
 ALTER TABLE public.auto_trade_settings
   DROP CONSTRAINT IF EXISTS auto_trade_settings_min_confidence_threshold_check;
 ALTER TABLE public.auto_trade_settings
+  DROP CONSTRAINT IF EXISTS auto_trade_settings_min_confidence_check;
+ALTER TABLE public.auto_trade_settings
   ADD CONSTRAINT auto_trade_settings_min_confidence_check
   CHECK (min_confidence IS NULL OR (min_confidence >= 0 AND min_confidence <= 100));
 
 -- 7. Add a check constraint for max_concurrent_positions (matches archive migration).
+ALTER TABLE public.auto_trade_settings
+  DROP CONSTRAINT IF EXISTS auto_trade_settings_max_concurrent_positions_check;
 ALTER TABLE public.auto_trade_settings
   DROP CONSTRAINT IF EXISTS auto_trade_settings_max_concurrent_positions_check;
 ALTER TABLE public.auto_trade_settings
