@@ -154,7 +154,7 @@ function analyzeConfig() {
     }
   }
 
-  // Check MCP configs point to v3
+  // Check MCP configs point to active MemPalace server
   const mcpPaths = [
     resolve(process.env.HOME || '/Users/taj', '.kimi-code/mcp.json'),
     resolve(process.env.HOME || '/Users/taj', '.kimi/mcp.json')
@@ -163,8 +163,8 @@ function analyzeConfig() {
     if (!existsSync(mcpPath)) continue;
     const label = mcpPath.replace(resolve(process.env.HOME || '/Users/taj'), '~');
     const mcp = readFileSync(mcpPath, 'utf8');
-    if (!mcp.includes('run-mempalace-mcp-v3.mjs')) {
-      issues.push(`${label} mangler referanse til MemPalace v3`);
+    if (!mcp.includes('mempalace')) {
+      issues.push(`${label} mangler mempalace-server`);
     }
   }
 

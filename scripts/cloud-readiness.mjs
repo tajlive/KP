@@ -86,11 +86,11 @@ function setResolvedVar(name, value, source) {
 
 const profiles = {
   /**
-   * Daglig lokal / automation:check — Linear + MCP. Deploy skjer via CI til
+   * Daglig lokal / automation:check — MCP. Deploy skjer via CI til
    * Cloudflare Workers.
    */
   preflight: {
-    required: ["LINEAR_API_KEY"],
+    required: [],
     optional: [
       "GITHUB_TOKEN",
       "SUPABASE_ACCESS_TOKEN",
@@ -107,7 +107,7 @@ const profiles = {
    * er primær hosting, så CLOUDFLARE_API_TOKEN kreves.
    */
   agent: {
-    required: ["LINEAR_API_KEY", "CLOUDFLARE_API_TOKEN"],
+    required: ["CLOUDFLARE_API_TOKEN"],
     optional: [
       "GITHUB_TOKEN",
       "SUPABASE_ACCESS_TOKEN",

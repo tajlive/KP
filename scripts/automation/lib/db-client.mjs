@@ -11,7 +11,7 @@ import { setDefaultResultOrder } from "dns";
 import { Client } from "pg";
 import { loadEnvLocal } from "../../load-env.mjs";
 
-// Force IPv4 lookups for Supavisor pooler (avoids Vercel/Node IPv6 routing issues).
+// Force IPv4 lookups for Supavisor pooler (avoids IPv6 routing issues).
 setDefaultResultOrder("ipv4first");
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

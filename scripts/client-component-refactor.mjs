@@ -50,7 +50,6 @@ const CLIENT_IMPORTS = [
   'next-auth',
   '@supabase/ssr',
   'zustand',
-  '@vercel/analytics/react',
 ];
 
 const EVENT_HANDLER_REGEX = /on[A-Z][a-zA-Z]+={/;

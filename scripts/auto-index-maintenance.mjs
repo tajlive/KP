@@ -6,7 +6,7 @@
  * - Identifiserer ubrukte indexer
  * - Genererer DROP INDEX statements (ikke kjører automatisk)
  * - Logger historikk for trend-analyse
- * - Sender rapport til Linear/Slack
+ * - Sender rapport til Slack
  */
 
 import { createClient } from '@supabase/supabase-js';

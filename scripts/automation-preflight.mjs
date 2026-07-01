@@ -26,7 +26,7 @@ function run(label, command, args, options = {}) {
 }
 
 const full = process.argv.includes("--full");
-/** `preflight` = Linear påkrevd; Vercel valgfri. Streng Vercel: `CLOUD_READINESS_PROFILE=agent` eller `npm run cloud:ready`. */
+/** `preflight` = MCP. Streng: `CLOUD_READINESS_PROFILE=agent` eller `npm run cloud:ready`. */
 const readinessProfile =
   process.env.CLOUD_READINESS_PROFILE || "preflight";
 
@@ -46,8 +46,6 @@ if (full) {
     console.error("Se scripts/mcp-test-report.txt for detaljer.");
     process.exit(code);
   }
-  code = run("Linear API", "npm", ["run", "linear:test"], { shell: true });
-  if (code !== 0) process.exit(code);
 }
 
 console.log("\n✅ Preflight fullført.");

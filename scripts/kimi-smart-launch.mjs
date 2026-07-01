@@ -43,7 +43,7 @@ const KEYWORDS = {
   database: ['database','migration','sql','supabase','postgres','table','index','trigger','function','rpc','view','schema'],
   frontend: ['frontend','ui','component','react','nextjs','tailwind','css','page','layout','form','modal','chart','dashboard'],
   api: ['api','endpoint','route','handler','middleware','request','response','server','action','webhook'],
-  deploy: ['deploy','fly.io','cloudflare','docker','flyctl','vercel','ci','github','action','workflow','build','env','secret','domain','ssl','monitor'],
+  deploy: ['deploy','fly.io','cloudflare','docker','flyctl','ci','github','action','workflow','build','env','secret','domain','ssl','monitor'],
   testing: ['test','testing','e2e','unit','vitest','playwright','spec','coverage','mock','assert'],
   cms: ['sanity','cms','content','schema','document','groq','studio','webhook','assist'],
   mobile: ['mobile','pwa','responsive','ios','android','lighthouse','viewport','touch'],

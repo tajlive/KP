@@ -1,8 +1,8 @@
 /**
- * Vercel Deploy Status Notification
+ * Deploy Status Notification
  * Sendes webhook til Slack ved deploy-feil eller post-deploy health-check feil.
  *
- * Bruk: npx tsx scripts/notify-deploy-status.ts [--status=error|success] [--url=<vercel_url>]
+ * Bruk: npx tsx scripts/notify-deploy-status.ts [--status=error|success] [--url=<deploy_url>]
  * Miljø: SLACK_DEPLOY_WEBHOOK_URL
  */
 

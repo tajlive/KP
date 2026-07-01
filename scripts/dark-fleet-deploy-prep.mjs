@@ -81,7 +81,7 @@ if (result.version === "champion" && percent > 0) {
 console.log(`
 📋 Deploy-sjekkliste:
 □ 1. PUSH branch: git push origin feat/dark-fleet-phase1
-□ 2. Vercel Preview deploy
+□ 2. Cloudflare Preview deploy
 □ 3. Sett ENABLE_DARK_FLEET=true (kun i Preview)
 □ 4. Sett DARK_FLEET_CHALLENGER_PERCENT=1 (kun 1 bruker)
 □ 5. Kjør: node scripts/dark-fleet-deploy-prep.mjs "<din-bruker-id>" 1

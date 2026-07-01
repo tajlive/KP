@@ -57,8 +57,6 @@ const CONFIG = {
   accessToken: process.env.SUPABASE_ACCESS_TOKEN,
   reportDir: process.env.WATCHDOG_REPORT_DIR || "./watchdog-reports",
   slackWebhook: process.env.SLACK_WEBHOOK_URL,
-  linearApiKey: process.env.LINEAR_API_KEY,
-  linearTeamId: process.env.LINEAR_TEAM_ID,
   maxRepairAttempts: 3,
 };
 

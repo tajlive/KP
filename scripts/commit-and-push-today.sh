@@ -17,7 +17,6 @@ git add .github/workflows/db-status.yml
 git add .github/workflows/pr-check.yml
 git add scripts/db-status-gate.mjs
 git add scripts/db-lint-gate.mjs
-git add scripts/linear-log-today.mjs
 git add supabase/migrations/999_fix_materialized_view.sql
 git add docs/MIGRATION-POLICY.md
 git add docs/FULL-AUTOMATION-PLAYBOOK.md

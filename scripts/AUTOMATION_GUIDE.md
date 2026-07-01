@@ -58,11 +58,13 @@ node scripts/execute-sql-cleanup.js
 2. Kopier "service_role key" (hemmelig - ikke del!)
 3. Sett som environment variable
 
-### Via Vercel (hvis deployet der):
+### Via Cloudflare Workers Builds (anbefalt):
 ```bash
-vercel env pull .env.local
-# Service role key skal være i .env.local
+# Miljøvariabler settes via Wrangler secrets / Cloudflare Dashboard
+# Service role key skal settes som Worker secret: npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 ```
+
+**Merk:** Vercel brukes ikke lenger. Cloudflare Workers Builds er primær deploy-plattform.
 
 ---
 
@@ -90,7 +92,7 @@ vercel env pull .env.local
 ```
 
 ### For full automatisering (senere):
-1. Sett opp service_role key i Vercel env
+1. Sett opp `SUPABASE_SERVICE_ROLE_KEY` som Wrangler-secret (via Cloudflare Dashboard eller `npx wrangler secret put`)
 2. Bruk `./scripts/final-auto-executor.sh`
 3. Få 90% automatikk (resten er komplekse DO blocks)
 

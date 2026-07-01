@@ -56,7 +56,7 @@ ${todos.map(t => `| ${t.file} | ${t.lineNum} | ${t.text.slice(0, 60)}${t.text.le
 ## Anbefalinger
 - TODOs bør ikke være i produksjonskode
 - FIXMEs indikerer teknisk gjeld
-- Vurder å konvertere til Linear-oppgaver
+- Vurder å konvertere til GitHub issues
 `;
     
     await writeFile(`${KNOWLEDGE_DIR}/current-todos.md`, content);
@@ -236,7 +236,7 @@ async function documentScripts() {
 ${descriptions.map(d => `| ${d.file} | ${d.desc}${d.desc.length >= 80 ? '...' : ''} |`).join('\n')}
 
 ## Kategorier
-- **Deploy:** *deploy*, *vercel*, *prod*
+- **Deploy:** *deploy*, *cloudflare*, *prod*
 - **Test:** *test*, *e2e*, *playwright*
 - **DB:** *supabase*, *migration*, *db*
 - **Fix:** *fix*, *repair*, *heal*
