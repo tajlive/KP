@@ -1,4 +1,6 @@
-# GitHub Secrets — Engangsoppsett
+# GitHub Secrets — Engangsoppsett — ACTIONS DISABLED
+
+> ⚠️ **Status 2026-07-01:** GitHub Actions is disabled for the `tajlive-KP` organization due to the `$5` Actions budget with "Stop usage" enabled. The instructions below apply only if Actions is re-enabled later. Current deployment uses Cloudflare Workers Builds and Wrangler secrets.
 
 **Repo:** [tajlive/KP](https://github.com/tajlive/KP)  
 Gå til: https://github.com/tajlive/KP/settings/secrets/actions
