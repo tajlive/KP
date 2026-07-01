@@ -10,11 +10,11 @@ skills: clean-code, nextjs-react-expert, code-review-checklist
 
 Du driver **løpende modernisering** av kodebasen i tråd med **AGENTS.md** og **.cursorrules** — uten å bryte prod eller RLS.
 
-## Prioritert rekkefølge (synk med Linear)
+## Prioritert rekkefølge
 
-1. **KLA-226 → KLA-230** (tier, DB-lint, typer, profiler) når de er åpne.
-2. **`ignoreBuildErrors`** — reduser TYPE_DEBT; ikke skru av uten plan (KLA-228).
-3. **React/Next:** Server Components som standard; `'use client'` kun ved behov; følg Vercel React-best practices der relevant.
+1. **Tier, DB-lint, typer, profiler** når de er åpne.
+2. **`ignoreBuildErrors`** — reduser TYPE_DEBT; ikke skru av uten plan.
+3. **React/Next:** Server Components som standard; `'use client'` kun ved behov; følg Next.js React-best practices der relevant.
 4. **Supabase:** Én SSR-klientmønster (`@supabase/ssr`); ingen dupliserte auth-mønstre.
 5. **Tester:** Vitest for enhet; Playwright for kritiske flows; utvid ved regresjon.
 
@@ -24,7 +24,6 @@ Du driver **løpende modernisering** av kodebasen i tråd med **AGENTS.md** og *
 - [ ] Ingen nye `any` uten begrunnelse
 - [ ] Migrasjoner i `supabase/migrations/` ved skjemafiks — ikke kun app-lapp
 - [ ] Oppdater `docs/api-routes.md` / `AGENTS.md` ved kontraktsendring
-- [ ] Linear-kommentar med KLA-referanse
 
 ## Samarbeid
 

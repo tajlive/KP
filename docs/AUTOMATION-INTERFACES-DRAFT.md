@@ -17,7 +17,7 @@
 
 | Interface | Command | Purpose | Inputs | Outputs | Env / Secrets | Readiness |
 |---|---|---|---|---|---|---|
-| `automation-preflight` | `node scripts/automation-preflight.mjs [--full]` | Verifies cloud readiness, MCP config, optionally MCP connections + Linear | `--full` flag | Exit code + stdout | `CLOUD_READINESS_PROFILE`, `.env.local` | Ready |
+| `automation-preflight` | `node scripts/automation-preflight.mjs [--full]` | Verifies cloud readiness, MCP config, optionally MCP connections | `--full` flag | Exit code + stdout | `CLOUD_READINESS_PROFILE`, `.env.local` | Ready |
 | `cloud-readiness` | `node scripts/cloud-readiness.mjs --profile <agent\|deploy\|manual-deploy>` | Checks env completeness per profile | `--profile`, `--environment` | JSON / table stdout | Many env vars (see docs) | Ready |
 | `verify-production` | `node scripts/verify-production.mjs` | Smoke tests production domain, redirects, security headers, API health | None | Colored stdout, exit code | None (hits public URLs) | Ready |
 | `health-check` | `node scripts/health-check.mjs [api\|supabase\|signals\|trading\|full\|prod]` | Granular health checks | Mode arg | OK/FEIL per check | `.env.local` Supabase vars | Ready |
@@ -59,7 +59,6 @@
 |---|---|---|---|---|---|---|
 | `cloudflare` | `npm run cloudflare -- <test\|zones\|dns\|account\|pages>` | Cloudflare zones, DNS, Pages | Subcommand + args | JSON / stdout | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Ready |
 | `stripe` | `npm run stripe -- <test\|prices>` | Stripe balance/price checks | Subcommand | JSON / stdout | `STRIPE_SECRET_KEY` | Ready |
-| `linear` | `npm run linear -- <teams\|issues\|create\|update>` | Linear issue CRUD | Subcommand + args | JSON / stdout | `LINEAR_API_KEY` | Ready |
 | `vipps` | `npm run vipps -- test` | Vipps token test | None | Token status | `VIPPS_CLIENT_ID`, `VIPPS_CLIENT_SECRET` | Ready |
 | `cursor` | `npm run cursor -- <test\|me\|agents\|agent\|models\|config>` | Cursor Cloud Agents API | Subcommand + args | JSON / stdout | `CURSOR_API_KEY` | Ready |
 
@@ -69,7 +68,7 @@
 - `scripts/db-lint-gate.mjs` / `db-status-gate.mjs` — migration drift gates.
 - `scripts/check-signal-pipeline-health.mjs` / `signals-cron-doctor.mjs` — signal engine health.
 - `scripts/create-test-users.js` — E2E test user provisioning.
-- `scripts/linear-watchdog-sync.mjs`, `scripts/slack-recovery-thread.mjs` — incident response.
+- `scripts/slack-recovery-thread.mjs` — incident response.
 - `scripts/watchdog-auto-repair.mjs` — auto-remediation.
 - `scripts/ai-health-report.mjs` — weekly AI health report.
 - `scripts/auto-index-maintenance.mjs`, `scripts/optimize-rls-policies.mjs` — DB maintenance.
@@ -223,7 +222,6 @@ All require `Authorization: Bearer CRON_SECRET` (via `validateCronSecret`).
 | **Binance** | `binance-api-node`, REST + WebSocket, Edge Functions | `BINANCE_API_KEY`, `BINANCE_API_SECRET`, `BINANCE_USE_TESTNET` | Live/paper trade execution, price data | Ready |
 | **Stripe** | `stripe` SDK + webhook + Edge Functions | `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET` | Payments, subscriptions, checkout | Ready |
 | **Resend** | `resend` SDK + MCP server (formerly) | `RESEND_API_KEY` | Transactional email | Ready |
-| **Linear** | `scripts/linear-api.mjs`, `@linear/sdk` | `LINEAR_API_KEY` | Issue tracking, incident automation | Ready |
 | **Slack** | Incoming webhooks | `SLACK_WEBHOOK`, `SLACK_DEPLOY_WEBHOOK` | Alerts, deploy notifications | Ready |
 | **Perplexity** | Custom MCP server | `PERPLEXITY_API_KEY` | Research | Ready |
 | **GitHub** | MCP server + `scripts/sync-github-actions-secrets.mjs` | `GH_PAT` / `GITHUB_TOKEN` | Issues, PRs, secrets sync | Ready |
@@ -284,7 +282,7 @@ Key functions for automation:
 | `secrets:*` | `node scripts/sync-github-actions-secrets.mjs` | GitHub secrets sync | Ready |
 | `cloud:*` | `node scripts/cloud-readiness.mjs` | Cloud readiness | Ready |
 | `auto:preflight` / `auto:preflight:full` | `node scripts/automation-preflight.mjs` | Automation preflight | Ready |
-| `linear:*` / `stripe:*` / `vipps:*` / `cloudflare:*` / `cursor:*` | External service CLIs | Ready |
+| `stripe:*` / `vipps:*` / `cloudflare:*` / `cursor:*` | External service CLIs | Ready |
 | `preprod:gate` | Full pre-prod pipeline | CI-like gate | Ready |
 | `release` | Lint + type-check + build | Release prep | Ready |
 
@@ -326,7 +324,7 @@ Loaded via `kimi --skills-dir .kimi/skills/<skill>` or aliases in `.kimi/command
 
 - Config: `.kimi/commands.json`
 - Provides `kimi health`, `kimi verify`, `kimi build`, `kimi deploy`, `kimi prod`, `kimi swarm:*`, etc.
-- Some aliases reference legacy commands (e.g. `deploy:prod`, `preview` with `flyctl`) that no longer exist in `package.json` — may need cleanup.
+- Some aliases reference legacy commands (e.g. `deploy:prod` with Coolify) that no longer exist in `package.json` — may need cleanup.
 
 ### 6.5 CI/CD triggers
 
@@ -353,8 +351,8 @@ Loaded via `kimi --skills-dir .kimi/skills/<skill>` or aliases in `.kimi/command
 |---|---|---|
 | 1 | No single unified dispatch interface | Create `scripts/automation-subagent.mjs` that accepts a JSON task and routes to CLI/MCP/API |
 | 2 | `kimi-cli-wrapper.ts` deploy maps to non-existent `deploy:preview`/`deploy:prod` | Align with `deploy:coolify` or add preview/prod aliases |
-| 3 | `.kimi/commands.json` contains legacy Fly.io / Vercel commands | Audit and remove stale aliases |
-| 4 | External service CLIs return ad-hoc stdout formats | Standardize to JSON schema across `cloudflare`, `stripe`, `linear`, `vipps`, `cursor` |
+| 3 | `.kimi/commands.json` contains legacy Fly.io commands | Audit and remove stale aliases |
+| 4 | External service CLIs return ad-hoc stdout formats | Standardize to JSON schema across `cloudflare`, `stripe`, `vipps`, `cursor` |
 | 5 | Cron routes need `CRON_SECRET` — no rotation tooling | Add secret rotation script / vault integration |
 | 6 | No unified status dashboard for automation | Extend `agent-bridge` or create a new `automation-status` route |
 | 7 | MCP servers are stdio-based; no persistent daemon | Consider `mcp:kimi:http` as a long-lived service for agent use |
@@ -371,7 +369,7 @@ See also `docs/SECRETS-INVENTORY.md`, `.env.example`, and `.env-templates/`.
 - **Required:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `POSTGRES_URL`
 - **Deploy:** `COOLIFY_DEPLOY_WEBHOOK`, `COOLIFY_TOKEN`
 - **Monitoring:** `CRON_SECRET`, `REVALIDATE_SECRET`, `SLACK_WEBHOOK`, `SLACK_DEPLOY_WEBHOOK`
-- **External APIs:** `STRIPE_SECRET_KEY`, `RESEND_API_KEY`, `LINEAR_API_KEY`, `CLOUDFLARE_API_TOKEN`, `GITHUB_TOKEN`/`GH_PAT`, `PERPLEXITY_API_KEY`, `BINANCE_API_KEY`, `BINANCE_API_SECRET`, `VIPPS_CLIENT_ID`, `VIPPS_CLIENT_SECRET`, `CURSOR_API_KEY`
+- **External APIs:** `STRIPE_SECRET_KEY`, `RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN`, `GITHUB_TOKEN`/`GH_PAT`, `PERPLEXITY_API_KEY`, `BINANCE_API_KEY`, `BINANCE_API_SECRET`, `VIPPS_CLIENT_ID`, `VIPPS_CLIENT_SECRET`, `CURSOR_API_KEY`
 - **CMS:** `NEXT_PUBLIC_SANITY_PROJECT_ID`, `SANITY_API_READ_TOKEN`, `SANITY_API_WRITE_TOKEN`
 - **Vault:** `KLARPAKKE_VAULT_KEY`
 - **Optional:** `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `NEXT_PUBLIC_GLITCHTIP_DSN`, `OPENAI_API_KEY`

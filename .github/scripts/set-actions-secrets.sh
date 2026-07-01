@@ -7,10 +7,10 @@ set -e
 REPO="${GITHUB_REPO:-tajlive/KP}"
 
 echo "Repo: $REPO"
-echo "Nødvendige secrets: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, VERCEL_TOKEN, SENTRY_AUTH_TOKEN"
+echo "Nødvendige secrets: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SENTRY_AUTH_TOKEN"
 echo ""
 
-for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY VERCEL_TOKEN SENTRY_AUTH_TOKEN; do
+for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SENTRY_AUTH_TOKEN; do
   echo "Sett $name (Ctrl+D når ferdig, eller lim inn én linje):"
   gh secret set "$name" --repo "$REPO"
 done

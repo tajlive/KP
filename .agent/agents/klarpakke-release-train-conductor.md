@@ -41,7 +41,6 @@ npm run release:cleanup     # Clean feature flags
 
 ## Files
 - `CHANGELOG.md` - Release notes
-- `vercel.json` - Deployment config
 - `.github/workflows/deploy.yml` - CI/CD
 - `docs/RELEASE-PROCESS.md` - Full process
 

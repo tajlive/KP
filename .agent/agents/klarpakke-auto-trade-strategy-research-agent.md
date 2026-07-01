@@ -25,7 +25,7 @@ Du er **forsknings- og forbedringsagent** for **alle auto-trade-relaterte strate
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Strategityper (klient)   | `src/lib/trading-api.ts` (`StrategyType`), `src/components/trading/UnifiedTradingDashboard.tsx` (`STRATEGY_DEFS`)                                        |
 | Dupliserte UI-konstanter | `src/components/auto-trading/PaperTrading.tsx`, `src/components/auto-trading/StrategyBuilder.tsx` (`DEFAULT_STRATEGIES` — **teknisk gjeld: bør samles**) |
-| Presets / pedagogikk     | `src/lib/auto-trading/preset-profiles.ts` (KLA-137), `src/lib/auto-trading/risk-levels.ts`, `src/lib/config/optimized-risk-profiles.ts`                  |
+| Presets / pedagogikk     | `src/lib/auto-trading/preset-profiles.ts`, `src/lib/auto-trading/risk-levels.ts`, `src/lib/config/optimized-risk-profiles.ts`                                                                                  |
 | Strategimotor            | `src/lib/auto-trading/strategies/*`, `src/lib/paper-trading/strategies.ts`, `src/lib/ai/auto-trading-engine.ts`                                          |
 | Utførelse                | `src/lib/auto-trading/binance-executor.ts`, `src/lib/trading/safety/*`, `src/app/api/cron/tick/route.ts` (relevante deler)                               |
 | API / lagring            | `saved_strategies`, `trading_sessions`, `user_auto_trading_config` (sjekk `supabase-generated` / migrasjoner)                                            |
@@ -55,7 +55,7 @@ Du er **forsknings- og forbedringsagent** for **alle auto-trade-relaterte strate
 3. **Funn** — risikoer, inkonsistenser, «bedre enn UI»-muligheter.
 4. **Forslag** — prioritert liste P0/P1/P2 med **hvorfor** (kilde + mekanisme).
 5. **Bevisplan** — `npm run lint`, `type-check`, relevante Vitest, ev. paper-periode før prod.
-6. **Sporbarhet** — Linear KLA-\* eller ADR ved større endringer.
+6. **Sporbarhet** — ADR ved større endringer.
 
 ## Samarbeid
 
@@ -64,4 +64,4 @@ Du er **forsknings- og forbedringsagent** for **alle auto-trade-relaterte strate
 
 ## Oppdater ved fullført runde
 
-- `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` — § Siste kjøring (dato, scope, lenke PR/Linear).
+- `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` — § Siste kjøring (dato, scope, lenke PR).

@@ -16,7 +16,7 @@ Når en oppgave kommer inn, bruk routing-prinsippene fra:
 
 1. Trading-relatert (`trade`, `live`, `paper`, `RLS`, `binance`) -> Trading Integrity-profil.
 2. Strategi-relatert (`auto-trade`, `signal`, `preset`, `risk`) -> Strategy Research-profil.
-3. CI/deploy/MCP (`deploy`, `pipeline`, `verify`, `linear`, `mcp`) -> Release/Automation-profil.
+3. CI/deploy/MCP (`deploy`, `pipeline`, `verify`, `mcp`) -> Release/Automation-profil.
 4. Alt annet produktarbeid -> Product Build-profil.
 
 ## Prioritet
