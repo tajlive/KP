@@ -32,6 +32,18 @@ const DEFAULT_THRESHOLDS: OutboxThresholds = {
   pendingDurationThreshold: 5 * 60 * 1000,
 };
 
+function readEnvInt(name: string, fallback: number): number {
+  try {
+    const value = process.env[name];
+    if (value === undefined || value === '') return fallback;
+    const parsed = parseInt(value, 10);
+    return Number.isNaN(parsed) ? fallback : parsed;
+  } catch {
+    // Edge runtime may not expose process.env at module load; use fallback.
+    return fallback;
+  }
+}
+
 let pendingAboveCriticalSince: Date | null = null;
 let killSwitchState: KillSwitchState = {
   activated: false,
@@ -41,12 +53,12 @@ let killSwitchState: KillSwitchState = {
 
 export function getThresholds(): OutboxThresholds {
   return {
-    maxFailed: parseInt(process.env.OUTBOX_MAX_FAILED ?? '0', 10),
-    pendingWarning: parseInt(process.env.OUTBOX_PENDING_WARNING ?? '50', 10),
-    pendingCritical: parseInt(process.env.OUTBOX_PENDING_CRITICAL ?? '100', 10),
-    pendingDurationThreshold: parseInt(
-      process.env.OUTBOX_PENDING_DURATION_MS ?? String(5 * 60 * 1000), 
-      10
+    maxFailed: readEnvInt('OUTBOX_MAX_FAILED', DEFAULT_THRESHOLDS.maxFailed),
+    pendingWarning: readEnvInt('OUTBOX_PENDING_WARNING', DEFAULT_THRESHOLDS.pendingWarning),
+    pendingCritical: readEnvInt('OUTBOX_PENDING_CRITICAL', DEFAULT_THRESHOLDS.pendingCritical),
+    pendingDurationThreshold: readEnvInt(
+      'OUTBOX_PENDING_DURATION_MS',
+      DEFAULT_THRESHOLDS.pendingDurationThreshold
     ),
   };
 }
