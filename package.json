@@ -90,6 +90,7 @@
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "test:unit": "vitest run",
+    "test:integration": "vitest run src/**/*.integration.test.ts",
     "test:unit:fast": "vitest run --pool=threads",
     "test:unit:ci": "vitest run --shard=${SHARD:-1}/4",
     "test:p0": "vitest run src/lib/trading/__tests__/p0-*.test.ts",

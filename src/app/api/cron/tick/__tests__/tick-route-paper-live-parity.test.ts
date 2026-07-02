@@ -17,6 +17,11 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(() => ({})),
 }));
 
+vi.mock("@/lib/trading/idempotency", () => ({
+  makeIdempotencyKey: vi.fn().mockReturnValue("key"),
+  withIdempotency: vi.fn((_db, _key, _scope, _hash, operation) => operation()),
+}));
+
 vi.mock("@/lib/trading/safety/risk-validator", () => ({
   validateTradeAgainstRiskProfile: vi.fn().mockResolvedValue({ allowed: true }),
   recordTradeRejection: vi.fn().mockResolvedValue(undefined),
