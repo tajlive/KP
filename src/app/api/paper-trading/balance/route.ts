@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     const { data: recentTrades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, symbol, side, quantity, price, total_value, fee, status, created_at")
+      .select("id, trading_pair, side, quantity, price, total_value, fee, status, created_at")
       .eq("session_id", session.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false })
@@ -55,7 +55,17 @@ export async function GET(request: NextRequest) {
         current: session.current_capital_nok ?? 0,
         starting: session.starting_capital_nok ?? 100000,
       },
-      recentTrades: (recentTrades ?? []) as unknown as Array<{
+      recentTrades: (recentTrades ?? []).map((t) => ({
+        id: t.id,
+        symbol: t.trading_pair,
+        side: t.side,
+        quantity: t.quantity,
+        price: t.price,
+        total_value: t.total_value,
+        fee: t.fee,
+        status: t.status,
+        created_at: t.created_at,
+      })) as Array<{
         id: string;
         symbol: string;
         side: "buy" | "sell";
