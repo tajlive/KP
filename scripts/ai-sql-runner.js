@@ -84,7 +84,7 @@ async function executeStatement(sql, index, total) {
     
     // Call exec_sql function via RPC
     const { data, error } = await supabase.rpc('exec_sql', {
-      query_text: sql
+      query: sql
     });
     
     if (error) {
