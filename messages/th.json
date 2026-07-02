@@ -2192,6 +2192,7 @@
     "entryPrice": "ราคาเข้า",
     "exitPrice": "ราคาออก",
     "exportCsv": "ส่งออก CSV",
+    "copyDiagnostics": "คัดลอกการวินิจฉัย",
     "filterAll": "ทั้งหมด",
     "filterLive": "สด",
     "filterPaper": "กระดาษ",
