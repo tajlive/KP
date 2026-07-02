@@ -51,10 +51,10 @@ export function getConfig(): BridgeConfig {
   const clientSecret = process.env.KIMI_OAUTH_CLIENT_SECRET?.trim() || undefined;
   const deviceEndpoint =
     process.env.KIMI_OAUTH_DEVICE_ENDPOINT?.trim() ||
-    "https://platform.moonshot.cn/oauth/device";
+    "https://platform.kimi.com/oauth/device";
   const tokenEndpoint =
     process.env.KIMI_OAUTH_TOKEN_ENDPOINT?.trim() ||
-    "https://platform.moonshot.cn/oauth/token";
+    "https://platform.kimi.com/oauth/token";
   const scope = process.env.KIMI_OAUTH_SCOPE?.trim() || "openid profile";
 
   return {
