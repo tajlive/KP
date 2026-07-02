@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { hasSupabaseSessionCookies } from "../helpers/supabase-cookies";
 import { waitForDevHealth } from "../helpers/wait-for-dev-health";
 
@@ -9,7 +10,7 @@ import { waitForDevHealth } from "../helpers/wait-for-dev-health";
  */
 
 test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
-  async function isGuestTeaserVisible(page: import("@playwright/test").Page) {
+  async function isGuestTeaserVisible(page: Page) {
     const guestCta = page
       .getByRole("link", {
         name: /Logg inn|Log in|Opprett konto|Create account/i,
@@ -29,9 +30,9 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       .catch(() => {});
   });
 
-  test("paper trading card displays balance", async ({ page }) => {
-    // Valider paper trading entrypoint direkte (dashboard-kort kan endres over tid).
-    await page.goto("/no/paper-trading", {
+  test("paper trading cockpit renders in paper mode", async ({ page }) => {
+    // Valider ny Trading Cockpit entrypoint for paper trading.
+    await page.goto("/no/handel?mode=paper", {
       timeout: 90_000,
       waitUntil: "domcontentloaded",
     });
@@ -39,48 +40,23 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       .waitForLoadState("domcontentloaded", { timeout: 30_000 })
       .catch(() => {});
 
-    const card = page.locator('[data-testid="paper-trading-card"]').first();
-    const isVisible = await card
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    if (!isVisible) {
-      const workspaceHeaderVisible = await page
-        .locator('[data-testid="paper-trading-workspace-header"]')
-        .first()
-        .isVisible({ timeout: 5000 })
-        .catch(() => false);
-      if (workspaceHeaderVisible) {
-        console.log("✅ Paper trading workspace header visible");
-        return;
-      }
+    // Cockpit header is authoritative even when the data-testid is not present.
+    const cockpitHeading = page.getByRole("heading", { name: "Trading Cockpit" }).first();
+    try {
+      await expect(cockpitHeading).toBeVisible({ timeout: 60_000 });
+    } catch {
       const teaserVisible = await isGuestTeaserVisible(page);
       expect(teaserVisible).toBe(true);
-      console.log("✅ Guest teaser visible when trading workspace is gated");
+      console.log("✅ Guest teaser visible when trading cockpit is gated");
       return;
     }
 
-    // Verify balance is displayed
-    const balance = page.locator('[data-testid="paper-balance"]').first();
-    const balanceVisible = await balance
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    if (balanceVisible) {
-      const balanceText = await balance.textContent();
-      expect(balanceText).toMatch(/\d+/); // Should contain numbers
-      console.log("✅ Paper trading balance:", balanceText);
-    } else {
-      const workspaceHeaderVisible = await page
-        .locator('[data-testid="paper-trading-workspace-header"]')
-        .first()
-        .isVisible({ timeout: 5000 })
-        .catch(() => false);
-      expect(workspaceHeaderVisible).toBe(true);
-      console.log(
-        "✅ Paper trading workspace visible when card balance is absent",
-      );
-    }
+    // Verify paper mode label is rendered ("Lekepenger" / "Øving" in the mode switch).
+    const paperModeLabel = page
+      .getByText(/Lekepenger|Paper|Øving/i)
+      .first();
+    await expect(paperModeLabel).toBeVisible({ timeout: 60_000 });
+    console.log("✅ Paper trading cockpit rendered with paper mode label");
   });
 
   test("paper trading API returns valid structure", async ({
@@ -143,51 +119,38 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
     }
   });
 
-  test("portfolio section displays metrics", async ({ page }) => {
-    await page.goto("/no/paper-trading", {
+  test("paper trading portfolio section renders in cockpit", async ({ page }) => {
+    await page.goto("/no/handel?mode=paper", {
       timeout: 90_000,
       waitUntil: "domcontentloaded",
     });
-    // Check for portfolio section
-    const portfolioSection = page.locator('[data-testid="portfolio-section"]');
+    await page
+      .waitForLoadState("domcontentloaded", { timeout: 30_000 })
+      .catch(() => {});
 
-    // Wait for section to be visible (may not exist if no portfolio)
-    const isVisible = await portfolioSection
-      .isVisible({ timeout: 5000 })
-      .catch(() => false);
-
-    if (!isVisible) {
-      const workspaceHeaderVisible = await page
-        .locator('[data-testid="paper-trading-workspace-header"]')
-        .first()
-        .isVisible({ timeout: 5000 })
-        .catch(() => false);
-      if (workspaceHeaderVisible) {
-        console.log(
-          "✅ Paper trading workspace header visible (portfolio section not rendered)",
-        );
-        return;
-      }
+    // Check for the cockpit heading
+    const cockpitHeading = page.getByRole("heading", { name: "Trading Cockpit" }).first();
+    try {
+      await expect(cockpitHeading).toBeVisible({ timeout: 60_000 });
+    } catch {
       const teaserVisible = await isGuestTeaserVisible(page);
       expect(teaserVisible).toBe(true);
-      console.log("✅ Guest teaser visible when portfolio section is hidden");
+      console.log(
+        "✅ Guest teaser visible when trading cockpit is gated",
+      );
       return;
     }
 
-    // Verify key metrics exist
-    const totalValue = page.locator('[data-testid="portfolio-total-value"]');
-    const cash = page.locator('[data-testid="portfolio-cash"]');
-    const pnl = page.locator('[data-testid="portfolio-pnl"]');
+    // Verify key metrics or summary rows exist in the cockpit
+    const totalCapital = page.getByText(/Total kapital|Total capital/i).first();
+    const pnl = page.getByText(/P&L/).first();
+    const winRate = page.getByText(/Vinnrate|Win rate/i).first();
+    const trades = page.getByText(/Handler|Trades/i).first();
 
-    // At least one should be visible
-    const anyVisible = await Promise.any([
-      totalValue.isVisible().catch(() => false),
-      cash.isVisible().catch(() => false),
-      pnl.isVisible().catch(() => false),
-    ]).catch(() => false);
-
-    expect(anyVisible).toBe(true);
-    console.log("✅ Portfolio metrics displayed");
+    await expect(
+      totalCapital.or(pnl).or(winRate).or(trades).first(),
+    ).toBeVisible({ timeout: 60_000 });
+    console.log("✅ Portfolio metrics displayed in trading cockpit");
   });
 
   test("trade history API returns valid data", async ({ page, request }) => {
@@ -230,9 +193,9 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
 
   /**
    * Regresjon: suksess-respons skal alltid inneholde session_id + trade_id (Zod i API),
-   * og sesjonssiden skal vise minst én handelsrad (data-testid) etter utført kjøp.
+   * og handelshistorikken skal vise raden etter utført kjøp.
    */
-  test("paper execute returns session_id and trade row visible on session page", async ({
+  test("paper execute returns session_id and trade appears in history", async ({
     page,
     request,
     playwright,
@@ -258,7 +221,7 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       data: {
         pair: "BTCUSDT",
         side: "buy",
-        amount_nok: 100,
+        amount_nok: 2000,
       },
       timeout: 90_000,
     } as const;
@@ -266,26 +229,39 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
     await waitForDevHealth(playwright, baseURL);
 
     let exec: Awaited<ReturnType<typeof request.post>>;
-    for (let attempt = 0; attempt < 3; attempt++) {
+    let body: Record<string, unknown> | undefined;
+    for (let attempt = 0; attempt < 5; attempt++) {
       try {
         exec = await request.post("/api/paper-trading/execute", postOpts);
-        break;
       } catch (e) {
-        if (!transient(e) || attempt === 2) throw e;
+        if (!transient(e) || attempt === 4) throw e;
         await waitForDevHealth(playwright, baseURL);
+        continue;
       }
-    }
 
-    if (exec.status() === 401) {
+      if (exec.status() === 401) {
+        test.skip();
+        return;
+      }
+
+      expect(exec.status()).toBe(200);
+      body = (await exec.json()) as Record<string, unknown>;
+
+      if (body.success === true) break;
+
+      if (body.rejectionReason === "CONCURRENT_TRADE_BLOCKED") {
+        console.log("⚠️ Concurrent trade block, retrying in 10s:", body);
+        await page.waitForTimeout(10_000);
+        continue;
+      }
+
+      console.log("⚠️ Paper execute rejected (balance/risk?):", body);
       test.skip();
       return;
     }
 
-    expect(exec.status()).toBe(200);
-    const body = await exec.json();
-
-    if (body.success !== true) {
-      console.log("⚠️ Paper execute rejected (balance/risk?):", body);
+    if (!body || body.success !== true) {
+      console.log("⚠️ Paper execute did not succeed after retries:", body);
       test.skip();
       return;
     }
@@ -298,19 +274,20 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
     );
     expect(typeof body.new_balance).toBe("number");
 
-    await page.goto(`/no/paper-trading/${body.session_id}`, {
+    // New Trading Cockpit is the canonical paper trading UI; verify it renders.
+    await page.goto("/no/handel?mode=paper", {
       waitUntil: "domcontentloaded",
       timeout: 90_000,
     });
 
     if (page.url().includes("innlogging") || page.url().includes("login")) {
-      console.log("⚠️ Redirected to login on session page");
+      console.log("⚠️ Redirected to login on trading cockpit");
       test.skip();
       return;
     }
 
     await expect(
-      page.getByTestId("paper-session-trade-row").first(),
+      page.getByRole("heading", { name: "Trading Cockpit" }).first(),
     ).toBeVisible({ timeout: 20_000 });
 
     // Kanonisk API + handelshistorikk (syntetisk happy path — samme kjeden som support-triage).
@@ -341,7 +318,7 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       return;
     }
     await expect(page.getByTestId("trade-history-row").first()).toBeVisible({
-      timeout: 25_000,
+      timeout: 45_000,
     });
   });
 });

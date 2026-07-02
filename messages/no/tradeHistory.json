@@ -20,6 +20,7 @@
   "open": "Åpen",
   "closed": "Lukket",
   "exportCsv": "Eksportér CSV",
+  "copyDiagnostics": "Kopier diagnostikk",
   "filterAll": "Alle",
   "filterPaper": "Kun papir",
   "filterLive": "Kun live",

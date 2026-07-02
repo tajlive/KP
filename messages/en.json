@@ -3250,6 +3250,7 @@
     "open": "Open",
     "closed": "Closed",
     "exportCsv": "Export CSV",
+    "copyDiagnostics": "Copy diagnostics",
     "filterAll": "All",
     "filterPaper": "Paper only",
     "filterLive": "Live only",
