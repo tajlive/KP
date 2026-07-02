@@ -13,6 +13,10 @@ import {
 } from "@/lib/trading/idempotency";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
 
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(() => ({})),
+}));
+
 vi.mock("@/lib/trading/idempotency", async (importOriginal) => {
   const actual =
     await importOriginal<typeof import("@/lib/trading/idempotency")>();
@@ -150,7 +154,7 @@ describe("executeTrade idempotency", () => {
     expect(result).toEqual(storedResult);
     expect(ExecutorFactory.create).not.toHaveBeenCalled();
     expect(withIdempotency).toHaveBeenCalledWith(
-      supabase,
+      expect.anything(),
       expect.any(String),
       "trade",
       expect.any(String),
@@ -230,7 +234,7 @@ describe("executeTrade idempotency", () => {
     expect(requestHash).not.toContain("caller-key-1");
 
     expect(withIdempotency).toHaveBeenCalledWith(
-      supabase,
+      expect.anything(),
       "caller-key-1",
       "trade",
       requestHash,

@@ -8,6 +8,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
 // We test the trade insert payload, not the full execution pipeline
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(() => ({})),
+}));
+
 vi.mock("@/lib/trading/safety/risk-validator", () => ({
   validateTradeAgainstRiskProfile: vi.fn().mockResolvedValue({ allowed: true }),
   recordTradeRejection: vi.fn().mockResolvedValue(undefined),

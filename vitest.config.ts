@@ -31,6 +31,7 @@ export default defineConfig({
       "e2e/**", 
       "**/*.d.ts",
       "**/p0-*.test.ts", // P0-tester krever DB, kjøres separat
+      "**/*.integration.test.ts", // Integrasjonstester krever ekte DB og env, kjøres separat
     ],
     
     // Retry for flaky tester i CI
