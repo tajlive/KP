@@ -8543,7 +8543,7 @@ export type Database = {
         Returns: number
       }
       calculate_daily_loss: {
-        Args: { p_date?: string; p_user_id: string }
+        Args: { p_session_id: string; p_user_id: string }
         Returns: number
       }
       calculate_level: { Args: { xp: number }; Returns: number }

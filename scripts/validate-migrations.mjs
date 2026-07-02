@@ -46,7 +46,13 @@ const LEGACY_ACCEPTED = new Set([
 ]);
 
 // Funksjoner som KAN ha flere overloads (whitelist)
-const ALLOWED_OVERLOADS = new Set([]);
+const ALLOWED_OVERLOADS = new Set([
+  // calculate_daily_loss signature has been intentionally migrated across
+  // multiple versions (uuid,uuid -> uuid,uuid-default-null -> uuid,date -> uuid,uuid).
+  // The migration files always DROP FUNCTION IF EXISTS before CREATE, so overloads
+  // are safe and intentional.
+  'calculate_daily_loss',
+]);
 
 // ─── HJELPEFUNKSJONER ───
 
