@@ -52,10 +52,10 @@ export function getKimiOAuthConfig(): KimiOAuthConfig {
     clientSecret: process.env.KIMI_OAUTH_CLIENT_SECRET?.trim() || undefined,
     deviceEndpoint:
       process.env.KIMI_OAUTH_DEVICE_ENDPOINT?.trim() ||
-      "https://platform.moonshot.cn/oauth/device",
+      "https://platform.kimi.com/oauth/device",
     tokenEndpoint:
       process.env.KIMI_OAUTH_TOKEN_ENDPOINT?.trim() ||
-      "https://platform.moonshot.cn/oauth/token",
+      "https://platform.kimi.com/oauth/token",
     scope: process.env.KIMI_OAUTH_SCOPE?.trim() || "openid profile",
   };
 }

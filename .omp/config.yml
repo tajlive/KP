@@ -1,5 +1,5 @@
-# Klarpakke OMP 16.2.12 + KIMI 2.5 project overlay
-# This overlay locks project sessions to KIMI 2.5 and tunes tool/verbosity
+# Klarpakke OMP 16.2.12 + KIMI K2.7 Code project overlay
+# This overlay locks project sessions to KIMI K2.7 Code and tunes tool/verbosity
 # settings for the Klarpakke codebase. Values here override the global
 # ~/.omp/agent/config.yml only for this repository.
 
@@ -14,23 +14,23 @@ disabledProviders:
   - agents
   - agents-md
 
-# Lock every model role to KIMI 2.5. High-thinking for reasoning roles;
-# plain kimi-k2.5 for smol/fast work.
+# Lock every model role to KIMI K2.7 Code via the kimi-k2-7-code provider.
+# High-thinking for reasoning roles; plain for smol/fast work.
 modelRoles:
-  default: kimi-code/kimi-k2.5:high
-  plan: kimi-code/kimi-k2.5:high
-  slow: kimi-code/kimi-k2.5:high
-  advisor: kimi-code/kimi-k2.5:high
-  vision: kimi-code/kimi-k2.5:high
-  designer: kimi-code/kimi-k2.5:high
-  task: kimi-code/kimi-k2.5:high
-  smol: kimi-code/kimi-k2.5
-  commit: kimi-code/kimi-k2.5:high
+  default: kimi-k2-7-code/kimi-for-coding:high
+  plan: kimi-k2-7-code/kimi-for-coding:high
+  slow: kimi-k2-7-code/kimi-for-coding:high
+  advisor: kimi-k2-7-code/kimi-for-coding:high
+  vision: kimi-k2-7-code/kimi-for-coding:high
+  designer: kimi-k2-7-code/kimi-for-coding:high
+  task: kimi-k2-7-code/kimi-for-coding:high
+  smol: kimi-k2-7-code/kimi-for-coding
+  commit: kimi-k2-7-code/kimi-for-coding:high
 
-# Leverage KIMI 2.5's reasoning by default for architect/integrity work.
+# Leverage K2.7 Code's reasoning by default for architect/integrity work.
 defaultThinkingLevel: high
 
-# Keep engineering output concise; KIMI 2.5 is strong enough to be terse.
+# Keep engineering output concise; K2.7 Code is strong enough to be terse.
 textVerbosity: medium
 
 # Native KIMI tool format gives the most reliable tool-use fidelity.
