@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const KIMI_OAUTH_TOKENS_KEY = "kimi:oauth:tokens";
-const KIMI_DEFAULT_MODEL = "kimi-k2-6";
+const KIMI_DEFAULT_MODEL = "kimi-k2-7-code";
 const KIMI_DEFAULT_REASONING_EFFORT = "high";
 
 interface StoredKimiTokens {

@@ -68,8 +68,8 @@ export const KIMI_MODELS = {
   SMALL: 'moonshot-v1-8k',
   MEDIUM: 'moonshot-v1-32k',
   LARGE: 'moonshot-v1-128k',
-  REASONING: 'kimi-k2-5',
-  HIGH: 'kimi-k2-6',
+  REASONING: 'kimi-k2-6',
+  HIGH: 'kimi-k2-7-code',
 } as const;
 
 export type KimiModel = typeof KIMI_MODELS[keyof typeof KIMI_MODELS];

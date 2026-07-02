@@ -11,6 +11,7 @@ const KIMI_MODEL_VALUES: Record<string, true> = {
   "moonshot-v1-128k": true,
   "kimi-k2-5": true,
   "kimi-k2-6": true,
+  "kimi-k2-7-code": true,
 };
 
 export interface KimiOAuthConfig {
@@ -285,6 +286,14 @@ export function resolveKimiModel(aliasOrModel: string): {
   reasoningEffort?: "low" | "medium" | "high";
 } {
   const normalized = aliasOrModel.trim().toLowerCase();
+
+  if (
+    normalized === "kimi k2.7 - [high]" ||
+    normalized === "kimi-k2-7-code" ||
+    normalized === "kimi-k2-7-code-high"
+  ) {
+    return { model: "kimi-k2-7-code", reasoningEffort: "high" };
+  }
 
   if (
     normalized === "kimi k2.6 - [high]" ||
