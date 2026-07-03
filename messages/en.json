@@ -1230,6 +1230,11 @@
     },
     "topBar": {
       "myOverview": "My Overview",
+      "paperMode": "Paper Trading",
+      "liveMode": "Live Trading",
+      "noData": "No data",
+      "ctaPaper": "Start trading",
+      "ctaLive": "Start trading",
       "systemOnline": "System Online",
       "allSystemsOperational": "All systems operational",
       "systemStatus": "System Status"
