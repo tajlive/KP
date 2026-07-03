@@ -13,6 +13,9 @@ disabledProviders:
   - github
   - agents
   - agents-md
+  - llama.cpp
+  - ollama
+  - lm-studio
 
 # Lock every model role to KIMI K2.7 Code via the kimi-k2-7-code provider.
 # High-thinking for reasoning roles; plain for smol/fast work.
@@ -23,11 +26,12 @@ modelRoles:
   advisor: kimi-k2-7-code/kimi-for-coding:high
   vision: kimi-k2-7-code/kimi-for-coding:high
   designer: kimi-k2-7-code/kimi-for-coding:high
-  task: kimi-k2-7-code/kimi-for-coding:high
-  smol: kimi-k2-7-code/kimi-for-coding
-  commit: kimi-k2-7-code/kimi-for-coding:high
+  task: kimi-k2-7-code/kimi-for-coding:medium
+  smol: kimi-k2-7-code/kimi-for-coding:medium
+  commit: kimi-k2-7-code/kimi-for-coding:medium
 
 # Leverage K2.7 Code's reasoning by default for architect/integrity work.
+# This is the intended project default; per-message overrides are still available.
 defaultThinkingLevel: high
 
 # Keep engineering output concise; K2.7 Code is strong enough to be terse.
@@ -36,3 +40,20 @@ textVerbosity: medium
 # Native KIMI tool format gives the most reliable tool-use fidelity.
 tools:
   format: kimi
+
+# Balanced concurrency for M1 macOS: enough parallelism for subagents, low enough
+# to avoid memory pressure and swap stalls. eager: always lets subagents start
+# promptly, which reduces apparent "pauses" between tool/model turns.
+task:
+  maxConcurrency: 4
+  eager: always
+
+# Autolearn disabled to avoid background agent work and skill capture overhead.
+autolearn:
+  enabled: false
+  autoContinue: false
+
+# Cap context growth so maintenance/compaction does not dominate long sessions.
+# (OMP global config governs the exact threshold; this key documents the intent.)
+provider:
+  appendOnlyContext: false

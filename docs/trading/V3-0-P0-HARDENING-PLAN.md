@@ -154,7 +154,7 @@ interface TradeEnvelope {
 | 2 | Type check & lint | ✅ | `npm run type-check && npm run lint` |
 | 3 | Unit tester (40+) | ✅ | `npm run test:unit -- p0-*.test.ts` |
 | 4 | Integrasjonstester | ✅ | `npm run test:integration:v3` |
-| 5 | Deploy til staging | ✅ | `vercel --env staging` |
+| 5 | Deploy til staging | ✅ | `npm run cf:deploy` |
 | 6 | Health check | ✅ | `curl /api/trading/v3/health` |
 | 7 | Smoke tester | ✅ | `npm run test:smoke:staging` |
 | 8 | Risk system verify | ✅ | `curl /api/trading/v3/risk/check` |
@@ -198,7 +198,7 @@ interface TradeEnvelope {
 | 2 | Type check & lint | ✅ | zero warnings |
 | 3 | Unit tester | ✅ | 40+ pass |
 | 4 | Integrasjonstester | ✅ | all pass |
-| 5 | Deploy til prod | ✅ | `vercel --prod` |
+| 5 | Deploy til prod | ✅ | `npm run cf:deploy` |
 | 6 | Health check | ✅ | HTTP 200 |
 | 7 | **V3 Health JSON** | ✅ | `status=healthy`, `tradingEnabled=true`, `killSwitch.activated=false` |
 | 8 | Smoke tester | ✅ | `npm run test:smoke:prod` |
