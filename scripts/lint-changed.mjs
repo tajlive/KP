@@ -7,6 +7,7 @@
  * Exits 0 if no JS/TS files changed.
  */
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 
 const EXTENSIONS = new Set([".js", ".jsx", ".ts", ".tsx"]);
 
@@ -64,7 +65,7 @@ function hasJsTsExtension(file) {
 const changed = getChangedFiles()
   .split("\n")
   .map((line) => line.trim())
-  .filter((line) => line.length > 0 && hasJsTsExtension(line));
+  .filter((line) => line.length > 0 && hasJsTsExtension(line) && existsSync(line));
 
 if (changed.length === 0) {
   console.log("✅ No changed JS/TS files to lint.");

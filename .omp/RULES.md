@@ -19,4 +19,4 @@ This project is tuned for KIMI 2.7 Code:
 - Specialist agents have `thinkingLevel: high` except `klarpakke-cockpit-qa` (`medium`).
 - `klarpakke-coder` is the full-stack generalist for work that spans multiple domains; it has full tool access and delegates to the narrow specialists when one domain dominates.
 - Use subagents and swarms frequently for independent bounded work; Main synthesizes and verifies.
-- When KIMI 2.7 OAuth is available, the project uses the `tools/kimi-oauth-bridge` to authenticate via `kimi-code/kimi-k2.7-code`. Do not store tokens in the repo; keep them in `~/.kimi-oauth-bridge/tokens.json` or another user-local secret store.
+- KIMI 2.7 Code is configured via API key through the `kimi-k2-7-code` provider in `~/.omp/agent/models.yml`. Do not store API keys or tokens in the repo; keep them in user-local secret stores such as `.env.local` or system keychains.
