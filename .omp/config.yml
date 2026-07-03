@@ -41,12 +41,13 @@ textVerbosity: medium
 tools:
   format: kimi
 
-# Tuned for 8 GB M1 macOS running 6 parallel KIMI K2.7 Code streams.
-# Benchmark showed >99% efficiency and 73% free memory at N=6, with only
-# marginal scheduler overhead beyond this point. eager: always keeps subagents
+# Tuned for 8 GB M1 macOS running 4 parallel KIMI K2.7 Code streams.
+# Live test with 6 subagents completed, but WorkerC was heavily delayed (160s total
+# vs ~30s for peers), showing scheduling stalls at N=6. 4 keeps response times
+# predictable while preserving good parallelism. eager: always keeps subagents
 # responsive and reduces apparent "pauses" between tool/model turns.
 task:
-  maxConcurrency: 6
+  maxConcurrency: 4
   eager: always
 
 # Autolearn disabled to avoid background agent work and skill capture overhead.
