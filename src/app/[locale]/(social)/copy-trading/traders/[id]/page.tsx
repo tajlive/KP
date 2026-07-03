@@ -52,7 +52,20 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
       .single();
 
     if (!trader) {
-      // Fallback to profiles
+      // Fallback to trader_profiles
+      const { data: traderProfile } = await supabase
+        .from("trader_profiles")
+        .select("display_name")
+        .eq("id", id)
+        .single();
+
+      if (traderProfile) {
+        return {
+          title: `${traderProfile.display_name} | Kopier Trading`,
+        };
+      }
+
+      // Fallback to user_profiles
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("display_name")
@@ -95,15 +108,24 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
       .single();
 
     if (!trader) {
-      // Try profiles as fallback
-      const { data: profile } = await supabase
-        .from("user_profiles")
+      // Try trader_profiles as fallback
+      const { data: traderProfile } = await supabase
+        .from("trader_profiles")
         .select("user_id")
         .eq("id", id)
         .single();
 
-      if (!profile) {
-        notFound();
+      if (!traderProfile) {
+        // Try user_profiles as fallback
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("user_id")
+          .eq("id", id)
+          .single();
+
+        if (!profile) {
+          notFound();
+        }
       }
     }
 
