@@ -117,7 +117,7 @@ npm run test:p0
 supabase db push --env staging
 
 # 2. Deploy API
-vercel --env staging
+npm run cf:deploy
 
 # 3. Smoke test
 npm run test:smoke:staging

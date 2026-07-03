@@ -12,10 +12,11 @@
 
 This project is tuned for KIMI 2.7 Code:
 
-- `modelRoles` locks every role to `kimi-code/kimi-k2.7-code` (high-thinking for reasoning roles, plain for `smol`).
+- `modelRoles` locks every role to `kimi-k2-7-code/kimi-for-coding` (high-thinking for reasoning roles, plain for `smol`).
 - `defaultThinkingLevel: high` so architect/integrity reasoning is on by default.
 - `tools.format: kimi` for native KIMI tool-use fidelity.
 - `textVerbosity: medium` for concise engineering output.
+- Project overlay: `task.maxConcurrency: 4`, `eager: always`, `autolearn: false` to keep M1 macOS responsive while still delegating work in parallel.
 - Specialist agents have `thinkingLevel: high` except `klarpakke-cockpit-qa` (`medium`).
 - `klarpakke-coder` is the full-stack generalist for work that spans multiple domains; it has full tool access and delegates to the narrow specialists when one domain dominates.
 - Use subagents and swarms frequently for independent bounded work; Main synthesizes and verifies.

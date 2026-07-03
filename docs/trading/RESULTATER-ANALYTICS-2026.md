@@ -18,11 +18,11 @@ Anbefaling videre: eksplisitte **tidsfiltre** (7d / 30d / YTD), **eksport CSV**,
 
 ## Drift: Supabase etter `db push`
 
-1. Verifiser at `app.settings.cron_secret` er satt (samme verdi som `CRON_SECRET` i Vercel):
+1. Verifiser at `app.settings.cron_secret` er satt (samme verdi som `CRON_SECRET` i Cloudflare Workers secrets):
 
    ```sql
    ALTER DATABASE postgres
-     SET "app.settings.cron_secret" = 'din-hemmelighet-fra-vercel';
+     SET "app.settings.cron_secret" = 'din-hemmelighet';
    ```
 
 2. Kjør migrasjonen (eller kjør innholdet i SQL Editor hvis dere ikke bruker `db push` på denne filen ennå).
@@ -34,7 +34,7 @@ Anbefaling videre: eksplisitte **tidsfiltre** (7d / 30d / YTD), **eksport CSV**,
    WHERE jobname = 'klarpakke-sync-prices-5min';
    ```
 
-## Bevis / verifikasjon etter deploy (Vercel)
+## Bevis / verifikasjon etter deploy
 
 Erstatt `CRON_SECRET` og eventuelt domene lokalt.
 
