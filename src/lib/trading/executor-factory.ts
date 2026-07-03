@@ -12,6 +12,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { BinanceExecutor } from "./binance-executor";
+import { BinanceProxyExecutor } from "./binance-proxy-executor";
 import type { OrderExecutor } from "./order-executor";
 import { PaperExecutor } from "./paper-executor";
 
@@ -86,11 +87,26 @@ export class ExecutorFactory {
       is_testnet?: boolean;
     };
 
-    // Create BinanceExecutor
+    const testnet = keys.is_testnet || false;
+
+    // Route through Supabase Edge Function proxy unless explicitly disabled.
+    // Proxy avoids Cloudflare Worker egress IP blocks from Binance WAF.
+    const proxyEnabled = process.env.BINANCE_PROXY_ENABLED !== "0";
+
+    if (proxyEnabled) {
+      return new BinanceProxyExecutor(
+        supabase,
+        userId,
+        keys.api_key,
+        keys.api_secret,
+        testnet,
+      );
+    }
+
     return new BinanceExecutor({
       apiKey: keys.api_key,
       apiSecret: keys.api_secret,
-      testnet: keys.is_testnet || false,
+      testnet,
     });
   }
 
