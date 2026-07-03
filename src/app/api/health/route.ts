@@ -292,10 +292,10 @@ export async function GET() {
         message: "Check timed out after 3000ms",
       }),
       Promise.resolve(checkEnvironment()),
-      withTimeout(checkBinanceConnectivity(), 5000, {
+      withTimeout(checkBinanceConnectivity(), 15000, {
         status: "error" as const,
         primaryWorked: false,
-        message: "Check timed out after 5000ms",
+        message: "Check timed out after 15000ms",
       }),
     ]);
 
