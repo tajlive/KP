@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { reconcileBinanceTrades, type ReconciliationTrade } from "@/lib/trading/reconciliation";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
-import { BinanceExecutor } from "@/lib/trading/binance-executor";
+import type { OrderExecutor } from "@/lib/trading/order-executor";
 import { validateCronSecret } from "@/lib/auth/cron";
 
 export const runtime = "nodejs";
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
   // Per-user executor cache so we only build (and decrypt API keys for) each
   // live-trading user once per reconciliation run.
-  const executors = new Map<string, BinanceExecutor>();
+  const executors = new Map<string, OrderExecutor>();
 
   const result = await reconcileBinanceTrades(
     db as SupabaseClient<Database>,
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       let executor = executors.get(trade.user_id);
       if (!executor) {
         try {
-          executor = (await ExecutorFactory.create(db, trade.user_id, "live")) as BinanceExecutor;
+          executor = await ExecutorFactory.create(db, trade.user_id, "live");
           executors.set(trade.user_id, executor);
         } catch (err) {
           console.error(
@@ -41,6 +41,10 @@ export async function GET(request: Request) {
           );
           return null;
         }
+      }
+
+      if (typeof executor.getOrderStatus !== "function") {
+        return null;
       }
 
       const binanceSymbol = trade.trading_pair.replace("/", "");

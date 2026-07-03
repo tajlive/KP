@@ -92,6 +92,12 @@ export interface OrderExecutor {
    * Get current order book for a symbol
    */
   fetchOrderBook(symbol: string, limit?: number): Promise<OrderBookSnapshot>;
+
+  /**
+   * Query the status of an existing exchange order.
+   * Optional until all executors implement it.
+   */
+  getOrderStatus?(symbol: string, orderId: string): Promise<{ status: string; filled: number } | null>;
 }
 
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
