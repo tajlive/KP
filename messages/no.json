@@ -53,6 +53,32 @@
     "overview": "Oversikt",
     "users": "Brukere",
     "students": "Studenter",
+    "nav": {
+      "traderVerifications": "Trader verifikasjoner"
+    },
+    "traderVerifications": {
+      "title": "Trader verifikasjoner",
+      "subtitle": "Godkjenn eller avvis trader-forespørsler",
+      "trader": "Trader",
+      "statusColumn": "Status",
+      "date": "Dato",
+      "reason": "Årsak",
+      "actions": "Handlinger",
+      "approve": "Godkjenn",
+      "reject": "Avvis",
+      "approvedSuccess": "Trader godkjent",
+      "rejectedSuccess": "Trader avvist",
+      "rejectPrompt": "Årsak til avvisning",
+      "fetchError": "Kunne ikke hente verifikasjoner",
+      "retry": "Prøv igjen",
+      "empty": "Ingen verifikasjoner funnet",
+      "status": {
+        "pending": "Venter",
+        "approved": "Godkjent",
+        "rejected": "Avvist",
+        "all": "Alle"
+      }
+    },
     "tradeSync": "Trade Sync",
     "system": {
       "databaseInfo": "Database Info",

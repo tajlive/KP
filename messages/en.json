@@ -53,6 +53,32 @@
     "overview": "Overview",
     "users": "Users",
     "students": "Students",
+    "nav": {
+      "traderVerifications": "Trader verifications"
+    },
+    "traderVerifications": {
+      "title": "Trader verifications",
+      "subtitle": "Approve or reject trader requests",
+      "trader": "Trader",
+      "statusColumn": "Status",
+      "date": "Date",
+      "reason": "Reason",
+      "actions": "Actions",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approvedSuccess": "Trader approved",
+      "rejectedSuccess": "Trader rejected",
+      "rejectPrompt": "Reason for rejection",
+      "fetchError": "Could not fetch verifications",
+      "retry": "Retry",
+      "empty": "No verifications found",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "all": "All"
+      }
+    },
     "tradeSync": "Trade Sync",
     "system": {
       "databaseInfo": "Database Info",
