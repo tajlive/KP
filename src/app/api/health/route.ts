@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
+import { BinanceMarketDataProvider } from "@/lib/trading/canonical/market-data/binance-provider";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -14,9 +15,17 @@ interface HealthCheck {
     tradingSignals: CheckResult;
     kv: CheckResult;
     environment: CheckResult;
+    binanceConnectivity: BinanceConnectivityResult;
   };
   uptime: number;
   cached?: boolean;
+}
+
+interface BinanceConnectivityResult {
+  status: "ok" | "degraded" | "error";
+  primaryWorked: boolean;
+  endpointUsed?: string;
+  message?: string;
 }
 
 interface CheckResult {
@@ -35,7 +44,9 @@ function getServiceClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   if (!url || !key) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
+    );
   }
 
   return createSupabaseClient(url, key, {
@@ -93,7 +104,8 @@ async function checkTradingSignals(): Promise<CheckResult> {
       return {
         status: "error",
         latency: Date.now() - start,
-        message: botRow.last_error?.slice(0, 200) ?? "signal-engine status error",
+        message:
+          botRow.last_error?.slice(0, 200) ?? "signal-engine status error",
       };
     }
 
@@ -182,6 +194,31 @@ async function checkKV(): Promise<CheckResult> {
   }
 }
 
+async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
+  const start = Date.now();
+  const provider = new BinanceMarketDataProvider();
+  const primaryBase = "https://api.binance.com";
+
+  try {
+    await provider.getPrice("BTCUSDT");
+    const endpointUsed = provider.getLastEndpointUsed() ?? primaryBase;
+    const primaryWorked = endpointUsed === primaryBase;
+
+    return {
+      status: primaryWorked ? "ok" : "degraded",
+      primaryWorked,
+      endpointUsed,
+    };
+  } catch (err) {
+    console.error("[Health] checkBinanceConnectivity error:", err);
+    return {
+      status: "error",
+      primaryWorked: false,
+      message: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+  }
+}
+
 function checkEnvironment(): CheckResult {
   const requiredVars = [
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -201,11 +238,15 @@ function checkEnvironment(): CheckResult {
   return { status: "ok" };
 }
 
-function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  fallback: T,
+): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms),
     ),
   ]).catch(() => fallback);
 }
@@ -222,43 +263,57 @@ export async function GET() {
       if (raw) {
         cached = JSON.parse(raw);
       }
-    } catch { /* ignore cache errors */ }
+    } catch {
+      /* ignore cache errors */
+    }
   }
 
   // Return cached result immediately if fresh (< 25s old to avoid edge case)
   if (cached && Date.now() - new Date(cached.timestamp).getTime() < 25_000) {
     return NextResponse.json(
       { ...cached, cached: true },
-      { status: cached.status === "unhealthy" ? 503 : 200 }
+      { status: cached.status === "unhealthy" ? 503 : 200 },
     );
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment] = await Promise.all([
-    withTimeout(checkDatabase(), 3000, {
-      status: "error" as const,
-      message: "Check timed out after 3000ms",
-    }),
-    withTimeout(checkTradingSignals(), 3000, {
-      status: "error" as const,
-      message: "Check timed out after 3000ms",
-    }),
-    withTimeout(checkKV(), 3000, {
-      status: "warning" as const,
-      message: "Check timed out after 3000ms",
-    }),
-    Promise.resolve(checkEnvironment()),
-  ]);
+  const [database, tradingSignals, kv, environment, binanceConnectivity] =
+    await Promise.all([
+      withTimeout(checkDatabase(), 3000, {
+        status: "error" as const,
+        message: "Check timed out after 3000ms",
+      }),
+      withTimeout(checkTradingSignals(), 3000, {
+        status: "error" as const,
+        message: "Check timed out after 3000ms",
+      }),
+      withTimeout(checkKV(), 3000, {
+        status: "warning" as const,
+        message: "Check timed out after 3000ms",
+      }),
+      Promise.resolve(checkEnvironment()),
+      withTimeout(checkBinanceConnectivity(), 5000, {
+        status: "error" as const,
+        primaryWorked: false,
+        message: "Check timed out after 5000ms",
+      }),
+    ]);
 
   const checks = {
     database,
     tradingSignals,
     kv,
     environment,
+    binanceConnectivity,
   };
 
-  const hasError = Object.values(checks).some((c) => c.status === "error");
-  const hasWarning = Object.values(checks).some((c) => c.status === "warning");
+  const { binanceConnectivity: _, ...statusChecks } = checks;
+  const hasError = Object.values(statusChecks).some(
+    (c) => c.status === "error",
+  );
+  const hasWarning = Object.values(statusChecks).some(
+    (c) => c.status === "warning",
+  );
 
   const status = hasError ? "unhealthy" : hasWarning ? "degraded" : "healthy";
 
@@ -284,7 +339,9 @@ export async function GET() {
       await redis?.set(CACHE_KEY, JSON.stringify(health), {
         ex: CACHE_TTL_SECONDS,
       });
-    } catch { /* ignore cache write errors */ }
+    } catch {
+      /* ignore cache write errors */
+    }
   }
 
   return NextResponse.json(health, {
