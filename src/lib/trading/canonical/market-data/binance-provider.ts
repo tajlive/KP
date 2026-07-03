@@ -82,12 +82,18 @@ async function fetchFromEndpoint<T>(
   }
 }
 
-async function binanceFetch<T>(path: string, timeoutMs: number): Promise<T> {
+async function binanceFetch<T>(
+  path: string,
+  timeoutMs: number,
+  onEndpointUsed?: (base: string) => void,
+): Promise<T> {
   let lastError: Error | undefined;
 
   for (const base of BINANCE_API_BASES) {
     try {
-      return await fetchFromEndpoint<T>(base, path, timeoutMs);
+      const result = await fetchFromEndpoint<T>(base, path, timeoutMs);
+      onEndpointUsed?.(base);
+      return result;
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
 
@@ -111,11 +117,24 @@ async function binanceFetch<T>(path: string, timeoutMs: number): Promise<T> {
 }
 
 export class BinanceMarketDataProvider implements MarketDataProvider {
+  private lastEndpointUsed: string | undefined;
+
+  /**
+   * Returns the last Binance endpoint that successfully served a request.
+   * Useful for health checks to verify whether the primary endpoint is reachable.
+   */
+  getLastEndpointUsed(): string | undefined {
+    return this.lastEndpointUsed;
+  }
+
   async getPrice(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
     const data = await binanceFetch<{ price: string }>(
       `/api/v3/ticker/price?symbol=${normalized}`,
       5000,
+      (base) => {
+        this.lastEndpointUsed = base;
+      },
     );
     return parseFloat(data.price);
   }
@@ -125,7 +144,9 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     const data = await binanceFetch<{
       bids: [string, string][];
       asks: [string, string][];
-    }>(`/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000);
+    }>(`/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000, (base) => {
+      this.lastEndpointUsed = base;
+    });
 
     return {
       bids: data.bids.map(([p, q]) => ({
@@ -155,7 +176,9 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     if (endTime !== undefined) {
       path += `&endTime=${Math.floor(endTime)}`;
     }
-    const data = await binanceFetch<unknown[]>(path, 15000);
+    const data = await binanceFetch<unknown[]>(path, 15000, (base) => {
+      this.lastEndpointUsed = base;
+    });
 
     return data.map((candle) => {
       const c = candle as unknown[];
@@ -175,6 +198,9 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     const data = await binanceFetch<{ priceChangePercent: string }>(
       `/api/v3/ticker/24hr?symbol=${normalized}`,
       5000,
+      (base) => {
+        this.lastEndpointUsed = base;
+      },
     );
     return parseFloat(data.priceChangePercent);
   }

@@ -14,29 +14,57 @@ import {
   type ExecuteTradeRequest,
   type TradeSignalContext,
 } from "@/lib/trading/core/execute-trade";
-import { resolveTickStrategyEngineKey, getStrategyConfig, shouldUseDarkFleet, getDarkFleetConfig } from "@/lib/trading/strategy-id-aliases";
-import { buildTradeReason, buildIndicatorSnapshot, resolveStrategyKey } from "@/lib/trading/build-trade-reason";
+import {
+  resolveTickStrategyEngineKey,
+  getStrategyConfig,
+  shouldUseDarkFleet,
+  getDarkFleetConfig,
+} from "@/lib/trading/strategy-id-aliases";
+import {
+  buildTradeReason,
+  buildIndicatorSnapshot,
+  resolveStrategyKey,
+} from "@/lib/trading/build-trade-reason";
 import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
-import { captureCronError, captureCronSuccess, generateTradeIdempotencyKey } from "@/lib/cron/cron-helpers";
+import {
+  captureCronError,
+  captureCronSuccess,
+  generateTradeIdempotencyKey,
+} from "@/lib/cron/cron-helpers";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import type { TradeSide, TradingSession } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/types/database.types";
 import {
-  createLedger, addLot, sellFIFO,
-  getTotalQuantity, migrateFromLegacy, toLegacyPosition,
+  createLedger,
+  addLot,
+  sellFIFO,
+  getTotalQuantity,
+  migrateFromLegacy,
+  toLegacyPosition,
   type LedgerState,
 } from "@/lib/trading/position-ledger";
-import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
+import {
+  resolveStrategy,
+  type Candle,
+  type StrategySignal,
+} from "@/lib/trading/strategies";
 
 import { logger } from "@/lib/logger";
-import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
+import {
+  evaluateDarkFleetSignal,
+  type DarkFleetConfig,
+} from "@/lib/trading/regime/tick-adapter";
 import { getFlagsAsync } from "@/lib/flags";
 // Rollout framework available for future A/B testing:
 // import { shouldUseChallenger, type TradeVersion } from "@/lib/trading/rollout/tick-rollout";
-import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from "@/lib/trading/beta/tick-guardrails";
+import {
+  evaluateGuardrails,
+  pauseUserSessions,
+  DEFAULT_GUARDRAIL_CONFIG,
+} from "@/lib/trading/beta/tick-guardrails";
 import { queueEmail } from "@/lib/email";
 import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
 import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
@@ -50,8 +78,16 @@ export const dynamic = "force-dynamic";
 
 interface TickResult {
   session_id: string;
-  action: "buy" | "sell" | "hold" | "error" | "heartbeat" | "risk_blocked" | "live_trade_failed";
+  action:
+    | "buy"
+    | "sell"
+    | "hold"
+    | "error"
+    | "heartbeat"
+    | "risk_blocked"
+    | "live_trade_failed";
   error?: string;
+  reason?: string;
   trade_id?: string;
   risk_reason?: string;
 }
@@ -83,52 +119,129 @@ async function fetchCandles(
   }
 }
 
+export type LiveTradeResult =
+  | {
+      ok: true;
+      executedPrice: number;
+      executedQuantity: number;
+      binanceOrderId: string;
+      fee: number;
+    }
+  | { ok: false; error: string; permanent: boolean };
+
+function classifyLiveTradeError(error: string): {
+  error: string;
+  permanent: boolean;
+} {
+  const lower = error.toLowerCase();
+  const transient = [
+    "unavailable",
+    "circuit breaker",
+    "timeout",
+    "403",
+    "429",
+    "endpoints failed",
+    "network",
+    "rate limit",
+    "blocked",
+    "temporarily",
+    "econn",
+    "fetch failed",
+    "all binance api endpoints failed",
+  ];
+  const permanent = [
+    "invalid api key",
+    "api key",
+    "unauthorized",
+    "rejected",
+    "permission",
+    "forbidden",
+    "invalid symbol",
+    "lot size",
+    "minimum",
+    "insufficient",
+    "malformed",
+    "bad",
+    "not authorized for live trading",
+  ];
+
+  if (transient.some((k) => lower.includes(k))) {
+    return { error, permanent: false };
+  }
+  if (permanent.some((k) => lower.includes(k))) {
+    return { error, permanent: true };
+  }
+  // Default to transient so unknown errors do not permanently stop sessions.
+  return { error, permanent: false };
+}
+
 /**
  * Execute a live trade on Binance using user's API keys.
  * Uses ExecutorFactory for consistent key decryption and tier validation.
- * Returns null if anything fails — live trades must NEVER silently fall back.
+ * Returns a discriminated result so callers can decide whether to stop the
+ * session or retry on the next tick.
  */
 export async function executeLiveTrade(
   db: SupabaseClient<Database>,
   userId: string,
   pair: string,
-  side: 'buy' | 'sell',
+  side: "buy" | "sell",
   quantity: number,
-): Promise<{ executedPrice: number; executedQuantity: number; binanceOrderId: string; fee: number } | null> {
+): Promise<LiveTradeResult> {
   try {
     // 1. Validate user can trade live (tier + connected)
     const canTrade = await ExecutorFactory.canTradeLive(db, userId);
     if (!canTrade) {
-      console.warn(`[LiveTrade] User ${userId} not authorized for live trading`);
-      return null;
+      const error = `User ${userId} not authorized for live trading`;
+      console.warn(`[LiveTrade] ${error}`);
+      return { ok: false, error, permanent: true };
     }
 
     // 2. Create executor via factory (handles key decryption)
-    const executor = await ExecutorFactory.create(db, userId, 'live');
+    const executor = await ExecutorFactory.create(db, userId, "live");
 
     // 3. Execute on Binance
-    const binanceSymbol = pair.replace('/', '');
+    const binanceSymbol = pair.replace("/", "");
     const result = await executor.executeOrder({
       symbol: binanceSymbol,
       side,
       quantity,
-      orderType: 'market',
+      orderType: "market",
     });
 
     if (!result.success) {
-      console.error(`[LiveTrade] Binance order failed for user ${userId}:`, result.error);
-      return null;
+      console.error(
+        `[LiveTrade] Binance order failed for user ${userId}:`,
+        result.error,
+      );
+      return {
+        ok: false,
+        ...classifyLiveTradeError(result.error ?? "Binance order failed"),
+      };
     }
     return {
+      ok: true,
       executedPrice: result.executedPrice,
       executedQuantity: result.executedQuantity,
       binanceOrderId: result.orderId,
       fee: result.fee,
     };
   } catch (err) {
-    console.error(`[LiveTrade] Unexpected error for user ${userId}:`, err);
-    return null;
+    const error = err instanceof Error ? err.message : String(err);
+    console.error(`[LiveTrade] Unexpected error for user ${userId}:`, error);
+    return { ok: false, error, permanent: false };
   }
+}
+
+// Per-session cooldown for the in-tick ensemble AI fallback. Cloudflare Workers
+// are single-process per instance, so an in-memory Map is sufficient.
+const ENSEMBLE_FALLBACK_COOLDOWN_MS = 5 * 60 * 1000;
+const ensembleFallbackLastInvocation = new Map<string, number>();
+
+function isEnsembleFallbackOnCooldown(sessionId: string): boolean {
+  const last = ensembleFallbackLastInvocation.get(sessionId);
+  if (!last) return false;
+  return Date.now() - last < ENSEMBLE_FALLBACK_COOLDOWN_MS;
 }
 
 /**
@@ -142,577 +255,1000 @@ async function processSession(
   darkFleetBaseConfig?: DarkFleetConfig,
   preFetchedCandles4h?: Candle[],
   preFetchedCandles15m?: Candle[],
+  tradingHalted = false,
 ): Promise<TickResult> {
-  const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
-  const pair = session.trading_pair || "BTCUSDT";
-  // OPTIMIZATION: Use pre-fetched candles if available, else fetch individually
-  const candles = preFetchedCandles ?? await fetchCandles(pair, "1h", 100);
-  const currentPrice = candles[candles.length - 1].close;
+  if (tradingHalted) {
+    return {
+      session_id: session.id,
+      action: "hold",
+      reason: "Global kill-switch active",
+    };
+  }
 
-  // ── V2: Load per-strategy config (UUID-aware) ───────────────────────────
-  const strategyConfig = getStrategyConfig(session.strategy_id);
-  const resolvedEngine = strategyConfig?.engine ?? engineKey ?? "multi_signal";
-  const baseConfig = strategyConfig?.config ?? {};
-  // Merge: per-UUID config overrides session.strategy_config
-  const mergedConfig: Record<string, unknown> = {
-    ...session.strategy_config,
-    ...baseConfig,
-    engineKey: resolvedEngine,
+  let heartbeatWritten = false;
+  const writeHeartbeat = async () => {
+    if (heartbeatWritten) return;
+    try {
+      await db
+        .from("trading_sessions")
+        .update({
+          last_heartbeat: new Date().toISOString(),
+          last_tick_at: new Date().toISOString(),
+        } as never)
+        .eq("id", session.id);
+      heartbeatWritten = true;
+    } catch (heartbeatErr) {
+      console.error(
+        `[Tick] Failed to write heartbeat for session ${session.id}:`,
+        heartbeatErr,
+      );
+    }
   };
 
-  let signal: StrategySignal;
+  try {
+    const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
+    const pair = session.trading_pair || "BTCUSDT";
+    // OPTIMIZATION: Use pre-fetched candles if available, else fetch individually
+    const candles = preFetchedCandles ?? (await fetchCandles(pair, "1h", 100));
+    const currentPrice = candles[candles.length - 1].close;
 
-  // ── PATH C: Dark Fleet (regime-aware ensemble) ──────────────────────────
-  // V2: Dark Fleet is always enabled in production. Per-strategy config overrides global.
-  const perStrategyDF = getDarkFleetConfig(session.strategy_id);
-  const dfEnabled = perStrategyDF?.enabled ?? darkFleetBaseConfig?.enabled ?? true;
+    // ── V2: Load per-strategy config (UUID-aware) ───────────────────────────
+    const strategyConfig = getStrategyConfig(session.strategy_id);
+    const resolvedEngine =
+      strategyConfig?.engine ?? engineKey ?? "multi_signal";
+    const baseConfig = strategyConfig?.config ?? {};
+    // Merge: per-UUID config overrides session.strategy_config
+    const mergedConfig: Record<string, unknown> = {
+      ...session.strategy_config,
+      ...baseConfig,
+      engineKey: resolvedEngine,
+    };
 
-  let darkFleetConfig: DarkFleetConfig | undefined;
-  if (dfEnabled && resolvedEngine !== "ensemble_ai") {
-    darkFleetConfig = { ...darkFleetBaseConfig, ...perStrategyDF } as DarkFleetConfig;
-  }
-  const useDarkFleet = !!darkFleetConfig;
-  if (useDarkFleet) {
-    try {
-      signal = evaluateDarkFleetSignal(
-        {
-          candles,
-          session,
-          config: mergedConfig,
-        },
-        darkFleetConfig,
-      );
-    } catch (err) {
-      console.error(`[DarkFleet] Error for session ${session.id}:`, (err as Error).message);
-      // Fallback to V2
-      const fallbackStrategy = resolvedEngine ? resolveStrategy(resolvedEngine) : undefined;
-      if (fallbackStrategy) {
-        signal = fallbackStrategy.evaluate({
-          candles,
-          session,
-          config: mergedConfig,
-        });
-      } else {
-        return {
-          session_id: session.id,
-          action: "error",
-          error: `Dark Fleet fallback failed for strategy: ${session.strategy_id}`,
-        };
-      }
+    let signal: StrategySignal;
+
+    // ── PATH C: Dark Fleet (regime-aware ensemble) ──────────────────────────
+    // V2: Dark Fleet is always enabled in production. Per-strategy config overrides global.
+    const perStrategyDF = getDarkFleetConfig(session.strategy_id);
+    const dfEnabled =
+      perStrategyDF?.enabled ?? darkFleetBaseConfig?.enabled ?? true;
+
+    let darkFleetConfig: DarkFleetConfig | undefined;
+    if (dfEnabled && resolvedEngine !== "ensemble_ai") {
+      darkFleetConfig = {
+        ...darkFleetBaseConfig,
+        ...perStrategyDF,
+      } as DarkFleetConfig;
     }
-  } else if (resolvedEngine === "ensemble_ai") {
-    // === PATH A: Eksisterende ensemble_ai (uendret) ===
-    const symbol = pair.replace("/", "");
-    let aiSignal = await db
-      .from("trading_signals")
-      .select("*")
-      .eq("symbol", symbol)
-      .eq("signal_type", "ensemble_ai")
-      .eq("agent_id", "ensemble_master")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then((r) => r.data);
-
-    if (!aiSignal) {
-      aiSignal = await db
+    const useDarkFleet = !!darkFleetConfig;
+    if (useDarkFleet) {
+      try {
+        signal = evaluateDarkFleetSignal(
+          {
+            candles,
+            session,
+            config: mergedConfig,
+          },
+          darkFleetConfig,
+        );
+      } catch (err) {
+        console.error(
+          `[DarkFleet] Error for session ${session.id}:`,
+          (err as Error).message,
+        );
+        // Fallback to V2
+        const fallbackStrategy = resolvedEngine
+          ? resolveStrategy(resolvedEngine)
+          : undefined;
+        if (fallbackStrategy) {
+          signal = fallbackStrategy.evaluate({
+            candles,
+            session,
+            config: mergedConfig,
+          });
+        } else {
+          return {
+            session_id: session.id,
+            action: "error",
+            error: `Dark Fleet fallback failed for strategy: ${session.strategy_id}`,
+          };
+        }
+      }
+    } else if (resolvedEngine === "ensemble_ai") {
+      // === PATH A: Eksisterende ensemble_ai (uendret) ===
+      const symbol = pair.replace("/", "");
+      let aiSignal = await db
         .from("trading_signals")
         .select("*")
         .eq("symbol", symbol)
         .eq("signal_type", "ensemble_ai")
+        .eq("agent_id", "ensemble_master")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle()
         .then((r) => r.data);
-    }
 
-    const maxAgeMs = 4 * 60 * 60 * 1000; // 4 hours (was 2h)
-    // OPTIMIZED: Increased from 2h → 4h because ai-engine runs hourly.
-    // Tick cron runs every 5 min. With 4h window we survive 3 consecutive
-    // ai-engine failures while still rejecting truly stale signals.
-    const isRecent = aiSignal?.created_at
-      ? Date.now() - new Date(aiSignal.created_at).getTime() < maxAgeMs
-      : false;
-
-    if (aiSignal && isRecent && (aiSignal.action === "buy" || aiSignal.action === "sell")) {
-      signal = {
-        action: aiSignal.action,
-        positionSize: (mergedConfig.position_size as number) ?? 0.05,
-        indicators: { source: "ensemble_ai", confidence: aiSignal.confidence },
-        reason: aiSignal.reasoning || "Ensemble AI signal",
-      };
-    } else {
-      // CRITICAL FALLBACK: If trading_signals is empty/stale, run ensemble DIRECTLY
-      // in tick. Prevents zero-trading when ai-engine cron fails or is delayed.
-      // Research: 73% of bot failures are execution mismatches, not signal quality.
-      try {
-        const prices = candles.map((c) => c.close);
-        const volumes = candles.map((c) => c.volume);
-        const consensus = await runEnsembleForSymbol(db, symbol, prices, volumes, {
-          modelVersion: 'ensemble-v2',
-          featureVersion: '1h-tick-fallback',
-        });
-
-        if (consensus.action === 'buy' || consensus.action === 'sell') {
-          signal = {
-            action: consensus.action,
-            positionSize: (mergedConfig.position_size as number) ?? 0.05,
-            indicators: {
-              source: "ensemble_fallback",
-              confidence: consensus.confidence,
-              regime: consensus.agentResults.find((a) => a.agent.id === 'hurst')?.signal.meta?.regime ?? 'unknown',
-            },
-            reason: `Fallback: ${consensus.reasoning}`,
-          };
-        } else {
-          signal = { action: "hold", reason: `Fallback ensemble: ${consensus.reasoning}` };
-        }
-      } catch (fallbackErr) {
-        console.error(`[Tick] Ensemble fallback failed for ${symbol}:`, (fallbackErr as Error).message);
-        signal = { action: "hold", reason: "No recent ensemble AI signal + fallback failed" };
-      }
-    }
-  } else {
-    // === PATH B: V2 strategies with merged config ===
-    const strategy = resolvedEngine ? resolveStrategy(resolvedEngine) : undefined;
-    if (!strategy) {
-      console.error(`[Tick] Unknown strategy for session ${session.id}: "${session.strategy_id}" (engine: ${resolvedEngine}) — skipping`);
-      return {
-        session_id: session.id,
-        action: "error",
-        error: `Unknown strategy: ${session.strategy_id}`,
-      };
-    }
-    signal = strategy.evaluate({
-      candles,
-      session,
-      config: mergedConfig,
-    });
-
-    // Check for Trailing Up config changes returned from strategy
-    if (signal.indicators?.new_grid_upper && signal.indicators?.new_grid_lower) {
-      const newUpper = signal.indicators.new_grid_upper as number;
-      const newLower = signal.indicators.new_grid_lower as number;
-      const stratCfg = session.strategy_config as Record<string, unknown>;
-      const existingGridConfig =
-        typeof stratCfg.grid_config === "object" && stratCfg.grid_config !== null
-          ? (stratCfg.grid_config as Record<string, unknown>)
-          : {};
-
-      const newGridConfig = {
-        ...existingGridConfig,
-        upper_price: newUpper,
-        lower_price: newLower,
-      };
-
-      const newStrategyConfig = {
-        ...stratCfg,
-        grid_config: newGridConfig,
-      };
-
-      // Update config asynchronously but catch errors
-      try {
-        await db.from("trading_sessions")
-          .update({ strategy_config: newStrategyConfig } as never)
-          .eq("id", session.id);
-        console.info(`[Tick] Updated grid config for session ${session.id} (Trailing Up: upper=${newUpper}, lower=${newLower})`);
-      } catch (err) {
-        console.error(`[Tick] Failed to persist new grid config for ${session.id}`, err);
+      if (!aiSignal) {
+        aiSignal = await db
+          .from("trading_signals")
+          .select("*")
+          .eq("symbol", symbol)
+          .eq("signal_type", "ensemble_ai")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+          .then((r) => r.data);
       }
 
-      // Update local session config for the rest of the tick
-      session.strategy_config = newStrategyConfig as TradingSession["strategy_config"];
-    }
-  }
+      const maxAgeMs = 4 * 60 * 60 * 1000; // 4 hours (was 2h)
+      // OPTIMIZED: Increased from 2h → 4h because ai-engine runs hourly.
+      // Tick cron runs every 5 min. With 4h window we survive 3 consecutive
+      // ai-engine failures while still rejecting truly stale signals.
+      const isRecent = aiSignal?.created_at
+        ? Date.now() - new Date(aiSignal.created_at).getTime() < maxAgeMs
+        : false;
 
-  // Update heartbeat
-  await db
-    .from("trading_sessions")
-    .update({
-      last_heartbeat: new Date().toISOString(),
-      last_tick_at: new Date().toISOString(),
-    } as never).eq("id", session.id);
-
-  // Trailing take-profit check on open positions
-  if (session.open_position && signal.action === "hold") {
-    const entryPrice = session.open_position.entry_price;
-    const highest = session.open_position.highest_price ?? entryPrice;
-
-    // OPTIMIZED: ATR-based trailing stop (AssetWhisper 2026 research: 2 ATR optimal)
-    // Falls back to percentage-based if ATR unavailable or disabled
-    const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
-    const useAtrTrailing = stratCfg.use_atr_trailing === true;
-    let trailingDistance: number;
-    let trailingReason: string;
-
-    if (useAtrTrailing && candles.length >= 15) {
-      // Calculate ATR14 from candles
-      const atrValues: number[] = [];
-      for (let i = candles.length - 14; i < candles.length; i++) {
-        const high = candles[i].high;
-        const low = candles[i].low;
-        const prevClose = candles[i - 1]?.close ?? candles[i].open;
-        const tr1 = high - low;
-        const tr2 = Math.abs(high - prevClose);
-        const tr3 = Math.abs(low - prevClose);
-        atrValues.push(Math.max(tr1, tr2, tr3));
-      }
-      const atr14 = atrValues.reduce((a, b) => a + b, 0) / atrValues.length;
-      // 2 ATR trailing distance (research-backed optimal)
-      trailingDistance = 2 * atr14;
-      trailingReason = `ATR14=${atr14.toFixed(2)}`;
-    } else {
-      // Fallback: percentage-based trailing stop
-      const trailingPct = (stratCfg.trailing_stop_pct as number) ?? 2.5;
-      trailingDistance = highest * (trailingPct / 100);
-      trailingReason = `${trailingPct}%`;
-    }
-
-    // Update highest price tracking
-    if (currentPrice > highest) {
-      await db
-        .from("trading_sessions")
-        .update({
-          open_position: {
-            ...session.open_position,
-            highest_price: currentPrice,
+      if (
+        aiSignal &&
+        isRecent &&
+        (aiSignal.action === "buy" || aiSignal.action === "sell")
+      ) {
+        signal = {
+          action: aiSignal.action,
+          positionSize: (mergedConfig.position_size as number) ?? 0.05,
+          indicators: {
+            source: "ensemble_ai",
+            confidence: aiSignal.confidence,
           },
-        })
-        .eq("id", session.id);
-    }
-
-    // Trailing stop: if price drops trailingDistance from peak AND still in profit
-    const dropFromPeak = highest - currentPrice;
-    if (dropFromPeak >= trailingDistance && currentPrice > entryPrice) {
-      const dropPct = ((highest - currentPrice) / highest) * 100;
-      signal.action = "sell";
-      signal.reason = `Trailing TP: dropped ${dropPct.toFixed(1)}% (${trailingReason}) from peak $${highest.toFixed(0)}`;
-    }
-
-    // Time-based exit: Sell after 7 days if position is not profitable
-    const entryTime = new Date(session.open_position.entry_time).getTime();
-    const daysInPosition = (Date.now() - entryTime) / (1000 * 60 * 60 * 24);
-    const timeExitDays = ((session.strategy_config as Record<string, unknown>)?.time_exit_days as number) ?? 7;
-    if (daysInPosition >= timeExitDays && currentPrice <= entryPrice) {
-      signal.action = "sell";
-      signal.reason = `Time-based exit: position held ${daysInPosition.toFixed(1)} days without profit — cutting loss`;
-    }
-
-    // Partial Take-Profit: Sell portions at predefined targets
-    const pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
-    const partialLevels = (session.strategy_config as Record<string, unknown>)
-      ?.partial_tp_levels as
-      | Array<{ target_pct: number; sell_pct: number }>
-      | undefined;
-
-    if (partialLevels && partialLevels.length > 0) {
-      // Find which level we're at (if any)
-      const positionWithExits =
-        session.open_position as typeof session.open_position & {
-          partial_exits_executed?: number[];
+          reason: aiSignal.reasoning || "Ensemble AI signal",
         };
-      const executedLevels = positionWithExits.partial_exits_executed || [];
-      const nextLevel = partialLevels.find(
-        (l) => pnlPct >= l.target_pct && !executedLevels.includes(l.target_pct),
-      );
+      } else {
+        // CRITICAL FALLBACK: If trading_signals is empty/stale, run ensemble DIRECTLY
+        // in tick. Prevents zero-trading when ai-engine cron fails or is delayed.
+        // Research: 73% of bot failures are execution mismatches, not signal quality.
 
-      if (nextLevel) {
-        // Execute partial exit - sell percentage of current position
-        const sellFraction = nextLevel.sell_pct / 100;
-        const currentQty = session.open_position.quantity || 1;
-        signal.action = "sell";
-        signal.positionSize =
-          (sellFraction * currentQty) / session.current_capital;
-        signal.reason = `Partial TP: ${nextLevel.sell_pct}% at +${nextLevel.target_pct}% target`;
+        // PRODUCTION SAFETY: Live sessions must not spend real money on unvalidated
+        // in-tick ensemble signals unless the emergency env var is explicitly set.
+        if (
+          session.mode === "live" &&
+          process.env.TICK_LIVE_ENSEMBLE_FALLBACK !== "enabled"
+        ) {
+          console.warn(
+            `[Tick] Live session ${session.id} held: no recent ensemble AI signal for ${symbol}`,
+          );
+          return {
+            session_id: session.id,
+            action: "hold",
+            reason: "No recent ensemble AI signal",
+          };
+        }
+        if (isEnsembleFallbackOnCooldown(session.id)) {
+          return {
+            session_id: session.id,
+            action: "hold",
+            reason: "Ensemble fallback cooldown active",
+          };
+        }
+        {
+          ensembleFallbackLastInvocation.set(session.id, Date.now());
+          try {
+            const prices = candles.map((c) => c.close);
+            const volumes = candles.map((c) => c.volume);
+            const consensus = await runEnsembleForSymbol(
+              db,
+              symbol,
+              prices,
+              volumes,
+              {
+                modelVersion: "ensemble-v2",
+                featureVersion: "1h-tick-fallback",
+              },
+            );
 
-        // Mark this level as executed
+            if (consensus.action === "buy" || consensus.action === "sell") {
+              signal = {
+                action: consensus.action,
+                positionSize: (mergedConfig.position_size as number) ?? 0.05,
+                indicators: {
+                  source: "ensemble_fallback",
+                  confidence: consensus.confidence,
+                  regime:
+                    consensus.agentResults.find((a) => a.agent.id === "hurst")
+                      ?.signal.meta?.regime ?? "unknown",
+                },
+                reason: `Fallback: ${consensus.reasoning}`,
+              };
+            } else {
+              signal = {
+                action: "hold",
+                reason: `Fallback ensemble: ${consensus.reasoning}`,
+              };
+            }
+          } catch (fallbackErr) {
+            console.error(
+              `[Tick] Ensemble fallback failed for ${symbol}:`,
+              (fallbackErr as Error).message,
+            );
+            signal = {
+              action: "hold",
+              reason: "No recent ensemble AI signal + fallback failed",
+            };
+          }
+        }
+      }
+    } else {
+      // === PATH B: V2 strategies with merged config ===
+      const strategy = resolvedEngine
+        ? resolveStrategy(resolvedEngine)
+        : undefined;
+      if (!strategy) {
+        console.error(
+          `[Tick] Unknown strategy for session ${session.id}: "${session.strategy_id}" (engine: ${resolvedEngine}) — skipping`,
+        );
+        return {
+          session_id: session.id,
+          action: "error",
+          error: `Unknown strategy: ${session.strategy_id}`,
+        };
+      }
+      signal = strategy.evaluate({
+        candles,
+        session,
+        config: mergedConfig,
+      });
+
+      // Check for Trailing Up config changes returned from strategy
+      if (
+        signal.indicators?.new_grid_upper &&
+        signal.indicators?.new_grid_lower
+      ) {
+        const newUpper = signal.indicators.new_grid_upper as number;
+        const newLower = signal.indicators.new_grid_lower as number;
+        const stratCfg = session.strategy_config as Record<string, unknown>;
+        const existingGridConfig =
+          typeof stratCfg.grid_config === "object" &&
+          stratCfg.grid_config !== null
+            ? (stratCfg.grid_config as Record<string, unknown>)
+            : {};
+
+        const newGridConfig = {
+          ...existingGridConfig,
+          upper_price: newUpper,
+          lower_price: newLower,
+        };
+
+        const newStrategyConfig = {
+          ...stratCfg,
+          grid_config: newGridConfig,
+        };
+
+        // Update config asynchronously but catch errors
+        try {
+          await db
+            .from("trading_sessions")
+            .update({ strategy_config: newStrategyConfig } as never)
+            .eq("id", session.id);
+          console.info(
+            `[Tick] Updated grid config for session ${session.id} (Trailing Up: upper=${newUpper}, lower=${newLower})`,
+          );
+        } catch (err) {
+          console.error(
+            `[Tick] Failed to persist new grid config for ${session.id}`,
+            err,
+          );
+        }
+
+        // Update local session config for the rest of the tick
+        session.strategy_config =
+          newStrategyConfig as TradingSession["strategy_config"];
+      }
+    }
+
+    // Update heartbeat
+    await writeHeartbeat();
+
+    // Trailing take-profit check on open positions
+    if (session.open_position && signal.action === "hold") {
+      const entryPrice = session.open_position.entry_price;
+      const highest = session.open_position.highest_price ?? entryPrice;
+
+      // OPTIMIZED: ATR-based trailing stop (AssetWhisper 2026 research: 2 ATR optimal)
+      // Falls back to percentage-based if ATR unavailable or disabled
+      const stratCfg =
+        (session.strategy_config as Record<string, unknown>) ?? {};
+      const useAtrTrailing = stratCfg.use_atr_trailing === true;
+      let trailingDistance: number;
+      let trailingReason: string;
+
+      if (useAtrTrailing && candles.length >= 15) {
+        // Calculate ATR14 from candles
+        const atrValues: number[] = [];
+        for (let i = candles.length - 14; i < candles.length; i++) {
+          const high = candles[i].high;
+          const low = candles[i].low;
+          const prevClose = candles[i - 1]?.close ?? candles[i].open;
+          const tr1 = high - low;
+          const tr2 = Math.abs(high - prevClose);
+          const tr3 = Math.abs(low - prevClose);
+          atrValues.push(Math.max(tr1, tr2, tr3));
+        }
+        const atr14 = atrValues.reduce((a, b) => a + b, 0) / atrValues.length;
+        // 2 ATR trailing distance (research-backed optimal)
+        trailingDistance = 2 * atr14;
+        trailingReason = `ATR14=${atr14.toFixed(2)}`;
+      } else {
+        // Fallback: percentage-based trailing stop
+        const trailingPct = (stratCfg.trailing_stop_pct as number) ?? 2.5;
+        trailingDistance = highest * (trailingPct / 100);
+        trailingReason = `${trailingPct}%`;
+      }
+
+      // Update highest price tracking
+      if (currentPrice > highest) {
         await db
           .from("trading_sessions")
           .update({
             open_position: {
               ...session.open_position,
-              partial_exits_executed: [...executedLevels, nextLevel.target_pct],
+              highest_price: currentPrice,
             },
           })
           .eq("id", session.id);
       }
+
+      // Trailing stop: if price drops trailingDistance from peak AND still in profit
+      const dropFromPeak = highest - currentPrice;
+      if (dropFromPeak >= trailingDistance && currentPrice > entryPrice) {
+        const dropPct = ((highest - currentPrice) / highest) * 100;
+        signal.action = "sell";
+        signal.reason = `Trailing TP: dropped ${dropPct.toFixed(1)}% (${trailingReason}) from peak $${highest.toFixed(0)}`;
+      }
+
+      // Time-based exit: Sell after 7 days if position is not profitable
+      const entryTime = new Date(session.open_position.entry_time).getTime();
+      const daysInPosition = (Date.now() - entryTime) / (1000 * 60 * 60 * 24);
+      const timeExitDays =
+        ((session.strategy_config as Record<string, unknown>)
+          ?.time_exit_days as number) ?? 7;
+      if (daysInPosition >= timeExitDays && currentPrice <= entryPrice) {
+        signal.action = "sell";
+        signal.reason = `Time-based exit: position held ${daysInPosition.toFixed(1)} days without profit — cutting loss`;
+      }
+
+      // Partial Take-Profit: Sell portions at predefined targets
+      const pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
+      const partialLevels = (session.strategy_config as Record<string, unknown>)
+        ?.partial_tp_levels as
+        | Array<{ target_pct: number; sell_pct: number }>
+        | undefined;
+
+      if (partialLevels && partialLevels.length > 0) {
+        // Find which level we're at (if any)
+        const positionWithExits =
+          session.open_position as typeof session.open_position & {
+            partial_exits_executed?: number[];
+          };
+        const executedLevels = positionWithExits.partial_exits_executed || [];
+        const nextLevel = partialLevels.find(
+          (l) =>
+            pnlPct >= l.target_pct && !executedLevels.includes(l.target_pct),
+        );
+
+        if (nextLevel) {
+          // Execute partial exit - sell percentage of current position
+          const sellFraction = nextLevel.sell_pct / 100;
+          const currentQty = session.open_position.quantity || 1;
+          signal.action = "sell";
+          signal.positionSize =
+            (sellFraction * currentQty) / session.current_capital;
+          signal.reason = `Partial TP: ${nextLevel.sell_pct}% at +${nextLevel.target_pct}% target`;
+
+          // Mark this level as executed
+          await db
+            .from("trading_sessions")
+            .update({
+              open_position: {
+                ...session.open_position,
+                partial_exits_executed: [
+                  ...executedLevels,
+                  nextLevel.target_pct,
+                ],
+              },
+            })
+            .eq("id", session.id);
+        }
+      }
     }
-  }
 
-  // ── V2: Multi-Timeframe Filter (4h trend + 1h signal + 15m entry) ──────
-  if (preFetchedCandles4h && preFetchedCandles15m && signal.action !== "hold") {
-    const mtfResult = applyMultiTimeframeFilter(
-      candles,
-      preFetchedCandles4h,
-      preFetchedCandles15m,
-      signal.action,
-      signal.indicators?.confidence ? (signal.indicators.confidence as number) / 3 : 0.8,
-      { strategyKey: resolvedEngine, trendThreshold: 0.5, entryThreshold: 0.7 },
-    );
+    // ── V2: Multi-Timeframe Filter (4h trend + 1h signal + 15m entry) ──────
+    if (
+      preFetchedCandles4h &&
+      preFetchedCandles15m &&
+      signal.action !== "hold"
+    ) {
+      const mtfResult = applyMultiTimeframeFilter(
+        candles,
+        preFetchedCandles4h,
+        preFetchedCandles15m,
+        signal.action,
+        signal.indicators?.confidence
+          ? (signal.indicators.confidence as number) / 3
+          : 0.8,
+        {
+          strategyKey: resolvedEngine,
+          trendThreshold: 0.5,
+          entryThreshold: 0.7,
+        },
+      );
 
-    logger.debug(`[MTF] Session ${session.id}: score=${mtfResult.score} trend=${mtfResult.trendDirection}(${mtfResult.trendScore}) entry=${mtfResult.entryConfirm} passed=${mtfResult.passed}`);
+      logger.debug(
+        `[MTF] Session ${session.id}: score=${mtfResult.score} trend=${mtfResult.trendDirection}(${mtfResult.trendScore}) entry=${mtfResult.entryConfirm} passed=${mtfResult.passed}`,
+      );
 
-    if (!mtfResult.passed) {
-      signal = {
-        action: "hold",
-        reason: `MTF blocked: ${mtfResult.reason}`,
-        indicators: {
+      if (!mtfResult.passed) {
+        signal = {
+          action: "hold",
+          reason: `MTF blocked: ${mtfResult.reason}`,
+          indicators: {
+            ...signal.indicators,
+            mtf_blocked: true,
+            mtf_score: mtfResult.score,
+            mtf_trend_score: mtfResult.trendScore,
+            mtf_entry_score: mtfResult.entryConfirm,
+            mtf_trend_direction: mtfResult.trendDirection,
+          },
+        };
+      } else {
+        // Enrich signal with MTF context
+        signal.indicators = {
           ...signal.indicators,
-          mtf_blocked: true,
           mtf_score: mtfResult.score,
           mtf_trend_score: mtfResult.trendScore,
           mtf_entry_score: mtfResult.entryConfirm,
           mtf_trend_direction: mtfResult.trendDirection,
-        },
-      };
-    } else {
-      // Enrich signal with MTF context
-      signal.indicators = {
-        ...signal.indicators,
-        mtf_score: mtfResult.score,
-        mtf_trend_score: mtfResult.trendScore,
-        mtf_entry_score: mtfResult.entryConfirm,
-        mtf_trend_direction: mtfResult.trendDirection,
-      };
+        };
+      }
     }
-  }
 
-  // If hold, just return heartbeat
-  if (signal.action === "hold") {
-    return { session_id: session.id, action: "heartbeat" };
-  }
-
-  // For grid strategy: cap positionSize by maxPositionSizePercent
-  const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
-  const DEFAULTS: RiskConfig = {
-    maxPositionSizePercent: 10,
-    stopLossPercent: 1,
-    trailingStopLossPercent: 1.5,
-    maxDailyLossPercent: 5,
-    maxDailyTrades: 20, // Increased from 10 → 20 with 15-min signal frequency
-    maxDrawdownPercent: 15,
-    maxLeverage: 1,
-  };
-  let riskConfig: RiskConfig = userRiskConfig || (stratCfg.risk_config as RiskConfig) || DEFAULTS;
-
-  // Grid strategy needs more trades per day — apply multiplier based on grid levels
-  if (engineKey === "grid") {
-    const gridCfg = (stratCfg.grid_config as Record<string, number> | undefined);
-    const gridLevels = gridCfg?.levels ?? 10;
-    // Grid needs at least 2 trades per level (buy + sell) per day
-    const gridMinTrades = gridLevels * 2;
-    if (riskConfig.maxDailyTrades < gridMinTrades) {
-      console.warn(`[Grid] Session ${session.id}: maxDailyTrades (${riskConfig.maxDailyTrades}) < gridMinTrades (${gridMinTrades}). Raising limit.`);
-      riskConfig = { ...riskConfig, maxDailyTrades: gridMinTrades };
+    // If hold, just return heartbeat
+    if (signal.action === "hold") {
+      return { session_id: session.id, action: "heartbeat" };
     }
-  }
 
-  if (engineKey === "grid" && signal.positionSize) {
-    const maxGridPos = riskConfig.maxPositionSizePercent / 100;
-    signal.positionSize = Math.min(signal.positionSize, maxGridPos);
-  }
+    // For grid strategy: cap positionSize by maxPositionSizePercent
+    const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
+    const DEFAULTS: RiskConfig = {
+      maxPositionSizePercent: 10,
+      stopLossPercent: 1,
+      trailingStopLossPercent: 1.5,
+      maxDailyLossPercent: 5,
+      maxDailyTrades: 20, // Increased from 10 → 20 with 15-min signal frequency
+      maxDrawdownPercent: 15,
+      maxLeverage: 1,
+    };
+    let riskConfig: RiskConfig =
+      userRiskConfig || (stratCfg.risk_config as RiskConfig) || DEFAULTS;
 
-  // ── V2: Dynamic Position Sizing (Kelly + ATR + Regime + Drawdown) ──────
-  let positionSize = signal.positionSize ?? 0.1;
-  let positionSizeReason = "static fallback";
-  let kellyFraction: number | undefined;
-  const regime = (signal.indicators?.regime as string) ?? "unknown";
+    // Grid strategy needs more trades per day — apply multiplier based on grid levels
+    if (engineKey === "grid") {
+      const gridCfg = stratCfg.grid_config as
+        | Record<string, number>
+        | undefined;
+      const gridLevels = gridCfg?.levels ?? 10;
+      // Grid needs at least 2 trades per level (buy + sell) per day
+      const gridMinTrades = gridLevels * 2;
+      if (riskConfig.maxDailyTrades < gridMinTrades) {
+        console.warn(
+          `[Grid] Session ${session.id}: maxDailyTrades (${riskConfig.maxDailyTrades}) < gridMinTrades (${gridMinTrades}). Raising limit.`,
+        );
+        riskConfig = { ...riskConfig, maxDailyTrades: gridMinTrades };
+      }
+    }
 
-  if (signal.action === "buy" || signal.action === "sell") {
-    try {
-      const dynamicSize = await calculateDynamicPositionSize(db, {
+    if (engineKey === "grid" && signal.positionSize) {
+      const maxGridPos = riskConfig.maxPositionSizePercent / 100;
+      signal.positionSize = Math.min(signal.positionSize, maxGridPos);
+    }
+
+    // ── V2: Dynamic Position Sizing (Kelly + ATR + Regime + Drawdown) ──────
+    let positionSize = signal.positionSize ?? 0.1;
+    let positionSizeReason = "static fallback";
+    let kellyFraction: number | undefined;
+    const regime = (signal.indicators?.regime as string) ?? "unknown";
+
+    if (signal.action === "buy" || signal.action === "sell") {
+      try {
+        const dynamicSize = await calculateDynamicPositionSize(db, {
+          userId: session.user_id,
+          sessionId: session.id,
+          strategyId: session.strategy_id,
+          currentCapital: session.current_capital,
+          initialCapital: session.initial_capital,
+          candles,
+          regime,
+          signalAction: signal.action,
+          basePositionSize: positionSize,
+          riskProfile: "balanced",
+        });
+        positionSize = dynamicSize.positionSize;
+        positionSizeReason = dynamicSize.reason;
+        kellyFraction = dynamicSize.kellyFraction;
+        logger.debug(
+          `[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`,
+        );
+      } catch (err) {
+        logger.warn(
+          `[PositionSize] Failed for session ${session.id}, using fallback:`,
+          (err as Error).message,
+        );
+      }
+    }
+
+    const tradeAmount = session.current_capital * positionSize;
+
+    // Minimum order value ($10) — same for paper and live
+    if (tradeAmount < 10) {
+      return { session_id: session.id, action: "hold" };
+    }
+
+    // Apply slippage (0.05%) — same for paper and live
+    const slippage = 0.0005;
+    const executedPrice =
+      signal.action === "buy"
+        ? mul(currentPrice, 1 + slippage)
+        : mul(currentPrice, 1 - slippage);
+
+    const quantity = div(tradeAmount, executedPrice);
+
+    if (quantity <= 0) {
+      return { session_id: session.id, action: "hold" };
+    }
+
+    // Tick-route risk gate is kept for live path only. Paper trades are routed
+    // through executeTrade() which performs the canonical risk validation.
+    if (session.mode === "live") {
+      const riskResult = await validateTradeAgainstRiskProfile(db, {
         userId: session.user_id,
         sessionId: session.id,
-        strategyId: session.strategy_id,
-        currentCapital: session.current_capital,
-        initialCapital: session.initial_capital,
-        candles,
-        regime,
-        signalAction: signal.action,
-        basePositionSize: positionSize,
-        riskProfile: "balanced",
+        symbol: pair.replace("/", ""),
+        side: signal.action as "buy" | "sell",
+        quantity,
+        price: currentPrice,
+        orderType: "market",
+        tradingMode: "live",
       });
-      positionSize = dynamicSize.positionSize;
-      positionSizeReason = dynamicSize.reason;
-      kellyFraction = dynamicSize.kellyFraction;
-      logger.debug(`[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`);
-    } catch (err) {
-      logger.warn(`[PositionSize] Failed for session ${session.id}, using fallback:`, (err as Error).message);
+
+      if (!riskResult.allowed) {
+        // Log risk block to database - using correct table schema
+        const riskLogDetails = {
+          reason: riskResult.rejectionReason,
+          signal: signal.action,
+          requested_amount: tradeAmount,
+          current_capital: session.current_capital,
+          risk_config: { ...riskConfig },
+        } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
+
+        await db.from("trading_logs").insert({
+          session_id: session.id,
+          user_id: session.user_id,
+          action: "risk_blocked",
+          details: riskLogDetails,
+        } as never);
+
+        console.warn("Trade blocked by risk validator:", {
+          session_id: session.id,
+          reason: riskResult.rejectionReason,
+        });
+
+        return {
+          session_id: session.id,
+          action: "risk_blocked",
+          risk_reason: riskResult.rejectionReason,
+        };
+      }
     }
-  }
 
-  const tradeAmount = session.current_capital * positionSize;
+    // ─── BETA GUARDRAILS ─────────────────────────────────────────────────
+    const isBetaUser =
+      process.env.BETA_USER_IDS?.split(",").includes(session.user_id) || false;
+    if (isBetaUser) {
+      const guardrails = await evaluateGuardrails(
+        db,
+        session.user_id,
+        session.current_capital,
+        session.initial_capital,
+        DEFAULT_GUARDRAIL_CONFIG,
+      );
 
-  // Minimum order value ($10) — same for paper and live
-  if (tradeAmount < 10) {
-    return { session_id: session.id, action: "hold" };
-  }
+      if (!guardrails.allowed) {
+        console.warn(
+          `[Guardrails] User ${session.user_id} blocked: ${guardrails.reason}`,
+        );
 
-  // Apply slippage (0.05%) — same for paper and live
-  const slippage = 0.0005;
-  const executedPrice = signal.action === "buy"
-    ? mul(currentPrice, 1 + slippage)
-    : mul(currentPrice, 1 - slippage);
+        if (guardrails.action === "pause" || guardrails.action === "kill") {
+          await pauseUserSessions(
+            db,
+            session.user_id,
+            guardrails.reason || "Guardrail triggered",
+          );
+        }
 
-  const quantity = div(tradeAmount, executedPrice);
+        return {
+          session_id: session.id,
+          action: "risk_blocked",
+          risk_reason: guardrails.reason,
+        };
+      }
 
-  if (quantity <= 0) {
-    return { session_id: session.id, action: "hold" };
-  }
+      if (guardrails.action === "warn") {
+        console.warn(
+          `[Guardrails] Warning for ${session.user_id}: ${guardrails.reason}`,
+        );
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────
 
-  // Tick-route risk gate is kept for live path only. Paper trades are routed
-  // through executeTrade() which performs the canonical risk validation.
-  if (session.mode === "live") {
-    const riskResult = await validateTradeAgainstRiskProfile(db, {
-      userId: session.user_id,
-      sessionId: session.id,
-      symbol: pair.replace("/", ""),
-      side: signal.action as "buy" | "sell",
-      quantity,
-      price: currentPrice,
-      orderType: "market",
-      tradingMode: "live",
+    // Calculate stop loss
+    const stopLossPercent = riskConfig.stopLossPercent ?? 1;
+    const stopLossPrice =
+      signal.action === "buy"
+        ? currentPrice * (1 - stopLossPercent / 100)
+        : currentPrice * (1 + stopLossPercent / 100);
+
+    // Build common trade context for explanation and canonical execution
+    const strategyKey = resolveStrategyKey(session.strategy_id);
+    const { reasonCode, reasonParams } = buildTradeReason({
+      side: signal.action as TradeSide,
+      strategyKey,
+      indicators:
+        ((signal.indicators || {}) as unknown as Record<string, unknown>) ||
+        null,
+      currentPrice,
+      candles,
+      entryPrice: session.open_position?.entry_price,
     });
-
-    if (!riskResult.allowed) {
-      // Log risk block to database - using correct table schema
-      const riskLogDetails = {
-        reason: riskResult.rejectionReason,
-        signal: signal.action,
-        requested_amount: tradeAmount,
-        current_capital: session.current_capital,
-        risk_config: { ...riskConfig },
-      } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
-
-      await db.from("trading_logs").insert({
-        session_id: session.id,
-        user_id: session.user_id,
-        action: "risk_blocked",
-        details: riskLogDetails,
-      } as never);
-
-      console.warn("Trade blocked by risk validator:", {
-        session_id: session.id,
-        reason: riskResult.rejectionReason,
-      });
-
-      return {
-        session_id: session.id,
-        action: "risk_blocked",
-        risk_reason: riskResult.rejectionReason,
-      };
-    }
-  }
-
-  // ─── BETA GUARDRAILS ─────────────────────────────────────────────────
-  const isBetaUser = process.env.BETA_USER_IDS?.split(",").includes(session.user_id) || false;
-  if (isBetaUser) {
-    const guardrails = await evaluateGuardrails(
-      db,
-      session.user_id,
-      session.current_capital,
-      session.initial_capital,
-      DEFAULT_GUARDRAIL_CONFIG,
+    const indicatorSnapshot = buildIndicatorSnapshot(
+      candles,
+      (signal.indicators as unknown as Record<string, unknown>) || null,
     );
 
-    if (!guardrails.allowed) {
-      console.warn(`[Guardrails] User ${session.user_id} blocked: ${guardrails.reason}`);
+    const signalContext: TradeSignalContext = {
+      action: signal.action,
+      confidence: (signal.indicators?.confidence as number) ?? 0,
+      regime: (signal.indicators?.regime as string) ?? "unknown",
+      strategy: strategyKey,
+      reason: signal.reason,
+      sizingPct: positionSize,
+      stopLossPrice,
+      indicators: {
+        ...signal.indicators,
+        stop_loss: stopLossPrice,
+        position_size: Math.round(positionSize * 10000) / 10000,
+        position_size_reason: positionSizeReason,
+        kelly_fraction: kellyFraction ?? null,
+      },
+    };
 
-      if (guardrails.action === "pause" || guardrails.action === "kill") {
-        await pauseUserSessions(db, session.user_id, guardrails.reason || "Guardrail triggered");
+    // ─── PAPER TRADING EXECUTION ─────────────────────────────────────────
+    // Route paper trades through the canonical execution pipeline so they share
+    // identical market-data, risk, and balance logic with live trading.
+    if (session.mode === "paper") {
+      const executeRequest: ExecuteTradeRequest = {
+        userId: session.user_id,
+        sessionId: session.id,
+        symbol: pair.replace("/", ""),
+        side: signal.action as "buy" | "sell",
+        quantity,
+        price: currentPrice,
+        orderType: "market",
+        mode: "paper",
+        signalContext,
+        idempotencyKey: generateTradeIdempotencyKey(
+          session.id,
+          pair,
+          signal.action,
+        ),
+        reasonCode,
+        reasonParams,
+        indicatorSnapshot: indicatorSnapshot as unknown as Record<
+          string,
+          unknown
+        >,
+        metadata: { maxSlippageBps: 5 },
+      };
+
+      const result = await executeTrade(db, executeRequest);
+
+      if (!result.success) {
+        console.warn(
+          `[Tick] Paper trade failed for session ${session.id}:`,
+          result.error,
+        );
+
+        await db.from("trading_logs").insert({
+          session_id: session.id,
+          user_id: session.user_id,
+          action: result.rejectionReason ? "risk_blocked" : "live_trade_failed",
+          details: {
+            reason: result.rejectionReason || result.error,
+            signal: signal.action,
+            requested_amount: tradeAmount,
+          } as never,
+        } as never);
+
+        return {
+          session_id: session.id,
+          action: result.rejectionReason ? "risk_blocked" : "error",
+          risk_reason: result.rejectionReason || result.error,
+        };
+      }
+
+      // Log Dark Fleet / regime metadata for every trade
+      if (signal.action === "buy" || signal.action === "sell") {
+        try {
+          await db.from("trading_logs").insert({
+            session_id: session.id,
+            user_id: session.user_id,
+            action: "regime_signal",
+            details: {
+              trade_id: result.tradeId,
+              regime: signal.indicators?.regime ?? "unknown",
+              ensemble_score: signal.indicators?.ensembleScore ?? null,
+              dark_fleet: useDarkFleet,
+              engine: resolvedEngine,
+              strategy_id: session.strategy_id,
+            } as never,
+          } as never);
+        } catch {
+          // Non-critical: don't fail the tick if logging fails
+        }
+      }
+
+      // AUDIT TRAIL (B1.4): Log every executed trade for compliance & debugging
+      // executeTrade returns USDT-denominated paper fill values; convert to NOK for
+      // audit parity with the NOK values stored in trades.price/total_value/fee.
+      if (result.tradeId) {
+        try {
+          const rate = getUsdtToNokRate();
+          const executedQty = result.executedQuantity ?? quantity;
+          const executedUsdt = result.executedPrice ?? currentPrice;
+          const totalUsdt = executedQty * executedUsdt;
+          const nokPrice = usdtToNok(executedUsdt, rate);
+          const nokTotalValue = usdtToNok(totalUsdt, rate);
+          const nokFee = usdtToNok(result.fee ?? 0, rate);
+
+          await db.from("trading_logs").insert({
+            session_id: session.id,
+            user_id: session.user_id,
+            action: "trade_executed",
+            details: {
+              trade_id: result.tradeId,
+              mode: "paper",
+              side: signal.action,
+              symbol: pair.replace("/", ""),
+              quantity: executedQty,
+              price: nokPrice,
+              total_value: nokTotalValue,
+              fee: nokFee,
+              usdt_price: executedUsdt,
+              usdt_total_value: totalUsdt,
+              usdt_fee: result.fee,
+              usdt_nok_rate: rate,
+              strategy_id: session.strategy_id,
+              engine: resolvedEngine,
+              dark_fleet: useDarkFleet,
+            } as never,
+          } as never);
+        } catch {
+          // Non-critical: audit logging must not fail the trade
+        }
       }
 
       return {
         session_id: session.id,
-        action: "risk_blocked",
-        risk_reason: guardrails.reason,
+        action: signal.action,
+        trade_id: result.tradeId,
       };
     }
 
-    if (guardrails.action === "warn") {
-      console.warn(`[Guardrails] Warning for ${session.user_id}: ${guardrails.reason}`);
-    }
-  }
-  // ─────────────────────────────────────────────────────────────────────
-
-  // Calculate stop loss
-  const stopLossPercent = riskConfig.stopLossPercent ?? 1;
-  const stopLossPrice =
-    signal.action === "buy"
-      ? currentPrice * (1 - stopLossPercent / 100)
-      : currentPrice * (1 + stopLossPercent / 100);
-
-  // Build common trade context for explanation and canonical execution
-  const strategyKey = resolveStrategyKey(session.strategy_id);
-  const { reasonCode, reasonParams } = buildTradeReason({
-    side: signal.action as TradeSide,
-    strategyKey,
-    indicators: ((signal.indicators || {}) as unknown as Record<string, unknown>) || null,
-    currentPrice,
-    candles,
-    entryPrice: session.open_position?.entry_price,
-  });
-  const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as unknown as Record<string, unknown>) || null);
-
-  const signalContext: TradeSignalContext = {
-    action: signal.action,
-    confidence: (signal.indicators?.confidence as number) ?? 0,
-    regime: (signal.indicators?.regime as string) ?? "unknown",
-    strategy: strategyKey,
-    reason: signal.reason,
-    sizingPct: positionSize,
-    stopLossPrice,
-    indicators: {
-      ...signal.indicators,
-      stop_loss: stopLossPrice,
-      position_size: Math.round(positionSize * 10000) / 10000,
-      position_size_reason: positionSizeReason,
-      kelly_fraction: kellyFraction ?? null,
-    },
-  };
-
-  // ─── PAPER TRADING EXECUTION ─────────────────────────────────────────
-  // Route paper trades through the canonical execution pipeline so they share
-  // identical market-data, risk, and balance logic with live trading.
-  if (session.mode === "paper") {
-    const executeRequest: ExecuteTradeRequest = {
-      userId: session.user_id,
-      sessionId: session.id,
-      symbol: pair.replace("/", ""),
-      side: signal.action as "buy" | "sell",
+    // ─── LIVE TRADING EXECUTION ──────────────────────────────────────────
+    const liveResult = await executeLiveTrade(
+      db,
+      session.user_id,
+      pair,
+      signal.action as "buy" | "sell",
       quantity,
-      price: currentPrice,
-      orderType: "market",
-      mode: "paper",
-      signalContext,
-      idempotencyKey: generateTradeIdempotencyKey(session.id, pair, signal.action),
-      reasonCode,
-      reasonParams,
-      indicatorSnapshot: indicatorSnapshot as unknown as Record<string, unknown>,
-      metadata: { maxSlippageBps: 5 },
-    };
+    );
 
-    const result = await executeTrade(db, executeRequest);
+    if (!liveResult.ok) {
+      console.warn(
+        `[Tick] Live trade blocked for session ${session.id}: ${liveResult.error}`,
+      );
 
-    if (!result.success) {
-      console.warn(`[Tick] Paper trade failed for session ${session.id}:`, result.error);
-
+      // Log failure to trading_logs so user sees it
       await db.from("trading_logs").insert({
         session_id: session.id,
         user_id: session.user_id,
-        action: result.rejectionReason ? "risk_blocked" : "live_trade_failed",
+        action: "live_trade_failed",
         details: {
-          reason: result.rejectionReason || result.error,
+          reason: liveResult.error,
           signal: signal.action,
           requested_amount: tradeAmount,
         } as never,
       } as never);
 
+      if (liveResult.permanent) {
+        // Stop the session permanently for non-recoverable errors (bad keys, permissions, etc.)
+        await db
+          .from("trading_sessions")
+          .update({ status: "stopped", last_status_message: liveResult.error })
+          .eq("id", session.id);
+        return {
+          session_id: session.id,
+          action: "error",
+          error: liveResult.error,
+        };
+      }
+
       return {
         session_id: session.id,
-        action: result.rejectionReason ? "risk_blocked" : "error",
-        risk_reason: result.rejectionReason || result.error,
+        action: "error",
+        error: liveResult.error,
       };
+    }
+
+    // Calculate realized P&L for sell trades using FIFO cost basis
+    let realizedPnl: number | undefined;
+    let updatedLedgerState: LedgerState | null = null;
+
+    if (signal.action === "sell" && session.open_position) {
+      // Build FIFO ledger: use lots if available, otherwise migrate from legacy
+      const ledger: LedgerState = session.open_position.lots
+        ? {
+            side: session.open_position.side || "long",
+            lots: session.open_position.lots as LedgerState["lots"],
+          }
+        : migrateFromLegacy(session.open_position);
+
+      const positionQty = getTotalQuantity(ledger);
+      const matchedQty = Math.min(quantity, positionQty);
+      if (matchedQty > 0) {
+        try {
+          const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
+          realizedPnl = sellResult.realizedPnl;
+          updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
+        } catch {
+          // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
+          const entryPrice = session.open_position.entry_price;
+          realizedPnl =
+            Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
+        }
+      }
+    }
+
+    // Execute trade
+    const finalExecutedPrice = liveResult.executedPrice;
+    const finalFee = liveResult.fee;
+    const totalValue = mul(quantity, finalExecutedPrice);
+    const idempotencyKey = generateTradeIdempotencyKey(
+      session.id,
+      pair,
+      signal.action,
+    );
+
+    const { data: trade, error: tradeError } = await db
+      .from("trades")
+      .insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        idempotency_key: idempotencyKey,
+        mode: session.mode,
+        trading_pair: session.trading_pair,
+        symbol: pair.replace("/", ""),
+        side: signal.action as TradeSide,
+        order_type: "market",
+        quantity,
+        filled_quantity: liveResult.executedQuantity,
+        price: finalExecutedPrice,
+        total_value: totalValue,
+        fee: finalFee,
+        status: "filled",
+        realized_pnl: realizedPnl,
+        binance_order_id: liveResult.binanceOrderId,
+        strategy_signal: signalContext.indicators,
+        // Explanation data
+        reason_code: reasonCode,
+        reason_params: reasonParams as unknown as Json,
+        indicator_snapshot: indicatorSnapshot as unknown as Json,
+        executed_at: new Date().toISOString(),
+      } as never)
+      .select("id")
+      .single();
+
+    if (tradeError) {
+      console.error("Trade insert failed:", {
+        session_id: session.id,
+        error: tradeError.message,
+        code: tradeError.code,
+      });
+
+      throw new Error(`Trade insert failed: ${tradeError.message}`);
+    }
+
+    // ── LIVE CAPITAL UPDATE (B1.3) ───────────────────────────────────────────
+    // Live capital MUST be updated here.
+    if (trade?.id) {
+      try {
+        const rate = getUsdtToNokRate();
+        const netValueUsdt =
+          signal.action === "buy"
+            ? totalValue + finalFee
+            : totalValue - finalFee;
+        const netValueNok = usdtToNok(netValueUsdt, rate);
+        const { error: capitalError } = await db.rpc(
+          signal.action === "buy" ? "decrement_capital" : "increment_capital",
+          {
+            p_session_id: session.id,
+            p_amount: Math.abs(netValueNok),
+            p_user_id: session.user_id,
+          },
+        );
+        if (capitalError) {
+          console.error(
+            `[Tick] Live capital update failed for session ${session.id}:`,
+            capitalError.message,
+          );
+        }
+      } catch (capitalErr) {
+        console.error(
+          `[Tick] Live capital update exception for session ${session.id}:`,
+          capitalErr,
+        );
+      }
+    }
+
+    // Update session position state with FIFO lots
+    if (signal.action === "buy") {
+      // Build ledger from current position (or create new)
+      const ledger: LedgerState = session.open_position?.lots
+        ? {
+            side: session.open_position.side || "long",
+            lots: session.open_position.lots as LedgerState["lots"],
+          }
+        : session.open_position
+          ? migrateFromLegacy(session.open_position)
+          : createLedger("long");
+
+      // For live trades, use actual Binance executed price as cost basis
+      const entryPriceForLot = liveResult.executedPrice;
+      const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
+      const legacyPos = toLegacyPosition(updatedLedger);
+
+      if (legacyPos) {
+        await db
+          .from("trading_sessions")
+          .update({
+            open_position: {
+              ...legacyPos,
+              highest_price:
+                session.open_position?.highest_price ?? entryPriceForLot,
+            },
+          } as never)
+          .eq("id", session.id);
+      }
+    } else if (signal.action === "sell" && updatedLedgerState) {
+      // Update with remaining lots after FIFO sell
+      const legacyPos = toLegacyPosition(updatedLedgerState);
+      await db
+        .from("trading_sessions")
+        .update({
+          open_position: legacyPos
+            ? {
+                ...legacyPos,
+                highest_price: session.open_position?.highest_price,
+              }
+            : null,
+        } as never)
+        .eq("id", session.id);
     }
 
     // Log Dark Fleet / regime metadata for every trade
@@ -723,7 +1259,7 @@ async function processSession(
           user_id: session.user_id,
           action: "regime_signal",
           details: {
-            trade_id: result.tradeId,
+            trade_id: trade?.id,
             regime: signal.indicators?.regime ?? "unknown",
             ensemble_score: signal.indicators?.ensembleScore ?? null,
             dark_fleet: useDarkFleet,
@@ -737,35 +1273,24 @@ async function processSession(
     }
 
     // AUDIT TRAIL (B1.4): Log every executed trade for compliance & debugging
-    // executeTrade returns USDT-denominated paper fill values; convert to NOK for
-    // audit parity with the NOK values stored in trades.price/total_value/fee.
-    if (result.tradeId) {
+    if (trade?.id) {
       try {
-        const rate = getUsdtToNokRate();
-        const executedQty = result.executedQuantity ?? quantity;
-        const executedUsdt = result.executedPrice ?? currentPrice;
-        const totalUsdt = executedQty * executedUsdt;
-        const nokPrice = usdtToNok(executedUsdt, rate);
-        const nokTotalValue = usdtToNok(totalUsdt, rate);
-        const nokFee = usdtToNok(result.fee ?? 0, rate);
-
         await db.from("trading_logs").insert({
           session_id: session.id,
           user_id: session.user_id,
           action: "trade_executed",
           details: {
-            trade_id: result.tradeId,
-            mode: "paper",
+            trade_id: trade.id,
+            mode: session.mode,
             side: signal.action,
             symbol: pair.replace("/", ""),
-            quantity: executedQty,
-            price: nokPrice,
-            total_value: nokTotalValue,
-            fee: nokFee,
-            usdt_price: executedUsdt,
-            usdt_total_value: totalUsdt,
-            usdt_fee: result.fee,
-            usdt_nok_rate: rate,
+            quantity,
+            price: finalExecutedPrice,
+            total_value: totalValue,
+            fee: finalFee,
+            realized_pnl: realizedPnl ?? null,
+            binance_order_id: liveResult.binanceOrderId,
+            idempotency_key: idempotencyKey,
             strategy_id: session.strategy_id,
             engine: resolvedEngine,
             dark_fleet: useDarkFleet,
@@ -776,228 +1301,15 @@ async function processSession(
       }
     }
 
+    // Log successful trade
     return {
       session_id: session.id,
       action: signal.action,
-      trade_id: result.tradeId,
+      trade_id: trade?.id,
     };
+  } finally {
+    await writeHeartbeat();
   }
-
-  // ─── LIVE TRADING EXECUTION ──────────────────────────────────────────
-  let liveResult: { executedPrice: number; executedQuantity: number; binanceOrderId: string; fee: number } | null = null;
-  liveResult = await executeLiveTrade(db, session.user_id, pair, signal.action as 'buy' | 'sell', quantity);
-
-  if (!liveResult) {
-    console.warn(`[Tick] Live trade blocked for session ${session.id}: Binance execution failed`);
-
-    // Log failure to trading_logs so user sees it
-    await db.from("trading_logs").insert({
-      session_id: session.id,
-      user_id: session.user_id,
-      action: "live_trade_failed",
-      details: { reason: "Binance execution failed", signal: signal.action, requested_amount: tradeAmount } as never,
-    } as never);
-
-    return {
-      session_id: session.id,
-      action: "live_trade_failed",
-      risk_reason: "Binance execution failed",
-    };
-  }
-
-  // Calculate realized P&L for sell trades using FIFO cost basis
-  let realizedPnl: number | undefined;
-  let updatedLedgerState: LedgerState | null = null;
-
-  if (signal.action === "sell" && session.open_position) {
-    // Build FIFO ledger: use lots if available, otherwise migrate from legacy
-    const ledger: LedgerState = session.open_position.lots
-      ? { side: session.open_position.side || "long", lots: session.open_position.lots as LedgerState["lots"] }
-      : migrateFromLegacy(session.open_position);
-
-    const positionQty = getTotalQuantity(ledger);
-    const matchedQty = Math.min(quantity, positionQty);
-    if (matchedQty > 0) {
-      try {
-        const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
-        realizedPnl = sellResult.realizedPnl;
-        updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
-      } catch {
-        // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
-        const entryPrice = session.open_position.entry_price;
-        realizedPnl = Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
-      }
-    }
-  }
-
-  // Execute trade
-  const finalExecutedPrice = liveResult.executedPrice;
-  const finalFee = liveResult.fee;
-  const totalValue = mul(quantity, finalExecutedPrice);
-  const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
-
-  const { data: trade, error: tradeError } = await db
-    .from("trades")
-    .insert({
-      session_id: session.id,
-      user_id: session.user_id,
-      idempotency_key: idempotencyKey,
-      mode: session.mode,
-      trading_pair: session.trading_pair,
-      symbol: pair.replace("/", ""),
-      side: signal.action as TradeSide,
-      order_type: "market",
-      quantity,
-      filled_quantity: liveResult.executedQuantity,
-      price: finalExecutedPrice,
-      total_value: totalValue,
-      fee: finalFee,
-      status: "filled",
-      realized_pnl: realizedPnl,
-      binance_order_id: liveResult.binanceOrderId,
-      strategy_signal: signalContext.indicators,
-      // Explanation data
-      reason_code: reasonCode,
-      reason_params: reasonParams as unknown as Json,
-      indicator_snapshot: indicatorSnapshot as unknown as Json,
-      executed_at: new Date().toISOString(),
-    } as never)
-    .select("id")
-    .single();
-
-  if (tradeError) {
-    console.error("Trade insert failed:", {
-      session_id: session.id,
-      error: tradeError.message,
-      code: tradeError.code,
-    });
-
-    throw new Error(`Trade insert failed: ${tradeError.message}`);
-  }
-
-  // ── LIVE CAPITAL UPDATE (B1.3) ───────────────────────────────────────────
-  // Live capital MUST be updated here.
-  if (trade?.id) {
-    try {
-      const rate = getUsdtToNokRate();
-      const netValueUsdt =
-        signal.action === "buy"
-          ? totalValue + finalFee
-          : totalValue - finalFee;
-      const netValueNok = usdtToNok(netValueUsdt, rate);
-      const { error: capitalError } = await db.rpc(
-        signal.action === "buy" ? "decrement_capital" : "increment_capital",
-        {
-          p_session_id: session.id,
-          p_amount: Math.abs(netValueNok),
-          p_user_id: session.user_id,
-        },
-      );
-      if (capitalError) {
-        console.error(`[Tick] Live capital update failed for session ${session.id}:`, capitalError.message);
-      }
-    } catch (capitalErr) {
-      console.error(`[Tick] Live capital update exception for session ${session.id}:`, capitalErr);
-    }
-  }
-
-  // Update session position state with FIFO lots
-  if (signal.action === "buy") {
-    // Build ledger from current position (or create new)
-    const ledger: LedgerState = session.open_position?.lots
-      ? { side: session.open_position.side || "long", lots: session.open_position.lots as LedgerState["lots"] }
-      : session.open_position
-        ? migrateFromLegacy(session.open_position)
-        : createLedger("long");
-
-    // For live trades, use actual Binance executed price as cost basis
-    const entryPriceForLot = liveResult.executedPrice;
-    const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
-    const legacyPos = toLegacyPosition(updatedLedger);
-
-    if (legacyPos) {
-      await db
-        .from("trading_sessions")
-        .update({
-          open_position: {
-            ...legacyPos,
-            highest_price: session.open_position?.highest_price ?? entryPriceForLot,
-          },
-        } as never)
-        .eq("id", session.id);
-    }
-  } else if (signal.action === "sell" && updatedLedgerState) {
-    // Update with remaining lots after FIFO sell
-    const legacyPos = toLegacyPosition(updatedLedgerState);
-    await db
-      .from("trading_sessions")
-      .update({
-        open_position: legacyPos
-          ? {
-              ...legacyPos,
-              highest_price: session.open_position?.highest_price,
-            }
-          : null,
-      } as never)
-      .eq("id", session.id);
-  }
-
-  // Log Dark Fleet / regime metadata for every trade
-  if (signal.action === "buy" || signal.action === "sell") {
-    try {
-      await db.from("trading_logs").insert({
-        session_id: session.id,
-        user_id: session.user_id,
-        action: "regime_signal",
-        details: {
-          trade_id: trade?.id,
-          regime: signal.indicators?.regime ?? "unknown",
-          ensemble_score: signal.indicators?.ensembleScore ?? null,
-          dark_fleet: useDarkFleet,
-          engine: resolvedEngine,
-          strategy_id: session.strategy_id,
-        } as never,
-      } as never);
-    } catch {
-      // Non-critical: don't fail the tick if logging fails
-    }
-  }
-
-  // AUDIT TRAIL (B1.4): Log every executed trade for compliance & debugging
-  if (trade?.id) {
-    try {
-      await db.from("trading_logs").insert({
-        session_id: session.id,
-        user_id: session.user_id,
-        action: "trade_executed",
-        details: {
-          trade_id: trade.id,
-          mode: session.mode,
-          side: signal.action,
-          symbol: pair.replace("/", ""),
-          quantity,
-          price: finalExecutedPrice,
-          total_value: totalValue,
-          fee: finalFee,
-          realized_pnl: realizedPnl ?? null,
-          binance_order_id: liveResult.binanceOrderId,
-          idempotency_key: idempotencyKey,
-          strategy_id: session.strategy_id,
-          engine: resolvedEngine,
-          dark_fleet: useDarkFleet,
-        } as never,
-      } as never);
-    } catch {
-      // Non-critical: audit logging must not fail the trade
-    }
-  }
-
-  // Log successful trade
-  return {
-    session_id: session.id,
-    action: signal.action,
-    trade_id: trade?.id,
-  };
 }
 
 /**
@@ -1038,7 +1350,9 @@ async function mirrorTradeToFollowers(
       const sourceRealizedPnl = tradeRecord.realized_pnl as number | undefined;
       const sourceTotalValue = (tradeRecord.total_value as number) || 1;
       const followerRealizedPnl = sourceRealizedPnl
-        ? Math.round(sourceRealizedPnl * (followerTradeAmount / sourceTotalValue) * 100) / 100
+        ? Math.round(
+            sourceRealizedPnl * (followerTradeAmount / sourceTotalValue) * 100,
+          ) / 100
         : undefined;
       const { error: mirrorError } = await db.from("trades").insert({
         session_id: followerSession.id,
@@ -1199,28 +1513,47 @@ export async function GET(req: NextRequest) {
   const db = (await createClient()) as SupabaseClient<Database>;
 
   // Dark Fleet feature flags (hetes en gang per cron-run)
-  const flags = await getFlagsAsync().catch(() => ({ darkFleetPhase1: false, darkFleetKillSwitch: false, signalEngineKillSwitch: false }));
+  const flags = await getFlagsAsync().catch(() => ({
+    darkFleetPhase1: false,
+    darkFleetKillSwitch: false,
+    signalEngineKillSwitch: false,
+  }));
 
   // GLOBAL KILL-SWITCH: Stop all trading if signal engine is halted
   if (flags.signalEngineKillSwitch) {
-    console.warn("[Tick] GLOBAL KILL-SWITCH ACTIVE — signalEngineKillSwitch is true. All trading halted.");
-    await captureCronError("tick", new Error("KILL_SWITCH_ACTIVE"), { reason: "signalEngineKillSwitch" });
+    console.warn(
+      "[Tick] GLOBAL KILL-SWITCH ACTIVE — signalEngineKillSwitch is true. All trading halted.",
+    );
+    await captureCronError("tick", new Error("KILL_SWITCH_ACTIVE"), {
+      reason: "signalEngineKillSwitch",
+    });
     return NextResponse.json(
       { error: "Trading halted", reason: "Global kill-switch active" },
       { status: 503 },
     );
   }
 
-  const darkFleetBaseConfig: DarkFleetConfig | undefined = flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
-    ? {
-        enabled: true,
-        technicalWeight: parseFloat(process.env.DARK_FLEET_TECH_WEIGHT || "0.5"),
-        narrativeWeight: parseFloat(process.env.DARK_FLEET_NARRATIVE_WEIGHT || "0.25"),
-        regimeWeight: parseFloat(process.env.DARK_FLEET_REGIME_WEIGHT || "0.25"),
-        threshold: parseFloat(process.env.DARK_FLEET_THRESHOLD || "0.3"),
-        maxPositionSize: parseFloat(process.env.DARK_FLEET_MAX_POSITION || "0.12"),
-      }
-    : undefined;
+  const darkFleetBaseConfig: DarkFleetConfig | undefined =
+    flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
+      ? {
+          enabled: true,
+          technicalWeight: parseFloat(
+            process.env.DARK_FLEET_TECH_WEIGHT || "0.5",
+          ),
+          narrativeWeight: parseFloat(
+            process.env.DARK_FLEET_NARRATIVE_WEIGHT || "0.25",
+          ),
+          regimeWeight: parseFloat(
+            process.env.DARK_FLEET_REGIME_WEIGHT || "0.25",
+          ),
+          threshold: parseFloat(process.env.DARK_FLEET_THRESHOLD || "0.3"),
+          maxPositionSize: parseFloat(
+            process.env.DARK_FLEET_MAX_POSITION || "0.12",
+          ),
+        }
+      : undefined;
+
+  const tradingHalted = flags.signalEngineKillSwitch ?? false;
 
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)
@@ -1253,26 +1586,44 @@ export async function GET(req: NextRequest) {
 
     // Portfolio-level circuit breaker: stop ALL trading if user's paper balance
     // has dropped 15% or more from initial across all sessions (was 5%, too aggressive)
-    const userPortfolioMap = new Map<string, { initial: number; current: number }>();
+    const userPortfolioMap = new Map<
+      string,
+      { initial: number; current: number }
+    >();
     for (const s of sessionsWithAuto) {
-      const existing = userPortfolioMap.get(s.user_id) || { initial: 0, current: 0 };
+      const existing = userPortfolioMap.get(s.user_id) || {
+        initial: 0,
+        current: 0,
+      };
       existing.initial += s.initial_capital;
       existing.current += s.current_capital;
       userPortfolioMap.set(s.user_id, existing);
     }
 
     for (const [userId, portfolio] of userPortfolioMap) {
-      const drawdown = ((portfolio.initial - portfolio.current) / portfolio.initial) * 100;
+      const drawdown =
+        ((portfolio.initial - portfolio.current) / portfolio.initial) * 100;
       if (drawdown >= 15) {
-        console.warn(`[PORTFOLIO STOP] User ${userId}: drawdown ${drawdown.toFixed(2)}% ≥ 15%. Stopping ALL sessions.`);
+        console.warn(
+          `[PORTFOLIO STOP] User ${userId}: drawdown ${drawdown.toFixed(2)}% ≥ 15%. Stopping ALL sessions.`,
+        );
         await db.from("trading_logs").insert({
           user_id: userId,
           action: "portfolio_stop",
-          details: { drawdown, initial: portfolio.initial, current: portfolio.current, reason: "Portfolio drawdown ≥ 15%" } as never,
+          details: {
+            drawdown,
+            initial: portfolio.initial,
+            current: portfolio.current,
+            reason: "Portfolio drawdown ≥ 15%",
+          } as never,
         } as never);
         // Stop all sessions for this user with reason
-        const { data: stoppedSessions } = await db.from("trading_sessions")
-          .update({ status: "stopped", last_status_message: `Circuit breaker: portfolio drawdown ${drawdown.toFixed(1)}%` })
+        const { data: stoppedSessions } = await db
+          .from("trading_sessions")
+          .update({
+            status: "stopped",
+            last_status_message: `Circuit breaker: portfolio drawdown ${drawdown.toFixed(1)}%`,
+          })
           .eq("user_id", userId)
           .eq("status", "active")
           .select("id");
@@ -1292,32 +1643,41 @@ export async function GET(req: NextRequest) {
             },
           });
         } catch (notifyErr) {
-          console.error(`[PORTFOLIO STOP] Failed to email user ${userId}:`, notifyErr);
+          console.error(
+            `[PORTFOLIO STOP] Failed to email user ${userId}:`,
+            notifyErr,
+          );
         }
 
         // Notify user via push notification
         try {
           const cronSecret = process.env.CRON_SECRET;
           if (cronSecret) {
-            await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "https://www.klarpakke.no"}/api/notifications/send`, {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${cronSecret}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userIds: [userId],
-                notification: {
-                  title: "⚠️ Trading stoppet",
-                  body: `Portfolio drawdown ${drawdown.toFixed(1)}%. ${stoppedSessions?.length ?? 0} session(s) stoppet.`,
-                  url: "/no/dashboard/portfolio",
-                  requireInteraction: true,
+            await fetch(
+              `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.klarpakke.no"}/api/notifications/send`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${cronSecret}`,
+                  "Content-Type": "application/json",
                 },
-              }),
-            });
+                body: JSON.stringify({
+                  userIds: [userId],
+                  notification: {
+                    title: "⚠️ Trading stoppet",
+                    body: `Portfolio drawdown ${drawdown.toFixed(1)}%. ${stoppedSessions?.length ?? 0} session(s) stoppet.`,
+                    url: "/no/dashboard/portfolio",
+                    requireInteraction: true,
+                  },
+                }),
+              },
+            );
           }
         } catch (pushErr) {
-          console.error(`[PORTFOLIO STOP] Failed to push notify user ${userId}:`, pushErr);
+          console.error(
+            `[PORTFOLIO STOP] Failed to push notify user ${userId}:`,
+            pushErr,
+          );
         }
       }
     }
@@ -1326,7 +1686,9 @@ export async function GET(req: NextRequest) {
     const userIds = [...new Set(sessionsWithAuto.map((s) => s.user_id))];
     const { data: autoSettings } = await db
       .from("auto_trade_settings")
-      .select("user_id, risk_profile, max_position_percent, daily_loss_limit_percent, daily_trade_limit")
+      .select(
+        "user_id, risk_profile, max_position_percent, daily_loss_limit_percent, daily_trade_limit",
+      )
       .in("user_id", userIds);
 
     const riskConfigMap = new Map<string, RiskConfig>();
@@ -1349,8 +1711,14 @@ export async function GET(req: NextRequest) {
     const uniqueSymbols = new Map<string, Candle[]>();
     const uniqueSymbols4h = new Map<string, Candle[]>();
     const uniqueSymbols15m = new Map<string, Candle[]>();
-    const symbolList = [...new Set(sessionsWithAuto.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))];
-    
+    const symbolList = [
+      ...new Set(
+        sessionsWithAuto.map(
+          (s) => s.trading_pair?.replace("/", "") || "BTCUSDT",
+        ),
+      ),
+    ];
+
     await Promise.all(
       symbolList.map(async (symbol) => {
         try {
@@ -1394,6 +1762,7 @@ export async function GET(req: NextRequest) {
           darkFleetBaseConfig,
           uniqueSymbols4h.get(symbolKey),
           uniqueSymbols15m.get(symbolKey),
+          tradingHalted,
         );
         results.push(result);
 
@@ -1460,7 +1829,9 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     const errorMessage = (err as Error).message;
     console.error("Cron tick unexpected error:", err);
-    captureCronError("tick", err as Error, { durationMs: Date.now() - startTime });
+    captureCronError("tick", err as Error, {
+      durationMs: Date.now() - startTime,
+    });
 
     return NextResponse.json(
       { error: "Internal error", details: errorMessage },

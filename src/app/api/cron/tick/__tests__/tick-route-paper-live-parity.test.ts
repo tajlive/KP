@@ -141,7 +141,7 @@ describe("tick route paper/live parity", () => {
     );
 
     expect(paperResult.success).toBe(true);
-    expect(liveResult).not.toBeNull();
+    expect(liveResult.ok).toBe(true);
 
     const { ExecutorFactory } = await import("@/lib/trading/executor-factory");
     const createCalls = (ExecutorFactory.create as ReturnType<typeof vi.fn>).mock.calls;
