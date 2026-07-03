@@ -1278,6 +1278,11 @@
     },
     "topBar": {
       "myOverview": "Min Oversikt",
+      "paperMode": "Lekepenger",
+      "liveMode": "Live-handel",
+      "noData": "Ingen data",
+      "ctaPaper": "Start handel",
+      "ctaLive": "Start handel",
       "systemOnline": "System online",
       "allSystemsOperational": "Alle systemer operative",
       "systemStatus": "Systemstatus"
