@@ -22,7 +22,6 @@ import {
   streamAIResponse,
   getAvailableProviders,
   SYSTEM_PROMPTS,
-  isKimiOAuthConfigured,
   type AIProvider,
   type AIMessage,
 } from '@/lib/ai/providers';
@@ -146,8 +145,7 @@ export async function POST(req: Request) {
 
     // Sjekk hvilke providere som er tilgjengelige
     const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-    const hasKimiStatic = !!(process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY);
-    const hasKimiOAuth = isKimiOAuthConfigured();
+    const hasKimi = !!(process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY);
     const hasNvidia = !!(process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY);
 
     // Velg provider
@@ -164,10 +162,10 @@ export async function POST(req: Request) {
         );
       }
     } else if (forceProvider === 'kimi') {
-      useKimi = hasKimiStatic || hasKimiOAuth;
+      useKimi = hasKimi;
       if (!useKimi) {
         return NextResponse.json(
-          { error: 'KIMI er ikke konfigurert. Sett MOONSHOT_API_KEY, KIMI_API_KEY eller KIMI_OAUTH_CLIENT_ID.' },
+          { error: 'KIMI er ikke konfigurert. Sett MOONSHOT_API_KEY eller KIMI_API_KEY.' },
           { status: 503 }
         );
       }
@@ -180,8 +178,8 @@ export async function POST(req: Request) {
         );
       }
     } else {
-      // Auto-select: KIMI K2.6 -> Perplexity (websearch) -> NVIDIA
-      useKimi = hasKimiStatic || hasKimiOAuth;
+      // Auto-select: KIMI -> Perplexity (websearch) -> NVIDIA
+      useKimi = hasKimi;
       usePerplexity = !useKimi && hasPerplexity;
       useNvidia = !useKimi && !usePerplexity && hasNvidia;
     }

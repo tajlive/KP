@@ -334,10 +334,7 @@
     "debug:auth:pkce": "node scripts/debug-pkce-cookies.mjs",
     "debug:auth:redirect": "node scripts/debug-redirect-cookies.mjs",
     "debug:auth:callback": "node scripts/debug-callback-test.mjs",
-    "mcp:bridge:install": "node scripts/mcp/install-launchd.mjs",
-    "kimi-oauth:login": "node scripts/start-kimi-bridge.js login",
-    "kimi-oauth:bridge": "node scripts/start-kimi-bridge.js bridge",
-    "kimi-oauth:typecheck": "cd tools/kimi-oauth-bridge && npm run typecheck"
+    "mcp:bridge:install": "node scripts/mcp/install-launchd.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.74",
