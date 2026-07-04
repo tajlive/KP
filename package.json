@@ -314,6 +314,8 @@
     "test:security": "npm audit --audit-level=moderate",
     "test:performance": "echo 'Kjør: npx lighthouse https://www.klarpakke.no --preset=desktop'",
     "test:a11y": "playwright test e2e/accessibility.spec.ts",
+    "provision:viking-no": "node --env-file=.env.local scripts/provision-viking-no.mjs",
+    "test:viking-no": "PLAYWRIGHT_TEST_BASE_URL=https://www.klarpakke.no npx playwright test e2e/critical/viking-no-paper-trading.spec.ts --project=critical-chromium",
     "test:e2e:dashboard-ux": "playwright test e2e/critical/dashboard-ux-automation.spec.ts --project=critical-chromium",
     "analyze:bundle": "ANALYZE=true npm run build",
     "analyze:deps": "npx depcheck && npx knip",
