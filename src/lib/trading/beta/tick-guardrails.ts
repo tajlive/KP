@@ -78,17 +78,19 @@ export async function getTodayTradeMetrics(
 
 /**
  * Evaluate guardrails for a user before allowing a trade.
+ *
+ * @param equity - Cash + market value of open positions (in NOK), used for drawdown.
  */
 export async function evaluateGuardrails(
   db: SupabaseClient<Database>,
   userId: string,
-  currentCapital: number,
+  equity: number,
   initialCapital: number,
   config: GuardrailConfig = DEFAULT_GUARDRAIL_CONFIG,
 ): Promise<GuardrailResult> {
   const metrics = await getTodayTradeMetrics(db, userId);
   const drawdownPct = initialCapital > 0
-    ? (initialCapital - currentCapital) / initialCapital
+    ? (initialCapital - equity) / initialCapital
     : 0;
 
   // Daily loss cap

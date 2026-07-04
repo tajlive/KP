@@ -20,6 +20,7 @@ import {
   shouldUseDarkFleet,
   getDarkFleetConfig,
 } from "@/lib/trading/strategy-id-aliases";
+import { clampDCAConfig } from "@/lib/trading/dca-validation";
 import {
   buildTradeReason,
   buildIndicatorSnapshot,
@@ -549,7 +550,10 @@ async function processSession(
     // Trailing take-profit check on open positions
     if (session.open_position && signal.action === "hold") {
       const entryPrice = session.open_position.entry_price;
-      const highest = session.open_position.highest_price ?? entryPrice;
+      const highest =
+        (session.open_position.highest_price && session.open_position.highest_price > 0)
+          ? session.open_position.highest_price
+          : entryPrice;
 
       // OPTIMIZED: ATR-based trailing stop (AssetWhisper 2026 research: 2 ATR optimal)
       // Falls back to percentage-based if ATR unavailable or disabled
@@ -582,14 +586,16 @@ async function processSession(
         trailingReason = `${trailingPct}%`;
       }
 
-      // Update highest price tracking
-      if (currentPrice > highest) {
+      // Update highest price tracking (use candle high to catch wicks)
+      const currentHigh = candles[candles.length - 1].high;
+      const newHighest = Math.max(highest, currentPrice, currentHigh);
+      if (newHighest > highest) {
         await db
           .from("trading_sessions")
           .update({
             open_position: {
               ...session.open_position,
-              highest_price: currentPrice,
+              highest_price: newHighest,
             },
           })
           .eq("id", session.id);
@@ -1230,7 +1236,9 @@ async function processSession(
             open_position: {
               ...legacyPos,
               highest_price:
-                session.open_position?.highest_price ?? entryPriceForLot,
+                (session.open_position?.highest_price && session.open_position.highest_price > 0)
+                  ? session.open_position.highest_price
+                  : entryPriceForLot,
             },
           } as never)
           .eq("id", session.id);
@@ -1244,7 +1252,10 @@ async function processSession(
           open_position: legacyPos
             ? {
                 ...legacyPos,
-                highest_price: session.open_position?.highest_price,
+                highest_price:
+                  (session.open_position?.highest_price && session.open_position.highest_price > 0)
+                    ? session.open_position.highest_price
+                    : legacyPos.entry_price,
               }
             : null,
         } as never)
@@ -1459,7 +1470,7 @@ async function ensureAutoTradingSessions(
     winning_trades: 0,
     losing_trades: 0,
     total_pnl: 0,
-    strategy_config: {},
+    strategy_config: clampDCAConfig({ position_size: undefined, interval_minutes: undefined }),
     started_at: now,
     last_heartbeat: now,
     last_tick_at: now,
@@ -1584,25 +1595,50 @@ export async function GET(req: NextRequest) {
       sessions as unknown as TradingSession[],
     );
 
-    // Portfolio-level circuit breaker: stop ALL trading if user's paper balance
-    // has dropped 15% or more from initial across all sessions (was 5%, too aggressive)
+    // Portfolio-level circuit breaker: stop ALL trading if user's equity
+    // (cash + market value of open positions) has dropped 15% or more from initial.
+    // Fetches the latest 1h close per pair (1 candle) to value open positions.
     const userPortfolioMap = new Map<
       string,
-      { initial: number; current: number }
+      { initial: number; equity: number }
     >();
+
+    const pairPriceMap = new Map<string, number>();
+    await Promise.all(
+      [...new Set(sessionsWithAuto.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))].map(async (symbol) => {
+        try {
+          const candles = await fetchCandles(symbol, "1h", 1);
+          const price = candles.length > 0 ? candles[candles.length - 1].close : 0;
+          pairPriceMap.set(symbol, price);
+        } catch (err) {
+          console.error(`[PortfolioStop] Failed to fetch price for ${symbol}:`, err);
+          pairPriceMap.set(symbol, 0);
+        }
+      }),
+    );
+
     for (const s of sessionsWithAuto) {
+      const symbol = s.trading_pair?.replace("/", "") || "BTCUSDT";
+      const currentPriceUsdt = pairPriceMap.get(symbol) ?? 0;
+      const positionValueNok =
+        s.open_position && currentPriceUsdt > 0
+          ? s.open_position.quantity *
+            usdtToNok(currentPriceUsdt, getUsdtToNokRate())
+          : 0;
+      const equity = s.current_capital + positionValueNok;
+
       const existing = userPortfolioMap.get(s.user_id) || {
         initial: 0,
-        current: 0,
+        equity: 0,
       };
       existing.initial += s.initial_capital;
-      existing.current += s.current_capital;
+      existing.equity += equity;
       userPortfolioMap.set(s.user_id, existing);
     }
 
     for (const [userId, portfolio] of userPortfolioMap) {
       const drawdown =
-        ((portfolio.initial - portfolio.current) / portfolio.initial) * 100;
+        ((portfolio.initial - portfolio.equity) / portfolio.initial) * 100;
       if (drawdown >= 15) {
         console.warn(
           `[PORTFOLIO STOP] User ${userId}: drawdown ${drawdown.toFixed(2)}% ≥ 15%. Stopping ALL sessions.`,
@@ -1613,7 +1649,7 @@ export async function GET(req: NextRequest) {
           details: {
             drawdown,
             initial: portfolio.initial,
-            current: portfolio.current,
+            current: portfolio.equity,
             reason: "Portfolio drawdown ≥ 15%",
           } as never,
         } as never);
@@ -1638,7 +1674,7 @@ export async function GET(req: NextRequest) {
               name: "",
               drawdown: `${drawdown.toFixed(1)}%`,
               sessionsStopped,
-              portfolioValue: `${portfolio.current.toLocaleString("no-NO")} NOK`,
+              portfolioValue: `${portfolio.equity.toLocaleString("no-NO")} NOK`,
               restartUrl: `https://www.klarpakke.no/no/dashboard/portfolio`,
             },
           });
@@ -1665,7 +1701,7 @@ export async function GET(req: NextRequest) {
                   userIds: [userId],
                   notification: {
                     title: "⚠️ Trading stoppet",
-                    body: `Portfolio drawdown ${drawdown.toFixed(1)}%. ${stoppedSessions?.length ?? 0} session(s) stoppet.`,
+                    body: `Portfolio drawdown ${drawdown.toFixed(1)}%. ${stoppedSessions?.length ?? 0} session(s) stoppet. Based on equity including open positions.`,
                     url: "/no/dashboard/portfolio",
                     requireInteraction: true,
                   },

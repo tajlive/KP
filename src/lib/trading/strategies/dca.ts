@@ -132,7 +132,7 @@ export class DCAStrategy implements StrategyEngine {
     if (cfg.use_trailing_stop !== false && candles.length >= 14) {
       const atrValue = atr(highs, lows, closes, 14);
       const trailingStopPct = (2 * atrValue / entryPrice) * 100;
-      const highestPrice = session.open_position.highest_price ?? entryPrice;
+      const highestPrice = (session.open_position.highest_price && session.open_position.highest_price > 0) ? session.open_position.highest_price : entryPrice;
       const dropFromPeak = ((highestPrice - currentPrice) / highestPrice) * 100;
 
       if (dropFromPeak >= trailingStopPct) {

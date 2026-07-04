@@ -8,6 +8,7 @@ import {
   getDbRiskLevelEnum,
 } from "@/lib/auto-trading/strategy-catalog";
 import type { ProductStrategyId } from "@/lib/trading/strategy-id-aliases";
+import { clampDCAConfig } from "@/lib/trading/dca-validation";
 
 const supabase = getSupabaseClient();
 
@@ -295,6 +296,16 @@ export async function startStrategy(
   const tradingPair = parseTradingPairFromConfig(productId, config);
   const initialCapital = parseInitialCapitalFromConfig(config);
   const strategy_config = enrichStrategyConfigForSession(productId, config);
+
+  // Clamp DCA config values to safe bounds on the server
+  if (productId === "dca_trygg") {
+    const dcaClamped = clampDCAConfig({
+      position_size: strategy_config.position_size as number | undefined,
+      interval_minutes: strategy_config.interval_minutes as number | undefined,
+    });
+    strategy_config.position_size = dcaClamped.position_size;
+    strategy_config.interval_minutes = dcaClamped.interval_minutes;
+  }
 
   // Archive any existing active session for this mode before creating a new one.
   // This prevents zombie sessions from accumulating.

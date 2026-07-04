@@ -8,6 +8,7 @@ import { mapRiskLevelToConfig, RISK_LEVELS } from "@/lib/auto-trading/risk-level
 import { getOptimizedRiskProfile } from "@/lib/config/optimized-risk-profiles";
 import { executeTrade } from "@/lib/trading/core/execute-trade";
 import { z } from "zod";
+import { clampDCAConfig } from "@/lib/trading/dca-validation";
 
 const tradingStartSchema = z.object({
   mode: z.enum(["paper", "live"]),
@@ -200,6 +201,17 @@ export async function startTrading(
       pairs,
       risk_config: riskConfig,
     };
+
+    // Clamp DCA-specific config to safe bounds so UI/server constraints match
+    if (strategy === "dca") {
+      const dcaClamped = clampDCAConfig({
+        position_size: (strategyConfig.position_size as number) ?? undefined,
+        interval_minutes:
+          (strategyConfig.interval_minutes as number) ?? undefined,
+      });
+      strategyConfig.position_size = dcaClamped.position_size;
+      strategyConfig.interval_minutes = dcaClamped.interval_minutes;
+    }
 
     // For grid strategy, store fixed grid boundaries so they don't drift every tick
     if (strategy === "grid") {
