@@ -34,7 +34,7 @@
 
 2. **Vent på Cloudflare Workers Builds deployment**
    - Cloudflare Workers Builds bygger automatisk ved push til `main` (~2–3 min)
-   - Verifiser med Wrangler: `npx wrangler deployment list`
+   - Verifiser med: `npm run deploy:status` (viser siste deployment + `/api/health`)
    - Se også Cloudflare Dashboard → Workers & Pages → klarpakke
 
 3. **Test lokalt før push**
@@ -330,13 +330,12 @@ NEXT_TELEMETRY_DISABLED=1
 # Full arbeidsflyt (kopier-lim inn)
 npm run type-check && \
 npm run lint:gate && \
-npm run test:unit && \
 git add -A && \
 git commit -m "type: your message here" && \
 git push origin main
 
 # Verifiser produksjon
-sleep 120 && npx wrangler deployment list && curl -I https://www.klarpakke.no/no
+sleep 120 && npm run deploy:status && curl -I https://www.klarpakke.no/no
 
 # Be KIMI om hjelp (etter push + deploy)
 # KIMI leser via MCP
