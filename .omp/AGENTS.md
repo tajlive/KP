@@ -88,5 +88,49 @@ Use these four agents for their domains; fall back to `klarpakke-coder` for cros
 | `klarpakke-live-trading-integrity` | Trades, sessions, Binance, live/paper parity, tier gates, RLS, trade history, and updating `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`. |
 | `klarpakke-trading-realtime-market-data` | Supabase Realtime, `useCockpitRealtime`, websocket auth, heartbeat, crash detection, candles, and Binance 403/fallback. |
 | `klarpakke-db-rls-guard` | Supabase schema, migrations, RLS policies, RPC signatures, `search_path`, generated types, and service-role boundaries. |
+| `klarpakke-cleanup-orchestrator` | Post-task / post-deploy verification, roster cleanup, and final status report. Read-and-report only. |
 
 For Trading Cockpit UI/E2E smoke, use `klarpakke-cockpit-qa`. For cross-cutting implementation that touches multiple domains, use `klarpakke-coder` and let it delegate to the narrow specialists above.
+
+## 1. Status triage matrix
+
+| User prompt | Main-agent response |
+|-------------|---------------------|
+| "hva skjer", "status", "hvordan går det" | 2–3 bullets: current phase, active subagents, next step. No JSON, no roster dump. |
+| "følg med", "oppdater meg", "hold meg oppdatert" | Promise a cadence (every 1–3 min), then give an immediate status snapshot. Resume cadence until the task is done or the user stops it. |
+| "fiks X", "løs Y", "deploy nå" | Confirm understanding in one sentence, set/update todos, delegate to the right specialist or act directly, and report back when done. |
+| User sends a token, API key, password, or other secret | Acknowledge receipt only ("lagret / notert / mottatt"). Do not log it, do not echo it, do not include it in any output. Continue the task using the secret once. |
+
+## 2. Agent lifecycle rules
+
+- **Max 4 concurrent subagents.** Use at most one `task` batch of 4 at a time. If there is more work, queue it or fold it into the current batch.
+- **After each parallel batch**, broadcast a brief status to IRC `all`: done / blocked / next step. Keep it to one sentence.
+- **When a subagent completes and its result is merged**, send a short status update to the user (what finished, what remains).
+- **Parked agents are normal.** Do not message them unless you need them. Main may broadcast `all: done, thank you` at the end of a round to signal cleanup.
+
+## 3. Main-agent checklist
+
+### Before
+- Read this `.omp/AGENTS.md` and the relevant specialist agent file under `.omp/agents/`.
+- Set/update todos for the task.
+- Decide: direct edit (<30 lines or single command) vs. delegate via `task`.
+
+### During
+- Report to the user every 1–3 min during long work.
+- Coordinate active subagents via IRC; broadcast to `all` after each batch.
+- For trading/live/paper/RLS/history/Binance work, keep `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` updated as verification happens.
+
+### After
+- Verify behavior or production health (see standard deploy-verify sequence above).
+- Push to GitHub if the task produced changes and the user expects a deploy.
+- Update `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` when trading integrity was involved.
+- Clear completed todos; broadcast a one-sentence cleanup message to IRC `all`.
+- Spawn `klarpakke-cleanup-orchestrator` for post-deploy or large post-task verification and roster cleanup.
+
+## 4. Subagent failure handling
+
+- **If a subagent times out or aborts with no output**, Main immediately takes over. Do not wait silently.
+- Inspect `git status` and any partial file changes. Decide: complete the work directly, or respawn a narrower, more focused task with tighter instructions.
+- **Never say "I am waiting"** without also stating what you are waiting for and for how long.
+- **If a task cannot be completed automatically**, state exactly what is missing and drop it. Do not loop indefinitely or pretend to progress.
+
