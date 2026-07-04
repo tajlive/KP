@@ -1,25 +1,54 @@
 # Cloudflare Deploy Reliability
 
-> **Status:** 2026-07-04
+> **Status:** 2026-07-04 — API token permission issue confirmed; manual dashboard update required.
 > **Primary deploy:** `git push origin main` triggers **Cloudflare Workers Builds**.
 > **Backup / emergency only:** `npm run cf:deploy` or `npm run deploy:backup`.
 
+## Current token status
+
+The local token stored in `.env.local` as `CLOUDFLARE_API_TOKEN` is active:
+
+- **Token ID:** `e700dab27335450a85e0e13686931bc7`
+- **Account:** `KLARPAKKE` (`80d5b1d56a3e907150ba7348b6182894`)
+- **Zone:** `klarpakke.no` (`328d7de7e8e48308fd4f9d760da5b18f`)
+
+Verification probes from `node scripts/rotate-cloudflare-token.mjs --dry-run` on 2026-07-04:
+
+| Probe | Result |
+|---|---|
+| Token valid (`/user/tokens/verify`) | ✅ OK |
+| Zone read (`/zones/<zone_id>`) | ✅ OK |
+| Workers scripts (`/accounts/<account_id>/workers/scripts`) | ✅ OK |
+| **Workers routes read (`/zones/<zone_id>/workers/routes`)** | ❌ **Authentication error** |
+| Cache purge (`/zones/<zone_id>/purge_cache`) | ❌ Authentication error |
+| KV namespaces (`/accounts/<account_id>/storage/kv/namespaces`) | ❌ Authentication error |
+
+`npx wrangler whoami` shows the same account, but Wrangler cannot read the token’s own permission list (the verify response only returns `id` and `status`), confirming the token lacks the `User:API Tokens:Read` permission group.
+
+Attempts to list tokens or permission groups programmatically (`GET /user/tokens`, `GET /user/tokens/permission_groups`) both return:
+
+```text
+Unauthorized to access requested resource (9109)
+```
+
+This means the current token **cannot create or edit API tokens via the Cloudflare API**. Therefore, automatic rotation is blocked and must be performed manually in the Cloudflare Dashboard.
+
 ## Root cause of the routes API 403
 
-`npx wrangler deploy` deploys the Worker script successfully, then falls back to the zone-based routes API because the API token lacks **All Zones** permissions. It then calls:
+`npx wrangler deploy` uploads the Worker script successfully, then falls back to the zone-based routes API and calls:
 
 ```text
 GET /zones/328d7de7e8e48308fd4f9d760da5b18f/workers/routes
 ```
 
-and receives `HTTP 403 Forbidden`. Wrangler reports:
+receiving `HTTP 403 Forbidden`. Wrangler reports:
 
 ```text
 Some triggers failed to deploy for klarpakke:
   - A request to the Cloudflare API (/zones/.../workers/routes) failed.
 ```
 
-The token used by `CLOUDFLARE_API_TOKEN` currently has **Cloudflare Workers Scripts: Edit** (account) but is missing either:
+The token is missing either:
 
 - `Zone:Workers Routes: Edit` scoped to zone `328d7de7e8e48308fd4f9d760da5b18f` (preferred, least-privilege), OR
 - `All Zones` permission for the `Zone:Workers Routes` permission group.
@@ -38,7 +67,9 @@ Workers Builds does **not** use this local token for routing, so normal pushes t
 
 > **Do not share tokens or commit them.** Rotate via `scripts/rotate-cloudflare-token.mjs` (reads `CLOUDFLARE_API_TOKEN` from env) after updating the token in `.env.local`.
 
-## Dashboard steps to fix the token
+## 🚨 Manual dashboard steps required
+
+Because the current token cannot be edited or replaced via the API, follow these steps in the Cloudflare Dashboard:
 
 1. Open [Cloudflare Dashboard → API Tokens](https://dash.cloudflare.com/profile/api-tokens).
 2. Create a new **Custom token** (or edit the existing `Klarpakke deploy` token):
@@ -46,20 +77,26 @@ Workers Builds does **not** use this local token for routing, so normal pushes t
    - **Permissions:** add the permission groups listed above.
    - **Account resources:** include `KLARPAKKE` account.
    - **Zone resources:** include zone `klarpakke.no`.
-3. Copy the token.
+3. Copy the new token value.
 4. Update `.env.local`:
    ```bash
    export CLOUDFLARE_API_TOKEN=<new-token>
    ```
-5. Rotate locally:
+5. Rotate locally and verify all probes pass:
    ```bash
    node scripts/rotate-cloudflare-token.mjs
    # or
    echo "<new-token>" | node scripts/rotate-cloudflare-token.mjs
    ```
-6. Verify:
+6. Verify the token is accepted by Wrangler:
    ```bash
    npx wrangler whoami
+   npm run deploy:status
+   ```
+7. Verify the backup deploy path no longer 403s on routes:
+   ```bash
+   npm run deploy:backup
+   # equivalent: npm run cf:deploy
    npm run deploy:status
    ```
 
