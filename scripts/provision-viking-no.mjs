@@ -271,7 +271,7 @@ async function getOrCreatePaperSessionServiceRole(userId) {
         paper: true,
         capital: PAPER_CAPITAL_NOK,
         interval_minutes: 1,
-        position_size: 0.0001,
+        position_size: 0.05,
         max_daily_buys: 100,
         stop_loss_pct: -5,
         use_trailing_stop: false,
