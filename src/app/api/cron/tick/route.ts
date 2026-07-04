@@ -297,10 +297,10 @@ async function processSession(
     const resolvedEngine =
       strategyConfig?.engine ?? engineKey ?? "multi_signal";
     const baseConfig = strategyConfig?.config ?? {};
-    // Merge: per-UUID config overrides session.strategy_config
+    // Merge: session.strategy_config overrides per-UUID defaults so user tuning wins
     const mergedConfig: Record<string, unknown> = {
-      ...session.strategy_config,
       ...baseConfig,
+      ...session.strategy_config,
       engineKey: resolvedEngine,
     };
 

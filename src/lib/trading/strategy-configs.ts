@@ -312,7 +312,7 @@ export function getStrategyConfig(
   if (direct) return direct;
 
   // Fallback: check if strategyId is an engine name directly
-  const engineDefaults: Record<string, { engine: string; config: Record<string, unknown> }> = {
+  const engineDefaults: Record<string, { engine: string; config: Record<string, unknown>; darkFleet?: Partial<DarkFleetConfig> }> = {
     multi_signal: {
       engine: "multi_signal",
       config: {
@@ -365,6 +365,7 @@ export function getStrategyConfig(
         fomo_reduction: 0.5,
         max_daily_buys: 5,
       },
+      darkFleet: { enabled: false },
     },
     grid: {
       engine: "grid",
