@@ -298,7 +298,10 @@ backups/
 .kimi/backup/
 .DS_Store
 
-# Local development tools (managed by scripts/update-tools.sh, not needed in CI/build)
+# Temporary local reports/screenshots
+tmp/
+
+# Local development tools (managed by scripts/update-tools.sh, not needed in CI…
 .tool-versions
 .worktrees/
 
