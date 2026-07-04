@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS auto_trade_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   is_enabled BOOLEAN DEFAULT false,
-  risk_profile TEXT DEFAULT 'konservativ' CHECK (risk_profile IN ('konservativ', 'moderat', 'aggressiv')),
+  risk_profile TEXT DEFAULT 'conservative' CHECK (risk_profile IN ('conservative', 'moderate', 'aggressive')),
   max_position_size_percent DECIMAL(5,2) DEFAULT 2.00,
   daily_loss_limit_percent DECIMAL(5,2) DEFAULT 5.00,
   max_daily_trades INTEGER DEFAULT 10,
