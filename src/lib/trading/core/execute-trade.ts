@@ -28,6 +28,7 @@ import { computeFill } from "@/lib/trading/canonical/execution/fill-model";
 import { calculatePnlFromTrades, type TradePnlInput } from "@/lib/trading/canonical/pnl/trade-pnl";
 import { acquireTradeLock } from "./distributed-lock";
 import { makeIdempotencyKey, withIdempotency } from "@/lib/trading/idempotency";
+import { createClient as createServiceClient } from "@/lib/supabase/server";
 import type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext } from "./types";
 
 export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
@@ -357,8 +358,10 @@ async function executeTradeWithLock(
       request.signalContext?.action ?? request.reasonCode ?? "trade",
     ]);
 
+    const serviceDb = createServiceClient();
+
     return await withIdempotency(
-      supabase,
+      serviceDb,
       idempotencyKey,
       "trade",
       requestHash,

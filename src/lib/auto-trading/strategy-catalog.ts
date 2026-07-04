@@ -11,6 +11,7 @@ import {
   type RiskLevel as OptProfileName,
 } from "@/lib/config/optimized-risk-profiles";
 import type { ProductStrategyId } from "@/lib/trading/strategy-id-aliases";
+import { DCA_CONSTRAINTS } from "@/lib/trading/dca-validation";
 
 /** UI / tick produkt-ID → nøkkel i RISK_LEVELS (partial TP, trailing, …) */
 const STRATEGY_TO_RISK_KEY: Record<ProductStrategyId, RiskLevelKey> = {
@@ -165,9 +166,9 @@ export function enrichStrategyConfigForSession(
 
   if (strategyType === "dca_trygg") {
     base.interval_minutes =
-      userConfig.interval_minutes ?? opt.minTradeIntervalMinutes;
+      userConfig.interval_minutes ?? DCA_CONSTRAINTS.defaultIntervalMinutes;
     base.position_size =
-      userConfig.position_size ?? opt.maxPositionSizePercent / 100;
+      userConfig.position_size ?? DCA_CONSTRAINTS.defaultPositionSize;
     base.profit_target_pct =
       userConfig.profit_target_pct ?? opt.takeProfitPercent;
     base.stop_loss_pct =
@@ -212,8 +213,8 @@ export function getDefaultStrategyDashboardConfigs(): Record<
     dca_trygg: {
       weeklyAmount: 1000,
       btcAllocation: 70,
-      interval_minutes: cons.minTradeIntervalMinutes,
-      position_size: cons.maxPositionSizePercent / 100,
+      interval_minutes: DCA_CONSTRAINTS.defaultIntervalMinutes,
+      position_size: DCA_CONSTRAINTS.defaultPositionSize,
     },
     trend_balansert: {
       riskPerTrade: mod.maxPositionSizePercent / 2,

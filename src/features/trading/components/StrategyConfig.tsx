@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { clampDCAConfig, DCA_CONSTRAINTS } from "@/lib/trading/dca-validation";
 import type { StrategyType } from "@/lib/trading-api";
 
 export function StrategyConfig({
@@ -19,7 +20,14 @@ export function StrategyConfig({
       const dcaConfig = config as {
         weeklyAmount: number;
         btcAllocation: number;
+        position_size?: number;
+        interval_minutes?: number;
       };
+      const clamped = clampDCAConfig({
+        position_size: dcaConfig.position_size,
+        interval_minutes: dcaConfig.interval_minutes,
+      });
+      const safeConfig = { ...dcaConfig, ...clamped };
       return (
         <div className="space-y-4 mt-4">
           <div>
@@ -27,7 +35,7 @@ export function StrategyConfig({
               htmlFor="dca-weekly-amount"
               className="text-slate-400 text-sm"
             >
-              Ukentlig beløp: {dcaConfig.weeklyAmount} NOK
+              Ukentlig beløp: {safeConfig.weeklyAmount} NOK
             </label>
             <input
               id="dca-weekly-amount"
@@ -35,10 +43,10 @@ export function StrategyConfig({
               min="100"
               max="5000"
               step="100"
-              value={dcaConfig.weeklyAmount}
+              value={safeConfig.weeklyAmount}
               title="Ukentlig beløp"
               onChange={(e) =>
-                onChange({ ...config, weeklyAmount: Number(e.target.value) })
+                onChange({ ...safeConfig, weeklyAmount: Number(e.target.value) })
               }
               className="w-full mt-1"
             />
@@ -48,19 +56,75 @@ export function StrategyConfig({
               htmlFor="dca-btc-allocation"
               className="text-slate-400 text-sm"
             >
-              BTC-fordeling: {dcaConfig.btcAllocation}%
+              BTC-fordeling: {safeConfig.btcAllocation}%
             </label>
             <input
               id="dca-btc-allocation"
               type="range"
               min="0"
               max="100"
-              value={dcaConfig.btcAllocation}
+              value={safeConfig.btcAllocation}
               title="BTC-fordeling"
               onChange={(e) =>
-                onChange({ ...config, btcAllocation: Number(e.target.value) })
+                onChange({ ...safeConfig, btcAllocation: Number(e.target.value) })
               }
               className="w-full mt-1"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="dca-position-size"
+              className="text-slate-400 text-sm"
+            >
+              Posisjonsstørrelse: {Math.round(safeConfig.position_size * 100)}%
+              (maks {Math.round(DCA_CONSTRAINTS.maxPositionSize * 100)}%)
+            </label>
+            <input
+              id="dca-position-size"
+              type="range"
+              min="0"
+              max={String(DCA_CONSTRAINTS.maxPositionSize * 100)}
+              step="1"
+              value={Math.round(safeConfig.position_size * 100)}
+              title="Posisjonsstørrelse"
+              onChange={(e) =>
+                onChange({
+                  ...safeConfig,
+                  position_size: Number(e.target.value) / 100,
+                })
+              }
+              className="w-full mt-1"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="dca-interval-minutes"
+              className="text-slate-400 text-sm"
+            >
+              Intervall (minutter): {safeConfig.interval_minutes}
+              (minst {DCA_CONSTRAINTS.minIntervalMinutes})
+            </label>
+            <input
+              id="dca-interval-minutes"
+              type="number"
+              min={String(DCA_CONSTRAINTS.minIntervalMinutes)}
+              step="60"
+              value={safeConfig.interval_minutes}
+              title="Intervall minutter"
+              onChange={(e) => {
+                const raw = Number(e.target.value);
+                if (!Number.isNaN(raw)) {
+                  const clampedInterval = Math.max(
+                    DCA_CONSTRAINTS.minIntervalMinutes,
+                    Math.round(raw),
+                  );
+                  onChange({
+                    ...safeConfig,
+                    interval_minutes: clampedInterval,
+                  });
+                }
+              }}
+              className="w-full mt-1 rounded bg-slate-900 border border-slate-700 px-2 py-1 text-sm"
             />
           </div>
         </div>
