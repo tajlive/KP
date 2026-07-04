@@ -28,3 +28,65 @@ Read the workflow rules before deployment, production, infrastructure, or agent/
 - Deploy/production/Cloudflare/OpenNext/Wrangler work: use `klarpakke-cloudflare-workers-ops`.
 - Trading Cockpit UI smoke and E2E: use `klarpakke-cockpit-qa`.
 - Existing bundled OMP agents (`explore`, `task`, `reviewer`, `oracle`, `designer`, `librarian`) remain available for non-project-specific work.
+
+## Main-agent automation playbook
+
+> For detailed workflow rules, secrets handling, and emergency procedures, see `../.kimi/WORKFLOW_RULES.md`. This section is a quick-reference for routine Main-agent flows only.
+
+### When to delegate vs. do directly
+
+Do the work yourself when **any** of these is true:
+
+- A single-file edit under ~30 lines.
+- A direct explanation, investigation, or one-off command.
+- The user explicitly asks you to run a command yourself.
+
+Delegate via `task` or the relevant specialist otherwise. Use parallel batches for independent slices; keep Main responsible for final synthesis and verification.
+
+### Standard deploy-verify sequence
+
+1. **Push to GitHub first.**
+   ```bash
+   git add -A
+   git commit -m "type: description"
+   git push origin main
+   ```
+2. **Wait for Cloudflare Workers Builds.** (~2–3 min.)
+   ```bash
+   npx wrangler deployment list
+   ```
+3. **Verify production health endpoint.**
+   ```bash
+   curl -s https://www.klarpakke.no/api/health | jq
+   ```
+   Confirm `status` is `healthy` and the returned `version` matches the pushed commit.
+4. **Verify the relevant subsystem.**
+   - Trading/live/paper/history: use MCP/Supabase to inspect `public.trades` / `public.trading_sessions`, or run focused scripts such as `npm run diagnose:signals-traders` / `npm run diagnose:user-trades`.
+   - Cockpit UI: use `klarpakke-cockpit-qa` for authenticated smoke of `/no/handel`.
+   - Update `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` when verification involves trading integrity.
+
+### Pre-push gates
+
+- **Fast gate (default):** `node scripts/pre-push.mjs` runs type-check, lint gate, i18n, migration validation if staged, unit tests, production build, and mobile fast-check. Skips E2E smoke to stay fast.
+- **Full gate:** `node scripts/pre-push.mjs --full` runs the same plus E2E smoke. Use when the change touches routing, auth, trading execution paths, or anything where a full smoke is worth the time.
+
+> Keep the `.husky/pre-push` hook fast: it currently runs `lint:gate`, `type-check`, and `test:unit`. If you change the hook, keep the minimum mandatory gates under ~60s for routine pushes.
+
+### Status reporting cadence
+
+- Report to the user every **1–3 minutes** during long operations (deploy waits, builds, E2E runs, DB migrations, or multi-agent swarms).
+- Include what just completed, what is running now, and the next step.
+- If blocked, say exactly what is blocking and what you are waiting for.
+
+### Specialist routing map
+
+Use these four agents for their domains; fall back to `klarpakke-coder` for cross-cutting work that spans several domains.
+
+| Agent | Use for |
+| ----- | ------- |
+| `klarpakke-cloudflare-workers-ops` | Cloudflare Workers Builds, Wrangler deploy, `/api/health`, routes, logs, secrets, rollback, and correcting stale Vercel assumptions. |
+| `klarpakke-live-trading-integrity` | Trades, sessions, Binance, live/paper parity, tier gates, RLS, trade history, and updating `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`. |
+| `klarpakke-trading-realtime-market-data` | Supabase Realtime, `useCockpitRealtime`, websocket auth, heartbeat, crash detection, candles, and Binance 403/fallback. |
+| `klarpakke-db-rls-guard` | Supabase schema, migrations, RLS policies, RPC signatures, `search_path`, generated types, and service-role boundaries. |
+
+For Trading Cockpit UI/E2E smoke, use `klarpakke-cockpit-qa`. For cross-cutting implementation that touches multiple domains, use `klarpakke-coder` and let it delegate to the narrow specialists above.

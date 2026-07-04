@@ -6,10 +6,4 @@ if [ -s "${HOME}/.nvm/nvm.sh" ]; then
 fi
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
-echo "🔍 Running pre-push quality gates..."
-
-npm run lint:gate
-npm run type-check
-npm run test:unit
-
-echo "✅ Pre-push checks passed."
+exec node scripts/pre-push.mjs
