@@ -23,7 +23,11 @@ type DbWithAdminAudit = Database & {
   };
 };
 
-export type AdminAuditAction = "user_paper_balance" | "user_tier" | string;
+export type AdminAuditAction =
+  | "user_paper_balance"
+  | "user_tier"
+  | "cockpit_report"
+  | string;
 
 /**
  * Append-only sporbarhet for admin-handlinger (service role).

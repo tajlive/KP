@@ -26,6 +26,8 @@ import {
 } from "@/app/api/admin/users/route";
 import { POST as usersSyncPOST } from "@/app/api/admin/users/sync/route";
 import { GET as verifyGET } from "@/app/api/admin/verify/route";
+import { POST as cockpitReportPOST } from "@/app/api/admin/support/cockpit-report/route";
+import { GET as cockpitReportStatusGET } from "@/app/api/admin/support/cockpit-report/status/route";
 
 describe("admin API routes — avviser uten gyldig admin (verifyAdminAccess)", () => {
   beforeEach(() => {
@@ -123,6 +125,27 @@ describe("admin API routes — avviser uten gyldig admin (verifyAdminAccess)", (
     [
       "POST /api/admin/kla130",
       () => kla130POST(new NextRequest("http://localhost", { method: "POST" })),
+    ],
+    [
+      "POST /api/admin/support/cockpit-report",
+      () =>
+        cockpitReportPOST(
+          new NextRequest("http://localhost", {
+            method: "POST",
+            body: JSON.stringify({
+              user_id: "00000000-0000-4000-8000-000000000001",
+            }),
+          }),
+        ),
+    ],
+    [
+      "GET /api/admin/support/cockpit-report/status",
+      () =>
+        cockpitReportStatusGET(
+          new NextRequest(
+            "http://localhost/api/admin/support/cockpit-report/status?jobId=00000000-0000-4000-8000-000000000001",
+          ),
+        ),
     ],
   ])("%s → 401", async (_label, call) => {
     const res = await call();

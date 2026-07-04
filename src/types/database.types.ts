@@ -137,6 +137,39 @@ export type Database = {
         }
         Relationships: []
       }
+      cockpit_report_jobs: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          signed_url: string | null
+          status: string
+          target_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          signed_url?: string | null
+          status?: string
+          target_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          signed_url?: string | null
+          status?: string
+          target_user_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           created_at: string | null
