@@ -5,6 +5,7 @@ import { TABLE } from "@/lib/design/tokens";
 import {
   ArrowUpCircle,
   Award,
+  Camera,
   CheckCircle,
   Crown,
   GraduationCap,
@@ -16,7 +17,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { type UserData, roles, tiers, sources } from "./admin-users.types";
 
@@ -41,6 +42,29 @@ export default function ClientAdminUsers() {
   const [paperSyncSessions, setPaperSyncSessions] = useState(true);
   const [paperResetBaseline, setPaperResetBaseline] = useState(false);
   const [savingPaper, setSavingPaper] = useState(false);
+  const [reportUser, setReportUser] = useState<UserData | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportJobId, setReportJobId] = useState<string | null>(null);
+  const [reportStatus, setReportStatus] = useState<
+    "queued" | "running" | "done" | "failed"
+  >("queued");
+  const [reportUrl, setReportUrl] = useState<string | null>(null);
+  const [reportExpiresAt, setReportExpiresAt] = useState<string | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const reportTimeoutRef = useRef<number | null>(null);
+
+  const clearReportTimeout = () => {
+    if (reportTimeoutRef.current) {
+      clearTimeout(reportTimeoutRef.current);
+      reportTimeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearReportTimeout();
+    };
+  }, []);
 
   const supabase = createClient();
 
@@ -193,6 +217,104 @@ export default function ClientAdminUsers() {
     } finally {
       setSavingPaper(false);
     }
+  };
+
+  const handleCockpitReport = async (user: UserData) => {
+    setReportUser(user);
+    setReportJobId(null);
+    setReportStatus("queued");
+    setReportUrl(null);
+    setReportExpiresAt(null);
+    setReportLoading(true);
+    setShowReportModal(true);
+
+    try {
+      const res = await fetch("/api/admin/support/cockpit-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const body = (await res.json().catch(() => ({}))) as Record<
+        string,
+        unknown
+      >;
+      if (!res.ok) {
+        toast.error(
+          typeof body.error === "string"
+            ? body.error
+            : t("usersPage.reportError"),
+        );
+        setReportStatus("failed");
+        return;
+      }
+      const jobId = body.jobId;
+      if (!jobId || typeof jobId !== "string") {
+        toast.error(t("usersPage.reportError"));
+        setReportStatus("failed");
+        return;
+      }
+      setReportJobId(jobId);
+      setReportStatus(
+        body.status === "done" ? "done" : ("queued" as const),
+      );
+      if (body.status === "done") {
+        setReportUrl((body.url as string | undefined) ?? null);
+        setReportExpiresAt((body.expiresAt as string | undefined) ?? null);
+        toast.success(t("usersPage.reportReady"));
+      } else {
+        void pollReportStatus(jobId);
+      }
+    } catch (error) {
+      console.error("Error queuing cockpit report:", error);
+      toast.error(t("usersPage.reportError"));
+      setReportStatus("failed");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  const pollReportStatus = async (jobId: string) => {
+    const check = async () => {
+      try {
+        const res = await fetch(
+          `/api/admin/support/cockpit-report/status?jobId=${encodeURIComponent(jobId)}`,
+        );
+        const body = (await res.json().catch(() => ({}))) as Record<
+          string,
+          unknown
+        >;
+        if (!res.ok) {
+          setReportStatus("failed");
+          toast.error(
+            typeof body.error === "string"
+              ? body.error
+              : t("usersPage.reportError"),
+          );
+          return;
+        }
+        const status = body.status as
+          | "queued"
+          | "running"
+          | "done"
+          | "failed";
+        setReportStatus(status);
+        if (status === "done") {
+          setReportUrl((body.url as string | undefined) ?? null);
+          setReportExpiresAt((body.expiresAt as string | undefined) ?? null);
+          toast.success(t("usersPage.reportReady"));
+          return;
+        }
+        if (status === "failed") {
+          toast.error(t("usersPage.reportFailed"));
+          return;
+        }
+        reportTimeoutRef.current = window.setTimeout(check, 5000);
+      } catch (error) {
+        console.error("Error polling cockpit report status:", error);
+        setReportStatus("failed");
+      }
+    };
+    void check();
   };
 
   const formatDate = (dateString: string | null) => {
@@ -514,16 +636,28 @@ export default function ClientAdminUsers() {
                     </span>
                   </td>
                   <td className={TABLE.cell}>
-                    <button
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setShowUpgradeModal(true);
-                      }}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-[#0052FF]/20 text-[#6FA3FF] rounded-lg hover:bg-[#0052FF]/30 transition-colors text-xs font-medium"
-                    >
-                      <ArrowUpCircle className="w-3 h-3" />
-                      Oppgrader
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setShowUpgradeModal(true);
+                        }}
+                        aria-label={`Oppgrader: ${user.email || user.id}`}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-[#0052FF]/20 text-[#6FA3FF] rounded-lg hover:bg-[#0052FF]/30 transition-colors text-xs font-medium"
+                      >
+                        <ArrowUpCircle className="w-3 h-3" />
+                        Oppgrader
+                      </button>
+                      <button
+                        onClick={() => void handleCockpitReport(user)}
+                        disabled={reportLoading && reportUser?.id === user.id}
+                        aria-label={`${t("usersPage.cockpitReport")}: ${user.email || user.id}`}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg hover:bg-emerald-500/30 transition-colors text-xs font-medium disabled:opacity-50"
+                      >
+                        <Camera className="w-3 h-3" />
+                        {t("usersPage.cockpitReport")}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -663,6 +797,79 @@ export default function ClientAdminUsers() {
                 disabled={upgrading}
               >
                 Avbryt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cockpit Report Modal */}
+      {showReportModal && reportUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4">
+            <h3 className="text-lg font-semibold text-white">
+              {t("usersPage.reportModalTitle")}
+            </h3>
+            <p className="text-sm text-slate-400">
+              {t("usersPage.reportModalHint")}
+            </p>
+            <p className="text-sm text-slate-300">
+              {reportUser.username || reportUser.email}
+            </p>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500">{t("usersPage.reportStatus")}</span>
+                <span className="text-white capitalize">
+                  {reportStatus === "queued" && t("usersPage.reportPending")}
+                  {reportStatus === "running" && t("usersPage.reportRunning")}
+                  {reportStatus === "done" && t("usersPage.reportDone")}
+                  {reportStatus === "failed" && t("usersPage.reportFailed")}
+                </span>
+              </div>
+              {reportLoading && (
+                <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  {t("usersPage.reportQueueing")}
+                </div>
+              )}
+              {reportJobId && (
+                <div className="text-xs text-slate-500 font-mono break-all">
+                  {t("usersPage.reportJobId")}: {reportJobId}
+                </div>
+              )}
+              {reportUrl && (
+                <a
+                  href={reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-sm text-[#6FA3FF] hover:text-[#0052FF] underline break-all"
+                >
+                  {t("usersPage.reportDownload")}
+                </a>
+              )}
+              {reportExpiresAt && (
+                <p className="text-xs text-slate-500">
+                  {t("usersPage.reportExpires")}: {formatDate(reportExpiresAt)}
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  clearReportTimeout();
+                  setShowReportModal(false);
+                  setReportUser(null);
+                  setReportJobId(null);
+                  setReportStatus("queued");
+                  setReportUrl(null);
+                  setReportExpiresAt(null);
+                }}
+                className="px-4 py-2 text-slate-400 hover:text-white"
+              >
+                {t("usersPage.reportClose")}
               </button>
             </div>
           </div>

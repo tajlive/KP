@@ -22,13 +22,17 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const email = process.env.COCKPIT_PREVIEW_USER_EMAIL || 'viking.no@klarpakke.test';
 const password = process.env.COCKPIT_PREVIEW_USER_PASSWORD || 'VikingTestPass123!';
 const baseUrl = process.env.COCKPIT_PREVIEW_BASE_URL || 'https://www.klarpakke.no';
-const outputDir = process.env.COCKPIT_PREVIEW_OUTPUT_DIR || '/tmp/cockpit-reports';
+const outputDir = process.env.COCKPIT_PREVIEW_OUTPUT_DIR || path.join(repoRoot, 'tmp', 'cockpit-reports');
+const jobId = process.env.COCKPIT_PREVIEW_JOB_ID || `manual-${Date.now()}`;
+const targetUserId = process.env.COCKPIT_PREVIEW_TARGET_USER_ID || 'Viking_NO';
 const cookieName = 'sb-pskhryjzkobytnfwucrb-auth-token';
 
 async function main() {
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local');
+    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
   }
+
+  fs.mkdirSync(outputDir, { recursive: true });
 
   // 1. Password-grant login via Supabase
   const authUrl = `${supabaseUrl}/auth/v1/token?grant_type=password`;
@@ -66,10 +70,13 @@ async function main() {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
 
+  const baseHostname = new URL(baseUrl).hostname;
+  const cookieDomain = baseHostname.includes('.') ? `.${baseHostname}` : baseHostname;
+
   await context.addCookies([{
     name: cookieName,
     value: encodedCookie,
-    domain: '.klarpakke.no',
+    domain: cookieDomain,
     path: '/',
     httpOnly: false,
     secure: true,
@@ -90,11 +97,17 @@ async function main() {
       await page.waitForSelector(selectorToWait, { timeout: 30_000 });
       await page.waitForTimeout(1000);
     }
-    const file = `/tmp/viking-no-cockpit-poc-${name}.png`;
-    await page.screenshot({ path: file, fullPage: true });
-    const stats = fs.statSync(file);
-    const dimensions = await page.evaluate(() => ({ width: document.body.scrollWidth, height: document.body.scrollHeight }));
-    results.push({ tab: name, file, size: stats.size, dimensions });
+    const fileName = `${jobId}-${name}.png`;
+    const filePath = path.join(outputDir, fileName);
+    await page.screenshot({ path: filePath, fullPage: true });
+    const stats = fs.statSync(filePath);
+    const dimensions = await page.evaluate(() => ({
+      width: document.body.scrollWidth,
+      height: document.body.scrollHeight,
+    }));
+    const result = { tab: name, fileName, filePath, size: stats.size, dimensions };
+    results.push(result);
+    console.log(`Captured ${name}: ${filePath} (${result.size} bytes, ${result.dimensions.width}x${result.dimensions.height})`);
   }
 
   // 5. Capture overview tab
@@ -122,13 +135,20 @@ async function main() {
 
   await browser.close();
 
-  // 7. Log results
-  for (const r of results) {
-    console.log(`Captured ${r.tab}: ${r.file} (${r.size} bytes, ${r.dimensions.width}x${r.dimensions.height})`);
-  }
+  // 7. Write manifest for the upload step
+  const manifest = {
+    jobId,
+    targetUserId,
+    baseUrl,
+    generatedAt: new Date().toISOString(),
+    files: results,
+  };
+  const manifestPath = path.join(outputDir, 'report-manifest.json');
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  console.log(`Manifest written: ${manifestPath}`);
 }
 
 main().catch(err => {
-  console.error('POC failed:', err.message);
+  console.error('Cockpit screenshot failed:', err.message);
   process.exit(1);
 });
