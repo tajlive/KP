@@ -421,21 +421,30 @@ async function executeTradeWithLock(
 
             const priorBuys: TradePnlInput[] =
               openPosition.lots && openPosition.lots.length > 0
-                ? openPosition.lots.map((lot) => ({
-                    symbol: request.symbol,
-                    side: "buy" as const,
-                    quantity: lot.quantity,
-                    price: lot.entryPrice,
-                    fee: 0,
-                    timestamp: lot.timestamp,
-                    currency: tradeCurrency,
-                  }))
+                ? openPosition.lots.map((lot) => {
+                    const lotPrice = Number(lot.entryPrice);
+                    if (Number.isNaN(lotPrice)) {
+                      console.warn(
+                        "execute-trade: missing entryPrice in open_position lot",
+                        { symbol: request.symbol, session: request.sessionId },
+                      );
+                    }
+                    return {
+                      symbol: request.symbol,
+                      side: "buy" as const,
+                      quantity: lot.quantity,
+                      price: Number.isNaN(lotPrice) ? 0 : lotPrice,
+                      fee: 0,
+                      timestamp: lot.timestamp,
+                      currency: tradeCurrency,
+                    };
+                  })
                 : [
                     {
                       symbol: request.symbol,
                       side: "buy" as const,
                       quantity: positionQty,
-                      price: openPosition.entry_price ?? 0,
+                      price: Number(openPosition.entry_price ?? 0),
                       fee: 0,
                       timestamp: openPosition.entry_time,
                       currency: tradeCurrency,

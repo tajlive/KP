@@ -549,7 +549,14 @@ async function processSession(
 
     // Trailing take-profit check on open positions
     if (session.open_position && signal.action === "hold") {
-      const entryPrice = session.open_position.entry_price;
+      const rawEntryPrice = session.open_position.entry_price;
+      const entryPrice = Number(rawEntryPrice);
+      if (Number.isNaN(entryPrice)) {
+        console.warn("tick: missing entry_price in open_position", {
+          session: session.id,
+          entry_price: rawEntryPrice,
+        });
+      }
       const highest =
         (session.open_position.highest_price && session.open_position.highest_price > 0)
           ? session.open_position.highest_price
@@ -621,7 +628,9 @@ async function processSession(
       }
 
       // Partial Take-Profit: Sell portions at predefined targets
-      const pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
+      const pnlPct = Number.isNaN(entryPrice) || entryPrice === 0
+        ? 0
+        : ((currentPrice - entryPrice) / entryPrice) * 100;
       const partialLevels = (session.strategy_config as Record<string, unknown>)
         ?.partial_tp_levels as
         | Array<{ target_pct: number; sell_pct: number }>
@@ -1124,9 +1133,17 @@ async function processSession(
           updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
         } catch {
           // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
-          const entryPrice = session.open_position.entry_price;
-          realizedPnl =
-            Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
+          const rawEntryPrice = session.open_position?.entry_price;
+          const entryPrice = Number(rawEntryPrice);
+          if (Number.isNaN(entryPrice)) {
+            console.warn("tick: missing entry_price in open_position for fallback P&L", {
+              session: session.id,
+              entry_price: rawEntryPrice,
+            });
+          }
+          realizedPnl = Number.isNaN(entryPrice)
+            ? 0
+            : Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
         }
       }
     }
