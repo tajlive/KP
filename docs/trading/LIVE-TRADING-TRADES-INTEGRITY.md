@@ -188,6 +188,8 @@ Eldre rader er fjernet her for lesbarhet; **full historikk** ligger i **git** (`
 
 
 
+| 2026-07-04 | Main | **Viking_NO production verification after fix deploy:** Commit `70821142` deployed to `https://www.klarpakke.no` (`/api/health` version `7082114`). Verified via three parallel specialist agents: (1) `klarpakke-live-trading-integrity` — user `viking.no@klarpakke.test` (`814b8c67-1534-4a47-8c66-40a3f80870cd`) has `tier='professor'`, exactly one active paper session (`5f6df628-f0c9-4a2d-b752-60677864b09a`), `starting_capital_nok=500000`, `current_capital_nok=1127821.95`, `strategy_config.position_size=0.05`, and 70+ trades. `POST /api/paper-trading/execute` returned 200 OK and created a new trade; `GET /api/paper-trading/balance` returned 200 OK with consistent capital. (2) `klarpakke-trading-realtime-market-data` — cron tick for Viking_NO returned 200, processed 2 sessions, executed 1 sell trade + 1 heartbeat, 0 errors; no `Invalid trade price` or `CurrencyMismatchError` was produced. 29 historical `Invalid trade price: 0.85906892` logs remain from before the fix (pre-2026-07-04T18:20:16Z). (3) `klarpakke-cockpit-qa` — logged in as Viking_NO on `/no/handel`, page loaded with no console/network errors, session shows `Aktiv`, capital 1,127,822 NOK, initial 500,000 NOK, visible trade count 150 after loading more; API returns 200 trades across 7 symbols and both sides. |
+
 ## Relatert dokumentasjon
 
 - **`docs/trading/DB-REMOTE-REPAIR-FASIT.md`** — fasit: `npm run db:apply:trading-core` når `db push` er blokkert (drift)
