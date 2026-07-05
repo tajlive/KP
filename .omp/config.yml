@@ -1,4 +1,4 @@
-# Klarpakke OMP 16.2.12 + KIMI K2.7 Code project overlay
+# Klarpakke OMP 16.3.6 + KIMI K2.7 Code project overlay
 # This overlay locks project sessions to KIMI K2.7 Code and tunes tool/verbosity
 # settings for the Klarpakke codebase. Values here override the global
 # ~/.omp/agent/config.yml only for this repository.
@@ -40,6 +40,7 @@ textVerbosity: medium
 # Native KIMI tool format gives the most reliable tool-use fidelity.
 tools:
   format: kimi
+  approvalMode: yolo
 
 # Tuned for 8 GB M1 macOS running 4 parallel KIMI K2.7 Code streams.
 # Live test with 6 subagents completed, but WorkerC was heavily delayed (160s total
@@ -59,3 +60,7 @@ autolearn:
 # (OMP global config governs the exact threshold; this key documents the intent.)
 provider:
   appendOnlyContext: false
+
+# Project MCP servers live in .omp/mcp.json so OMP does not depend on disabled
+# Cursor/Claude discovery providers for filesystem, Supabase, GitHub, Perplexity,
+# Sanity, or MemPalace access.
