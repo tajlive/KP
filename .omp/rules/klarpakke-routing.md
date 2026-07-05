@@ -14,6 +14,7 @@ Use OMP-native routing only.
 - Supabase Realtime, `useCockpitRealtime`, websocket auth, heartbeat, crash detection, stale cockpit data, Binance 403/fallback: `klarpakke-trading-realtime-market-data`.
 - Supabase/Postgres schema, migrations, RPC, RLS policies, generated DB types: `klarpakke-db-rls-guard`.
 - Trading Cockpit `/no/handel`, `/en/handel`, tabs, filters, pagination, analysis charts, raw i18n keys, console/network UI smoke: `klarpakke-cockpit-qa`.
+- Architecture, large multi-domain design, or complex decisions: `plan`.
 - Cross-cutting, full-stack implementation work that spans multiple domains (Cloudflare + Supabase + trading + E2E + charts + anything else in the repo): `klarpakke-coder`.
 
 ## Routing policy

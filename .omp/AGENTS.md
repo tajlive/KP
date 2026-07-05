@@ -12,6 +12,13 @@ Read the workflow rules before deployment, production, infrastructure, or agent/
 
 @../.kimi/WORKFLOW_RULES.md
 
+## `.kimi/MASTER_PROMPT.md` vs `.omp/AGENTS.md`
+
+- `.omp/AGENTS.md` and `.omp/rules/*.md` are the **primary** sources for OMP sessions. They define specialist routing, project constraints, and the Main-agent playbook.
+- `.kimi/MASTER_PROMPT.md` is the original project source of truth. It still provides background, domain context, and high-level constraints. OMP reads it for context, but where it conflicts with `.omp/`, the `.omp/` overlay wins.
+- `.kimi/WORKFLOW_RULES.md` remains authoritative for **deploy, production, infrastructure, secrets handling, and emergency procedures**. Always read it before that class of work.
+- Rule of thumb: make OMP-native changes in `.omp/`; do not edit `.kimi/` files for OMP optimization or routing work. If a conflict persists, Main reconciles it explicitly.
+
 ## OMP-native operating model
 
 - Project-specific instructions live in `.omp/AGENTS.md` and `.omp/RULES.md`.
@@ -23,7 +30,7 @@ Read the workflow rules before deployment, production, infrastructure, or agent/
 
 ## Chief architect routing defaults
 
-- Larger tasks: Main agent decides architecture, then uses OMP `task` subagents only for bounded implementation, verification, or investigation.
+- Larger tasks: Main agent decides architecture, then uses OMP `plan` for complex design and `task` subagents for bounded implementation, verification, or investigation.
 - Trading/live/paper/RLS/history/Binance/session work: use OMP-native trading integrity rules and agents.
 - Deploy/production/Cloudflare/OpenNext/Wrangler work: use `klarpakke-cloudflare-workers-ops`.
 - Trading Cockpit UI smoke and E2E: use `klarpakke-cockpit-qa`.
@@ -89,8 +96,11 @@ Use these four agents for their domains; fall back to `klarpakke-coder` for cros
 | `klarpakke-trading-realtime-market-data` | Supabase Realtime, `useCockpitRealtime`, websocket auth, heartbeat, crash detection, candles, and Binance 403/fallback. |
 | `klarpakke-db-rls-guard` | Supabase schema, migrations, RLS policies, RPC signatures, `search_path`, generated types, and service-role boundaries. |
 | `klarpakke-cleanup-orchestrator` | Post-task / post-deploy verification, roster cleanup, and final status report. Read-and-report only. |
+| `klarpakke-cockpit-qa` | Trading Cockpit `/no/handel`, `/en/handel`, tabs, filters, pagination, analysis charts, raw i18n keys, console/network UI smoke. |
+| `plan` | Architecture, large multi-domain design, or complex decisions. |
+| `reviewer` | Code/security review when no custom specialist is needed. |
 
-For Trading Cockpit UI/E2E smoke, use `klarpakke-cockpit-qa`. For cross-cutting implementation that touches multiple domains, use `klarpakke-coder` and let it delegate to the narrow specialists above.
+For cross-cutting implementation that touches multiple domains, use `klarpakke-coder` and let it delegate to the narrow specialists above.
 
 ## 1. Status triage matrix
 
