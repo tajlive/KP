@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Cloudflare Workers (fallback)
+name: Deploy to Cloudflare Workers — Fallback
 
 on:
   # Primary auto-deploy is Cloudflare Workers Builds. Use this workflow as a fallback when:
