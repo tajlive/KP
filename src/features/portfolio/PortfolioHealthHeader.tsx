@@ -6,8 +6,17 @@ import { useBinancePrices } from "@/hooks/useBinancePrices";
 import { m } from "framer-motion";
 
 interface Props {
-  wallets: any[];
-  config: any;
+  wallets: WalletData[];
+  config: RebalanceConfig | null;
+}
+
+interface WalletData {
+  currency: string;
+  balance: number;
+}
+
+interface RebalanceConfig {
+  target_allocations: Record<string, number>;
 }
 
 export function PortfolioHealthHeader({ wallets, config }: Props) {

@@ -309,7 +309,7 @@ const eslintConfig = [
       ...tsPlugin.configs.recommended.rules,
       // TypeScript - disallow explicit any
       "@typescript-eslint/no-explicit-any": [
-        "warn",
+        "error",
         {
           fixToUnknown: true,
           ignoreRestArgs: false,

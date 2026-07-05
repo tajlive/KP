@@ -6,6 +6,14 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
+interface TradeRow {
+  realized_pnl: number | null;
+  total_value: number;
+  fee: number;
+  usdt_nok_rate: number | null;
+  side: string;
+}
+
 export interface PLAttribution {
   period: { hours: number };
   totalPnLNok: number;
@@ -36,7 +44,7 @@ export async function calculatePLAttribution(
     .gte("executed_at", since)
     .eq("status", "filled")
     .not("realized_pnl", "is", null);
-    const trades = rawTrades as any;
+    const trades = rawTrades as TradeRow[];
 
   if (error) throw new Error(`P&L attribution query failed: ${error.message}`);
   if (!trades || trades.length === 0) {

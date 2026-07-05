@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
+
+type ChartValue = number | string | readonly (number | string)[] | undefined;
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, m } from "framer-motion";
@@ -33,6 +35,39 @@ interface RebalanceOrder {
   twap_chunks: number;
   executed_chunks: number;
 }
+
+// Minimal typed query builders for portfolio tables not yet in generated DB types
+type PortfolioConfigResult = { data: RebalanceConfig | null; error: Error | null };
+type PortfolioOrderResult = { data: RebalanceOrder[] | null; error: Error | null };
+
+type PortfolioConfigQuery = {
+  select(columns: string): {
+    eq(column: string, value: string): {
+      maybeSingle(): Promise<PortfolioConfigResult>;
+    };
+  };
+  insert(values: object): {
+    select(): {
+      single(): Promise<PortfolioConfigResult>;
+    };
+  };
+  update(values: object): {
+    eq(column: string, value: string): Promise<{ error: Error | null }>;
+  };
+};
+
+type PortfolioOrderQuery = {
+  select(columns: string): {
+    eq(column: string, value: string): {
+      in(column: string, values: string[]): Promise<PortfolioOrderResult>;
+    };
+  };
+};
+
+type PortfolioClient = {
+  from(table: "portfolio_rebalance_configs"): PortfolioConfigQuery;
+  from(table: "portfolio_rebalance_orders"): PortfolioOrderQuery;
+};
 
 const COLORS = [
   "#0052FF", // BRAND_COLOR.DEFAULT
@@ -71,14 +106,15 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
   }, []);
 
   const supabase = createClient();
+  const portfolioDb = supabase as unknown as PortfolioClient;
 
   useEffect(() => {
     async function fetchData() {
       try {
         const [walletsRes, configRes, ordersRes] = await Promise.all([
           supabase.from("wallets").select("*").eq("user_id", userId),
-          (supabase as any).from("portfolio_rebalance_configs").select("*").eq("user_id", userId).maybeSingle(),
-          (supabase as any).from("portfolio_rebalance_orders")
+          portfolioDb.from("portfolio_rebalance_configs").select("*").eq("user_id", userId).maybeSingle(),
+          portfolioDb.from("portfolio_rebalance_orders")
             .select("*")
             .eq("user_id", userId)
             .in("status", ["pending", "partial"])
@@ -104,7 +140,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
             }
           };
           
-          const { data: newConfig, error: insertError } = await (supabase as any)
+          const { data: newConfig, error: insertError } = await portfolioDb
             .from("portfolio_rebalance_configs")
             .insert(defaultConfig)
             .select()
@@ -143,7 +179,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
   const toggleAutopilot = async () => {
     if (!config) return;
     const newStatus = !config.is_active;
-    const { error } = await (supabase as any)
+    const { error } = await portfolioDb
       .from("portfolio_rebalance_configs")
       .update({ is_active: newStatus })
       .eq("id", config.id);
@@ -435,7 +471,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                               ))}
                             </Pie>
                             <Tooltip 
-                              formatter={(value: any) => [`${value}%`, 'Målvekt']}
+                              formatter={(value: ChartValue) => [`${value ?? 0}%`, 'Målvekt']}
                               contentStyle={{ 
                                 backgroundColor: 'rgba(10, 11, 13, 0.95)', 
                                 border: '1px solid rgba(255,255,255,0.1)', 
@@ -512,7 +548,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                         domain={['dataMin - 5000', 'dataMax + 10000']}
                       />
                       <Tooltip 
-                        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Portefølje-verdi']}
+                        formatter={(value: ChartValue) => [`$${Number(value ?? 0).toLocaleString()}`, 'Portefølje-verdi']}
                         contentStyle={{ 
                           backgroundColor: 'rgba(10, 11, 13, 0.95)', 
                           border: '1px solid rgba(255,255,255,0.1)', 
@@ -627,7 +663,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
               Allokeringsanalyse
             </h4>
             <div className="space-y-4">
-              {Object.entries(config?.target_allocations || {}).map(([symbol, target]: [string, any]) => {
+              {Object.entries(config?.target_allocations || {}).map(([symbol, target]: [string, number]) => {
                 const current = currentAllocations[symbol] || 0;
                 const diff = current - target;
                 const isOver = diff > 0;

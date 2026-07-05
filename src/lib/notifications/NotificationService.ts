@@ -8,6 +8,8 @@ export type NotificationType =
   | "portfolio_rebalance_completed"
   | "security_alert";
 
+export type NotificationData = Record<string, string | number | boolean | null | undefined>;
+
 export class NotificationService {
   constructor(private supabase: SupabaseClient) {}
 
@@ -16,7 +18,7 @@ export class NotificationService {
     type: NotificationType, 
     title: string, 
     message: string, 
-    data: Record<string, any> = {}
+    data: NotificationData = {}
   ) {
     try {
       const { error } = await this.supabase
@@ -46,7 +48,7 @@ export class NotificationService {
     }
   }
 
-  static async create(supabase: SupabaseClient, userId: string, type: NotificationType, title: string, message: string, data: Record<string, any> = {}) {
+  static async create(supabase: SupabaseClient, userId: string, type: NotificationType, title: string, message: string, data: NotificationData = {}) {
     const service = new NotificationService(supabase);
     return service.send(userId, type, title, message, data);
   }

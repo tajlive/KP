@@ -21,9 +21,22 @@ interface HealthCheck {
   cached?: boolean;
 }
 
+const KNOWN_BINANCE_ENDPOINTS = [
+  "https://api.binance.com",
+  "https://api1.binance.com",
+  "https://api2.binance.com",
+  "https://api3.binance.com",
+  "https://api4.binance.com",
+  "https://data-api.binance.vision",
+  "https://testnet.binance.vision",
+] as const;
+
+const PRIMARY_BINANCE_ENDPOINT = "https://api.binance.com";
+
 interface BinanceConnectivityResult {
   status: "ok" | "degraded" | "error";
   primaryWorked: boolean;
+  fallbackActive: boolean;
   endpointUsed?: string;
   message?: string;
 }
@@ -195,18 +208,31 @@ async function checkKV(): Promise<CheckResult> {
 }
 
 async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
-  const start = Date.now();
   const provider = new BinanceMarketDataProvider();
-  const primaryBase = "https://api.binance.com";
 
   try {
-    await provider.getPrice("BTCUSDT");
-    const endpointUsed = provider.getLastEndpointUsed() ?? primaryBase;
-    const primaryWorked = endpointUsed === primaryBase;
+    await Promise.race([
+      provider.getPrice("BTCUSDT"),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Binance health probe timeout")),
+          5000,
+        ),
+      ),
+    ]);
+
+    const endpointUsed =
+      provider.getLastEndpointUsed() ?? PRIMARY_BINANCE_ENDPOINT;
+    const primaryWorked = endpointUsed === PRIMARY_BINANCE_ENDPOINT;
+    const fallbackActive = !primaryWorked;
+    const knownEndpoint = (KNOWN_BINANCE_ENDPOINTS as readonly string[]).includes(
+      endpointUsed,
+    );
 
     return {
-      status: primaryWorked ? "ok" : "degraded",
+      status: knownEndpoint ? "ok" : "degraded",
       primaryWorked,
+      fallbackActive,
       endpointUsed,
     };
   } catch (err) {
@@ -214,6 +240,7 @@ async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
     return {
       status: "error",
       primaryWorked: false,
+      fallbackActive: false,
       message: err instanceof Error ? err.message : JSON.stringify(err),
     };
   }
@@ -295,6 +322,7 @@ export async function GET() {
       withTimeout(checkBinanceConnectivity(), 15000, {
         status: "error" as const,
         primaryWorked: false,
+        fallbackActive: false,
         message: "Check timed out after 15000ms",
       }),
     ]);

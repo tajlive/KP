@@ -19,6 +19,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
+type TradingSessionRow = Database["public"]["Tables"]["trading_sessions"]["Row"];
+
 export type DashboardMode = "paper" | "live";
 
 export type SessionScope = "all" | "active" | "active_and_completed";
@@ -50,7 +52,7 @@ export interface DashboardMetrics {
   /** Number of sessions in the chosen scope. */
   sessionCount: number;
   /** The 5 most recent sessions for display in the dashboard. */
-  recentSessions: any[];
+  recentSessions: TradingSessionRow[];
 }
 
 export class DashboardMetricsError extends Error {
