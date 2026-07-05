@@ -17,7 +17,9 @@
     "abTests": "A/B-tester",
     "autoTrading": "Auto-trading",
     "tradingSessions": "Trading-økter",
-    "adminV2": "Admin v2"
+    "adminV2": "Admin v2",
+    "sectionSupport": "Support",
+    "impersonate": "Se som bruker"
   },
   "users": "Brukere",
   "students": "Studenter",
@@ -187,7 +189,31 @@
     "reportExpires": "Rapporten utløper",
     "reportClose": "Lukk",
     "reportError": "Kunne ikke generere cockpit-rapport",
-    "reportReady": "Cockpit-rapporten er klar"
+    "reportReady": "Cockpit-rapporten er klar",
+    "impersonate": "Se som bruker"
+  },
+  "impersonation": {
+    "title": "Se som bruker",
+    "description": "Start en read-only support-økt og vis brukerens cockpit.",
+    "warningTitle": "Kun for support",
+    "warningBody": "Du må skrive brukerens passord. Økten logges, er kortvarig og skrivebeskyttet.",
+    "email": "E-post",
+    "emailPlaceholder": "viking.no@klarpakke.test",
+    "password": "Passord",
+    "passwordPlaceholder": "Skriv brukerens passord",
+    "passwordHint": "Passordet brukes til en vanlig Supabase-innlogging og lagres ikke.",
+    "reason": "Årsak",
+    "reasonPlaceholder": "F.eks. feilsøking av cockpit-visning",
+    "duration": "Varighet: {minutes} min",
+    "minDuration": "{minutes} min",
+    "maxDuration": "{minutes} min",
+    "start": "Start visning",
+    "starting": "Starter...",
+    "startError": "Kunne ikke starte visning: {status}",
+    "banner": "Support-modus: du viser som {user}",
+    "endSession": "Avslutt økt",
+    "endSessionAria": "Avslutt support-visning",
+    "ending": "Avslutter..."
   },
   "send": "Send",
   "sendEmail": "Send e-post",

@@ -6949,6 +6949,48 @@ export type Database = {
           },
         ]
       }
+      support_impersonation_sessions: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          ended_at: string | null
+          expires_at: string
+          id: string
+          reason: string
+          revoked_at: string | null
+          started_at: string
+          target_user_id: string
+          token_jti: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          ended_at?: string | null
+          expires_at: string
+          id?: string
+          reason: string
+          revoked_at?: string | null
+          started_at?: string
+          target_user_id: string
+          token_jti: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          ended_at?: string | null
+          expires_at?: string
+          id?: string
+          reason?: string
+          revoked_at?: string | null
+          started_at?: string
+          target_user_id?: string
+          token_jti?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trading_api_keys: {
         Row: {
           api_key_encrypted: string
@@ -9755,6 +9797,10 @@ export type Database = {
           error_message: string
           is_valid: boolean
         }[]
+      }
+      verify_impersonation_session: {
+        Args: { p_jti: string }
+        Returns: boolean
       }
       xp_for_level: { Args: { level: number }; Returns: number }
     }

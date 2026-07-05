@@ -1,3 +1,4 @@
+import { rejectIfImpersonating } from '@/lib/admin/impersonation-guard';
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { resetPaperTradingSession } from '@/lib/supabase/paper-trading';
@@ -25,6 +26,9 @@ export async function POST(request: NextRequest) {
         { status: 401 },
       );
     }
+
+    const impersonation = await rejectIfImpersonating(request);
+    if (impersonation) return impersonation;
 
     // Valgfri startkapital fra body (default: 100000)
     let startingCapital = 100000;

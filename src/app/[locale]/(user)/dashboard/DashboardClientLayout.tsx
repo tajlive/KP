@@ -23,6 +23,7 @@ import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
 import { ThemeProvider } from "@/shared/theme";
 import { QueryProvider } from "@/shared/providers/query-provider";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
+import ImpersonationBanner from "@/components/admin/support/ImpersonationBanner";
 // Analytics/SpeedInsights disabled on self-hosted stack
 import { useAuth } from "@/lib/auth/new/AuthContext";
 
@@ -89,6 +90,7 @@ export default function DashboardClientLayout({
                   <TradingModeProvider initialMode={initialTradingMode}>
                     <TradeSuccessProvider>
                       <ProtectedRoute>
+                        <ImpersonationBanner />
                         <OnboardingFlow />
                         <div data-testid="dashboard-root">
                           <DashboardContent>{children}</DashboardContent>
