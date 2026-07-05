@@ -61,7 +61,7 @@ export function PortfolioHealthHeader({ wallets, config }: Props) {
         {healthScore > 90 ? <ShieldCheck className="w-4 h-4" /> : <Activity className="w-4 h-4 animate-pulse" />}
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Health Score</span>
+        <span className="text-[12px] font-bold text-gray-500 uppercase tracking-wider">Health Score</span>
         <span className={`text-sm font-black ${healthScore > 90 ? 'text-emerald-500' : healthScore > 70 ? 'text-amber-500' : 'text-rose-500'}`}>
           {healthScore}%
         </span>
