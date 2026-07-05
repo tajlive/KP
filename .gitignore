@@ -298,6 +298,27 @@ backups/
 .kimi/backup/
 .DS_Store
 
+# =============================================================================
+# LOCAL IDE CONFIG AND SCRATCH (prevent future clutter)
+# =============================================================================
+# Local scratch directories / research notes
+.local/
+
+# IDE/agent directories that contain local-only config, secrets, or generated
+# rules/workflow files (e.g. .claude/mcp.json, .cursor/environment.json).
+# Existing files are kept tracked; these patterns stop new clutter.
+.agent/
+.claude/
+.cursor/
+
+# Local archive directory for ad-hoc backups/old files
+archive/
+
+# One-off scratch/test scripts (mjs) that are not part of the committed suite
+scripts/test-*.mjs
+scripts/verify/test-*.mjs
+test-impersonation-flow.mjs
+
 # Temporary local reports/screenshots
 tmp/
 

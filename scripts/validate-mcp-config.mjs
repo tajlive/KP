@@ -14,12 +14,8 @@ const configFiles = [
   { label: ".omp/mcp.json", path: resolve(root, ".omp/mcp.json") },
   { label: ".mcp/mcp_config.json", path: resolve(root, ".mcp/mcp_config.json") },
   { label: ".kimi/mcp-config.json", path: resolve(root, ".kimi/mcp-config.json") },
-  { label: ".kimi/mcp_config.json", path: resolve(root, ".kimi/mcp_config.json") },
   { label: ".claude/mcp.json", path: resolve(root, ".claude/mcp.json") },
-  { label: ".claude/mcp-config.json", path: resolve(root, ".claude/mcp-config.json") },
   { label: ".perplexity/mcp_config.json", path: resolve(root, ".perplexity/mcp_config.json") },
-  { label: ".perplexity/mcp-config.json", path: resolve(root, ".perplexity/mcp-config.json") },
-  { label: ".perplexity/mac-mcp-config.json", path: resolve(root, ".perplexity/mac-mcp-config.json") },
 ];
 
 const masterLabel = ".omp/mcp.json";

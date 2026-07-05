@@ -78,10 +78,10 @@ else
 fi
 
 echo ""
-echo "${BLUE}Kimi (.kimi/mcp_config.json):${NC}"
-if [ -f .kimi/mcp_config.json ]; then
-    check_mcp_config .kimi/mcp_config.json "supabase"
-    check_mcp_config .kimi/mcp_config.json "sentry"
+echo "${BLUE}Kimi (.kimi/mcp-config.json):${NC}"
+if [ -f .kimi/mcp-config.json ]; then
+    check_mcp_config .kimi/mcp-config.json "supabase"
+    check_mcp_config .kimi/mcp-config.json "sentry"
 else
     echo -e "  ${RED}❌${NC} Fil ikke funnet"
 fi
