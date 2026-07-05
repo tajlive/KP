@@ -65,7 +65,6 @@ export default function ImpersonationBanner() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        // eslint-disable-next-line no-console
         console.error("[ImpersonationBanner] Failed to end session:", body);
       }
     } finally {
