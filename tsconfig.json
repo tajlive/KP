@@ -34,7 +34,8 @@
     "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": false
+    "incremental": true,
+    "tsBuildInfoFile": ".cache/tsc/buildinfo.json"
   },
   "include": [
     ".next/types/**/*.ts",
@@ -48,8 +49,17 @@
     "node_modules",
     "archive",
     "src/api-temp",
+    ".open-next",
+    ".next/cache",
+    ".next/standalone",
+    "out/standalone",
+    "out/cache",
     "supabase/functions",
     "tests",
+    "e2e/test-results",
+    "allure-results",
+    "playwright-report",
+    "coverage",
     "playwright.config.ts",
     "**/*.test.ts",
     "**/*.test.tsx",

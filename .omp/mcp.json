@@ -1,5 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
+  "_meta": {
+    "version": "2.9-minimal",
+    "lastOptimized": "2026-07-05",
+    "for": "KIMI CLI v1.44.0 + k2.6 / OMP / Claude",
+    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere for Klarpakke på Cloudflare Workers. MemPalace v3.5.0 (delt server) inkludert. Resend gjenopplivet via lokal wrapper.",
+    "note": "Resend MCP aktiv via scripts/run-resend-mcp.mjs. Fjernet: npx-servere (playwright, chrome-devtools), klarpakke (remote), vercel. Synkroniseres med npm run mcp:sync fra .omp/mcp.json."
+  },
   "mcpServers": {
     "filesystem": {
       "type": "stdio",
@@ -33,6 +40,13 @@
       "type": "stdio",
       "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
       "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "resend": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-resend-mcp.mjs"],
       "cwd": "/Users/taj/klarpakke",
       "timeout": 120000
     },

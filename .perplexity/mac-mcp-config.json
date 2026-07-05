@@ -1,59 +1,79 @@
 {
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
   "_meta": {
-    "version": "2.1",
-    "for": "Perplexity Mac Desktop",
-    "project": "Klarpakke",
-    "lastOptimized": "2026-06-29",
-    "description": "Perplexity Desktop med lokale verktøy: filsystem, GitHub, Supabase, MemPalace, Sanity. Optional: Playwright, Perplexity-search.",
-    "note": "Custom KIMI MCP-server fjernet: OpenCode/Kimi-krasj pga. ugyldige MCP-verktøyskjemaer (se github.com/anomalyco/opencode/issues/23887)."
+    "version": "2.9-minimal",
+    "lastOptimized": "2026-07-05",
+    "for": "KIMI CLI v1.44.0 + k2.6 / OMP / Claude",
+    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere for Klarpakke på Cloudflare Workers. MemPalace v3.5.0 (delt server) inkludert. Resend gjenopplivet via lokal wrapper.",
+    "note": "Resend MCP aktiv via scripts/run-resend-mcp.mjs. Fjernet: npx-servere (playwright, chrome-devtools), klarpakke (remote), vercel. Synkroniseres med npm run mcp:sync fra .omp/mcp.json."
   },
   "mcpServers": {
     "filesystem": {
-      "description": "📁 Filsystem — Direkte filoperasjoner uten KIMI-kall",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "supabase-db": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-supabase-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "sanity": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "github": {
-      "description": "🔀 GitHub — Repo, issues, PRs for tajlive/KP",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-github-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
-    "supabase": {
-      "description": "🗄️ Supabase — DB, Edge Functions, auth (offisiell MCP-server)",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-official-supabase-mcp.mjs"]
+    "perplexity": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "resend": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-resend-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "mempalace": {
-      "description": "🏛️ MemPalace MCP v3.5.0 — delt prosjekt-spesifikk server med config override",
-      "command": "node",
-      "args": ["/Users/taj/.kimi/mempalace-server.mjs"],
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/.kimi/mempalace-server.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000,
       "env": {
         "MEMPALACE_ROOT": "/Users/taj/klarpakke",
         "MEMPALACE_CONFIG": "/Users/taj/klarpakke/.mempalace/config.json"
       }
-    },
-    "sanity": {
-      "description": "🎨 Sanity CMS v2 — Read + write (krever SANITY_API_READ_TOKEN / SANITY_API_WRITE_TOKEN)",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"]
-    }
-  },
-  "_optional": {
-    "playwright": {
-      "description": "🎭 Playwright — E2E testing (valgfritt, krever lokal install)",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/node_modules/@playwright/mcp/cli.js"]
-    },
-    "perplexity": {
-      "description": "🔍 Perplexity MCP — AI-søk og research (valgfritt, krever PERPLEXITY_API_KEY)",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"]
-    }
-  },
-  "_removed": {
-    "klarpakke": {
-      "reason": "Remote Edge Function var treg/ustabil. Bruk supabase-db eller supabase i stedet.",
-      "replacement": "supabase"
     }
   }
 }
