@@ -29,11 +29,19 @@
     "html": {
       "command": "./node_modules/.bin/vscode-html-language-server",
       "args": ["--stdio"]
+    },
+    "markdown": {
+      "command": "./node_modules/.bin/vscode-markdown-language-server",
+      "args": ["--stdio"]
+    },
+    "yaml": {
+      "command": "./node_modules/.bin/yaml-language-server",
+      "args": ["--stdio"]
     }
   },
   "_notes": {
     "env_support": "OMP LSP clients that honor 'env' will increase the Node heap for the TypeScript and ESLint language servers. If your client ignores 'env', set NODE_OPTIONS in the shell that launches OMP, or create a wrapper script that exports NODE_OPTIONS before exec'ing the server.",
     "memory_tuning": "4096 MB balances the M1 8 GB workstation with 4 parallel KIMI streams. Raise to 6144/8192 on machines with more RAM.",
-    "trailing_notes": "All original servers, commands, and --stdio arguments preserved; no runtime or build semantics changed."
+    "trailing_notes": "Added markdown (vscode-markdown-language-server) and yaml (yaml-language-server) LSPs. sql-language-server is installed but crashes on startup due to a vscode-languageserver-protocol export conflict, so it is omitted. All original servers, commands, and --stdio arguments preserved; no runtime or build semantics changed."
   }
 }

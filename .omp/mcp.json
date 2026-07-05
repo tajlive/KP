@@ -4,8 +4,8 @@
     "version": "2.9-minimal",
     "lastOptimized": "2026-07-05",
     "for": "KIMI CLI v1.44.0 + k2.6 / OMP / Claude",
-    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere for Klarpakke på Cloudflare Workers. MemPalace v3.5.0 (delt server) inkludert. Resend gjenopplivet via lokal wrapper.",
-    "note": "Resend MCP aktiv via scripts/run-resend-mcp.mjs. Fjernet: npx-servere (playwright, chrome-devtools), klarpakke (remote), vercel. Synkroniseres med npm run mcp:sync fra .omp/mcp.json."
+    "description": "MCP-konfigurasjon — 11 servere for Klarpakke på Cloudflare Workers. Aktive: filesystem, supabase-db, sanity, github, perplexity, resend, mempalace, cloudflare, binance, stripe, chrome. Klarpakke (remote) er dokumentert men deaktivert fordi Supabase Edge Function-endepunktet er utilgjengelig fra dette nettverket.",
+    "note": "Alle wrappers finnes under scripts/run-*.mjs. De fleste laster secrets fra .env.local via scripts/load-env.mjs. Synkroniseres med npm run mcp:sync fra .omp/mcp.json."
   },
   "mcpServers": {
     "filesystem": {
@@ -60,6 +60,34 @@
         "MEMPALACE_ROOT": "/Users/taj/klarpakke",
         "MEMPALACE_CONFIG": "/Users/taj/klarpakke/.mempalace/config.json"
       }
+    },
+    "cloudflare": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-cloudflare-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "binance": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-binance-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "stripe": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-stripe-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "chrome": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-chrome-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     }
   }
 }
