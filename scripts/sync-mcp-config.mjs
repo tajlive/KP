@@ -16,12 +16,8 @@ const sourcePath = resolve(root, sourceLabel);
 const destinations = [
   ".mcp/mcp_config.json",
   ".kimi/mcp-config.json",
-  ".kimi/mcp_config.json",
   ".claude/mcp.json",
-  ".claude/mcp-config.json",
   ".perplexity/mcp_config.json",
-  ".perplexity/mcp-config.json",
-  ".perplexity/mac-mcp-config.json",
 ];
 
 function loadJson(label, filePath) {

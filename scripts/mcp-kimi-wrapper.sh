@@ -40,7 +40,7 @@ if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ "$SUPABASE_ACCESS_TOKEN" = "sbp_your_sup
 fi
 
 # Sett KIMI_MCP_CONFIG for å bruke vår config
-export KIMI_MCP_CONFIG="$PROJECT_ROOT/.kimi/mcp_config.json"
+export KIMI_MCP_CONFIG="$PROJECT_ROOT/.kimi/mcp-config.json"
 
 echo -e "${BLUE}🚀 Starter Kimi CLI med MCP...${NC}"
 echo ""
