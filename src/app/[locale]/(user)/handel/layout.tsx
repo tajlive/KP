@@ -1,4 +1,5 @@
 import { ToastProvider } from "@/providers/ToastProvider";
+import ImpersonationBanner from "@/components/admin/support/ImpersonationBanner";
 
 export const runtime = "nodejs";
 
@@ -12,5 +13,10 @@ export default function HandelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <ToastProvider>
+      <ImpersonationBanner />
+      {children}
+    </ToastProvider>
+  );
 }

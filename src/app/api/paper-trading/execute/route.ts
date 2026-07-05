@@ -7,6 +7,7 @@
 import { executeTrade } from "@/lib/trading/safety";
 import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-execute-success-response";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
+import { rejectIfImpersonating } from "@/lib/admin/impersonation-guard";
 import { createServerClient } from "@/lib/supabase/server";
 import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
 import { NextRequest, NextResponse } from "next/server";
@@ -46,6 +47,9 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const impersonation = await rejectIfImpersonating(request);
+    if (impersonation) return impersonation;
 
     // request.json() kan kaste (tom body / avbrutt stream) og krasjer ellers Next dev under load.
     // Vi leser raw text og parser eksplisitt for å returnere 400 i stedet for 500.

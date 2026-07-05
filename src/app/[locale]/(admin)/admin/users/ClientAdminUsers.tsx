@@ -8,6 +8,7 @@ import {
   Camera,
   CheckCircle,
   Crown,
+  Eye,
   GraduationCap,
   RefreshCw,
   Search,
@@ -17,6 +18,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { type UserData, roles, tiers, sources } from "./admin-users.types";
@@ -25,6 +27,7 @@ import { type UserData, roles, tiers, sources } from "./admin-users.types";
 
 export default function ClientAdminUsers() {
   const t = useTranslations("admin");
+  const locale = useLocale();
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -657,6 +660,14 @@ export default function ClientAdminUsers() {
                         <Camera className="w-3 h-3" />
                         {t("usersPage.cockpitReport")}
                       </button>
+                      <a
+                        href={`/${locale}/admin/support/impersonate?email=${encodeURIComponent(user.email || "")}`}
+                        aria-label={`${t("usersPage.impersonate")}: ${user.email || user.id}`}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition-colors text-xs font-medium"
+                      >
+                        <Eye className="w-3 h-3" />
+                        {t("usersPage.impersonate")}
+                      </a>
                     </div>
                   </td>
                 </tr>

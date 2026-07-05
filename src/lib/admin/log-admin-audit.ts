@@ -27,6 +27,9 @@ export type AdminAuditAction =
   | "user_paper_balance"
   | "user_tier"
   | "cockpit_report"
+  | "impersonation.started"
+  | "impersonation.ended"
+  | "impersonation.revoked"
   | string;
 
 /**

@@ -17,7 +17,9 @@
     "abTests": "A/B tests",
     "autoTrading": "Auto-trading",
     "tradingSessions": "Trading sessions",
-    "adminV2": "Admin v2"
+    "adminV2": "Admin v2",
+    "sectionSupport": "Support",
+    "impersonate": "See as user"
   },
   "users": "Users",
   "students": "Students",
@@ -187,7 +189,31 @@
     "reportExpires": "Report expires",
     "reportClose": "Close",
     "reportError": "Could not generate cockpit report",
-    "reportReady": "Cockpit report is ready"
+    "reportReady": "Cockpit report is ready",
+    "impersonate": "See as user"
+  },
+  "impersonation": {
+    "title": "See as user",
+    "description": "Start a read-only support session and view the user's cockpit.",
+    "warningTitle": "Support use only",
+    "warningBody": "You must enter the user's password. The session is logged, short-lived and read-only.",
+    "email": "Email",
+    "emailPlaceholder": "viking.no@klarpakke.test",
+    "password": "Password",
+    "passwordPlaceholder": "Enter the user's password",
+    "passwordHint": "The password is used for a normal Supabase login and is not stored.",
+    "reason": "Reason",
+    "reasonPlaceholder": "E.g. debugging cockpit view",
+    "duration": "Duration: {minutes} min",
+    "minDuration": "{minutes} min",
+    "maxDuration": "{minutes} min",
+    "start": "Start viewing",
+    "starting": "Starting...",
+    "startError": "Could not start viewing: {status}",
+    "banner": "Support mode: you are viewing as {user}",
+    "endSession": "End session",
+    "endSessionAria": "End support viewing",
+    "ending": "Ending..."
   },
   "send": "Send",
   "sendEmail": "Send email",

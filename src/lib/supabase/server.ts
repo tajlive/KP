@@ -21,6 +21,11 @@ type SupabaseCookie = {
   options?: Parameters<NextResponse["cookies"]["set"]>[2];
 };
 
+type ImpersonationCookieOverride = {
+  name: string;
+  value: string;
+};
+
 /**
  * Creates a Supabase service-role client (elevated privileges, bypasses RLS).
  * Use in API routes and Server Actions that need full DB access.
@@ -49,6 +54,7 @@ export function createClient() {
 export function createServerClient(
   request: NextRequest,
   response: NextResponse,
+  impersonationCookies?: ImpersonationCookieOverride[],
 ): SupabaseClient<Database>;
 // eslint-disable-next-line no-redeclare
 export function createServerClient(): Promise<SupabaseClient<Database>>;
@@ -56,6 +62,7 @@ export function createServerClient(): Promise<SupabaseClient<Database>>;
 export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,
+  impersonationCookies?: ImpersonationCookieOverride[],
 ): SupabaseClient<Database> | Promise<SupabaseClient<Database>> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim();
@@ -66,7 +73,27 @@ export function createServerClient(
     return createSSRServerClient<Database>(url, key, {
       cookieEncoding: "raw",
       cookies: {
-        getAll: () => request.cookies.getAll(),
+        getAll: () => {
+          const all = request.cookies.getAll();
+          if (!impersonationCookies || impersonationCookies.length === 0) {
+            return all;
+          }
+          // During impersonation the request still carries the admin's auth
+          // cookies; swap them for the target user's tokens so that Supabase
+          // SSR sees the impersonated session.
+          const impersonationNames: Record<string, true> = {};
+          for (const c of impersonationCookies) {
+            impersonationNames[c.name] = true;
+          }
+          const filtered = all.filter(
+            (c) =>
+              !impersonationNames[c.name] &&
+              !c.name.startsWith("sb-") &&
+              c.name !== "__impersonation_banner" &&
+              c.name !== "__impersonate",
+          );
+          return [...filtered, ...impersonationCookies];
+        },
         setAll: (cookiesToSet: SupabaseCookie[]) => {
           cookiesToSet.forEach((cookie) => {
             const { name, value, options } = cookie;

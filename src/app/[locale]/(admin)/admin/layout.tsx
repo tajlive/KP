@@ -9,6 +9,7 @@ import {
   Bot,
   DollarSign,
   FlaskConical,
+  HeadsetIcon,
   LogOut,
   Megaphone,
   Menu,
@@ -227,6 +228,16 @@ export default function AdminLayout({
           href: `/${locale}/admin/v2`,
           label: t("nav.adminV2"),
           icon: Sparkles,
+        },
+      ],
+    },
+    {
+      title: t("nav.sectionSupport"),
+      items: [
+        {
+          href: `/${locale}/admin/support/impersonate`,
+          label: t("nav.impersonate"),
+          icon: HeadsetIcon,
         },
       ],
     },
