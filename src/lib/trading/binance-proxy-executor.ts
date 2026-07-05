@@ -83,16 +83,25 @@ export class BinanceProxyExecutor implements OrderExecutor {
     action: Action,
     params?: Record<string, string | number>,
   ): Promise<unknown> {
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!serviceRoleKey) {
-      throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured");
+    const proxySecret = process.env.BINANCE_PROXY_SECRET;
+    if (!proxySecret) {
+      throw new Error("BINANCE_PROXY_SECRET is not configured");
+    }
+
+    // Supabase Edge Functions require a valid JWT in the Authorization header.
+    // The anonymous key is sufficient for the gateway; the actual proxy access
+    // control is enforced via X-Binance-Proxy-Secret inside the function.
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!anonKey) {
+      throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY is not configured");
     }
 
     const response = await fetch(this.proxyUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${serviceRoleKey}`,
+        Authorization: `Bearer ${anonKey}`,
+        "X-Binance-Proxy-Secret": proxySecret,
       },
       body: JSON.stringify({
         action,

@@ -206,16 +206,14 @@ Deno.serve(async (req) => {
   if (corsResponse) return corsResponse;
 
   try {
-    const authHeader = req.headers.get("authorization") ?? "";
-    const expectedServiceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    // Supabase Edge Functions require a valid JWT in the Authorization header.
+    // The gateway validates that JWT before the function runs; we enforce an
+    // additional shared secret via a custom header so we don't have to store the
+    // Supabase service role key inside the function itself.
+    const proxySecretHeader = req.headers.get("x-binance-proxy-secret") ?? "";
     const expectedProxySecret = Deno.env.get("BINANCE_PROXY_SECRET") ?? "";
-    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
 
-    const isValid =
-      (expectedServiceRole && token === expectedServiceRole) ||
-      (expectedProxySecret && token === expectedProxySecret);
-
-    if (!isValid) {
+    if (!expectedProxySecret || proxySecretHeader !== expectedProxySecret) {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
 

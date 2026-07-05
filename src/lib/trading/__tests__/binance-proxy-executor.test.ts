@@ -9,7 +9,8 @@ describe("BinanceProxyExecutor", () => {
 
   beforeEach(() => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = supabaseUrl;
-    process.env.SUPABASE_SERVICE_ROLE_KEY = serviceRoleKey;
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+    process.env.BINANCE_PROXY_SECRET = "test-proxy-secret";
     globalThis.fetch = mockFetch;
   });
 
@@ -69,7 +70,8 @@ describe("BinanceProxyExecutor", () => {
       expect.objectContaining({
         method: "POST",
         headers: expect.objectContaining({
-          Authorization: `Bearer ${serviceRoleKey}`,
+          Authorization: "Bearer test-anon-key",
+          "X-Binance-Proxy-Secret": "test-proxy-secret",
           "Content-Type": "application/json",
         }),
         body: expect.stringContaining('"action":"order"'),
