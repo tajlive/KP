@@ -228,7 +228,7 @@ export function TradingResultsCharts({
             {t("charts.dailyTitle")}
           </h2>
           {data.worstDay ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-400 border border-rose-500/20">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider text-rose-400 border border-rose-500/20">
               <ArrowDownRight className="h-3 w-3" />
               {t("worstDay", {
                 day: data.worstDay.day,
@@ -397,7 +397,7 @@ export function TradingResultsCharts({
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500">
+                    <p className="text-[12px] uppercase font-bold tracking-wider text-slate-500">
                       {t("modeTrades", { count: m.trades })}
                     </p>
                     <div className="h-1 w-24 rounded-full bg-slate-800 overflow-hidden">

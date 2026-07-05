@@ -284,7 +284,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-bold text-white tracking-tight">Smart Index</h2>
-                <span className="px-2 py-0.5 bg-brand-500/20 text-brand-500 text-[10px] font-bold uppercase rounded-full border border-brand-500/30">Pro</span>
+                <span className="px-2 py-0.5 bg-brand-500/20 text-brand-500 text-[12px] font-bold uppercase rounded-full border border-brand-500/30">Pro</span>
               </div>
               <p className="text-gray-400 text-sm mt-0.5 flex items-center gap-1.5">
                 <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
@@ -321,11 +321,11 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center">
-                  <span className="text-[10px] font-black text-white leading-none">{healthScore}%</span>
+                  <span className="text-[12px] font-black text-white leading-none">{healthScore}%</span>
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Helse</span>
+                <span className="text-[12px] text-gray-500 uppercase font-bold tracking-wider">Helse</span>
                 <span className={`text-xs font-bold ${healthScore > 90 ? 'text-emerald-500' : healthScore > 70 ? 'text-amber-500' : 'text-rose-500'}`}>
                   {healthScore > 95 ? 'Perfekt' : healthScore > 85 ? 'God' : 'Krever Rebalansering'}
                 </span>
@@ -333,7 +333,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
             </div>
 
             <div className="flex flex-col items-end">
-              <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Status</span>
+              <span className="text-[12px] text-gray-500 uppercase font-bold tracking-wider">Status</span>
               <span className={`text-sm font-bold flex items-center gap-1.5 ${config?.is_active ? 'text-emerald-500' : 'text-amber-500'}`}>
                 {config?.is_active ? <><CheckCircle2 className="w-4 h-4" /> Aktiv Autopilot</> : <><AlertCircle className="w-4 h-4" /> Avslått</>}
               </span>
@@ -388,7 +388,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                   Nåværende Beholdning
-                  <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400">Live</span>
+                  <span className="text-[12px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400">Live</span>
                 </h3>
                 {currentAllocationData.length > 0 ? (
                   <div className="h-72">
@@ -448,7 +448,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                   Top 5 Indeks Mål
-                  <span className="text-[10px] bg-brand-500/20 px-1.5 py-0.5 rounded text-brand-500 font-bold">Optimalt</span>
+                  <span className="text-[12px] bg-brand-500/20 px-1.5 py-0.5 rounded text-brand-500 font-bold">Optimalt</span>
                 </h3>
                 {targetData.length > 0 ? (
                   <div className="h-72">
@@ -515,11 +515,11 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                   </div>
                   <div className="flex gap-4">
                     <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center">
-                      <span className="block text-[10px] text-gray-500 uppercase font-bold">Total Avkastning</span>
+                      <span className="block text-[12px] text-gray-500 uppercase font-bold">Total Avkastning</span>
                       <span className="text-lg font-black text-emerald-500">+1,140%</span>
                     </div>
                     <div className="px-4 py-2 bg-brand-500/10 border border-brand-500/20 rounded-xl text-center">
-                      <span className="block text-[10px] text-gray-500 uppercase font-bold">CAGR</span>
+                      <span className="block text-[12px] text-gray-500 uppercase font-bold">CAGR</span>
                       <span className="text-lg font-black text-brand-500">65.4%</span>
                     </div>
                   </div>
@@ -583,7 +583,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                     <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">{stat.label}</span>
                     <div className="flex items-end gap-2 mt-1">
                       <span className="text-xl font-black text-white">{stat.value}</span>
-                      <span className="text-[10px] text-gray-600 pb-1">{stat.sub}</span>
+                      <span className="text-[12px] text-gray-600 pb-1">{stat.sub}</span>
                     </div>
                   </div>
                 ))}
@@ -604,7 +604,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 <Activity className="w-4 h-4 text-brand-500 animate-pulse" />
                 Aktive TWAP Ordrer ({activeOrders.length})
               </h4>
-              <span className="text-[10px] text-gray-500 italic flex items-center gap-1">
+              <span className="text-[12px] text-gray-500 italic flex items-center gap-1">
                 <RefreshCcw className="w-3 h-3 animate-spin" />
                 Oppdateres live
               </span>
@@ -620,7 +620,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white">{order.symbol}</span>
-                        <span className={`text-[10px] font-bold uppercase ${order.side === 'buy' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                        <span className={`text-[12px] font-bold uppercase ${order.side === 'buy' ? 'text-emerald-500' : 'text-rose-500'}`}>
                           {order.side === 'buy' ? 'Kjøp' : 'Salg'}
                         </span>
                       </div>
@@ -629,7 +629,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="flex-1 max-w-[200px] w-full">
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                    <div className="flex justify-between text-[12px] font-bold uppercase tracking-wider mb-1.5">
                       <span className="text-gray-500">Eksekvering</span>
                       <span className="text-brand-500">{Math.round((order.executed_chunks / order.twap_chunks) * 100)}%</span>
                     </div>
@@ -707,10 +707,10 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 : "Systemet overvåker avvik og vil starte TWAP-rebalansering ved behov."}
             </p>
             <div className="mt-4 flex gap-2">
-              <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-bold text-gray-400">
+              <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[12px] font-bold text-gray-400">
                 Slippage: <span className="text-white">Lav</span>
               </div>
-              <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-bold text-gray-400">
+              <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[12px] font-bold text-gray-400">
                 Gass: <span className="text-white">Optimal</span>
               </div>
             </div>
@@ -725,7 +725,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 <Info className="w-4 h-4 text-gray-400" />
               </div>
               <div>
-                <span className="block text-[10px] text-gray-500 uppercase font-bold">Rebalansering</span>
+                <span className="block text-[12px] text-gray-500 uppercase font-bold">Rebalansering</span>
                 <span className="text-sm font-semibold text-gray-300">{config?.threshold_percent || 5}% Avvik</span>
               </div>
             </div>
@@ -734,7 +734,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
                 <Zap className="w-4 h-4 text-amber-500" />
               </div>
               <div>
-                <span className="block text-[10px] text-gray-500 uppercase font-bold">Sist Oppdatert</span>
+                <span className="block text-[12px] text-gray-500 uppercase font-bold">Sist Oppdatert</span>
                 <span className="text-sm font-semibold text-gray-300">{isClient ? new Date().toLocaleTimeString() : "--:--:--"}</span>
               </div>
             </div>
