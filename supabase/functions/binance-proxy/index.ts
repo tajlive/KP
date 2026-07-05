@@ -6,8 +6,10 @@
  * rotates through mainnet/testnet endpoints with retry-on-429/5xx, and
  * returns the raw Binance response. Never persists API credentials.
  *
- * Auth: Authorization header must contain SUPABASE_SERVICE_ROLE_KEY or
- *       BINANCE_PROXY_SECRET.
+ * Auth:
+ *   - Authorization header must be a valid Supabase JWT
+ *     (NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY).
+ *   - X-Binance-Proxy-Secret header must contain BINANCE_PROXY_SECRET.
  */
 
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
