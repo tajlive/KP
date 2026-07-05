@@ -1,0 +1,39 @@
+{
+  "servers": {
+    "typescript": {
+      "command": "./node_modules/.bin/typescript-language-server",
+      "args": ["--stdio"],
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+      }
+    },
+    "tailwindcss": {
+      "command": "./node_modules/.bin/tailwindcss-language-server",
+      "args": ["--stdio"]
+    },
+    "eslint": {
+      "command": "./node_modules/.bin/vscode-eslint-language-server",
+      "args": ["--stdio"],
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+      }
+    },
+    "json": {
+      "command": "./node_modules/.bin/vscode-json-language-server",
+      "args": ["--stdio"]
+    },
+    "css": {
+      "command": "./node_modules/.bin/vscode-css-language-server",
+      "args": ["--stdio"]
+    },
+    "html": {
+      "command": "./node_modules/.bin/vscode-html-language-server",
+      "args": ["--stdio"]
+    }
+  },
+  "_notes": {
+    "env_support": "OMP LSP clients that honor 'env' will increase the Node heap for the TypeScript and ESLint language servers. If your client ignores 'env', set NODE_OPTIONS in the shell that launches OMP, or create a wrapper script that exports NODE_OPTIONS before exec'ing the server.",
+    "memory_tuning": "4096 MB balances the M1 8 GB workstation with 4 parallel KIMI streams. Raise to 6144/8192 on machines with more RAM.",
+    "trailing_notes": "All original servers, commands, and --stdio arguments preserved; no runtime or build semantics changed."
+  }
+}

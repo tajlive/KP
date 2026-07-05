@@ -1,41 +1,75 @@
 {
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
   "_meta": {
     "version": "2.9-minimal",
-    "lastOptimized": "2026-06-29",
-    "for": "KIMI CLI v1.44.0 + k2.6 / Cursor / Claude",
-    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere for Klarpakke på Cloudflare Workers. MemPalace v3.5.0 (delt server) inkludert for prosjektkunnskap.",
-    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote), vercel. All servers lokalt installert. Synkroniseres med npm run mcp:sync."
+    "lastOptimized": "2026-07-05",
+    "for": "KIMI CLI v1.44.0 + k2.6 / OMP / Claude",
+    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere for Klarpakke på Cloudflare Workers. MemPalace v3.5.0 (delt server) inkludert. Resend gjenopplivet via lokal wrapper.",
+    "note": "Resend MCP aktiv via scripts/run-resend-mcp.mjs. Fjernet: npx-servere (playwright, chrome-devtools), klarpakke (remote), vercel. Synkroniseres med npm run mcp:sync fra .omp/mcp.json."
   },
   "mcpServers": {
     "filesystem": {
-      "description": "Filesystem MCP — filoperasjoner i prosjektet",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "supabase-db": {
-      "description": "Supabase Postgres MCP — SQL queries, tabeller, migrasjoner",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-supabase-mcp.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-supabase-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "sanity": {
-      "description": "Sanity MCP v2 — CMS read + write (queries, documents, mutations)",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "github": {
-      "description": "GitHub MCP — repo, issues, pull requests",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-github-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "perplexity": {
-      "description": "Perplexity MCP — AI-søk og research",
-      "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"]
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "resend": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-resend-mcp.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
     },
     "mempalace": {
-      "description": "MemPalace MCP v3.5.0 — delt prosjekt-spesifikk server med config override",
-      "command": "node",
-      "args": ["/Users/taj/.kimi/mempalace-server.mjs"],
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/.kimi/mempalace-server.mjs"
+      ],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000,
       "env": {
         "MEMPALACE_ROOT": "/Users/taj/klarpakke",
         "MEMPALACE_CONFIG": "/Users/taj/klarpakke/.mempalace/config.json"

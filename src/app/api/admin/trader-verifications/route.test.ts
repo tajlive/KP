@@ -12,7 +12,7 @@ const currentUser = vi.hoisted(() => ({
 const getServiceRoleClient = vi.hoisted(() => vi.fn());
 
 const withRole = vi.hoisted(() =>
-  vi.fn((roles: string[], handler: Function) => {
+  vi.fn((roles: string[], handler: (...args: unknown[]) => unknown) => {
     return async (req: NextRequest) => {
       if (!currentUser.value.role || !roles.includes(currentUser.value.role)) {
         return new Response(

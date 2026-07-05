@@ -12,7 +12,7 @@ const currentUser = vi.hoisted(() => ({
 const createClient = vi.hoisted(() => vi.fn());
 
 const withAuth = vi.hoisted(() =>
-  vi.fn((handler: Function) => {
+  vi.fn((handler: (...args: unknown[]) => unknown) => {
     return async (req: NextRequest) => handler(req, { user: currentUser.value });
   }),
 );

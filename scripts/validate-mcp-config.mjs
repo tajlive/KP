@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const configFiles = [
-  { label: ".cursor/mcp.json", path: resolve(root, ".cursor/mcp.json") },
+  { label: ".omp/mcp.json", path: resolve(root, ".omp/mcp.json") },
   { label: ".mcp/mcp_config.json", path: resolve(root, ".mcp/mcp_config.json") },
   { label: ".kimi/mcp-config.json", path: resolve(root, ".kimi/mcp-config.json") },
   { label: ".kimi/mcp_config.json", path: resolve(root, ".kimi/mcp_config.json") },
@@ -20,10 +20,9 @@ const configFiles = [
   { label: ".perplexity/mcp_config.json", path: resolve(root, ".perplexity/mcp_config.json") },
   { label: ".perplexity/mcp-config.json", path: resolve(root, ".perplexity/mcp-config.json") },
   { label: ".perplexity/mac-mcp-config.json", path: resolve(root, ".perplexity/mac-mcp-config.json") },
-  { label: ".agent/mcp_config.json", path: resolve(root, ".agent/mcp_config.json") },
 ];
 
-const masterLabel = ".mcp/mcp_config.json";
+const masterLabel = ".omp/mcp.json";
 const masterPath = resolve(root, masterLabel);
 
 function loadJson(label, filePath) {
@@ -58,7 +57,8 @@ function getRunnerScripts(config) {
     const cmd = server.command;
     const args = server.args || [];
     // Look for local wrapper scripts (relative or absolute paths within repo)
-    if (cmd === "node" || cmd === "npx") {
+    const cmdName = typeof cmd === "string" ? cmd.replace(/.*[/\\]/, "") : "";
+    if (cmdName === "node" || cmdName === "node.exe" || cmdName === "npx") {
       for (const arg of args) {
         if (typeof arg === "string" && arg.includes("scripts/run-")) {
           // Normalize absolute repo paths to relative for existence check
@@ -94,10 +94,7 @@ for (const { label, path: p } of configFiles) {
 
 // ─── Compare each to master (skip special non-master configs that are intentionally different) ───
 const skipSyncCheck = new Set([
-  ".perplexity/mcp-config.json", // intentionally minimal kimi-only config
-  ".perplexity/mac-mcp-config.json",
-  ".claude/mcp-config.json",
-  ".agent/mcp_config.json"
+  // .omp/mcp.json is the source of truth; all downstream configs are synced verbatim.
 ]);
 
 let syncErrors = 0;
