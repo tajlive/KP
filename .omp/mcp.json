@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "supabase-db": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-supabase-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "sanity": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "github": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "perplexity": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000
+    },
+    "mempalace": {
+      "type": "stdio",
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": ["/Users/taj/.kimi/mempalace-server.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "timeout": 120000,
+      "env": {
+        "MEMPALACE_ROOT": "/Users/taj/klarpakke",
+        "MEMPALACE_CONFIG": "/Users/taj/klarpakke/.mempalace/config.json"
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ globs:
   - src/components/paper-trading/**/*
   - src/app/**/handelshistorikk/**/*
   - supabase/migrations/**/*.sql
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Klarpakke Trading Integrity Rule

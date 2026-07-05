@@ -5,7 +5,7 @@ globs:
   - src/lib/trading/binance-proxy-executor.ts
   - src/app/api/admin/test-binance-proxy/route.ts
   - src/lib/trading/executor-factory.ts
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Binance Proxy Secrets Handling

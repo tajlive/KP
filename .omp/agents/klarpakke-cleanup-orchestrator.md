@@ -1,3 +1,12 @@
+---
+name: klarpakke-cleanup-orchestrator
+description: Klarpakke post-task and post-deploy cleanup, verification, and roster hygiene specialist. Use after non-trivial tasks, deploys, trading integrity verification, or parallel task batches.
+tools: read, grep, glob, bash, irc
+spawns: reviewer
+model: inherit
+thinkingLevel: medium
+---
+
 # klarpakke-cleanup-orchestrator
 
 Post-task / post-deploy cleanup and verification specialist for Klarpakke.

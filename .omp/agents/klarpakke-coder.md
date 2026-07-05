@@ -1,6 +1,7 @@
 ---
 name: klarpakke-coder
 description: "Klarpakke full-stack coding generalist. Handles cross-cutting implementation work across Cloudflare Workers, Supabase/PostgreSQL, GitHub, Resend, Next.js/React/TypeScript, crypto trading, SQL migrations, Lighthouse, E2E, charts/graphs, and everything else in the repo. Delegates deep specialism to the dedicated Klarpakke agents."
+tools: read, grep, glob, bash, browser, lsp, ast_grep, ast_edit, task, irc, eval, edit, write
 spawns:
   - klarpakke-cloudflare-workers-ops
   - klarpakke-db-rls-guard
