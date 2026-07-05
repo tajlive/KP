@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { NotificationService, NotificationType } from "./notifications/NotificationService";
+import { NotificationService, NotificationType, NotificationData } from "./notifications/NotificationService";
 
 export async function createNotification(
   supabase: SupabaseClient,
@@ -7,7 +7,7 @@ export async function createNotification(
   type: string,
   title: string,
   message: string,
-  data: Record<string, any> = {}
+  data: NotificationData = {}
 ) {
   return NotificationService.create(supabase, userId, type as NotificationType, title, message, data);
 }

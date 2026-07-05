@@ -5,6 +5,24 @@
 
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
+interface StrategySignal {
+  regime?: string;
+  [key: string]: unknown;
+}
+
+interface TradeRow {
+  realized_pnl: number | null;
+  total_value: number;
+  fee: number;
+  strategy_signal: unknown;
+  trading_sessions: { strategy_id: string } | null;
+}
+
+interface BacktestResultRow {
+  strategy_id: string;
+  total_return_pct: number;
+  total_trades: number;
+}
 
 export interface GapMetrics {
   period: { hours: number; start: string; end: string };
@@ -57,7 +75,8 @@ export async function calculateBacktestLiveGap(
   const byStrategy: Record<string, { live: typeof liveTrades; backtestPnL: number }> = {};
 
   for (const t of liveTrades) {
-    const sid = (t as any).strategy_id ?? (t as any).strategy_signal?.regime ?? "unknown";
+    const signal = t.strategy_signal as StrategySignal | null;
+    const sid = signal?.regime ?? "unknown";
     byStrategy[sid] = byStrategy[sid] ?? { live: [], backtestPnL: 0 };
     byStrategy[sid].live.push(t);
   }
@@ -70,7 +89,9 @@ export async function calculateBacktestLiveGap(
     .order("created_at", { ascending: false })
     .limit(1);
 
-  const backtestMap = new Map((backtests as any ?? []).map((b: any) => [b.strategy_id, b]));
+  // The query builder reports a schema mismatch for the legacy strategy_id column,
+  // but the code expects this row shape at runtime.
+  const backtestMap = new Map(((backtests as unknown as BacktestResultRow[]) ?? []).map((b) => [b.strategy_id, b]));
 
   const strategies: StrategyGap[] = [];
   let totalLiveReturn = 0;
@@ -84,8 +105,8 @@ export async function calculateBacktestLiveGap(
     const liveReturnPct = liveVolume > 0 ? (livePnL / liveVolume) * 100 : 0;
 
     const bt = backtestMap.get(strategyId);
-    const backtestReturnPct = (bt as any)?.total_return_pct ?? 0;
-    const backtestVolume = (bt as any)?.total_trades ? (bt as any).total_trades * 1000 : 0;
+    const backtestReturnPct = bt?.total_return_pct ?? 0;
+    const backtestVolume = bt?.total_trades ? bt.total_trades * 1000 : 0;
 
     const gapPct = backtestReturnPct !== 0
       ? ((liveReturnPct - backtestReturnPct) / Math.abs(backtestReturnPct)) * 100
@@ -107,7 +128,7 @@ export async function calculateBacktestLiveGap(
       backtestReturnPct,
       gapPct,
       liveTrades: data.live.length,
-      backtestTrades: (bt as any)?.total_trades ?? 0,
+      backtestTrades: bt?.total_trades ?? 0,
       attribution: {
         slippage: (slippageEstimate / liveVolume) * 100,
         fees: (feeAttribution / liveVolume) * 100,

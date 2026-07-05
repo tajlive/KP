@@ -13,6 +13,19 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
+interface TCATrade {
+  trading_pair: string;
+  total_value: number;
+  fee: number;
+  mode: string;
+  status: string;
+}
+
+interface TrendingTrade {
+  total_value: number;
+  fee: number;
+}
+
 export interface TCAMetrics {
   period: { hours: number; start: string; end: string };
   totals: {
@@ -90,8 +103,8 @@ export async function calculateTCA(
     .eq("status", "filled");
 
   const trending = computeTrending(
-    trades,
-    prevTrades ?? [],
+    trades as TCATrade[],
+    prevTrades ?? [] as TrendingTrade[],
     metrics.totalCostNok,
     metrics.avgSlippageBps,
   );
@@ -124,7 +137,7 @@ export async function calculateTCA(
   };
 }
 
-function computeMetrics(trades: any[]) {
+function computeMetrics(trades: TCATrade[]) {
   let totalCostNok = 0;
   let totalVolumeNok = 0;
   let totalSlippageBps = 0;
@@ -178,8 +191,8 @@ function computeMetrics(trades: any[]) {
 }
 
 function computeTrending(
-  current: any[],
-  previous: any[],
+  current: TrendingTrade[],
+  previous: TrendingTrade[],
   currentCost: number,
   currentSlippage: number,
 ): TCAMetrics["trending"] {
@@ -210,9 +223,9 @@ function computeTrending(
   return { costTrend, costChangePct, slippageTrend, slippageChangePct };
 }
 
-function computeVenueBreakdown(trades: any[]): VenuePerformance[] {
+function computeVenueBreakdown(trades: TCATrade[]): VenuePerformance[] {
   // For now, infer venue from mode (paper = simulated, live = Binance)
-  const byVenue: Record<string, any[]> = {};
+  const byVenue: Record<string, TCATrade[]> = {};
   for (const t of trades) {
     const venue = t.mode === "paper" ? "paper-sim" : "binance";
     byVenue[venue] = byVenue[venue] ?? [];
@@ -254,8 +267,8 @@ function computeVenueBreakdown(trades: any[]): VenuePerformance[] {
   }).sort((a, b) => b.score - a.score);
 }
 
-function computeSymbolBreakdown(trades: any[]): SymbolPerformance[] {
-  const bySymbol: Record<string, any[]> = {};
+function computeSymbolBreakdown(trades: TCATrade[]): SymbolPerformance[] {
+  const bySymbol: Record<string, TCATrade[]> = {};
   for (const t of trades) {
     const sym = t.trading_pair ?? "unknown";
     bySymbol[sym] = bySymbol[sym] ?? [];
