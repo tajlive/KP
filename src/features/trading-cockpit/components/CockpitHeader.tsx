@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
-import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/shared/ui/switch";
 import { ModeBadge } from "./ModeBadge";
@@ -33,52 +32,73 @@ export function CockpitHeader({
   return (
     <header
       data-testid="cockpit-header"
-      className={cn("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between", className)}
+      className={cn(
+        "flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+        className,
+      )}
     >
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-white">{t("cockpit.header.title")}</h1>
+        <h1 className="text-2xl font-bold text-kp-text-primary">
+          {t("cockpit.header.title")}
+        </h1>
         <ModeBadge mode={mode} />
       </div>
 
       <TooltipProvider delayDuration={100}>
-        <div className="flex items-center gap-3">
-          <span
-            className={cn(
-              "text-sm font-medium",
-              isLive ? "text-gray-400" : "text-white",
-            )}
-          >
-            {t("cockpit.mode.paperShort")}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-sm font-medium text-kp-text-secondary">
+            {t("cockpit.mode.label", {
+              mode: isLive ? t("cockpit.mode.live") : t("cockpit.mode.paper"),
+            })}
           </span>
 
-          {!canUseLive ? (
+          <div className="flex items-center gap-3">
+            <span
+              className={cn(
+                "text-sm font-medium",
+                isLive ? "text-kp-text-secondary" : "text-kp-text-primary",
+              )}
+            >
+              {t("cockpit.mode.paperShort")}
+            </span>
+
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1.5 border border-white/[0.08]">
-                  <Lock className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="text-xs text-gray-400">{t("cockpit.mode.locked")}</span>
-                </div>
+                <span className="inline-flex items-center">
+                  <Switch
+                    checked={isLive}
+                    disabled={!canUseLive}
+                    onCheckedChange={(checked) =>
+                      onModeChange(checked ? "live" : "paper")
+                    }
+                    aria-label={t("toggleAria")}
+                  />
+                </span>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="max-w-xs text-xs">{t("cockpit.mode.lockedTooltip")}</p>
-              </TooltipContent>
+              {!canUseLive && (
+                <TooltipContent side="bottom">
+                  <p className="max-w-xs text-xs">
+                    {t("cockpit.mode.lockedTooltip")}
+                  </p>
+                </TooltipContent>
+              )}
             </Tooltip>
-          ) : (
-            <Switch
-              checked={isLive}
-              onCheckedChange={(checked) => onModeChange(checked ? "live" : "paper")}
-              aria-label={t("toggleAria")}
-            />
-          )}
 
-          <span
-            className={cn(
-              "text-sm font-medium",
-              isLive ? "text-white" : "text-gray-400",
-            )}
-          >
-            {t("cockpit.mode.liveShort")}
-          </span>
+            <span
+              className={cn(
+                "text-sm font-medium",
+                isLive ? "text-kp-text-primary" : "text-kp-text-secondary",
+              )}
+            >
+              {t("cockpit.mode.liveShort")}
+            </span>
+          </div>
+
+          {!canUseLive && (
+            <span className="text-xs text-kp-text-muted">
+              {t("cockpit.mode.lockedInline")}
+            </span>
+          )}
         </div>
       </TooltipProvider>
     </header>

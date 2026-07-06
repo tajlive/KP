@@ -1,6 +1,6 @@
-import { GlassCard } from '@/shared/ui/GlassCard';
-import { BadgePremium } from '@/shared/ui/BadgePremium';
-import { ButtonPremium } from '@/shared/ui/ButtonPremium';
+import { Card } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { BookOpen, Clock, CheckCircle2, Play } from 'lucide-react';
 import Link from 'next/link';
@@ -57,9 +57,11 @@ export function CourseProgressCard({
     : null;
 
   return (
-    <GlassCard 
-      variant="elevated" 
-      hover="lift" 
+    <Card
+      variant="glass"
+      glassVariant="elevated"
+      hover="lift"
+      padding="md"
       className={className}
     >
       <div className="flex flex-col h-full">
@@ -88,9 +90,9 @@ export function CourseProgressCard({
           {/* Completion badge */}
           {isCompleted && (
             <div className="absolute top-3 right-3">
-              <BadgePremium variant="success" icon={<CheckCircle2 className="w-3.5 h-3.5" />}>
+              <Badge variant="success" icon={<CheckCircle2 className="w-3.5 h-3.5" />}>
                 Fullført
-              </BadgePremium>
+              </Badge>
             </div>
           )}
         </div>
@@ -139,19 +141,19 @@ export function CourseProgressCard({
             </div>
             
             <Link href={`/kurs/${slug}`}>
-              <ButtonPremium
+              <Button
                 variant={isCompleted ? 'secondary' : 'primary'}
                 size="sm"
                 icon={isCompleted ? undefined : <Play className="w-4 h-4" />}
                 iconPosition="left"
               >
                 {isCompleted ? 'Se igjen' : hasStarted ? 'Fortsett' : 'Start'}
-              </ButtonPremium>
+              </Button>
             </Link>
           </div>
         </div>
       </div>
-    </GlassCard>
+    </Card>
   );
 }
 

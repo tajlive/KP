@@ -47,9 +47,9 @@ src/
 
 ```
 src/shared/ui/
-├── ButtonPremium.tsx           # 5 varianter, glow-effekt
-├── GlassCard.tsx               # Glassmorphism med gradient
-├── BadgePremium.tsx            # Status-indikatorer
+├── ButtonPremium.tsx           # 5 varianter, glow-effekt (deprecated)
+├── GlassCard.tsx               # Glassmorphism med gradient (deprecated, re-export of card)
+├── badge.tsx                   # Status-indikatorer (consolidated, includes brand/success/warning/danger/neutral)
 ├── accordion.tsx → tooltip.tsx # Radix UI-baserte
 └── charts/Sparkline.tsx        # Datavisualisering
 ```

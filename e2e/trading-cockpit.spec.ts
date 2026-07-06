@@ -36,7 +36,7 @@ test.describe("Trading Cockpit", () => {
     await expect(page.getByText("Sesjoner").first()).toBeVisible();
   });
 
-  test("trades tab shows filters, empty state and pagination controls", async ({
+  test("trades tab shows filters, data table and pagination controls", async ({
     page,
   }) => {
     await page.goto(`${COCKPIT_URL}?tab=trades`, {
@@ -49,14 +49,53 @@ test.describe("Trading Cockpit", () => {
     });
     await expect(page.getByTestId("trades-tab")).toBeVisible();
 
-    // Filters visible on desktop
+    // Filters visible
     await expect(page.getByPlaceholder("Søk etter handler...")).toBeVisible();
     await expect(page.getByText("30 dager").first()).toBeVisible();
 
-    // Empty state in Norwegian
-    await expect(page.getByTestId("trade-empty-state")).toBeVisible();
-    await expect(page.getByText("Ingen handler", { exact: true })).toBeVisible();
-    await expect(page.getByText("Ingen handler matcher valgte filter.")).toBeVisible();
+    // Trade data view visible (table on desktop, cards on mobile; both exist in DOM so use first)
+    await expect(
+      page.getByTestId("trade-table").or(page.getByTestId("trade-cards")).first(),
+    ).toBeVisible();
+
+    // Pagination controls visible when more data may exist
+    await expect(page.getByTestId("trade-pagination")).toBeVisible();
+  });
+
+  test("trades tab shows empty state when filters match nothing", async ({
+    page,
+  }) => {
+    await page.goto(`${COCKPIT_URL}?tab=trades`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    const tradesTab = page.getByTestId("cockpit-tab-trades");
+    await expect(tradesTab).toHaveAttribute("data-state", "active", {
+      timeout: 15_000,
+    });
+
+    // Wait for the trades data view to be present before filtering
+    await expect(
+      page.getByTestId("trade-table").or(page.getByTestId("trade-cards")).first(),
+    ).toBeVisible();
+
+    // Search for something that cannot match any trade
+    const searchInput = page.getByPlaceholder("Søk etter handler...");
+    await searchInput.fill("XYZ-NONEXISTENT-SEARCH");
+    await searchInput.press("Enter");
+
+    // Wait for the loading indicator to disappear and empty state to appear
+    await expect(page.getByTestId("trades-loading-indicator")).toBeHidden({ timeout: 10_000 });
+
+    // Empty state visible when no trades match the filters
+    const emptyState = page.getByTestId("trade-empty-state");
+    await expect(emptyState).toBeVisible({ timeout: 10_000 });
+    await expect(
+      emptyState.getByText("Ingen handler", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      emptyState.getByText("Ingen handler matcher valgte filter."),
+    ).toBeVisible();
   });
 
   test("analysis tab shows period selector, stat grid and charts", async ({

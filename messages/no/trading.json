@@ -900,7 +900,9 @@
       "paperDescription": "Øv med virtuell kapital",
       "liveDescription": "Handel med ekte penger",
       "locked": "Låst",
-      "lockedTooltip": "Live trading krever tilkoblet børs og gyldig abonnement."
+      "lockedInline": "Live krever børs + abonnement",
+      "lockedTooltip": "Live trading krever tilkoblet børs og gyldig abonnement.",
+      "label": "Modus: {mode}"
     },
     "tab": {
       "overview": "Oversikt",
@@ -1036,7 +1038,8 @@
         "placeholder": "Søk etter handler...",
         "apply": "Bruk",
         "reset": "Tilbakestill",
-        "open": "Filter"
+        "open": "Filter",
+        "remove": "Fjern"
       },
       "dateRange": {
         "7d": "7 dager",

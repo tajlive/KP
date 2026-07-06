@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/shared/ui/card";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
-import { SEMANTIC_COLORS, SURFACE } from "@/lib/design/tokens";
 import type {
   DashboardMetrics,
   TradingAnalytics,
@@ -50,7 +49,7 @@ export function KpiCards({ metrics, analytics, className }: KpiCardsProps) {
       prefix: "kr ",
       decimals: 0,
       valueClassName:
-        safeMetrics.totalPnl >= 0 ? "text-emerald-400" : "text-rose-400",
+        safeMetrics.totalPnl >= 0 ? "text-kp-success" : "text-kp-danger",
     },
     {
       key: "winRate",
@@ -78,7 +77,7 @@ export function KpiCards({ metrics, analytics, className }: KpiCardsProps) {
       value: analytics?.max_drawdown_pct ?? null,
       suffix: "%",
       decimals: 2,
-      valueClassName: "text-rose-400",
+      valueClassName: "text-kp-danger",
     },
     {
       key: "bestPair",
@@ -90,33 +89,27 @@ export function KpiCards({ metrics, analytics, className }: KpiCardsProps) {
   return (
     <div
       className={cn(
-        "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6",
+        "grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3 lg:grid-cols-6",
         className,
       )}
     >
       {kpis.map((kpi) => (
         <Card
           key={kpi.key}
-          className={cn(
-            SURFACE.BG_CARD,
-            "border-white/[0.06] p-0 rounded-2xl",
-          )}
+          className="bg-kp-bg-card border-kp-border rounded-2xl p-0"
         >
-          <CardContent className="p-4">
-            <p className="text-xs font-medium text-gray-400 mb-1">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs font-medium text-kp-text-secondary mb-1">
               {kpi.label}
             </p>
             {kpi.key === "bestPair" ? (
-              <p
-                className="text-lg font-semibold text-white truncate"
-                style={{ color: SEMANTIC_COLORS.textDarkPrimary }}
-              >
+              <p className="text-lg font-semibold text-kp-text-primary truncate">
                 {analytics?.best_pair ?? "—"}
               </p>
             ) : (
               <p
                 className={cn(
-                  "text-lg font-semibold tabular-nums",
+                  "text-lg font-semibold tabular-nums text-kp-text-primary",
                   kpi.valueClassName,
                 )}
               >

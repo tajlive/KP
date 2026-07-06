@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Play, Pause, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
-import { BUTTON } from "@/lib/design/tokens";
+import { useCockpit } from "../hooks/useCockpit";
 
 interface QuickActionsProps {
   onStartRobot?: () => void;
@@ -21,27 +21,28 @@ export function QuickActions({
   className,
 }: QuickActionsProps) {
   const t = useTranslations("trading");
+  const { statusCounts } = useCockpit();
+  const activeSessionsCount = statusCounts.active ?? 0;
+  const hasActiveSessions = activeSessionsCount > 0;
 
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
-      <Button
-        className={cn(BUTTON.primary, "rounded-xl")}
-        onClick={() => onStartRobot?.()}
-      >
+      <Button className="rounded-xl min-h-12" onClick={() => onStartRobot?.()}>
         <Play className="w-4 h-4" />
         {t("cockpit.quickActions.startRobot")}
       </Button>
       <Button
         variant="secondary"
-        className={cn(BUTTON.secondary, "rounded-xl")}
+        className="rounded-xl min-h-12"
+        disabled={!hasActiveSessions}
         onClick={() => onPauseAll?.()}
       >
         <Pause className="w-4 h-4" />
         {t("cockpit.quickActions.pauseAll")}
       </Button>
       <Button
-        variant="outline"
-        className={cn(BUTTON.ghost, "rounded-xl")}
+        variant="ghost"
+        className="rounded-xl min-h-12 text-kp-text-secondary hover:text-kp-text-primary hover:bg-kp-bg-secondary"
         onClick={() => onViewHistory?.()}
       >
         <History className="w-4 h-4" />

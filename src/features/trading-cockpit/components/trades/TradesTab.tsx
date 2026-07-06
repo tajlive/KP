@@ -6,7 +6,7 @@ import { AlertTriangle, Loader2, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
-import { SURFACE } from "@/lib/design/tokens";
+
 import { TradeFilters } from "./TradeFilters";
 import { TradeFiltersSheet } from "./TradeFiltersSheet";
 import { TradeTable } from "./TradeTable";
@@ -61,15 +61,14 @@ export function TradesTab({ pairs = [], className }: TradesTabProps) {
 
         <div
           className={cn(
-            SURFACE.BG_CARD,
-            "border-white/[0.06] rounded-2xl p-8 flex flex-col items-center justify-center gap-3 text-center",
+            "bg-kp-bg-card border border-kp-border rounded-2xl p-8 flex flex-col items-center justify-center gap-3 text-center",
           )}
           data-testid="trade-error-state"
         >
-          <AlertTriangle className="w-8 h-8 text-amber-400" />
+          <AlertTriangle className="w-8 h-8 text-kp-warning" />
           <div>
-            <p className="text-white font-medium">{t("cockpit.trades.error.title")}</p>
-            <p className="text-sm text-gray-400 mt-1">{tradesError.message}</p>
+            <p className="text-kp-text-primary font-medium">{t("cockpit.trades.error.title")}</p>
+            <p className="text-sm text-kp-text-secondary mt-1">{tradesError.message}</p>
           </div>
           <Button
             variant="secondary"
@@ -129,13 +128,12 @@ export function TradesTab({ pairs = [], className }: TradesTabProps) {
       {showEmptyState ? (
         <div
           className={cn(
-            SURFACE.BG_CARD,
-            "border-white/[0.06] rounded-2xl p-8 text-center",
+            "bg-kp-bg-card border border-kp-border rounded-2xl p-8 text-center",
           )}
           data-testid="trade-empty-state"
         >
-          <p className="text-white font-medium">{t("cockpit.trades.noTradesTitle")}</p>
-          <p className="text-sm text-gray-400 mt-1">{t("cockpit.trades.noTradesDescription")}</p>
+          <p className="text-kp-text-primary font-medium">{t("cockpit.trades.noTradesTitle")}</p>
+          <p className="text-sm text-kp-text-secondary mt-1">{t("cockpit.trades.noTradesDescription")}</p>
         </div>
       ) : (
         <>

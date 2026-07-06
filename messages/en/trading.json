@@ -900,7 +900,9 @@
       "paperDescription": "Practice with virtual capital",
       "liveDescription": "Trade with real money",
       "locked": "Locked",
-      "lockedTooltip": "Live trading requires a connected exchange and valid subscription."
+      "lockedInline": "Live requires exchange + tier",
+      "lockedTooltip": "Live trading requires a connected exchange and valid subscription.",
+      "label": "Mode: {mode}"
     },
     "tab": {
       "overview": "Overview",
@@ -1036,7 +1038,8 @@
         "placeholder": "Search trades...",
         "apply": "Apply",
         "reset": "Reset",
-        "open": "Filters"
+        "open": "Filters",
+        "remove": "Remove"
       },
       "dateRange": {
         "7d": "7 days",

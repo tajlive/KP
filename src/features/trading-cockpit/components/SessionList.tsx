@@ -1,10 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
-import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
@@ -15,9 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { MobileTradingCard } from "@/shared/ui/mobile-trading-card";
 import { Badge } from "@/shared/ui/badge";
-import { SEMANTIC_COLORS, SURFACE, TABLE } from "@/lib/design/tokens";
 import type { TradingSessionSummary } from "@/features/trading-cockpit/types";
 
 interface SessionListProps {
@@ -59,13 +56,12 @@ export function SessionList({
     return (
       <div
         className={cn(
-          SURFACE.BG_CARD,
-          "border-white/[0.06] rounded-2xl p-8 text-center",
+          "bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
           className,
         )}
       >
-        <p className="text-white font-medium">{t("cockpit.empty.sessionsTitle")}</p>
-        <p className="text-sm text-gray-400 mt-1">
+        <p className="text-kp-text-primary font-medium">{t("cockpit.empty.sessionsTitle")}</p>
+        <p className="text-sm text-kp-text-secondary mt-1">
           {t("cockpit.empty.sessionsDescription")}
         </p>
       </div>
@@ -87,94 +83,142 @@ export function SessionList({
   return (
     <div className={cn("space-y-3", className)}>
       {/* Mobile card view */}
-      <div className="grid gap-3 sm:hidden">
+      <div className="grid gap-3 sm:hidden" data-testid="session-cards">
         {sessions.map((session) => {
+          const pnl = session.total_pnl ?? 0;
+          const isProfit = pnl >= 0;
           const starting = session.starting_capital_nok ?? 0;
           const current = session.current_capital_nok ?? 0;
           const changePercent = starting > 0 ? ((current - starting) / starting) * 100 : 0;
 
           return (
-            <MobileTradingCard
+            <button
               key={session.id}
-              symbol={session.trading_pair}
-              name={t(`cockpit.sessions.status.${session.status}`)}
-              quantity={1}
-              avgPrice={starting}
-              currentPrice={current}
-              currency="NOK"
-              changePercent={changePercent}
-              onPress={() => window.alert(`Session ${session.id}`)}
-            />
+              type="button"
+              onClick={() => window.alert(`Session ${session.id}`)}
+              className="bg-kp-card border border-kp-light rounded-2xl p-4 text-left w-full transition-colors hover:bg-kp-bg-hover"
+              aria-label={`${session.trading_pair} ${session.status}`}
+              data-testid={`session-card-${session.id}`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-kp-text-primary">{session.trading_pair}</span>
+                  <Badge className={cn("rounded-full border text-xs", statusColor(session.status))}>
+                    {t(`cockpit.sessions.status.${session.status}`)}
+                  </Badge>
+                </div>
+                <span
+                  className={cn(
+                    "text-sm font-medium tabular-nums",
+                    isProfit ? "text-kp-success" : "text-kp-danger",
+                  )}
+                >
+                  {isProfit ? "+" : ""}
+                  {formatMoney(pnl)}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                <div>
+                  <p className="text-kp-text-muted text-xs">
+                    {t("cockpit.sessions.columns.startingCapital")}
+                  </p>
+                  <p className="text-kp-text-primary tabular-nums">{formatMoney(session.starting_capital_nok)}</p>
+                </div>
+                <div>
+                  <p className="text-kp-text-muted text-xs">
+                    {t("cockpit.sessions.columns.currentCapital")}
+                  </p>
+                  <p className="text-kp-text-primary tabular-nums">{formatMoney(session.current_capital_nok)}</p>
+                </div>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-kp-light flex items-center justify-between">
+                <p className="text-xs text-kp-text-muted">{formatDate(session.updated_at)}</p>
+                {starting > 0 && (
+                  <p
+                    className={cn(
+                      "text-xs font-medium tabular-nums",
+                      isProfit ? "text-kp-success" : "text-kp-danger",
+                    )}
+                  >
+                    {changePercent >= 0 ? "+" : ""}
+                    {changePercent.toFixed(2)}%
+                  </p>
+                )}
+              </div>
+            </button>
           );
         })}
       </div>
 
       {/* Desktop table view */}
-      <div className="hidden sm:block overflow-hidden rounded-2xl border border-white/[0.06]">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-white/[0.06] hover:bg-transparent">
-              <TableHead className={TABLE.header}>{t("cockpit.sessions.columns.pair")}</TableHead>
-              <TableHead className={TABLE.header}>{t("cockpit.sessions.columns.status")}</TableHead>
-              <TableHead className={cn(TABLE.header, "text-right")}>
-                {t("cockpit.sessions.columns.startingCapital")}
-              </TableHead>
-              <TableHead className={cn(TABLE.header, "text-right")}>
-                {t("cockpit.sessions.columns.currentCapital")}
-              </TableHead>
-              <TableHead className={cn(TABLE.header, "text-right")}>
-                {t("cockpit.sessions.columns.pnl")}
-              </TableHead>
-              <TableHead className={cn(TABLE.header, "text-right")}>
-                {t("cockpit.sessions.columns.updatedAt")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sessions.map((session) => {
-              const pnl = session.total_pnl ?? 0;
-              const isProfit = pnl >= 0;
+      <div className="hidden sm:block overflow-x-auto rounded-2xl border border-kp-light bg-kp-card" data-testid="session-table">
+        <div className="min-w-[700px]">
+          <Table>
+            <TableHeader className="sticky top-0 z-10 bg-kp-card">
+              <TableRow className="border-kp-light hover:bg-transparent">
+                <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.sessions.columns.pair")}</TableHead>
+                <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.sessions.columns.status")}</TableHead>
+                <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                  {t("cockpit.sessions.columns.startingCapital")}
+                </TableHead>
+                <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                  {t("cockpit.sessions.columns.currentCapital")}
+                </TableHead>
+                <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                  {t("cockpit.sessions.columns.pnl")}
+                </TableHead>
+                <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                  {t("cockpit.sessions.columns.updatedAt")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sessions.map((session) => {
+                const pnl = session.total_pnl ?? 0;
+                const isProfit = pnl >= 0;
 
-              return (
-                <TableRow key={session.id} className={TABLE.row}>
-                  <TableCell className={cn(TABLE.cell, "font-medium text-white")}>
-                    {session.trading_pair}
-                  </TableCell>
-                  <TableCell className={TABLE.cell}>
-                    <Badge className={cn("rounded-full border", statusColor(session.status))}>
-                      {t(`cockpit.sessions.status.${session.status}`)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                    {formatMoney(session.starting_capital_nok)}
-                  </TableCell>
-                  <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                    {formatMoney(session.current_capital_nok)}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      TABLE.cellNumeric,
-                      "font-medium",
-                      isProfit ? "text-emerald-400" : "text-rose-400",
-                    )}
-                  >
-                    {isProfit ? "+" : ""}
-                    {formatMoney(pnl)}
-                  </TableCell>
-                  <TableCell className={cn(TABLE.cellNumeric, "text-gray-400")}>
-                    {formatDate(session.updated_at)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                return (
+                  <TableRow key={session.id} className="border-b border-kp-border hover:bg-kp-bg-hover/50 transition-colors duration-150">
+                    <TableCell className="px-4 py-3 text-sm font-medium text-kp-text-primary">
+                      {session.trading_pair}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-sm">
+                      <Badge className={cn("rounded-full border", statusColor(session.status))}>
+                        {t(`cockpit.sessions.status.${session.status}`)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                      {formatMoney(session.starting_capital_nok)}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                      {formatMoney(session.current_capital_nok)}
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        "px-4 py-3 text-sm tabular-nums text-right font-medium",
+                        isProfit ? "text-kp-success" : "text-kp-danger",
+                      )}
+                    >
+                      {isProfit ? "+" : ""}
+                      {formatMoney(pnl)}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-muted">
+                      {formatDate(session.updated_at)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {hasMore && (
         <Button
           variant="secondary"
-          className="w-full rounded-xl"
+          className="w-full rounded-xl min-h-12"
           onClick={onLoadMore}
           disabled={isLoadingMore}
         >

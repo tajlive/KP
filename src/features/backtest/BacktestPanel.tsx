@@ -6,8 +6,8 @@ import type { StrategyType } from '@/lib/backtest/engine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Play, Loader2, TrendingUp, TrendingDown, Activity, BarChart3 } from 'lucide-react';
-import { GlassCard } from '@/shared/ui/GlassCard';
-import { ButtonPremium } from '@/shared/ui/ButtonPremium';
+import { Card } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
 
 interface BacktestResult {
   trades: unknown[];
@@ -76,7 +76,7 @@ export function BacktestPanel() {
 
   return (
     <section className="py-8">
-      <GlassCard variant="elevated" className="overflow-hidden">
+      <Card variant="glass" glassVariant="elevated" padding="md" className="overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b border-kp-border">
           <div className="flex items-center gap-2 mb-4">
@@ -143,7 +143,7 @@ export function BacktestPanel() {
                 {p.label}
               </button>
             ))}
-            <ButtonPremium
+            <Button
               size="sm"
               onClick={runBacktestAction}
               disabled={loading}
@@ -151,7 +151,7 @@ export function BacktestPanel() {
               className="ml-auto"
             >
               Kjør backtest
-            </ButtonPremium>
+            </Button>
           </div>
         </div>
         
@@ -233,7 +233,7 @@ export function BacktestPanel() {
             </motion.div>
           )}
         </AnimatePresence>
-      </GlassCard>
+      </Card>
     </section>
   );
 }

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+  "inline-flex items-center justify-center rounded-full border font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
   {
     variants: {
       variant: {
@@ -17,24 +17,44 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        brand:
+          "border-kp-brand/20 bg-kp-brand-subtle text-kp-brand",
+        success:
+          "border-kp-success/20 bg-kp-success-light text-kp-success",
+        warning:
+          "border-kp-warning/20 bg-kp-warning-light text-kp-warning",
+        danger:
+          "border-kp-danger/20 bg-kp-danger-light text-kp-danger",
+        neutral:
+          "border-kp-border bg-kp-bg-tertiary text-kp-text-tertiary",
+      },
+      size: {
+        default: "px-2 py-0.5 text-xs",
+        sm: "px-2 py-0.5 text-xs",
+        md: "px-3 py-1 text-sm",
       },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 )
 
-export interface BadgeProps 
+export interface BadgeProps
   extends React.ComponentProps<"span">,
     VariantProps<typeof badgeVariants> {
   asChild?: boolean;
+  icon?: React.ReactNode;
 }
 
 function Badge({
   className,
   variant,
+  size,
   asChild = false,
+  icon,
+  children,
   ...props
 }: BadgeProps) {
   const Comp = asChild ? Slot : "span"
@@ -42,9 +62,16 @@ function Badge({
   return (
     <Comp
       data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
+      className={cn(badgeVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      {asChild ? children : (
+        <>
+          {icon && <span className="flex-shrink-0">{icon}</span>}
+          {children}
+        </>
+      )}
+    </Comp>
   )
 }
 
