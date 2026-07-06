@@ -25,9 +25,6 @@ interface OverviewProps {
   hasMoreSessions?: boolean;
   isLoadingMoreSessions?: boolean;
   onLoadMoreSessions?: () => void;
-  onStartRobot?: () => void;
-  onPauseAll?: () => void;
-  onViewHistory?: () => void;
   onActivateAutoTrading?: () => void;
   isActivatingAutoTrading?: boolean;
   className?: string;
@@ -42,9 +39,6 @@ export function Overview({
   hasMoreSessions,
   isLoadingMoreSessions,
   onLoadMoreSessions,
-  onStartRobot,
-  onPauseAll,
-  onViewHistory,
   onActivateAutoTrading,
   isActivatingAutoTrading,
   className,
@@ -97,11 +91,7 @@ export function Overview({
         />
       )}
 
-      <QuickActions
-        onStartRobot={onStartRobot}
-        onPauseAll={onPauseAll}
-        onViewHistory={onViewHistory}
-      />
+      <QuickActions />
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-kp-text-secondary">

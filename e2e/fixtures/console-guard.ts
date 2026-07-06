@@ -33,6 +33,13 @@ export const test = base.extend<{
           /\[Klarpakke WARN\]/, // Våre egne warnings (strukturert)
           /preloaded using link preload but not used/i, // Chrome preload warnings (non-blocking)
           /WebSocket is closed before the connection is established/i, // Supabase realtime close race on test teardown
+          // Next.js image aspect-ratio warning for known payment SVGs rendered with CSS sizing.
+          // Exact observed messages (dev-only, no runtime impact; components unchanged by recent work):
+          //   Image with src ".../images/payments/stripe.svg" has either width or height modified...
+          //   Image with src ".../images/payments/apple-pay.svg" has either width or height modified...
+          //   Image with src ".../images/payments/paypal.svg" has either width or height modified...
+          //   Image with src ".../brand/payments/paypal.svg" has either width or height modified...
+          /Image with src ".*\/(?:images|brand)\/payments\/(?:stripe|apple-pay|paypal)\.svg" has either width or height modified.*to maintain the aspect ratio/i,
         ];
 
         if (allowedPatterns.some((p) => p.test(text))) return;

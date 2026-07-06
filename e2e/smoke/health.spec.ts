@@ -68,8 +68,8 @@ test.describe("Smoke: Health Checks @smoke", () => {
   });
 
   test("login page is accessible", async ({ page }) => {
-    // Eksplisitt locale + lang timeout: unngår flakiness ved kald dev-server og parallel workers
-    await page.goto("/auth/login", {
+    // Use canonical localized login route; /auth/login is not a valid app route in this locale-prefix routing.
+    await page.goto("/no/login", {
       waitUntil: "domcontentloaded",
       timeout: 90_000,
     });

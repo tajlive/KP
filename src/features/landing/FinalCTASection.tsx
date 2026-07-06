@@ -27,6 +27,7 @@ export default function FinalCTASection() {
 
   return (
     <section
+      data-testid="final-cta"
       className={`relative py-16 lg:py-20 overflow-x-hidden ${SURFACE.BG}`}
       aria-labelledby="final-cta-heading"
     >

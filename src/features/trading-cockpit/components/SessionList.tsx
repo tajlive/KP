@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,7 @@ export function SessionList({
 }: SessionListProps) {
   const t = useTranslations("trading");
   const locale = useLocale();
+  const router = useRouter();
   const dateLocale = locale === "no" ? nb : enUS;
 
   if (sessions.length === 0) {
@@ -95,7 +97,7 @@ export function SessionList({
             <button
               key={session.id}
               type="button"
-              onClick={() => window.alert(`Session ${session.id}`)}
+              onClick={() => router.push(`/${locale}/handelshistorikk`)}
               className="bg-kp-card border border-kp-light rounded-2xl p-4 text-left w-full transition-colors hover:bg-kp-bg-hover"
               aria-label={`${session.trading_pair} ${session.status}`}
               data-testid={`session-card-${session.id}`}

@@ -5,10 +5,8 @@ const BASE = process.env.PLAYWRIGHT_TEST_BASE_URL || process.env.BASE_URL || "ht
 test("Landing NO: laster og har CTA", async ({ page }) => {
   await page.goto(`${BASE}/no`, { waitUntil: "domcontentloaded" });
   await expect(page).toHaveTitle(/Klarpakke/i);
-  const cta = page.locator(
-    'a[href*="signup"], a[href*="registrer"], button:has-text("Start"), button:has-text("Kom i gang")',
-  );
-  await expect(cta.first()).toBeVisible();
+  const cta = page.getByTestId("hero-cta");
+  await expect(cta).toBeVisible();
 });
 
 test("Landing EN: laster og har CTA", async ({ page }) => {
@@ -31,14 +29,29 @@ test("Innlogging: viser loginskjema", async ({ page }) => {
   await expect(loginPage).toBeVisible();
 });
 
-test("Redirect: /settings → /innstillinger (første hop, ingen redirect-loop)", async ({
+test("Redirect: /innstillinger → profile settings uten redirect-loop", async ({
   page,
 }) => {
-  await page.goto(`${BASE}/no/innstillinger`, { waitUntil: "domcontentloaded" });
-  await expect(page.locator("h1, h2").first()).toBeVisible();
-  // Verify we're on the settings page
-  const url = page.url();
-  expect(url).toMatch(/innstillinger|settings/i);
+  const response = await page.goto(`${BASE}/no/innstillinger`, {
+    waitUntil: "domcontentloaded",
+  });
+
+  const chain: string[] = [];
+  let request = response?.request() ?? null;
+  while (request?.redirectedFrom()) {
+    request = request.redirectedFrom();
+  }
+  while (request) {
+    chain.push(request.url());
+    request = request.redirectedTo() ?? null;
+  }
+
+  expect(chain).toEqual([
+    `${BASE}/no/innstillinger`,
+    `${BASE}/no/profile?tab=settings`,
+    `${BASE}/no/login?next=%2Fno%2Fprofile`,
+  ]);
+  expect(response?.status()).toBe(200);
 });
 
 test("Paper trading: side laster", async ({ page }) => {
@@ -46,8 +59,10 @@ test("Paper trading: side laster", async ({ page }) => {
     waitUntil: "domcontentloaded",
   });
   await expect(page).not.toHaveTitle(/404|error/i);
-  // Page renders PaperTradingList; assert on main content container
-  await expect(page.locator("main").first()).toBeVisible();
+  // /paper-trading is a legacy redirect to /handel?mode=paper, which is auth-protected.
+  // Unauthenticated smoke tests land on the login page; verify it rendered.
+  await expect(page.getByTestId("login-page").first()).toBeVisible();
+  expect(page.url()).toMatch(/\/(login|innlogging)/);
 });
 
 test("Landing: har meta description", async ({ page }) => {

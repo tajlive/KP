@@ -131,6 +131,7 @@ export default async function SanityHeroSection({
             >
               <Link
                 href={primaryLink}
+                data-testid="hero-cta"
                 className="inline-flex items-center justify-center gap-2 !text-slate-950 hover:!text-slate-950"
               >
                 {primaryText}

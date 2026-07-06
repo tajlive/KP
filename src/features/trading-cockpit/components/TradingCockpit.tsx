@@ -14,7 +14,13 @@ import { TradesTab } from "./trades/TradesTab";
 import { AnalysisTab } from "./analysis/AnalysisTab";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
 
-export function TradingCockpit({ className }: { className?: string }) {
+export function TradingCockpit({
+  className,
+  installPrompt,
+}: {
+  className?: string;
+  installPrompt?: React.ReactNode;
+}) {
   const t = useTranslations("trading");
   const {
     mode,
@@ -22,6 +28,7 @@ export function TradingCockpit({ className }: { className?: string }) {
     metrics,
     sessions,
     statusCounts,
+    riskStatus,
     canUseLive,
     autoTradeSettings,
     isLoading,
@@ -100,8 +107,11 @@ export function TradingCockpit({ className }: { className?: string }) {
       <CockpitHeader
         mode={mode}
         canUseLive={canUseLive}
+        riskStatus={riskStatus}
         onModeChange={setMode}
       />
+
+      {installPrompt}
 
       <CockpitTabs activeTab={tab} onTabChange={setTab} />
 
@@ -113,9 +123,6 @@ export function TradingCockpit({ className }: { className?: string }) {
           autoTradeSettings={autoTradeSettings}
           hasMoreSessions={hasMoreSessions}
           onLoadMoreSessions={loadMoreSessions}
-          onStartRobot={() => window.alert(t("cockpit.quickActions.startRobot"))}
-          onPauseAll={() => window.alert(t("cockpit.quickActions.pauseAll"))}
-          onViewHistory={() => window.alert(t("cockpit.quickActions.viewHistory"))}
           onActivateAutoTrading={handleActivateAutoTrading}
           isActivatingAutoTrading={isActivating}
         />

@@ -7,6 +7,22 @@ import type { TradingAnalytics } from "@/features/trading-cockpit/types";
 const paramsSchema = z.object({
   mode: z.enum(["paper", "live"]),
   dateRange: z.enum(["7d", "30d", "90d", "1y", "all"]).default("30d"),
+  pair: z.string().optional(),
+  status: z
+    .enum([
+      "all",
+      "filled",
+      "partially_filled",
+      "pending",
+      "cancelled",
+      "failed",
+    ])
+    .optional(),
+  sessionStatus: z
+    .enum(["all", "active", "paused", "stopped", "crashed"])
+    .optional(),
+  side: z.enum(["all", "buy", "sell"]).optional(),
+  search: z.string().optional(),
 });
 
 function dateRangeToRange(
@@ -114,6 +130,11 @@ export async function GET(request: NextRequest) {
   const parsed = paramsSchema.safeParse({
     mode: searchParams.get("mode"),
     dateRange: searchParams.get("dateRange") || "30d",
+    pair: searchParams.get("pair") ?? undefined,
+    status: searchParams.get("status") ?? undefined,
+    sessionStatus: searchParams.get("sessionStatus") ?? undefined,
+    side: searchParams.get("side") ?? undefined,
+    search: searchParams.get("search") ?? undefined,
   });
 
   if (!parsed.success) {
@@ -123,7 +144,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const { mode, dateRange } = parsed.data;
+  const { mode, dateRange, pair, status, sessionStatus, side, search } =
+    parsed.data;
   const { from, to } = dateRangeToRange(dateRange);
 
   if (mode === "live" && !(await verifyLiveEntitlement(supabase, user.id))) {
@@ -133,14 +155,19 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const tradeStatuses =
+    status && status !== "all" ? [status] : null;
+  const sessionStatuses =
+    sessionStatus && sessionStatus !== "all" ? [sessionStatus] : null;
+
   const { data: rows, error } = await supabase.rpc("get_trading_analytics", {
     p_user_id: user.id,
     p_mode: mode,
-    p_trade_statuses: null,
-    p_session_statuses: null,
-    p_side: null,
-    p_pair: null,
-    p_search: null,
+    p_trade_statuses: tradeStatuses,
+    p_session_statuses: sessionStatuses,
+    p_side: side && side !== "all" ? side : null,
+    p_pair: pair || null,
+    p_search: search || null,
     p_from: from,
     p_to: to,
   });

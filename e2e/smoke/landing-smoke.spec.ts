@@ -54,8 +54,8 @@ test.describe("Landing smoke — post-deploy verifisering", () => {
     // Sjekk at nøkkelseksjoner har innhold
     const checks = [
       { name: "DemoWidget", selector: "#land-demo" },
-      { name: "CoursePreview", selector: "#land-kurs" },
-      { name: "ThreeSteps", selector: "#land-steg" },
+      { name: "ThreeSteps", selector: "[data-testid='three-steps']" },
+      { name: "FinalCTA", selector: "[data-testid='final-cta']" },
       { name: "FAQ", text: "Ofte stilte spørsmål" },
       { name: "Footer", selector: "footer" },
     ];

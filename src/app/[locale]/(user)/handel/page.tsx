@@ -4,6 +4,7 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { getCockpitInitialData } from "@/features/trading-cockpit/server/getCockpitInitialData";
 import { CockpitProvider } from "@/features/trading-cockpit/hooks/useCockpit";
 import { TradingCockpit } from "@/features/trading-cockpit/components/TradingCockpit";
+import { InstallPrompt } from "@/shared/pwa/InstallPrompt";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,7 +39,7 @@ export default async function TradingPage({
         userId={user.id}
         locale={locale}
       >
-        <TradingCockpit />
+        <TradingCockpit installPrompt={<InstallPrompt />} />
       </CockpitProvider>
     </Suspense>
   );

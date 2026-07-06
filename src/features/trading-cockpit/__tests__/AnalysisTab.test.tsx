@@ -282,4 +282,33 @@ describe("AnalysisTab", () => {
 
     expect(setFilters).toHaveBeenCalledWith({ dateRange: "90d" });
   });
+
+  it("renders updated analytics when the filter-driven context changes", () => {
+    const btcOnlyAnalytics: TradingAnalytics = {
+      ...mockAnalytics,
+      total_trades: 10,
+      best_pair: "BTCUSDT",
+      worst_pair: "BTCUSDT",
+      trades_by_symbol: [{ symbol: "BTCUSDT", pnl: 5_000, trades: 10 }],
+    };
+    mockUseCockpit.mockReturnValue(baseContext);
+    const { rerender } = render(<AnalysisTab />);
+
+    expect(screen.getByText("ETHUSDT")).toBeInTheDocument();
+
+    mockUseCockpit.mockReturnValue({
+      ...baseContext,
+      analytics: btcOnlyAnalytics,
+      filters: { ...baseContext.filters, pair: "BTCUSDT" },
+    });
+    rerender(<AnalysisTab />);
+
+    // BTCUSDT is intentionally rendered twice (best pair card + symbol distribution bar),
+    // so assert the presence of the BTC-only symbol distribution row and the absence of
+    // the previously rendered worst-pair symbol.
+    expect(
+      screen.getAllByText("BTCUSDT").length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText("ETHUSDT")).not.toBeInTheDocument();
+  });
 });

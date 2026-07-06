@@ -1096,6 +1096,19 @@
           "description": "{side} {symbol}"
         }
       }
+    },
+    "liveModeConfirm": {
+      "title": "Bytt til Live Trading?",
+      "description": "Du er i ferd med å bytte til ekte handel med ekte penger. Bekreft at du forstår risikoen.",
+      "rememberDefault": "Husk som standard",
+      "cancel": "Avbryt",
+      "confirm": "Bekreft, bytt til live"
+    },
+    "riskBanner": {
+      "title": "Risikovarsel",
+      "crashed": "Krasjede sesjoner oppdaget. Handel kan være påvirket.",
+      "dailyLossLimit": "Daglig tapsgrense nådd. Nye handler blokkert.",
+      "maxDrawdown": "Maks drawdown nådd. Gå gjennom risikoinnstillinger."
     }
   }
 }
