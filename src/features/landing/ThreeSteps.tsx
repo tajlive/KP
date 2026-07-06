@@ -51,7 +51,7 @@ export function ThreeSteps() {
   ];
 
   return (
-    <div suppressHydrationWarning className="pt-10 pb-8 md:pt-16 md:pb-12">
+    <div data-testid="three-steps" suppressHydrationWarning className="pt-10 pb-8 md:pt-16 md:pb-12">
       <div className="text-center mb-8">
         <h2 className="font-fraunces text-3xl md:text-4xl font-bold text-slate-100 mb-4">
           {t("sectionTitle")}

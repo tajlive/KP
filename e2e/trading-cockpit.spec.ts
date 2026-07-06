@@ -149,4 +149,44 @@ test.describe("Trading Cockpit", () => {
     await expect(page.getByText("Datoområde").first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Bruk" })).toBeVisible();
   });
+
+  test("PWA manifest and service worker are wired for /no/handel", async ({
+    page,
+  }) => {
+    const manifestLink = await page
+      .locator('link[rel="manifest"]')
+      .getAttribute("href");
+    expect(manifestLink).toBeTruthy();
+
+    const manifest = await page.evaluate(async () => {
+      const link = document.querySelector('link[rel="manifest"]');
+      if (!link) return null;
+      const res = await fetch(link.getAttribute("href") || "");
+      return res.ok ? res.json() : null;
+    });
+
+    expect(manifest).not.toBeNull();
+    expect(manifest.display).toBe("standalone");
+    expect(manifest.start_url).toBe("/no/handel");
+    expect(
+      manifest.icons.some(
+        (icon: { sizes: string }) =>
+          icon.sizes === "192x192" || icon.sizes === "512x512"
+      )
+    ).toBe(true);
+
+    const swState = await page.evaluate(() => {
+      if (!("serviceWorker" in navigator)) return "unsupported";
+      return navigator.serviceWorker.ready
+        .then((registration) => {
+          const active =
+            navigator.serviceWorker.controller || registration.active || registration.installing;
+          const script = active?.scriptURL || "";
+          return script.includes("/sw.js") ? "registered" : "failed";
+        })
+        .catch(() => "failed");
+    });
+
+    expect(["registered", "unsupported"]).toContain(swState);
+  });
 });

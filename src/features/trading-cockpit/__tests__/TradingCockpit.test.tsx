@@ -9,6 +9,12 @@ vi.mock("next-intl", () => ({
   useLocale: () => "no",
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  usePathname: () => "/no/handel",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock("../hooks/useCockpit", () => ({
   useCockpit: (): CockpitContextValue => ({
     mode: "paper",
@@ -28,6 +34,7 @@ vi.mock("../hooks/useCockpit", () => ({
     statusCounts: { active: 0, paused: 0, stopped: 0, crashed: 0 },
     canUseLive: false,
     autoTradeSettings: { auto_trading_enabled: false, risk_profile: "moderate" },
+    riskStatus: { dailyLossLimitReached: false, maxDrawdownReached: false, crashed: false },
     isLoading: false,
     error: null,
     analytics: null,

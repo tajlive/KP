@@ -4,14 +4,18 @@
  * Cache-strategi: Network first, fallback til cache
  */
 
-const CACHE_VERSION = "3"; // Bumped 2026-05-07: CSP fix invalidated old HTML cache
+const CACHE_VERSION = "4"; // Bumped 2026-07-06: PWA Trading Cockpit activation refresh
 const CACHE_NAME = `klarpakke-v${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
-  "/",
+  "/no/handel",
+  "/en/handel",
+  "/offline.html",
   "/manifest.json",
   "/logo.svg",
   "/favicon.svg",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
 ];
 
 const OFFLINE_URL = "/offline.html";

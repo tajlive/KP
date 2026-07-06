@@ -102,6 +102,12 @@ export interface TradingAnalytics {
   trades_by_symbol: Array<{ symbol: string; pnl: number; trades: number }>;
 }
 
+export interface CockpitRiskStatus {
+  dailyLossLimitReached: boolean;
+  maxDrawdownReached: boolean;
+  crashed: boolean;
+}
+
 export interface CockpitInitialData {
   mode: CockpitMode;
   defaultMode: CockpitMode;
@@ -109,6 +115,7 @@ export interface CockpitInitialData {
   metrics: DashboardMetrics;
   sessions: TradingSessionSummary[];
   statusCounts: Record<string, number>;
+  riskStatus: CockpitRiskStatus;
   canUseLive: boolean;
   autoTradeSettings: {
     auto_trading_enabled: boolean | null;

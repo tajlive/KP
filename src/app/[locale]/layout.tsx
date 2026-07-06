@@ -121,6 +121,7 @@ export async function generateMetadata({
         { url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" },
       ],
     },
+    manifest: "/manifest.json",
   };
 }
 
@@ -210,7 +211,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     for (var i = 0; i < regs.length; i++) {
       var r = regs[i];
       var scope = r.scope || '';
-      if (scope.indexOf('klarpakke') !== -1 || scope.indexOf('localhost') !== -1 || scope === '' || scope === '/') {
+      var script = (r.scope && r.active && r.active.scriptURL) || '';
+      // Preserve the active PWA service worker (root scope, /sw.js)
+      var isAllowedPWA = (scope === '' || scope === window.location.origin + '/') && script.indexOf('/sw.js') !== -1;
+      if (isAllowedPWA) continue;
+      // Kill legacy scopes that used path-based scopes like /klarpakke/ or /dashboard
+      if (scope.indexOf('klarpakke') !== -1 || scope.indexOf('dashboard') !== -1 || scope.indexOf('localhost') !== -1) {
         r.unregister();
         killed = true;
         console.warn('[Klarpakke] Avregistrerte gammel service worker:', scope);

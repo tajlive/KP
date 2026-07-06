@@ -30,6 +30,7 @@
       cursor: pointer;
     }
     button:hover { background: #003fcc; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -37,7 +38,18 @@
     <div class="icon">📡</div>
     <h1>Du er offline</h1>
     <p>Klarpakke trenger internett for sanntidsdata. Sjekk tilkoblingen din og prøv igjen.</p>
-    <button onclick="location.reload()">Prøv igjen</button>
+    <button id="reload" type="button">Prøv igjen</button>
   </div>
+  <script>
+    (function() {
+      var btn = document.getElementById('reload');
+      if (!btn) return;
+      btn.addEventListener('click', function() {
+        btn.disabled = true;
+        btn.textContent = 'Laster...';
+        window.location.reload();
+      });
+    })();
+  </script>
 </body>
 </html>

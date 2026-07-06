@@ -8,7 +8,7 @@
           "throughputKbps": 1638.4,
           "cpuSlowdownMultiplier": 4
         },
-        "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
+        "onlyCategories": ["performance", "accessibility", "best-practices", "seo", "pwa"],
         "screenEmulation": {
           "mobile": true,
           "width": 390,
@@ -25,6 +25,13 @@
         "categories:accessibility": ["error", {"minScore": 0.90}],
         "categories:best-practices": ["warn", {"minScore": 0.85}],
         "categories:seo": ["warn", {"minScore": 0.85}],
+        "categories:pwa": ["warn", {"minScore": 0.90}],
+        "installable-manifest": "error",
+        "service-worker": "error",
+        "splash-screen": "warn",
+        "themed-omnibox": "warn",
+        "maskable-icon": "warn",
+        "content-width": "error",
 
         "first-contentful-paint": ["warn", {"maxNumericValue": 1800}],
         "largest-contentful-paint": ["warn", {"maxNumericValue": 2500}],

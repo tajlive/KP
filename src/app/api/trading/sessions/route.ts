@@ -184,14 +184,7 @@ export async function PATCH(request: NextRequest) {
   const supabase = createClient();
 
   const body = await request.json();
-  const { session_id, action } = body;
-
-  if (!session_id || !action) {
-    return NextResponse.json(
-      { error: "session_id and action required" },
-      { status: 400 },
-    );
-  }
+  const { session_id, all, mode, action } = body;
 
   const validActions: { [key: string]: string } = {
     pause: "paused",
@@ -199,13 +192,14 @@ export async function PATCH(request: NextRequest) {
     stop: "stopped",
   };
 
-  const newStatus = validActions[action];
-  if (!newStatus) {
+  if (!action || !validActions[action]) {
     return NextResponse.json(
       { error: "Invalid action. Use: pause, resume, stop" },
       { status: 400 },
     );
   }
+
+  const newStatus = validActions[action];
 
   const updates: {
     status: string;
@@ -222,9 +216,47 @@ export async function PATCH(request: NextRequest) {
     updates.archived_at = new Date().toISOString();
   }
 
+  // Bulk mode: pause/resume all sessions for the given mode.
+  if (all === true) {
+    if (!mode || (mode !== "paper" && mode !== "live")) {
+      return NextResponse.json(
+        { error: "mode is required for bulk actions" },
+        { status: 400 },
+      );
+    }
+
+    const sourceStatus = action === "pause" ? "active" : "paused";
+    const { data: sessions, error } = await supabase
+      .from("trading_sessions")
+      .update(updates)
+      .eq("user_id", user.id)
+      .eq("mode", mode)
+      .eq("status", sourceStatus)
+      .select();
+
+    if (error) {
+      console.error(
+        "[PATCH /api/trading/sessions] bulk update error:",
+        error.code,
+        error.message,
+      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ updated: sessions?.length ?? 0, sessions });
+  }
+
+  if (!session_id) {
+    return NextResponse.json(
+      { error: "session_id required for non-bulk actions" },
+      { status: 400 },
+    );
+  }
+
   const { data: session, error } = await supabase
     .from("trading_sessions")
-    .update(updates).eq("id", session_id)
+    .update(updates)
+    .eq("id", session_id)
     .eq("user_id", user.id)
     .select()
     .single();

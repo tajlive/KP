@@ -2703,6 +2703,18 @@ git commit -m "feat(trading-cockpit): production-ready cockpit /handel"
 
 ---
 
+## Appendix: AI coach guardrails and marketplace integration hook
+
+This plan assumes the Trading Cockpit may surface AI explanations (e.g. `src/app/api/ai/explain-trade/route.ts`) and marketplace copy opportunities. Guardrails are documented in `docs/adr/ADR-2026-07-cockpit-ai-guardrails.md`:
+
+- AI must only provide explanatory/safe guidance, never actionable buy/sell advice.
+- AI suggestions must be bounded by user risk limits, tier entitlements, and the `checkTradeRisk` checks in `src/lib/trading/canonical/risk/risk-engine.ts`.
+- Human confirmation is required for any auto-trade execution.
+
+Marketplace catalog hook: `public.get_marketplace_ready_listings(p_limit integer, p_offset integer)` returns published `marketplace_listings` rows joined with materialized `marketplace_listing_stats`. The stub lives in `supabase/migrations/20260709000000_marketplace_ready_listings_rpc.sql`. Future UI should call this RPC and route copy/subscribe actions through authenticated server APIs with user consent.
+
+---
+
 ## Self-review
 
 **Spec coverage:**

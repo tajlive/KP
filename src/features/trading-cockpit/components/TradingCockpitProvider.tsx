@@ -20,6 +20,7 @@ import type {
   CockpitFilters,
   CockpitInitialData,
   CockpitMode,
+  CockpitRiskStatus,
   CockpitTab,
   DashboardMetrics,
   Trade,
@@ -36,6 +37,7 @@ interface State {
   metrics: DashboardMetrics;
   sessions: TradingSessionSummary[];
   statusCounts: Record<string, number>;
+  riskStatus: CockpitRiskStatus;
   canUseLive: boolean;
   autoTradeSettings: CockpitInitialData["autoTradeSettings"];
   isLoading: boolean;
@@ -110,6 +112,7 @@ function reducer(state: State, action: Action): State {
         metrics: action.payload.metrics,
         sessions: action.payload.sessions,
         statusCounts: action.payload.statusCounts,
+        riskStatus: action.payload.riskStatus,
         canUseLive: action.payload.canUseLive,
         autoTradeSettings: action.payload.autoTradeSettings,
         isLoading: false,
@@ -198,6 +201,7 @@ function createInitialState(data: CockpitInitialData): State {
     metrics: data.metrics,
     sessions: data.sessions,
     statusCounts: data.statusCounts,
+    riskStatus: data.riskStatus,
     canUseLive: data.canUseLive,
     autoTradeSettings: data.autoTradeSettings,
     isLoading: false,
@@ -229,6 +233,7 @@ export interface CockpitContextValue {
   metrics: DashboardMetrics;
   sessions: TradingSessionSummary[];
   statusCounts: Record<string, number>;
+  riskStatus: CockpitRiskStatus;
   canUseLive: boolean;
   autoTradeSettings: CockpitInitialData["autoTradeSettings"];
   isLoading: boolean;
@@ -567,6 +572,7 @@ export function TradingCockpitProvider({
       metrics: state.metrics,
       sessions: state.sessions,
       statusCounts: state.statusCounts,
+      riskStatus: state.riskStatus,
       canUseLive: state.canUseLive,
       autoTradeSettings: state.autoTradeSettings,
       isLoading: state.isLoading,

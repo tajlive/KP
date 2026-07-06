@@ -12,6 +12,7 @@ import { z } from "zod";
 
 const tradingModeSchema = z.object({
   mode: z.enum(["paper", "live"]),
+  rememberDefault: z.boolean().optional().default(true),
 });
 
 function getAuthUser(request: NextRequest) {
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    const { mode } = parsed.data;
+    const { mode, rememberDefault } = parsed.data;
 
     // Hvis bytte til live, sjekk at Binance er koblet til
     if (mode === "live") {
@@ -146,20 +147,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Oppdater trading mode
-    const { error } = await supabase
-      .from("user_profiles")
-      .update({
-        preferred_trading_mode: mode,
-        updated_at: new Date().toISOString(),
-      } as { preferred_trading_mode: string; updated_at: string }).eq("id", user.id);
+    // Oppdater trading mode. "Husk som standard" styrer om profilens
+    // foretrukne modus skal oppdateres; selve cockpitet bruker URL.
+    if (rememberDefault) {
+      const { error } = await supabase
+        .from("user_profiles")
+        .update({
+          preferred_trading_mode: mode,
+          updated_at: new Date().toISOString(),
+        } as { preferred_trading_mode: string; updated_at: string }).eq("id", user.id);
 
-    if (error) {
-      console.error("Error updating trading mode:", error);
-      return NextResponse.json(
-        { error: "Kunne ikke oppdatere trading mode" },
-        { status: 500 },
-      );
+      if (error) {
+        console.error("Error updating trading mode:", error);
+        return NextResponse.json(
+          { error: "Kunne ikke oppdatere trading mode" },
+          { status: 500 },
+        );
+      }
     }
 
     const { error: auditErr } = await supabase.from("audit_logs").insert({

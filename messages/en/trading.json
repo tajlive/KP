@@ -1096,6 +1096,19 @@
           "description": "{side} {symbol}"
         }
       }
+    },
+    "liveModeConfirm": {
+      "title": "Switch to Live Trading?",
+      "description": "You are about to switch to real trading with real money. Confirm that you understand the risks.",
+      "rememberDefault": "Remember as default",
+      "cancel": "Cancel",
+      "confirm": "Confirm, switch to live"
+    },
+    "riskBanner": {
+      "title": "Risk warning",
+      "crashed": "Crashed sessions detected. Trading may be impaired.",
+      "dailyLossLimit": "Daily loss limit reached. New trades are blocked.",
+      "maxDrawdown": "Max drawdown reached. Review risk settings."
     }
   }
 }
