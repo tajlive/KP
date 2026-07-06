@@ -1,6 +1,7 @@
-import { GlassCard, StatCard } from '@/shared/ui/GlassCard';
+import { Card } from '@/shared/ui/card';
+import { StatCard } from '@/shared/ui/StatCard';
 import { SectionHeading } from '@/shared/ui/SectionHeading';
-import { BadgePremium } from '@/shared/ui/BadgePremium';
+import { Badge } from '@/shared/ui/badge';
 import { 
   BookOpen, 
   CheckCircle2, 
@@ -75,12 +76,12 @@ export function OverallProgressStats({
         />
         
         {currentStreak > 0 && (
-          <BadgePremium 
-            variant="warning" 
+          <Badge
+            variant="warning"
             icon={<Flame className="w-3.5 h-3.5" />}
           >
             {currentStreak} dagers streak!
-          </BadgePremium>
+          </Badge>
         )}
       </div>
 
@@ -101,7 +102,7 @@ export function OverallProgressStats({
       </div>
 
       {/* Weekly Goal */}
-      <GlassCard variant="subtle" padding="md">
+      <Card variant="glass" glassVariant="subtle" padding="md">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-xl bg-kp-brand-subtle text-kp-brand">
             <Clock className="w-6 h-6" />
@@ -134,11 +135,11 @@ export function OverallProgressStats({
             </p>
           </div>
         </div>
-      </GlassCard>
+      </Card>
 
       {/* Achievement teaser */}
       {overallProgress >= 50 && (
-        <GlassCard variant="glow" padding="md" className="text-center">
+        <Card variant="glass" glassVariant="glow" padding="md" className="text-center">
           <Trophy className="w-8 h-8 text-kp-warning mx-auto mb-2" />
           <h4 className="font-semibold text-kp-text-primary mb-1">
             {overallProgress >= 100 ? 'Kurs-mester!' : 'Halvveis der!'}
@@ -148,7 +149,7 @@ export function OverallProgressStats({
               ? 'Du har fullført alle dine kurs. Imponerende!'
               : 'Du er halvveis gjennom læringsreisen din. Fortsett så!'}
           </p>
-        </GlassCard>
+        </Card>
       )}
     </div>
   );

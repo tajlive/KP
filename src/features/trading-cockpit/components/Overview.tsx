@@ -3,6 +3,8 @@
 import * as React from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/shared/ui/card";
+import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import { KpiCards } from "./KpiCards";
 import { QuickActions } from "./QuickActions";
 import { StatusSummary } from "./StatusSummary";
@@ -48,34 +50,61 @@ export function Overview({
   className,
 }: OverviewProps) {
   const t = useTranslations("trading");
+  const totalPnl = metrics?.totalPnl ?? null;
 
   return (
-    <div className={cn("space-y-6", className)}>
-      <AutoTradingActivation
-        autoTradeSettings={autoTradeSettings}
-        isLoading={Boolean(isActivatingAutoTrading)}
-        onActivate={onActivateAutoTrading ?? (() => {})}
-      />
+    <div className={cn("space-y-4 sm:space-y-6", className)}>
+      <section className="space-y-2">
+        <Card className="bg-kp-bg-card border-kp-border rounded-2xl">
+          <CardContent className="p-4 sm:p-6">
+            <p className="text-sm text-kp-text-secondary">
+              {t("cockpit.kpi.totalPnl")}
+            </p>
+            <div
+              className={cn(
+                "text-3xl sm:text-4xl font-bold tabular-nums tracking-tight",
+                totalPnl === null
+                  ? "text-kp-text-primary"
+                  : totalPnl >= 0
+                    ? "text-kp-success"
+                    : "text-kp-danger",
+              )}
+            >
+              {totalPnl === null ? (
+                "—"
+              ) : (
+                <AnimatedNumber
+                  value={totalPnl}
+                  prefix="kr "
+                  decimals={0}
+                  duration={500}
+                />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <StatusSummary statusCounts={statusCounts} />
 
       <KpiCards metrics={metrics} analytics={analytics} />
 
-      <section className="space-y-3">
-        <QuickActions
-          onStartRobot={onStartRobot}
-          onPauseAll={onPauseAll}
-          onViewHistory={onViewHistory}
+      {autoTradeSettings?.auto_trading_enabled !== true && (
+        <AutoTradingActivation
+          autoTradeSettings={autoTradeSettings}
+          isLoading={Boolean(isActivatingAutoTrading)}
+          onActivate={onActivateAutoTrading ?? (() => {})}
         />
-      </section>
+      )}
+
+      <QuickActions
+        onStartRobot={onStartRobot}
+        onPauseAll={onPauseAll}
+        onViewHistory={onViewHistory}
+      />
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-          {t("cockpit.sessions.title")}
-        </h2>
-        <StatusSummary statusCounts={statusCounts} />
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-kp-text-secondary">
           {t("cockpit.sessions.title")}
         </h2>
         <SessionList

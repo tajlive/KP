@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/shared/ui/card";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
-import { SURFACE, SEMANTIC_COLORS } from "@/lib/design/tokens";
 import type { TradingAnalytics } from "@/features/trading-cockpit/types";
 
 interface StatItem {
@@ -150,8 +149,7 @@ export function AnalyticsStatGrid({
         <Card
           key={stat.key}
           className={cn(
-            SURFACE.BG_CARD,
-            "border-white/[0.06] p-0 rounded-2xl",
+            "bg-kp-bg-card border-white/[0.06] p-0 rounded-2xl",
           )}
         >
           <CardContent className="p-4">
@@ -162,7 +160,7 @@ export function AnalyticsStatGrid({
               <div className="space-y-0.5">
                 <p
                   className="text-base font-semibold truncate"
-                  style={{ color: SEMANTIC_COLORS.textDarkPrimary }}
+                  style={{ color: "#f8fafc" }}
                 >
                   {stat.displayText ?? "—"}
                 </p>

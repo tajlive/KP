@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Loader2, Play, TriangleAlert } from "lucide-react";
-import { SURFACE } from "@/lib/design/tokens";
 import type { CockpitInitialData } from "@/features/trading-cockpit/types";
 
 interface AutoTradingActivationProps {
@@ -32,8 +31,7 @@ export function AutoTradingActivation({
     <div
       data-testid="auto-trading-activation"
       className={cn(
-        SURFACE.BG_CARD,
-        "border border-white/[0.06] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4",
+        "bg-kp-bg-card border border-white/[0.06] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4",
         className,
       )}
     >

@@ -28,6 +28,8 @@
   --kp-warning-bg: rgba(245, 158, 11, 0.1);
   --kp-error: #ef4444;
   --kp-error-bg: rgba(239, 68, 68, 0.1);
+  --kp-danger: var(--kp-error);
+  --kp-danger-bg: var(--kp-error-bg);
   --kp-info: #3b82f6;
   --kp-info-bg: rgba(59, 130, 246, 0.1);
 

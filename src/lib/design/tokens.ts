@@ -1,7 +1,11 @@
 // Klarpakke Design Tokens - Bruk DISSE overalt (samme stil på alle sider)
 // Merke-farge: #0052FF (Coinbase-blå, kp-tokens.css --kp-accent)
 
-/** Merke-farge #0052FF – bruk overalt for primær CTA og accent */
+/**
+ * @deprecated Use `kp-*` Tailwind tokens or CSS variables from `kp-tokens-sanity.css` instead.
+ * Mapping: DEFAULT -> #0052ff (or bg-kp-brand / text-kp-brand), HOVER -> #0047e0,
+ * LIGHT -> #3d7aff, MUTED -> bg-kp-brand-subtle, BORDER -> border-kp-border-brand.
+ */
 export const BRAND_COLOR = {
   DEFAULT: "#0052ff",
   HOVER: "#0047e0",
@@ -24,7 +28,16 @@ export const CDS_THEME_MAP = {
   borderDefault: "var(--cds-colors-line)",
 } as const;
 
-/** Coinbase-inspired dark theme surfaces */
+/**
+ * @deprecated Use `kp-*` Tailwind tokens instead. Mapping:
+ * BG -> bg-kp-bg-primary, BG_SECONDARY -> bg-kp-bg-secondary,
+ * BG_TERTIARY -> bg-kp-bg-tertiary, BG_ELEVATED -> bg-kp-bg-elevated,
+ * BG_CARD -> bg-kp-bg-card, BORDER -> border-kp-border,
+ * BORDER_LIGHT -> border-kp-border-light, BORDER_STRONG -> border-kp-border-strong,
+ * BORDER_BRAND -> border-kp-border-brand, TEXT -> text-kp-text-primary,
+ * TEXT_SECONDARY -> text-kp-text-secondary, TEXT_MUTED -> text-kp-text-muted,
+ * TEXT_SUBTLE -> text-kp-text-tertiary.
+ */
 export const SURFACE = {
   // Dark theme (default) - Coinbase CDS colors
   BG: "bg-[#0a0b0d]", // Deepest background
@@ -91,6 +104,10 @@ export const SHADOW = {
   modal: "shadow-2xl",
 } as const;
 
+/**
+ * @deprecated Use the `Button` component variants or `kp-*` Tailwind tokens directly.
+ * Maps to: bg-kp-brand / text-kp-text-primary / border-kp-border / rounded-button.
+ */
 export const BUTTON = {
   // Primary: Solid brand color
   primary: `${BRAND.primary} ${RADIUS.button} px-6 py-3 font-semibold shadow-sm transition-all duration-200 active:scale-[0.98]`,
@@ -105,6 +122,11 @@ export const BUTTON = {
   success: `${BRAND.success} ${RADIUS.button} px-6 py-3 font-semibold`,
 } as const;
 
+/**
+ * @deprecated Use `kp-*` Tailwind tokens instead. Mapping:
+ * default/hover/elevated/dark -> bg-kp-bg-card border-kp-border rounded-card;
+ * light -> bg-kp-bg-primary border-kp-border.
+ */
 export const CARD = {
   default: `${SURFACE.BG_CARD} ${RADIUS.card} border ${SURFACE.BORDER} shadow-sm p-6`,
   hover: `${SURFACE.BG_CARD} ${RADIUS.card} border ${SURFACE.BORDER} shadow-sm hover:shadow-md hover:border-white/[0.12] transition-all duration-200 p-6`,
@@ -116,7 +138,10 @@ export const CARD = {
   lightHover: `bg-white ${RADIUS.card} border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 p-6`,
 } as const;
 
-/** Hero/landing – gradient og CTA (samme merke #0052FF) */
+/**
+ * @deprecated Use `kp-*` Tailwind tokens or the brand scale (brand-500, etc.) instead.
+ * Hero gradients should reference `--kp-brand` and the brand-500/brand-600 scale.
+ */
 export const HERO = {
   gradient: "from-brand-500 via-brand-600 to-slate-900",
   /** Tittel-accent (h1 del 2) — merke-spesifikk, mindre «generisk AI-gradient» */
@@ -132,7 +157,12 @@ export const HERO = {
     "px-8 py-4 bg-white text-brand-500 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200",
 } as const;
 
-/** Tabeller: tall alltid tabular-nums, rader med hover */
+/**
+ * @deprecated Use direct Tailwind utilities mapped to `kp-*` tokens instead.
+ * Mapping: header -> px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider,
+ * row -> border-b border-kp-border hover:bg-kp-bg-hover/50 transition-colors duration-150,
+ * cell -> px-4 py-3 text-sm, cellNumeric -> px-4 py-3 text-sm tabular-nums text-right.
+ */
 export const TABLE = {
   cell: "px-4 py-3 text-sm",
   cellNumeric: "px-4 py-3 text-sm tabular-nums text-right",
@@ -165,7 +195,12 @@ export const MOBILE = {
   responsiveGap: "gap-3 sm:gap-4 lg:gap-6",
 } as const;
 
-/** Phase 1 redesign palette: Nordic Trust + Live Accents */
+/**
+ * @deprecated Use CSS variables from `kp-tokens-sanity.css` or `kp-*` Tailwind classes instead.
+ * Mapping: positive -> #22c55e (text-kp-success), negative -> #ef4444 (text-kp-danger),
+ * ai -> #3b82f6, live -> #f59e0b, learning -> #a855f7,
+ * textDarkPrimary -> text-kp-text-primary (#f8fafc), textDarkSecondary -> text-kp-text-secondary.
+ */
 export const SEMANTIC_COLORS = {
   backgroundDark: "#0b1220",
   backgroundDarkElevated: "#111827",

@@ -2,8 +2,8 @@
 
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
-import { GlassCard } from './GlassCard';
-import { ButtonPremium } from './ButtonPremium';
+import { Card } from './card';
+import { Button } from './button';
 
 interface EmptyStateProps {
   icon?: ReactNode;
@@ -44,22 +44,23 @@ export function EmptyState({
           <p className="text-sm text-kp-text-tertiary mb-4">{description}</p>
         )}
         {action && (
-          <ButtonPremium
+          <Button
             variant="secondary"
             size="sm"
             onClick={action.onClick}
           >
             {action.label}
-          </ButtonPremium>
+          </Button>
         )}
       </div>
     );
   }
 
   return (
-    <GlassCard 
-      variant="subtle" 
-      padding="lg" 
+    <Card
+      variant="glass"
+      glassVariant="subtle"
+      padding="lg"
       className={cn('text-center max-w-md mx-auto', className)}
     >
       {icon && (
@@ -80,23 +81,23 @@ export function EmptyState({
       
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         {action && (
-          <ButtonPremium
+          <Button
             variant={action.variant || 'primary'}
             onClick={action.onClick}
           >
             {action.label}
-          </ButtonPremium>
+          </Button>
         )}
         {secondaryAction && (
-          <ButtonPremium
+          <Button
             variant="ghost"
             onClick={secondaryAction.onClick}
           >
             {secondaryAction.label}
-          </ButtonPremium>
+          </Button>
         )}
       </div>
-    </GlassCard>
+    </Card>
   );
 }
 

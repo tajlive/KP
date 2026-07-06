@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ChartWrapper } from "@/shared/ui/chart-wrapper";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { cn } from "@/lib/utils";
-import { SURFACE, BRAND_COLOR } from "@/lib/design/tokens";
 import { BarChart3 } from "lucide-react";
 
 interface PnLDataPoint {
@@ -50,8 +49,7 @@ export function PnLChart({ data, className }: PnLChartProps) {
     return (
       <Card
         className={cn(
-          SURFACE.BG_CARD,
-          "border-white/[0.06] rounded-2xl",
+          "bg-kp-bg-card border-white/[0.06] rounded-2xl",
           className,
         )}
       >
@@ -76,8 +74,7 @@ export function PnLChart({ data, className }: PnLChartProps) {
   return (
     <Card
       className={cn(
-        SURFACE.BG_CARD,
-        "border-white/[0.06] rounded-2xl",
+"bg-kp-bg-card border-white/[0.06] rounded-2xl",
         className,
       )}
     >
@@ -91,8 +88,8 @@ export function PnLChart({ data, className }: PnLChartProps) {
           <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={BRAND_COLOR.DEFAULT} stopOpacity={0.35} />
-                <stop offset="95%" stopColor={BRAND_COLOR.DEFAULT} stopOpacity={0.02} />
+                <stop offset="5%" stopColor="#0052ff" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#0052ff" stopOpacity={0.02} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
@@ -125,10 +122,10 @@ export function PnLChart({ data, className }: PnLChartProps) {
             <Area
               type="monotone"
               dataKey="pnl"
-              stroke={BRAND_COLOR.DEFAULT}
+              stroke="#0052ff"
               strokeWidth={2}
               fill={`url(#${gradientId})`}
-              activeDot={{ r: 5, strokeWidth: 0, fill: BRAND_COLOR.DEFAULT }}
+              activeDot={{ r: 5, strokeWidth: 0, fill: "#0052ff" }}
             />
           </AreaChart>
         </ChartWrapper>

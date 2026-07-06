@@ -15,12 +15,12 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { TABLE } from "@/lib/design/tokens";
 import type { Trade } from "@/features/trading-cockpit/types";
 
 interface TradeTableProps {
   trades: Trade[];
   isLoading?: boolean;
+  error?: { message: string } | null;
   onRowClick?: (trade: Trade) => void;
   className?: string;
 }
@@ -49,13 +49,14 @@ export function sideColor(side: string): string {
 }
 
 export function pnlColor(value: number | null): string {
-  if (value === null || value === 0) return "text-gray-400";
-  return value > 0 ? "text-emerald-400" : "text-rose-400";
+  if (value === null || value === 0) return "text-kp-text-muted";
+  return value > 0 ? "text-kp-success" : "text-kp-danger";
 }
 
 export function TradeTable({
   trades,
   isLoading = false,
+  error = null,
   onRowClick,
   className,
 }: TradeTableProps) {
@@ -86,7 +87,7 @@ export function TradeTable({
 
   if (isLoading && trades.length === 0) {
     return (
-      <div className={cn("space-y-2", className)} data-testid="trade-table-skeleton">
+      <div className={cn("hidden md:block space-y-2", className)} data-testid="trade-table-skeleton">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} variant="text" className="h-10 w-full" />
         ))}
@@ -94,88 +95,121 @@ export function TradeTable({
     );
   }
 
+  if (error && trades.length === 0) {
+    return (
+      <div
+        className={cn(
+          "hidden md:block bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
+          className,
+        )}
+        data-testid="trade-table-error"
+      >
+        <p className="text-kp-text-primary font-medium">{t("cockpit.trades.error.title")}</p>
+        <p className="text-sm text-kp-text-secondary mt-1">{error.message}</p>
+      </div>
+    );
+  }
+
+  if (trades.length === 0) {
+    return (
+      <div
+        className={cn(
+          "hidden md:block bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
+          className,
+        )}
+        data-testid="trade-table-empty"
+      >
+        <p className="text-kp-text-primary font-medium">{t("cockpit.trades.noTradesTitle")}</p>
+        <p className="text-sm text-kp-text-secondary mt-1">{t("cockpit.trades.noTradesDescription")}</p>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
-        "hidden md:block overflow-hidden rounded-2xl border border-white/[0.06]",
+        "hidden md:block overflow-x-auto rounded-2xl border border-kp-light bg-kp-card",
         className,
       )}
+      data-testid="trade-table"
     >
-      <Table>
-        <TableHeader>
-          <TableRow className="border-white/[0.06] hover:bg-transparent">
-            <TableHead className={TABLE.header}>{t("cockpit.trades.columns.pair")}</TableHead>
-            <TableHead className={TABLE.header}>{t("cockpit.trades.columns.side")}</TableHead>
-            <TableHead className={TABLE.header}>{t("cockpit.trades.columns.status")}</TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.price")}
-            </TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.quantity")}
-            </TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.fee")}
-            </TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.totalValue")}
-            </TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.realizedPnl")}
-            </TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.effectivePnl")}
-            </TableHead>
-            <TableHead className={cn(TABLE.header, "text-right")}>
-              {t("cockpit.trades.columns.executedAt")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {trades.map((trade) => (
-            <TableRow
-              key={trade.id}
-              className={cn(TABLE.row, "cursor-pointer")}
-              onClick={() => onRowClick?.(trade)}
-              data-testid={`trade-row-${trade.id}`}
-            >
-              <TableCell className={cn(TABLE.cell, "font-medium text-white")}>
-                {trade.trading_pair}
-              </TableCell>
-              <TableCell className={TABLE.cell}>
-                <Badge className={cn("rounded-full border", sideColor(trade.side))}>
-                  {t(`cockpit.trades.side.${trade.side}`)}
-                </Badge>
-              </TableCell>
-              <TableCell className={TABLE.cell}>
-                <Badge className={cn("rounded-full border", tradeStatusColor(trade.status))}>
-                  {t(`cockpit.trades.status.${trade.status}`)}
-                </Badge>
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                {formatMoney(trade.price)}
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                {formatNumber(trade.quantity)}
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                {formatMoney(trade.fee)}
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                {formatMoney(trade.total_value)}
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, pnlColor(trade.realized_pnl))}>
-                {formatMoney(trade.realized_pnl)}
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, pnlColor(trade.effective_pnl))}>
-                {formatMoney(trade.effective_pnl)}
-              </TableCell>
-              <TableCell className={cn(TABLE.cellNumeric, "text-white")}>
-                {formatDate(trade.executed_at)}
-              </TableCell>
+      <div className="min-w-[1000px]">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-kp-card">
+            <TableRow className="border-kp-light hover:bg-transparent">
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.trades.columns.pair")}</TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.trades.columns.side")}</TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.trades.columns.status")}</TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.price")}
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.quantity")}
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.fee")}
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.totalValue")}
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.realizedPnl")}
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.effectivePnl")}
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
+                {t("cockpit.trades.columns.executedAt")}
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {trades.map((trade) => (
+              <TableRow
+                key={trade.id}
+                className="border-b border-kp-border hover:bg-kp-bg-hover/50 transition-colors duration-150 cursor-pointer"
+                onClick={() => onRowClick?.(trade)}
+                data-testid={`trade-row-${trade.id}`}
+              >
+                <TableCell className="px-4 py-3 text-sm font-medium text-kp-text-primary">
+                  {trade.trading_pair}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm">
+                  <Badge className={cn("rounded-full border", sideColor(trade.side))}>
+                    {t(`cockpit.trades.side.${trade.side}`)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm">
+                  <Badge className={cn("rounded-full border", tradeStatusColor(trade.status))}>
+                    {t(`cockpit.trades.status.${trade.status}`)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                  {formatMoney(trade.price)}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                  {formatNumber(trade.quantity)}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                  {formatMoney(trade.fee)}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                  {formatMoney(trade.total_value)}
+                </TableCell>
+                <TableCell className={cn("px-4 py-3 text-sm tabular-nums text-right", pnlColor(trade.realized_pnl))}>
+                  {formatMoney(trade.realized_pnl)}
+                </TableCell>
+                <TableCell className={cn("px-4 py-3 text-sm tabular-nums text-right", pnlColor(trade.effective_pnl))}>
+                  {formatMoney(trade.effective_pnl)}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
+                  {formatDate(trade.executed_at)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

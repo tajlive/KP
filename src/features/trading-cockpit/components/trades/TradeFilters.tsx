@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { SURFACE } from "@/lib/design/tokens";
 import type { CockpitFilters } from "@/features/trading-cockpit/types";
 
 const DATE_RANGES: CockpitFilters["dateRange"][] = ["7d", "30d", "90d", "1y", "all"];
@@ -62,20 +61,19 @@ export function TradeFilters({
   return (
     <div
       className={cn(
-        SURFACE.BG_CARD,
-        "border-white/[0.06] rounded-2xl p-4 hidden md:flex flex-wrap items-center gap-3",
+        "bg-kp-card border border-kp-light rounded-2xl p-4 hidden md:flex flex-wrap items-center gap-3",
         className,
       )}
       data-testid="trade-filters"
     >
       <div className="relative flex-1 min-w-[200px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-kp-text-muted" />
         <Input
           type="text"
           placeholder={t("cockpit.trades.filters.placeholder")}
           value={filters.search}
           onChange={(e) => onChange({ search: e.target.value })}
-          className="pl-9 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-gray-500"
+          className="pl-9 bg-kp-tertiary border-kp-border text-kp-text-primary placeholder:text-kp-text-muted"
           data-testid="trade-search-input"
         />
       </div>
@@ -86,7 +84,7 @@ export function TradeFilters({
           onChange({ dateRange: value as CockpitFilters["dateRange"] })
         }
       >
-        <SelectTrigger className="bg-white/[0.03] border-white/[0.08] text-white min-w-[130px]">
+        <SelectTrigger className="bg-kp-tertiary border-kp-border text-kp-text-primary min-w-[130px] min-h-12">
           <SelectValue placeholder={t("cockpit.trades.filters.dateRange")} />
         </SelectTrigger>
         <SelectContent>
@@ -104,7 +102,7 @@ export function TradeFilters({
           onChange({ pair: value === "all" ? null : value })
         }
       >
-        <SelectTrigger className="bg-white/[0.03] border-white/[0.08] text-white min-w-[130px]">
+        <SelectTrigger className="bg-kp-tertiary border-kp-border text-kp-text-primary min-w-[130px] min-h-12">
           <SelectValue placeholder={t("cockpit.trades.filters.pair")} />
         </SelectTrigger>
         <SelectContent>
@@ -123,7 +121,7 @@ export function TradeFilters({
           onChange({ side: value as CockpitFilters["side"] })
         }
       >
-        <SelectTrigger className="bg-white/[0.03] border-white/[0.08] text-white min-w-[110px]">
+        <SelectTrigger className="bg-kp-tertiary border-kp-border text-kp-text-primary min-w-[110px] min-h-12">
           <SelectValue placeholder={t("cockpit.trades.filters.side")} />
         </SelectTrigger>
         <SelectContent>
@@ -141,7 +139,7 @@ export function TradeFilters({
           onChange({ tradeStatus: value as CockpitFilters["tradeStatus"] })
         }
       >
-        <SelectTrigger className="bg-white/[0.03] border-white/[0.08] text-white min-w-[140px]">
+        <SelectTrigger className="bg-kp-tertiary border-kp-border text-kp-text-primary min-w-[140px] min-h-12">
           <SelectValue placeholder={t("cockpit.trades.filters.tradeStatus")} />
         </SelectTrigger>
         <SelectContent>
@@ -159,7 +157,7 @@ export function TradeFilters({
           onChange({ sessionStatus: value as CockpitFilters["sessionStatus"] })
         }
       >
-        <SelectTrigger className="bg-white/[0.03] border-white/[0.08] text-white min-w-[150px]">
+        <SelectTrigger className="bg-kp-tertiary border-kp-border text-kp-text-primary min-w-[150px] min-h-12">
           <SelectValue placeholder={t("cockpit.trades.filters.sessionStatus")} />
         </SelectTrigger>
         <SelectContent>
@@ -176,7 +174,7 @@ export function TradeFilters({
         size="sm"
         onClick={onReset}
         disabled={!hasActiveFilters}
-        className="text-gray-400 hover:text-white disabled:opacity-40"
+        className="text-kp-text-secondary hover:text-kp-text-primary disabled:opacity-40"
         data-testid="trade-filters-reset"
       >
         <RotateCcw className="w-4 h-4 mr-1" />

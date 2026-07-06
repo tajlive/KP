@@ -16,7 +16,6 @@ import { ChartWrapper } from "@/shared/ui/chart-wrapper";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/toggle-group";
 import { cn } from "@/lib/utils";
-import { SURFACE, SEMANTIC_COLORS, BRAND_COLOR } from "@/lib/design/tokens";
 import { BarChart3 } from "lucide-react";
 
 interface SymbolDataPoint {
@@ -46,8 +45,7 @@ export function SymbolDistribution({ data, className }: SymbolDistributionProps)
     return (
       <Card
         className={cn(
-          SURFACE.BG_CARD,
-          "border-white/[0.06] rounded-2xl",
+          "bg-kp-bg-card border-white/[0.06] rounded-2xl",
           className,
         )}
       >
@@ -70,8 +68,7 @@ export function SymbolDistribution({ data, className }: SymbolDistributionProps)
   return (
     <Card
       className={cn(
-        SURFACE.BG_CARD,
-        "border-white/[0.06] rounded-2xl",
+"bg-kp-bg-card border-white/[0.06] rounded-2xl",
         className,
       )}
     >
@@ -147,10 +144,10 @@ export function SymbolDistribution({ data, className }: SymbolDistributionProps)
                   key={`cell-${index}`}
                   fill={
                     metric === "trades"
-                      ? BRAND_COLOR.DEFAULT
+                      ? "#0052ff"
                       : entry.pnl >= 0
-                        ? SEMANTIC_COLORS.positive
-                        : SEMANTIC_COLORS.negative
+                        ? "#22c55e"
+                        : "#ef4444"
                   }
                 />
               ))}

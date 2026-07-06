@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, TrendingUp, ArrowRightLeft, Shield, Info, ExternalLink } from 'lucide-react';
-import { GlassCard } from '@/shared/ui/GlassCard';
+import { Card } from '@/shared/ui/card';
 import { identifyCrossExchangeArbitrage, getHistoricalArbitragePerformance, calculateArbitragePosition } from '@/lib/futures/cross-exchange-arb';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -81,7 +81,7 @@ export default function FundingArbitrageDashboard() {
 
         {/* Historical Performance (Realistic) */}
         {/* DISCLAIMER: All numbers are backtested estimates. Not guaranteed. */}
-        <GlassCard variant="elevated" className="p-8">
+        <Card variant="glass" glassVariant="elevated" padding="none" className="p-8">
           <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-3">
             <TrendingUp className="w-6 h-6 text-emerald-400" />
             {t('historicalPerformanceTitle')}
@@ -109,10 +109,10 @@ export default function FundingArbitrageDashboard() {
               <div className="text-xs text-slate-500">{formatPct(historical.worstMonth)} {isEn ? 'worst' : 'verste'}</div>
             </div>
           </div>
-        </GlassCard>
+        </Card>
 
         {/* Position Calculator */}
-        <GlassCard variant="elevated" className="p-8">
+        <Card variant="glass" glassVariant="elevated" padding="none" className="p-8">
           <h2 className="text-xl font-black text-white mb-6 flex items-center gap-3">
             <Shield className="w-6 h-6 text-blue-400" />
             {isEn ? 'Position Calculator' : 'Posisjonskalkulator'}
@@ -170,10 +170,10 @@ export default function FundingArbitrageDashboard() {
           <p className={`mt-4 text-center text-sm ${RISK_PROFILES.find(p => p.key === riskLevel)?.color}`}>
             {position.riskWarning}
           </p>
-        </GlassCard>
+        </Card>
 
         {/* Live Opportunities */}
-        <GlassCard variant="elevated" className="p-8">
+        <Card variant="glass" glassVariant="elevated" padding="none" className="p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-black text-white flex items-center gap-3">
               <ArrowRightLeft className="w-6 h-6 text-purple-400" />
@@ -258,7 +258,7 @@ export default function FundingArbitrageDashboard() {
               ))}
             </div>
           )}
-        </GlassCard>
+        </Card>
 
         {/* CTA */}
         <div className="text-center space-y-4">

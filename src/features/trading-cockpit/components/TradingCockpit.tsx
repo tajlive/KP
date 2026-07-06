@@ -13,7 +13,6 @@ import { SessionList } from "./SessionList";
 import { TradesTab } from "./trades/TradesTab";
 import { AnalysisTab } from "./analysis/AnalysisTab";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
-import { SURFACE } from "@/lib/design/tokens";
 
 export function TradingCockpit({ className }: { className?: string }) {
   const t = useTranslations("trading");
@@ -66,13 +65,12 @@ export function TradingCockpit({ className }: { className?: string }) {
     return (
       <div
         className={cn(
-          SURFACE.BG_CARD,
-          "border-white/[0.06] rounded-2xl p-12 flex flex-col items-center justify-center gap-3",
+          "bg-kp-bg-card border-kp-border rounded-2xl p-12 flex flex-col items-center justify-center gap-3",
           className,
         )}
       >
-        <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
-        <p className="text-sm text-gray-400">{t("cockpit.loading")}</p>
+        <Loader2 className="w-8 h-8 animate-spin text-kp-brand" />
+        <p className="text-sm text-kp-text-secondary">{t("cockpit.loading")}</p>
       </div>
     );
   }
@@ -81,15 +79,14 @@ export function TradingCockpit({ className }: { className?: string }) {
     return (
       <div
         className={cn(
-          SURFACE.BG_CARD,
-          "border-white/[0.06] rounded-2xl p-8 flex flex-col items-center justify-center gap-3 text-center",
+          "bg-kp-bg-card border-kp-border rounded-2xl p-8 flex flex-col items-center justify-center gap-3 text-center",
           className,
         )}
       >
-        <AlertTriangle className="w-8 h-8 text-amber-400" />
+        <AlertTriangle className="w-8 h-8 text-kp-warning" />
         <div>
-          <p className="text-white font-medium">{t("cockpit.error.title")}</p>
-          <p className="text-sm text-gray-400 mt-1">{error.message}</p>
+          <p className="text-kp-text-primary font-medium">{t("cockpit.error.title")}</p>
+          <p className="text-sm text-kp-text-secondary mt-1">{error.message}</p>
         </div>
         <Button variant="secondary" className="rounded-xl" onClick={refresh}>
           {t("cockpit.error.retry")}

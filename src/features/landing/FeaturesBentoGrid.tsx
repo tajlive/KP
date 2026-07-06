@@ -18,8 +18,8 @@ import {
   ArrowRight,
   Activity,
 } from "lucide-react";
-import { GlassCard } from "@/shared/ui/GlassCard";
-import { ButtonPremium } from "@/shared/ui/ButtonPremium";
+import { Card } from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
 import { useEffect, useState } from "react";
 
 interface FeatureCardProps {
@@ -46,7 +46,7 @@ function FeatureCard({
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
     >
-      <GlassCard variant="elevated" hover="lift" className={`h-full ${className}`}>
+      <Card variant="glass" glassVariant="elevated" hover="lift" padding="md" className={`h-full ${className}`}>
         <div
           className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4`}
         >
@@ -54,7 +54,7 @@ function FeatureCard({
         </div>
         <h3 className="text-lg font-semibold text-kp-text-primary mb-2">{title}</h3>
         <p className="text-sm text-kp-text-secondary leading-relaxed">{description}</p>
-      </GlassCard>
+      </Card>
     </motion.div>
   );
 }
@@ -100,7 +100,7 @@ function LiveSignalCard({ delay = 0 }: { delay?: number }) {
       transition={{ delay, duration: 0.5 }}
       className="col-span-2 row-span-2"
     >
-      <GlassCard variant="elevated" hover="lift" className="h-full relative overflow-hidden">
+      <Card variant="glass" glassVariant="elevated" hover="lift" padding="md" className="h-full relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-kp-brand/30 via-kp-brand/10 to-transparent opacity-50" />
         <div className="relative z-10 h-full flex flex-col">
           <div className="w-14 h-14 rounded-xl bg-kp-surface-highlight flex items-center justify-center mb-4">
@@ -136,7 +136,7 @@ function LiveSignalCard({ delay = 0 }: { delay?: number }) {
             </div>
           </div>
         </div>
-      </GlassCard>
+      </Card>
     </motion.div>
   );
 }
@@ -233,13 +233,15 @@ export function FeaturesBentoGrid() {
             transition={{ delay: 0.5 }}
             className="col-span-1 md:col-span-2"
           >
-            <GlassCard
-              variant="glow"
+            <Card
+              variant="glass"
+              glassVariant="glow"
+              padding="none"
               className="h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-br from-kp-brand to-kp-brand-dark"
             >
               <h3 className="text-xl font-bold text-white mb-3">{tc("bentoCtaTitle")}</h3>
               <p className="text-white/80 mb-6">{tc("bentoCtaDesc")}</p>
-              <ButtonPremium
+              <Button
                 asChild
                 variant="secondary"
                 size="lg"
@@ -249,8 +251,8 @@ export function FeaturesBentoGrid() {
                 <Link href={`/${locale}/onboarding/step1-welcome`}>
                   {tc("bentoCtaButton")}
                 </Link>
-              </ButtonPremium>
-            </GlassCard>
+              </Button>
+            </Card>
           </motion.div>
         </div>
       </div>

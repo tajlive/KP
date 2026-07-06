@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { SEMANTIC_COLORS, SURFACE } from "@/lib/design/tokens";
 
 interface StatusSummaryProps {
   statusCounts: Record<string, number>;
@@ -11,6 +10,13 @@ interface StatusSummaryProps {
 }
 
 const STATUS_ORDER = ["active", "paused", "stopped", "crashed"] as const;
+
+const STATUS_COLOR_CLASS: Record<typeof STATUS_ORDER[number], string> = {
+  active: "text-kp-success",
+  paused: "text-kp-warning",
+  stopped: "text-kp-text-secondary",
+  crashed: "text-kp-danger",
+};
 
 export function StatusSummary({ statusCounts, className }: StatusSummaryProps) {
   const t = useTranslations("trading");
@@ -22,24 +28,16 @@ export function StatusSummary({ statusCounts, className }: StatusSummaryProps) {
         return (
           <div
             key={status}
-            className={cn(
-              SURFACE.BG_CARD,
-              "border-white/[0.06] rounded-2xl p-4 flex items-center justify-between",
-            )}
+            className="bg-kp-bg-card border-kp-border rounded-2xl p-4 flex items-center justify-between"
           >
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-kp-text-secondary">
               {t(`cockpit.sessions.status.${status}`)}
             </span>
             <span
-              className="text-lg font-semibold tabular-nums"
-              style={{
-                color:
-                  status === "crashed"
-                    ? SEMANTIC_COLORS.negative
-                    : status === "active"
-                      ? SEMANTIC_COLORS.positive
-                      : SEMANTIC_COLORS.textDarkPrimary,
-              }}
+              className={cn(
+                "text-lg font-semibold tabular-nums",
+                STATUS_COLOR_CLASS[status],
+              )}
             >
               {count}
             </span>

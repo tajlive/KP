@@ -6,7 +6,7 @@
 
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import { GlassCard } from '@/shared/ui/GlassCard';
+import { Card } from '@/shared/ui/card';
 import { Shield, Zap, Star, Database, Cloud, Bitcoin, CreditCard } from 'lucide-react';
 
 interface TrustStripProps {
@@ -59,9 +59,10 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
         {/* Stats Grid — only verifiable claims, no platform numbers */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
           {stats.map((stat) => (
-            <GlassCard
+            <Card
               key={stat.label}
-              variant="elevated"
+              variant="glass"
+              glassVariant="elevated"
               hover="lift"
               padding="md"
               className="group"
@@ -85,13 +86,13 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
               <div className="text-xs text-kp-text-tertiary">
                 {stat.description}
               </div>
-            </GlassCard>
+            </Card>
           ))}
         </div>
 
         {/* App rating + partners */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-          <GlassCard variant="subtle" padding="md" className="flex items-center gap-4">
+          <Card variant="glass" glassVariant="subtle" padding="md" className="flex items-center gap-4">
             <div className="flex -space-x-1">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -105,9 +106,9 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
               <div className="text-sm font-semibold text-kp-text-primary">{t('appStore.rating')}</div>
               <div className="text-xs text-kp-text-tertiary">{t('appStore.reviewCount')}</div>
             </div>
-          </GlassCard>
+          </Card>
 
-          <GlassCard variant="subtle" padding="md">
+          <Card variant="glass" glassVariant="subtle" padding="md">
             <div className="text-xs font-medium text-kp-text-tertiary uppercase tracking-wide mb-2">
               {t('partners.label')}
             </div>
@@ -124,7 +125,7 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </Card>
         </div>
 
         {/* Payment Methods */}

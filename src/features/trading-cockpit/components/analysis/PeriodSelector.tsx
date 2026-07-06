@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { SURFACE } from "@/lib/design/tokens";
 import type { CockpitFilters } from "@/features/trading-cockpit/types";
 
 const PERIOD_OPTIONS: CockpitFilters["dateRange"][] = [
@@ -43,9 +42,7 @@ export function PeriodSelector({
         <SelectTrigger
           data-testid="analysis-period-selector"
           className={cn(
-            SURFACE.BG_CARD,
-            SURFACE.BORDER,
-            "text-sm text-white border-white/[0.08] hover:border-white/[0.15] rounded-xl h-9 px-3 min-w-[140px]",
+            "bg-kp-bg-card border-kp-border text-sm text-white hover:border-white/[0.15] rounded-xl h-9 px-3 min-w-[140px]",
           )}
           aria-label={t("cockpit.analysis.period.label")}
         >
