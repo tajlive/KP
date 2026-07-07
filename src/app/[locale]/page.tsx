@@ -1,6 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
 import { SURFACE } from "@/lib/design/tokens";
-import SanityHeroSection from "@/features/landing/SanityHeroSection";
 import { LandingHero } from "@/features/landing/LandingHero";
 import { SafetySection } from "@/features/landing/SafetySection";
 import { LiveMarketStrip } from "@/features/landing/LiveMarketStrip";
@@ -12,7 +11,6 @@ import SanityFAQSection from "@/features/landing/SanityFAQSection";
 import { StickyCTA } from "@/features/landing/StickyCTA";
 import SanityTestimonials from "@/features/landing/SanityTestimonials";
 import { AboutKlarpakkeSection } from "@/features/landing/AboutKlarpakkeSection";
-import FinalCTASection from "@/features/landing/FinalCTASection";
 
 import {
   MarketingPageShell,
@@ -56,7 +54,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <FeaturesBentoGrid />
       <ThreeSteps />
       <SanityTestimonials />
-      <FinalCTASection />
       <SanityFAQSection />
       <AboutKlarpakkeSection locale={locale} />
       <StickyCTA />
