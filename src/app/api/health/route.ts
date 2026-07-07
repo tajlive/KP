@@ -22,16 +22,16 @@ interface HealthCheck {
 }
 
 const KNOWN_BINANCE_ENDPOINTS = [
+  "https://data-api.binance.vision",  // API-optimert — mindre sannsynlig geo-blokkert
   "https://api.binance.com",
   "https://api1.binance.com",
   "https://api2.binance.com",
   "https://api3.binance.com",
   "https://api4.binance.com",
-  "https://data-api.binance.vision",
   "https://testnet.binance.vision",
 ] as const;
 
-const PRIMARY_BINANCE_ENDPOINT = "https://api.binance.com";
+const PRIMARY_BINANCE_ENDPOINT = "https://data-api.binance.vision";
 
 interface BinanceConnectivityResult {
   status: "ok" | "degraded" | "error";
