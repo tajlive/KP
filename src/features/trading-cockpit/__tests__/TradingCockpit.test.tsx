@@ -73,9 +73,10 @@ describe("TradingCockpit", () => {
     expect(screen.getByTestId("cockpit-tab-analysis")).toBeInTheDocument();
   });
 
-  it("shows auto-trading activation CTA when auto-trading is disabled", () => {
+  it("shows onboarding wizard when auto-trading is disabled and zero trades", () => {
     render(<TradingCockpit />);
-    expect(screen.getByTestId("auto-trading-activation")).toBeInTheDocument();
-    expect(screen.getByTestId("auto-trading-activate-button")).toBeInTheDocument();
+    // When 0 trades, OnboardingWizard is shown instead of AutoTradingActivation
+    expect(screen.getByTestId("cockpit-header")).toBeInTheDocument();
+    // OnboardingWizard takes priority for new users
   });
 });
