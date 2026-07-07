@@ -4,15 +4,15 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": "24.x",
-    "npm": "11.x"
+    "node": "22.x",
+    "npm": "10.x"
   },
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=2816\" next build",
-    "build:local": "SKIP_LINT_IN_BUILD=true next build",
-    "cf:build": "NODE_OPTIONS=\"--max-old-space-size=4096\" opennextjs-cloudflare build",
+    "build": "bash --norc --noprofile -c 'export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; source ~/.nvm/nvm.sh 2>/dev/null; nvm use --silent 2>/dev/null; SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" next build'",
+    "build:local": "SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" next build",
+    "cf:build": "SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" opennextjs-cloudflare build",
     "deploy": "echo \"Use primary path: git push origin main. This script is reserved for emergency override.\" && npm run cf:deploy",
     "cf:deploy": "npm run cf:build && wrangler deploy --minify --var APP_VERSION:$(git rev-parse HEAD)",
     "cf:deploy:ci": "npm run cf:build && wrangler deploy --minify --var APP_VERSION:${WORKERS_CI_COMMIT_SHA:-unknown}",
@@ -351,10 +351,10 @@
     "@ai-sdk/openai": "^3.0.74",
     "@ai-sdk/perplexity": "^3.0.36",
     "@ai-sdk/react": "^3.0.211",
-    "@coinbase/cds-web": "^9.4.3",
+    "@coinbase/cds-web": "^9.6.1",
     "@headlessui/react": "^2.2.10",
     "@hookform/resolvers": "^5.4.0",
-    "@huggingface/inference": "^4.13.19",
+    "@huggingface/inference": "^4.13.22",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@radix-ui/react-accordion": "^1.2.14",
     "@radix-ui/react-alert-dialog": "^1.1.17",
@@ -449,8 +449,8 @@
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@lhci/cli": "^0.15.1",
-    "@next/bundle-analyzer": "^16.2.9",
-    "@opennextjs/cloudflare": "^1.19.11",
+    "@next/bundle-analyzer": "^16.2.10",
+    "@opennextjs/cloudflare": "^1.20.1",
     "@playwright/mcp": "^0.0.70",
     "@playwright/test": "^1.61.1",
     "@storybook/react": "^10.3.6",
@@ -513,7 +513,7 @@
     "vite": "^8.1.0",
     "vitest": "^4.1.9",
     "vscode-langservers-extracted": "^4.10.0",
-    "wrangler": "^4.107.0",
+    "wrangler": "^4.108.0",
     "yaml-language-server": "^1.23.0"
   },
   "lint-staged": {
