@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, BarChart3, Wallet, Calendar, Target, Info } from "lucide-react";
+import { TrendingUp, TrendingDown, BarChart3, Wallet, Target, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import {
