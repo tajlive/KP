@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Zap, TrendingUp, Shield, PartyPopper, Bitcoin } from "lucide-react";
+import { ArrowRight, Zap, TrendingUp, Shield, Bitcoin } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 
 interface Step {
