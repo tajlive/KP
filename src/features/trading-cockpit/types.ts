@@ -78,6 +78,7 @@ export interface Trade {
   total_value: number;
   realized_pnl: number | null;
   effective_pnl: number | null;
+  performance_fee_nok: number | null;
   executed_at: string;
   created_at: string;
   mode?: "paper" | "live";
