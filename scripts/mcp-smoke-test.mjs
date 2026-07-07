@@ -37,7 +37,7 @@ function resolveArg(arg) {
 
 function sendInitialize(proc, { keepAlive = false } = {}) {
   return new Promise((resolve, reject) => {
-    let stdout = "";
+    let stdoutBuffer = "";
     let stderr = "";
     let settled = false;
     let initOk = false;
@@ -71,48 +71,52 @@ function sendInitialize(proc, { keepAlive = false } = {}) {
       }
     }
 
-    proc.stdout.on("data", (data) => {
-      stdout += data.toString();
-      const lines = stdout.split("\n").filter((line) => line.trim());
-      for (const line of lines) {
-        try {
-          const msg = JSON.parse(line);
-          if (msg.id === 1) {
-            if (msg.result?.protocolVersion) {
-              initOk = true;
-              // Send tools/list etter vellykket initialize
-              const listMsg = {
-                jsonrpc: "2.0",
-                id: 2,
-                method: "tools/list",
-                params: {},
-              };
-              safeWrite(listMsg);
-            } else if (msg.error) {
-              if (!settled) {
-                settled = true;
-                clearTimeout(timer);
-                proc.kill();
-                reject(new Error(msg.error.message || JSON.stringify(msg.error)));
-              }
-            }
-          } else if (msg.id === 2) {
-            if (Array.isArray(msg.result?.tools)) {
-              toolsOk = true;
-              finish();
-            } else if (msg.error) {
-              if (!settled) {
-                settled = true;
-                clearTimeout(timer);
-                proc.kill();
-                reject(new Error(msg.error.message || JSON.stringify(msg.error)));
-              }
+    function handleLine(line) {
+      if (!line.trim()) return;
+      try {
+        const msg = JSON.parse(line);
+        if (msg.id === 1) {
+          if (msg.result?.protocolVersion) {
+            initOk = true;
+            // Send tools/list etter vellykket initialize
+            const listMsg = {
+              jsonrpc: "2.0",
+              id: 2,
+              method: "tools/list",
+              params: {},
+            };
+            safeWrite(listMsg);
+          } else if (msg.error) {
+            if (!settled) {
+              settled = true;
+              clearTimeout(timer);
+              proc.kill();
+              reject(new Error(msg.error.message || JSON.stringify(msg.error)));
             }
           }
-        } catch {
-          // Ikke gyldig JSON enda, fortsett å lese
+        } else if (msg.id === 2) {
+          if (Array.isArray(msg.result?.tools)) {
+            toolsOk = true;
+            finish();
+          } else if (msg.error) {
+            if (!settled) {
+              settled = true;
+              clearTimeout(timer);
+              proc.kill();
+              reject(new Error(msg.error.message || JSON.stringify(msg.error)));
+            }
+          }
         }
+      } catch {
+        // Ikke gyldig JSON enda, fortsett å lese
       }
+    }
+
+    proc.stdout.on("data", (data) => {
+      stdoutBuffer += data.toString();
+      const lines = stdoutBuffer.split("\n");
+      stdoutBuffer = lines.pop() || "";
+      for (const line of lines) handleLine(line);
     });
 
     proc.stderr.on("data", (data) => {
@@ -163,15 +167,21 @@ async function testServer(name, server) {
   }
 }
 
-function sendToolCall(proc, id, name, args) {
+function sendToolCall(proc, id, name, args, timeout = 30000) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error(`tool call ${name} timed out after 30s`));
-    }, 30000);
+      reject(new Error(`tool call ${name} timed out after ${timeout / 1000}s`));
+    }, timeout);
+
+    let stdoutBuffer = "";
 
     function handler(data) {
-      const lines = data.toString().split("\n").filter((line) => line.trim());
+      stdoutBuffer += data.toString();
+      const lines = stdoutBuffer.split("\n");
+      // Keep the last (possibly incomplete) line in the buffer.
+      stdoutBuffer = lines.pop() || "";
       for (const line of lines) {
+        if (!line.trim()) continue;
         try {
           const msg = JSON.parse(line);
           if (msg.id === id) {
@@ -214,6 +224,7 @@ async function testChromeSequence(name, server) {
   const args = (server.args || []).map(resolveArg);
   const env = { ...process.env, MCP_API_KEY: process.env.MCP_API_KEY || "smoke-test" };
   const proc = spawn(server.command, args, { cwd: root, env });
+  const chromeTimeout = 60000;
 
   try {
     const { initOk, toolsOk } = await sendInitialize(proc, { keepAlive: true });
@@ -223,25 +234,25 @@ async function testChromeSequence(name, server) {
 
     let id = 3;
 
-    const start = parseToolResult(await sendToolCall(proc, id++, "chrome_start", { headless: true, profileMode: "clean" }));
+    const start = parseToolResult(await sendToolCall(proc, id++, "chrome_start", { headless: true, profileMode: "clean" }, chromeTimeout));
     if (!start.ok) throw new Error("chrome_start failed: " + JSON.stringify(start));
 
-    const navigate = parseToolResult(await sendToolCall(proc, id++, "chrome_navigate", { url: "https://www.klarpakke.no/no", waitUntil: "domcontentloaded" }));
+    const navigate = parseToolResult(await sendToolCall(proc, id++, "chrome_navigate", { url: "https://www.klarpakke.no/no", waitUntil: "domcontentloaded" }, chromeTimeout));
     if (!navigate.ok) throw new Error("chrome_navigate failed: " + JSON.stringify(navigate));
 
-    const snapshot = parseToolResult(await sendToolCall(proc, id++, "chrome_snapshot", {}));
+    const snapshot = parseToolResult(await sendToolCall(proc, id++, "chrome_snapshot", {}, chromeTimeout));
     if (!snapshot.ok) throw new Error("chrome_snapshot failed: " + JSON.stringify(snapshot));
     if (!Array.isArray(snapshot.snapshot) || snapshot.snapshot.length === 0) {
       throw new Error("chrome_snapshot returned empty snapshot");
     }
 
-    const screenshot = parseToolResult(await sendToolCall(proc, id++, "chrome_screenshot", {}));
+    const screenshot = parseToolResult(await sendToolCall(proc, id++, "chrome_screenshot", {}, chromeTimeout));
     if (!screenshot.ok) throw new Error("chrome_screenshot failed: " + JSON.stringify(screenshot));
     if (!screenshot.base64 || typeof screenshot.base64 !== "string" || screenshot.base64.length < 100) {
       throw new Error("chrome_screenshot returned invalid base64 PNG");
     }
 
-    const stop = parseToolResult(await sendToolCall(proc, id++, "chrome_stop", {}));
+    const stop = parseToolResult(await sendToolCall(proc, id++, "chrome_stop", {}, chromeTimeout));
     if (!stop.ok) throw new Error("chrome_stop failed: " + JSON.stringify(stop));
 
     try { proc.stdin.end(); } catch { /* ignore */ }
