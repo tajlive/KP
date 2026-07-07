@@ -113,7 +113,30 @@ if (!existsSync(backendCli)) {
   process.exit(1);
 }
 
-const backendProc = spawn("node", [backendCli], {
+const backendArgs = [backendCli];
+
+function addArg(flag, value) {
+  if (value !== undefined && value !== null && value !== "") {
+    backendArgs.push(flag, value);
+  }
+}
+
+const headless = process.env.PLAYWRIGHT_MCP_HEADLESS === "true";
+const device = process.env.PLAYWRIGHT_MCP_DEVICE || "";
+const userDataDir = process.env.PLAYWRIGHT_MCP_USER_DATA_DIR || "";
+const allowedHosts = process.env.PLAYWRIGHT_MCP_ALLOWED_HOSTS || "";
+const allowedOrigins = process.env.PLAYWRIGHT_MCP_ALLOWED_ORIGINS || "";
+const caps = process.env.PLAYWRIGHT_MCP_CAPS || "";
+
+if (headless) backendArgs.push("--headless");
+addArg("--user-data-dir", userDataDir);
+addArg("--output-dir", outputDir);
+addArg("--device", device);
+addArg("--allowed-hosts", allowedHosts);
+addArg("--allowed-origins", allowedOrigins);
+addArg("--caps", caps);
+
+const backendProc = spawn("node", backendArgs, {
   env: { ...process.env },
   stdio: ["pipe", "pipe", "inherit"],
   cwd: root,
