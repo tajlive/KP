@@ -1,113 +1,74 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
+import type { MiddlewareFn } from "./types";
 
-let ratelimit: ReturnType<typeof createFixedWindowLimiter> | null = null;
+/**
+ * Simple in-memory rate limiter for trading API routes.
+ * Limits requests per IP per window.
+ * 
+ * For production scale, replace with Upstash Redis or Cloudflare Rate Limiting.
+ */
 
-function createFixedWindowLimiter(windowSeconds: number, maxRequests: number) {
-  return {
-    async limit(identifier: string) {
-      const redis = getRedisRest();
-      if (!redis) {
-        // No Redis/KV available — allow the request
-        return { success: true, limit: maxRequests, remaining: maxRequests, reset: Date.now() + windowSeconds * 1000 };
-      }
-
-      const key = `ratelimit:${identifier}:${Math.floor(Date.now() / 1000 / windowSeconds)}`;
-      const pipeline = redis.pipeline();
-      pipeline.incr(key);
-      pipeline.expire(key, windowSeconds);
-      const results = await pipeline.exec<[number, number]>();
-      const count = results[0] ?? 1;
-      const reset = Math.floor((Math.floor(Date.now() / 1000 / windowSeconds) + 1) * windowSeconds);
-
-      return {
-        success: count <= maxRequests,
-        limit: maxRequests,
-        remaining: Math.max(0, maxRequests - count),
-        reset,
-      };
-    },
-  };
+interface RateLimitEntry {
+  count: number;
+  resetAt: number;
 }
 
-function getRateLimit() {
-  if (ratelimit) return ratelimit;
+const store = new Map<string, RateLimitEntry>();
 
-  if (!isRedisRestConfigured()) {
-    return null;
+// Cleanup stale entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of store) {
+    if (now > entry.resetAt) store.delete(key);
   }
+}, 5 * 60 * 1000);
 
-  ratelimit = createFixedWindowLimiter(60, 100);
-  return ratelimit;
+const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
+  "/api/trading": { max: 60, windowMs: 60_000 },        // 60 req/min for trading
+  "/api/binance": { max: 30, windowMs: 60_000 },        // 30 req/min for Binance proxy
+  "/api/webhooks/stripe": { max: 100, windowMs: 60_000 }, // Stripe webhooks (unlimited)
+  "/api/cron": { max: 100, windowMs: 60_000 },           // Cron jobs (unlimited via CRON_SECRET)
+};
+
+function getClientIp(request: NextRequest): string {
+  return request.headers.get("cf-connecting-ip") 
+    ?? request.headers.get("x-forwarded-for") 
+    ?? "unknown";
 }
 
-function getIp(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0]?.trim() ?? "127.0.0.1";
-  }
-  return request.headers.get("x-real-ip") ?? "127.0.0.1";
-}
+export const rateLimitMiddleware: MiddlewareFn = (request: NextRequest) => {
+  const pathname = request.nextUrl.pathname;
+  
+  // Find matching rate limit
+  const matchedPath = Object.keys(RATE_LIMITS).find((p) => pathname.startsWith(p));
+  if (!matchedPath) return NextResponse.next();
 
-export async function rateLimitMiddleware(
-  request: NextRequest,
-  response?: NextResponse,
-): Promise<NextResponse> {
-  response = response ?? NextResponse.next();
-  // Only rate-limit API routes
-  if (!request.nextUrl.pathname.startsWith("/api/")) {
-    return response;
-  }
+  const limit = RATE_LIMITS[matchedPath];
+  const ip = getClientIp(request);
+  const key = `${ip}:${matchedPath}`;
+  const now = Date.now();
 
-  const limiter = getRateLimit();
-  if (!limiter) {
-    // Redis/KV not configured — skip rate limiting (common in local dev)
-    return response;
+  let entry = store.get(key);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 1, resetAt: now + limit.windowMs };
+    store.set(key, entry);
+  } else {
+    entry.count++;
   }
 
-  const ip = getIp(request);
-  let limitResult: Awaited<ReturnType<typeof limiter.limit>>;
-  try {
-    limitResult = await limiter.limit(ip);
-  } catch (error) {
-    console.error("[rateLimit] backend unavailable", {
-      path: request.nextUrl.pathname,
-      error: error instanceof Error ? error.message : String(error),
-    });
-
-    // Fail closed by default: if a Redis/KV backend is configured but errors,
-    // do not silently disable rate limiting. Operators can opt into fail-open
-    // behavior by setting RATE_LIMIT_FAIL_OPEN=true (useful for local dev).
-    if (process.env.RATE_LIMIT_FAIL_OPEN === "true") {
-      return response;
-    }
-
-    const res = NextResponse.json(
-      { error: "Rate limiter unavailable" },
-      { status: 503 },
-    );
-    res.headers.set("Retry-After", "10");
-    res.headers.set("x-middleware-stop", "true");
-    return res;
-  }
-
-  const { success, limit, remaining, reset } = limitResult;
-
-  if (!success) {
-    const res = NextResponse.json(
-      { error: "Too many requests" },
-      { status: 429 },
-    );
-    res.headers.set("X-RateLimit-Limit", String(limit));
-    res.headers.set("X-RateLimit-Remaining", String(remaining));
-    res.headers.set("X-RateLimit-Reset", String(reset));
-    res.headers.set("x-middleware-stop", "true");
-    return res;
-  }
-
-  response.headers.set("X-RateLimit-Limit", String(limit));
+  // Set rate limit headers
+  const remaining = Math.max(0, limit.max - entry.count);
+  const response = NextResponse.next();
+  response.headers.set("X-RateLimit-Limit", String(limit.max));
   response.headers.set("X-RateLimit-Remaining", String(remaining));
-  response.headers.set("X-RateLimit-Reset", String(reset));
+  response.headers.set("X-RateLimit-Reset", String(entry.resetAt));
+
+  if (entry.count > limit.max) {
+    return new NextResponse(
+      JSON.stringify({ error: "Too many requests", retryAfter: Math.ceil((entry.resetAt - now) / 1000) }),
+      { status: 429, headers: { "Content-Type": "application/json", "Retry-After": String(Math.ceil((entry.resetAt - now) / 1000)) } }
+    );
+  }
 
   return response;
-}
+};
