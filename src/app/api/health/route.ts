@@ -30,8 +30,14 @@ const KNOWN_BINANCE_ENDPOINTS = [
   "https://api4.binance.com",
   "https://testnet.binance.vision",
 ] as const;
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-const PRIMARY_BINANCE_ENDPOINT = "https://data-api.binance.vision";
+// Binance probe: try via Supabase Edge Function proxy first (avoids Worker IP geo-block),
+// then fall back to direct API calls.
+const BINANCE_PROXY_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/binance-proxy`;
+const BINANCE_DIRECT_TIMEOUT_MS = 5000;
+const BINANCE_PROXY_TIMEOUT_MS = 8000;
 
 interface BinanceConnectivityResult {
   status: "ok" | "degraded" | "error";
