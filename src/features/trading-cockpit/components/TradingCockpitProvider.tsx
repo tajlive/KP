@@ -475,6 +475,14 @@ export function TradingCockpitProvider({
     dispatch({ type: "MARK_TRADES_SEEN" });
   }, []);
 
+  // ── 5-second polling for live KPI updates ──
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchInitialData();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [fetchInitialData]);
+
   const activeSession = useMemo(() => {
     const candidates = state.sessions.filter(
       (s) => s.mode === state.mode && s.status === "active",

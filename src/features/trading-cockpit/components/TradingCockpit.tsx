@@ -134,6 +134,8 @@ export function TradingCockpit({
             onLoadMoreSessions={loadMoreSessions}
             onActivateAutoTrading={handleActivateAutoTrading}
             isActivatingAutoTrading={isActivating}
+            showOnboarding={true}
+            onDismissOnboarding={() => {}}
           />
           <TraderStatusLog sessionId={selectedSessionId} mode={mode} />
         </>
