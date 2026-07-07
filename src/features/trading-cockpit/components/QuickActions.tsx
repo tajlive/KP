@@ -43,9 +43,9 @@ export function QuickActions({ className }: QuickActionsProps) {
       }
 
       if (body.existing) {
-        toast.info(t("cockpit.quickActions.startRobotExisting"));
+        toast.info(t("cockpit.toast.startRobotExisting"));
       } else {
-        toast.success(t("cockpit.quickActions.startRobotSuccess"));
+        toast.success(t("cockpit.toast.startRobotSuccess"));
       }
 
       await refresh();
@@ -85,8 +85,8 @@ export function QuickActions({ className }: QuickActionsProps) {
       toast.success(
         t(
           toggleAction === "pause"
-            ? "cockpit.quickActions.pauseAllSuccess"
-            : "cockpit.quickActions.resumeAllSuccess",
+            ? "cockpit.toast.pauseAllSuccess"
+            : "cockpit.toast.resumeAllSuccess",
         ),
       );
       await refresh();

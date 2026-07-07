@@ -323,6 +323,10 @@ RETURNS TABLE(
   effective_pnl NUMERIC,
   executed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ,
+  strategy_signal JSONB,
+  reason_code TEXT,
+  indicator_snapshot JSONB,
+  mode TEXT,
   next_cursor TEXT
 )
 LANGUAGE plpgsql
@@ -358,6 +362,10 @@ BEGIN
     public.calculate_effective_pnl(t.realized_pnl, t.total_value, t.side::TEXT) AS effective_pnl,
     t.executed_at,
     t.created_at,
+    t.strategy_signal,
+    t.reason_code,
+    t.indicator_snapshot,
+    t.mode::TEXT,
     CASE WHEN count(*) OVER () > p_limit THEN
       encode(
         jsonb_build_object(

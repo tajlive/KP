@@ -2,7 +2,12 @@
 
 import * as React from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { CockpitMode, CockpitTab, Trade } from "@/features/trading-cockpit/types";
+import type {
+  CockpitMode,
+  CockpitTab,
+  Trade,
+  TradingSessionSummary,
+} from "@/features/trading-cockpit/types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 const REALTIME_DEBOUNCE_MS = 800;
@@ -16,6 +21,7 @@ interface UseCockpitRealtimeOptions {
   onInvalidateAnalytics: () => void;
   onTradeInsert?: (trade: Trade) => void;
   onTradeUpdate?: (trade: Trade) => void;
+  onSessionUpdate?: (session: TradingSessionSummary) => void;
   enabled?: boolean;
 }
 
@@ -37,6 +43,7 @@ export function useCockpitRealtime({
   onInvalidateAnalytics,
   onTradeInsert,
   onTradeUpdate,
+  onSessionUpdate,
   enabled = true,
 }: UseCockpitRealtimeOptions): UseCockpitRealtimeResult {
   const [isSubscribed, setIsSubscribed] = React.useState(false);
@@ -48,6 +55,7 @@ export function useCockpitRealtime({
     onInvalidateAnalytics,
     onTradeInsert,
     onTradeUpdate,
+    onSessionUpdate,
   });
 
   callbacksRef.current = {
@@ -56,6 +64,7 @@ export function useCockpitRealtime({
     onInvalidateAnalytics,
     onTradeInsert,
     onTradeUpdate,
+    onSessionUpdate,
   };
 
   const refreshAll = React.useCallback(() => {
@@ -130,7 +139,12 @@ export function useCockpitRealtime({
           table: "trading_sessions",
           filter: `user_id=eq.${userId}`,
         },
-        () => scheduleRefresh(),
+        (payload) => {
+          callbacksRef.current.onSessionUpdate?.(
+            payload.new as TradingSessionSummary,
+          );
+          scheduleRefresh();
+        },
       )
       .on(
         "postgres_changes",

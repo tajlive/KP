@@ -245,6 +245,7 @@ export interface CockpitContextValue {
   isLoadingTrades: boolean;
   tradesError: CockpitError | null;
   hasMoreSessions: boolean;
+  lastTickAt: string | null;
   setMode: (mode: CockpitMode) => void;
   setTab: (tab: CockpitTab) => void;
   refresh: () => Promise<void>;
@@ -474,6 +475,54 @@ export function TradingCockpitProvider({
     dispatch({ type: "MARK_TRADES_SEEN" });
   }, []);
 
+  const activeSession = useMemo(() => {
+    const candidates = state.sessions.filter(
+      (s) => s.mode === state.mode && s.status === "active",
+    );
+    if (candidates.length === 0) return null;
+    return candidates.reduce((latest, s) => {
+      const latestTime = latest.last_tick_at ?? latest.updated_at;
+      const sTime = s.last_tick_at ?? s.updated_at;
+      return sTime > latestTime ? s : latest;
+    }, candidates[0]);
+  }, [state.sessions, state.mode]);
+
+  const lastTickAt = activeSession?.last_tick_at ?? null;
+
+  const handleSessionUpdate = useCallback(
+    (updatedSession: TradingSessionSummary) => {
+      const previousSession = state.sessions.find(
+        (s) => s.id === updatedSession.id,
+      );
+      if (!previousSession) return;
+      if (previousSession.status === updatedSession.status) return;
+
+      const statusKey =
+        updatedSession.status === "active"
+          ? "cockpit.sessions.status.active"
+          : updatedSession.status === "paused"
+            ? "cockpit.sessions.status.paused"
+            : updatedSession.status === "stopped"
+              ? "cockpit.sessions.status.stopped"
+              : "cockpit.sessions.status.crashed";
+
+      const description = updatedSession.last_status_message
+        ? t("cockpit.toast.sessionStatusChanged.description", {
+            status: t(statusKey),
+            message: updatedSession.last_status_message,
+          })
+        : t("cockpit.toast.sessionStatusChanged.descriptionNoMessage", {
+            status: t(statusKey),
+          });
+
+      toast.info(t("cockpit.toast.sessionStatusChanged.title"), {
+        description,
+        duration: 5000,
+      });
+    },
+    [state.sessions, t],
+  );
+
   // Load trades whenever the active tab becomes trades or filters/mode change while on trades.
   useEffect(() => {
     if (state.activeTab !== "trades") return;
@@ -562,6 +611,7 @@ export function TradingCockpitProvider({
     onRefreshTrades: loadTrades,
     onInvalidateAnalytics: invalidateAnalytics,
     onTradeInsert: handleTradeInsert,
+    onSessionUpdate: handleSessionUpdate,
     enabled: !state.isLoading,
   });
 
@@ -585,6 +635,7 @@ export function TradingCockpitProvider({
       tradesError: state.tradesError,
       unreadTradeCount: state.unreadTradeCount,
       hasMoreSessions: state.hasMoreSessions,
+      lastTickAt,
       setMode,
       setTab,
       refresh,
@@ -597,6 +648,7 @@ export function TradingCockpitProvider({
     }),
     [
       state,
+      lastTickAt,
       setMode,
       setTab,
       refresh,

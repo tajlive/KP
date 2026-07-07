@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/shared/ui/switch";
+import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import {
@@ -34,6 +35,7 @@ interface CockpitHeaderProps {
   canUseLive: boolean;
   onModeChange: (mode: CockpitMode) => void;
   riskStatus: CockpitRiskStatus;
+  lastTickAt?: string | null;
   className?: string;
 }
 
@@ -42,6 +44,7 @@ export function CockpitHeader({
   canUseLive,
   onModeChange,
   riskStatus,
+  lastTickAt = null,
   className,
 }: CockpitHeaderProps) {
   const t = useTranslations("trading");
@@ -67,6 +70,33 @@ export function CockpitHeader({
       return t("cockpit.riskBanner.maxDrawdown");
     return null;
   }, [riskStatus, t]);
+
+  const marketDataStatus = React.useMemo(() => {
+    if (!lastTickAt) {
+      return {
+        variant: "danger" as const,
+        label: t("cockpit.marketData.stale"),
+      };
+    }
+    const tickTime = new Date(lastTickAt).getTime();
+    if (Number.isNaN(tickTime)) {
+      return {
+        variant: "danger" as const,
+        label: t("cockpit.marketData.stale"),
+      };
+    }
+    const minutesSince = (Date.now() - tickTime) / 1000 / 60;
+    if (minutesSince > 15) {
+      return { variant: "danger" as const, label: t("cockpit.marketData.stale") };
+    }
+    if (minutesSince > 5) {
+      return {
+        variant: "warning" as const,
+        label: t("cockpit.marketData.delayed"),
+      };
+    }
+    return { variant: "success" as const, label: t("cockpit.marketData.ok") };
+  }, [lastTickAt, t]);
 
   const handleSwitchChange = React.useCallback(
     (checked: boolean) => {
@@ -232,6 +262,19 @@ export function CockpitHeader({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge
+          variant={marketDataStatus.variant}
+          icon={<Activity className="size-3" />}
+          data-testid="market-data-pill"
+          aria-label={t("cockpit.marketData.aria", {
+            status: marketDataStatus.label,
+          })}
+        >
+          {marketDataStatus.label}
+        </Badge>
+      </div>
 
       {hasRiskBanner && riskMessage && (
         <Alert variant="destructive" data-testid="risk-banner">

@@ -28,6 +28,10 @@ RETURNS TABLE(
   effective_pnl NUMERIC,
   executed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ,
+  strategy_signal JSONB,
+  reason_code TEXT,
+  indicator_snapshot JSONB,
+  mode TEXT,
   next_cursor TEXT
 )
 LANGUAGE plpgsql
@@ -40,9 +44,12 @@ DECLARE
   v_id UUID;
 BEGIN
   IF p_cursor IS NOT NULL THEN
-    SELECT (d->>'executed_at')::TIMESTAMPTZ, (d->>'id')::UUID
+    SELECT (cursor_data.payload->>'executed_at')::TIMESTAMPTZ,
+           (cursor_data.payload->>'id')::UUID
     INTO v_executed_at, v_id
-    FROM jsonb_in(decode(p_cursor, 'base64')) AS d;
+    FROM (
+      SELECT convert_from(decode(p_cursor, 'base64'), 'UTF8')::jsonb AS payload
+    ) AS cursor_data;
   END IF;
 
   RETURN QUERY
@@ -60,6 +67,10 @@ BEGIN
     public.calculate_effective_pnl(t.realized_pnl, t.total_value, t.side::TEXT) AS effective_pnl,
     t.executed_at,
     t.created_at,
+    t.strategy_signal,
+    t.reason_code,
+    t.indicator_snapshot,
+    t.mode::TEXT,
     CASE WHEN count(*) OVER () > p_limit THEN
       encode(
         jsonb_build_object(

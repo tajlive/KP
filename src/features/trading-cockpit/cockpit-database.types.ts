@@ -485,6 +485,10 @@ export type CockpitDatabase = {
           executed_at: string;
           created_at: string;
           next_cursor: string;
+          mode: "paper" | "live";
+          strategy_signal: Json | null;
+          reason_code: string | null;
+          indicator_snapshot: Json | null;
         }[];
       };
       get_trading_analytics: {

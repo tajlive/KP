@@ -60,6 +60,8 @@ export type TradingSessionSummary = Pick<
   | "current_capital_nok"
   | "total_pnl"
   | "trading_pair"
+  | "last_tick_at"
+  | "last_status_message"
   | "created_at"
   | "updated_at"
 >;
@@ -78,6 +80,10 @@ export interface Trade {
   effective_pnl: number | null;
   executed_at: string;
   created_at: string;
+  mode?: "paper" | "live";
+  strategy_signal?: Record<string, unknown> | null;
+  reason_code?: string | null;
+  indicator_snapshot?: Record<string, unknown> | null;
 }
 
 export interface TradingAnalytics {

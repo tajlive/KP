@@ -9516,6 +9516,10 @@ export type Database = {
           symbol: string | null
           total_value: number
           trading_pair: string
+          mode: string
+          strategy_signal: Json | null
+          reason_code: string | null
+          indicator_snapshot: Json | null
         }[]
       }
       get_trading_analytics: {

@@ -952,7 +952,9 @@
       "viewHistory": "Se historikk",
       "connectExchange": "Koble til børs",
       "startRobot": "Start robot",
-      "pauseAll": "Pause alle"
+      "pauseAll": "Pause alle",
+      "resumeAll": "Aktiver alle",
+      "error": "Noe gikk galt"
     },
     "activation": {
       "missingTitle": "Auto-handel er ikke satt opp",
@@ -1083,7 +1085,12 @@
         "title": "Handelsdetaljer",
         "description": "Fullstendige detaljer for valgt handel.",
         "sessionId": "Sesjons-ID",
-        "id": "Handels-ID"
+        "id": "Handels-ID",
+        "reason": "Årsak",
+        "paperNotice": "Dette er en simulert handel (lekepenger).",
+        "holdingFallback": "Klarpakke holdt posisjonen basert på strategiens signalfilter.",
+        "noSignal": "Klarpakke holdt posisjonen basert på strategiens signalfilter.",
+        "readMore": "Les mer om"
       },
       "error": {
         "title": "Noe gikk galt",
@@ -1109,6 +1116,44 @@
       "crashed": "Krasjede sesjoner oppdaget. Handel kan være påvirket.",
       "dailyLossLimit": "Daglig tapsgrense nådd. Nye handler blokkert.",
       "maxDrawdown": "Maks drawdown nådd. Gå gjennom risikoinnstillinger."
+    },
+    "statusLog": {
+      "title": "Siste beslutninger",
+      "loading": "Laster beslutninger...",
+      "noDecisions": "Ingen nylige beslutninger.",
+      "noRecentDecisions": "Ingen nylige beslutninger.",
+      "tradeExecuted": "{pair} for {amount} — {reason}",
+      "tradeExecutedNoReason": "{pair} for {amount}",
+      "tradeFailed": "Kunne ikke handle: {reason}",
+      "tradeFailedNoReason": "Handel ble blokkert.",
+      "regimeSignal": "Markedsregime: {regime}, score: {ensemble_score}",
+      "whyHolding": "Hvorfor holder?",
+      "holdingRegime": "Roboten holder fordi markedsregimet er {regime} med lav konfidens (score {score}).",
+      "holdingBlocked": "Roboten holder fordi: {reason}",
+      "holdingEvaluating": "Roboten vurderer signaler — ingen endring ennå.",
+      "evaluatingSignals": "Roboten vurderer signaler — ingen endring ennå.",
+      "noTickWarning": "Ingen tick mottatt på {minutes} minutter. Sjekk markedsdata/feil.",
+      "holdingStale": "Ingen tick mottatt på {minutes} minutter. Sjekk markedsdata/feil.",
+      "dataOk": "Data OK",
+      "dataDelayed": "Data forsinket",
+      "dataMissing": "Ingen markedsdata"
+    },
+    "marketData": {
+      "ok": "Data OK",
+      "delayed": "Data forsinket",
+      "stale": "Ingen markedsdata",
+      "aria": "Markedsdatastatus: {status}"
+    },
+    "toast": {
+      "sessionStatusChanged": {
+        "title": "Sesjonsstatus endret",
+        "description": "Status: {status}. {message}",
+        "descriptionNoMessage": "Status endret til {status}."
+      },
+      "startRobotSuccess": "Tradingrobot startet.",
+      "startRobotExisting": "En aktiv robot finnes allerede.",
+      "pauseAllSuccess": "Alle roboter er satt på pause.",
+      "resumeAllSuccess": "Robotene er aktivert igjen."
     }
   }
 }
