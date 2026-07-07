@@ -6,7 +6,8 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 /** Subtle animated particle background — lightweight CSS, no lib deps */
 function AnimatedBg() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // eslint-disable-next-line no-undef
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
