@@ -5,6 +5,7 @@ import { getCockpitInitialData } from "@/features/trading-cockpit/server/getCock
 import { CockpitProvider } from "@/features/trading-cockpit/hooks/useCockpit";
 import { TradingCockpit } from "@/features/trading-cockpit/components/TradingCockpit";
 import { InstallPrompt } from "@/shared/pwa/InstallPrompt";
+import { CockpitQueryProvider } from "@/features/trading-cockpit/components/CockpitQueryProvider";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,13 +35,15 @@ export default async function TradingPage({
         </div>
       }
     >
-      <CockpitProvider
-        initialData={initialData}
-        userId={user.id}
-        locale={locale}
-      >
-        <TradingCockpit installPrompt={<InstallPrompt />} />
-      </CockpitProvider>
+      <CockpitQueryProvider>
+        <CockpitProvider
+          initialData={initialData}
+          userId={user.id}
+          locale={locale}
+        >
+          <TradingCockpit installPrompt={<InstallPrompt />} />
+        </CockpitProvider>
+      </CockpitQueryProvider>
     </Suspense>
   );
 }

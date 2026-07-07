@@ -28,6 +28,19 @@ function computeRiskStatus(
   };
 }
 
+const COCKPIT_CACHE_TTL_MS = 30_000; // 30 sec SWR cache for cockpit data
+
+interface CockpitCacheEntry {
+  data: CockpitInitialData;
+  timestamp: number;
+}
+
+const cockpitCache = new Map<string, CockpitCacheEntry>();
+
+function cockpitCacheKey(userId: string, mode: string, tab: string): string {
+  return `${userId}:${mode}:${tab}`;
+}
+
 export async function getCockpitInitialData(
   userId: string,
   requestedMode: string | null,
@@ -35,13 +48,27 @@ export async function getCockpitInitialData(
 ): Promise<CockpitInitialData> {
   const supabase = createClient();
 
-  const { data: profile } = await supabase
-    .from("user_profiles")
-    .select("preferred_trading_mode, binance_connected, tier")
-    .eq("id", userId)
-    .single();
+  // ── Phase 1: Fetch independent data in parallel ──
+  const [profileResult, canUseLive, autoSettingsResult, dailyLossResult] =
+    await Promise.all([
+      supabase
+        .from("user_profiles")
+        .select("preferred_trading_mode, binance_connected, tier")
+        .eq("id", userId)
+        .single(),
+      verifyLiveEntitlement(supabase, userId),
+      supabase
+        .from("auto_trade_settings")
+        .select("auto_trading_enabled, risk_profile, daily_loss_limit_percent")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      supabase.rpc("check_daily_loss_limit", { p_user_id: userId }),
+    ]);
 
-  const canUseLive = await verifyLiveEntitlement(supabase, userId);
+  const profile = profileResult.data;
+  const autoTradeSettings = autoSettingsResult.data;
+  const dailyLossCheck = dailyLossResult.data;
+
   const storedMode =
     profile?.preferred_trading_mode === "live" ||
     profile?.preferred_trading_mode === "paper"
@@ -61,44 +88,45 @@ export async function getCockpitInitialData(
       ? requestedTab
       : "overview";
 
-  const metrics = await getUserDashboardMetrics({
-    supabaseClient: supabase,
-    userId,
-    mode,
-    sessionScope: "all",
-  });
-
-  const { data: rawSessions } = await supabase
-    .from("trading_sessions")
-    .select(
-      "id, status, mode, starting_capital_nok, current_capital_nok, total_pnl, max_drawdown_pct, trading_pair, created_at, updated_at",
-    )
-    .eq("user_id", userId)
-    .eq("mode", mode)
-    .is("archived", false)
-    .order("created_at", { ascending: false })
-    .limit(20);
-
-  const sessions = (rawSessions ?? []) as unknown as TradingSessionSummary[];
-
-  const { data: statusRows } = await supabase.rpc(
-    "trading_session_status_counts",
-    {
-      p_user_id: userId,
-      p_mode: mode,
-    },
-  );
-
-  const statusCounts: Record<string, number> = {};
-  for (const row of statusRows ?? []) {
-    statusCounts[row.status] = Number(row.count);
+  // ── Cache check for mode-dependent data ──
+  const cacheKey = cockpitCacheKey(userId, mode, tab);
+  const cached = cockpitCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < COCKPIT_CACHE_TTL_MS) {
+    return cached.data;
   }
 
-  const { data: autoTradeSettings } = await supabase
-    .from("auto_trade_settings")
-    .select("auto_trading_enabled, risk_profile, daily_loss_limit_percent")
-    .eq("user_id", userId)
-    .maybeSingle();
+  // ── Phase 2: Fetch mode-dependent data in parallel ──
+  const [metricsResult, sessionsResult, statusResult] = await Promise.all([
+    getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId,
+      mode,
+      sessionScope: "all",
+    }),
+    supabase
+      .from("trading_sessions")
+      .select(
+        "id, status, mode, starting_capital_nok, current_capital_nok, total_pnl, max_drawdown_pct, trading_pair, created_at, updated_at",
+      )
+      .eq("user_id", userId)
+      .eq("mode", mode)
+      .is("archived", false)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase.rpc("trading_session_status_counts", {
+      p_user_id: userId,
+      p_mode: mode,
+    }),
+  ]);
+
+  const metrics = metricsResult;
+  const sessions = (sessionsResult.data ?? []) as unknown as TradingSessionSummary[];
+  const rawSessionData = sessionsResult.data ?? [];
+
+  const statusCounts: Record<string, number> = {};
+  for (const row of (statusResult.data ?? []) as Array<{ status: string; count: number }>) {
+    statusCounts[row.status] = Number(row.count);
+  }
 
   const mappedAutoTradeSettings = autoTradeSettings
     ? {
@@ -107,10 +135,6 @@ export async function getCockpitInitialData(
       }
     : null;
 
-  const { data: dailyLossCheck } = await supabase.rpc(
-    "check_daily_loss_limit",
-    { p_user_id: userId },
-  );
   const dailyLossLimitReached = dailyLossCheck?.[0]?.should_stop ?? false;
 
   const drawdownThresholdPercent =
@@ -119,12 +143,12 @@ export async function getCockpitInitialData(
 
   const riskStatus = computeRiskStatus(
     dailyLossLimitReached,
-    rawSessions ?? [],
+    rawSessionData as { max_drawdown_pct: number | null }[],
     drawdownThresholdPercent,
   );
   riskStatus.crashed = (statusCounts.crashed ?? 0) > 0;
 
-  return {
+  const result: CockpitInitialData = {
     mode,
     defaultMode: storedMode,
     tab,
@@ -135,4 +159,9 @@ export async function getCockpitInitialData(
     canUseLive,
     autoTradeSettings: mappedAutoTradeSettings,
   };
+
+  // Cache the result for 30 seconds
+  cockpitCache.set(cacheKey, { data: result, timestamp: Date.now() });
+
+  return result;
 }
