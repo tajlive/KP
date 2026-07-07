@@ -2,14 +2,12 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
+import { Wallet, TrendingUp, BarChart3, Calendar, Target, Activity, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/shared/ui/card";
-import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
-import { KpiCards } from "./KpiCards";
+import { OnboardingWizard } from "./OnboardingWizard";
+import { MetricCard } from "./MetricCard";
 import { QuickActions } from "./QuickActions";
 import { StatusSummary } from "./StatusSummary";
-import { SessionList } from "./SessionList";
-import { AutoTradingActivation } from "./AutoTradingActivation";
 import type {
   DashboardMetrics,
   TradingAnalytics,
@@ -21,13 +19,14 @@ interface OverviewProps {
   analytics?: TradingAnalytics | null;
   sessions: TradingSessionSummary[];
   statusCounts: Record<string, number>;
-  autoTradeSettings: { auto_trading_enabled: boolean | null; risk_profile: string | null; } | null;
+  autoTradeSettings: { auto_trading_enabled: boolean | null; risk_profile: string | null } | null;
   hasMoreSessions?: boolean;
-  isLoadingMoreSessions?: boolean;
   onLoadMoreSessions?: () => void;
   onActivateAutoTrading?: () => void;
   isActivatingAutoTrading?: boolean;
   className?: string;
+  showOnboarding?: boolean;
+  onDismissOnboarding?: () => void;
 }
 
 export function Overview({
@@ -37,73 +36,79 @@ export function Overview({
   statusCounts,
   autoTradeSettings,
   hasMoreSessions,
-  isLoadingMoreSessions,
   onLoadMoreSessions,
   onActivateAutoTrading,
   isActivatingAutoTrading,
   className,
+  showOnboarding = false,
+  onDismissOnboarding,
 }: OverviewProps) {
   const t = useTranslations("trading");
-  const totalPnl = metrics?.totalPnl ?? null;
+  const safeMetrics = metrics ?? {
+    totalPnl: 0,
+    totalTrades: 0,
+    winRate: 0,
+    totalCapital: 0,
+    startingCapital: 0,
+    winningTrades: 0,
+    losingTrades: 0,
+    sessionCount: 0,
+    recentSessions: [],
+  };
+
+  const hasZeroTrades = safeMetrics.totalTrades === 0;
 
   return (
-    <div className={cn("space-y-4 sm:space-y-6", className)}>
-      <section className="space-y-2">
-        <Card className="bg-kp-bg-card border-kp-border rounded-2xl">
-          <CardContent className="p-4 sm:p-6">
-            <p className="text-sm text-kp-text-secondary">
-              {t("cockpit.kpi.totalPnl")}
-            </p>
-            <div
-              className={cn(
-                "text-3xl sm:text-4xl font-bold tabular-nums tracking-tight",
-                totalPnl === null
-                  ? "text-kp-text-primary"
-                  : totalPnl >= 0
-                    ? "text-kp-success"
-                    : "text-kp-danger",
-              )}
-            >
-              {totalPnl === null ? (
-                "—"
-              ) : (
-                <AnimatedNumber
-                  value={totalPnl}
-                  prefix="kr "
-                  decimals={0}
-                  duration={500}
-                />
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      <StatusSummary statusCounts={statusCounts} />
-
-      <KpiCards metrics={metrics} analytics={analytics} />
-
-      {autoTradeSettings?.auto_trading_enabled !== true && (
-        <AutoTradingActivation
-          autoTradeSettings={autoTradeSettings}
-          isLoading={Boolean(isActivatingAutoTrading)}
-          onActivate={onActivateAutoTrading ?? (() => {})}
-        />
+    <div className={cn("space-y-4 sm:space-y-5", className)}>
+      {/* Onboarding Wizard for new users */}
+      {showOnboarding && hasZeroTrades && (
+        <OnboardingWizard onComplete={onDismissOnboarding ?? (() => {})} />
       )}
 
-      <QuickActions />
-
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-kp-text-secondary">
-          {t("cockpit.sessions.title")}
-        </h2>
-        <SessionList
-          sessions={sessions}
-          hasMore={hasMoreSessions}
-          isLoadingMore={isLoadingMoreSessions}
-          onLoadMore={onLoadMoreSessions}
+      {/* Key Metrics Grid — mobile 2-col, desktop 4-col */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <MetricCard
+          label={t("cockpit.kpi.portfolioValue")}
+          value={safeMetrics.totalCapital}
+          prefix="kr "
+          decimals={0}
+          trend="neutral"
+          tooltip="Total verdi av porteføljen din akkurat nå"
+          icon={<Wallet className="w-4 h-4" />}
         />
-      </section>
+        <MetricCard
+          label={t("cockpit.kpi.winRate")}
+          value={safeMetrics.winRate * 100}
+          suffix="%"
+          decimals={1}
+          trend={(safeMetrics.winRate * 100) >= 50 ? "up" : "down"}
+          tooltip="Hvor mange handler som endte i pluss"
+          icon={<Target className="w-4 h-4" />}
+        />
+        <MetricCard
+          label={t("cockpit.kpi.totalTrades")}
+          value={safeMetrics.totalTrades}
+          decimals={0}
+          trend="neutral"
+          tooltip="Totalt antall handler du har gjort"
+          icon={<BarChart3 className="w-4 h-4" />}
+        />
+        <MetricCard
+          label={t("cockpit.kpi.totalPnl")}
+          value={safeMetrics.totalPnl}
+          prefix="kr "
+          decimals={0}
+          trend={safeMetrics.totalPnl >= 0 ? "up" : "down"}
+          tooltip="Samlet gevinst eller tap"
+          icon={<TrendingUp className="w-4 h-4" />}
+        />
+      </div>
+
+      {/* Status + Quick Actions row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <StatusSummary statusCounts={statusCounts} />
+        <QuickActions />
+      </div>
     </div>
   );
 }
