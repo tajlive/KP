@@ -4,7 +4,8 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { PaymentTrustLogos } from "@/features/landing/PaymentTrustLogos";
-import { getPriserPlans } from "./priser-plans";
+import { PricingGrid } from "./PricingGrid";
+import { getPriserPlans, PRISER_PLAN_ORDER } from "./priser-plans";
 import { PrimaryCtaSection } from "@/features/marketing/components";
 
 function getTierFeatures(
@@ -29,6 +30,14 @@ export async function PriserContent({
   const tFoot = await getTranslations({ locale, namespace: "footer" });
   const tStudy = await getTranslations({ locale, namespace: "studieprogram" });
   const plans = getPriserPlans();
+  const tierNames: Record<string, string> = {};
+  for (const key of PRISER_PLAN_ORDER) {
+    tierNames[key] = tStudy(`tiers.${key}.name`) as string;
+  }
+  const planDescriptions: Record<string, { description: string }> = {};
+  for (const key of PRISER_PLAN_ORDER) {
+    planDescriptions[key] = { description: t(`plans.${key}.description`) as string };
+  }
 
   const legacyFaqs = [
     { q: t("faq.q2"), a: t("faq.a2") },
@@ -97,86 +106,18 @@ export async function PriserContent({
       </div>
 
       {/* Pricing Cards */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {plans.map((plan) => (
-            <Link
-              key={plan.key}
-              href={`${hrefWithLocale(locale, "/checkout")}?plan=${plan.key}`}
-              className={`bg-white rounded-2xl p-6 border-2 relative flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 ${
-                plan.popular
-                  ? "border-blue-600 shadow-xl shadow-blue-600/10"
-                  : "border-slate-100 hover:border-slate-300"
-              }`}
-            >
-              {(locale === "no" ? plan.badgeNo : plan.badgeEn) && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                    {locale === "no" ? plan.badgeNo : plan.badgeEn}
-                  </span>
-                </div>
-              )}
-
-              <div className="text-center mb-6">
-                <div
-                  className={`w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 ${
-                    plan.popular
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-100 text-slate-600"
-                  }`}
-                >
-                  <plan.icon className="w-7 h-7" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1">
-                  {tStudy(`tiers.${plan.key}.name`)}
-                </h3>
-                <p className="text-slate-500 text-sm">
-                  {t(`plans.${plan.key}.description`)}
-                </p>
-                <div className="flex items-baseline justify-center gap-1 mt-4 flex-wrap">
-                  <span className="text-3xl font-bold text-slate-900 tabular-nums">
-                    {plan.price === "0"
-                      ? t("free")
-                      : locale === "no"
-                        ? `${plan.price} kr`
-                        : `${plan.price} NOK`}
-                  </span>
-                  {plan.price !== "0" && (
-                    <span className="text-slate-500 text-sm">
-                      {locale === "no" ? plan.periodNo : plan.periodEn}
-                    </span>
-                  )}
-                  {plan.price === "0" && (
-                    <span className="text-slate-500 text-sm">
-                      {t("freeForever")}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <ul className="space-y-3 mb-6 flex-1">
-                {getTierFeatures(tStudy, plan.key).map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-500 shrink-0" />
-                    <span className="text-slate-600 text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                className={`w-full ${
-                  plan.popular
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-slate-900 hover:bg-slate-800"
-                }`}
-                tabIndex={-1}
-              >
-                {plan.price === "0" ? t("startFree") : t("startTrial")}
-              </Button>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <PricingGrid
+        locale={locale}
+        getTierFeatures={(slug) => getTierFeatures(tStudy, slug)}
+        translations={{
+          startFree: t("startFree"),
+          startTrial: t("startTrial"),
+          free: t("free"),
+          freeForever: t("freeForever"),
+          plans: planDescriptions,
+        }}
+        tierNames={tierNames}
+      />
 
       {/* Comparison Table */}
       <div className="bg-white border-y border-slate-100">
