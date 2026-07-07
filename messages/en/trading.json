@@ -952,7 +952,9 @@
       "viewHistory": "View history",
       "connectExchange": "Connect exchange",
       "startRobot": "Start robot",
-      "pauseAll": "Pause all"
+      "pauseAll": "Pause all",
+      "resumeAll": "Resume all",
+      "error": "Something went wrong"
     },
     "activation": {
       "missingTitle": "Auto-trading not set up",
@@ -1083,7 +1085,12 @@
         "title": "Trade details",
         "description": "Full details for selected trade.",
         "sessionId": "Session ID",
-        "id": "Trade ID"
+        "id": "Trade ID",
+        "reason": "Reason",
+        "paperNotice": "This is a simulated trade (paper trading).",
+        "holdingFallback": "Klarpakke held the position based on the strategy's signal filter.",
+        "noSignal": "Klarpakke held the position based on the strategy's signal filter.",
+        "readMore": "Read more about"
       },
       "error": {
         "title": "Something went wrong",
@@ -1109,6 +1116,44 @@
       "crashed": "Crashed sessions detected. Trading may be impaired.",
       "dailyLossLimit": "Daily loss limit reached. New trades are blocked.",
       "maxDrawdown": "Max drawdown reached. Review risk settings."
+    },
+    "statusLog": {
+      "title": "Recent decisions",
+      "loading": "Loading decisions...",
+      "noDecisions": "No recent decisions.",
+      "noRecentDecisions": "No recent decisions.",
+      "tradeExecuted": "{pair} for {amount} — {reason}",
+      "tradeExecutedNoReason": "{pair} for {amount}",
+      "tradeFailed": "Trade blocked: {reason}",
+      "tradeFailedNoReason": "Trade was blocked.",
+      "regimeSignal": "Market regime: {regime}, score: {ensemble_score}",
+      "whyHolding": "Why holding?",
+      "holdingRegime": "The robot is holding because the market regime is {regime} with low confidence (score {score}).",
+      "holdingBlocked": "The robot is holding because: {reason}",
+      "holdingEvaluating": "The robot is evaluating signals — no change yet.",
+      "evaluatingSignals": "The robot is evaluating signals — no change yet.",
+      "noTickWarning": "No tick received for {minutes} minutes. Check market data/errors.",
+      "holdingStale": "No tick received for {minutes} minutes. Check market data/errors.",
+      "dataOk": "Data OK",
+      "dataDelayed": "Data delayed",
+      "dataMissing": "No market data"
+    },
+    "marketData": {
+      "ok": "Data OK",
+      "delayed": "Data delayed",
+      "stale": "No market data",
+      "aria": "Market data status: {status}"
+    },
+    "toast": {
+      "sessionStatusChanged": {
+        "title": "Session status changed",
+        "description": "Status: {status}. {message}",
+        "descriptionNoMessage": "Status changed to {status}."
+      },
+      "startRobotSuccess": "Trading robot started.",
+      "startRobotExisting": "An active robot already exists.",
+      "pauseAllSuccess": "All robots are paused.",
+      "resumeAllSuccess": "Robots resumed."
     }
   }
 }

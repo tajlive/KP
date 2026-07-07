@@ -12,6 +12,7 @@ import { Overview } from "./Overview";
 import { SessionList } from "./SessionList";
 import { TradesTab } from "./trades/TradesTab";
 import { AnalysisTab } from "./analysis/AnalysisTab";
+import { TraderStatusLog } from "./TraderStatusLog";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
 
 export function TradingCockpit({
@@ -38,7 +39,13 @@ export function TradingCockpit({
     refresh,
     loadMoreSessions,
     hasMoreSessions,
+    lastTickAt,
   } = useCockpit();
+
+  const selectedSessionId = React.useMemo(() => {
+    const active = sessions.find((s) => s.status === "active" && s.mode === mode);
+    return active?.id ?? sessions[0]?.id ?? null;
+  }, [sessions, mode]);
 
   const [isActivating, setIsActivating] = React.useState(false);
 
@@ -108,6 +115,7 @@ export function TradingCockpit({
         mode={mode}
         canUseLive={canUseLive}
         riskStatus={riskStatus}
+        lastTickAt={lastTickAt}
         onModeChange={setMode}
       />
 
@@ -116,16 +124,19 @@ export function TradingCockpit({
       <CockpitTabs activeTab={tab} onTabChange={setTab} />
 
       {tab === "overview" && (
-        <Overview
-          metrics={metrics}
-          sessions={sessions}
-          statusCounts={statusCounts}
-          autoTradeSettings={autoTradeSettings}
-          hasMoreSessions={hasMoreSessions}
-          onLoadMoreSessions={loadMoreSessions}
-          onActivateAutoTrading={handleActivateAutoTrading}
-          isActivatingAutoTrading={isActivating}
-        />
+        <>
+          <Overview
+            metrics={metrics}
+            sessions={sessions}
+            statusCounts={statusCounts}
+            autoTradeSettings={autoTradeSettings}
+            hasMoreSessions={hasMoreSessions}
+            onLoadMoreSessions={loadMoreSessions}
+            onActivateAutoTrading={handleActivateAutoTrading}
+            isActivatingAutoTrading={isActivating}
+          />
+          <TraderStatusLog sessionId={selectedSessionId} mode={mode} />
+        </>
       )}
 
       {tab === "trades" && <TradesTab />}
