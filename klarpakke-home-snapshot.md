@@ -1,0 +1,347 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation "Hovednavigasjon" [ref=e3]:
+      - generic [ref=e5]:
+        - link "Klarpakke — Lær å trade krypto på den smarte måten" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: Klarpakke
+          - generic [ref=e8]: — Lær å trade krypto på den smarte måten
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - link "Lær" [ref=e11] [cursor=pointer]:
+              - /url: /kurs
+            - link "Trade" [ref=e12] [cursor=pointer]:
+              - /url: /handel
+            - link "Bots" [ref=e13] [cursor=pointer]:
+              - /url: /dashboard/auto-trade
+            - link "Priser" [ref=e14] [cursor=pointer]:
+              - /url: /priser
+            - link "Logg inn" [ref=e16] [cursor=pointer]:
+              - /url: /login
+              - button "Logg inn" [disabled] [ref=e17]:
+                - img [ref=e18]
+                - text: Logg inn
+            - link "Registrer deg" [ref=e21] [cursor=pointer]:
+              - /url: /register
+              - button "Registrer deg" [disabled] [ref=e22]
+          - button "Bytt til Lyst modus" [ref=e24]:
+            - img [ref=e25]
+    - main [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e35]:
+          - heading "Lær å handle med AI — risikofritt med lekepenger" [level=1] [ref=e36]
+          - paragraph [ref=e37]: Øv i samme plattform som live trading. Fullfør oppdrag, få personlig feedback og gå fra nybegynner til trygg trader.
+          - generic [ref=e38]:
+            - link "Start gratis lekepenge-trade-økt" [ref=e39] [cursor=pointer]:
+              - /url: /no/onboarding/step1-welcome
+              - text: Start gratis lekepenge-trade-økt
+              - img [ref=e40]
+            - link "Se priser" [ref=e42] [cursor=pointer]:
+              - /url: /no/priser
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - img [ref=e45]
+              - generic [ref=e47]: Alltid gratis å prøve
+            - generic [ref=e48]:
+              - img [ref=e49]
+              - generic [ref=e51]: Ingen kort påkrevd
+            - generic [ref=e52]:
+              - img [ref=e53]
+              - generic [ref=e55]: Kanseller når som helst
+          - generic [ref=e56]:
+            - generic [ref=e57]: Ved å fortsette godtar du våre
+            - link "vilkår" [ref=e58] [cursor=pointer]:
+              - /url: /no/vilkar
+            - generic [ref=e59]: og
+            - link "personvernerklæring" [ref=e60] [cursor=pointer]:
+              - /url: /no/personvern
+        - generic [ref=e63]:
+          - heading "Live markeder" [level=2] [ref=e463]
+          - generic [ref=e464]:
+            - generic [ref=e465]:
+              - generic [ref=e466]:
+                - generic [ref=e467]: BTC
+                - generic [ref=e468]: Live
+              - generic [ref=e472]: $105 000,00
+              - generic [ref=e473]:
+                - img [ref=e474]
+                - text: +2.50%
+              - application [ref=e482]
+              - generic [ref=e489]: "Volum 24t: 3 675 000 000M"
+            - generic [ref=e490]:
+              - generic [ref=e492]: ETH
+              - generic [ref=e493]: $3 800,00
+              - generic [ref=e494]:
+                - img [ref=e495]
+                - text: +1.80%
+              - application [ref=e503]
+              - generic [ref=e510]: "Volum 24t: 68 400 000M"
+            - generic [ref=e511]:
+              - generic [ref=e513]: SOL
+              - generic [ref=e514]: $165,00
+              - generic [ref=e515]:
+                - img [ref=e516]
+                - text: "-1.20%"
+              - application [ref=e524]
+              - generic [ref=e531]: "Volum 24t: 693 000M"
+            - generic [ref=e532]:
+              - generic [ref=e534]: BNB
+              - generic [ref=e535]: $720,00
+              - generic [ref=e536]:
+                - img [ref=e537]
+                - text: +0.50%
+              - application [ref=e545]
+              - generic [ref=e552]: "Volum 24t: 1 080 000M"
+            - generic [ref=e553]:
+              - generic [ref=e555]: XRP
+              - generic [ref=e556]: $2,45
+              - generic [ref=e557]:
+                - img [ref=e558]
+                - text: +3.10%
+              - application [ref=e566]
+              - generic [ref=e573]: "Volum 24t: 6 860M"
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]: Live markedsdata
+            - heading "Sanntidsfølelse — uten en krone på spill" [level=2] [ref=e103]
+            - paragraph [ref=e104]: Kjøp og selg i demoen under. Prisen tikker som i et ekte marked — helt risikofritt.
+          - generic [ref=e106]:
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - generic [ref=e109]: ₿
+                - generic [ref=e110]:
+                  - generic [ref=e111]: BTC / USDT
+                  - generic [ref=e112]: Live pris
+                  - generic [ref=e117]: $95,000.00
+              - generic [ref=e118]:
+                - generic [ref=e119]: Portefølje
+                - generic [ref=e120]: 100 000 kr
+            - img [ref=e122]
+            - generic [ref=e123]:
+              - button "Kjøp BTC" [ref=e124]
+              - button "Selg BTC" [disabled] [ref=e125]
+            - generic [ref=e126]:
+              - paragraph [ref=e127]: Registrer deg for å handle med ekte data
+              - link "Start gratis nå" [ref=e128] [cursor=pointer]:
+                - /url: /register
+                - text: Start gratis nå
+                - img [ref=e129]
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e135]:
+              - img [ref=e138]
+              - generic [ref=e140]: 0 kr
+              - generic [ref=e141]: Risikofritt
+              - generic [ref=e142]: Lær uten å tape penger
+            - generic [ref=e144]:
+              - img [ref=e147]
+              - generic [ref=e149]: Alltid på
+              - generic [ref=e150]: AI-signaler
+              - generic [ref=e151]: Handel rundt klokken
+          - generic [ref=e152]:
+            - generic [ref=e154]:
+              - generic [ref=e155]:
+                - img [ref=e156]
+                - img [ref=e158]
+                - img [ref=e160]
+                - img [ref=e162]
+                - img [ref=e164]
+              - generic [ref=e166]:
+                - generic [ref=e167]: 4,9/5 i App Store
+                - generic [ref=e168]: Basert på 127 anmeldelser
+            - generic [ref=e170]:
+              - generic [ref=e171]: Drevet av
+              - generic [ref=e172]:
+                - generic [ref=e173]:
+                  - img [ref=e174]
+                  - generic [ref=e176]: Binance
+                - generic [ref=e177]:
+                  - img [ref=e178]
+                  - generic [ref=e182]: Supabase
+                - generic [ref=e183]:
+                  - img [ref=e184]
+                  - generic [ref=e186]: Cloudflare
+                - generic [ref=e187]:
+                  - img [ref=e188]
+                  - generic [ref=e190]: Stripe
+          - generic [ref=e191]:
+            - generic [ref=e192]: Trygg betaling via
+            - generic [ref=e193]:
+              - img "Vipps" [ref=e194]
+              - img "Stripe" [ref=e195]
+              - img "Apple Pay" [ref=e196]
+              - img "PayPal" [ref=e197]
+          - generic [ref=e198]:
+            - generic [ref=e199]:
+              - img [ref=e200]
+              - generic [ref=e202]: 256-bit SSL
+            - generic [ref=e203]:
+              - img [ref=e204]
+              - generic [ref=e206]: GDPR-sikret
+            - generic [ref=e207]:
+              - img [ref=e208]
+              - generic [ref=e210]: Lynrask utførelse
+        - generic [ref=e212]:
+          - generic [ref=e213]:
+            - generic [ref=e214]:
+              - img [ref=e215]
+              - generic [ref=e218]: Alt du trenger
+            - heading "Hva du får med Klarpakke" [level=2] [ref=e219]
+          - generic [ref=e220]:
+            - generic [ref=e225]:
+              - img [ref=e227]
+              - heading "AI-signaler i sanntid" [level=3] [ref=e230]
+              - paragraph [ref=e231]: Vår AI analyserer markedet kontinuerlig og gir deg tydelige kjøps-, salgs- eller hold-signaler basert på teknisk analyse.
+              - generic [ref=e233]:
+                - generic [ref=e234]:
+                  - img [ref=e235]
+                  - generic [ref=e237]:
+                    - paragraph [ref=e238]: BTC/USDT — Siste signal
+                    - paragraph [ref=e239]: Oppdateres hvert minutt
+                - generic [ref=e240]: HOLD
+            - generic [ref=e244]:
+              - img [ref=e247]
+              - heading "Gå fra nybegynner til trader på 4 uker" [level=3] [ref=e250]
+              - paragraph [ref=e251]: Strukturerte kurs med videoer, quiz og praktiske øvelser. Du lærer i ditt eget tempo.
+            - generic [ref=e254]:
+              - img [ref=e257]
+              - heading "Øv uten å tape penger" [level=3] [ref=e260]
+              - paragraph [ref=e261]: Start med 100 000 kr virtuelle penger. Få erfaring med ekte markedsdata før du bruker egne sparepenger.
+            - generic [ref=e264]:
+              - img [ref=e267]
+              - heading "AI forteller deg når å kjøpe og selge" [level=3] [ref=e270]
+              - paragraph [ref=e271]: Få tydelige signaler basert på teknisk analyse. AI-en overvåker markedet 24/7 for deg.
+            - generic [ref=e274]:
+              - img [ref=e277]
+              - heading "Stop-loss beskytter deg automatisk" [level=3] [ref=e279]
+              - paragraph [ref=e280]: Sett dine egne risikogrenser. Systemet selger automatisk hvis markedet går mot deg.
+            - generic [ref=e283]:
+              - img [ref=e286]
+              - heading "Få signaler umiddelbart" [level=3] [ref=e288]
+              - paragraph [ref=e289]: Ingen forsinkelse. Data kommer direkte fra Binance — verdens største kryptobørs.
+            - generic [ref=e292]:
+              - img [ref=e295]
+              - heading "Handelsboten handler mens du sover" [level=3] [ref=e298]
+              - paragraph [ref=e299]: Auto-trading følger din strategi døgnet rundt. Du slipper å stirre på grafer hele dagen.
+            - generic [ref=e302]:
+              - img [ref=e305]
+              - heading "Norsk fellesskap" [level=3] [ref=e310]
+              - paragraph [ref=e311]: Bli med i et voksende fellesskap av norske tradere. Støtte på norsk når du trenger det.
+            - generic [ref=e314]:
+              - heading "Klar til å starte?" [level=3] [ref=e315]
+              - paragraph [ref=e316]: Bli med i dag og få tilgang til alle funksjoner.
+              - link "Start gratis nå" [ref=e317] [cursor=pointer]:
+                - /url: /no/onboarding/step1-welcome
+        - generic [ref=e318]:
+          - generic [ref=e319]:
+            - heading "Kom i gang på 4 enkle steg" [level=2] [ref=e320]
+            - paragraph [ref=e321]: Ingen forkunnskaper nødvendig. Vi guider deg fra første øyeblikk.
+          - generic [ref=e322]:
+            - generic [ref=e323]:
+              - img [ref=e326]
+              - generic [ref=e329]: "01"
+              - heading "Registrer deg gratis" [level=3] [ref=e330]
+              - paragraph [ref=e331]: Opprett konto med BankID. Ingen kredittkort nødvendig. Start på under 2 minutter.
+            - generic [ref=e332]:
+              - img [ref=e335]
+              - generic [ref=e337]: "02"
+              - heading "Ta ditt første kurs" [level=3] [ref=e338]
+              - paragraph [ref=e339]: Velg blant norske nybegynnerkurs. Lær i ditt eget tempo.
+            - generic [ref=e340]:
+              - img [ref=e343]
+              - generic [ref=e345]: "03"
+              - heading "Øv med papirhandel" [level=3] [ref=e346]
+              - paragraph [ref=e347]: Bruk kr 10 000 i lekepenger. Test strategier uten risiko.
+            - generic [ref=e348]:
+              - img [ref=e350]
+              - generic [ref=e355]: "04"
+              - generic [ref=e356]: Valgfritt · Pro-funksjon
+              - heading "Automatiser med bot" [level=3] [ref=e357]
+              - paragraph [ref=e358]: La AI handle for deg når du er klar. Du bestemmer når.
+          - generic [ref=e359]:
+            - link "Start gratis i dag" [ref=e360] [cursor=pointer]:
+              - /url: /register
+              - img [ref=e361]
+              - text: Start gratis i dag
+            - paragraph [ref=e364]: Ingen kredittkort nødvendig · Avbryt når som helst
+        - region "Start din trading-reise i dag" [ref=e365]:
+          - generic [ref=e370]:
+            - img [ref=e372]
+            - heading "Start din trading-reise i dag" [level=2] [ref=e375]:
+              - text: Start din trading-reise
+              - text: i dag
+            - paragraph [ref=e376]: Lær steg for steg med kurs, lekepenger og autotrade — i ditt eget tempo.
+            - link "Start gratis nå" [ref=e379] [cursor=pointer]:
+              - /url: /register
+              - generic [ref=e380]:
+                - text: Start gratis nå
+                - img [ref=e381]
+            - generic [ref=e383]:
+              - generic [ref=e384]:
+                - img [ref=e385]
+                - generic [ref=e388]: Ingen binding — avslutt når som helst
+              - generic [ref=e389]:
+                - img [ref=e390]
+                - generic [ref=e393]: Ingen kredittkort nødvendig for å prøve
+              - generic [ref=e394]:
+                - img [ref=e395]
+                - generic [ref=e398]: Risikofri lekepenger
+              - generic [ref=e399]:
+                - img [ref=e400]
+                - generic [ref=e403]: Alt innhold tilgjengelig umiddelbart
+            - generic [ref=e404]:
+              - img [ref=e405]
+              - generic [ref=e408]: Student gratis · Bachelor fra 249 kr/mnd
+        - generic [ref=e410]:
+          - heading "Ofte stilte spørsmål" [level=2] [ref=e411]
+          - generic [ref=e412]:
+            - group [ref=e413]:
+              - generic "Trenger jeg kunnskap om trading fra før? ▼" [ref=e414] [cursor=pointer]:
+                - text: Trenger jeg kunnskap om trading fra før?
+                - generic [ref=e415]: ▼
+            - group [ref=e416]:
+              - generic "Hva er lekepenger? ▼" [ref=e417] [cursor=pointer]:
+                - text: Hva er lekepenger?
+                - generic [ref=e418]: ▼
+            - group [ref=e419]:
+              - generic "Kan jeg få pengene tilbake hvis jeg ikke er fornøyd? ▼" [ref=e420] [cursor=pointer]:
+                - text: Kan jeg få pengene tilbake hvis jeg ikke er fornøyd?
+                - generic [ref=e421]: ▼
+        - generic [ref=e423]:
+          - heading "Om Klarpakke" [level=2] [ref=e424]
+          - paragraph [ref=e425]: Klarpakke er Norges ledende krypto-utdanningsplattform. Vi hjelper nybegynnere og erfarne tradere med å lære trygg handel på kryptobørser gjennom steg-for-steg kurs, simulert papirhandel, AI-drevet markedsanalyse og automatiske tradingverktøy — alt på ett sted.
+          - generic [ref=e426]:
+            - generic [ref=e427]:
+              - img [ref=e428]
+              - heading "Lær" [level=3] [ref=e431]
+              - paragraph [ref=e432]: Strukturerte kurs fra nybegynner til avansert
+            - generic [ref=e433]:
+              - img [ref=e434]
+              - heading "Øv" [level=3] [ref=e437]
+              - paragraph [ref=e438]: Risikofri papirhandel med reelle markedsdata
+            - generic [ref=e439]:
+              - img [ref=e440]
+              - heading "Trade trygt" [level=3] [ref=e443]
+              - paragraph [ref=e444]: AI-analyse og automasjon med risikokontroll
+          - generic [ref=e445]:
+            - link "Personvernerklæring" [ref=e446] [cursor=pointer]:
+              - /url: /no/personvern
+            - generic [ref=e447]: ·
+            - link "Vilkår for bruk" [ref=e448] [cursor=pointer]:
+              - /url: /no/vilkar
+    - contentinfo [ref=e449]:
+      - generic [ref=e450]:
+        - generic [ref=e451]:
+          - generic [ref=e452]:
+            - generic [ref=e453]: Klarpakke
+            - generic [ref=e454]: "|"
+            - generic [ref=e455]: Norges enkleste krypto-trading
+          - generic [ref=e456]:
+            - link "Vilkår" [ref=e457] [cursor=pointer]:
+              - /url: /vilkar
+            - link "Personvern" [ref=e458] [cursor=pointer]:
+              - /url: /personvern
+            - link "Kontakt" [ref=e459] [cursor=pointer]:
+              - /url: /kontakt
+        - generic [ref=e460]: "© 2026 Klarpakke AS. Org.no: 929003292 MVA.·7.7.2026"
+  - alert [ref=e461]
