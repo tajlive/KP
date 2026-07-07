@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
   "_meta": {
     "version": "2.9-minimal",
-    "lastOptimized": "2026-07-05",
+    "lastOptimized": "2026-07-07",
     "for": "KIMI CLI v1.44.0 + k2.6 / OMP / Claude",
     "description": "MCP-konfigurasjon — 11 servere for Klarpakke på Cloudflare Workers. Aktive: filesystem, supabase-db, sanity, github, perplexity, resend, mempalace, cloudflare, binance, stripe, chrome. Klarpakke (remote) er dokumentert men deaktivert fordi Supabase Edge Function-endepunktet er utilgjengelig fra dette nettverket.",
     "note": "Alle wrappers finnes under scripts/run-*.mjs. De fleste laster secrets fra .env.local via scripts/load-env.mjs. Synkroniseres med npm run mcp:sync fra .omp/mcp.json."
@@ -109,7 +109,11 @@
         "/Users/taj/klarpakke/scripts/run-chrome-mcp.mjs"
       ],
       "cwd": "/Users/taj/klarpakke",
-      "timeout": 120000
+      "timeout": 180000,
+      "env": {
+        "CHROME_MCP_HEADLESS": "true"
+      },
+      "description": "Chrome Control via Playwright MCP proxy (chrome_* -> browser_* mapping)"
     }
   }
 }
