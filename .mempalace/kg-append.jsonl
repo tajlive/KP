@@ -258,3 +258,10 @@
 {"subject":"backtest-parity-test","predicate":"verifies","object":"deterministic output for identical canonical engine inputs","validFrom":"2026-06-29T00:42:56.842Z"}
 {"subject":"tick-route-paper-live-parity-test","predicate":"mock_fixed_for","object":"idempotency_keys.maybeSingle returning null","validFrom":"2026-06-29T00:42:56.843Z"}
 {"subject":"lint-changed.mjs","predicate":"uses","object":"--no-warn-ignored flag","validFrom":"2026-06-29T00:42:56.847Z"}
+{"subject":"chrome-control","predicate":"uses","object":"playwright-mcp-proxy via run-chrome-mcp.mjs","validFrom":"2026-07-07T10:14:57Z"}
+{"subject":"run-chrome-mcp","predicate":"reads_allowlist_from","object":"env.PLAYWRIGHT_MCP_ALLOWED_HOSTS and env.PLAYWRIGHT_MCP_ALLOWED_ORIGINS","validFrom":"2026-07-07T10:14:57Z"}
+{"subject":"run-chrome-mcp","predicate":"falls_back_to","object":"semicolon-separated origins https://www.klarpakke.no;https://klarpakke.no;http://localhost:3000;https://example.com","validFrom":"2026-07-07T10:14:57Z"}
+{"subject":"playwright-mcp-proxy","predicate":"has_idempotent","object":"PreSpawnedStdioTransport.start() guarded by _started flag","validFrom":"2026-07-07T10:14:57Z"}
+{"subject":"chrome_navigate","predicate":"verified_against","object":"https://www.klarpakke.no returning page title Klarpakke - Bygg din økonomiske fremtid | Klarpakke","validFrom":"2026-07-07T10:14:57Z"}
+{"subject":"run-chrome-mcp","predicate":"spawns","object":"scripts/playwright-mcp-proxy.mjs when node_modules/@playwright/mcp/cli.js exists","validFrom":"2026-07-07T10:14:57Z"}
+{"subject":"chrome-mcp","predicate":"deployed_commit","object":"74e1ce51b fix(chrome-mcp): idempotent stdio transport, correct allowlist delimiters, env overrides","validFrom":"2026-07-07T10:14:57Z"}
