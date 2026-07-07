@@ -8,6 +8,8 @@ import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 
 export const runtime = "nodejs";
 
+export const revalidate = 3600; // ISR: regenerate hver time
+
 export async function generateMetadata({
   params,
 }: {
