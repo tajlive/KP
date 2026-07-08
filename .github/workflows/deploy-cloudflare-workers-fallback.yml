@@ -113,20 +113,6 @@ jobs:
           NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07' }}
           NEXT_PUBLIC_GLITCHTIP_DSN: ${{ vars.NEXT_PUBLIC_GLITCHTIP_DSN || '' }}
 
-      - name: Wait for Worker warmup
-        run: |
-          echo "⏳ Waiting 30s for Worker to warm up..."
-          sleep 30
-          for i in $(seq 1 10); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" -m5 "https://www.klarpakke.no/api/health")
-            if [ "$code" = "200" ]; then
-              echo "✅ Worker ready (attempt $i)"
-              break
-            fi
-            echo "  Attempt $i: HTTP $code, retrying..."
-            sleep 10
-          done
-
       - name: Page smoke test
         run: |
           echo "🏥 Testing ALL public pages..."
