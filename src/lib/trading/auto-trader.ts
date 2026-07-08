@@ -144,16 +144,7 @@ export class NextGenAutoTrader {
           order_type: "market",
           status: "filled",
           executed_at: new Date().toISOString(),
-          metadata: {
-            trader_version: SMART_TRADER_VERSION,
-            regime: rank.regime,
-            score: rank.score,
-            rr_ratio: rank.rrRatio,
-            stop_loss: rank.stopLoss,
-            take_profit: rank.takeProfit,
-            reason: rank.reason,
-          },
-        })
+        } as any)
         .select("id")
         .single();
 
