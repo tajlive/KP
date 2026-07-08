@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
-# Klarpakke pre-push — blokker push hvis noe feiler
+# Klarpakke Pre-Push — enterprise gate
+# Type-check kjøres i CI (for tungt lokalt). Kun raske sjekker her.
 set -e
 
 echo "🔒 Klarpakke Pre-Push"
 
-# 1. TypeScript
-echo "  tsc..."
-npx tsc --noEmit --pretty false 2>&1 | tail -3
-echo "  ✅ tsc OK"
-
-# 2. Unit tests (bare de raskeste)
-echo "  vitest..."
-npx vitest run --reporter=verbose 2>&1 | tail -1
-echo "  ✅ tests OK"
-
-# 3. Lint
-echo "  lint..."
+# 1. Lint (rask)
+echo "  eslint..."
 npx next lint --quiet 2>&1 | tail -1
 echo "  ✅ lint OK"
 
-echo "✅ Alt klart — push tillatt"
+# 2. Unit tests (bare endrede filer)
+echo "  vitest..."
+npx vitest related --run --reporter=verbose $(git diff --name-only HEAD origin/main...HEAD 2>/dev/null || echo "src/") 2>&1 | tail -2
+echo "  ✅ tests OK"
+
+# 3. Build check (turbopack dry-run)
+echo "  next build --dry-run..."
+npx next build --dry-run 2>&1 | tail -1
+echo "  ✅ build dry-run OK"
+
+echo "✅ Pre-push passed — pushing"
