@@ -25,6 +25,8 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
 
   useEffect(() => {
     if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return; // Guard against zero-size container
 
     const chart = createChart(containerRef.current, {
       height,
