@@ -1,12 +1,8 @@
 name: Deploy to Cloudflare Workers — Fallback
 
 on:
-  # Primary auto-deploy is Cloudflare Workers Builds. Use this workflow as a fallback when:
-  #   - Workers Builds is disabled/broken
-  #   - A hotfix must be deployed immediately without waiting for Builds
-  #   - The production version is stale and the Builds trigger has not fired
-  push:
-    branches: [main]
+  # Primary auto-deploy is Cloudflare Workers Builds — handles incremental deploys.
+  # This workflow is for emergencies and manual hotfixes only.
   workflow_dispatch:
     inputs:
       ref:
