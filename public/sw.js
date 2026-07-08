@@ -4,7 +4,7 @@
  * Cache-strategi: Network first, fallback til cache
  */
 
-const CACHE_VERSION = "4"; // Bumped 2026-07-06: PWA Trading Cockpit activation refresh
+const CACHE_VERSION = "5"; // Bumped 2026-07-08: Skip external URLs + RSC requests
 const CACHE_NAME = `klarpakke-v${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -35,10 +35,24 @@ function isNextStatic(url) {
 }
 
 /**
+ * Sjekk om URL er et eksternt kall (Supabase, Binance, etc.)
+ */
+function isExternalUrl(url) {
+  return url.hostname !== self.location.hostname;
+}
+
+/**
+ * Sjekk om URL er et RSC (React Server Component) kall
+ */
+function isRscRequest(url) {
+  return url.searchParams.has("_rsc");
+}
+
+/**
  * Sjekk om URL er API-kall
  */
 function isApiRequest(url) {
-  return url.pathname.startsWith("/api/");
+  return url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/");
 }
 
 // Installer service worker og cache statiske assets
@@ -87,6 +101,16 @@ self.addEventListener("fetch", (event) => {
 
   // Ikke håndter ikke-GET forespørsler
   if (request.method !== "GET") {
+    return;
+  }
+
+  // Hopp over eksterne kall (Supabase, Binance) — de ødelegger response.clone()
+  if (isExternalUrl(url)) {
+    return;
+  }
+
+  // Hopp over RSC requests — Next.js håndterer de selv
+  if (isRscRequest(url)) {
     return;
   }
 
