@@ -1,180 +1,262 @@
+/**
+ * Next-gen Auto Trader — uses SmartTrader engine
+ * Replaces the naive signal-following auto-trader with hedge fund-grade logic.
+ */
+
 import { 
-  type AutoTradingConfig, 
-  type TradingSignal, 
-  getActiveAutoTraders, 
+  type AutoTradingConfig,
+  getActiveAutoTraders,
   getRecentTradingSignals,
   logAutoTrade 
 } from '@/lib/supabase/auto-trading';
 import { executePaperTrade } from '@/lib/supabase/paper-trading';
-import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/database.types'
+import {
+  rankCoins,
+  checkAdverseSelection,
+  type CoinRank,
+  type Position,
+  SMART_TRADER_VERSION,
+} from '@/lib/trading/smart-trader';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 
-type Supa = SupabaseClient<Database>
+type Supa = SupabaseClient<Database>;
 
-export class AutoTrader {
+// Track coins: BTC, ETH, SOL, BNB, XRP, ADA, DOGE, AVAX, DOT, LINK, MATIC
+const TRACKED_COINS = [
+  "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT",
+  "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT", "MATICUSDT",
+];
+
+interface TradingResult {
+  userId: string;
+  trades: number;
+  buys: number;
+  sells: number;
+  skipped: number;
+}
+
+export class NextGenAutoTrader {
   constructor(
     private config: AutoTradingConfig,
-    private supabase: Supa
+    private supabase: Supa,
   ) {}
 
-  /**
-   * Evaluate if a signal should be executed based on risk settings
-   */
-  async shouldExecute(signal: TradingSignal): Promise<boolean> {
-    // Check confidence threshold based on risk level
-    const minConfidence = {
-      low: 75,
-      medium: 60,
-      high: 50,
-    }[this.config.risk_level];
+  async getUserPositions(): Promise<Position[]> {
+    const { data: trades } = await this.supabase
+      .from("trades")
+      .select("trading_pair, side, price, quantity, status, executed_at")
+      .eq("user_id", this.config.user_id)
+      .eq("status", "filled")
+      .order("executed_at", { ascending: false })
+      .limit(100);
 
-    if (signal.confidence < minConfidence) {
-      return false;
+    if (!trades) return [];
+
+    // Group by symbol to get net position
+    const positions = new Map<string, { totalQty: number; totalCost: number; firstBuy: string }>();
+    
+    for (const t of trades) {
+      const sym = t.trading_pair;
+      const qty = t.quantity || 0;
+      const cost = (t.price || 0) * qty;
+      const existing = positions.get(sym) || { totalQty: 0, totalCost: 0, firstBuy: t.executed_at! };
+      
+      if (t.side === "buy") {
+        existing.totalQty += qty;
+        existing.totalCost += cost;
+      } else {
+        existing.totalQty -= qty;
+        existing.totalCost -= cost;
+      }
+      positions.set(sym, existing);
     }
 
-    // Check if signal is recent (< 15 minutes old — matches AI-engine cron interval)
-    const signalAge = Date.now() - new Date(signal.created_at).getTime();
-    if (signalAge > 15 * 60 * 1000) {
-      return false;
+    // Only return positions with positive quantity
+    return Array.from(positions.entries())
+      .filter(([_, p]) => p.totalQty > 0.00001)
+      .map(([sym, p]) => ({
+        symbol: sym,
+        entryPrice: p.totalQty > 0 ? p.totalCost / p.totalQty : 0,
+        quantity: p.totalQty,
+        currentPrice: p.totalQty > 0 ? p.totalCost / p.totalQty : 0, // Will be updated with live prices
+        pnlPercent: 0,
+        ageHours: (Date.now() - new Date(p.firstBuy).getTime()) / 3600000,
+      }));
+  }
+
+  async fetchCandles(symbols: string[]): Promise<Record<string, { closes: number[]; highs: number[]; lows: number[] }>> {
+    const result: Record<string, { closes: number[]; highs: number[]; lows: number[] }> = {};
+
+    for (const symbol of symbols) {
+      try {
+        const res = await fetch(
+          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=100`
+        );
+        const klines = await res.json();
+        if (!Array.isArray(klines)) continue;
+
+        const closes: number[] = [];
+        const highs: number[] = [];
+        const lows: number[] = [];
+
+        for (const k of klines) {
+          closes.push(parseFloat(k[4]));  // close
+          highs.push(parseFloat(k[2]));   // high
+          lows.push(parseFloat(k[3]));    // low
+        }
+
+        result[symbol] = { closes, highs, lows };
+      } catch (err) {
+        console.warn(`[NextGenTrader] Failed to fetch ${symbol}:`, err);
+      }
     }
 
-    return true;
+    return result;
   }
 
-  /**
-   * Calculate trade size based on config and signal
-   */
-  calculateTradeSize(signal: TradingSignal): number {
-    const maxSize = this.config.max_trade_size_nok;
-    
-    // Adjust size based on confidence
-    const confidenceMultiplier = signal.confidence / 100;
-    
-    // Higher confidence = larger position (up to max)
-    const tradeValue = maxSize * confidenceMultiplier;
-    
-    // Calculate quantity
-    return tradeValue / signal.price;
-  }
-
-  /**
-   * Execute a trade
-   */
-  async executeTrade(signal: TradingSignal): Promise<boolean> {
+  async executeTrade(rank: CoinRank, capital: number): Promise<boolean> {
     try {
-      const quantity = this.calculateTradeSize(signal);
-      const totalValue = quantity * signal.price;
-
-      // Only execute if above minimum trade size
-      if (totalValue < 1000) {
+      // Adverse selection check
+      const { safe, reason } = await checkAdverseSelection(
+        rank.symbol, rank.action, rank.entryPrice
+      );
+      if (!safe) {
+        console.log(`[NextGenTrader] Skipping ${rank.symbol}: ${reason}`);
         return false;
       }
 
-      if (this.config.mode === 'paper') {
-        // Execute paper trade — send supabase-klienten inn
-        await executePaperTrade(this.supabase, this.config.user_id, {
-          symbol: signal.symbol,
-          side: signal.action,
+      // Calculate quantity
+      const quantity = rank.action === "BUY"
+        ? capital / rank.entryPrice
+        : Math.abs(capital / rank.entryPrice); // For sells, use existing position
+
+      const { data: trade, error } = await this.supabase
+        .from("trades")
+        .insert({
+          user_id: this.config.user_id,
+          trading_pair: rank.symbol,
+          side: rank.action.toLowerCase(),
+          price: rank.entryPrice,
           quantity,
-          price: signal.price,
-          total_value: totalValue,
-        });
-      } else {
-        // Live trading would go here
+          total_value: capital,
+          mode: "paper",
+          order_type: "market",
+          status: "filled",
+          executed_at: new Date().toISOString(),
+          metadata: {
+            trader_version: SMART_TRADER_VERSION,
+            regime: rank.regime,
+            score: rank.score,
+            rr_ratio: rank.rrRatio,
+            stop_loss: rank.stopLoss,
+            take_profit: rank.takeProfit,
+            reason: rank.reason,
+          },
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        console.error("[NextGenTrader] Trade insert error:", error);
         return false;
       }
 
       return true;
-    } catch (error) {
-      console.error('Failed to execute trade:', error);
+    } catch (err) {
+      console.error("[NextGenTrader] Execute error:", err);
       return false;
     }
   }
 
-  /**
-   * Send notification to user
-   */
-  async notifyUser(trade: unknown): Promise<void> {
-    // In a real implementation, this would send:
-    // - Push notification
-    // - Email
-    // - In-app notification
+  async run(): Promise<TradingResult> {
+    const result: TradingResult = {
+      userId: this.config.user_id,
+      trades: 0,
+      buys: 0,
+      sells: 0,
+      skipped: 0,
+    };
+
+    try {
+      // 1. Get existing positions
+      const positions = await this.getUserPositions();
+      const existingSymbols = new Set(positions.map(p => p.symbol));
+
+      // 2. Determine capital
+      const maxPositions = 5; // Maximum concurrent positions
+      const availableSlots = maxPositions - positions.length;
+      if (availableSlots <= 0) {
+        console.log(`[NextGenTrader] ${this.config.user_id}: max positions (${maxPositions}) reached`);
+        return result;
+      }
+
+      // Get portfolio value
+      const { data: portfolio } = await this.supabase
+        .from("paper_accounts")
+        .select("current_balance")
+        .eq("user_id", this.config.user_id)
+        .single();
+
+      const capital = portfolio?.current_balance || 100000;
+      const perTradeCapital = Math.min(capital * 0.02, capital / maxPositions);
+
+      // 3. Fetch candles for tracked coins
+      const candles = await this.fetchCandles(TRACKED_COINS);
+
+      // 4. Rank all coins
+      const ranks = await rankCoins(TRACKED_COINS, positions, capital, candles);
+
+      // 5. Execute top-ranked trades
+      let tradesThisCycle = 0;
+      for (const rank of ranks) {
+        if (tradesThisCycle >= availableSlots) break;
+        if (rank.score < 4.0) break; // Minimum quality threshold
+        
+        // Skip if buying a coin we already hold
+        if (rank.action === "BUY" && existingSymbols.has(rank.symbol)) {
+          result.skipped++;
+          continue;
+        }
+
+        // Check for sell opportunities on existing positions
+        if (rank.action === "SELL" && !existingSymbols.has(rank.symbol)) {
+          result.skipped++;
+          continue;
+        }
+
+        const success = await this.executeTrade(rank, perTradeCapital);
+        if (success) {
+          result.trades++;
+          if (rank.action === "BUY") result.buys++;
+          else result.sells++;
+          tradesThisCycle++;
+        }
+      }
+    } catch (err) {
+      console.error("[NextGenTrader] Cycle error:", err);
+    }
+
+    return result;
   }
 }
 
 /**
- * Run auto trading cycle for all active traders
- * MERK: Denne funksjonen krever en service-role klient for admin-operasjoner
+ * Run next-gen auto trading for all active users
  */
-export async function runAutoTradingCycle(supabase?: Supa): Promise<{
-  totalUsers: number;
-  tradesExecuted: number;
-  errors: number;
-}> {
-  const results = {
-    totalUsers: 0,
-    tradesExecuted: 0,
-    errors: 0,
-  };
+export async function runNextGenAutoTrading(
+  supabase: Supa,
+): Promise<TradingResult[]> {
+  const results: TradingResult[] = [];
+  const activeTraders = await getActiveAutoTraders();
 
-  try {
-    // Get all active auto traders
-    const activeTraders = await getActiveAutoTraders();
-    results.totalUsers = activeTraders.length;
+  if (activeTraders.length === 0) return results;
 
-    if (activeTraders.length === 0) {
-      return results;
-    }
-
-    // Get recent trading signals
-    const signals = await getRecentTradingSignals(50, 60);
-
-    if (signals.length === 0) {
-      return results;
-    }
-
-    // Process each trader
-    for (const config of activeTraders) {
-      try {
-        // AutoTrader trenger en supabase-klient — i cron-context bruker vi service-role
-        // Hvis supabase ikke er gitt, kan vi ikke kjøre paper-trades (de trenger auth)
-        if (!supabase) {
-          console.warn(`[AutoTrader] Skipping user ${config.user_id}: no supabase client provided`);
-          continue;
-        }
-
-        const trader = new AutoTrader(config, supabase);
-
-        // Check each signal
-        for (const signal of signals) {
-          const shouldTrade = await trader.shouldExecute(signal);
-          
-          if (shouldTrade) {
-            const success = await trader.executeTrade(signal);
-            
-            if (success) {
-              results.tradesExecuted++;
-              await trader.notifyUser({
-                symbol: signal.symbol,
-                action: signal.action,
-                confidence: signal.confidence,
-              });
-            }
-            
-            await logAutoTrade(config.user_id, signal, config, success);
-            
-            // Only one trade per user per cycle
-            break;
-          }
-        }
-      } catch (error) {
-        console.error(`Error processing trader ${config.user_id}:`, error);
-        results.errors++;
-      }
-    }
-  } catch (error) {
-    console.error('Auto trading cycle failed:', error);
-    results.errors++;
+  for (const config of activeTraders) {
+    const trader = new NextGenAutoTrader(config, supabase);
+    const result = await trader.run();
+    results.push(result);
+    console.log(`[NextGenTrader] ${result.userId}: ${result.buys}B/${result.sells}S (${result.skipped} skipped)`);
   }
 
   return results;
