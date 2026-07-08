@@ -444,13 +444,26 @@ const nextConfig = {
   },
 };
 
+// Sentry monitoring (auto-capture errors + performance)
+import { withSentryConfig } from "@sentry/nextjs";
+
 // Bundle Analyzer configuration
 import withBundleAnalyzer from "@next/bundle-analyzer";
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-// Export with NextIntl + Bundle Analyzer
-export default withAnalyzer(withNextIntl(nextConfig));
+// Export with NextIntl + Bundle Analyzer + Sentry
+const config = withAnalyzer(withNextIntl(nextConfig));
+export default withSentryConfig(config, {
+  // Upload source maps to Sentry for readable stack traces
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN, // Kun i CI
+  },
+});
 // Trigger rebuild 1775646351
 // Deploy 1775648664
