@@ -85,7 +85,8 @@ type Action =
     }
   | { type: "LOAD_MORE_TRADES_ERROR"; error: CockpitError }
   | { type: "INCREMENT_UNREAD_TRADES" }
-  | { type: "MARK_TRADES_SEEN" };
+  | { type: "MARK_TRADES_SEEN" }
+  | { type: "REFRESH_METRICS"; metrics: DashboardMetrics };
 
 function buildSessionsCursor(
   sessions: TradingSessionSummary[],
@@ -189,6 +190,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, unreadTradeCount: state.unreadTradeCount + 1 };
     case "MARK_TRADES_SEEN":
       return { ...state, unreadTradeCount: 0 };
+    case "REFRESH_METRICS":
+      return { ...state, metrics: action.metrics };
     default:
       return state;
   }
@@ -475,13 +478,26 @@ export function TradingCockpitProvider({
     dispatch({ type: "MARK_TRADES_SEEN" });
   }, []);
 
-  // ── 5-second polling for live KPI updates ──
+  // ── 5-second polling for live KPI updates (lightweight — no loading state) ──
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchInitialData();
-    }, 5000);
+    const poll = async () => {
+      try {
+        const res = await fetch(
+          `/api/trading-cockpit/metrics?mode=${currentModeRef.current}`,
+          { cache: "no-store" },
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.metrics) {
+          dispatch({ type: "REFRESH_METRICS", metrics: data.metrics });
+        }
+      } catch {
+        // silently ignore poll errors
+      }
+    };
+    const interval = setInterval(poll, 5000);
     return () => clearInterval(interval);
-  }, [fetchInitialData]);
+  }, []);
 
   const activeSession = useMemo(() => {
     const candidates = state.sessions.filter(
