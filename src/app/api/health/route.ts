@@ -30,8 +30,6 @@ const KNOWN_BINANCE_ENDPOINTS = [
   "https://api4.binance.com",
   "https://testnet.binance.vision",
 ] as const;
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
 
 // Binance probe: try via Supabase Edge Function proxy first (avoids Worker IP geo-block),
 // then fall back to direct API calls.
@@ -228,8 +226,8 @@ async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
     ]);
 
     const endpointUsed =
-      provider.getLastEndpointUsed() ?? PRIMARY_BINANCE_ENDPOINT;
-    const primaryWorked = endpointUsed === PRIMARY_BINANCE_ENDPOINT;
+      provider.getLastEndpointUsed() ?? KNOWN_BINANCE_ENDPOINTS[0];
+    const primaryWorked = endpointUsed === KNOWN_BINANCE_ENDPOINTS[0];
     const fallbackActive = !primaryWorked;
     const knownEndpoint = (KNOWN_BINANCE_ENDPOINTS as readonly string[]).includes(
       endpointUsed,
