@@ -168,6 +168,25 @@ export const TIERS = {
 
 export type Tier = (typeof TIERS)[TierSlug];
 
+/** Maks antall tradere en bruker kan følge basert på tier */
+export function maxActiveCopyFollowsForTier(tier: string): number {
+  const normalized = normalizeTier(tier);
+  if (normalized === "student") return 2;
+  return -1; // ubegrenset
+}
+
+/** Paper trading cap per tier */
+export function paperTradingCapForTier(tier: string): number {
+  const limits: Record<TierSlug, number> = {
+    student: 100_000,
+    bachelor: 250_000,
+    master: 500_000,
+    phd: 1_000_000,
+    professor: Number.POSITIVE_INFINITY,
+  };
+  return limits[normalizeTier(tier)] ?? 100_000;
+}
+
 /** Sikrer at TIERS og tier-level.TierSlug holder seg i synk */
 type _TierKeys = keyof typeof TIERS;
 const _tierKeysAlign: TierSlug extends _TierKeys
