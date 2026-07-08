@@ -9,6 +9,9 @@
 import type { TierSlug } from "./tier-level";
 import { normalizeTier } from "./tier-level";
 
+export type { TierSlug } from "./tier-level";
+export { normalizeTier } from "./tier-level";
+
 export const TIERS = {
   student: {
     slug: "student" as const,
