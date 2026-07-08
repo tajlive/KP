@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "@/lib/monitoring/sentry.client"; // Sentry: auto-capture errors
 import "./globals.css";
 
 export const runtime = 'nodejs';
