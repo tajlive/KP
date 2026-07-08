@@ -44,16 +44,18 @@ const ALLOWED_ACTIONS = [
   "cancelOrder",
   "orderStatus",
   "testConnection",
+  "publicApi",    // Proxy unsigned public API calls (ticker/price, klines, depth)
 ] as const;
 
 type Action = (typeof ALLOWED_ACTIONS)[number];
 
 interface ProxyPayload {
   action: Action;
-  apiKey: string;
+  apiKey: string
   apiSecret: string;
   testnet?: boolean;
   params?: Record<string, string | number>;
+  publicApiPath?: string;  // For "publicApi" action: e.g. /api/v3/ticker/price?symbol=BTCUSDT
 }
 
 interface ProxySuccess {
@@ -115,6 +117,33 @@ function getEndpointForAction(action: Action): { path: string; method: "GET" | "
   }
 }
 
+async function fetchOncePublic(
+  url: string,
+): Promise<{ ok: true; status: number; body: unknown } | { ok: false; status: number; error: string }> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      headers: { Accept: "application/json", "User-Agent": "Klarpakke/1.0" },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    const text = await response.text();
+    let body: unknown;
+    try { body = JSON.parse(text); } catch { body = text; }
+
+    if (!response.ok) {
+      return { ok: false, status: response.status, error: `Binance API: ${response.status}` };
+    }
+    return { ok: true, status: response.status, body };
+  } catch (error) {
+    clearTimeout(timeoutId);
+    return { ok: false, status: 0, error: error instanceof Error ? error.message : String(error) };
+  }
+}
+
 async function fetchOnce(
   url: string,
   method: "GET" | "POST" | "DELETE",
@@ -164,7 +193,18 @@ async function fetchOnce(
 }
 
 async function proxyRequest(payload: ProxyPayload): Promise<ProxySuccess | ProxyError> {
-  const { action, apiKey, apiSecret, testnet = false, params = {} } = payload;
+  const { action, apiKey, apiSecret, testnet = false, params = {}, publicApiPath } = payload;
+
+  // Public API passthrough — unsigned GET, no signing required
+  if (action === "publicApi" && publicApiPath) {
+    const bases = testnet ? BINANCE_TESTNET_BASES : BINANCE_SIGNED_API_BASES;
+    for (const base of bases) {
+      const url = `${base}${publicApiPath}`;
+      const result = await fetchOncePublic(url);
+      if (result.ok) return { ok: true, status: result.status, body: result.body, endpointUsed: base };
+    }
+    return { ok: false, error: "All public API endpoints failed", endpointUsed: "" };
+  }
   const { path, method } = getEndpointForAction(action);
 
   const timestamp = Date.now();
@@ -220,17 +260,18 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { action, apiKey, apiSecret, testnet = false, params } = body;
+    const { action, apiKey, apiSecret, testnet = false, params, publicApiPath } = body;
 
     if (!action || !ALLOWED_ACTIONS.includes(action)) {
       return jsonResponse({ error: "Missing or invalid action" }, 400);
     }
 
-    if (!apiKey || !apiSecret) {
+    // publicApi doesn't need credentials
+    if (action !== "publicApi" && (!apiKey || !apiSecret)) {
       return jsonResponse({ error: "Missing API credentials" }, 400);
     }
 
-    const result = await proxyRequest({ action, apiKey, apiSecret, testnet, params });
+    const result = await proxyRequest({ action, apiKey, apiSecret, testnet, params, publicApiPath });
 
     if (result.ok) {
       return jsonResponse(

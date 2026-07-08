@@ -13,6 +13,7 @@
  */
 
 import type { Kline, MarketDataProvider, OrderBookSnapshot } from "./types";
+import { fetchPriceViaProxy, fetchKlinesViaProxy, fetchDepthViaProxy, fetch24hChangeViaProxy } from "./binance-proxy-provider";
 
 // Prioritert liste. Mainnet først for paper/live-paritet; .vision-endepunkter
 // er tilbakefall hvis CloudFront/WAF blokkerer egress-IP-en.
@@ -129,36 +130,37 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
 
   async getPrice(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
-    const data = await binanceFetch<{ price: string }>(
-      `/api/v3/ticker/price?symbol=${normalized}`,
-      5000,
-      (base) => {
-        this.lastEndpointUsed = base;
-      },
-    );
-    return parseFloat(data.price);
+    try {
+      const data = await binanceFetch<{ price: string }>(
+        `/api/v3/ticker/price?symbol=${normalized}`,
+        5000,
+        (base) => { this.lastEndpointUsed = base; },
+      );
+      return parseFloat(data.price);
+    } catch {
+      // Fallback: route through Supabase Edge Function proxy
+      console.warn(`[Binance] Direct API failed for ${normalized}, trying proxy`);
+      return fetchPriceViaProxy(normalized);
+    }
   }
 
   async getDepth(symbol: string, limit = 20): Promise<OrderBookSnapshot> {
     const normalized = symbol.toUpperCase();
-    const data = await binanceFetch<{
-      bids: [string, string][];
-      asks: [string, string][];
-    }>(`/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000, (base) => {
-      this.lastEndpointUsed = base;
-    });
-
-    return {
-      bids: data.bids.map(([p, q]) => ({
-        price: parseFloat(p),
-        quantity: parseFloat(q),
-      })),
-      asks: data.asks.map(([p, q]) => ({
-        price: parseFloat(p),
-        quantity: parseFloat(q),
-      })),
+    const parseData = (data: { bids: [string, string][]; asks: [string, string][] }) => ({
+      bids: data.bids.map(([p, q]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
+      asks: data.asks.map(([p, q]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
       timestamp: new Date(),
-    };
+    });
+    try {
+      const data = await binanceFetch<{ bids: [string, string][]; asks: [string, string][] }>(
+        `/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000,
+        (base) => { this.lastEndpointUsed = base; },
+      );
+      return parseData(data);
+    } catch {
+      console.warn(`[Binance] Direct depth failed for ${normalized}, trying proxy`);
+      return parseData(await fetchDepthViaProxy(normalized, limit));
+    }
   }
 
   async getKlines(
@@ -170,38 +172,44 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
   ): Promise<Kline[]> {
     const normalized = symbol.toUpperCase();
     let path = `/api/v3/klines?symbol=${normalized}&interval=${interval}&limit=${limit}`;
-    if (startTime !== undefined) {
-      path += `&startTime=${Math.floor(startTime)}`;
-    }
-    if (endTime !== undefined) {
-      path += `&endTime=${Math.floor(endTime)}`;
-    }
-    const data = await binanceFetch<unknown[]>(path, 15000, (base) => {
-      this.lastEndpointUsed = base;
-    });
+    if (startTime !== undefined) path += `&startTime=${Math.floor(startTime)}`;
+    if (endTime !== undefined) path += `&endTime=${Math.floor(endTime)}`;
 
-    return data.map((candle) => {
-      const c = candle as unknown[];
-      return {
-        timestamp: c[0] as number,
-        open: parseFloat(c[1] as string),
-        high: parseFloat(c[2] as string),
-        low: parseFloat(c[3] as string),
-        close: parseFloat(c[4] as string),
-        volume: parseFloat(c[5] as string),
-      };
-    });
+    const parseKlines = (data: unknown[]): Kline[] =>
+      data.map((candle) => {
+        const c = candle as unknown[];
+        return {
+          timestamp: c[0] as number,
+          open: parseFloat(c[1] as string),
+          high: parseFloat(c[2] as string),
+          low: parseFloat(c[3] as string),
+          close: parseFloat(c[4] as string),
+          volume: parseFloat(c[5] as string),
+        };
+      });
+
+    try {
+      const data = await binanceFetch<unknown[]>(path, 15000,
+        (base) => { this.lastEndpointUsed = base; },
+      );
+      return parseKlines(data);
+    } catch {
+      console.warn(`[Binance] Direct klines failed for ${normalized}, trying proxy`);
+      return parseKlines(await fetchKlinesViaProxy(normalized, interval, limit));
+    }
   }
 
   async get24hChange(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
-    const data = await binanceFetch<{ priceChangePercent: string }>(
-      `/api/v3/ticker/24hr?symbol=${normalized}`,
-      5000,
-      (base) => {
-        this.lastEndpointUsed = base;
-      },
-    );
-    return parseFloat(data.priceChangePercent);
+    try {
+      const data = await binanceFetch<{ priceChangePercent: string }>(
+        `/api/v3/ticker/24hr?symbol=${normalized}`, 5000,
+        (base) => { this.lastEndpointUsed = base; },
+      );
+      return parseFloat(data.priceChangePercent);
+    } catch {
+      console.warn(`[Binance] Direct 24h failed for ${normalized}, trying proxy`);
+      return fetch24hChangeViaProxy(normalized);
+    }
   }
 }
