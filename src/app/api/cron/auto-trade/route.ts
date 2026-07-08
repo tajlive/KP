@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { validateCronSecret } from '@/lib/auth/cron';
-import { runAutoTradingCycle } from '@/lib/trading/auto-trader';
+import { runNextGenAutoTrading } from '@/lib/trading/auto-trader';
 import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   try {
     // Opprett service-role klient for admin-operasjoner i cron-jobb
     const supabase = await createClient();
-    const results = await runAutoTradingCycle(supabase);
+    const results = await runNextGenAutoTrading(supabase);
     
     const duration = Date.now() - startTime;
     
