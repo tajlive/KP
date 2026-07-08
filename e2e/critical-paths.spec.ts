@@ -15,8 +15,8 @@ test.describe("Kritiske sider laster", () => {
 
   test("login (/no/login)", async ({ page }) => {
     await page.goto("/no/login");
-    await expect(page.getByRole("button", { name: /Logg inn/i })).toBeVisible();
     await expect(page.getByLabel("E-postadresse")).toBeVisible();
+    await expect(page.getByLabel("Passord")).toBeVisible();
   });
 
   test("register (/no/register)", async ({ page }) => {
