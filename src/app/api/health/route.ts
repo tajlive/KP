@@ -215,12 +215,13 @@ async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
   const provider = new BinanceMarketDataProvider();
 
   try {
+    // 20s timeout — enough for direct API (7 endpoints × 5s) + proxy fallback
     await Promise.race([
       provider.getPrice("BTCUSDT"),
       new Promise<never>((_, reject) =>
         setTimeout(
           () => reject(new Error("Binance health probe timeout")),
-          5000,
+          20000,
         ),
       ),
     ]);
@@ -323,7 +324,7 @@ export async function GET() {
         message: "Check timed out after 3000ms",
       }),
       Promise.resolve(checkEnvironment()),
-      withTimeout(checkBinanceConnectivity(), 15000, {
+      withTimeout(checkBinanceConnectivity(), 25000, {
         status: "error" as const,
         primaryWorked: false,
         fallbackActive: false,
