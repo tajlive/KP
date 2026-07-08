@@ -17,7 +17,10 @@ interface EquityCurveChartProps {
   className?: string;
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+import type { TooltipProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+
+const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (

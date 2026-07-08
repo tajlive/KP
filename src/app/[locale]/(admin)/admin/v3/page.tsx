@@ -6,12 +6,13 @@ import { Crown, Gift, Coins, Users, Zap, Check, Loader2, Sparkles } from "lucide
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { toast } from "sonner";
+import { User } from "@supabase/supabase-js";
 
 const ADMIN_EMAIL = "tomarnejensen@gmail.com";
 const TIERS = ["student", "bachelor", "master", "phd", "professor"] as const;
 
 export default function AdminPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [targetEmail, setTargetEmail] = useState("");
   const [selectedTier, setSelectedTier] = useState<string>("master");
@@ -52,8 +53,8 @@ export default function AdminPage() {
     try {
       await fn();
       toast.success(`${action} fullført!`);
-    } catch (e: any) {
-      toast.error(e.message || "Noe gikk galt");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Noe gikk galt");
     }
     setActionLoading(null);
   };
@@ -98,8 +99,9 @@ export default function AdminPage() {
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {/* User input */}
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-          <label className="text-sm font-medium text-zinc-400 mb-3 block">Bruker (epost)</label>
+          <label htmlFor="targetEmail" className="text-sm font-medium text-zinc-400 mb-3 block">Bruker (epost)</label>
           <Input
+            id="targetEmail"
             value={targetEmail}
             onChange={(e) => setTargetEmail(e.target.value)}
             placeholder="epost@example.com"

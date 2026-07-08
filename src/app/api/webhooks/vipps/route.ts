@@ -45,29 +45,29 @@ export async function POST(request: NextRequest) {
     const eventType = request.headers.get("X-Vipps-Event-Type") || body.eventType || "unknown";
     const orderId = body.orderId || body.merchantSerialNumber + "-" + Date.now();
 
-    console.log(`[Vipps Webhook] ${eventType} — order: ${orderId}`);
+    console.info(`[Vipps Webhook] ${eventType} — order: ${orderId}`);
 
     switch (eventType) {
       case "payment.captured":
       case "reservation.captured":
         // Payment successful — activate subscription/order
-        console.log(`[Vipps] ✅ Payment captured: ${orderId}`);
+        console.info(`[Vipps] ✅ Payment captured: ${orderId}`);
         break;
 
       case "payment.cancelled":
       case "reservation.cancelled":
         // Payment cancelled — revert
-        console.log(`[Vipps] ❌ Payment cancelled: ${orderId}`);
+        console.info(`[Vipps] ❌ Payment cancelled: ${orderId}`);
         break;
 
       case "payment.refunded":
       case "reservation.refunded":
         // Payment refunded
-        console.log(`[Vipps] ↩️ Payment refunded: ${orderId}`);
+        console.info(`[Vipps] ↩️ Payment refunded: ${orderId}`);
         break;
 
       default:
-        console.log(`[Vipps] ℹ️ Event: ${eventType}`);
+        console.info(`[Vipps] ℹ️ Event: ${eventType}`);
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

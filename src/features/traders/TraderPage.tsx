@@ -16,9 +16,20 @@ interface Trade {
   reason: string;
 }
 
+interface TraderProfile {
+  name: string;
+  tier: string;
+  winRate: number;
+  totalTrades: number;
+  totalPnl: number;
+  bestTrade: number;
+  worstTrade: number;
+  currentBalance: number;
+}
+
 export function TraderPage() {
   const { id } = useParams<{ id: string }>();
-  const [trader, setTrader] = useState<any>(null);
+  const [trader, setTrader] = useState<TraderProfile | null>(null);
   const [trades, setTrades] = useState<Trade[]>([]);
 
   useEffect(() => {
