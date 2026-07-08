@@ -100,34 +100,19 @@ REVOKE EXECUTE ON FUNCTION public.compute_leaderboard_monthly FROM anon;
 REVOKE EXECUTE ON FUNCTION public.persist_gap_metrics FROM anon;
 
 -- ════════════════════════════════════════
--- 6. Convert SECURITY DEFINER → INVOKER for safe read-only functions
---    Disse trenger IKKE elevated privileges
+-- 6. RLS-enabled tables uten policy → service_role-only (INFO)
 -- ════════════════════════════════════════
-ALTER FUNCTION public.get_user_role SET security_invoker = true;
-ALTER FUNCTION public.get_user_subscription_tier SET security_invoker = true;
-ALTER FUNCTION public.is_admin SET security_invoker = true;
-ALTER FUNCTION public.is_admin_for_profiles SET security_invoker = true;
-ALTER FUNCTION public.is_service_role SET security_invoker = true;
-ALTER FUNCTION public.user_has_permission SET security_invoker = true;
-ALTER FUNCTION public.get_cron_jobs_status SET security_invoker = true;
-ALTER FUNCTION public.get_rls_status SET security_invoker = true;
-ALTER FUNCTION public.get_top_tables_by_rows SET security_invoker = true;
-ALTER FUNCTION public.get_system_metrics SET security_invoker = true;
-ALTER FUNCTION public.get_emergency_status SET security_invoker = true;
-ALTER FUNCTION public.is_trading_allowed SET security_invoker = true;
-ALTER FUNCTION public.is_bot_healthy SET security_invoker = true;
-ALTER FUNCTION public.should_send_notification SET security_invoker = true;
-ALTER FUNCTION public.should_send_push SET security_invoker = true;
-ALTER FUNCTION public.get_cta_click_aggregates SET security_invoker = true;
-ALTER FUNCTION public.get_cta_daily_trends SET security_invoker = true;
-ALTER FUNCTION public.get_error_stats SET security_invoker = true;
-ALTER FUNCTION public.get_avg_onboarding_time SET security_invoker = true;
-ALTER FUNCTION public.latest_trader_verification SET security_invoker = true;
-
--- ════════════════════════════════════════
--- 7. Enable leaked password protection
--- ════════════════════════════════════════
--- Done via Supabase Dashboard: Authentication → Settings → Enable 'Leaked password protection'
--- SQL equivalent:
-ALTER ROLE authenticator SET pgrst.jwt_claims = '{"role":"authenticator"}';
--- Note: This must be configured via Dashboard or Auth admin API
+DO $$
+DECLARE
+  tbl TEXT;
+  tables TEXT[] := ARRAY[
+    'admin_audit_log', 'archived_trade_summaries', 'bot_health',
+    'cockpit_report_jobs', 'feature_flags', 'idempotency_keys',
+    'reconciliation_runs', 'strategy_logs'
+  ];
+BEGIN
+  FOREACH tbl IN ARRAY tables LOOP
+    EXECUTE format('CREATE POLICY "Service role access" ON public.%I FOR ALL TO service_role USING (true) WITH CHECK (true)', tbl);
+    EXECUTE format('CREATE POLICY "Block others" ON public.%I FOR ALL TO anon, authenticated USING (false)', tbl);
+  END LOOP;
+END $$;
