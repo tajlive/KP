@@ -52,7 +52,8 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     });
     chartRef.current = chart;
 
-    // Candlestick series
+    // Candlestick series — lightweight-charts types omit addCandlestickSeries at runtime
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const candleSeries = (chart as any).addCandlestickSeries({
       upColor: "#22C55E",
       downColor: "#EF4444",
@@ -83,6 +84,8 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
           `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=100`
         );
         const klines = await res.json();
+        // Binance klines: [number, string, string, string, string, string, ...]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data = klines.map((k: any) => ({
           time: Math.floor(k[0] / 1000),
           open: parseFloat(k[1]),
