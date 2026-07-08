@@ -6,10 +6,12 @@ import { Bot, Zap, Shield, Clock, TrendingUp, ArrowRight } from "lucide-react";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = generateMarketingMetadata({
-  title: "Trading Bots — Automatiser handelen din",
-  description: "La Klarpakkes AI-drevne trading bots handle for deg. 24/7 overvåking, automatisk stop-loss og take-profit.",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Trading Bots — Automatiser handelen din",
+    description: "La Klarpakkes AI-drevne trading bots handle for deg. 24/7 overvåking, automatisk stop-loss og take-profit.",
+  };
+}
 
 export default function BotsPage() {
   return (
