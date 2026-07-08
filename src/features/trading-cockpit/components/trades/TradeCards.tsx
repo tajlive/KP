@@ -2,145 +2,137 @@
 
 import * as React from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { format } from "date-fns";
-import { nb, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/shared/ui/badge";
+import { ArrowUpRight, ArrowDownRight, Clock, Info } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { tradeStatusColor, sideColor, pnlColor } from "./TradeTable";
+import { tradeStatusColor } from "./TradeTable";
 import type { Trade } from "@/features/trading-cockpit/types";
 
 interface TradeCardsProps {
   trades: Trade[];
   isLoading?: boolean;
-  error?: { message: string } | null;
   onCardClick?: (trade: Trade) => void;
   className?: string;
 }
 
-export function TradeCards({
-  trades,
-  isLoading = false,
-  error = null,
-  onCardClick,
-  className,
-}: TradeCardsProps) {
+function pnlColor(value: number | null): string {
+  if (value === null || value === 0) return "text-zinc-500";
+  return value > 0 ? "text-emerald-400" : "text-rose-400";
+}
+
+function sideIcon(side: string) {
+  return side === "buy" ? (
+    <ArrowDownRight className="size-4 text-blue-400" />
+  ) : (
+    <ArrowUpRight className="size-4 text-rose-400" />
+  );
+}
+
+export function TradeCards({ trades, isLoading = false, onCardClick, className }: TradeCardsProps) {
   const t = useTranslations("trading");
   const locale = useLocale();
-  const dateLocale = locale === "no" ? nb : enUS;
 
-  const formatMoney = (value: number | null) =>
-    value === null
-      ? "—"
-      : new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
-          style: "currency",
-          currency: "NOK",
-          maximumFractionDigits: 2,
-        }).format(value);
+  const fmtNok = (v: number | null) =>
+    v === null ? "—" : new Intl.NumberFormat("nb-NO", { style: "currency", currency: "NOK", maximumFractionDigits: 0 }).format(v);
 
-  const formatNumber = (value: number | null) =>
-    value === null
-      ? "—"
-      : new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
-          maximumFractionDigits: 8,
-        }).format(value);
-
-  const formatDate = (value: string | null) =>
-    value
-      ? format(new Date(value), "dd.MM.yyyy HH:mm", { locale: dateLocale })
-      : "—";
+  const fmtDate = (d: string | null) => {
+    if (!d) return "—";
+    const date = new Date(d);
+    const now = new Date();
+    const diffMin = (now.getTime() - date.getTime()) / 60000;
+    if (diffMin < 1) return "Nå";
+    if (diffMin < 60) return `${Math.floor(diffMin)}m siden`;
+    if (diffMin < 1440) return `${Math.floor(diffMin / 60)}t siden`;
+    return date.toLocaleDateString("nb-NO", { day: "numeric", month: "short" });
+  };
 
   if (isLoading && trades.length === 0) {
     return (
-      <div className={cn("grid gap-3 md:hidden", className)} data-testid="trade-cards-skeleton">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} variant="card" className="h-32 w-full" />
+      <div className={cn("md:hidden space-y-3", className)}>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-3">
+            <Skeleton variant="text" className="h-5 w-24" />
+            <Skeleton variant="text" className="h-4 w-16" />
+          </div>
         ))}
       </div>
     );
   }
 
-  if (error && trades.length === 0) {
-    return (
-      <div
-        className={cn(
-          "md:hidden bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
-          className,
-        )}
-        data-testid="trade-cards-error"
-      >
-        <p className="text-kp-text-primary font-medium">{t("cockpit.trades.error.title")}</p>
-        <p className="text-sm text-kp-text-secondary mt-1">{error.message}</p>
-      </div>
-    );
-  }
-
-  if (trades.length === 0) {
-    return (
-      <div
-        className={cn(
-          "md:hidden bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
-          className,
-        )}
-        data-testid="trade-cards-empty"
-      >
-        <p className="text-kp-text-primary font-medium">{t("cockpit.trades.noTradesTitle")}</p>
-        <p className="text-sm text-kp-text-secondary mt-1">{t("cockpit.trades.noTradesDescription")}</p>
-      </div>
-    );
-  }
-
   return (
-    <div className={cn("grid gap-3 md:hidden", className)} data-testid="trade-cards">
-      {trades.map((trade) => (
-        <button
-          key={trade.id}
-          type="button"
-          onClick={() => onCardClick?.(trade)}
-          className={cn(
-            "bg-kp-card border border-kp-light rounded-2xl p-4 text-left w-full transition-colors hover:bg-kp-bg-hover",
-          )}
-          aria-label={`${trade.trading_pair} ${trade.side}`}
-          data-testid={`trade-card-${trade.id}`}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-kp-text-primary">{trade.trading_pair}</span>
-              <Badge className={cn("rounded-full border text-xs", sideColor(trade.side))}>
-                {t(`cockpit.trades.side.${trade.side}`)}
-              </Badge>
-            </div>
-            <Badge className={cn("rounded-full border text-xs", tradeStatusColor(trade.status))}>
-              {t(`cockpit.trades.status.${trade.status}`)}
-            </Badge>
-          </div>
+    <div className={cn("md:hidden space-y-2.5", className)} data-testid="trade-cards">
+      {trades.map((trade) => {
+        const isBuy = trade.side === "buy";
+        const hasPnl = trade.effective_pnl !== null && trade.effective_pnl !== 0;
 
-          <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-            <div>
-              <p className="text-kp-text-muted text-xs">{t("cockpit.trades.columns.price")}</p>
-              <p className="text-kp-text-primary tabular-nums">{formatMoney(trade.price)}</p>
+        return (
+          <button
+            key={trade.id}
+            onClick={() => onCardClick?.(trade)}
+            className={cn(
+              "w-full text-left rounded-2xl p-4 transition-all duration-200",
+              "bg-gradient-to-br from-white/[0.04] to-white/[0.01]",
+              "border border-white/[0.06] hover:border-white/[0.12]",
+              "active:scale-[0.98] shadow-sm hover:shadow-md",
+            )}
+          >
+            {/* Top row: pair + time */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-white">{trade.trading_pair}</span>
+                <span className={cn(
+                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold",
+                  isBuy ? "bg-blue-400/10 text-blue-400" : "bg-rose-400/10 text-rose-400"
+                )}>
+                  {sideIcon(trade.side)}
+                  {isBuy ? "Kjøp" : "Salg"}
+                </span>
+              </div>
+              <span className="flex items-center gap-1 text-xs text-zinc-500">
+                <Clock className="size-3" />
+                {fmtDate(trade.executed_at)}
+              </span>
             </div>
-            <div>
-              <p className="text-kp-text-muted text-xs">{t("cockpit.trades.columns.quantity")}</p>
-              <p className="text-kp-text-primary tabular-nums">{formatNumber(trade.quantity)}</p>
-            </div>
-            <div>
-              <p className="text-kp-text-muted text-xs">{t("cockpit.trades.columns.totalValue")}</p>
-              <p className="text-kp-text-primary tabular-nums">{formatMoney(trade.total_value)}</p>
-            </div>
-            <div>
-              <p className="text-kp-text-muted text-xs">{t("cockpit.trades.columns.effectivePnl")}</p>
-              <p className={cn("tabular-nums", pnlColor(trade.effective_pnl))}>
-                {formatMoney(trade.effective_pnl)}
-              </p>
-            </div>
-          </div>
 
-          <div className="mt-3 pt-3 border-t border-kp-light">
-            <p className="text-xs text-kp-text-muted">{formatDate(trade.executed_at)}</p>
-          </div>
-        </button>
-      ))}
+            {/* Middle: price + quantity */}
+            <div className="flex items-center gap-4 mb-2">
+              <div>
+                <span className="text-[10px] uppercase tracking-wider text-zinc-500">Pris</span>
+                <p className="text-sm font-medium text-white">{fmtNok(trade.price)}</p>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase tracking-wider text-zinc-500">Antall</span>
+                <p className="text-sm font-medium text-white">{trade.quantity ?? "—"}</p>
+              </div>
+              <div className="ml-auto text-right">
+                <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                  {hasPnl ? "Gevinst/tap" : "Status"}
+                </span>
+                {hasPnl ? (
+                  <p className={cn("text-sm font-bold", pnlColor(trade.effective_pnl))}>
+                    {trade.effective_pnl! > 0 ? "+" : ""}{fmtNok(trade.effective_pnl)}
+                  </p>
+                ) : (
+                  <span className={cn(
+                    "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold",
+                    tradeStatusColor(trade.status)
+                  )}>
+                    {trade.status === "filled" ? "✓ Utført" : trade.status}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom: PnL detail (only for sell trades with profit) */}
+            {hasPnl && (
+              <div className="flex items-center gap-1 text-xs text-zinc-600">
+                <Info className="size-3" />
+                {trade.effective_pnl! > 0 ? "Tjente penger på dette salget" : "Tapte penger på dette salget"}
+              </div>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

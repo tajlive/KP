@@ -2,18 +2,8 @@
 
 import * as React from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { format } from "date-fns";
-import { nb, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/ui/table";
-import { Badge } from "@/shared/ui/badge";
+import { ArrowDownRight, ArrowUpRight, Clock, Info } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { Trade } from "@/features/trading-cockpit/types";
 
@@ -27,188 +17,126 @@ interface TradeTableProps {
 
 export function tradeStatusColor(status: string): string {
   switch (status) {
-    case "filled":
-      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
-    case "partially_filled":
-      return "bg-sky-500/10 text-sky-400 border-sky-500/30";
-    case "pending":
-      return "bg-amber-500/10 text-amber-400 border-amber-500/30";
-    case "cancelled":
-      return "bg-gray-500/10 text-gray-400 border-gray-500/30";
-    case "failed":
-      return "bg-rose-500/10 text-rose-400 border-rose-500/30";
-    default:
-      return "bg-gray-500/10 text-gray-400 border-gray-500/30";
+    case "filled": return "bg-emerald-400/10 text-emerald-400";
+    case "pending": return "bg-amber-400/10 text-amber-400";
+    case "failed":  return "bg-rose-400/10 text-rose-400";
+    default:        return "bg-zinc-500/10 text-zinc-400";
   }
 }
 
-export function sideColor(side: string): string {
-  return side === "buy"
-    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-    : "bg-rose-500/10 text-rose-400 border-rose-500/30";
+export function pnlClass(value: number | null): string {
+  if (value === null || value === 0) return "text-zinc-500";
+  return value > 0 ? "text-emerald-400" : "text-rose-400";
 }
 
-export function pnlColor(value: number | null): string {
-  if (value === null || value === 0) return "text-kp-text-muted";
-  return value > 0 ? "text-kp-success" : "text-kp-danger";
+export function sidePill(side: string, label: string) {
+  return side === "buy" ? (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-400/10 text-blue-400">
+      <ArrowDownRight className="size-3" />{label}
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-400/10 text-rose-400">
+      <ArrowUpRight className="size-3" />{label}
+    </span>
+  );
 }
 
-export function TradeTable({
-  trades,
-  isLoading = false,
-  error = null,
-  onRowClick,
-  className,
-}: TradeTableProps) {
+export function TradeTable({ trades, isLoading = false, error = null, onRowClick, className }: TradeTableProps) {
   const t = useTranslations("trading");
   const locale = useLocale();
-  const dateLocale = locale === "no" ? nb : enUS;
 
-  const formatMoney = (value: number | null) =>
-    value === null
-      ? "—"
-      : new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
-          style: "currency",
-          currency: "NOK",
-          maximumFractionDigits: 2,
-        }).format(value);
+  const fmtNok = (v: number | null) =>
+    v === null ? "—" : new Intl.NumberFormat("nb-NO", { style: "currency", currency: "NOK", maximumFractionDigits: 0 }).format(v);
 
-  const formatNumber = (value: number | null) =>
-    value === null
-      ? "—"
-      : new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
-          maximumFractionDigits: 8,
-        }).format(value);
-
-  const formatDate = (value: string | null) =>
-    value
-      ? format(new Date(value), "dd.MM.yyyy HH:mm", { locale: dateLocale })
-      : "—";
+  const fmtDate = (d: string | null) => {
+    if (!d) return "—";
+    const date = new Date(d);
+    return date.toLocaleDateString("nb-NO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  };
 
   if (isLoading && trades.length === 0) {
-    return (
-      <div className={cn("hidden md:block space-y-2", className)} data-testid="trade-table-skeleton">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} variant="text" className="h-10 w-full" />
-        ))}
-      </div>
-    );
+    return <div className={cn("hidden md:block space-y-2", className)} data-testid="trade-table-skeleton">
+      {[1,2,3,4,5].map(i => <Skeleton key={i} variant="text" className="h-12 w-full rounded-xl" />)}
+    </div>;
   }
 
   if (error && trades.length === 0) {
-    return (
-      <div
-        className={cn(
-          "hidden md:block bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
-          className,
-        )}
-        data-testid="trade-table-error"
-      >
-        <p className="text-kp-text-primary font-medium">{t("cockpit.trades.error.title")}</p>
-        <p className="text-sm text-kp-text-secondary mt-1">{error.message}</p>
-      </div>
-    );
-  }
-
-  if (trades.length === 0) {
-    return (
-      <div
-        className={cn(
-          "hidden md:block bg-kp-card border border-kp-light rounded-2xl p-8 text-center",
-          className,
-        )}
-        data-testid="trade-table-empty"
-      >
-        <p className="text-kp-text-primary font-medium">{t("cockpit.trades.noTradesTitle")}</p>
-        <p className="text-sm text-kp-text-secondary mt-1">{t("cockpit.trades.noTradesDescription")}</p>
-      </div>
-    );
+    return <div className={cn("hidden md:block text-center py-12 text-zinc-500", className)}>{error.message}</div>;
   }
 
   return (
-    <div
-      className={cn(
-        "hidden md:block overflow-x-auto rounded-2xl border border-kp-light bg-kp-card",
-        className,
-      )}
-      data-testid="trade-table"
-    >
-      <div className="min-w-[1000px]">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-kp-card">
-            <TableRow className="border-kp-light hover:bg-transparent">
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.trades.columns.pair")}</TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.trades.columns.side")}</TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider">{t("cockpit.trades.columns.status")}</TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.price")}
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.quantity")}
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.fee")}
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.totalValue")}
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.realizedPnl")}
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.effectivePnl")}
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-xs font-semibold text-kp-text-secondary uppercase tracking-wider text-right">
-                {t("cockpit.trades.columns.executedAt")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {trades.map((trade) => (
-              <TableRow
-                key={trade.id}
-                className="border-b border-kp-border hover:bg-kp-bg-hover/50 transition-colors duration-150 cursor-pointer"
-                onClick={() => onRowClick?.(trade)}
-                data-testid={`trade-row-${trade.id}`}
-              >
-                <TableCell className="px-4 py-3 text-sm font-medium text-kp-text-primary">
-                  {trade.trading_pair}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm">
-                  <Badge className={cn("rounded-full border", sideColor(trade.side))}>
-                    {t(`cockpit.trades.side.${trade.side}`)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm">
-                  <Badge className={cn("rounded-full border", tradeStatusColor(trade.status))}>
-                    {t(`cockpit.trades.status.${trade.status}`)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
-                  {formatMoney(trade.price)}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
-                  {formatNumber(trade.quantity)}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
-                  {formatMoney(trade.fee)}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
-                  {formatMoney(trade.total_value)}
-                </TableCell>
-                <TableCell className={cn("px-4 py-3 text-sm tabular-nums text-right", pnlColor(trade.realized_pnl))}>
-                  {formatMoney(trade.realized_pnl)}
-                </TableCell>
-                <TableCell className={cn("px-4 py-3 text-sm tabular-nums text-right", pnlColor(trade.effective_pnl))}>
-                  {formatMoney(trade.effective_pnl)}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-sm tabular-nums text-right text-kp-text-primary">
-                  {formatDate(trade.executed_at)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+    <div className={cn("hidden md:block", className)} data-testid="trade-table">
+      {/* Glassmorphism card */}
+      <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden shadow-lg shadow-black/20">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/[0.06]">
+                {[
+                  { label: "Par", info: "Hvilket kryptopar som ble handlet" },
+                  { label: "Handling", info: "Kjøp eller salg" },
+                  { label: "Pris", info: "Pris per enhet" },
+                  { label: "Antall", info: "Hvor mange enheter" },
+                  { label: "Gevinst/tap", info: "Resultat ved salg. Kjøp har ingen gevinst/tap før de selges." },
+                  { label: "Tid", info: "Når handelen skjedde" },
+                ].map((col) => (
+                  <th key={col.label} className="px-4 py-3 text-left">
+                    <div className="flex items-center gap-1 group/tip cursor-help" title={col.info}>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                        {col.label}
+                      </span>
+                      <Info className="size-3 text-zinc-700 group-hover/tip:text-zinc-400 transition-colors" />
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {trades.map((trade) => {
+                const isBuy = trade.side === "buy";
+                const hasPnl = trade.effective_pnl !== null && trade.effective_pnl !== 0;
+
+                return (
+                  <tr
+                    key={trade.id}
+                    onClick={() => onRowClick?.(trade)}
+                    className="border-b border-white/[0.03] hover:bg-white/[0.03] transition-colors cursor-pointer group"
+                  >
+                    <td className="px-4 py-3">
+                      <span className="text-sm font-bold text-white">{trade.trading_pair}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {sidePill(trade.side, isBuy ? "Kjøp" : "Salg")}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm font-medium text-zinc-200">{fmtNok(trade.price)}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-zinc-300">{trade.quantity ?? "—"}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {hasPnl ? (
+                        <span className={cn("text-sm font-bold", pnlClass(trade.effective_pnl))}>
+                          {trade.effective_pnl! > 0 ? "+" : ""}{fmtNok(trade.effective_pnl)}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-zinc-600">
+                          {isBuy ? "—" : "—"}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="flex items-center gap-1 text-sm text-zinc-500">
+                        <Clock className="size-3" />
+                        {fmtDate(trade.executed_at)}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ import {
   SheetDescription,
 } from "@/shared/ui/sheet";
 import { MobileBottomSheet } from "@/shared/ui/mobile-bottom-sheet";
-import { tradeStatusColor, sideColor, pnlColor } from "./TradeTable";
+import { tradeStatusColor, sidePill, pnlClass } from "./TradeTable";
 import {
   buildTradeExplanation,
   getLearnMoreTitle,
@@ -107,7 +107,7 @@ export function TradeDetails({
       <div className="flex items-center justify-between">
         <span className="text-2xl font-bold text-kp-text-primary">{trade.trading_pair}</span>
         <div className="flex gap-2">
-          <Badge className={cn("rounded-full border", sideColor(trade.side))}>
+          <Badge className={cn("rounded-full border", trade.side === "buy" ? "bg-blue-400/10 text-blue-400" : "bg-rose-400/10 text-rose-400")}>
             {t(`cockpit.trades.side.${trade.side}`)}
           </Badge>
           <Badge className={cn("rounded-full border", tradeStatusColor(trade.status))}>
@@ -124,12 +124,12 @@ export function TradeDetails({
         <DetailItem
           label={t("cockpit.trades.columns.realizedPnl")}
           value={formatMoney(trade.realized_pnl)}
-          valueClassName={pnlColor(trade.realized_pnl)}
+          valueClassName={pnlClass(trade.realized_pnl)}
         />
         <DetailItem
           label={t("cockpit.trades.columns.effectivePnl")}
           value={formatMoney(trade.effective_pnl)}
-          valueClassName={pnlColor(trade.effective_pnl)}
+          valueClassName={pnlClass(trade.effective_pnl)}
         />
       </div>
 

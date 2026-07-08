@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
-import { Wallet, TrendingUp, BarChart3, Calendar, Target, Activity, Sparkles } from "lucide-react";
+import { Wallet, TrendingUp, BarChart3, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingWizard } from "./OnboardingWizard";
 import { MetricCard } from "./MetricCard";
 import { QuickActions } from "./QuickActions";
 import { StatusSummary } from "./StatusSummary";
+import { TradingModesInfo } from "./TradingModesInfo";
 import type {
   DashboardMetrics,
   TradingAnalytics,
@@ -31,29 +32,18 @@ interface OverviewProps {
 
 export function Overview({
   metrics,
-  analytics,
   sessions,
   statusCounts,
-  autoTradeSettings,
-  hasMoreSessions,
-  onLoadMoreSessions,
-  onActivateAutoTrading,
-  isActivatingAutoTrading,
   className,
   showOnboarding = false,
   onDismissOnboarding,
 }: OverviewProps) {
   const t = useTranslations("trading");
   const safeMetrics = metrics ?? {
-    totalPnl: 0,
-    totalTrades: 0,
-    winRate: 0,
-    totalCapital: 0,
-    startingCapital: 0,
-    winningTrades: 0,
-    losingTrades: 0,
-    sessionCount: 0,
-    recentSessions: [],
+    totalPnl: 0, totalTrades: 0, winRate: 0,
+    totalCapital: 0, startingCapital: 0,
+    winningTrades: 0, losingTrades: 0,
+    sessionCount: 0, recentSessions: [],
   };
 
   const hasZeroTrades = safeMetrics.totalTrades === 0;
@@ -64,6 +54,9 @@ export function Overview({
       {showOnboarding && hasZeroTrades && (
         <OnboardingWizard onComplete={onDismissOnboarding ?? (() => {})} />
       )}
+
+      {/* ✨ Handel vs Auto-handel infoboks — alltid synlig */}
+      <TradingModesInfo />
 
       {/* Key Metrics Grid — mobile 2-col, desktop 4-col */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
