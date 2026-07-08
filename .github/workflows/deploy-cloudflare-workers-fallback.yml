@@ -60,7 +60,7 @@ jobs:
   deploy:
     name: Build and deploy Worker
     needs: check-health
-    if: ${{ needs.check-health.outputs.stale == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-health.outputs.stale == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
