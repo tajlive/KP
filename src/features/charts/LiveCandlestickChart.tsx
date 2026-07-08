@@ -53,7 +53,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     chartRef.current = chart;
 
     // Candlestick series
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = (chart as any).addCandlestickSeries({
       upColor: "#22C55E",
       downColor: "#EF4444",
       borderDownColor: "#EF4444",
@@ -83,7 +83,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
           `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=100`
         );
         const klines = await res.json();
-        const data = klines.map((k: number[]) => ({
+        const data = klines.map((k: any) => ({
           time: Math.floor(k[0] / 1000),
           open: parseFloat(k[1]),
           high: parseFloat(k[2]),
