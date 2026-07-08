@@ -28,8 +28,8 @@ on:
         type: boolean
 
 concurrency:
-  group: cloudflare-workers-deploy
-  cancel-in-progress: true
+  group: cloudflare-workers-deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
