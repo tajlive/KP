@@ -4,8 +4,8 @@ import { join, extname } from "path";
 import { sitemapClient, isSanityConfigured } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
 
-// Cache sitemap for 1 hour — Sanity pages rarely change and this reduces API quota usage.
-export const revalidate = 3600;
+// Sitemap regenereres ved hver request (Cloudflare Workers støtter ikke ISR)
+export const dynamic = "force-dynamic";
 
 const baseUrl = "https://www.klarpakke.no";
 const appDir = join(process.cwd(), "src/app/[locale]");
