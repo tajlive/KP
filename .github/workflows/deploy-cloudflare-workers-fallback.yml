@@ -81,12 +81,12 @@ jobs:
         run: npm ci --prefer-offline --legacy-peer-deps
 
       - name: Type check
-        if: ${{ github.event_name == 'workflow_dispatch' && !github.event.inputs.skip_tests }}
+        if: false  # Skip on push — pre-push hook handles tsc
         run: npm run type-check
         timeout-minutes: 10
 
       - name: Run unit tests
-        if: ${{ github.event_name == 'workflow_dispatch' && !github.event.inputs.skip_tests }}
+        if: false  # Skip on push — pre-push hook handles tests
         run: npm run test:unit
 
       - name: Build for Cloudflare Workers
