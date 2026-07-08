@@ -2,8 +2,6 @@ import { setRequestLocale } from "next-intl/server";
 import { SURFACE } from "@/lib/design/tokens";
 import { LandingHero } from "@/features/landing/LandingHero";
 import { SafetySection } from "@/features/landing/SafetySection";
-import { LiveMarketStrip } from "@/features/landing/LiveMarketStrip";
-import { DemoWidget } from "@/features/landing/DemoWidget";
 import { TrustStrip } from "@/features/landing/TrustStrip";
 import { FeaturesBentoGrid } from "@/features/landing/FeaturesBentoGrid";
 import { ThreeSteps } from "@/features/landing/ThreeSteps";
@@ -48,8 +46,6 @@ export default async function HomePage({ params }: HomePageProps) {
     <MarketingPageShell className={SURFACE.BG_LIGHT}>
       <LandingHero />
       <SafetySection />
-      <LiveMarketStrip />
-      <DemoWidget />
       <TrustStrip />
       <FeaturesBentoGrid />
       <ThreeSteps />
