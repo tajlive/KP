@@ -1,20 +1,34 @@
+/**
+ * Sentry edge — optimalisert for minimal kostnad
+ * 
+ * Edge kjører på CF Workers — veldig lav sample rate
+ */
+
 import * as Sentry from "@sentry/nextjs";
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 
-if (SENTRY_DSN) {
+if (SENTRY_DSN && process.env.NODE_ENV === "production") {
   Sentry.init({
     dsn: SENTRY_DSN,
-    tracesSampleRate: 0.05, // Edge: veldig lav sample rate (kostnad)
-    environment: process.env.NODE_ENV || "production",
-    release: process.env.NEXT_PUBLIC_APP_VERSION || "dev",
+    environment: "production",
+    release: process.env.NEXT_PUBLIC_APP_VERSION || "unknown",
+    tracesSampleRate: 0.01, // Edge: 1% (kostnadskontroll)
+    
+    ignoreErrors: [
+      "NetworkError",
+      "fetch failed",
+      "Unexpected end of JSON input",
+    ],
     
     beforeSend(event) {
-      if (process.env.NODE_ENV === "development") return null;
-      if (!SENTRY_DSN) return null;
+      // Edge: kun send exceptions, ikke transactions
+      if (event.type === "transaction") return null;
       return event;
     },
   });
-}
+});
 
-export const onRequest = Sentry.wrapMiddleware;
+// Edge middleware — wrap for auto-error capture
+// Bruk sentry.edge.init + auto-instrumentering
+
