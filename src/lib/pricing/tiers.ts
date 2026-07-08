@@ -10,7 +10,7 @@ import type { TierSlug } from "./tier-level";
 import { normalizeTier } from "./tier-level";
 
 export type { TierSlug } from "./tier-level";
-export { normalizeTier } from "./tier-level";
+export { getTierLevel, normalizeTier, VALID_TIER_SLUGS } from "./tier-level";
 
 export const TIERS = {
   student: {
