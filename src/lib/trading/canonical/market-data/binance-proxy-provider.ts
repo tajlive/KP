@@ -7,8 +7,6 @@
  * Brukes av BinanceMarketDataProvider som fallback når direkte API feiler.
  */
 
-const BINANCE_PROXY_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/binance-proxy`;
-
 interface ProxyResponse {
   ok: true;
   status: number;
@@ -23,14 +21,16 @@ interface ProxyError {
 }
 
 async function fetchViaProxy(path: string): Promise<unknown> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const proxySecret = process.env.BINANCE_PROXY_SECRET;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!proxySecret || !anonKey) {
-    throw new Error("BINANCE_PROXY_SECRET or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured");
+  if (!supabaseUrl || !proxySecret || !anonKey) {
+    throw new Error("Supabase proxy not configured (missing env vars)");
   }
 
-  const res = await fetch(BINANCE_PROXY_URL!, {
+  const proxyUrl = `${supabaseUrl}/functions/v1/binance-proxy`;
+  const res = await fetch(proxyUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
