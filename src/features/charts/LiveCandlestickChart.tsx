@@ -51,7 +51,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     chartRef.current = chart;
 
     // Candlestick series
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = (chart as any).addCandlestickSeries({
       upColor: "#22C55E",
       downColor: "#EF4444",
       borderDownColor: "#EF4444",
