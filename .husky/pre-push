@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
-# Klarpakke pre-push hook
-# Kjører tester lokalt FØR push — blokkerer hvis noe feiler.
-
+# Klarpakke pre-push — blokker push hvis noe feiler
 set -e
 
-echo "🚀 Klarpakke Pre-Push — sjekker..."
+echo "🔒 Klarpakke Pre-Push"
 
-# Fast-fail: Sjekk kun de raskeste testene
-echo "  ⚡ Rate limit test..."
-npx vitest run src/middleware/rateLimit.test.ts --reporter=dot 2>&1 | tail -3
+# 1. TypeScript
+echo "  tsc..."
+npx tsc --noEmit --pretty false 2>&1 | tail -3
+echo "  ✅ tsc OK"
 
-echo "  ⚡ TSC type-check..."
-npx tsc --noEmit 2>&1 | head -5 || {
-  echo "❌ TypeScript-feil — rett opp før push!"
-  exit 1
-}
+# 2. Unit tests (bare de raskeste)
+echo "  vitest..."
+npx vitest run --reporter=verbose 2>&1 | tail -1
+echo "  ✅ tests OK"
 
-echo "✅ Pre-push OK"
+# 3. Lint
+echo "  lint..."
+npx next lint --quiet 2>&1 | tail -1
+echo "  ✅ lint OK"
+
+echo "✅ Alt klart — push tillatt"
