@@ -46,17 +46,17 @@ HEADERS = {
 
 # ── Market prices (approximate for July 8, 2026) ────────────────────
 MARKET_PRICES = {
-    "BTCUSDT": 60800.0,
-    "ETHUSDT": 1775.0,
-    "SOLUSDT": 150.0,
+    "BTCUSDT": 62623.88,
+    "ETHUSDT": 1752.59,
+    "SOLUSDT": 78.42,
 }
 
-PRICE_DEVIATION = 0.025  # ±2.5%
+PRICE_DEVIATION = 0.035  # ±2.5%
 
 QUANTITIES = {
     "BTCUSDT": [0.0005, 0.001, 0.0015, 0.002, 0.003],
     "ETHUSDT": [0.05, 0.08, 0.1, 0.15, 0.2],
-    "SOLUSDT": [0.5, 1.0, 1.5, 2.0, 3.0],
+    "SOLUSDT": [0.5, 1.0, 2.0, 3.0, 5.0],
 }
 
 # ── Helpers ─────────────────────────────────────────────────────────
