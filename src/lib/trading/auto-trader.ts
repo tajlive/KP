@@ -119,7 +119,7 @@ export class NextGenAutoTrader {
     try {
       // Adverse selection check
       const { safe, reason } = await checkAdverseSelection(
-        rank.symbol, rank.action, rank.entryPrice
+        rank.symbol, rank.action as "BUY" | "SELL", rank.entryPrice
       );
       if (!safe) {
         console.log(`[NextGenTrader] Skipping ${rank.symbol}: ${reason}`);
