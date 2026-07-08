@@ -66,7 +66,15 @@ export const rateLimitMiddleware: MiddlewareFn = (request: NextRequest) => {
   if (entry.count > limit.max) {
     return new NextResponse(
       JSON.stringify({ error: "Too many requests", retryAfter: Math.ceil((entry.resetAt - now) / 1000) }),
-      { status: 429, headers: { "Content-Type": "application/json", "Retry-After": String(Math.ceil((entry.resetAt - now) / 1000)) } }
+      { 
+        status: 429, 
+        headers: { 
+          "Content-Type": "application/json", 
+          "Retry-After": String(Math.ceil((entry.resetAt - now) / 1000)),
+          "X-RateLimit-Limit": String(limit.max),
+          "X-RateLimit-Remaining": "0",
+        } 
+      }
     );
   }
 
