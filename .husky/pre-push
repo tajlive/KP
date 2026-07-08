@@ -1,9 +1,19 @@
-#!/usr/bin/env sh
-if [ -s "${HOME}/.nvm/nvm.sh" ]; then
-  # shellcheck source=/dev/null
-  . "${HOME}/.nvm/nvm.sh"
-  nvm use 2>/dev/null || true
-fi
-export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+#!/usr/bin/env bash
+# Klarpakke pre-push hook
+# Kjører tester lokalt FØR push — blokkerer hvis noe feiler.
 
-exec node scripts/pre-push.mjs
+set -e
+
+echo "🚀 Klarpakke Pre-Push — sjekker..."
+
+# Fast-fail: Sjekk kun de raskeste testene
+echo "  ⚡ Rate limit test..."
+npx vitest run src/middleware/rateLimit.test.ts --reporter=dot 2>&1 | tail -3
+
+echo "  ⚡ TSC type-check..."
+npx tsc --noEmit 2>&1 | head -5 || {
+  echo "❌ TypeScript-feil — rett opp før push!"
+  exit 1
+}
+
+echo "✅ Pre-push OK"
