@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, CrosshairMode, LineStyle } from "lightweight-charts";
+import { createChart, ColorType, CrosshairMode, LineStyle, IChartApi, ISeriesApi, CandlestickData, Time } from "lightweight-charts";
 
 interface Trade {
   time: number;
@@ -19,9 +19,9 @@ interface LiveChartProps {
 
 export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height = 400, className }: LiveChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<any>(null);
-  const candleSeriesRef = useRef<any>(null);
-  const markerSeriesRef = useRef<any>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const markerSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -53,7 +53,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     chartRef.current = chart;
 
     // Candlestick series
-    const candleSeries = (chart as any).addCandlestickSeries({
+    const candleSeries = chart.addCandlestickSeries({
       upColor: "#22C55E",
       downColor: "#EF4444",
       borderDownColor: "#EF4444",
@@ -67,7 +67,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     const markers = trades
       .filter((t) => t.side)
       .map((t) => ({
-        time: t.time as any,
+        time: t.time as Time,
         position: t.side === "buy" ? "belowBar" as const : "aboveBar" as const,
         color: t.side === "buy" ? "#3B82F6" : "#EF4444",
         shape: t.side === "buy" ? "arrowUp" as const : "arrowDown" as const,
@@ -83,7 +83,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
           `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=100`
         );
         const klines = await res.json();
-        const data = klines.map((k: any) => ({
+        const data = klines.map((k: number[]) => ({
           time: Math.floor(k[0] / 1000),
           open: parseFloat(k[1]),
           high: parseFloat(k[2]),
@@ -103,7 +103,7 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
           const high = Math.max(open, price) + Math.random() * 200;
           const low = Math.min(open, price) - Math.random() * 200;
           mock.push({
-            time: (now - i * 300) as any,
+            time: (now - i * 300) as Time,
             open,
             high,
             low,
