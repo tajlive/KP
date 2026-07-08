@@ -77,19 +77,17 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                 size="sm"
                 variant="outline"
                 className={`gap-2 ${BRAND.primaryOutline}`}
-                aria-disabled={loading}
               >
                 <LogIn className="w-4 h-4" />
-                {t("login")}
+                {loading ? "..." : t("login")}
               </Button>
             </Link>
             <Link href={l("/register")}>
               <Button
                 size="sm"
                 className={`${BRAND.primary} shadow-md shadow-blue-500/20`}
-                aria-disabled={loading}
               >
-                {t("signup")}
+                {loading ? "..." : t("signup")}
               </Button>
             </Link>
           </>
