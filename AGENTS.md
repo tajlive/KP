@@ -1,8 +1,10 @@
-# 🤖 KIMI + MemPalace Master Guide
+# 🤖 Klarpakke — Agent Instructions (Hermes + KIMI)
 
+**Lead Architect:** Hermes Agent (overtatt 2026-07-07)
 **Prosjekt:** Klarpakke - AI Trading Platform  
-**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Cloudflare (DNS/CDN/Workers), Wrangler, Domeneshop  
+**Stack:** Next.js 16, React 19, TypeScript 5.9, Supabase, Cloudflare (DNS/CDN/Workers), Wrangler, Domeneshop, Stripe, Vipps, Resend  
 **Status:** Production (www.klarpakke.no)  
+**Hermes config:** Se `.hermes.md` for arkitekt-kontekst
 **Node:** 24.x (se `.nvmrc`)  
 **Hosting:** Cloudflare Workers (OpenNext.js + Wrangler) + Cloudflare DNS/CDN + Domeneshop domene
 **CI/CD:** GitHub Actions (`.github/workflows/pr-check.yml` + `.github/workflows/deploy.yml`) → `npm run cf:build && npx wrangler deploy`
