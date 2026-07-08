@@ -27,7 +27,7 @@ if (SENTRY_DSN && process.env.NODE_ENV === "production") {
       return event;
     },
   });
-});
+}
 
 // Edge middleware — wrap for auto-error capture
 // Bruk sentry.edge.init + auto-instrumentering
