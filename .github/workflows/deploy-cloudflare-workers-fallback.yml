@@ -114,6 +114,41 @@ jobs:
           NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07' }}
           NEXT_PUBLIC_GLITCHTIP_DSN: ${{ vars.NEXT_PUBLIC_GLITCHTIP_DSN || '' }}
 
+      - name: Page smoke test
+        run: |
+          echo "🏥 Testing critical pages..."
+          BASE="https://www.klarpakke.no"
+          ERRORS=0
+
+          check_page() {
+            local path="$1"
+            local code
+            code=$(curl -s -o /tmp/kp_page -w "%{http_code}" -m10 "$BASE$path")
+            if [ "$code" != "200" ]; then
+              echo "  ❌ $path (HTTP $code)"
+              ERRORS=$((ERRORS+1))
+            elif grep -q "Noe gikk galt" /tmp/kp_page; then
+              echo "  ❌ $path (Worker crash: Noe gikk galt)"
+              ERRORS=$((ERRORS+1))
+            else
+              echo "  ✅ $path"
+            fi
+          }
+
+          check_page "/no"
+          check_page "/no/priser"
+          check_page "/no/login"
+          check_page "/no/bots"
+          check_page "/no/leaderboard"
+          check_page "/api/health"
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "❌ $ERRORS page(s) failing — BLOCKING deploy"
+            exit 1
+          fi
+          echo "✅ All pages OK"
+
       - name: Wait for production health check
         if: ${{ github.event.inputs.environment == 'production' || github.event.inputs.environment == null }}
         uses: actions/github-script@v7
