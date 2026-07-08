@@ -1,188 +1,196 @@
+// Auto-trading cron for Klarpakke — 10 Norwegian test users
+// Each run: 1-2 random paper trades per user (BTC, ETH, SOL)
+// BUY/SELL near market price, ~55% of sells profitable
+// Updates paper_accounts balances
+
+import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import pg from 'pg';
-import { randomUUID, randomBytes } from 'crypto';
+import { randomUUID } from 'crypto';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const envPath = resolve(__dirname, '..', '.env.local');
-const envRaw = readFileSync(envPath, 'utf-8');
-const env = {};
-for (const line of envRaw.split(/\r?\n/)) {
-  const trimmed = line.trim();
-  if (!trimmed || trimmed.startsWith('#')) continue;
-  const eqIdx = trimmed.indexOf('=');
-  if (eqIdx === -1) continue;
-  const key = trimmed.slice(0, eqIdx).trim();
-  let val = trimmed.slice(eqIdx + 1).trim();
-  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
-    val = val.slice(1, -1);
-  env[key] = val;
+const PROJECT_DIR = new URL('..', import.meta.url).pathname;
+const envRaw = readFileSync(PROJECT_DIR + '.env.local', 'utf8');
+
+function getEnv(key) {
+  const re = new RegExp(`^${key}=["']?([^"'\n]+)["']?`, 'm');
+  const m = envRaw.match(re);
+  return m ? m[1].trim() : null;
 }
 
-const pass = env.POSTGRES_PASSWORD;
-const DATABASE_URL = `postgresql://postgres.pskhryjzkobytnfwucrb:${encodeURIComponent(pass)}@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=no-verify`;
-const pool = new pg.Pool({ connectionString: DATABASE_URL, max: 5 });
+const SUPABASE_URL = 'https://pskhryjzkobytnfwucrb.supabase.co';
+const SERVICE_ROLE_KEY = getEnv('SUPABASE_SERVICE_ROLE_KEY');
 
-const MARKET = { BTC: 62857.99, ETH: 1757.26, SOL: 78.38 };
-const SYMBOLS = ['BTC', 'ETH', 'SOL'];
-const PAIRS = { BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT' };
-
-function rand(min, max) { return Math.random() * (max - min) + min; }
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function nowISO() { return new Date().toISOString(); }
-function uniqSuffix() { return randomBytes(4).toString('hex'); }
-
-async function getOrCreateSession(client, uid, symbol, capital) {
-  // Try to find an active session for this user+pair first
-  const { rows } = await client.query(
-    `SELECT id FROM public.trading_sessions
-     WHERE user_id = $1 AND trading_pair = $2 AND status = 'active'
-     LIMIT 1`,
-    [uid, PAIRS[symbol]]
-  );
-  if (rows.length > 0) return rows[0].id;
-
-  // Create new with unique strategy_id
-  const sid = randomUUID();
-  await client.query(
-    `INSERT INTO public.trading_sessions (
-      id, user_id, mode, status, strategy_id, strategy_config,
-      trading_pair, risk_level, current_capital, initial_capital,
-      total_trades, winning_trades, losing_trades, total_pnl,
-      last_heartbeat, crash_count, started_at, created_at, updated_at,
-      is_leaderboard_visible
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)`,
-    [
-      sid, uid, 'paper', 'active', 'cron_' + uniqSuffix(), JSON.stringify({}),
-      PAIRS[symbol], 'balanced', capital, capital,
-      0, 0, 0, 0,
-      nowISO(), 0, nowISO(), nowISO(), nowISO(),
-      false
-    ]
-  );
-  return sid;
+if (!SERVICE_ROLE_KEY) {
+  console.error('FATAL: SUPABASE_SERVICE_ROLE_KEY not found');
+  process.exit(1);
 }
+
+const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { persistSession: false }
+});
+
+// Approximate market prices — script reads coin_prices table first as override
+const MARKET_PRICES = {
+  'BTC/USDT': 62100,
+  'ETH/USDT': 1770,
+  'SOL/USDT': 82,
+};
+
+const COINS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT'];
+const TEST_NAMES = [
+  'Ola Nordmann', 'Kari Aas', 'Bjørn Fjell', 'Ingrid Sol',
+  'Lars Vik', 'Marte Hav', 'Per Berg', 'Silje Lund',
+  'Trond Dal', 'Anne Mo'
+];
+
+// --- Helpers ---
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const round2 = n => Math.round(n * 100) / 100;
+const round8 = n => Math.round(n * 100000000) / 100000000;
+const jitter = (price, pct) => {
+  const f = 1 + (Math.random() * 2 - 1) * pct;
+  return round2(price * f);
+};
 
 async function main() {
-  const client = await pool.connect();
+  // 1. Find test users via user_profiles
+  const { data: profiles, error: profErr } = await supabase
+    .from('user_profiles')
+    .select('id, display_name');
+  if (profErr) { console.error('Profile fetch failed:', profErr.message); process.exit(1); }
+
+  const testUsers = (profiles || []).filter(p => TEST_NAMES.includes(p.display_name));
+  if (testUsers.length === 0) { process.exit(0); }
+
+  // 2. Get one active paper session per user (latest created)
+  const userIds = testUsers.map(u => u.id);
+  const { data: sessions } = await supabase
+    .from('trading_sessions')
+    .select('id, user_id, created_at')
+    .in('user_id', userIds)
+    .eq('mode', 'paper')
+    .eq('status', 'active')
+    .order('created_at', { ascending: false });
+
+  const sessionMap = {};
+  if (sessions) {
+    for (const s of sessions) {
+      if (!sessionMap[s.user_id]) sessionMap[s.user_id] = s.id;
+    }
+  }
+
+  // 3. Get paper_account balances
+  const { data: paperAccounts } = await supabase
+    .from('paper_accounts')
+    .select('user_id, current_balance, total_profit_loss')
+    .in('user_id', userIds);
+
+  const balanceMap = {};
+  if (paperAccounts) {
+    for (const pa of paperAccounts) {
+      balanceMap[pa.user_id] = {
+        balance: parseFloat(pa.current_balance) || 100000,
+        pnl: parseFloat(pa.total_profit_loss) || 0,
+      };
+    }
+  }
+
+  // 4. Get coin prices from DB (fallback to market)
+  let prices = { ...MARKET_PRICES };
   try {
-    console.log('[' + nowISO() + '] Auto-trading cron STARTED');
-
-    const TEST_EMAILS = [
-      'ola.nordmann@klarpakke.test', 'kari.aas@klarpakke.test',
-      'bjorn.fjell@klarpakke.test', 'ingrid.sol@klarpakke.test',
-      'lars.vik@klarpakke.test', 'marte.hav@klarpakke.test',
-      'per.berg@klarpakke.test', 'silje.lund@klarpakke.test',
-      'trond.dal@klarpakke.test', 'anne.mo@klarpakke.test',
-    ];
-
-    const { rows: authUsers } = await client.query(
-      'SELECT id, email FROM auth.users WHERE email = ANY($1)', [TEST_EMAILS]
-    );
-
-    if (authUsers.length === 0) { console.log('No test users found.'); return; }
-    console.log('Found ' + authUsers.length + ' test users');
-
-    const userIds = authUsers.map(u => u.id);
-    const userMap = new Map(authUsers.map(u => [u.id, u.email]));
-
-    const { rows: paperAccounts } = await client.query(
-      'SELECT * FROM public.paper_accounts WHERE user_id = ANY($1)', [userIds]
-    );
-    const accountMap = new Map(paperAccounts.map(pa => [pa.user_id, pa]));
-
-    let totalTrades = 0;
-    const results = [];
-    const now = nowISO();
-
-    for (const uid of userIds) {
-      const email = userMap.get(uid);
-      const account = accountMap.get(uid);
-      if (!account) { console.log('No paper account for ' + email); continue; }
-
-      const numTrades = Math.random() < 0.5 ? 1 : 2;
-
-      for (let t = 0; t < numTrades; t++) {
-        const symbol = pick(SYMBOLS);
-        const marketPrice = MARKET[symbol];
-        const side = pick(['buy', 'sell']);
-        const price = Math.round((marketPrice * (1 + rand(-0.015, 0.015))) * 100) / 100;
-
-        let quantity;
-        if (symbol === 'BTC') quantity = Math.round(rand(0.001, 0.05) * 100000) / 100000;
-        else if (symbol === 'ETH') quantity = Math.round(rand(0.05, 2.0) * 1000) / 1000;
-        else quantity = Math.round(rand(1, 20) * 10) / 10;
-
-        const totalValue = Math.round(price * quantity * 100) / 100;
-        const isProfitable = Math.random() < 0.60;
-        let realizedPnl = isProfitable
-          ? Math.round(rand(5, 250) * 100) / 100
-          : Math.round(rand(-200, -5) * 100) / 100;
-
-        const tradeId = randomUUID();
-        const idempotencyKey = randomUUID();
-        const fee = Math.round(totalValue * 0.001 * 100) / 100;
-        const sessionId = await getOrCreateSession(client, uid, symbol, account.current_balance);
-
-        await client.query(
-          `INSERT INTO public.trades (
-            id, session_id, user_id, mode, trading_pair, side, order_type,
-            quantity, price, total_value, fee, status,
-            is_copy, is_mock, idempotency_key, idempotency_scope,
-            realized_pnl, reason_code, reason_params,
-            executed_at, created_at
-          ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)`,
-          [
-            tradeId, sessionId, uid, 'paper', PAIRS[symbol], side, 'market',
-            quantity, price, totalValue, fee, 'filled',
-            false, true, idempotencyKey, 'auto_trading_cron',
-            realizedPnl, 'cron_auto',
-            JSON.stringify({ source: 'auto_trading_cron', run: now }),
-            now, now,
-          ]
-        );
-
-        const newBalance = account.current_balance + realizedPnl;
-        const newTotalPnl = (account.total_profit_loss || 0) + realizedPnl;
-        const newWinCount = isProfitable ? (account.win_count || 0) + 1 : (account.win_count || 0);
-        const newLossCount = !isProfitable ? (account.loss_count || 0) + 1 : (account.loss_count || 0);
-
-        await client.query(
-          `UPDATE public.paper_accounts SET
-            current_balance = $1, total_profit_loss = $2,
-            win_count = $3, loss_count = $4, updated_at = $5
-           WHERE id = $6`,
-          [Math.round(newBalance * 100) / 100, Math.round(newTotalPnl * 100) / 100,
-           newWinCount, newLossCount, now, account.id]
-        );
-
-        account.current_balance = newBalance;
-        account.total_profit_loss = newTotalPnl;
-        account.win_count = newWinCount;
-        account.loss_count = newLossCount;
-        totalTrades++;
-
-        results.push({ user: email, symbol, side, price, quantity, totalValue, pnl: realizedPnl, isProfitable });
+    const { data: dbPrices } = await supabase
+      .from('coin_prices')
+      .select('symbol, price')
+      .in('symbol', ['BTCUSDT', 'ETHUSDT', 'SOLUSDT']);
+    if (dbPrices) {
+      for (const cp of dbPrices) {
+        const pair = cp.symbol.replace('USDT', '/USDT');
+        if (prices[pair] !== undefined && parseFloat(cp.price) > 0) {
+          prices[pair] = parseFloat(cp.price);
+        }
       }
     }
+  } catch (_) { /* fallback to market prices */ }
 
-    console.log('');
-    console.log('DONE: ' + totalTrades + ' trades across ' + authUsers.length + ' users');
-    console.log('----------------------------------------------------------------------');
-    const prof = results.filter(r => r.isProfitable).length;
-    const unprof = results.filter(r => !r.isProfitable).length;
-    console.log('  Profitable: ' + prof + '  |  Unprofitable: ' + unprof);
+  // 5. Generate trades
+  const allTrades = [];
+  const balanceDeltas = {};
+  const now = new Date().toISOString();
 
-    for (const r of results) {
-      const emoji = r.isProfitable ? 'GREEN' : 'RED';
-      const sign = r.pnl >= 0 ? '+' : '';
-      console.log('  [' + emoji + '] ' + r.user.padEnd(28) + ' ' + r.side.padEnd(4) + ' ' + r.symbol.padEnd(4) + ' ' + String(r.quantity).padEnd(10) + ' @ $' + String(r.price).padEnd(14) + ' PnL: ' + sign + '$' + r.pnl);
+  for (const user of testUsers) {
+    const sessionId = sessionMap[user.id];
+    if (!sessionId) continue;
+
+    const numTrades = randInt(1, 2);
+    for (let t = 0; t < numTrades; t++) {
+      const coin = pick(COINS);
+      const side = pick(['buy', 'sell']);
+      const basePrice = prices[coin];
+      const price = jitter(basePrice, 0.015);
+
+      let quantity;
+      if (coin === 'BTC/USDT') {
+        quantity = round8(Math.random() * 0.015 + 0.0005);
+      } else if (coin === 'ETH/USDT') {
+        quantity = round8(Math.random() * 0.4 + 0.01);
+      } else {
+        quantity = round8(Math.random() * 2.5 + 0.1);
+      }
+
+      const totalValue = round2(quantity * price);
+      const fee = round2(totalValue * 0.001);
+
+      // ~55% profitable sells, ±0.5% to ±4% PnL
+      let realizedPnl = null;
+      if (side === 'sell') {
+        const profitable = Math.random() < 0.55;
+        const pnlPct = (profitable ? 1 : -1) * (Math.random() * 3.5 + 0.5);
+        realizedPnl = round2(totalValue * pnlPct / 100);
+      }
+
+      const trade = {
+        session_id: sessionId,
+        user_id: user.id,
+        idempotency_key: `cron-${user.id.slice(0, 8)}-${Date.now()}-${t}-${randomUUID().slice(0, 6)}`,
+        mode: 'paper',
+        trading_pair: coin,
+        side,
+        order_type: 'market',
+        quantity,
+        price,
+        total_value: totalValue,
+        fee,
+        realized_pnl: realizedPnl,
+        status: 'filled',
+        executed_at: now,
+      };
+
+      allTrades.push(trade);
+      balanceDeltas[user.id] = (balanceDeltas[user.id] || 0) + (realizedPnl || 0) - fee;
     }
-    console.log('----------------------------------------------------------------------');
-  } finally {
-    client.release();
-    await pool.end();
+  }
+
+  // 6. Insert trades one-by-one (most reliable)
+  if (allTrades.length > 0) {
+    for (const trade of allTrades) {
+      const { error } = await supabase.from('trades').insert(trade);
+      if (error) console.error(`Insert fail: ${error.message}`);
+    }
+  }
+
+  // 7. Update paper_accounts balances
+  for (const [uid, delta] of Object.entries(balanceDeltas)) {
+    const d = round2(delta);
+    if (d === 0) continue;
+    const cur = balanceMap[uid] || { balance: 100000, pnl: 0 };
+    const { error } = await supabase
+      .from('paper_accounts')
+      .update({
+        current_balance: round2(cur.balance + d),
+        total_profit_loss: round2(cur.pnl + d),
+      })
+      .eq('user_id', uid);
+    if (error) console.error(`Balance update fail for ${uid.slice(0, 8)}: ${error.message}`);
   }
 }
 
