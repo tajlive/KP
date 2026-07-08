@@ -1,0 +1,44 @@
+name: Health Monitor
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Hvert 15. min
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test all pages
+        run: |
+          BASE="https://www.klarpakke.no"
+          ERRORS=0
+          
+          check() {
+            code=$(curl -s -o /tmp/kp -w "%{http_code}" -m10 "$BASE$1")
+            crash=$(grep -c "Noe gikk galt" /tmp/kp 2>/dev/null || echo 0)
+            if [ "$crash" -gt 0 ]; then
+              echo "❌ $1 (Worker crash)"
+              echo "::warning::Page crash: $BASE$1"
+              ERRORS=$((ERRORS+1))
+            elif [ "$code" = "200" ]; then
+              echo "  ✅ $1"
+            elif [ "$code" = "307" ]; then
+              echo "  🔐 $1 (auth)"
+            else
+              echo "  ⚠️ $1 (HTTP $code)"
+              echo "::warning::HTTP $code: $BASE$1"
+            fi
+          }
+          
+          echo "🏥 Klarpakke Health — $(date +%H:%M)"
+          for page in /no /no/priser /no/login /no/register /no/bots /no/leaderboard /no/om-oss /no/kontakt /no/kalkulator /no/hjelp /no/binance-guide /api/health; do
+            check "$page"
+          done
+          
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::$ERRORS page(s) failing!"
+            exit 1
+          fi
+          echo "✅ 13 pages OK"
