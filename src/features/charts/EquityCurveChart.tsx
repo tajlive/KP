@@ -17,10 +17,8 @@ interface EquityCurveChartProps {
   className?: string;
 }
 
-import type { TooltipProps } from "recharts";
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
-
-const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- recharts Tooltip content gets active+payload from context, not props type
+const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
