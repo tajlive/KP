@@ -1,4 +1,6 @@
-import { headers } from "next/headers";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { PriserContent } from "./PriserContent";
 import {
   MarketingPageShell,
