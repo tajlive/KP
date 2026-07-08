@@ -14,12 +14,13 @@ jobs:
         run: |
           BASE="https://www.klarpakke.no"
           ERRORS=0
+          RESULTS=""
           
           check() {
             code=$(curl -s -o /tmp/kp -w "%{http_code}" -m10 "$BASE$1")
             crash=$(grep -c "Noe gikk galt" /tmp/kp 2>/dev/null || echo 0)
             if [ "$crash" -gt 0 ]; then
-              echo "❌ $1 (Worker crash)"
+              RESULTS="${RESULTS}\n❌ $1 (Worker crash)"
               echo "::warning::Page crash: $BASE$1"
               ERRORS=$((ERRORS+1))
             elif [ "$code" = "200" ]; then
@@ -27,8 +28,9 @@ jobs:
             elif [ "$code" = "307" ]; then
               echo "  🔐 $1 (auth)"
             else
-              echo "  ⚠️ $1 (HTTP $code)"
+              RESULTS="${RESULTS}\n⚠️ $1 (HTTP $code)"
               echo "::warning::HTTP $code: $BASE$1"
+              ERRORS=$((ERRORS+1))
             fi
           }
           
@@ -37,8 +39,59 @@ jobs:
             check "$page"
           done
           
+          echo "RESULTS=$RESULTS" >> $GITHUB_ENV
+          echo "ERRORS=$ERRORS" >> $GITHUB_ENV
+          
           if [ "$ERRORS" -gt 0 ]; then
             echo "::error::$ERRORS page(s) failing!"
             exit 1
           fi
-          echo "✅ 13 pages OK"
+          echo "✅ 12 pages OK"
+
+      - name: Report to Sentry (on failure)
+        if: failure()
+        run: |
+          PAYLOAD=$(cat <<EOF
+          {
+            "event_id": "${{ github.run_id }}",
+            "timestamp": "${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}",
+            "platform": "github-actions",
+            "level": "error",
+            "logger": "health-monitor",
+            "transaction": "${{ github.workflow }}",
+            "message": {
+              "formatted": "Health monitor FAILED — ${{ env.ERRORS }} error(s)"
+            },
+            "tags": {
+              "workflow": "${{ github.workflow }}",
+              "run_id": "${{ github.run_id }}",
+              "branch": "${{ github.ref_name }}"
+            },
+            "extra": {
+              "failures": "${{ env.RESULTS }}",
+              "run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+          }
+          EOF
+          )
+          
+          curl -s -X POST "https://sentry.io/api/0/organizations/klarpakke-h3/monitors/health-monitor/checkins/" \
+            -H "Authorization: DSN https://beff674ffc73a116bacc53a9f15e8c68@o4511701230747648.ingest.de.sentry.io/4511701234483280" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\": \"error\", \"duration\": $SECONDS}"
+          
+          # Store event via API
+          curl -s -X POST "https://sentry.io/api/0/projects/klarpakke-h3/klarpakke-no/events/" \
+            -H "Authorization: Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Sentry OK checkin
+        if: success()
+        run: |
+          curl -s -X POST "https://sentry.io/api/0/organizations/klarpakke-h3/monitors/health-monitor/checkins/" \
+            -H "Authorization: DSN https://beff674ffc73a116bacc53a9f15e8c68@o4511701230747648.ingest.de.sentry.io/4511701234483280" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\": \"ok\", \"duration\": $SECONDS}"

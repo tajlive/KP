@@ -21,6 +21,40 @@ interface HealthResult {
   error?: string;
 }
 
+async function reportToSentry(failures: HealthResult[], baseUrl: string) {
+  const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+  if (!sentryDsn) return;
+
+  const sentryApi = 'https://sentry.io/api/0';
+  const org = 'klarpakke-h3';
+  const project = 'klarpakke-no';
+  
+  for (const f of failures) {
+    try {
+      await fetch(`${sentryApi}/projects/${org}/${project}/events/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.SENTRY_AUTH_TOKEN || ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          platform: 'javascript',
+          level: 'error',
+          logger: 'cron.health-check',
+          message: { formatted: `Health check failed: ${f.name}` },
+          extra: {
+            check: f.name,
+            error: f.error,
+            latency: f.latency,
+            baseUrl,
+          },
+          tags: { check: f.name, source: 'cron' },
+        }),
+      });
+    } catch { /* ignore */ }
+  }
+}
+
 async function checkEndpoint(
   name: string,
   url: string,
@@ -93,12 +127,18 @@ export async function GET(request: Request): Promise<NextResponse> {
         method: 'POST',
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify({
-          text: `⚠️ Klarpakke health check failed:\n${failed.map((f) => `- ${f.name}: ${f.error}`).join('\n')}`,
+          text: `⚠️ Klarpakke health check failed:\\n${failed.map((f) => `- ${f.name}: ${f.error}`).join('\\n')}`,
         }),
       });
     } catch {
       // Ignore Slack errors
     }
+  }
+
+  // Report to Sentry on failure
+  if (!allOk) {
+    const failed = results.filter((r) => r.status === 'error');
+    reportToSentry(failed, baseUrl);
   }
   
   return NextResponse.json({
