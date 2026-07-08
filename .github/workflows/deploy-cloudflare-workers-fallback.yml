@@ -116,7 +116,7 @@ jobs:
 
       - name: Page smoke test
         run: |
-          echo "🏥 Testing critical pages..."
+          echo "🏥 Testing ALL public pages..."
           BASE="https://www.klarpakke.no"
           ERRORS=0
 
@@ -128,26 +128,44 @@ jobs:
               echo "  ❌ $path (HTTP $code)"
               ERRORS=$((ERRORS+1))
             elif grep -q "Noe gikk galt" /tmp/kp_page; then
-              echo "  ❌ $path (Worker crash: Noe gikk galt)"
+              echo "  ❌ $path (Worker crash)"
               ERRORS=$((ERRORS+1))
             else
               echo "  ✅ $path"
             fi
           }
 
-          check_page "/no"
-          check_page "/no/priser"
-          check_page "/no/login"
-          check_page "/no/bots"
-          check_page "/no/leaderboard"
-          check_page "/api/health"
+          # Alle offentlige sider i Klarpakke
+          PAGES=(
+            "/no"
+            "/no/priser"
+            "/no/priser/cancel"
+            "/no/priser/success"
+            "/no/login"
+            "/no/register"
+            "/no/om-oss"
+            "/no/kontakt"
+            "/no/bots"
+            "/no/leaderboard"
+            "/no/binance-guide"
+            "/no/kalkulator"
+            "/no/hjelp"
+            "/no/copy-trading"
+            "/no/copy-trading/discover"
+            "/api/health"
+          )
 
+          for page in "${PAGES[@]}"; do
+            check_page "$page"
+          done
+
+          echo ""
+          echo "Tested ${#PAGES[@]} pages"
           if [ "$ERRORS" -gt 0 ]; then
-            echo ""
-            echo "❌ $ERRORS page(s) failing — BLOCKING deploy"
+            echo "❌ $ERRORS failures — BLOCKING deploy"
             exit 1
           fi
-          echo "✅ All pages OK"
+          echo "✅ All ${#PAGES[@]} pages OK"
 
       - name: Wait for production health check
         if: ${{ github.event.inputs.environment == 'production' || github.event.inputs.environment == null }}
