@@ -348,8 +348,8 @@
     "mcp:bridge:install": "node scripts/mcp/install-launchd.mjs"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.8",
-    "@ai-sdk/perplexity": "^4.0.6",
+    "@ai-sdk/openai": "^3.0.82",
+    "@ai-sdk/perplexity": "^3.0.44",
     "@coinbase/cds-web": "^9.6.1",
     "@hookform/resolvers": "^5.4.0",
     "@huggingface/inference": "^4.13.22",
