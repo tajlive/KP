@@ -1,41 +1,20 @@
-import { headers } from "next/headers";
 import { PriserContent } from "./PriserContent";
-import {
-  MarketingPageShell,
-  generateMarketingMetadata,
-} from "@/shared/ui/marketing";
-import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
+import { MarketingPageShell } from "@/shared/ui/marketing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  return generateMarketingMetadata({
-    locale,
-    namespace: "pricing",
-    titleKey: "metadata.title",
-    descriptionKey: "metadata.description",
-    pathname: "/priser",
-  });
+export async function generateMetadata() {
+  return {
+    title: "Priser — Velg din trading-plan",
+    description: "Start gratis, oppgrader når du er klar. Alle planer inkluderer papirhandel og AI-signaler.",
+  };
 }
 
-export default async function PriserPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const hdrs = await headers();
-  const showVipps = shouldShowVippsForRequest(hdrs);
-
+export default async function PriserPage() {
   return (
     <MarketingPageShell>
-      <PriserContent locale={locale} showVipps={showVipps} />
+      <PriserContent locale="no" showVipps={false} />
     </MarketingPageShell>
   );
 }
