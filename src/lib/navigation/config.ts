@@ -79,6 +79,13 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ["auth"],
   },
   {
+    key: "jokerTrade",
+    href: "/jokertrade",
+    labelKey: "navigation.jokerTrade",
+    icon: "Zap",
+    roles: ["auth"],
+  },
+  {
     key: "account",
     href: "/profile",
     labelKey: "navigation.account",
@@ -225,7 +232,8 @@ export type DashboardSidebarLabelKey =
   | "settings"
   | "admin"
   | "referral"
-  | "taxReport";
+  | "taxReport"
+  | "jokerTrade";
 
 export type DashboardMainNavItem = {
   href: string;
@@ -274,6 +282,7 @@ export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
 export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/tax-report", labelKey: "taxReport" },
   { href: "/dashboard/referral", labelKey: "referral" },
+  { href: "/jokertrade", labelKey: "jokerTrade" },
 ];
 
 export const dashboardNavigation = {
@@ -346,6 +355,7 @@ export const FALLBACK_NAVIGATION: NavigationData = {
     { label: "Bots", path: "/dashboard/auto-trade", order: 3 },
     { label: "Lær", path: "/kurs", order: 4 },
     { label: "Priser", path: "/priser", order: 5 },
+    { label: "JokerTrade", path: "/jokertrade", order: 6 },
   ],
 };
 
@@ -375,6 +385,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/quiz",
   "/innstillinger",
   "/callback",
+  "/jokertrade",
 ];
 
 /** Returns true when `strippedPath` is (or lives under) an app-shell route. */

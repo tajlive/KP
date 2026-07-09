@@ -266,6 +266,31 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
           </a>
         </div>
       </m.div>
+
+      {/* JokerTrade CTA */}
+      <m.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45 }}
+        className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 p-4"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h4 className="text-sm font-semibold text-amber-300">
+              🎭 JokerTrade — AI-en trader for deg
+            </h4>
+            <p className="text-xs text-slate-400 mt-0.5">
+              La AI finne de beste trades. Du bare ser pengene vokse.
+            </p>
+          </div>
+          <a
+            href={`/${locale}/jokertrade`}
+            className="shrink-0 rounded-lg bg-amber-500/30 px-3 py-1.5 text-xs font-medium text-amber-200 hover:bg-amber-500/40 transition-colors animate-pulse"
+          >
+            Prøv JokerTrade →
+          </a>
+        </div>
+      </m.div>
     </div>
   );
 }
