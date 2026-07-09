@@ -43,7 +43,7 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   return (
-    <MarketingPageShell className={SURFACE.BG_LIGHT}>
+    <MarketingPageShell className={SURFACE.BG}>
       <LandingHero />
       <SafetySection />
       <TrustStrip />

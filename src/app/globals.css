@@ -770,3 +770,53 @@ textarea,
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ═══════════════════════════════════════════
+   JokerTrade Dark Theme Override
+   Overstyrer lyse bakgrunner → dark glassmorphism
+   ═══════════════════════════════════════════ */
+@layer base {
+  body, html {
+    background-color: #0A0B0D !important;
+    color: #F9FAFB !important;
+  }
+
+  /* Gjør alle kort dark */
+  .bg-white, [class*="bg-white"],
+  .bg-slate-50, [class*="bg-slate-50"],
+  .bg-gray-50, [class*="bg-gray-50"] {
+    background-color: #1A1D26 !important;
+    border-color: #2A2D35 !important;
+  }
+
+  /* Tekst overrides */
+  .text-slate-900, .text-gray-900 { color: #F9FAFB !important; }
+  .text-slate-700, .text-gray-700 { color: #E2E8F0 !important; }
+  .text-slate-600 { color: #CBD5E1 !important; }
+  .text-slate-500, .text-gray-500 { color: #9CA3AF !important; }
+  .text-slate-400 { color: #94A3B8 !important; }
+
+  /* Navigation - dark bg */
+  nav, header, [class*="bg-white/80"] {
+    background-color: #15171B !important;
+    backdrop-filter: blur(20px) !important;
+    border-color: #2A2D35 !important;
+  }
+
+  /* Borders */
+  .border-slate-100, .border-gray-100 { border-color: #2A2D35 !important; }
+  .border-slate-200, .border-gray-200 { border-color: #2A2D35 !important; }
+
+  /* Shadow override */
+  .shadow-sm, .shadow, .shadow-md, .shadow-lg {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+  }
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(26, 29, 38, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(42, 45, 53, 0.5) !important;
+  border-radius: 16px !important;
+}
