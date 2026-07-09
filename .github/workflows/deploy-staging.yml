@@ -1,0 +1,121 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
+jobs:
+  deploy:
+    name: Build and deploy to staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --legacy-peer-deps
+
+      - name: Type check
+        run: npx tsc --noEmit
+        timeout-minutes: 5
+
+      - name: Unit tests
+        run: npm run test:unit
+        timeout-minutes: 10
+
+      - name: Build for Cloudflare Workers
+        run: npm run cf:build
+        env:
+          NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://staging.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID || '63qn23si' }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET || 'staging' }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07' }}
+          NEXT_PUBLIC_GLITCHTIP_DSN: ${{ vars.NEXT_PUBLIC_GLITCHTIP_DSN || '' }}
+
+      - name: Deploy to Cloudflare Workers (staging)
+        run: npx wrangler deploy --env staging --minify --var APP_VERSION:${{ github.sha }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://staging.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID || '63qn23si' }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET || 'staging' }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07' }}
+          NEXT_PUBLIC_GLITCHTIP_DSN: ${{ vars.NEXT_PUBLIC_GLITCHTIP_DSN || '' }}
+
+      - name: Smoke test staging
+        run: |
+          echo "🏥 Smoke testing staging.klarpakke.no..."
+          BASE="https://staging.klarpakke.no"
+          ERRORS=0
+
+          check_page() {
+            local path="$1"
+            local code
+            code=$(curl -s -o /tmp/kp_staging -w "%{http_code}" -m15 "$BASE$path")
+            if [ "$code" != "200" ]; then
+              echo "  ❌ $path (HTTP $code)"
+              ERRORS=$((ERRORS+1))
+            elif grep -q "Feilkode:" /tmp/kp_staging; then
+              echo "  ❌ $path (Worker crash)"
+              ERRORS=$((ERRORS+1))
+            else
+              echo "  ✅ $path"
+            fi
+          }
+
+          PAGES=(
+            "/no"
+            "/no/login"
+            "/no/register"
+            "/api/health"
+          )
+
+          for page in "${PAGES[@]}"; do
+            check_page "$page"
+          done
+
+          echo ""
+          echo "Tested ${#PAGES[@]} pages"
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "❌ $ERRORS failures — BLOCKING deploy"
+            exit 1
+          fi
+          echo "✅ All ${#PAGES[@]} pages OK"
+
+      - name: Deploy summary
+        if: always()
+        run: |
+          echo "## 🚀 Staging Deploy" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** staging" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** https://staging.klarpakke.no" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

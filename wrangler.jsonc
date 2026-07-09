@@ -29,6 +29,43 @@
     {
       "binding": "KV_KLARPAKKE",
       "id": "36369d6957c14ef1a25e22dff65fdc79"
+    },
+    {
+      "binding": "KV_KLARPAKKE_STAGING",
+      "id": "707c647acb86464f8df2f949564734fc"
     }
-  ]
+  ],
+  "env": {
+    "staging": {
+      "name": "klarpakke-staging",
+      "workers_dev": true,
+      "routes": [
+        {
+          "pattern": "staging.klarpakke.no/*",
+          "zone_id": "328d7de7e8e48308fd4f9d760da5b18f"
+        }
+      ],
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": {
+        "enabled": true,
+        "logs": {
+          "head_sampling_rate": 1
+        },
+        "traces": {
+          "enabled": true,
+          "head_sampling_rate": 0.01
+        }
+      },
+      "kv_namespaces": [
+        {
+          "binding": "KV_KLARPAKKE",
+          "id": "707c647acb86464f8df2f949564734fc"
+        },
+        {
+          "binding": "KV_KLARPAKKE_STAGING",
+          "id": "707c647acb86464f8df2f949564734fc"
+        }
+      ]
+    }
+  }
 }
