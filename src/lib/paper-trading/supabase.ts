@@ -358,7 +358,7 @@ export async function getLeaderboard(
     created_at: entry.updated_at || new Date().toISOString(),
     risk_level: 'moderate',
     is_public: true,
-  })) as LeaderboardEntry[];
+  })) as unknown as LeaderboardEntry[];
 }
 
 /**
