@@ -330,15 +330,8 @@ export async function getLeaderboard(
   period: 'daily' | 'weekly' | 'monthly' | 'all_time' = 'weekly',
   limit: number = 50
 ): Promise<LeaderboardEntry[]> {
-  // Hardcodet URL (NEXT_PUBLIC_ blir ikke alltid inlinet client-side)
-  const baseUrl = 'https://pskhryjzkobytnfwucrb.supabase.co';
-  const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyeWp6a29ieXRuZnd1Y3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzI4NTcsImV4cCI6MjA5NzQ0ODg1N30.SAcjagaGKL_m8wk-wmu12PplGMCKVhdeMFHMkAdwUgI';
-  const url = `${baseUrl}/rest/v1/leaderboard_entries?period=eq.${period}&is_public=eq.true&order=rank.asc&limit=${limit}`;
-  
   try {
-    const res = await fetch(url, {
-      headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
-    });
+    const res = await fetch(`/api/leaderboard?period=${period}`);
     if (!res.ok) return [];
     const data = await res.json();
     return (data as LeaderboardEntry[]) || [];
@@ -351,17 +344,11 @@ export async function getUserRank(
   userId: string,
   period: 'daily' | 'weekly' | 'monthly' | 'all_time' = 'weekly'
 ): Promise<LeaderboardEntry | null> {
-  const baseUrl = 'https://pskhryjzkobytnfwucrb.supabase.co';
-  const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyeWp6a29ieXRuZnd1Y3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzI4NTcsImV4cCI6MjA5NzQ0ODg1N30.SAcjagaGKL_m8wk-wmu12PplGMCKVhdeMFHMkAdwUgI';
-  const url = `${baseUrl}/rest/v1/leaderboard_entries?user_id=eq.${userId}&period=eq.${period}&limit=1`;
-  
   try {
-    const res = await fetch(url, {
-      headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
-    });
+    const res = await fetch(`/api/leaderboard?period=${period}`);
     if (!res.ok) return null;
-    const data = await res.json();
-    return (data?.[0] as LeaderboardEntry) || null;
+    const data: LeaderboardEntry[] = await res.json();
+    return data.find((e) => e.user_id === userId) || null;
   } catch {
     return null;
   }
