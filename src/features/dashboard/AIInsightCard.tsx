@@ -54,6 +54,7 @@ export function AIInsightCard() {
         const res = await fetch("/api/ai/insight", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ type }),
         });
 
