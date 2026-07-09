@@ -84,17 +84,20 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
   const dailyPnl: Record<string, number> = {};
   let totalPnl = 0;
   let wins = 0;
+  let losses = 0;
 
   for (const t of closedTrades) {
     const pnl = t.realized_pnl ?? 0;
     totalPnl += pnl;
     if (pnl > 0) wins++;
+    else if (pnl < 0) losses++;
 
     const day = t.executed_at.slice(0, 10);
     dailyPnl[day] = (dailyPnl[day] ?? 0) + pnl;
   }
 
-  const winRate = Math.round((wins / closedTrades.length) * 100);
+  const totalDecided = wins + losses;
+  const winRate = totalDecided > 0 ? Math.round((wins / totalDecided) * 100) : 0;
   const avgTradePnl = totalPnl / closedTrades.length;
 
   let currentStreak = 0;
