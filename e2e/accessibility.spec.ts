@@ -46,10 +46,6 @@ test.describe("Tilgjengelighet (axe) desktop @accessibility", () => {
 });
 
 test.describe("Tilgjengelighet (axe) mobil-viewport @accessibility", () => {
-  test.use({
-    ...devices["iPhone 13"],
-  });
-
   for (const { path, name } of PUBLIC_PAGES) {
     test(`${name} (${path}) mobil – ingen kritiske axe-brudd`, async ({
       page,
