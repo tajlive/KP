@@ -13,7 +13,6 @@ export const PROTECTED_PATHS = [
   "/handel",
   "/akademi",
   "/leaderboard",
-  "/handelshistorikk",
   "/varsler",
   "/konto",
   "/leagues",

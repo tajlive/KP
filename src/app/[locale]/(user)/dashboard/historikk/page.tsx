@@ -1,4 +1,4 @@
-import ClientHandelshistorikk from "../../handelshistorikk/ClientHandelshistorikk";
+import ClientHandelshistorikk from "./ClientHandelshistorikk";
 
 export const runtime = 'nodejs';
 

@@ -31,7 +31,6 @@ const NO_STORE_PATHS = [
   "/innstillinger",
   "/settings",
   "/konto",
-  "/handelshistorikk",
   "/varsler",
   "/leagues",
   // Trading
