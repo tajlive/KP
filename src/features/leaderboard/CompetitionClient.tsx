@@ -18,7 +18,7 @@ import {
     ChevronDown
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { TopThree } from '@/features/leaderboard/TopThree'
+import TopThree from '@/features/leaderboard/TopThree'
 import { TraderBadges, getBadges } from '@/features/leaderboard/Badges'
 import { TraderProgress } from '@/features/leaderboard/ProgressBar'
 import { TraderInsight } from '@/features/leaderboard/TraderInsight'
