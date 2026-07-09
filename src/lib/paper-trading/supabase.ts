@@ -26,7 +26,17 @@ import { RISK_PRESETS } from './presets';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+// Bruk singleton fra lib/supabase/client for å unngå dobbel GoTrueClient
+let _paperClient: ReturnType<typeof createClient<Database>> | null = null;
+function getPaperClient() {
+  if (_paperClient) return _paperClient;
+  _paperClient = createClient<Database>(supabaseUrl, supabaseKey, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+  return _paperClient;
+}
+
+const supabase = getPaperClient();
 
 /**
  * Map trading_sessions row to PaperSimulation type
