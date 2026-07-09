@@ -142,12 +142,21 @@ jobs:
             "/no/kontakt"
             "/no/bots"
             "/no/leaderboard"
+            "/no/jokertrade"
             "/no/binance-guide"
             "/no/kalkulator"
             "/no/hjelp"
+            "/no/kurs"
+            "/no/personvern"
+            "/no/vilkar"
+            "/no/cookies"
+            "/no/marked"
+            "/no/velkommen"
             "/no/copy-trading"
             "/no/copy-trading/discover"
+            "/no/handel"
             "/api/health"
+            "/api/leaderboard?period=weekly"
           )
 
           for page in "${PAGES[@]}"; do
