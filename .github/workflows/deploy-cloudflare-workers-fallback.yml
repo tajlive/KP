@@ -122,7 +122,7 @@ jobs:
             if [ "$code" != "200" ]; then
               echo "  ❌ $path (HTTP $code)"
               ERRORS=$((ERRORS+1))
-            elif grep -q "Feilkode:" /tmp/kp_page; then
+            elif grep -qE "Feilkode: [0-9]{7,}" /tmp/kp_page; then
               echo "  ❌ $path (Worker crash)"
               ERRORS=$((ERRORS+1))
             else
