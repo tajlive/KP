@@ -570,11 +570,21 @@
     },
     "overview": {
       "title": "Oversikt",
-      "portfolioValue": "Portefølje Verdi",
+      "portfolioValue": "Portefølje Verdi"
+    },
+    "kpi": {
+      "portfolioValue": "Porteføljeverdi",
+      "totalTrades": "Antall handler",
+      "winRate": "Gjennomsnittlig vinnrate",
+      "totalPnl": "Total P&L",
+      "dailyPnl": "Dagens P&L",
+      "totalCapital": "Total kapital",
+      "activeStrategies": "Aktive strategier",
+      "openPositions": "Åpne posisjoner",
+      "totalVolume": "Total volum",
       "dailyResult": "Daglig Resultat",
       "weeklyResult": "Ukentlig Resultat",
       "monthlyResult": "Månedlig Resultat",
-      "winRate": "Gjennomsnittlig vinnrate",
       "quickActions": "Hurtighandlinger",
       "newStrategy": "Ny Strategi",
       "newStrategyDesc": "Utforsk markedsplassen",
