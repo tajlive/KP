@@ -1,58 +1,71 @@
 /**
- * Tilgjengelighet (a11y) – axe-core WCAG på kritiske sider
- * Kjør: npm run test:a11y
- * Mot prod: BASE_URL=https://www.klarpakke.no npm run test:a11y
- *
- * Feiler kun på impact=critical (blokkerer ikke på serious/minor).
- * Rapporterer alle violations i feilmelding ved critical.
- *
- * Kjører både desktop og mobil-viewport (fanger kontrast/layout som kun vises på små skjermer).
+ * Tilgjengelighet (a11y) — axe-core WCAG på ALLE offentlige sider
+ * Blokkerer kun på impact=critical.
+ * Rapporterer serious + moderate som warnings.
  */
-import { test, expect, devices, type Page } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const PUBLIC_PAGES = [
-  { path: "/no/priser", name: "Priser" },
-  { path: "/no/innlogging", name: "Innlogging" },
-  { path: "/no/kurs", name: "Kurs" },
-  { path: "/no/interessetest", name: "Interessetest" },
+const ALL_PAGES = [
+  "/no", "/no/priser", "/no/priser/cancel", "/no/priser/success",
+  "/no/login", "/no/register", "/no/om-oss", "/no/kontakt",
+  "/no/bots", "/no/leaderboard", "/no/jokertrade",
+  "/no/binance-guide", "/no/kalkulator", "/no/hjelp",
+  "/no/kurs", "/no/personvern", "/no/vilkar", "/no/cookies",
+  "/no/marked", "/no/velkommen", "/no/copy-trading",
+  "/no/copy-trading/discover", "/no/handel", "/no/interessetest",
 ] as const;
 
-async function assertNoCriticalAxe(page: Page, path: string) {
+async function checkA11y(page: Page, path: string) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
     .analyze();
 
-  const critical = results.violations.filter((v) => v.impact === "critical");
+  const critical = results.violations.filter(v => v.impact === "critical");
+  const serious = results.violations.filter(v => v.impact === "serious");
+  
+  // Logg alle violations for debugging
+  if (results.violations.length > 0) {
+    console.log(`\n  🔍 ${path}: ${results.violations.length} violations`);
+    for (const v of results.violations.slice(0, 3)) {
+      console.log(`    [${v.impact}] ${v.id}: ${v.help} (${v.nodes.length} nodes)`);
+    }
+  }
+
+  // Kun critical blokkerer
   if (critical.length > 0) {
     const summary = critical
-      .map((v) => `[${v.impact}] ${v.id}: ${v.help} (${v.nodes.length} nodes)`)
+      .map(v => `[${v.impact}] ${v.id}: ${v.help}`)
       .join("\n");
-    expect(
-      critical,
-      `Kritiske a11y-brudd på ${path}:\n${summary}`,
-    ).toHaveLength(0);
+    expect(critical, `Kritiske a11y-brudd på ${path}:\n${summary}`).toHaveLength(0);
   }
 }
 
-test.describe("Tilgjengelighet (axe) desktop @accessibility", () => {
-  for (const { path, name } of PUBLIC_PAGES) {
-    test(`${name} (${path}) – ingen kritiske axe-brudd`, async ({ page }) => {
+test.describe("WCAG Tilgjengelighet — desktop", () => {
+  for (const path of ALL_PAGES) {
+    test(`${path} — ingen kritiske brudd`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle").catch(() => {});
-      await assertNoCriticalAxe(page, path);
+      await checkA11y(page, path);
     });
   }
 });
 
-test.describe("Tilgjengelighet (axe) mobil-viewport @accessibility", () => {
-  for (const { path, name } of PUBLIC_PAGES) {
-    test(`${name} (${path}) mobil – ingen kritiske axe-brudd`, async ({
-      page,
-    }) => {
+test.describe("WCAG Tilgjengelighet — mobil (375px)", () => {
+  test.use({ viewport: { width: 375, height: 667 } });
+  
+  // Kjør kun de viktigste sidene på mobil (48 tester er nok)
+  const MOBILE_PRIORITY = [
+    "/no", "/no/priser", "/no/login", "/no/register",
+    "/no/leaderboard", "/no/jokertrade", "/no/kurs",
+    "/no/om-oss", "/no/kontakt", "/no/personvern",
+  ];
+  
+  for (const path of MOBILE_PRIORITY) {
+    test(`${path} mobil — ingen kritiske brudd`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle").catch(() => {});
-      await assertNoCriticalAxe(page, path);
+      await checkA11y(page, path);
     });
   }
 });
