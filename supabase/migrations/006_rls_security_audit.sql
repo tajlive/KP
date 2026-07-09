@@ -39,11 +39,16 @@ CREATE POLICY "Users see own ai decisions"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 -- ── bot_configs ───────────────────────────
-DROP POLICY IF EXISTS "Users see own bot configs" ON bot_configs;
-CREATE POLICY "Users see own bot configs"
-  ON bot_configs FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'bot_configs') THEN
+    DROP POLICY IF EXISTS "Users see own bot configs" ON bot_configs;
+    CREATE POLICY "Users see own bot configs"
+      ON bot_configs FOR ALL
+      USING (auth.uid() = user_id)
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 -- ── Verifiser alle policies ───────────────
 -- (Denne kjøres ikke automatisk, men kan sjekkes manuelt)
 -- SELECT tablename, policyname, cmd 
