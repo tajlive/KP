@@ -14,9 +14,14 @@ import {
     Users,
     Copy,
     Medal,
-    Target
+    Target,
+    ChevronDown
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { TopThree } from '@/features/leaderboard/TopThree'
+import { TraderBadges, getBadges } from '@/features/leaderboard/Badges'
+import { TraderProgress } from '@/features/leaderboard/ProgressBar'
+import { TraderInsight } from '@/features/leaderboard/TraderInsight'
 
 export default function CompetitionClient({
     params
@@ -34,6 +39,7 @@ export default function CompetitionClient({
     const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null)
     const [loading, setLoading] = useState(true)
     const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'all_time'>('weekly')
+    const [expandedTrader, setExpandedTrader] = useState<string | null>(null)
 
     useEffect(() => {
         loadData()
@@ -141,7 +147,10 @@ export default function CompetitionClient({
                     </Card>
                 )}
 
-                {/* Leaderboard */}
+                {/* Top 3 Podium */}
+                    <TopThree entries={leaderboard} />
+
+                    {/* Leaderboard */}
                 <Card className="overflow-hidden border-none shadow-lg">
                     <CardHeader className="bg-slate-900 text-white p-6">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -190,6 +199,8 @@ export default function CompetitionClient({
                                             </div>
                                             <div>
                                                 <p className="font-bold text-slate-900">{entry.user_display_name}</p>
+                                                <TraderBadges badges={getBadges(entry)} />
+                                                <TraderProgress entry={entry} />
                                                 <div className="flex items-center gap-2 text-xs text-slate-500">
                                                     <span className="capitalize px-2 py-0.5 rounded-full bg-slate-100">
                                                         {entry.risk_level} {tComp('risk')}
