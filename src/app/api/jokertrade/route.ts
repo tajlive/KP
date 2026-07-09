@@ -71,16 +71,16 @@ export async function GET(request: NextRequest) {
       .order("created_at", { ascending: false })
       .limit(3);
 
-    // 4. Hent trade history
+    // 4. Hent trade history (Joker-trades har forklaring)
     const { data: tradeHistory } = await db
       .from("trades")
       .select(
-        "id, symbol, side, quantity, price, pnl, pnl_percent, closed_at, created_at",
+        "id, symbol, side, quantity, price, pnl, pnl_percent, closed_at, created_at, joker_trade, joker_explanation",
       )
       .eq("user_id", user.id)
       .not("closed_at", "is", null)
       .order("closed_at", { ascending: false })
-      .limit(10);
+      .limit(20);
 
     return NextResponse.json({
       success: true,
