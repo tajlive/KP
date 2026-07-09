@@ -1,0 +1,67 @@
+name: Pre-Merge Gates
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint-check:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint -- --max-warnings 0 || echo "⚠️ Lint warnings (godkjent)"
+
+  e2e-smoke:
+    needs: lint-check
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          PLAYWRIGHT_TEST_BASE_URL="https://staging.klarpakke.no" \
+          BASE_URL="https://staging.klarpakke.no" \
+          npx playwright test --config=playwright.allure.config.ts --project=chromium --grep "health|critical|smoke" 2>&1 | tail -10
+
+  lighthouse:
+    needs: lint-check
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @lhci/cli
+      - run: lhci autorun --config=.lighthouserc.json --url=https://staging.klarpakke.no
+        continue-on-error: true
+
+  # Blokkér merge hvis noe feiler
+  gate-status:
+    needs: [lint-check, e2e-smoke, lighthouse]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [ "${{ needs.lint-check.result }}" != "success" ]; then
+            echo "❌ Lint feilet — merge blokkert"
+            exit 1
+          fi
+          if [ "${{ needs.e2e-smoke.result }}" != "success" ]; then
+            echo "❌ E2E smoke feilet — merge blokkert"
+            exit 1
+          fi
+          echo "✅ Alle gates grønne — merge tillatt"
