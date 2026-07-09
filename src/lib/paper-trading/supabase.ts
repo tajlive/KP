@@ -332,7 +332,7 @@ export async function getLeaderboard(
 ): Promise<LeaderboardEntry[]> {
   // Hardcodet URL (NEXT_PUBLIC_ blir ikke alltid inlinet client-side)
   const baseUrl = 'https://pskhryjzkobytnfwucrb.supabase.co';
-  const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyanprb2J5dG5md3VjcmIiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDA5OTc5OCwiZXhwIjoyMDQ5Njc1Nzk4fQ.Zc-XsxJm3BBbCvMQ6AtqRY2_xc6iz1fOX8kPlHfRSss';
+  const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyeWp6a29ieXRuZnd1Y3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzI4NTcsImV4cCI6MjA5NzQ0ODg1N30.SAcjagaGKL_m8wk-wmu12PplGMCKVhdeMFHMkAdwUgI';
   const url = `${baseUrl}/rest/v1/leaderboard_entries?period=eq.${period}&is_public=eq.true&order=rank.asc&limit=${limit}`;
   
   try {
@@ -352,7 +352,7 @@ export async function getUserRank(
   period: 'daily' | 'weekly' | 'monthly' | 'all_time' = 'weekly'
 ): Promise<LeaderboardEntry | null> {
   const baseUrl = 'https://pskhryjzkobytnfwucrb.supabase.co';
-  const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyanprb2J5dG5md3VjcmIiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDA5OTc5OCwiZXhwIjoyMDQ5Njc1Nzk4fQ.Zc-XsxJm3BBbCvMQ6AtqRY2_xc6iz1fOX8kPlHfRSss';
+  const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyeWp6a29ieXRuZnd1Y3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzI4NTcsImV4cCI6MjA5NzQ0ODg1N30.SAcjagaGKL_m8wk-wmu12PplGMCKVhdeMFHMkAdwUgI';
   const url = `${baseUrl}/rest/v1/leaderboard_entries?user_id=eq.${userId}&period=eq.${period}&limit=1`;
   
   try {
