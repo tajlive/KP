@@ -36,6 +36,25 @@ jobs:
           BASE_URL="https://staging.klarpakke.no" \
           npx playwright test --config=playwright.allure.config.ts --project=chromium --grep "health|critical|smoke" 2>&1 | tail -10
 
+  e2e-golden-path:
+    needs: lint-check
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          PLAYWRIGHT_TEST_BASE_URL="https://staging.klarpakke.no" \
+          BASE_URL="https://staging.klarpakke.no" \
+          E2E_TEST_EMAIL="${{ secrets.E2E_TEST_EMAIL }}" \
+          E2E_TEST_PASSWORD="${{ secrets.E2E_TEST_PASSWORD }}" \
+          npx playwright test --config=playwright.allure.config.ts --project=chromium e2e/golden-path-auth.spec.ts
+
   lighthouse:
     needs: lint-check
     timeout-minutes: 10
@@ -51,7 +70,7 @@ jobs:
 
   # Blokkér merge hvis noe feiler
   gate-status:
-    needs: [lint-check, e2e-smoke, lighthouse]
+    needs: [lint-check, e2e-smoke, e2e-golden-path, lighthouse]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -62,6 +81,10 @@ jobs:
           fi
           if [ "${{ needs.e2e-smoke.result }}" != "success" ]; then
             echo "❌ E2E smoke feilet — merge blokkert"
+            exit 1
+          fi
+          if [ "${{ needs.e2e-golden-path.result }}" != "success" ]; then
+            echo "❌ Golden path E2E feilet — merge blokkert"
             exit 1
           fi
           echo "✅ Alle gates grønne — merge tillatt"
