@@ -776,57 +776,32 @@ textarea,
    Tailwind-integrated — NO !important overrides
    ═══════════════════════════════════════════ */
 
-/* Glassmorphism card — primary design token utility */
+/* Glassmorphism card — primary design token, mobile-first */
 .glass-card {
-  @apply rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/80 backdrop-blur-xl shadow-lg shadow-black/20;
+  @apply rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/80 backdrop-blur-xl shadow-lg shadow-black/20 p-4 sm:p-6;
+  min-height: 48px;
+}
+.glass-card:active {
+  @apply border-[#3A3D45];
 }
 
-.glass-card:hover {
-  @apply border-[#3A3D45] shadow-xl shadow-black/30;
-}
-
-/* Glassmorphism — lighter variant (on secondary surfaces) */
-.glass-card-light {
-  @apply rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent backdrop-blur-md;
-}
-
-.glass-card-light:hover {
-  @apply border-white/[0.12];
-}
-
-/* Chart container — guaranteed min-height to avoid width(0) */
+/* Chart container — guaranteed min-height for mobile */
 .chart-container {
-  @apply w-full min-h-[300px] sm:min-h-[380px] rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/60 backdrop-blur-xl p-5 md:p-6;
+  @apply w-full min-h-[220px] sm:min-h-[300px] rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/60 backdrop-blur-xl p-4 sm:p-5;
 }
 
-/* Glassmorphism stat card — compact for KPIs */
+/* Glass stat card — compact for KPIs, touch-friendly */
 .stat-glass {
-  @apply rounded-xl border border-[#2A2D35] bg-[#1A1D26]/60 backdrop-blur-md p-4 transition-all duration-200;
+  @apply rounded-xl border border-[#2A2D35] bg-[#1A1D26]/60 backdrop-blur-md p-3 sm:p-4 transition-all duration-200;
+  min-height: 56px;
 }
 
-.stat-glass:hover {
-  @apply border-[#3A3D45] shadow-md;
-}
-
-/* Navbar glass effect */
-.nav-glass {
-  @apply border-b border-[#2A2D35] bg-[#15171B] backdrop-blur-xl;
-}
-
-/* Hover transition preset for interactive cards */
-.hover-lift {
-  @apply transition-all duration-200;
-}
-.hover-lift:hover {
-  @apply -translate-y-0.5 shadow-lg shadow-black/20;
-}
-
-/* Gold CTA button — JokerTrade primary */
+/* Gold CTA — mobile-first: alltid 48px touch target */
 .btn-gold {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm
+  @apply inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl font-bold text-sm
          bg-[#F59E0B] text-[#0A0B0D] transition-all duration-200
-         hover:bg-[#D97706] hover:shadow-lg hover:shadow-amber-500/20
-         active:scale-[0.98] min-h-[48px];
+         active:bg-[#D97706] active:scale-[0.98]
+         min-h-[48px] min-w-[120px];
 }
 
 /* Blue accent CTA button */

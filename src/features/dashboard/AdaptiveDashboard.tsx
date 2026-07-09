@@ -66,7 +66,7 @@ function OnboardingProgress({ step }: { step: number }) {
           <div
             key={i}
             className={`h-1.5 flex-1 rounded-full transition-colors ${
-              i < step ? "bg-emerald-500" : "bg-slate-700"
+              i < step ? "bg-emerald-500" : "bg-[#1A1D26]"
             }`}
           />
         ))}

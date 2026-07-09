@@ -136,10 +136,10 @@ export default function CompetitionClient({
 
                 {/* User Rank Card — kun når data er lastet */}
                 {!loading && (userRank ? (
-                    <Card className="bg-[#1A1D26] border-[#2A2D35]">
+                    <Card className="glass-card border-[#2A2D35]">
                         <CardContent className="p-6 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-[#1A1D26] rounded-full flex items-center justify-center font-bold text-[#3B82F6] text-xl">
+                                <div className="w-12 h-12 glass-card rounded-full flex items-center justify-center font-bold text-[#3B82F6] text-xl">
                                     #{userRank.rank}
                                 </div>
                                 <div>
@@ -160,7 +160,7 @@ export default function CompetitionClient({
                         </CardContent>
                     </Card>
                 ) : (
-                    <Card className="bg-[#1A1D26] border-[#2A2D35]">
+                    <Card className="glass-card border-[#2A2D35]">
                         <CardContent className="p-6 text-center">
                             <p className="text-[#3B82F6] font-medium mb-3">{tComp('notParticipating')}</p>
                             <Button
@@ -177,7 +177,7 @@ export default function CompetitionClient({
                     <TopThree entries={leaderboard} />
 
                     {/* Leaderboard */}
-                <Card className="overflow-hidden border border-[#2A2D35] bg-[#1A1D26] shadow-lg shadow-black/20">
+                <Card className="overflow-hidden border border-[#2A2D35] glass-card shadow-lg shadow-black/20">
                     <CardHeader className="bg-[#15171B] text-[#F9FAFB] p-6 border-b border-[#2A2D35]">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <CardTitle className="flex items-center gap-2 text-[#F9FAFB]">
@@ -281,7 +281,7 @@ export default function CompetitionClient({
                                                 <Button
                                                     onClick={() => handleCopy(entry)}
                                                     size="sm"
-                                                    className="bg-[#1A1D26] text-[#3B82F6] hover:bg-[#2A2D35] gap-2 w-full sm:w-auto"
+                                                    className="glass-card text-[#3B82F6] hover:bg-[#2A2D35] gap-2 w-full sm:w-auto"
                                                 >
                                                     <Copy className="w-4 h-4" />
                                                     {tComp('copy')}
