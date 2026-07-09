@@ -13,9 +13,9 @@ interface TradeRecord {
   pnl: number | null;
   pnl_percent: number | null;
   closed_at: string;
+  created_at: string;
   joker_trade?: boolean;
   joker_explanation?: string | null;
-}
 }
 
 interface TradeHistoryProps {
