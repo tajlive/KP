@@ -35,6 +35,10 @@
       "id": "707c647acb86464f8df2f949564734fc"
     }
   ],
+  "build": {
+    "command": "npm run cf:build",
+    "cwd": "./"
+  },
   "env": {
     "staging": {
       "name": "klarpakke-staging",
