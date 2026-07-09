@@ -13,7 +13,9 @@ interface TradeRecord {
   pnl: number | null;
   pnl_percent: number | null;
   closed_at: string;
-  created_at: string;
+  joker_trade?: boolean;
+  joker_explanation?: string | null;
+}
 }
 
 interface TradeHistoryProps {
@@ -116,6 +118,11 @@ export function TradeHistory({ trades }: TradeHistoryProps) {
                   >
                     {Number(trade.pnl_percent) >= 0 ? "+" : ""}
                     {Number(trade.pnl_percent).toFixed(2)}%
+                  </p>
+                )}
+                {trade.joker_trade && trade.joker_explanation && (
+                  <p className="text-[10px] text-amber-400/80 italic mt-0.5 leading-tight max-w-[200px]">
+                    {trade.joker_explanation}
                   </p>
                 )}
               </div>
