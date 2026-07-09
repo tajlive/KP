@@ -313,7 +313,12 @@ HAVING COUNT(t.id) >= 5
 ORDER BY total_pnl DESC;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_leaderboard_user ON leaderboard (user_id);
 -- Refresh leaderboard every minute
-SELECT cron.unschedule('refresh-leaderboard');
+DO $$
+BEGIN
+  PERFORM cron.unschedule('refresh-leaderboard');
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'Could not unschedule refresh-leaderboard (job may not exist): %', SQLERRM;
+END $$;
 SELECT cron.schedule(
   'refresh-leaderboard',
   '* * * * *',
@@ -399,7 +404,12 @@ CREATE TRIGGER on_trade_notify
 -- ============================================================================
 -- 10. CRASH DETECTION CRON
 -- ============================================================================
-SELECT cron.unschedule('detect-crashed-sessions');
+DO $$
+BEGIN
+  PERFORM cron.unschedule('detect-crashed-sessions');
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'Could not unschedule detect-crashed-sessions (job may not exist): %', SQLERRM;
+END $$;
 SELECT cron.schedule(
   'detect-crashed-sessions',
   '* * * * *',

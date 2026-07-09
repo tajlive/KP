@@ -20,7 +20,12 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-CREATE OR REPLACE TRIGGER on_profile_created
-  AFTER INSERT ON public.profiles
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_portfolio();
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+    CREATE OR REPLACE TRIGGER on_profile_created
+      AFTER INSERT ON public.profiles
+      FOR EACH ROW EXECUTE FUNCTION public.handle_new_portfolio();
+  END IF;
+END $$;
 CREATE INDEX portfolios_user_id_idx ON public.portfolios(user_id);
