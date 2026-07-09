@@ -16,6 +16,9 @@ interface HealthCheck {
     kv: CheckResult;
     environment: CheckResult;
     binanceConnectivity: BinanceConnectivityResult;
+    leaderboard: CheckResult;
+    hangingSessions: CheckResult;
+    binanceProxy: CheckResult;
   };
   uptime: number;
   cached?: boolean;
@@ -49,6 +52,7 @@ interface CheckResult {
   status: "ok" | "error" | "warning";
   latency?: number;
   message?: string;
+  count?: number;
   details?: Record<string, string | number | boolean | null>;
 }
 
@@ -281,6 +285,106 @@ function checkEnvironment(): CheckResult {
   return { status: "ok" };
 }
 
+async function checkLeaderboard(): Promise<CheckResult> {
+  const start = Date.now();
+  try {
+    const supabase = getServiceClient();
+    const { count, error } = await supabase
+      .from("leaderboard_entries")
+      .select("*", { count: "exact", head: true });
+
+    if (error) throw error;
+
+    const total = count ?? 0;
+    return {
+      status: total > 0 ? "ok" : "error",
+      latency: Date.now() - start,
+      count: total,
+      message: total === 0 ? "Leaderboard entries view is empty" : undefined,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      count: 0,
+      message: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+  }
+}
+
+async function checkHangingSessions(): Promise<CheckResult> {
+  const start = Date.now();
+  try {
+    const supabase = getServiceClient();
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error } = await supabase
+      .from("trading_sessions")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "active")
+      .lt("updated_at", oneHourAgo);
+
+    if (error) throw error;
+
+    const hanging = count ?? 0;
+    return {
+      status: hanging === 0 ? "ok" : "error",
+      latency: Date.now() - start,
+      count: hanging,
+      message: hanging > 0 ? `${hanging} hanging session(s) detected` : undefined,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      count: 0,
+      message: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+  }
+}
+
+async function checkBinanceProxy(): Promise<CheckResult> {
+  const start = Date.now();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  try {
+    const res = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${anonKey}`,
+        "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
+      },
+      body: JSON.stringify({
+        action: "publicApi",
+        apiKey: "",
+        apiSecret: "public",
+        publicApiPath: "/api/v3/ping",
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (res.ok) {
+      return {
+        status: "ok",
+        latency: Date.now() - start,
+      };
+    }
+
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      message: `Binance proxy returned ${res.status}`,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Unknown proxy error",
+    };
+  }
+}
+
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,
@@ -320,7 +424,7 @@ export async function GET() {
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment, binanceConnectivity] =
+  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy] =
     await Promise.all([
       withTimeout(checkDatabase(), 3000, {
         status: "error" as const,
@@ -341,6 +445,18 @@ export async function GET() {
         fallbackActive: false,
         message: "Check timed out after 15000ms",
       }),
+      withTimeout(checkLeaderboard(), 3000, {
+        status: "error" as const,
+        message: "Check timed out after 3000ms",
+      }),
+      withTimeout(checkHangingSessions(), 3000, {
+        status: "error" as const,
+        message: "Check timed out after 3000ms",
+      }),
+      withTimeout(checkBinanceProxy(), 10000, {
+        status: "error" as const,
+        message: "Check timed out after 10000ms",
+      }),
     ]);
 
   const checks = {
@@ -349,6 +465,9 @@ export async function GET() {
     kv,
     environment,
     binanceConnectivity,
+    leaderboard,
+    hangingSessions,
+    binanceProxy,
   };
 
   const { binanceConnectivity: _, ...statusChecks } = checks;

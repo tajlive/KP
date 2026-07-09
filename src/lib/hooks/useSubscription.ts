@@ -25,7 +25,8 @@ export function useSubscription() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
 
-      const { data } = await supabase
+      // Sjekk Stripe-subscription først
+      const { data: sub } = await supabase
         .from('subscriptions')
         .select('id, tier_slug, status, current_period_end, cancel_at_period_end')
         .eq('user_id', user.id)
@@ -34,7 +35,29 @@ export function useSubscription() {
         .limit(1)
         .single();
 
-      setSubscription((data ?? null) as Subscription | null);
+      if (sub) {
+        setSubscription(sub as Subscription | null);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback til user_profiles.tier (for manuelt satte tiers som Tom=Professor)
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('tier')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profile?.tier) {
+        setSubscription({
+          id: 'manual',
+          tier_slug: profile.tier as TierSlug,
+          status: 'active',
+          current_period_end: null,
+          cancel_at_period_end: false,
+        });
+      }
+
       setLoading(false);
     }
 
