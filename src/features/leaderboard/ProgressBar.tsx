@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { LeaderboardEntry } from "@/lib/shared";
+import type { LeaderboardEntry } from "@/types/paper-trading";
 
 // ─── Level thresholds ───────────────────────────────────────────────────────
 
