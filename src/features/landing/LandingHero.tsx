@@ -85,7 +85,7 @@ function LivePulse() {
   useEffect(() => { setVisible(true); }, []);
   return (
     <div
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs font-medium
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1A1D26]/80 backdrop-blur-md border border-[#2A2D35] text-[#9CA3AF] text-xs font-medium
         transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}
     >
       <span className="relative flex h-2 w-2">
@@ -101,33 +101,33 @@ function LivePulse() {
 function MobilePreview() {
   return (
     <div className="mt-8 sm:mt-10 max-w-sm mx-auto lg:mx-0 w-full">
-      <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-4 sm:p-5 shadow-xl shadow-black/10">
+      <div className="glass-card p-4 sm:p-5">
         {/* Price ticker */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-xl">₿</span>
-            <span className="text-white font-bold text-sm sm:text-base">BTC / USDT</span>
+            <span className="text-[#F9FAFB] font-bold text-sm sm:text-base">BTC / USDT</span>
           </div>
-          <span className="text-green-300 text-xs sm:text-sm font-semibold tabular-nums animate-pulse">
+          <span className="text-[#10B981] text-xs sm:text-sm font-semibold tabular-nums animate-pulse">
             +2.4%
           </span>
         </div>
-        <div className="text-2xl sm:text-3xl font-black text-white tabular-nums tracking-tight mb-2">
+        <div className="text-2xl sm:text-3xl font-black text-[#F9FAFB] tabular-nums tracking-tight mb-2">
           $105,240
         </div>
         {/* Mini chart bar */}
-        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
-          <div className="h-full w-[62%] bg-gradient-to-r from-green-400 to-emerald-300 rounded-full animate-pulse" />
+        <div className="h-1.5 bg-[#2A2D35] rounded-full overflow-hidden mb-3">
+          <div className="h-full w-[62%] bg-gradient-to-r from-[#10B981] to-emerald-300 rounded-full animate-pulse" />
         </div>
         <div className="flex gap-2">
-          <div className="flex-1 py-2.5 rounded-xl bg-green-500/20 border border-green-400/30 text-green-300 text-xs sm:text-sm font-bold text-center">
+          <div className="flex-1 py-2.5 rounded-xl bg-[#064E3B] border border-[#10B981]/30 text-[#10B981] text-xs sm:text-sm font-bold text-center">
             Kjøp
           </div>
-          <div className="flex-1 py-2.5 rounded-xl bg-red-500/20 border border-red-400/30 text-red-300 text-xs sm:text-sm font-bold text-center">
+          <div className="flex-1 py-2.5 rounded-xl bg-[#7F1D1D] border border-[#EF4444]/30 text-[#EF4444] text-xs sm:text-sm font-bold text-center">
             Selg
           </div>
         </div>
-        <p className="text-white/40 text-[10px] sm:text-xs text-center mt-2">
+        <p className="text-[#6B7280] text-[10px] sm:text-xs text-center mt-2">
           Dette er papirhandel — ingen ekte penger
         </p>
       </div>
@@ -137,15 +137,16 @@ function MobilePreview() {
 
 export function LandingHero() {
   return (
-    <section className="relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden
-      bg-gradient-to-br from-[#0f172a] via-[#1e3a5f] to-[#0052FF]">
+    <section className="relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden bg-[#0A0B0D]">
       <AnimatedBg />
 
-      {/* Decorative blobs */}
+      {/* Decorative blobs — dark glassmorphism style */}
       <div aria-hidden className="pointer-events-none absolute -top-20 -right-20 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px]
-        rounded-full bg-blue-400/10 blur-3xl" />
+        rounded-full bg-[#3B82F6]/5 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-20 w-[250px] h-[250px] sm:w-[400px] sm:h-[400px]
-        rounded-full bg-cyan-400/8 blur-3xl" />
+        rounded-full bg-[#F59E0B]/5 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute top-1/3 left-1/2 w-[200px] h-[200px] sm:w-[300px] sm:h-[300px]
+        rounded-full bg-[#10B981]/5 blur-3xl" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-16 lg:py-24">
         <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16">
@@ -153,29 +154,29 @@ export function LandingHero() {
           <div className="flex-1 text-center lg:text-left">
             <LivePulse />
 
-            <h1 className="mt-4 sm:mt-6 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white leading-[1.1] tracking-tight">
+            <h1 className="mt-4 sm:mt-6 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-[#F9FAFB] leading-[1.1] tracking-tight">
               Se om krypto er noe for deg
               <br />
-              <span className="text-blue-200">— uten å risikere en krone</span>
+              <span className="text-[#60A5FA]">— uten å risikere en krone</span>
             </h1>
 
-            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-blue-100/80 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-[#9CA3AF] max-w-lg mx-auto lg:mx-0 leading-relaxed">
               Få 10 000 kr i lekepenger. Prøv, lær, og bestem selv når du er klar
               for ekte handel. Null stress, null forpliktelser.
             </p>
 
             {/* Trust bullets */}
-            <div className="mt-5 sm:mt-6 flex flex-wrap justify-center lg:justify-start gap-3 text-xs sm:text-sm text-blue-200/70">
+            <div className="mt-5 sm:mt-6 flex flex-wrap justify-center lg:justify-start gap-3 text-xs sm:text-sm text-[#9CA3AF]">
               <span className="inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
                 Gratis å starte
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
                 Ingen binding
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
                 Norsk support
               </span>
             </div>
@@ -184,10 +185,7 @@ export function LandingHero() {
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 href="/no/signup"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:px-8 sm:py-4
-                  bg-white text-[#0052FF] font-bold text-base sm:text-lg rounded-2xl
-                  hover:bg-blue-50 active:scale-[0.98] transition-all shadow-lg shadow-black/10
-                  min-h-[48px] sm:min-h-[52px]"
+                className="btn-accent text-base sm:text-lg px-8 py-4 no-underline shadow-lg shadow-blue-500/20"
               >
                 <Sparkles className="w-5 h-5" />
                 Prøv gratis
@@ -195,10 +193,10 @@ export function LandingHero() {
               </Link>
               <Link
                 href="/no#hvordan"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:px-8 sm:py-4
-                  border-2 border-white/20 text-white font-bold text-base sm:text-lg rounded-2xl
-                  hover:bg-white/10 active:scale-[0.98] transition-all
-                  min-h-[48px] sm:min-h-[52px]"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4
+                  border border-[#2A2D35] text-[#F9FAFB] font-bold text-base sm:text-lg rounded-xl
+                  hover:bg-[#1A1D26]/80 hover:border-[#3A3D45] active:scale-[0.98] transition-all
+                  min-h-[48px] sm:min-h-[52px] backdrop-blur-sm"
               >
                 Se hvordan det fungerer
               </Link>

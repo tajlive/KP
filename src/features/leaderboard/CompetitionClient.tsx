@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { createClient } from '@/lib/utils'
 import { getLeaderboard, getUserRank } from '@/lib/paper-trading/supabase'
@@ -15,7 +15,9 @@ import {
     Copy,
     Medal,
     Target,
-    ChevronDown
+    ChevronDown,
+    AlertCircle,
+    RefreshCw,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import TopThree from '@/features/leaderboard/TopThree'
@@ -38,31 +40,55 @@ export default function CompetitionClient({
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
     const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null)
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'all_time'>('weekly')
     const [expandedTrader, setExpandedTrader] = useState<string | null>(null)
+    const mountedRef = useRef(true)
+    const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     useEffect(() => {
+        mountedRef.current = true;
         loadData()
+        return () => { mountedRef.current = false; }
     }, [timeframe])
 
     async function loadData() {
         try {
             setLoading(true)
+            setError(null)
+
+            // Timeout guard — force-show after 8s even if loading
+            loadingTimeoutRef.current = setTimeout(() => {
+                if (mountedRef.current) setLoading(false)
+            }, 8000)
+
             const { data: { user } } = await supabase.auth.getUser()
 
-            const [data, rank] = await Promise.all([
-                getLeaderboard(timeframe),
-                user ? getUserRank(user.id, timeframe) : null
-            ])
+            // Fetch leaderboard FIRST (user rank can lag)
+            const data = await getLeaderboard(timeframe)
+            if (!mountedRef.current) return
 
             setLeaderboard(data)
 
-            if (rank) setUserRank(rank)
+            // Then fetch user rank in background
+            if (user) {
+                getUserRank(user.id, timeframe).then(rank => {
+                    if (mountedRef.current && rank) setUserRank(rank)
+                }).catch(() => {
+                    // Silently fail — data is already shown
+                })
+            }
 
         } catch (error) {
             console.error('Error loading competition data:', error)
+            if (mountedRef.current) setError('Kunne ikke laste leaderboarddata')
         } finally {
-            setLoading(false)
+            if (mountedRef.current) {
+                // Give it a minimum display time
+                setTimeout(() => {
+                    if (mountedRef.current) setLoading(false)
+                }, 600)
+            }
         }
     }
 
@@ -108,8 +134,8 @@ export default function CompetitionClient({
                     </p>
                 </div>
 
-                {/* User Rank Card */}
-                {userRank ? (
+                {/* User Rank Card — kun når data er lastet */}
+                {!loading && (userRank ? (
                     <Card className="bg-[#1A1D26] border-[#2A2D35]">
                         <CardContent className="p-6 flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -145,26 +171,26 @@ export default function CompetitionClient({
                             </Button>
                         </CardContent>
                     </Card>
-                )}
+                ))}
 
                 {/* Top 3 Podium */}
                     <TopThree entries={leaderboard} />
 
                     {/* Leaderboard */}
-                <Card className="overflow-hidden border border-[#2A2D35] bg-[#1A1D26]">
-                    <CardHeader className="bg-slate-900 text-white p-6">
+                <Card className="overflow-hidden border border-[#2A2D35] bg-[#1A1D26] shadow-lg shadow-black/20">
+                    <CardHeader className="bg-[#15171B] text-[#F9FAFB] p-6 border-b border-[#2A2D35]">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-[#F9FAFB]">
                                 <Users className="text-[#60A5FA]" />
                                 {tComp('leaderboard')}
                             </CardTitle>
-                            <div className="flex bg-[#15171B] rounded-lg p-1">
+                            <div className="flex bg-[#0A0B0D] rounded-lg p-1 border border-[#2A2D35]">
                                 {(['weekly', 'monthly', 'all_time'] as const).map((t) => (
                                     <button
                                         key={t}
                                         onClick={() => setTimeframe(t)}
                                         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${timeframe === t
-                                            ? 'bg-[#1A1D26] text-white'
+                                            ? 'bg-[#1A1D26] text-white shadow-sm'
                                             : 'text-[#6B7280] hover:text-white'
                                             }`}
                                     >
@@ -177,18 +203,42 @@ export default function CompetitionClient({
                         </div>
                     </CardHeader>
                     <CardContent className="p-0">
-                        {loading ? (
-                            <div className="p-12 text-center text-[#6B7280]">{tComp('loading')}</div>
+                        {error ? (
+                            <div className="p-12 text-center">
+                                <AlertCircle className="w-16 h-16 text-[#EF4444] mx-auto mb-4" />
+                                <p className="text-[#F9FAFB] font-medium text-lg mb-2">Kunne ikke laste leaderboard</p>
+                                <p className="text-sm text-[#6B7280] mb-6">{error}</p>
+                                <button
+                                    onClick={loadData}
+                                    className="btn-accent inline-flex items-center gap-2"
+                                >
+                                    <RefreshCw className="w-4 h-4" />
+                                    Prøv igjen
+                                </button>
+                            </div>
+                        ) : leaderboard.length === 0 && loading ? (
+                            <div className="divide-y divide-[#2A2D35]">
+                                {[1,2,3,4,5].map((i) => (
+                                    <div key={i} className="p-4 sm:p-6 flex items-center gap-4 animate-pulse">
+                                        <div className="w-10 h-10 rounded-full bg-[#2A2D35]" />
+                                        <div className="flex-1 space-y-2">
+                                            <div className="h-4 w-32 bg-[#2A2D35] rounded" />
+                                            <div className="h-3 w-24 bg-[#2A2D35] rounded" />
+                                        </div>
+                                        <div className="w-20 h-8 bg-[#2A2D35] rounded-lg" />
+                                    </div>
+                                ))}
+                            </div>
                         ) : leaderboard.length === 0 ? (
                             <div className="p-12 text-center">
-                                <Trophy className="w-12 h-12 text-[#9CA3AF] mx-auto mb-4" />
-                                <p className="text-[#F9FAFB] font-medium mb-2">{tComp('noActive')}</p>
-                                <p className="text-sm text-[#6B7280]">Ingen tradere har resultater ennå. Start trading for å komme på lista!</p>
+                                <Trophy className="w-16 h-16 text-[#2A2D35] mx-auto mb-4" />
+                                <p className="text-[#F9FAFB] font-medium text-lg mb-2">{tComp('noActive')}</p>
+                                <p className="text-sm text-[#6B7280] max-w-sm mx-auto">Ingen tradere har resultater ennå. Start trading for å komme på lista!</p>
                             </div>
                         ) : (
                             <div className="divide-y divide-[#2A2D35]">
                                 {leaderboard.map((entry) => (
-                                    <div key={entry.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-[#15171B] transition-colors">
+                                    <div key={entry.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-[#15171B]/80 hover:backdrop-blur-md transition-all duration-200">
                                         {/* Rank & User */}
                                         <div className="flex items-center gap-4 flex-1">
                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm ${entry.rank === 1 ? 'bg-[#F59E0B] text-[#0A0B0D]' :
@@ -247,7 +297,7 @@ export default function CompetitionClient({
 
                 {/* Info Card */}
                 <div className="grid md:grid-cols-3 gap-6 mt-8">
-                    <div className="bg-[#1A1D26] p-6 rounded-xl border border-[#2A2D35]">
+                    <div className="glass-card p-6 hover-lift">
                         <div className="w-10 h-10 bg-[#064E3B] rounded-lg flex items-center justify-center text-[#10B981] mb-4">
                             <Target className="w-5 h-5" />
                         </div>
@@ -256,7 +306,7 @@ export default function CompetitionClient({
                             {tComp('howToWinDesc')}
                         </p>
                     </div>
-                    <div className="bg-[#1A1D26] p-6 rounded-xl border border-[#2A2D35]">
+                    <div className="glass-card p-6 hover-lift">
                         <div className="w-10 h-10 bg-[#064E3B] rounded-lg flex items-center justify-center text-[#10B981] mb-4">
                             <Copy className="w-5 h-5" />
                         </div>
@@ -265,7 +315,7 @@ export default function CompetitionClient({
                             {tComp('whatIsCopyingDesc')}
                         </p>
                     </div>
-                    <div className="bg-[#1A1D26] p-6 rounded-xl border border-[#2A2D35]">
+                    <div className="glass-card p-6 hover-lift">
                         <div className="w-10 h-10 bg-[#78350F] rounded-lg flex items-center justify-center text-[#F59E0B] mb-4">
                             <Medal className="w-5 h-5" />
                         </div>
