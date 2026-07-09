@@ -1,32 +1,67 @@
 import { createServerClient } from "@/lib/supabase/server";
-import { localizedPathname } from "@/middleware/locale-path";
 import { redirect } from "next/navigation";
 
-export async function requireAuth(locale: string = "no", nextPath?: string) {
-  const supabase = await createServerClient();
+const AUTH_TIMEOUT_MS = 8000; // 8s total — enough for Worker fetch to Supabase Auth
 
-  // Use getSession first (reads cookies locally, no network call) to avoid
-  // race conditions where middleware sees auth but server component doesn't.
-  const { data: { session } } = await supabase.auth.getSession();
-  let user = session?.user ?? null;
-
-  // Fallback to getUser() if session is missing but cookies exist
-  if (!user) {
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    user = authUser ?? null;
-  }
-
-  return { supabase, user };
+/**
+ * Timeout wrapper — rejects with "timeout" if promise exceeds ms limit.
+ * Used to protect against hung fetch() on Cloudflare Workers.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error("auth-timeout")), ms),
+    ),
+  ]);
 }
 
-export async function requireGuest(locale: string = "no") {
+export async function requireAuth(locale = "no", nextPath?: string) {
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  if (user) {
-    redirect(localizedPathname(locale, "/dashboard"));
+  // Try getSession first — local cookie parse, no network.
+  try {
+    const { data: { session } } = await withTimeout(
+      supabase.auth.getSession(),
+      AUTH_TIMEOUT_MS / 2,
+    );
+    if (session?.user) {
+      return { supabase, user: session.user };
+    }
+  } catch {
+    // Session read failed or timed out — try network fallback
+  }
+
+  // Fallback to getUser() — validates token via network.
+  // Wrap in timeout to avoid Worker hang.
+  try {
+    const { data: { user } } = await withTimeout(
+      supabase.auth.getUser(),
+      AUTH_TIMEOUT_MS / 2,
+    );
+    if (user) {
+      return { supabase, user };
+    }
+  } catch {
+    // Network auth failed or timed out — return null user
+  }
+
+  return { supabase, user: null };
+}
+
+export async function requireGuest(locale = "no") {
+  const supabase = await createServerClient();
+
+  try {
+    const { data: { user } } = await withTimeout(
+      supabase.auth.getUser(),
+      AUTH_TIMEOUT_MS,
+    );
+    if (user) {
+      redirect(`/${locale}/dashboard`);
+    }
+  } catch {
+    // Auth unavailable — assume guest (safe default)
   }
 
   return { supabase };
