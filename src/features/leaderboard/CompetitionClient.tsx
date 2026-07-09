@@ -154,7 +154,7 @@ export default function CompetitionClient({
                             <div className="text-right">
                                 <p className="text-sm text-[#6B7280] font-medium">Avkastning</p>
                                 <p className={`text-xl font-bold ${userRank.return_pct >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
-                                    {userRank.return_pct > 0 ? '+' : ''}{userRank.return_pct.toFixed(2)}%
+                                    {userRank.return_pct > 0 ? '+' : ''}{Math.abs(userRank.return_pct).toLocaleString('no')} kr
                                 </p>
                             </div>
                         </CardContent>
@@ -271,7 +271,7 @@ export default function CompetitionClient({
                                             <div className="text-center sm:text-left" title="Total prosentvis avkastning i perioden">
                                                 <p className="text-xs text-[#6B7280] uppercase font-bold mb-1">{tComp('return')}</p>
                                                 <p className={`font-bold text-lg ${entry.return_pct >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
-                                                    {entry.return_pct > 0 ? '+' : ''}{entry.return_pct}%
+                                                    {entry.return_pct > 0 ? '+' : ''}{Math.abs(entry.return_pct).toLocaleString('no')} kr
                                                 </p>
                                                 <p className="text-[10px] text-[#6B7280] mt-0.5">
                                                     {timeframe === 'weekly' ? 'Siste 7 dager' : timeframe === 'monthly' ? 'Siste 30 dager' : 'Totalt'}
