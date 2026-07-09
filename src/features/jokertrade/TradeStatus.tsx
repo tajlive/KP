@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Activity } from "lucide-react";
+import { ShieldIcon, AIBrainIcon } from "./JokerIcons";
 import { formatDistanceToNow } from "date-fns";
 import { nb } from "date-fns/locale";
 
@@ -56,7 +56,7 @@ export function TradeStatus({ status, insight, mode }: TradeStatusProps) {
         <div className="flex items-center gap-3">
           {/* Trading mode */}
           <span className="flex items-center gap-1.5 rounded-full bg-[#15171B] px-3 py-1 text-xs font-medium text-[#9CA3AF]">
-            <Shield className="h-3.5 w-3.5" />
+            <ShieldIcon className="h-3.5 w-3.5" />
             {mode === "paper" ? "Paper" : "Live"}
           </span>
 
@@ -83,7 +83,7 @@ export function TradeStatus({ status, insight, mode }: TradeStatusProps) {
         <div className="rounded-lg border border-[#2A2D35] bg-gradient-to-br from-[#1A1D26] to-[#78350F]/20 p-4">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="flex items-center gap-2 font-sans text-sm font-semibold text-[#F9FAFB]">
-              <Activity className="h-4 w-4 text-[#FCD34D]" />
+              <AIBrainIcon className="h-4 w-4 text-[#FCD34D]" />
               🧠 AI siste innsikt
             </h3>
             <span className="text-xs text-[#6B7280]">
@@ -124,7 +124,7 @@ export function TradeStatus({ status, insight, mode }: TradeStatusProps) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2D35] py-8">
-          <Activity className="mb-2 h-8 w-8 text-[#6B7280]" />
+          <AIBrainIcon className="mb-2 h-8 w-8 text-[#6B7280]" />
           <p className="font-sans text-sm text-[#6B7280]">
             Ingen AI-analyse ennå
           </p>

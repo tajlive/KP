@@ -1,7 +1,7 @@
 "use client";
 
 import { ButtonHTMLAttributes, useState } from "react";
-import { Zap } from "lucide-react";
+import { JokerIcon, SparkleIcon } from "./JokerIcons";
 
 interface JokerButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
@@ -93,7 +93,8 @@ export function JokerButton({ onClick, loading, ...props }: JokerButtonProps) {
           </>
         ) : (
           <>
-            <Zap className="h-7 w-7" />
+            <JokerIcon className="h-7 w-7" />
+            <SparkleIcon className="h-5 w-5 text-amber-800" />
             <span>🎭 JOKER — Finn beste trade</span>
           </>
         )}

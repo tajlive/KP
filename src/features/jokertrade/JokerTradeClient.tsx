@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Trophy } from "lucide-react";
+import { JokerIcon } from "./JokerIcons";
 import { JokerButton } from "./JokerButton";
 import { TradeStatus } from "./TradeStatus";
 import { ActivePositions } from "./ActivePositions";
@@ -243,7 +243,7 @@ export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
 
       {/* Footer */}
       <div className="mt-8 flex items-center justify-center gap-2 font-sans text-xs text-[#6B7280]">
-        <Trophy className="h-4 w-4 text-[#F59E0B]" />
+        <JokerIcon className="h-4 w-4 text-[#F59E0B]" />
         JokerTrade v1.0 — AI-drevet av Hermes Agent
       </div>
     </div>
