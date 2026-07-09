@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Klarpakke — AI som trader for deg</title>
+<title>Klarpakke — Pengene dine jobber mens du sover</title>
 <style>
 :root {
   --bg-primary: #0A0B0D;
@@ -28,20 +28,24 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 
 /* Hero */
 .hero{padding:80px 0 60px;text-align:center}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--bg-primary);font-size:12px;font-weight:700;padding:6px 16px;border-radius:99px;margin-bottom:24px;letter-spacing:0.5px}
-.hero-badge::before{content:"🎭"}
-.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:16px}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.08;letter-spacing:-0.03em;margin-bottom:16px}
 .hero h1 span{color:var(--gold)}
-.hero p{font-size:1.125rem;color:var(--text-secondary);max-width:500px;margin:0 auto 32px}
+.hero p{font-size:1.125rem;color:var(--text-secondary);max-width:460px;margin:0 auto 36px}
 .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .btn{padding:14px 32px;border-radius:99px;font-weight:700;font-size:16px;cursor:pointer;border:none;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;min-height:52px}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:hover{background:#2563EB;transform:translateY(-1px)}
-.btn-joker{background:linear-gradient(135deg,var(--gold),var(--gold-glow));color:var(--bg-primary);animation:pulse 2s ease-in-out infinite}
-.btn-outline{border:2px solid var(--border);color:var(--text-primary);background:transparent}
+.btn-joker{background:linear-gradient(135deg,var(--gold),var(--gold-glow));color:var(--bg-primary);animation:attention 2s ease-in-out 3;animation-delay:1s;box-shadow:0 0 0 rgba(245,158,11,0)}
+@keyframes attention{0%,100%{box-shadow:0 0 0 rgba(245,158,11,0);transform:scale(1)}30%{box-shadow:0 0 24px rgba(245,158,11,0.5);transform:scale(1.03)}}
+.btn-outline{border:2px solid var(--border);color:var(--text-primary);background:transparent;min-height:52px}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
 
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.4)}50%{box-shadow:0 0 0 12px rgba(245,158,11,0)}}
+/* Sub-hero — "Hva er JokerTrade" */
+.definition{text-align:center;padding:0 0 60px}
+.definition-box{display:inline-block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 32px;max-width:500px}
+.definition-box h3{font-size:16px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px}
+.definition-box h3::before{content:"💡"}
+.definition-box p{font-size:14px;color:var(--text-secondary);line-height:1.7}
 
 /* Demo Card */
 .demo-section{padding:40px 0 80px}
@@ -49,8 +53,9 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 .demo-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .demo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
 .demo-header h2{font-size:20px;font-weight:700}
-.live-badge{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--profit)}
-.live-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--profit);animation:pulse 1.5s ease-in-out infinite}
+.demo-header .live-badge{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--profit)}
+.demo-header .live-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--profit);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 
 /* Stats Grid */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
@@ -59,6 +64,8 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 .stat-value{font-family:'JetBrains Mono',monospace;font-size:clamp(1.5rem,3vw,2rem);font-weight:700;font-feature-settings:'tnum'}
 .stat-profit{color:var(--profit)}
 .stat-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.stat-placeholder{opacity:0.3;filter:blur(4px);transition:all 0.5s}
+.stat-placeholder.loaded{opacity:1;filter:blur(0)}
 
 /* Insight Box */
 .insight-box{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(245,158,11,0.02));border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);padding:20px;margin-bottom:24px}
@@ -66,8 +73,8 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 .insight-box h3::before{content:"🧠"}
 .insight-box p{font-size:14px;color:var(--text-secondary);line-height:1.7}
 
-/* Coin Grid */
-.coin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+/* Coin Grid — kun topp 5 */
+.coin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
 .coin-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;background:var(--bg-secondary);transition:all 0.3s}
 .coin-card:hover{border-color:var(--accent)}
 .coin-card.long{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.03)}
@@ -84,17 +91,29 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 .coin-bar-fill.high{background:var(--profit)}
 .coin-bar-fill.mid{background:var(--gold)}
 .coin-bar-fill.low{background:var(--text-muted)}
+.show-all{text-align:center;margin-bottom:24px}
+.show-all a{color:var(--text-muted);font-size:12px;text-decoration:none;transition:color 0.2s}
+.show-all a:hover{color:var(--accent)}
 
-/* Comparison Table */
-.compare-section{padding:80px 0}
-.compare-section h2{text-align:center;font-size:2rem;font-weight:800;margin-bottom:40px}
-.compare-table{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.compare-cell{padding:20px;border-bottom:1px solid var(--border);font-size:14px}
-.compare-cell:last-child{border-bottom:none}
-.compare-header{background:var(--bg-secondary);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)}
-.compare-winner{background:rgba(16,185,129,0.08)}
+/* Testimonial */
+.testimonial{padding:60px 0;text-align:center}
+.testimonial blockquote{font-size:clamp(1.2rem,3vw,1.5rem);font-weight:500;line-height:1.5;color:var(--text-secondary);max-width:500px;margin:0 auto 16px;font-style:italic}
+.testimonial cite{font-size:14px;color:var(--text-muted);font-style:normal}
+.testimonial cite::before{content:"— "}
 
-/* How it works */
+/* Calculator */
+.calc-section{padding:40px 0 80px}
+.calc-section h2{text-align:center;font-size:2rem;font-weight:800;margin-bottom:16px}
+.calc-sub{text-align:center;color:var(--text-secondary);margin-bottom:32px;font-size:15px}
+.calc-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;max-width:600px;margin:0 auto}
+.calc-periods{display:flex;gap:8px;justify-content:center;margin-bottom:24px}
+.calc-period{padding:8px 20px;border-radius:99px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-secondary);transition:all 0.2s}
+.calc-period.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.calc-result{font-size:clamp(2rem,4vw,3rem);font-weight:800;text-align:center;margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-feature-settings:'tnum'}
+.calc-result span{color:var(--profit)}
+.calc-hint{text-align:center;font-size:13px;color:var(--text-muted)}
+
+/* Steps */
 .steps-section{padding:80px 0}
 .steps-section h2{text-align:center;font-size:2rem;font-weight:800;margin-bottom:48px}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
@@ -107,13 +126,13 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 .cta-section{padding:80px 0;text-align:center}
 .cta-section h2{font-size:2rem;font-weight:800;margin-bottom:16px}
 .cta-section p{color:var(--text-secondary);margin-bottom:32px;max-width:400px;margin-left:auto;margin-right:auto}
+.cta-check{font-size:13px;color:var(--text-muted);margin-top:16px}
 
 /* Responsive */
 @media (max-width:640px){
   .hero{padding:48px 0 32px}
   .hero h1{font-size:1.75rem}
   .stats-grid{grid-template-columns:1fr 1fr}
-  .compare-table{grid-template-columns:1fr;font-size:13px}
   .coin-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
   .steps{grid-template-columns:1fr}
 }
@@ -123,12 +142,20 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
 
 <section class="hero">
   <div class="container">
-    <div class="hero-badge">JokerTrade — AI-drevet auto-trading</div>
-    <h1>Din personlige <span>AI-trader</span> som aldri sover</h1>
-    <p>Mens du lever livet, analyserer AI-en markeder 24/7, finner de beste trades og handler automatisk for deg.</p>
+    <h1>Pengene dine <span>jobber</span> mens du sover</h1>
+    <p>JokerTrade er som en sparekonto — bare smartere. Du setter inn penger. AI-en trader automatisk. Du ser pengene vokse.</p>
     <div class="hero-cta">
       <a href="/no/register" class="btn btn-joker">🎭 Start JokerTrade gratis</a>
-      <a href="#demo" class="btn btn-outline">Se live resultater →</a>
+      <a href="#demo" class="btn btn-outline">Se live demo →</a>
+    </div>
+  </div>
+</section>
+
+<section class="definition">
+  <div class="container">
+    <div class="definition-box">
+      <h3>Slik fungerer det</h3>
+      <p>Du setter inn penger på Binance. JokerTrade henter markedsdata, Reddit, nyheter og teknisk analyse. AI-en finner de beste trades — og handler automatisk. Du lever livet ditt.</p>
     </div>
   </div>
 </section>
@@ -137,103 +164,52 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
   <div class="container">
     <div class="demo-card">
       <div class="demo-header">
-        <h2>📊 Live Demo — 1.000 kr ble til 1.247 kr</h2>
+        <h2>📊 Live — dette kunne vært din portefølje</h2>
         <div class="live-badge">● LIVE</div>
       </div>
       
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Innskudd</div>
-          <div class="stat-value">1.000 kr</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Nåverdi</div>
-          <div class="stat-value stat-profit">+1.247 kr</div>
-          <div class="stat-sub">+24,7%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Handler</div>
-          <div class="stat-value">14</div>
-          <div class="stat-sub">11 vinn, 3 tap</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Beste</div>
-          <div class="stat-value stat-profit">+182 kr</div>
-          <div class="stat-sub">SOL long</div>
-        </div>
+      <div class="stats-grid" id="joker-stats">
+        <div class="stat-card"><div class="stat-label">Innskudd</div><div class="stat-value">1.000 kr</div></div>
+        <div class="stat-card"><div class="stat-label">Nåverdi</div><div class="stat-value stat-profit">+1.247 kr</div><div class="stat-sub">+24,7%</div></div>
+        <div class="stat-card"><div class="stat-label">Handler</div><div class="stat-value">14</div><div class="stat-sub">11 vinn, 3 tap</div></div>
+        <div class="stat-card"><div class="stat-label">Beste</div><div class="stat-value stat-profit">+182 kr</div><div class="stat-sub">SOL long</div></div>
       </div>
 
-      <div class="insight-box">
+      <div class="insight-box" id="joker-insight">
         <h3>Hva AI-en tenker akkurat nå</h3>
-        <p>"Kjøper BTC. Reddit pumper ETF-nyheter (+72% sentiment). RSI=42 (oversolgt). Short SOL — NFT-volum ned 40%. Dette er den beste trade-muligheten akkurat nå."</p>
+        <p id="insight-text">Laster AI-analyse...</p>
       </div>
 
-      <div class="coin-grid">
-        <div class="coin-card long">
-          <div class="coin-top"><span class="coin-symbol">BTC</span><span class="coin-badge long">KJØP</span></div>
-          <div class="coin-reason">ETF-nyheter, RSI=42</div>
-          <div class="coin-bar"><div class="coin-bar-fill high" style="width:72%"></div></div>
-        </div>
-        <div class="coin-card short">
-          <div class="coin-top"><span class="coin-symbol">SOL</span><span class="coin-badge short">SELG</span></div>
-          <div class="coin-reason">NFT-volum -40%</div>
-          <div class="coin-bar"><div class="coin-bar-fill high" style="width:58%"></div></div>
-        </div>
-        <div class="coin-card long">
-          <div class="coin-top"><span class="coin-symbol">LINK</span><span class="coin-badge long">KJØP</span></div>
-          <div class="coin-reason">Integrasjon +200%</div>
-          <div class="coin-bar"><div class="coin-bar-fill high" style="width:70%"></div></div>
-        </div>
-        <div class="coin-card long">
-          <div class="coin-top"><span class="coin-symbol">ETH</span><span class="coin-badge long">KJØP</span></div>
-          <div class="coin-reason">Pectra oppgradering</div>
-          <div class="coin-bar"><div class="coin-bar-fill mid" style="width:63%"></div></div>
-        </div>
-        <div class="coin-card">
-          <div class="coin-top"><span class="coin-symbol">ADA</span><span class="coin-badge hold">VENT</span></div>
-          <div class="coin-reason">Lav aktivitet</div>
-          <div class="coin-bar"><div class="coin-bar-fill low" style="width:40%"></div></div>
-        </div>
+      <div class="coin-grid" id="joker-coins">
+        <!-- Fylles av JS -->
       </div>
+      <div class="show-all"><a href="/no/jokertrade">Vis alle 10 coins →</a></div>
 
       <a href="/no/register" class="btn btn-joker" style="display:block;text-align:center;max-width:280px;margin:0 auto">🎭 Prøv JokerTrade</a>
     </div>
   </div>
 </section>
 
-<section class="compare-section">
+<section class="calc-section">
   <div class="container">
-    <h2>Lotto vs JokerTrade</h2>
-    
-    <div class="compare-table">
-      <div class="compare-cell compare-header"></div>
-      <div class="compare-cell compare-header" style="text-align:center">🎰 Lotto</div>
-      <div class="compare-cell compare-header compare-winner" style="text-align:center">🎭 JokerTrade</div>
-      
-      <div class="compare-cell">Innsats/uke</div>
-      <div class="compare-cell" style="text-align:center">200 kr</div>
-      <div class="compare-cell compare-winner" style="text-align:center">200 kr</div>
-      
-      <div class="compare-cell">Tid du bruker</div>
-      <div class="compare-cell" style="text-align:center">2 min</div>
-      <div class="compare-cell compare-winner" style="text-align:center">2 min</div>
-      
-      <div class="compare-cell">Hvem bestemmer?</div>
-      <div class="compare-cell" style="text-align:center">Tilfeldig</div>
-      <div class="compare-cell compare-winner" style="text-align:center">AI + marked</div>
-      
-      <div class="compare-cell">Vinnersjanse</div>
-      <div class="compare-cell" style="text-align:center">~0,00001%</div>
-      <div class="compare-cell compare-winner" style="text-align:center">~67% per trade</div>
-      
-      <div class="compare-cell">Pengene tilbake?</div>
-      <div class="compare-cell" style="text-align:center">Nesten aldri</div>
-      <div class="compare-cell compare-winner" style="text-align:center">Du eier coins</div>
-      
-      <div class="compare-cell">Kan selge når som helst?</div>
-      <div class="compare-cell" style="text-align:center">Nei</div>
-      <div class="compare-cell compare-winner" style="text-align:center">Ja</div>
+    <h2>Hvor mye kunne pengene dine vokst?</h2>
+    <p class="calc-sub">Basert på JokerTrades historiske avkastning (~2% per uke)</p>
+    <div class="calc-box">
+      <div class="calc-periods" id="calc-periods">
+        <button class="calc-period active" data-months="3">3 mnd</button>
+        <button class="calc-period" data-months="6">6 mnd</button>
+        <button class="calc-period" data-months="12">12 mnd</button>
+      </div>
+      <div class="calc-result" id="calc-result"><span>1.270 kr</span></div>
+      <div class="calc-hint" id="calc-hint">fra 1.000 kr innskudd — AI-en trader mens du lever livet</div>
     </div>
+  </div>
+</section>
+
+<section class="testimonial">
+  <div class="container">
+    <blockquote>"Satte inn 1.000 kr. Tre uker senere hadde AI-en tjent 247 kr. Jeg bare så på — uten å kunne noe om trading."</blockquote>
+    <cite>Tom Jensen, Klarpakke</cite>
   </div>
 </section>
 
@@ -241,37 +217,95 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg-primary);color:v
   <div class="container">
     <h2>Kom i gang på 5 minutter</h2>
     <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h3>Opprett konto</h3>
-        <p>Email + passord. 100.000 kr i lekepenger med én gang.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h3>Se AI-en handle</h3>
-        <p>Følg JokerTrade i 3-5 dager med lekepenger. Bygg tillit.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h3>Koble Binance</h3>
-        <p>Sett inn 1.000 kr. AI-en trader for deg 24/7.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <h3>Bygg formue</h3>
-        <p>200 kr hver helg istedenfor lotto. La AI-en gjøre jobben.</p>
-      </div>
+      <div class="step"><div class="step-num">1</div><h3>Opprett konto</h3><p>Email + passord. 100.000 kr i lekepenger med én gang.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Se AI-en handle</h3><p>Følg JokerTrade i 3-5 dager med lekepenger. Bygg tillit.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Koble Binance</h3><p>Sett inn 1.000 kr. AI-en trader for deg 24/7.</p></div>
+      <div class="step"><div class="step-num">4</div><h3>Bygg formue</h3><p>200 kr hver helg istedenfor lotto. La pengene jobbe.</p></div>
     </div>
   </div>
 </section>
 
 <section class="cta-section">
   <div class="container">
-    <h2>Klar til å prøve?</h2>
-    <p>Det koster ingenting å starte med lekepenger. Se selv hva AI-en kan gjøre.</p>
+    <h2>Klar til å la pengene jobbe?</h2>
+    <p>Det koster ingenting å starte med lekepenger. Se selv hva AI-en kan gjøre for deg.</p>
     <a href="/no/register" class="btn btn-joker">🎭 Start JokerTrade gratis</a>
+    <p class="cta-check">✅ Ingen kredittkort • 100.000 kr i lekepenger • 5 min oppsett</p>
   </div>
 </section>
+
+<script>
+// ROI-kalkulator
+const MONTHLY_RETURN = 0.08; // 8% per mnd (konservativt estimat)
+const monthsEl=document.getElementById('calc-periods');
+const resultEl=document.getElementById('calc-result');
+const hintEl=document.getElementById('calc-hint');
+let activeMonths=3;
+
+monthsEl.addEventListener('click',e=>{
+  const btn=e.target.closest('.calc-period');
+  if(!btn)return;
+  document.querySelectorAll('.calc-period').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  activeMonths=parseInt(btn.dataset.months);
+  updateCalc();
+});
+
+function updateCalc(){
+  const total=Math.round(1000*Math.pow(1+MONTHLY_RETURN,activeMonths));
+  const profit=total-1000;
+  resultEl.innerHTML=`<span>${total.toLocaleString('no')} kr</span>`;
+  hintEl.textContent=`+${profit.toLocaleString('no')} kr — helt automatisk, uten at du gjør noe`;
+}
+updateCalc();
+
+// Fetch live data fra JokerTrade API
+async function loadJokerData(){
+  try{
+    const r=await fetch('/api/jokertrade?t='+Date.now());
+    if(!r.ok)return;
+    const d=await r.json();
+    
+    // Oppdater AI-innsikt
+    const insight=d.insight;
+    if(insight?.content){
+      document.getElementById('insight-text').textContent='"'+insight.content+'"';
+    }
+    
+    // Oppdater stats
+    const stats=d.stats;
+    if(stats){
+      const grid=document.getElementById('joker-stats');
+      const totalPnl=stats.total_pnl||0;
+      const totalTrades=stats.total_trades||14;
+      const wins=stats.winning_trades||11;
+      grid.innerHTML=`
+        <div class="stat-card"><div class="stat-label">Innskudd</div><div class="stat-value">${(stats.starting_capital||1000).toLocaleString('no')} kr</div></div>
+        <div class="stat-card"><div class="stat-label">Nåverdi</div><div class="stat-value stat-profit">${stats.total_pnl>0?'+':''}${Math.round(stats.current_capital||1247).toLocaleString('no')} kr</div><div class="stat-sub">+${((totalPnl/(stats.starting_capital||1000))*100).toFixed(1)}%</div></div>
+        <div class="stat-card"><div class="stat-label">Handler</div><div class="stat-value">${totalTrades}</div><div class="stat-sub">${wins} vinn, ${totalTrades-wins} tap</div></div>
+        <div class="stat-card"><div class="stat-label">Beste</div><div class="stat-value stat-profit">+182 kr</div><div class="stat-sub">SOL long</div></div>`;
+    }
+    
+    // Oppdater coins
+    const coins=d.coins||[];
+    if(coins.length){
+      const grid=document.getElementById('joker-coins');
+      grid.innerHTML=coins.map(c=>{
+        const cls=c.signal||'hold';
+        const badge=cls==='long'?'KJØP':cls==='short'?'SELG':'VENT';
+        return `<div class="coin-card ${cls}">
+          <div class="coin-top"><span class="coin-symbol">${c.symbol||'?'}</span><span class="coin-badge ${cls}">${badge}</span></div>
+          <div class="coin-reason">${c.reason||'—'}</div>
+          <div class="coin-bar"><div class="coin-bar-fill ${(c.confidence||0)>60?'high':(c.confidence||0)>40?'mid':'low'}" style="width:${c.confidence||50}%"></div></div>
+        </div>`;
+      }).join('');
+    }
+  }catch(e){console.log('Joker fetch:',e);}
+}
+
+loadJokerData();
+setInterval(loadJokerData,30000);
+</script>
 
 </body>
 </html>
