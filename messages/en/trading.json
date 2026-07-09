@@ -919,7 +919,8 @@
       "losingTrades": "Losing",
       "activeSessions": "Active Sessions",
       "maxDrawdown": "Max Drawdown",
-      "bestPair": "Best Pair"
+      "bestPair": "Best Pair",
+      "portfolioValue": "Portfolio Value"
     },
     "sessions": {
       "title": "Sessions",
