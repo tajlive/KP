@@ -212,41 +212,52 @@ async function checkKV(): Promise<CheckResult> {
 }
 
 async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
-  const provider = new BinanceMarketDataProvider();
+  // Bruk Binance proxy direkte — raskere enn 7-endpoint-kjede på Worker
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   try {
-    // 20s timeout — enough for direct API (7 endpoints × 5s) + proxy fallback
-    await Promise.race([
-      provider.getPrice("BTCUSDT"),
-      new Promise<never>((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Binance health probe timeout")),
-          20000,
-        ),
-      ),
-    ]);
+    const res = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${anonKey}`,
+        "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
+      },
+      body: JSON.stringify({
+        action: "publicApi",
+        apiKey: "public",
+        apiSecret: "public",
+        publicApiPath: "/api/v3/ticker/price?symbol=BTCUSDT",
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
 
-    const endpointUsed =
-      provider.getLastEndpointUsed() ?? KNOWN_BINANCE_ENDPOINTS[0];
-    const primaryWorked = endpointUsed === KNOWN_BINANCE_ENDPOINTS[0];
-    const fallbackActive = !primaryWorked;
-    const knownEndpoint = (KNOWN_BINANCE_ENDPOINTS as readonly string[]).includes(
-      endpointUsed,
-    );
+    if (res.ok) {
+      const payload = await res.json();
+      if (payload.ok) {
+        return {
+          status: "ok",
+          primaryWorked: false,
+          fallbackActive: true,
+          endpointUsed: "binance-proxy",
+        };
+      }
+    }
 
-    return {
-      status: knownEndpoint ? "ok" : "degraded",
-      primaryWorked,
-      fallbackActive,
-      endpointUsed,
-    };
-  } catch (err) {
-    console.error("[Health] checkBinanceConnectivity error:", err);
     return {
       status: "error",
       primaryWorked: false,
       fallbackActive: false,
-      message: err instanceof Error ? err.message : JSON.stringify(err),
+      endpointUsed: "binance-proxy",
+      message: `Proxy returned ${res.status}`,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      primaryWorked: false,
+      fallbackActive: false,
+      message: err instanceof Error ? err.message : "Unknown proxy error",
     };
   }
 }
