@@ -11,7 +11,6 @@ const PROTECTED_PATHS = [
   "/akademi",
   "/handel",
   "/konto",
-  "/handelshistorikk",
   "/varsler",
   "/leagues",
   "/copy-trading",

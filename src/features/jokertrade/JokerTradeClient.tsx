@@ -7,6 +7,9 @@ import { TradeStatus } from "./TradeStatus";
 import { ActivePositions } from "./ActivePositions";
 import { TradeHistory } from "./TradeHistory";
 import { CoinCarousel } from "./CoinCarousel";
+import { LiveFeed } from "@/features/live/LiveFeed";
+import { JokerPush } from "@/features/live/JokerPush";
+import { LeaderboardChanges } from "@/features/live/LeaderboardChanges";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -239,6 +242,27 @@ export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
 
         {/* Trade History */}
         <TradeHistory trades={data.history} />
+      </div>
+
+      {/* 📡 LiveFeed — sanntidshendelser fra plattformen */}
+      <div className="mt-8 sm:mt-10">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#2A2D35]" />
+          <h2 className="font-sans text-lg font-bold text-[#F9FAFB]">
+            ⚡ Live Feed
+          </h2>
+          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#2A2D35]" />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <LiveFeed />
+          </div>
+          <div className="space-y-4">
+            <JokerPush />
+            <LeaderboardChanges />
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

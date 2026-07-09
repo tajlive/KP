@@ -280,7 +280,6 @@ export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
 
 /** Ekstra sider tilgjengelig via "Mer" dropdown i TopNav */
 export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
-  { href: "/dashboard/tax-report", labelKey: "taxReport" },
   { href: "/dashboard/referral", labelKey: "referral" },
   { href: "/jokertrade", labelKey: "jokerTrade" },
 ];
@@ -377,7 +376,6 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/akademi",
   "/konto",
   "/handel",
-  "/handelshistorikk",
   "/marked",
   "/varsler",
   "/leagues",
