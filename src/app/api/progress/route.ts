@@ -42,23 +42,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Hent fremgang med kurs-info
-    const { data: progress, error } = await supabase
-      .from('user_course_progress')
-      .select(`
-        *,
-        course:courses(id, title, slug, level),
-        lesson:lessons(id, title, slug, duration_minutes)
-      `)
-      .eq('user_id', user.id)
-      .order('last_accessed_at', { ascending: false });
+    // Hent fremgang med kurs-info — tåler manglende tabeller
+    let progress: any[] = [];
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_course_progress')
+        .select(`*`)
+        .eq('user_id', user.id)
+        .order('last_accessed_at', { ascending: false });
 
-    if (error) {
-      console.error('[Progress API] Henting feilet:', error);
-      return NextResponse.json(
-        { error: 'Kunne ikke hente fremgang' },
-        { status: 500 }
-      );
+      if (!error && data) {
+        progress = data;
+      }
+    } catch (_) {
+      // Tabell finnes ikke — returner tomt
     }
 
     // Beregn aggregert statistikk
