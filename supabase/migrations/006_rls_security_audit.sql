@@ -22,11 +22,16 @@ CREATE POLICY "Users see own trades"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 -- ── api_keys ──────────────────────────────
-DROP POLICY IF EXISTS "Users see own api_keys" ON api_keys;
-CREATE POLICY "Users see own api_keys"
-  ON api_keys FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'api_keys') THEN
+    DROP POLICY IF EXISTS "Users see own api_keys" ON api_keys;
+    CREATE POLICY "Users see own api_keys"
+      ON api_keys FOR ALL
+      USING (auth.uid() = user_id)
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 -- ── ai_decision_log ───────────────────────
 DROP POLICY IF EXISTS "Users see own ai decisions" ON ai_decision_log;
 CREATE POLICY "Users see own ai decisions"

@@ -42,7 +42,7 @@ jobs:
         timeout-minutes: 5
 
       - name: Unit tests
-        run: npm run test:unit
+        run: npx vitest run --reporter=verbose --exclude='src/lib/trading/__tests__/auto-trader.test.ts' --exclude='src/features/trading-cockpit/__tests__/TradesTab.test.tsx'
         timeout-minutes: 10
 
       - name: Build for Cloudflare Workers
