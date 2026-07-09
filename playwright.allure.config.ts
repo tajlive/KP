@@ -1,7 +1,7 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
 
 const config: PlaywrightTestConfig = {
-  testDir: "./tests/e2e",
+  testDir: "./e2e",
   testMatch: "*.spec.ts",
   testIgnore: "**/_archive/**",
   timeout: 60000,
