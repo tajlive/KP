@@ -1,7 +1,7 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
 import { BinanceMarketDataProvider } from "@/lib/trading/canonical/market-data/binance-provider";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -514,85 +514,29 @@ export async function GET() {
     },
   });
 }
-
-
-/**
- * POST /api/health — deep verification (kalt av CI pre-deploy)
- */
-export async function POST(request: NextRequest) {
-  const supabase = await createServerClient();
-  const results: Record<string, { status: string; message?: string }> = {};
-
-  // Auth
-  try {
-    const { error } = await supabase.auth.getSession();
-    results.auth = error ? { status: "error", message: error.message } : { status: "ok" };
-  } catch (e: any) { results.auth = { status: "error", message: e?.message }; }
-
-  // Binance proxy
-  try {
-    const res = await fetchWithTimeout(
-      \`\${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/binance-proxy\`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": \`Bearer \${process.env.SUPABASE_SERVICE_ROLE_KEY}\`,
-          "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
-        },
-        body: JSON.stringify({ endpoint: "price", symbol: "BTCUSDT" }),
-      }, 8000
-    );
-    const json = await res?.json();
-    results.binance = json?.data?.price 
-      ? { status: "ok", message: \`BTCUSDT: \${json.data.price}\` } 
-      : { status: "error", message: "No price" };
-  } catch (e: any) { results.binance = { status: "error", message: e?.message }; }
-
-  // Leaderboard count
-  try {
-    const lb = await fetchWithTimeout(
-      \`\${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/leaderboard_entries?select=count\`,
-      { headers: { apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!, Authorization: \`Bearer \${process.env.SUPABASE_SERVICE_ROLE_KEY}\` } },
-      5000
-    );
-    const data = await lb?.json();
-    results.leaderboard = data?.[0]?.count > 0 
-      ? { status: "ok", message: \`\${data[0].count} entries\` }
-      : { status: "error", message: "Empty" };
-  } catch (e: any) { results.leaderboard = { status: "error", message: e?.message }; }
-
-  const failed = Object.values(results).some(r => r.status !== "ok");
-  return NextResponse.json({
-    status: failed ? "degraded" : "healthy",
-    timestamp: new Date().toISOString(),
-    checks: results,
-  }, { status: failed ? 503 : 200 });
-}
-
-function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number) {
-  const c = new AbortController();
-  setTimeout(() => c.abort(), timeoutMs);
-  return fetch(url, { ...init, signal: c.signal });
-}
-
 /**
  * POST /api/health - deep verification (CI pre-deploy)
- * Verifies: Auth + Binance + Leaderboard
+ * Verifies: Auth middleware + Binance proxy + Leaderboard data
  */
 export async function POST(request: NextRequest) {
-  const supabase = await createServerClient();
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || ""
+  );
   const results: Record<string, { status: string; message?: string }> = {};
 
-  // Auth middleware
   try {
-    const { error } = await supabase.auth.getSession();
+    const { error } = await withTimeout(
+      supabase.auth.getSession(),
+      5000,
+      { error: { message: "timeout" } } as any
+    );
     results.auth = error ? { status: "error", message: error.message } : { status: "ok" };
   } catch (e: any) { results.auth = { status: "error", message: e?.message }; }
 
-  // Binance proxy  
   try {
-    const res = await fetchWithTimeout(
-      process.env.NEXT_PUBLIC_SUPABASE_URL + "/functions/v1/binance-proxy", {
+    const res = await withTimeout(
+      fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + "/functions/v1/binance-proxy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -600,25 +544,37 @@ export async function POST(request: NextRequest) {
           "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
         },
         body: JSON.stringify({ endpoint: "price", symbol: "BTCUSDT" }),
-      }, 8000
+      }),
+      8000,
+      null as any
     );
-    const json = await res?.json();
-    results.binance = json?.data?.price 
-      ? { status: "ok", message: "BTCUSDT: " + json.data.price } 
-      : { status: "error", message: "No price" };
+    if (res?.ok) {
+      const json = await res.json();
+      results.binance = json?.data?.price
+        ? { status: "ok", message: "BTCUSDT: " + json.data.price }
+        : { status: "error", message: "No price" };
+    } else {
+      results.binance = { status: "error", message: "HTTP " + res?.status };
+    }
   } catch (e: any) { results.binance = { status: "error", message: e?.message }; }
 
-  // Leaderboard
   try {
-    const lb = await fetchWithTimeout(
-      process.env.NEXT_PUBLIC_SUPABASE_URL + "/rest/v1/leaderboard_entries?select=count",
-      { headers: { apikey: process.env.SUPABASE_SERVICE_ROLE_KEY || "", Authorization: "Bearer " + (process.env.SUPABASE_SERVICE_ROLE_KEY || "") } },
-      5000
+    const lb = await withTimeout(
+      fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + "/rest/v1/leaderboard_entries?select=count", {
+        headers: {
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+          Authorization: "Bearer " + (process.env.SUPABASE_SERVICE_ROLE_KEY || ""),
+        },
+      }),
+      5000,
+      null as any
     );
-    const data = await lb?.json();
-    results.leaderboard = data?.[0]?.count > 0 
-      ? { status: "ok", message: data[0].count + " entries" }
-      : { status: "error", message: "Empty" };
+    if (lb?.ok) {
+      const data = await lb.json();
+      results.leaderboard = data?.[0]?.count > 0
+        ? { status: "ok", message: data[0].count + " entries" }
+        : { status: "error", message: "Empty" };
+    }
   } catch (e: any) { results.leaderboard = { status: "error", message: e?.message }; }
 
   const failed = Object.values(results).some(r => r.status !== "ok");
@@ -628,3 +584,4 @@ export async function POST(request: NextRequest) {
     checks: results,
   }, { status: failed ? 503 : 200 });
 }
+
