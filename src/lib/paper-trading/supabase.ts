@@ -331,11 +331,10 @@ export async function getLeaderboard(
   limit: number = 50
 ): Promise<LeaderboardEntry[]> {
   const { data, error } = await supabase
-    .from('leaderboard_entries' as any)
+    .from('leaderboard_bots')
     .select('*')
-    .eq('period', period)
-    .eq('is_public', true)
-    .order('rank', { ascending: true })
+    .eq('is_active', true)
+    .order('pnl_all_time', { ascending: false })
     .limit(limit);
 
   if (error) {
@@ -343,7 +342,23 @@ export async function getLeaderboard(
     return [];
   }
 
-  return (data as unknown as LeaderboardEntry[]) || [];
+  return (data || []).map((entry: any) => ({
+    id: entry.id,
+    period: 'all_time',
+    user_id: entry.user_id,
+    user_display_name: entry.display_name || 'Ukjent trader',
+    avatar_url: entry.avatar_url,
+    simulation_id: '',
+    return_pct: Number(entry.pnl_all_time || 0),
+    sharpe_ratio: Number(entry.sharpe_ratio || 0),
+    win_rate: Number(entry.win_rate || 0),
+    total_trades: 0,
+    rank: Number(entry.rank || 0),
+    previous_rank: null,
+    created_at: entry.updated_at || new Date().toISOString(),
+    risk_level: 'moderate',
+    is_public: true,
+  })) as LeaderboardEntry[];
 }
 
 /**
