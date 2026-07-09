@@ -15,11 +15,11 @@
      ═══════════════════════════════════════════════════════════════ */
 
   /* Brand Colors */
-  --kp-brand: #0052ff;
-  --kp-brand-hover: #0047e0;
-  --kp-brand-light: #dbeafe;
-  --kp-brand-dark: #0039c7;
-  --kp-brand-glow: rgba(0, 82, 255, 0.3);
+  --kp-brand: #3b82f6;
+  --kp-brand-hover: #2563eb;
+  --kp-brand-light: #60a5fa;
+  --kp-brand-dark: #1d4ed8;
+  --kp-brand-glow: rgba(59, 130, 246, 0.3);
 
   /* Semantic Colors */
   --kp-success: #22c55e;
@@ -50,24 +50,24 @@
 
   /* Dark Mode - Background Hierarchy */
   --kp-bg-primary: #0a0b0d;
-  --kp-bg-secondary: #161719;
-  --kp-bg-tertiary: #1a1c24;
+  --kp-bg-secondary: #15171b;
+  --kp-bg-tertiary: #1a1d26;
   --kp-bg-elevated: #1f2128;
-  --kp-bg-card: #1a1c24;
+  --kp-bg-card: #1a1d26;
   --kp-bg-hover: rgba(255, 255, 255, 0.05);
   --kp-bg-active: rgba(255, 255, 255, 0.1);
 
   /* Dark Mode - Text */
-  --kp-text-primary: #f1f5f9;
-  --kp-text-secondary: #94a3b8;
-  --kp-text-tertiary: #64748b;
+  --kp-text-primary: #f9fafb;
+  --kp-text-secondary: #9ca3af;
+  --kp-text-tertiary: #6b7280;
   --kp-text-muted: #475569;
 
   /* Dark Mode - Borders */
-  --kp-border: rgba(255, 255, 255, 0.08);
-  --kp-border-light: rgba(255, 255, 255, 0.05);
-  --kp-border-strong: rgba(255, 255, 255, 0.15);
-  --kp-border-brand: rgba(0, 82, 255, 0.5);
+  --kp-border: #2a2d35;
+  --kp-border-light: rgba(255, 255, 255, 0.06);
+  --kp-border-strong: rgba(255, 255, 255, 0.12);
+  --kp-border-brand: rgba(59, 130, 246, 0.5);
 
   /* Typography */
   --kp-font-sans:
@@ -98,17 +98,17 @@
   --kp-radius-full: 9999px;
 
   /* Shadows */
-  --kp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --kp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --kp-shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --kp-shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --kp-shadow-card:
-    0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 4px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --kp-shadow-card-hover:
-    0 8px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  --kp-shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.3);
-  --kp-shadow-glow: 0 0 40px rgba(0, 82, 255, 0.3);
+    0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --kp-shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --kp-shadow-glow: 0 0 40px rgba(59, 130, 246, 0.3);
   --kp-shadow-glow-success: 0 0 30px rgba(16, 185, 129, 0.25);
   --kp-shadow-glow-error: 0 0 30px rgba(239, 68, 68, 0.25);
 

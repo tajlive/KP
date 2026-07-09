@@ -772,51 +772,78 @@ textarea,
 }
 
 /* ═══════════════════════════════════════════
-   JokerTrade Dark Theme Override
-   Overstyrer lyse bakgrunner → dark glassmorphism
+   JokerTrade Premium Dark Glassmorphism
+   Tailwind-integrated — NO !important overrides
    ═══════════════════════════════════════════ */
-@layer base {
-  body, html {
-    background-color: #0A0B0D !important;
-    color: #F9FAFB !important;
-  }
 
-  /* Gjør alle kort dark */
-  .bg-white, [class*="bg-white"],
-  .bg-slate-50, [class*="bg-slate-50"],
-  .bg-gray-50, [class*="bg-gray-50"] {
-    background-color: #1A1D26 !important;
-    border-color: #2A2D35 !important;
-  }
-
-  /* Tekst overrides */
-  .text-slate-900, .text-gray-900 { color: #F9FAFB !important; }
-  .text-slate-700, .text-gray-700 { color: #E2E8F0 !important; }
-  .text-slate-600 { color: #CBD5E1 !important; }
-  .text-slate-500, .text-gray-500 { color: #9CA3AF !important; }
-  .text-slate-400 { color: #94A3B8 !important; }
-
-  /* Navigation - dark bg */
-  nav, header, [class*="bg-white/80"] {
-    background-color: #15171B !important;
-    backdrop-filter: blur(20px) !important;
-    border-color: #2A2D35 !important;
-  }
-
-  /* Borders */
-  .border-slate-100, .border-gray-100 { border-color: #2A2D35 !important; }
-  .border-slate-200, .border-gray-200 { border-color: #2A2D35 !important; }
-
-  /* Shadow override */
-  .shadow-sm, .shadow, .shadow-md, .shadow-lg {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
-  }
+/* Glassmorphism card — primary design token utility */
+.glass-card {
+  @apply rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/80 backdrop-blur-xl shadow-lg shadow-black/20;
 }
 
-/* Glassmorphism utility */
-.glass {
-  background: rgba(26, 29, 38, 0.8) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(42, 45, 53, 0.5) !important;
-  border-radius: 16px !important;
+.glass-card:hover {
+  @apply border-[#3A3D45] shadow-xl shadow-black/30;
+}
+
+/* Glassmorphism — lighter variant (on secondary surfaces) */
+.glass-card-light {
+  @apply rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent backdrop-blur-md;
+}
+
+.glass-card-light:hover {
+  @apply border-white/[0.12];
+}
+
+/* Chart container — guaranteed min-height to avoid width(0) */
+.chart-container {
+  @apply w-full min-h-[300px] sm:min-h-[380px] rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/60 backdrop-blur-xl p-5 md:p-6;
+}
+
+/* Glassmorphism stat card — compact for KPIs */
+.stat-glass {
+  @apply rounded-xl border border-[#2A2D35] bg-[#1A1D26]/60 backdrop-blur-md p-4 transition-all duration-200;
+}
+
+.stat-glass:hover {
+  @apply border-[#3A3D45] shadow-md;
+}
+
+/* Navbar glass effect */
+.nav-glass {
+  @apply border-b border-[#2A2D35] bg-[#15171B] backdrop-blur-xl;
+}
+
+/* Hover transition preset for interactive cards */
+.hover-lift {
+  @apply transition-all duration-200;
+}
+.hover-lift:hover {
+  @apply -translate-y-0.5 shadow-lg shadow-black/20;
+}
+
+/* Gold CTA button — JokerTrade primary */
+.btn-gold {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm
+         bg-[#F59E0B] text-[#0A0B0D] transition-all duration-200
+         hover:bg-[#D97706] hover:shadow-lg hover:shadow-amber-500/20
+         active:scale-[0.98] min-h-[48px];
+}
+
+/* Blue accent CTA button */
+.btn-accent {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
+         bg-[#3B82F6] text-white transition-all duration-200
+         hover:bg-[#2563EB] hover:shadow-lg hover:shadow-blue-500/20
+         active:scale-[0.98] min-h-[48px];
+}
+
+/* Subtle text color presets for dark theme */
+.text-kp-primary {
+  color: #F9FAFB;
+}
+.text-kp-secondary {
+  color: #9CA3AF;
+}
+.text-kp-muted {
+  color: #6B7280;
 }

@@ -247,14 +247,14 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-4"
+        className="glass-card p-4 border-amber-500/20 hover:border-amber-500/30 transition-all duration-200"
       >
         <div className="flex items-center justify-between gap-4">
           <div>
             <h4 className="text-sm font-semibold text-amber-300">
               {t("leaderboardTitle")}
             </h4>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#9CA3AF] mt-0.5">
               {t("leaderboardDesc")}
             </p>
           </div>
@@ -272,20 +272,20 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
-        className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 p-4"
+        className="glass-card p-4 border-amber-500/30 hover:border-amber-500/40 transition-all duration-200"
       >
         <div className="flex items-center justify-between gap-4">
           <div>
             <h4 className="text-sm font-semibold text-amber-300">
               🎭 JokerTrade — AI-en trader for deg
             </h4>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#9CA3AF] mt-0.5">
               La AI finne de beste trades. Du bare ser pengene vokse.
             </p>
           </div>
           <a
             href={`/${locale}/jokertrade`}
-            className="shrink-0 rounded-lg bg-amber-500/30 px-3 py-1.5 text-xs font-medium text-amber-200 hover:bg-amber-500/40 transition-colors animate-pulse"
+            className="btn-gold text-xs px-3 py-1.5"
           >
             Prøv JokerTrade →
           </a>

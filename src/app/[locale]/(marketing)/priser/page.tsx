@@ -1,7 +1,7 @@
 /**
  * Priser page — static HTML. Zero SSR, zero Worker crashes.
  * Cloudflare Workers compatible by design.
- * Dark theme with gold CTA.
+ * Premium dark glassmorphism with gold CTA — JokerTrade theme.
  */
 
 const TIERS = [
@@ -14,84 +14,78 @@ const TIERS = [
 
 export default function PriserPage() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", background: "#0A0B0D", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-[#0A0B0D]" style={{ fontFamily: "system-ui, sans-serif" }}>
       {/* Header */}
-      <header style={{ background: "#1A1D26", borderBottom: "1px solid #2A2D35", padding: "16px 24px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <a href="/no" style={{ fontWeight: 700, fontSize: 20, color: "#F9FAFB", textDecoration: "none" }}>Klarpakke</a>
-          <nav style={{ display: "flex", gap: 16, alignItems: "center" }}>
-            <a href="/no/login" style={{ color: "#9CA3AF", textDecoration: "none", fontSize: 14 }}>Logg inn</a>
-            <a href="/no/register" style={{ background: "#3B82F6", color: "white", padding: "8px 16px", borderRadius: 8, textDecoration: "none", fontSize: 14, fontWeight: 600 }}>Registrer deg</a>
+      <header className="nav-glass px-6 py-4">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <a href="/no" className="font-bold text-xl text-[#F9FAFB] no-underline">Klarpakke</a>
+          <nav className="flex gap-4 items-center">
+            <a href="/no/login" className="text-[#9CA3AF] no-underline text-sm hover:text-[#F9FAFB] transition-colors">Logg inn</a>
+            <a href="/no/register" className="btn-accent text-sm px-4 py-2 no-underline">Registrer deg</a>
           </nav>
         </div>
       </header>
 
       {/* Hero */}
-      <section style={{ textAlign: "center", padding: "80px 24px 40px" }}>
-        <h1 style={{ fontSize: 40, fontWeight: 800, color: "#F9FAFB", marginBottom: 16 }}>Velg din plan</h1>
-        <p style={{ fontSize: 18, color: "#9CA3AF", maxWidth: 600, margin: "0 auto" }}>
+      <section className="text-center px-6 pt-20 pb-10">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-[#F9FAFB] mb-4 tracking-tight">
+          Velg din plan
+        </h1>
+        <p className="text-lg text-[#9CA3AF] max-w-xl mx-auto leading-relaxed">
           Start gratis, oppgrader når du er klar. Alle planer inkluderer papirhandel og AI-signaler.
         </p>
       </section>
 
       {/* Pricing grid */}
-      <section style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px 80px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+      <section className="max-w-6xl mx-auto px-6 pb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {TIERS.map((tier) => (
             <div
               key={tier.name}
-              style={{
-                background: "#1A1D26",
-                borderRadius: 16,
-                border: tier.popular ? "2px solid #F59E0B" : "1px solid #2A2D35",
-                padding: 24,
-                display: "flex",
-                flexDirection: "column",
-                position: "relative",
-              }}
+              className={`relative flex flex-col rounded-2xl p-6 backdrop-blur-xl transition-all duration-200 hover-lift ${
+                tier.popular
+                  ? "bg-[#1A1D26]/90 border-2 border-[#F59E0B] shadow-lg shadow-amber-500/10"
+                  : "bg-[#1A1D26]/70 border border-[#2A2D35] hover:border-[#3A3D45]"
+              }`}
             >
               {tier.popular && (
-                <span style={{
-                  position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
-                  background: "#F59E0B", color: "#0A0B0D", padding: "4px 12px", borderRadius: 99,
-                  fontSize: 12, fontWeight: 700,
-                }}>
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#0A0B0D] px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                   🎲 Mest populær
                 </span>
               )}
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: "#F9FAFB", marginBottom: 8 }}>{tier.name}</h3>
-              <div style={{ marginBottom: 16 }}>
+              <h3 className="text-xl font-bold text-[#F9FAFB] mb-3">{tier.name}</h3>
+              <div className="mb-4">
                 {tier.price === "0" ? (
-                  <span style={{ fontSize: 32, fontWeight: 800, color: "#F9FAFB" }}>Gratis</span>
+                  <span className="text-3xl font-extrabold text-[#F9FAFB]">Gratis</span>
                 ) : (
                   <>
-                    <span style={{ fontSize: 32, fontWeight: 800, color: "#F9FAFB" }}>{tier.price}</span>
-                    <span style={{ fontSize: 14, color: "#6B7280" }}> {tier.period}</span>
+                    <span className="text-3xl font-extrabold text-[#F9FAFB]">{tier.price}</span>
+                    <span className="text-sm text-[#6B7280] ml-1"> {tier.period}</span>
                   </>
                 )}
               </div>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", flex: 1 }}>
+              <ul className="list-none p-0 m-0 flex-1 space-y-2 mb-6">
                 {tier.features.map((f, i) => (
-                  <li key={i} style={{ padding: "6px 0", fontSize: 14, color: "#9CA3AF", display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ color: "#10B981", fontWeight: 700 }}>✓</span> {f}
+                  <li key={i} className="text-sm text-[#9CA3AF] flex items-center gap-2">
+                    <span className="text-[#10B981] font-bold shrink-0">✓</span>
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>
               <a
                 href={`/no/register?plan=${tier.name.toLowerCase()}`}
-                style={{
-                  display: "block", textAlign: "center", padding: "12px 0", borderRadius: 12,
-                  fontSize: 14, fontWeight: 600, textDecoration: "none",
-                  background: tier.popular ? "#F59E0B" : "#2A2D35",
-                  color: tier.popular ? "#0A0B0D" : "#F9FAFB",
-                }}
+                className={`block text-center py-3 rounded-xl text-sm font-semibold no-underline transition-all duration-200 ${
+                  tier.popular
+                    ? "bg-[#F59E0B] text-[#0A0B0D] hover:bg-[#D97706] hover:shadow-lg hover:shadow-amber-500/20 active:scale-[0.98]"
+                    : "bg-[#2A2D35] text-[#F9FAFB] hover:bg-[#3A3D45] active:scale-[0.98]"
+                }`}
               >
                 {tier.cta}
               </a>
             </div>
           ))}
         </div>
-        <p style={{ textAlign: "center", marginTop: 32, fontSize: 13, color: "#6B7280" }}>
+        <p className="text-center mt-8 text-xs text-[#6B7280]">
           Alle priser inkl. MVA. Ingen bindingstid. Avslutt når som helst.
         </p>
       </section>
