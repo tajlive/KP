@@ -929,7 +929,8 @@
       "losingTrades": "Tapende",
       "activeSessions": "Aktive sesjoner",
       "maxDrawdown": "Maks drawdown",
-      "bestPair": "Beste par"
+      "bestPair": "Beste par",
+      "portfolioValue": "Porteføljeverdi"
     },
     "sessions": {
       "title": "Sesjoner",
