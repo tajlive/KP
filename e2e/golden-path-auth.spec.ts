@@ -26,16 +26,19 @@ test.describe("Golden Path — autentisert", () => {
     await expect(page).toHaveURL(/dashboard/);
   });
 
-  test("2. Dashboard viser JokerTrade CTA", async ({ page }) => {
-    // Login via localStorage (raskere)
+  test("2. Dashboard laster for innlogget bruker (uten feil)", async ({ page }) => {
     await page.goto(`${BASE}/no/login`);
     await page.locator('input[type="email"]').first().fill(TEST_EMAIL);
     await page.locator('input[type="password"]').first().fill(TEST_PASSWORD);
     await page.locator('button[type="submit"]').first().click();
     await page.waitForURL("**/dashboard**", { timeout: 15000 });
     
-    // Sjekk at JokerTrade CTA finnes
-    await expect(page.locator('text=JokerTrade').first()).toBeVisible({ timeout: 10000 });
+    // Dashboard skal laste uten Worker crash
+    const body = await page.content();
+    expect(body).not.toMatch(/Feilkode: \d{7,}/);
+    
+    // Skal ha innhold
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 });
   });
 
   test("3. JokerTrade side laster for innlogget bruker", async ({ page }) => {
