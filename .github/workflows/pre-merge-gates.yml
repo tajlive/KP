@@ -66,7 +66,6 @@ jobs:
           node-version: 22
       - run: npm install -g @lhci/cli
       - run: lhci autorun --config=.lighthouserc.json --url=https://staging.klarpakke.no
-        continue-on-error: true
 
   # Blokkér merge hvis noe feiler
   gate-status:
@@ -85,6 +84,10 @@ jobs:
           fi
           if [ "${{ needs.e2e-golden-path.result }}" != "success" ]; then
             echo "❌ Golden path E2E feilet — merge blokkert"
+            exit 1
+          fi
+          if [ "${{ needs.lighthouse.result }}" != "success" ]; then
+            echo "❌ Lighthouse QA feilet — merge blokkert"
             exit 1
           fi
           echo "✅ Alle gates grønne — merge tillatt"
