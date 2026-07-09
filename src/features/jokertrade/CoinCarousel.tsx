@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity } from "lucide-react";
+import { AIBrainIcon } from "./JokerIcons";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,7 +47,7 @@ export function CoinCarousel({ insight }: { insight: string | null }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Activity className="w-4 h-4 text-amber-400" />
+        <AIBrainIcon className="w-4 h-4 text-amber-400" />
         <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
           AI SCORER 10 COINS
         </h3>

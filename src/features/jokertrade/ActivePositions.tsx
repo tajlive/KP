@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { SparkleIcon } from "./JokerIcons";
 
 interface Position {
   id: string;
@@ -37,7 +37,7 @@ export function ActivePositions({ positions }: ActivePositionsProps) {
           Åpne Posisjoner
         </h2>
         <div className="flex flex-col items-center justify-center py-8">
-          <TrendingUp className="mb-2 h-8 w-8 text-[#6B7280]" />
+          <SparkleIcon className="mb-2 h-8 w-8 text-[#6B7280]" />
           <p className="font-sans text-sm text-[#6B7280]">
             Ingen åpne posisjoner
           </p>
@@ -86,9 +86,9 @@ export function ActivePositions({ positions }: ActivePositionsProps) {
                     }`}
                   >
                     {isLong ? (
-                      <TrendingUp className="h-3 w-3" />
+                      <SparkleIcon className="h-3 w-3" />
                     ) : (
-                      <TrendingDown className="h-3 w-3" />
+                      <SparkleIcon className="h-3 w-3" />
                     )}
                     {isLong ? "LONG" : "SHORT"}
                   </span>
