@@ -14,7 +14,10 @@
  * ```
  */
 
-import { opik, traceLLMCall } from './opik-client';
+// Opik er deaktivert i prod — for stor for Cloudflare Workers (37 MB+)
+// Bruk dynamisk import kun i utvikling
+let opik: any = { track: () => {} };
+let traceLLMCall: any = () => {};
 
 // ==================== TYPES ====================
 
