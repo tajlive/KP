@@ -92,12 +92,12 @@ describe("CompetitionClient", () => {
     expect(screen.getByText("Trading Konkurranse")).toBeInTheDocument();
   });
 
-  it("shows loading state initially", () => {
+  it("shows loading skeleton initially", () => {
     vi.mocked(getLeaderboard).mockImplementation(() => new Promise(() => {}));
     vi.mocked(getUserRank).mockImplementation(() => new Promise(() => {}));
 
     render(<CompetitionClient params={{ locale: "no" }} />);
-    expect(screen.getByText("Laster...")).toBeInTheDocument();
+    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
   });
 
   it("shows empty state when no leaderboard data", async () => {
