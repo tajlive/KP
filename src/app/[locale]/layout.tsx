@@ -13,7 +13,8 @@ import {
   getEarlyMetaDescription,
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
-import PlausibleProvider from "next-plausible";
+import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
+import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { isAppShellPath } from "@/lib/navigation/config";
 import { RootProviders } from "@/app/providers/RootProviders";
@@ -102,10 +103,10 @@ export async function generateMetadata({
 
   return {
     title: {
-      template: "%s | Klarpakke — Norges krypto-skole",
+      template: "%s | Klarpakke",
       default: isNo
-        ? "Klarpakke — Norges krypto-skole"
-        : "Klarpakke — Norway's Crypto School",
+        ? "Klarpakke — Krypto trading bot"
+        : "Klarpakke — Crypto Trading Bot",
     },
     keywords: [
       "crypto trading",
@@ -296,31 +297,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {/* Preload critical above-fold assets */}
         <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
         <OrganizationJsonLd />
-        {/* Schema.org WebApplication JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              name: "Klarpakke",
-              url: "https://www.klarpakke.no",
-              applicationCategory: "EducationalApplication",
-              operatingSystem: "Web",
-              browserRequirements: "Requires JavaScript. Modern browser required.",
-              offers: {
-                "@type": "Offer",
-                price: "0",
-                priceCurrency: "NOK",
-                category: "Free tier available",
-              },
-              description: isNo
-                ? "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy for trygg læring."
-                : "Norway's first crypto school. Learn cryptocurrency and trading with paper money. AI-powered tools for safe learning.",
-              inLanguage: isNo ? "nb" : "en",
-            }),
-          }}
-        />
         {/* Server-side injected Sanity design tokens — eliminates FOUC */}
         <style
           id="sanity-design-tokens"
@@ -332,16 +308,18 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         suppressHydrationWarning
       >
         <RootProviders
-            locale={locale}
-            messages={messages}
-            showVippsMarket={showVippsMarket}
-            marketingNav={marketingNav}
-            flags={flags}
-            isMarketing={isMarketing}
-          >
-            {children}
-          </RootProviders>
+          locale={locale}
+          messages={messages}
+          showVippsMarket={showVippsMarket}
+          marketingNav={marketingNav}
+          flags={flags}
+          isMarketing={isMarketing}
+        >
+          {children}
+        </RootProviders>
+        <PlausibleScript />
         {/* Analytics handled via Plausible/Cloudflare. */}
+        <SanityLiveWrapper />
       </body>
     </html>
   );
