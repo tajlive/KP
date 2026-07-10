@@ -31,7 +31,6 @@ const NO_STORE_PATHS = [
   "/innstillinger",
   "/settings",
   "/konto",
-  "/varsler",
   "/leagues",
   // Trading
   "/handel",
@@ -45,9 +44,6 @@ const NO_STORE_PATHS = [
   "/onboarding",
   "/velg-strategi",
   "/velkommen",
-  "/interessetest",
-  "/quiz",
-  "/verify",
 ] as const;
 
 /** Public marketing/legal pages that benefit from Cloudflare edge caching. */

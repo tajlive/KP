@@ -144,3 +144,13 @@ BINANCE_PROXY_SECRET=
 | `supabase/migrations/` | Database-versjonering |
 | `e2e/` | Playwright E2E-tester |
 | `.github/workflows/` | CI/CD |
+
+## 📋 Forretningsdokumenter
+
+Strategi-, prisings- og markedsføringsplan for Klarpakke:
+
+| Dokument | Hva |
+|----------|-----|
+| [Forretningsplan](./docs/BUSINESS-PLAN.md) | Visjon, målgruppe, problem, løsning, inntektsmodell, roadmap |
+| [Prisingsstrategi](./docs/PRICING.md) | 3-tier modell: Gratis → Premium (199 kr) → Professor (499 kr) |
+| [Markedsføringsplan](./docs/MARKETING-PLAN.md) | TikTok-first strategi, SEO, konverteringstrakt, CAC/LTV-mål |

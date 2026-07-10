@@ -193,17 +193,7 @@ export function NotificationBell() {
             )}
           </div>
 
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="p-3 border-t border-white/5 text-center">
-              <Link
-                href={`/${locale}/varsler`}
-                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                Se alle varsler →
-              </Link>
-            </div>
-          )}
+          {/* Footer — varsler-siden slettet */}
         </div>
       )}
     </div>

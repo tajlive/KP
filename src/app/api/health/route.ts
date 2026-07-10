@@ -19,6 +19,8 @@ interface HealthCheck {
     leaderboard: CheckResult;
     hangingSessions: CheckResult;
     binanceProxy: CheckResult;
+    errorRate: CheckResult;
+    tradesPerMinute: CheckResult;
   };
   uptime: number;
   cached?: boolean;
@@ -416,6 +418,65 @@ async function checkPaperTrading(): Promise<CheckResult> {
   }
 }
 
+async function checkErrorRate(): Promise<CheckResult> {
+  const start = Date.now();
+  try {
+    const supabase = getServiceClient();
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { count, error } = await supabase
+      .from("bot_health")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", fiveMinAgo)
+      .eq("status", "error");
+
+    if (error) throw error;
+
+    const errors = count ?? 0;
+    return {
+      status: errors > 5 ? "error" : errors > 0 ? "warning" : "ok",
+      latency: Date.now() - start,
+      count: errors,
+      message: errors > 0 ? `${errors} error(s) siste 5 min` : undefined,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      count: 0,
+      message: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+  }
+}
+
+async function checkTradesPerMinute(): Promise<CheckResult> {
+  const start = Date.now();
+  try {
+    const supabase = getServiceClient();
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { count, error } = await supabase
+      .from("trades")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", fiveMinAgo);
+
+    if (error) throw error;
+
+    const trades = count ?? 0;
+    return {
+      status: trades === 0 ? "warning" : "ok",
+      latency: Date.now() - start,
+      count: trades,
+      message: trades === 0 ? "Ingen trades siste 5 min" : `${trades} trade(s) siste 5 min`,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      count: 0,
+      message: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+  }
+}
+
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,
@@ -455,7 +516,7 @@ export async function GET() {
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading] =
+  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading, errorRate, tradesPerMinute] =
     await Promise.all([
       withTimeout(checkDatabase(), 3000, {
         status: "error" as const,
@@ -496,6 +557,16 @@ export async function GET() {
         status: "error" as const,
         message: "Check timed out after 3000ms",
       }),
+      withTimeout(checkErrorRate(), 3000, {
+        status: "error" as const,
+        message: "Check timed out after 3000ms",
+        count: 0,
+      }),
+      withTimeout(checkTradesPerMinute(), 3000, {
+        status: "warning" as const,
+        message: "Check timed out after 3000ms",
+        count: 0,
+      }),
     ]);
 
   const checks = {
@@ -509,6 +580,8 @@ export async function GET() {
     binanceProxy,
     sanity,
     paperTrading,
+    errorRate,
+    tradesPerMinute,
   };
 
   const { binanceConnectivity: _, ...statusChecks } = checks;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { Bell, Settings, User, ChevronDown, Activity } from "lucide-react";
+import { Settings, User, ChevronDown, Activity } from "lucide-react";
 import { ThemeToggle } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
@@ -247,19 +247,7 @@ export function TopNav() {
               <span className="hidden sm:inline">{t("settings")}</span>
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="secondary"
-            size="sm"
-            aria-label={t("alerts")}
-            title={t("alerts")}
-            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-          >
-            <Link href={hrefWithLocale(locale, "/varsler")}>
-              <Bell className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("alerts")}</span>
-            </Link>
-          </Button>
+          {/* Varsler-fjernet — route slettet */}
           <Button
             asChild
             variant="secondary"
