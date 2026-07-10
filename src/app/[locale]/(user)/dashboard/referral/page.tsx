@@ -1,7 +1,12 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { ReferralDashboard } from "@/features/account/referral/ReferralDashboard";
-import { ReferralCard } from "@/features/referral/ReferralCard";
+import dynamic from "next/dynamic";
+
+const ReferralCard = dynamic(
+  () => import("@/features/referral/ReferralCard").then((m) => ({ default: m.ReferralCard })),
+  { ssr: false }
+);
 
 export const runtime = 'nodejs';
 
