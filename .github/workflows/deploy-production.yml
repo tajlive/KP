@@ -1,9 +1,9 @@
 name: Deploy to Production
 
 on:
-  workflow_dispatch:  # Kun manuell — Workers Builds er deaktivert
-  # push:  # Deaktivert — Workers Builds gir false positive smoke tests
-  #   branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
