@@ -185,18 +185,22 @@ export function LandingHero() {
     // Logg impression kun én gang
     if (!impressionLogged.current) {
       impressionLogged.current = true;
-      const supabase = createClient();
-      recordImpression(EXPERIMENT_NAME, v, supabase as Parameters<typeof recordImpression>[2]);
+      try {
+        const supabase = createClient();
+        recordImpression(EXPERIMENT_NAME, v, supabase as Parameters<typeof recordImpression>[2]);
+      } catch { /* silent — tabell mangler i Supabase */ }
     }
   }, []);
 
   const handleCTAClick = useCallback(() => {
-    const supabase = createClient();
-    recordConversion(
-      EXPERIMENT_NAME,
-      variant || "A",
-      supabase as Parameters<typeof recordConversion>[2],
-    );
+    try {
+      const supabase = createClient();
+      recordConversion(
+        EXPERIMENT_NAME,
+        variant || "A",
+        supabase as Parameters<typeof recordConversion>[2],
+      );
+    } catch { /* silent */ }
   }, [variant]);
 
   const content = variant === "B" ? VARIANT_B : VARIANT_A;
