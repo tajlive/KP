@@ -41,6 +41,7 @@ interface Trade {
 interface TradeMetrics {
   totalTrades: number;
   winRate: number;
+  totalDecided: number;
   totalPnl: number;
   avgTradePnl: number;
   maxDrawdownPct: number;
@@ -69,7 +70,8 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
   
   if (closedTrades.length === 0) {
     return {
-      totalTrades: trades.length, // Still show total activity
+      totalTrades: trades.length,
+      totalDecided: 0,
       winRate: 0,
       totalPnl: 0,
       avgTradePnl: 0,
@@ -140,6 +142,7 @@ function computeMetrics(trades: Trade[]): TradeMetrics {
 
   return {
     totalTrades: trades.length,
+    totalDecided,
     winRate,
     totalPnl: Math.round(totalPnl),
     avgTradePnl: Math.round(avgTradePnl * 100) / 100,
@@ -238,8 +241,11 @@ function ruleBasedInsight(
 
     case "performance_summary": {
       const vsBenchmark = metrics.winRate >= 55 ? "over" : "under";
+      const breakeven = metrics.totalDecided > 0 
+        ? metrics.totalTrades - metrics.totalDecided 
+        : 0;
       return {
-        insight: `Siste 30 dager: ${metrics.totalTrades} handler med ${metrics.winRate}% win rate (${vsBenchmark} bransjesnittet på ~55%). Total P&L: ${metrics.totalPnl > 0 ? "+" : ""}${metrics.totalPnl.toLocaleString()} kr. Beste dag: +${metrics.bestDayPnl.toLocaleString()} kr.`,
+        insight: `${metrics.winRate}% av ${metrics.totalDecided} avgjorte handler var lønnsomme (${vsBenchmark} bransjen på ~55%). ${metrics.totalTrades} handler totalt, ${breakeven > 0 ? breakeven + ' gikk i null, ' : ''}total P&L: ${metrics.totalPnl > 0 ? "+" : ""}${metrics.totalPnl.toLocaleString()} kr.` ,
         confidence: metrics.totalTrades >= 10 ? "high" : "low",
       };
     }
@@ -247,7 +253,7 @@ function ruleBasedInsight(
     case "strategy_tip": {
       if (metrics.winRate < 40 && metrics.totalTrades >= 10) {
         return {
-          insight: `Din win rate på ${metrics.winRate}% tyder på at strategien kan forbedres. Vurder å teste DCA (Dollar-Cost Averaging) i paper-modus først — det er den tryggeste måten å bygge posisjoner på.`,
+          insight: `Din win rate på ${metrics.winRate}% (${metrics.winRate} av 100 avgjorte handler gir gevinst) tyder på at strategien kan forbedres. Vurder å teste DCA (Dollar-Cost Averaging) i paper-modus først — det er den tryggeste måten å bygge posisjoner på.`,
           confidence: "medium",
         };
       }
