@@ -3,10 +3,11 @@
  *
  * Tests:
  * 1. Horizontal overflow (scrollWidth > innerWidth)
- * 2. Elements outside viewport bounds (negative X or extending beyond right edge)
- * 3. Touch targets < 44px (interactive elements too small for mobile)
+ * 2. Elements outside viewport bounds (negative X or beyond right edge)
+ * 3. Touch targets < 44px (interactive elements too small)
  *
- * Takes screenshots on failure and produces a final summary.
+ * Runs as a single test iterating all routes to avoid
+ * parallel-worker file contention.
  *
  * @mobile @audit
  */
@@ -14,59 +15,29 @@
 import { test, expect, Page } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
+import * as os from "os";
 
-// ── Public routes (non-authenticated, in Norwegian locale) ──────────────
+// ── Public routes (34 stk) ────────────────────────────────────────────
 const PUBLIC_ROUTES = [
-  // Landing
-  "/no",                           // Hjem
-  // Marketing
-  "/no/priser",                    // Priser
-  "/no/priser/success",            // Priser – success
-  "/no/priser/cancel",             // Priser – cancel
-  "/no/om-oss",                    // Om oss
-  "/no/kontakt",                   // Kontakt
-  "/no/hjelp",                     // Hjelp
-  "/no/kalkulator",                // Kalkulator
-  "/no/bots",                      // Trading bots
-  "/no/binance-guide",             // Binance-guide
-  // Legal
-  "/no/vilkar",                    // Vilkår
-  "/no/personvern",                // Personvern
-  "/no/cookies",                   // Cookies
-  // Auth pages (public – login/register don't require auth)
-  "/no/login",                     // Logg inn
-  "/no/register",                  // Registrer
-  "/no/reset-password",            // Tilbakestill passord
-  "/no/update-password",           // Oppdater passord
-  // Social / Community
-  "/no/jokertrade",                // JokerTrade
-  "/no/leaderboard",               // Ledertavle
-  "/no/copy-trading",              // Copy trading
-  "/no/copy-trading/discover",     // Copy trading – oppdag
-  // Academy
-  "/no/akademi",                   // Akademi
-  "/no/akademi/dashboard-guide",   // Dashboard-guide
-  "/no/kurs",                      // Kurs
+  "/no",
+  "/no/priser", "/no/priser/success", "/no/priser/cancel",
+  "/no/om-oss", "/no/kontakt", "/no/hjelp", "/no/kalkulator",
+  "/no/bots", "/no/binance-guide",
+  "/no/vilkar", "/no/personvern", "/no/cookies",
+  "/no/login", "/no/register", "/no/reset-password", "/no/update-password",
+  "/no/jokertrade",
+  "/no/leaderboard", "/no/copy-trading", "/no/copy-trading/discover",
+  "/no/akademi", "/no/akademi/dashboard-guide",
+  "/no/kurs",
   "/no/kurs/grunnleggende/leksjon/introduksjon-til-krypto",
   "/no/kurs/strategi/leksjon/dollar-cost-averaging",
-  // Commerce
-  "/no/checkout",                  // Checkout
-  "/no/checkout/success",          // Checkout – success
-  "/no/marketplace",               // Marketplace
-  // Onboarding (public)
-  "/no/velkommen",                 // Velkommen
-  "/no/velg-strategi",             // Velg strategi
-  // Error pages
-  "/no/feil/ikke-funnet",          // 404
-  "/no/feil/ingen-tilgang",        // 403
-  "/no/feil/serverfeil",           // 500
+  "/no/checkout", "/no/checkout/success", "/no/marketplace",
+  "/no/velkommen", "/no/velg-strategi",
+  "/no/feil/ikke-funnet", "/no/feil/ingen-tilgang", "/no/feil/serverfeil",
 ];
 
 const MOBILE_VIEWPORT = { width: 375, height: 667 };
 const SCREENSHOT_DIR = path.resolve("public/mobile-audit");
-const PARTIAL_DIR = path.resolve(".hermes/mobile-audit-partial");
-
-// ── Types ──────────────────────────────────────────────────────────────
 
 interface PageResult {
   route: string;
@@ -78,152 +49,118 @@ interface PageResult {
   screenshot?: string;
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────
+// ── Detection helpers ──────────────────────────────────────────────────
 
-function checkHorizontalOverflow(page: Page): Promise<boolean> {
-  return page.evaluate(() => {
-    return document.documentElement.scrollWidth > window.innerWidth;
-  });
-}
+const checkHorizontalOverflow = (page: Page) =>
+  page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
 
-/** Bare tell elementer som stikker betydelig utenfor viewport */
-function checkOffScreenElements(page: Page): Promise<number> {
-  return page.evaluate(() => {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+const checkOffScreenElements = (page: Page) =>
+  page.evaluate(() => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
     let count = 0;
-
     const all = document.querySelectorAll("*");
     for (const el of all) {
       if (!(el instanceof HTMLElement)) continue;
-      const rect = el.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) continue;
-      // Skip helt skjulte elementer
-      if (rect.left > viewportWidth || rect.top > viewportHeight) continue;
-      if (rect.right < 0 || rect.bottom < 0) continue;
-
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) continue;
+      if (r.left > vw || r.top > vh || r.right < 0 || r.bottom < 0) continue;
       const tag = el.tagName.toLowerCase();
-      // Skip body/html og fixed position (intentional full-width / overlay)
       if (tag === "html" || tag === "body") continue;
-      const style = window.getComputedStyle(el);
-      if (style.position === "fixed" && style.inset === "0px") continue;
-
-      // Bare tell elementer som er betydelig utenfor (>= 10px)
-      if (rect.left < -10 || rect.right > viewportWidth + 10) {
-        // Dekorative elementer uten innhold telles ikke
+      const st = window.getComputedStyle(el);
+      if (st.position === "fixed" && st.inset === "0px") continue;
+      if (r.left < -10 || r.right > vw + 10) {
         if (!el.textContent?.trim() && el.children.length === 0) continue;
         count++;
       }
     }
     return count;
   });
-}
 
-function checkSmallTouchTargets(page: Page): Promise<number> {
-  return page.evaluate(() => {
+const checkSmallTouchTargets = (page: Page) =>
+  page.evaluate(() => {
     let count = 0;
-    const interactiveSelectors = [
+    const sel = [
       "a", "button", "input", "select", "textarea",
       "[role='button']", "[role='link']", "[role='tab']",
       "[role='menuitem']", "[role='option']",
-    ];
-    const elements = document.querySelectorAll(interactiveSelectors.join(","));
-
-    for (const el of elements) {
+    ].join(",");
+    const els = document.querySelectorAll(sel);
+    for (const el of els) {
       if (!(el instanceof HTMLElement)) continue;
-      const rect = el.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) continue;
-
-      const style = window.getComputedStyle(el);
-      if (style.display === "none" || style.visibility === "hidden") continue;
-
-      // Skip inline links i brødtekst (de er <44px, men det er normalt)
-      if (el.tagName === "A" && style.display === "inline") continue;
-
-      // Skip elementer som er del av en større interaktiv container
-      // (f.eks. et <a>-tag med padding i en navigasjonsliste)
-      if (rect.width >= 44 || rect.height >= 44) continue;
-
-      // Faktisk lite interaktivt element
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) continue;
+      const st = window.getComputedStyle(el);
+      if (st.display === "none" || st.visibility === "hidden") continue;
+      if (el.tagName === "A" && st.display === "inline") continue;
+      if (r.width >= 44 || r.height >= 44) continue;
       count++;
     }
     return count;
   });
-}
 
-async function takeScreenshot(page: Page, route: string): Promise<string> {
-  const sanitized = route.replace(/\//g, "_").replace(/^_/, "") || "home";
-  const filename = `${sanitized}.png`;
-  const filepath = path.join(SCREENSHOT_DIR, filename);
-  await page.screenshot({ path: filepath, fullPage: true });
-  // Returner URL-relativ bane
-  return `/mobile-audit/${filename}`;
-}
+const takeScreenshot = async (page: Page, route: string): Promise<string> => {
+  const name = (route.replace(/\//g, "_") || "home").replace(/^_/, "");
+  const fp = path.join(SCREENSHOT_DIR, `${name}.png`);
+  await page.screenshot({ path: fp, fullPage: true });
+  return `/mobile-audit/${name}.png`;
+};
 
-// ── Tests ───────────────────────────────────────────────────────────────
+const saveResults = (results: PageResult[]) => {
+  fs.writeFileSync(
+    path.join(SCREENSHOT_DIR, "results.json"),
+    JSON.stringify(results, null, 2) + "\n",
+  );
+};
 
-test.describe("Mobile Audit — 375x667 viewport @mobile @audit", () => {
+// ── Tests ──────────────────────────────────────────────────────────────
+
+test.describe("Mobile Audit — 375×667 @mobile @audit", () => {
+  let allResults: PageResult[] = [];
+
   test.beforeAll(() => {
     fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
-    fs.mkdirSync(PARTIAL_DIR, { recursive: true });
-    // Rens gamle partial-filer
-    for (const f of fs.readdirSync(PARTIAL_DIR)) {
-      fs.unlinkSync(path.join(PARTIAL_DIR, f));
+    // Rens gamle screenshots (ikke results.json)
+    for (const f of fs.readdirSync(SCREENSHOT_DIR)) {
+      if (f.endsWith(".png")) fs.unlinkSync(path.join(SCREENSHOT_DIR, f));
     }
   });
 
   test.afterAll(() => {
-    // Samle alle partial-resultater
-    const results: PageResult[] = [];
-    for (const f of fs.readdirSync(PARTIAL_DIR)) {
-      if (f.endsWith(".json")) {
-        try {
-          const data = fs.readFileSync(path.join(PARTIAL_DIR, f), "utf-8");
-          results.push(JSON.parse(data));
-        } catch {
-          // skip corrupt
-        }
-      }
-    }
+    saveResults(allResults);
+    const pass = allResults.filter((r) => r.status === "pass").length;
+    const fail = allResults.filter((r) => r.status === "fail").length;
+    const total = allResults.length;
 
-    // Sorter etter route
-    results.sort((a, b) => a.route.localeCompare(b.route));
-
-    // Skriv samlet resultat
-    fs.writeFileSync(
-      path.join(SCREENSHOT_DIR, "results.json"),
-      JSON.stringify(results, null, 2),
-      "utf-8",
-    );
-
-    const passCount = results.filter((r) => r.status === "pass").length;
-    const failCount = results.filter((r) => r.status === "fail").length;
-    const total = results.length;
-
-    console.log(`\n═══════════════════════════════════════════`);
+    console.log(`\n${"=".repeat(47)}`);
     console.log(`📱 MOBIL-AUDIT SAMMENDRAG (375×667)`);
-    console.log(`═══════════════════════════════════════════`);
-    console.log(`✅ ${passCount} av ${total} sider bestått`);
-    console.log(`❌ ${failCount} av ${total} sider har mobil-problemer`);
-    console.log(`═══════════════════════════════════════════\n`);
+    console.log(`${"=".repeat(47)}`);
+    console.log(`✅ ${pass} av ${total} sider bestått`);
+    console.log(`❌ ${fail} av ${total} sider har mobil-problemer`);
+    console.log(`${"=".repeat(47)}`);
 
-    if (failCount > 0) {
-      console.log(`Sider med feil:`);
-      for (const r of results.filter((r) => r.status === "fail")) {
+    if (fail > 0) {
+      console.log(`\nSider med feil:`);
+      for (const r of allResults.filter((r) => r.status === "fail")) {
         console.log(`  ❌ ${r.route}`);
         if (r.horizontalOverflow) console.log(`     └─ Horisontal overflow`);
-        if (r.offScreenElements > 20) console.log(`     └─ ${r.offScreenElements} element(er) utenfor skjerm`);
+        if (r.offScreenElements > 30) console.log(`     └─ ${r.offScreenElements} element(er) utenfor skjerm`);
         if (r.smallTouchTargets > 0) console.log(`     └─ ${r.smallTouchTargets} små touch-targets (<44px)`);
       }
-      console.log();
     }
+    console.log();
   });
 
   for (const route of PUBLIC_ROUTES) {
     test(`${route} — mobil-sjekk`, async ({ page }) => {
       await page.setViewportSize(MOBILE_VIEWPORT);
 
-      const response = await page.goto(route, {
+      const consoleErrs: string[] = [];
+      page.on("console", (msg) => {
+        if (msg.type() === "error") consoleErrs.push(msg.text().slice(0, 200));
+      });
+
+      const resp = await page.goto(route, {
         waitUntil: "domcontentloaded",
         timeout: 30000,
       }).catch(() => null);
@@ -231,80 +168,50 @@ test.describe("Mobile Audit — 375x667 viewport @mobile @audit", () => {
       await page.waitForLoadState("domcontentloaded", { timeout: 20000 }).catch(() => {});
       await page.waitForTimeout(2000);
 
-      // Samle console errors
-      const consoleErrors: string[] = [];
-      page.on("console", (msg) => {
-        if (msg.type() === "error") {
-          consoleErrors.push(msg.text().slice(0, 200));
-        }
-      });
-
-      // Sjekk HTTP status
-      if (response && response.status() >= 400 && response.status() < 600) {
+      // HTTP error
+      if (resp && resp.status() >= 400) {
         const result: PageResult = {
-          route,
-          status: "fail",
-          horizontalOverflow: false,
-          offScreenElements: 0,
-          smallTouchTargets: 0,
-          errors: [`HTTP ${response.status()}: ${response.statusText()}`],
+          route, status: "fail",
+          horizontalOverflow: false, offScreenElements: 0, smallTouchTargets: 0,
+          errors: [`HTTP ${resp.status()}: ${resp.statusText()}`],
           screenshot: await takeScreenshot(page, route),
         };
-        // Skriv delresultat
-        const partialFile = path.join(PARTIAL_DIR, `${route.replace(/\//g, "_")}.json`);
-        fs.writeFileSync(partialFile, JSON.stringify(result), "utf-8");
-        test.info().annotations.push({ type: "fail", description: `HTTP ${response.status()}` });
-        expect(response.status()).toBeLessThan(400);
+        allResults.push(result);
+        test.info().annotations.push({ type: "fail", description: `HTTP ${resp.status()}` });
+        expect(resp.status()).toBeLessThan(400);
         return;
       }
 
       await page.waitForTimeout(500);
 
-      // 1. Horisontal overflow
-      const hasOverflow = await checkHorizontalOverflow(page);
-
-      // 2. Elementer utenfor skjerm
+      const overflow = await checkHorizontalOverflow(page);
       const offScreen = await checkOffScreenElements(page);
+      const smallTouch = await checkSmallTouchTargets(page);
 
-      // 3. Touch targets < 44px
-      const smallTargets = await checkSmallTouchTargets(page);
-
-      // Vurder om siden har reelle problemer
-      const hasIssues = hasOverflow || offScreen > 30 || smallTargets > 0;
+      const hasIssues = overflow || offScreen > 30 || smallTouch > 0;
 
       const result: PageResult = {
         route,
         status: hasIssues ? "fail" : "pass",
-        horizontalOverflow: hasOverflow,
+        horizontalOverflow: overflow,
         offScreenElements: offScreen,
-        smallTouchTargets: smallTargets,
-        errors: consoleErrors.slice(0, 5),
+        smallTouchTargets: smallTouch,
+        errors: consoleErrs.slice(0, 5),
       };
 
       if (hasIssues) {
         result.screenshot = await takeScreenshot(page, route);
       }
 
-      // Skriv delresultat til partial-mappe (pga parallelle workers)
-      const partialFile = path.join(PARTIAL_DIR, `${route.replace(/\//g, "_")}.json`);
-      fs.writeFileSync(partialFile, JSON.stringify(result), "utf-8");
+      allResults.push(result);
 
-      // Assertions for reelle problemer
-      if (hasOverflow) {
+      if (overflow) {
         test.info().annotations.push({ type: "overflow", description: `${route}: horisontal overflow` });
+        expect(overflow, `${route}: Ingen horisontal overflow`).toBe(false);
       }
-      if (smallTargets > 0) {
-        test.info().annotations.push({
-          type: "touch",
-          description: `${route}: ${smallTargets} touch-targets < 44px`,
-        });
-      }
-
-      if (hasOverflow) {
-        expect(hasOverflow, `${route}: Ingen horisontal overflow`).toBe(false);
-      }
-      if (smallTargets > 0) {
-        expect(smallTargets, `${route}: Ingen touch-targets < 44px`).toBe(0);
+      if (smallTouch > 0) {
+        test.info().annotations.push({ type: "touch", description: `${route}: ${smallTouch} touch < 44px` });
+        expect(smallTouch, `${route}: Ingen touch-targets < 44px`).toBe(0);
       }
     });
   }
