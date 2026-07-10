@@ -29,7 +29,7 @@
     "guide": "Guide",
     "strategies": "Strategier",
     "metrics": "Metrikker",
-    "referral": "Referral",
+    "referral": "Verv en venn",
     "mainMenu": "Hovedmeny",
     "closeMenu": "Lukk meny",
     "breadcrumbYouAreHere": "Du er her",
@@ -651,5 +651,33 @@
     "doingGreat": {
       "message": "Sterkt! {winRate}% win rate og positiv avkastning. Vurder å øke kapitalen gradvis."
     }
+  },
+  "referralPaper": {
+    "title": "Få en venn til å trade",
+    "subtitle": "Dere får begge 5 000 kr i lekepenger",
+    "invited": "Inviterte",
+    "bonusEarned": "Opptjent bonus",
+    "thisMonth": "Denne måneden",
+    "topRecruiter": "Top Recruiter",
+    "yourLink": "Din unike henvisningslenke",
+    "copy": "Kopier",
+    "copied": "Kopiert!",
+    "shareWithFriends": "Del med venner",
+    "howItWorks": "Slik fungerer det",
+    "step1": "Del din unike lenke med en venn",
+    "step2": "Vennen registrerer seg og begynner å trade",
+    "step3": "Dere får begge 5 000 kr ekstra i lekepenger",
+    "rewardPaperBonus": "5 000 kr paper bonus",
+    "rewardPaperDesc": "Til deg og vennen din når vennen fullfører sin første handel",
+    "rewardBadge": "Top Recruiter 🏆",
+    "rewardBadgeDesc": "De 3 med flest inviterte denne måneden får et eksklusivt badge på profilen",
+    "rewardLeaderboard": "Leaderboard — Flest inviterte",
+    "rewardLeaderboardDesc": "Se hvem som har invitert flest denne måneden på leaderboardet",
+    "topReferrers": "Topp-ververe denne måneden",
+    "goldenTicketLink": "Du kan også generere Golden Ticket-invitasjoner for å gi venner gratis Master-tier tilgang",
+    "rewardsAndBadges": "Belønninger & utmerkelser",
+    "loginRequired": "Logg inn for å se dine henvisninger.",
+    "loading": "Laster henvisningsdata...",
+    "errorLoading": "Kunne ikke laste henvisningsdata"
   }
 }

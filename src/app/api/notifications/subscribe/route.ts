@@ -1,53 +1,63 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
+import { withErrorHandler } from "@/lib/api-error-handler";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
-  try {
-    const { subscription } = await request.json();
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-    if (!subscription?.endpoint || !subscription?.keys) {
-      return NextResponse.json(
-        { error: "Invalid subscription" },
-        { status: 400 }
-      );
-    }
+interface PushSubscriptionBody {
+  subscription: {
+    endpoint: string;
+    keys: {
+      p256dh: string;
+      auth: string;
+    };
+  };
+}
 
-    const response = NextResponse.next();
-    const supabase = createServerClient(request, response);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+async function handlePOST(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-    const admin = createClient();
-    const { error } = await admin.from("push_subscriptions").upsert(
-      {
-        user_id: user.id,
-        endpoint: subscription.endpoint,
-        auth: subscription.keys.auth,
-        p256dh: subscription.keys.p256dh,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "endpoint" }
-    );
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    if (error) {
-      console.error("Error saving push subscription:", error);
-      return NextResponse.json(
-        { error: "Failed to save subscription" },
-        { status: 500 }
-      );
-    }
+  const body: PushSubscriptionBody = await request.json();
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("Subscribe error:", err);
+  if (!body.subscription?.endpoint || !body.subscription?.keys) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { error: "Ugyldig push subscription data" },
+      { status: 400 },
     );
   }
+
+  // Upsert subscription (én per endpoint)
+  const { error } = await supabase.from("push_subscriptions").upsert(
+    {
+      user_id: user.id,
+      endpoint: body.subscription.endpoint,
+      p256dh: body.subscription.keys.p256dh,
+      auth: body.subscription.keys.auth,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "endpoint" },
+  );
+
+  if (error) {
+    console.error("[Push Subscribe] Error:", error);
+    return NextResponse.json(
+      { error: "Kunne ikke lagre push-abonnement" },
+      { status: 500 },
+    );
+  }
+
+  return NextResponse.json({ ok: true });
 }
+
+export const POST = withErrorHandler(handlePOST, "/api/notifications/subscribe");

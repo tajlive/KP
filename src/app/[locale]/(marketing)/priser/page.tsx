@@ -1,8 +1,21 @@
+import { Metadata } from "next";
+
 /**
  * Priser page — static HTML. Zero SSR, zero Worker crashes.
  * Cloudflare Workers compatible by design.
  * Premium dark glassmorphism with gold CTA — JokerTrade theme.
  */
+
+export const metadata: Metadata = {
+  title: "Priser",
+  description:
+    "Se Klarpakkes priser og planer. Start gratis med 100 000 kr i lekepenger. Oppgrader til Bachelor, Master eller Professor når du er klar. Ingen bindingstid.",
+  openGraph: {
+    title: "Priser | Klarpakke — Norges krypto-skole",
+    description:
+      "Se Klarpakkes priser og planer. Start gratis med 100 000 kr i lekepenger. Ingen bindingstid.",
+  },
+};
 
 const TIERS = [
   { name: "Student", price: "0", period: "Gratis", features: ["Papirhandel 100 000 kr", "1 auto-strategi", "AI-signaler", "Community-tilgang"], cta: "Start gratis", popular: false },

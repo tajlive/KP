@@ -2,10 +2,8 @@
 
 import {
   UserPlus,
-  BookOpen,
-  Gamepad2,
-  Rocket,
-  LayoutDashboard,
+  Wallet,
+  Bot,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -23,81 +21,58 @@ export function ThreeSteps() {
       number: "01",
       title: t("step1.title"),
       description: t("step1.description"),
-      color: "bg-[#0052FF]",
+      color: "bg-[#3B82F6]",
     },
     {
-      icon: BookOpen,
+      icon: Wallet,
       number: "02",
       title: t("step2.title"),
       description: t("step2.description"),
-      color: "bg-amber-500",
+      color: "bg-[#F59E0B]",
     },
     {
-      icon: Gamepad2,
+      icon: Bot,
       number: "03",
       title: t("step3.title"),
       description: t("step3.description"),
-      color: "bg-indigo-500",
-    },
-    {
-      icon: Rocket,
-      number: "04",
-      title: t("step4.title"),
-      description: t("step4.description"),
-      color: "bg-purple-500",
-      badge: t("step4.badge"),
-      optional: true,
+      color: "bg-[#10B981]",
     },
   ];
 
   return (
     <div data-testid="three-steps" suppressHydrationWarning className="pt-10 pb-8 md:pt-16 md:pb-12">
       <div className="text-center mb-8">
-        <h2 className="font-fraunces text-3xl md:text-4xl font-bold text-slate-100 mb-4">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#F9FAFB] mb-3">
           {t("sectionTitle")}
         </h2>
-        <p className="font-lexend text-slate-400 max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base text-[#9CA3AF] max-w-2xl mx-auto">
           {t("sectionSubtitle")}
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      <div className="grid md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
         {steps.map((step, idx) => (
           <div
             key={step.number}
-            className={`relative bg-slate-800/50 border rounded-2xl p-6 md:p-8 group hover:border-slate-600 transition-colors ${
-              step.optional ? "border-purple-700/50" : "border-slate-700"
-            }`}
+            className="relative glass-card text-center flex flex-col items-center"
           >
-            {/* Connector line (hidden on mobile) */}
-            {idx < steps.length - 1 && (
-              <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-px bg-slate-700" />
-            )}
-
             {/* Step number */}
             <div
-              className={`w-12 h-12 ${step.color} rounded-xl flex items-center justify-center mb-6`}
+              className={`w-12 h-12 ${step.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}
             >
               <step.icon className="w-6 h-6 text-white" />
             </div>
 
             {/* Number badge */}
-            <span className="absolute top-6 right-6 font-fraunces text-4xl font-bold text-slate-300/50">
+            <span className="absolute top-4 right-4 text-3xl font-black text-[#2A2D35] select-none">
               {step.number}
             </span>
 
-            {/* Optional badge */}
-            {step.badge && (
-              <span className="absolute top-6 left-20 bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded">
-                {step.badge}
-              </span>
-            )}
-
             {/* Content */}
-            <h3 className="font-fraunces text-xl font-bold text-slate-100 mb-3">
+            <h3 className="text-lg sm:text-xl font-bold text-[#F9FAFB] mb-2">
               {step.title}
             </h3>
-            <p className="font-lexend text-slate-400 text-sm leading-relaxed">
+            <p className="text-sm text-[#9CA3AF] leading-relaxed">
               {step.description}
             </p>
           </div>
@@ -108,16 +83,16 @@ export function ThreeSteps() {
       <div className="text-center mt-8">
         <Link
           href={hrefWithLocale(locale, user ? "/dashboard" : "/register")}
-          className="bg-kp-brand hover:bg-kp-brand-hover text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
+          className="btn-gold inline-flex items-center justify-center gap-2 px-8 py-4 text-base sm:text-lg font-bold rounded-xl no-underline shadow-lg shadow-[#F59E0B]/25 min-h-[48px] transition-all"
         >
           {user ? (
-            <LayoutDashboard className="w-5 h-5" aria-hidden />
+            <Bot className="w-5 h-5" aria-hidden />
           ) : (
             <UserPlus className="w-5 h-5" aria-hidden />
           )}
           {user ? t("ctaButtonLoggedIn") : t("ctaButton")}
         </Link>
-        <p className="font-lexend text-slate-400 text-sm mt-4">
+        <p className="text-[#6B7280] text-sm mt-3">
           {user ? t("ctaSubtextLoggedIn") : t("ctaSubtext")}
         </p>
       </div>

@@ -118,6 +118,7 @@ export const cspMiddleware: MiddlewareFn = (
       "https://pskhryjzkobytnfwucrb.supabase.co",
       "wss://pskhryjzkobytnfwucrb.supabase.co",
       "https://api.binance.com",
+      "https://api.coingecko.com",
       "wss://stream.binance.com:9443",
       "https://*.sanity.io",
       "wss://*.sanity.io",

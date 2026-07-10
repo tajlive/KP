@@ -15,7 +15,8 @@
     "contact": "Kontakt",
     "help": "Hjelp",
     "privacy": "Personvern",
-    "terms": "Vilkår"
+    "terms": "Vilkår",
+    "apiDocs": "API-dokumentasjon"
   },
   "paymentSubtitle": "Vi bruker Stripe og Vipps for sikker betaling. Ingen kortdetaljer lagres hos oss.",
   "paymentSubtitleNoVipps": "Vi bruker Stripe for sikker betaling. Ingen kortdetaljer lagres hos oss.",

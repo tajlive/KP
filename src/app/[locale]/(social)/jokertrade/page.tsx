@@ -1,15 +1,16 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
-import { JokerTradeClient } from "@/features/jokertrade/JokerTradeClient";
 import { createClient } from "@/lib/supabase/server";
+import { JokerTradeLanding } from "@/features/jokertrade/JokerTradeLanding";
+import { JokerTradeClient } from "@/features/jokertrade/JokerTradeClient";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "JokerTrade | Klarpakke",
+  title: "JokerTrade™ | AI-drevet trading | Klarpakke",
   description:
-    "AI-drevet trading med Joker-modus — la Hermes finne de beste trade-signalene",
+    "Din personlige AI-trader som jobber mens du sover. Automatisk analyse, intelligente signaler — null stress. Start gratis med 100 000 kr i lekepenger.",
 };
 
 export default async function JokerTradePage({
@@ -19,15 +20,22 @@ export default async function JokerTradePage({
 }) {
   const { locale } = await params;
   const { user } = await requireAuth(locale);
+
+  // Hvis ikke innlogget: vis kun landing-siden (hero + marketing)
   if (!user) {
-    return <LoginRequired next={`/${locale}/jokertrade`} />;
+    return (
+      <div className="min-h-screen bg-[#0A0B0D]">
+        <JokerTradeLanding />
+      </div>
+    );
   }
 
+  // Hvis innlogget: vis landing + trading dashboard
   let initialData: any;
 
   try {
     const db: any = createClient();
-    
+
     const { data: latestInsight } = await db
       .from("market_intelligence")
       .select("*")
@@ -86,7 +94,6 @@ export default async function JokerTradePage({
     };
   } catch (error) {
     console.error("[JokerTrade] SSR-feil:", error);
-    // Fallback — vis JokerTrade uten data heller enn blank side
     initialData = {
       status: "active",
       insight: null,
@@ -98,7 +105,11 @@ export default async function JokerTradePage({
 
   return (
     <div className="min-h-screen bg-[#0A0B0D]">
-      <JokerTradeClient initialData={initialData} />
+      <JokerTradeLanding />
+      {/* Trading dashboard for innloggede brukere */}
+      <div className="border-t border-[#2A2D35]">
+        <JokerTradeClient initialData={initialData} />
+      </div>
     </div>
   );
 }

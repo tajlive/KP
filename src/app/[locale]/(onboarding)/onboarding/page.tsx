@@ -26,21 +26,21 @@ function OnboardingErrorFallback({
   backToLogin: string;
 }) {
   return (
-    <div className="min-h-screen bg-kp-bg-primary flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-kp-danger-bg border border-kp-danger/20 rounded-xl p-6 text-center">
-        <AlertCircle className="w-12 h-12 text-kp-danger mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-kp-danger mb-2">{title}</h2>
-        <p className="text-kp-danger/80 mb-4">{message}</p>
+    <div className="min-h-screen bg-[#0A0B0D] flex items-center justify-center p-6">
+      <div className="max-w-md w-full bg-red-900/20 border border-red-500/20 rounded-xl p-6 text-center">
+        <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+        <h2 className="text-xl font-semibold text-red-500 mb-2">{title}</h2>
+        <p className="text-red-400/80 mb-4">{message}</p>
         <div className="flex gap-3 justify-center">
           <Link
             href={`/${locale}/onboarding`}
-            className="px-4 py-2 bg-kp-danger hover:bg-kp-danger/90 text-kp-text-primary rounded-lg transition-colors"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
           >
             {retry}
           </Link>
           <Link
             href={`/${locale}/login`}
-            className="px-4 py-2 bg-kp-bg-tertiary hover:bg-kp-bg-elevated text-kp-text-primary rounded-lg transition-colors"
+            className="px-4 py-2 bg-[#2A2D35] hover:bg-[#3A3D45] text-[#F9FAFB] rounded-lg transition-colors"
           >
             {backToLogin}
           </Link>
@@ -72,14 +72,12 @@ export default async function OnboardingPage({
       redirect(`/${locale}/dashboard`);
     }
 
-    // Redirect til riktig steg basert på onboarding_step
+    // 3-stegs flyt basert på onboarding_step
     const step = profile?.onboarding_step || 0;
     const steps = [
       "/onboarding/step1-welcome",
       "/onboarding/step2-level",
-      "/onboarding/step3-trading-mode",
       "/onboarding/step4-first-trade",
-      "/onboarding/step5-complete",
     ];
     const targetStep = Math.min(step, steps.length - 1);
 

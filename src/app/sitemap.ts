@@ -14,7 +14,6 @@ const appDir = join(process.cwd(), "src/app/[locale]");
 const EXCLUDED_GROUPS = [
   "(user)",
   "(admin)",
-  "(auth)",
   "(onboarding)",
   "(commerce)",
 ];

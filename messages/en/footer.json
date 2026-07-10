@@ -15,7 +15,8 @@
     "contact": "Contact",
     "help": "Help",
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "apiDocs": "API Documentation"
   },
   "paymentSubtitle": "We use Stripe and Vipps for secure payment. No card details are stored with us.",
   "paymentSubtitleNoVipps": "We use Stripe for secure payment. No card details are stored with us.",

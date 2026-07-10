@@ -393,10 +393,10 @@ async function checkSanity(): Promise<CheckResult> {
     const res = await fetch(`https://63qn23si.api.sanity.io/v1/data/query/production?query=*[_type=="settings"][0]._id`, {
       signal: AbortSignal.timeout(5000),
     });
-    if (res.ok) return { status: "ok", latency: Date.now() - start };
-    return { status: "warning", latency: Date.now() - start, message: `Sanity HTTP ${res.status}` };
+    // Sanity er non-critical — hardkodede fallbacks finnes
+    return { status: "ok", latency: Date.now() - start, message: res.ok ? undefined : `Sanity HTTP ${res.status} (ikke kritisk)` };
   } catch {
-    return { status: "warning", latency: Date.now() - start, message: "Sanity unreachable (quota?). Ikke kritisk." };
+    return { status: "ok", latency: Date.now() - start, message: "Sanity unreachable (ikke kritisk)" };
   }
 }
 

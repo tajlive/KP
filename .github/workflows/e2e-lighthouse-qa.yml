@@ -3,7 +3,13 @@ name: E2E + Lighthouse QA
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
@@ -33,17 +39,122 @@ jobs:
           retention-days: 7
 
   lighthouse:
-    timeout-minutes: 15
+    timeout-minutes: 30
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install -g @lhci/cli
-      - run: lhci autorun --config=.lighthouserc.json
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
+
+      - name: Run Lighthouse CI — alle 25 offentlige ruter
+        id: lhci
+        run: |
+          lhci autorun --config=.lighthouserc.json 2>&1 | tee lhci-output.txt
+          # Siste linje inneholder exit code
+          echo "LHCI_EXIT=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Generer Lighthouse-oppsummering
+        id: summary
+        run: |
+          # Generer en Markdown-oppsummering fra .lighthouseci/ rapportene
+          echo "## 🚦 Lighthouse CI — 25 offentlige ruter" > lhci-summary.md
+          echo "" >> lhci-summary.md
+          echo "**Commit:** ${{ github.sha }}" >> lhci-summary.md
+          echo "**Branch:** ${{ github.head_ref || github.ref_name }}" >> lhci-summary.md
+          echo "" >> lhci-summary.md
+
+          if [ -d ".lighthouseci" ]; then
+            # Antall rapporter
+            COUNT=$(find .lighthouseci -name "*.json" -not -name "links.json" | wc -l)
+            echo "**Ruter testet:** ${COUNT}" >> lhci-summary.md
+            echo "" >> lhci-summary.md
+
+            # Hent score fra hver rapport
+            echo "| Rute | Performance | Accessibility | Best Practices | SEO |" >> lhci-summary.md
+            echo "|------|------------:|--------------:|---------------:|----:|" >> lhci-summary.md
+
+            for REPORT in .lighthouseci/*.report.json; do
+              if [ -f "$REPORT" ]; then
+                # Ekstraher URL fra rapporten
+                URL=$(jq -r '.requestedUrl // "unknown"' "$REPORT" 2>/dev/null)
+                ROUTE=$(echo "$URL" | sed 's|https://www.klarpakke\.no||' | sed 's|^$|/|')
+                
+                PERF=$(jq -r '.categories.performance.score * 100 | floor' "$REPORT" 2>/dev/null || echo "—")
+                A11Y=$(jq -r '.categories.accessibility.score * 100 | floor' "$REPORT" 2>/dev/null || echo "—")
+                BP=$(jq -r '.["categories"]["best-practices"].score * 100 | floor' "$REPORT" 2>/dev/null || echo "—")
+                SEO=$(jq -r '.categories.seo.score * 100 | floor' "$REPORT" 2>/dev/null || echo "—")
+
+                echo "| \`${ROUTE}\` | ${PERF} | ${A11Y} | ${BP} | ${SEO} |" >> lhci-summary.md
+              fi
+            done
+          else
+            echo "⚠️ Ingen Lighthouse-rapporter funnet." >> lhci-summary.md
+          fi
+
+          echo "" >> lhci-summary.md
+          echo "---" >> lhci-summary.md
+          echo "_Rapporter lagres som artifacts i 7 dager._" >> lhci-summary.md
+
+          # Les hele til output
+          cat lhci-summary.md
+          echo "SUMMARY<<EOF" >> "$GITHUB_OUTPUT"
+          cat lhci-summary.md >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Oppdater PR med Lighthouse-resultater
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const summary = `${{ steps.summary.outputs.SUMMARY }}`;
+            
+            // Finn eller opprett en eksisterende kommentar
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(c => 
+              c.user.type === 'Bot' && 
+              c.body.includes('Lighthouse CI — 25 offentlige ruter')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: summary
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: summary
+              });
+            }
+
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: lighthouse-report
           path: .lighthouseci/
           retention-days: 7
+
+      - name: Sjekk Lighthouse-terskler
+        run: |
+          if [ "${{ steps.lhci.outputs.LHCI_EXIT }}" != "0" ]; then
+            echo "⚠️ En eller flere Lighthouse-tester feilet tersklene."
+            echo "Se artifact 'lighthouse-report' for detaljer."
+            exit "${{ steps.lhci.outputs.LHCI_EXIT }}"
+          fi
+          echo "✅ Alle Lighthouse-terskler bestått!"

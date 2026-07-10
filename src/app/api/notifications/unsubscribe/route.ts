@@ -1,48 +1,52 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
+import { withErrorHandler } from "@/lib/api-error-handler";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
-  try {
-    const { endpoint } = await request.json();
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-    if (!endpoint) {
-      return NextResponse.json(
-        { error: "Missing endpoint" },
-        { status: 400 }
-      );
-    }
+interface UnsubscribeBody {
+  endpoint: string;
+}
 
-    const response = NextResponse.next();
-    const supabase = createServerClient(request, response);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+async function handlePOST(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-    const admin = createClient();
-    const { error } = await admin
-      .from("push_subscriptions")
-      .delete()
-      .eq("endpoint", endpoint)
-      .eq("user_id", user.id);
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    if (error) {
-      console.error("Error deleting push subscription:", error);
-      return NextResponse.json(
-        { error: "Failed to delete subscription" },
-        { status: 500 }
-      );
-    }
+  const body: UnsubscribeBody = await request.json();
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("Unsubscribe error:", err);
+  if (!body.endpoint) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { error: "Mangler endpoint" },
+      { status: 400 },
     );
   }
+
+  // Slett subscription — kun egen
+  const { error } = await supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("endpoint", body.endpoint)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("[Push Unsubscribe] Error:", error);
+    return NextResponse.json(
+      { error: "Kunne ikke slette push-abonnement" },
+      { status: 500 },
+    );
+  }
+
+  return NextResponse.json({ ok: true });
 }
+
+export const POST = withErrorHandler(handlePOST, "/api/notifications/unsubscribe");

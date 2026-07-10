@@ -7,12 +7,27 @@ import { OnboardingTrustBar } from "@/features/onboarding/OnboardingTrustBar";
 
 export const runtime = 'nodejs';
 
-// Krever Supabase env; unngå statisk generering ved build
 export const dynamic = "force-dynamic";
 
 interface OnboardingLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
+}
+
+// 3-stegs onboarding flyt
+const STEP_PATHS = [
+  "/onboarding/step1-welcome",
+  "/onboarding/step2-level",
+  "/onboarding/step4-first-trade",
+];
+
+const STEP_LABELS = ["Velkommen", "Startkapital", "Første handel"];
+
+function getCurrentStep(pathname: string): number {
+  for (let i = 0; i < STEP_PATHS.length; i++) {
+    if (pathname.includes(STEP_PATHS[i])) return i;
+  }
+  return 0;
 }
 
 export default async function OnboardingLayout({
@@ -34,56 +49,27 @@ export default async function OnboardingLayout({
     );
   }
 
-  // Hent onboarding-status
-  const { data: profile } = await supabase
-    .from("user_profiles")
-    .select("onboarding_step, onboarding_completed")
-    .eq("id", user.id)
-    .single();
-
-  // Hvis onboarding allerede er fullført → dashboard
-  if (profile?.onboarding_completed) {
-    redirect(`/${locale}/dashboard`);
-  }
-
-  // Beregn nåværende steg fra URL
-  // 5-stegs flyt: DB step 0-4 mappes direkte til visning
-  const dbStep = profile?.onboarding_step || 0;
-  const TOTAL_STEPS = 5;
-  const displayStep = Math.min(dbStep, TOTAL_STEPS - 1);
+  // Beregn nåværende steg
+  const currentStep = getCurrentStep(""); // vil bli satt av client component
+  const TOTAL_STEPS = 3;
 
   return (
-    <div className="min-h-screen bg-kp-bg-primary">
-      {/* Header */}
-      <header className="bg-kp-bg-secondary border-b border-kp-border">
-        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-[#0A0B0D]">
+      {/* Top nav with logo */}
+      <header className="border-b border-[#2A2D35] bg-[#15171B]/80 backdrop-blur-xl">
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href={`/${locale}`}>
-            <Logo className="h-8" />
+            <Logo className="h-7" />
           </Link>
-          <div className="text-sm text-kp-text-muted">
-            {t("stepIndicator", { current: displayStep + 1, total: TOTAL_STEPS })}
-          </div>
         </div>
       </header>
 
       {/* Trust signals */}
       <OnboardingTrustBar />
 
-      {/* Progress bar */}
-      <div className="bg-kp-bg-secondary">
-        <div className="max-w-2xl mx-auto">
-          <div className="h-1 bg-kp-bg-tertiary">
-            <div
-              className="h-full bg-kp-ai transition-all duration-500"
-              style={{ width: `${((displayStep + 1) / TOTAL_STEPS) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Main content */}
-      <main className="max-w-2xl mx-auto px-4 py-8 pb-28 md:pb-8">
-        <div className="bg-[var(--kp-bg-secondary)] rounded-2xl shadow-sm border border-[var(--kp-border)] p-6 md:p-8">
+      <main className="max-w-2xl mx-auto px-4 py-6 pb-32 md:pb-8">
+        <div className="rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/80 backdrop-blur-xl p-5 sm:p-6">
           {children}
         </div>
       </main>

@@ -985,27 +985,22 @@
     "learningItem3": "Quiz for å teste kunnskap"
   },
   "threeSteps": {
-    "sectionTitle": "Kom i gang på 4 enkle steg",
-    "sectionSubtitle": "Ingen forkunnskaper nødvendig. Vi guider deg fra første øyeblikk.",
+    "sectionTitle": "Hvordan det fungerer",
+    "sectionSubtitle": "Kom i gang på under 2 minutter — helt gratis og uten risiko.",
     "step1": {
-      "title": "Registrer deg gratis",
-      "description": "Opprett konto med BankID. Ingen kredittkort nødvendig. Start på under 2 minutter."
+      "title": "Registrer deg",
+      "description": "30 sekunder. Ingen kredittkort. Bare e-post og passord."
     },
     "step2": {
-      "title": "Ta ditt første kurs",
-      "description": "Velg blant norske nybegynnerkurs. Lær i ditt eget tempo."
+      "title": "Få 100 000 kr i lekepenger",
+      "description": "Din virtuelle portefølje. Handel med ekte markedspriser."
     },
     "step3": {
-      "title": "Øv med papirhandel",
-      "description": "Bruk kr 10 000 i lekepenger. Test strategier uten risiko."
+      "title": "Start trading med AI-hjelp",
+      "description": "Få signaler og innsikt. Lær mens du handler."
     },
-    "step4": {
-      "title": "Automatiser med bot",
-      "description": "La AI handle for deg når du er klar. Du bestemmer når.",
-      "badge": "Valgfritt · Pro-funksjon"
-    },
-    "ctaButton": "Start gratis i dag",
-    "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst",
+    "ctaButton": "Start gratis",
+    "ctaSubtext": "Ingen kredittkort · 2 minutter å komme i gang",
     "ctaButtonLoggedIn": "Gå til dashboard",
     "ctaSubtextLoggedIn": "Fortsett din læringsreise"
   },

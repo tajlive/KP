@@ -6,11 +6,11 @@ export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: {
-    default: "Klarpakke Universitet - Norges første krypto-trading skole",
-    template: "%s | Klarpakke",
+    default: "Klarpakke — Norges krypto-skole",
+    template: "%s | Klarpakke — Norges krypto-skole",
   },
   description:
-    "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Lekepenger med 100 000 kr. Norges første krypto-trading skole.",
+    "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring — fra nybegynner til trader på 4 uker.",
   keywords: [
     "krypto",
     "trading",
@@ -55,10 +55,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "no_NO",
     url: "https://klarpakke.no",
-    siteName: "Klarpakke Universitet",
-    title: "Klarpakke Universitet - Norges første krypto-trading skole",
+    siteName: "Klarpakke — Norges krypto-skole",
+    title: "Klarpakke — Norges krypto-skole",
     description:
-      "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Lekepenger med 100 000 kr.",
+      "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring fra nybegynner til trader.",
     images: [
       {
         url: "/logo.svg",
@@ -70,9 +70,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Klarpakke Universitet - Norges første krypto-trading skole",
+    title: "Klarpakke — Norges krypto-skole",
     description:
-      "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker.",
+      "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring fra nybegynner til trader.",
     images: ["/logo.svg"],
     creator: "@klarpakke",
   },
@@ -113,7 +113,7 @@ export const viewport: Viewport = {
   /** iOS Safari / PWA: env(safe-area-inset-*) for dashboard nav */
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0052FF" },
+    { media: "(prefers-color-scheme: light)", color: "#0A0B0D" },
     { media: "(prefers-color-scheme: dark)", color: "#0A0B0D" },
   ],
   colorScheme: "dark",

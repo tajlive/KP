@@ -1,5 +1,5 @@
 {
-  "name": "Klarpakke - Krypto Utdanning og Trading",
+  "name": "Klarpakke — Norges krypto-skole",
   "version": "2.0.2",
   "short_name": "Klarpakke",
   "description": "Norges utdanningsplattform for krypto: lær trading, paper trading og kurs fra A til Å",
@@ -7,8 +7,8 @@
   "id": "/no/handel",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
-  "background_color": "#0a0b0d",
-  "theme_color": "#2563eb",
+  "background_color": "#0A0B0D",
+  "theme_color": "#0A0B0D",
   "orientation": "portrait",
   "scope": "/",
   "lang": "no",
