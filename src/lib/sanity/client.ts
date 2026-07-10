@@ -78,8 +78,8 @@ export async function safeFetch<T>(
     const sanityClient = await getSanityClient();
     const result = await sanityClient.fetch<T>(query, params, options);
     return result ?? fallback;
-  } catch (error) {
-    console.error("Sanity fetch error:", error);
+  } catch {
+    // Silently fall back — avoid noisy logs when Sanity is over quota
     return fallback;
   }
 }
