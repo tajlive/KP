@@ -14,7 +14,6 @@ import {
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
 import PlausibleProvider from "next-plausible";
-import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { isAppShellPath } from "@/lib/navigation/config";
 import { RootProviders } from "@/app/providers/RootProviders";
@@ -343,7 +342,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             {children}
           </RootProviders>
         {/* Analytics handled via Plausible/Cloudflare. */}
-        <SanityLiveWrapper />
       </body>
     </html>
   );
