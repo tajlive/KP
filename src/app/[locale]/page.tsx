@@ -47,7 +47,6 @@ export default async function HomePage({ params }: HomePageProps) {
   return (
     <MarketingPageShell className={SURFACE.BG}>
       <LandingHero />
-      <InteractiveDemo />
       <SocialProofBanner />
       <SafetySection />
       <TrustStrip />
