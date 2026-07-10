@@ -202,15 +202,8 @@ async function fetchSanityPages(): Promise<SitemapEntry[]> {
       priority: 0.6,
       changeFrequency: "weekly" as const,
     }));
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    if (message.includes("plan_limit_reached")) {
-      console.warn(
-        "[sitemap] Sanity API plan limit reached. Falling back to filesystem routes only.",
-      );
-    } else {
-      console.warn("[sitemap] Failed to fetch Sanity pages:", err);
-    }
+  } catch {
+    // Silent fallback — plan_limit_reached er vanlig, ingen grunn til å logge
     return [];
   }
 }
