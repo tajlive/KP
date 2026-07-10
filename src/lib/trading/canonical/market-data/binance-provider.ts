@@ -14,6 +14,7 @@
 
 import type { Kline, MarketDataProvider, OrderBookSnapshot } from "./types";
 import { fetchPriceViaProxy, fetchKlinesViaProxy, fetchDepthViaProxy, fetch24hChangeViaProxy } from "./binance-proxy-provider";
+import { fetchPriceFromCoinGecko, fetch24hChangeFromCoinGecko } from "./coingecko-provider";
 
 // Prioritert liste. Mainnet først for paper/live-paritet; .vision-endepunkter
 // er tilbakefall hvis CloudFront/WAF blokkerer egress-IP-en.
@@ -143,7 +144,8 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
         );
         return parseFloat(data.price);
       } catch {
-        throw new Error(`All Binance price sources failed for ${normalized}`);
+        // CoinGecko — siste utvei (Binance blokkerer Cloudflare IP-er)
+        return await fetchPriceFromCoinGecko(normalized);
       }
     }
   }
@@ -224,7 +226,7 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
         );
         return parseFloat(data.priceChangePercent);
       } catch {
-        throw new Error(`All Binance 24h change sources failed for ${normalized}`);
+        return await fetch24hChangeFromCoinGecko(normalized);
       }
     }
   }
