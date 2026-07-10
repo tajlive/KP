@@ -39,7 +39,7 @@ async function fetchViaProxy(path: string): Promise<unknown> {
     },
     body: JSON.stringify({
       action: "publicApi",
-      apiKey: "public",      // Dummy — not used for publicApi
+      apiKey: "",      // Dummy — not used for publicApi
       apiSecret: "public",   // Dummy
       publicApiPath: path,
     }),

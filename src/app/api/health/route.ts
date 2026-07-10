@@ -385,6 +385,37 @@ async function checkBinanceProxy(): Promise<CheckResult> {
   }
 }
 
+async function checkSanity(): Promise<CheckResult> {
+  const start = Date.now();
+  try {
+    const res = await fetch(`https://63qn23si.api.sanity.io/v1/data/query/production?query=*[_type=="settings"][0]._id`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) return { status: "ok", latency: Date.now() - start };
+    return { status: "warning", latency: Date.now() - start, message: `Sanity HTTP ${res.status}` };
+  } catch {
+    return { status: "warning", latency: Date.now() - start, message: "Sanity unreachable (quota?). Ikke kritisk." };
+  }
+}
+
+async function checkPaperTrading(): Promise<CheckResult> {
+  const start = Date.now();
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const res = await fetch(`${supabaseUrl}/rest/v1/paper_trades?select=count&limit=1`, {
+      headers: {
+        apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY || ""}`,
+      },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (res.ok) return { status: "ok", latency: Date.now() - start };
+    return { status: "error", latency: Date.now() - start, message: `Paper trading HTTP ${res.status}` };
+  } catch (err) {
+    return { status: "error", latency: Date.now() - start, message: err instanceof Error ? err.message : "Unknown" };
+  }
+}
+
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,
@@ -424,7 +455,7 @@ export async function GET() {
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy] =
+  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading] =
     await Promise.all([
       withTimeout(checkDatabase(), 3000, {
         status: "error" as const,
@@ -457,6 +488,14 @@ export async function GET() {
         status: "error" as const,
         message: "Check timed out after 10000ms",
       }),
+      withTimeout(checkSanity(), 5000, {
+        status: "warning" as const,
+        message: "Check timed out after 5000ms",
+      }),
+      withTimeout(checkPaperTrading(), 3000, {
+        status: "error" as const,
+        message: "Check timed out after 3000ms",
+      }),
     ]);
 
   const checks = {
@@ -468,6 +507,8 @@ export async function GET() {
     leaderboard,
     hangingSessions,
     binanceProxy,
+    sanity,
+    paperTrading,
   };
 
   const { binanceConnectivity: _, ...statusChecks } = checks;

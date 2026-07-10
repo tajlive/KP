@@ -278,11 +278,38 @@ async function executeTradeWithLock(
 
     let orderValueUsdt: number;
     if (request.orderType === "market") {
+      let marketPrice = request.price;
+
+      // Fallback: hvis markedspris mangler (f.eks. Binance nede), hent siste kjente pris
+      if (!marketPrice || marketPrice <= 0 || !Number.isFinite(marketPrice)) {
+        try {
+          const { data: lastTrade } = await supabase
+            .from("trades")
+            .select("price, usdt_nok_rate")
+            .eq("trading_pair", request.symbol)
+            .eq("mode", request.mode)
+            .order("executed_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (lastTrade?.price && Number(lastTrade.price) > 0) {
+            // Bruk siste kjente pris hvis den er i USDT
+            const lastPrice = request.mode === "paper" && lastTrade.usdt_nok_rate
+              ? Number(lastTrade.price) / Number(lastTrade.usdt_nok_rate)
+              : Number(lastTrade.price);
+            if (lastPrice > 0 && Number.isFinite(lastPrice)) {
+              marketPrice = lastPrice;
+            }
+          }
+        } catch {
+          // Stille fallback — behold original marketPrice (0)
+        }
+      }
+
       const estimatedFill = computeFill({
         side: request.side,
         quantity: request.quantity,
         orderType: request.orderType,
-        marketPrice: request.price,
+        marketPrice,
         feeRate: ESTIMATED_FILL_PARAMS.feeRate,
         marketSlippageRate: ESTIMATED_FILL_PARAMS.marketSlippageRate,
         minOrderValue: ESTIMATED_FILL_PARAMS.minOrderValue,
