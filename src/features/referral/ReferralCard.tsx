@@ -1,6 +1,5 @@
 "use client";
-
-import { motion } from "framer-motion";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Copy,
   Check,
@@ -172,9 +171,7 @@ export function ReferralCard({ locale = "no" }: ReferralCardProps) {
   return (
     <div className="space-y-6">
       {/* ── Hovedkort: "Få en venn til å trade" ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+      <div
         className="relative overflow-hidden rounded-2xl border border-[#F59E0B]/30 bg-gradient-to-br from-[#78350F]/30 via-[#1A1D26] to-[#1A1D26] p-6"
       >
         {/* Glødeffekt */}
@@ -301,7 +298,7 @@ export function ReferralCard({ locale = "no" }: ReferralCardProps) {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ── Hvordan det fungerer ── */}
       <div className="rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/60 p-6">

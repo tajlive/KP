@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { useCallback, useEffect, useRef, useState } from "react";
 import {
   TrendingUp,
   TrendingDown,
