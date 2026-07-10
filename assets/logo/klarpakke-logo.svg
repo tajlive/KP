@@ -1,5 +1,0 @@
-<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
-  <text x="10" y="35" font-family="Inter" font-size="28" font-weight="700" fill="#0EA5E9">Klarpakke</text>
-  <circle cx="190" cy="25" r="8" fill="#22C55E" opacity="0.2"/>
-  <text x="186" y="31" font-family="Inter" font-size="16" font-weight="700" fill="#22C55E">K</text>
-</svg>

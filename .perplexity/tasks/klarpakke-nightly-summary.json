@@ -1,8 +1,0 @@
-{
-  "name": "Klarpakke Nightly Summary",
-  "description": "Oppsummering av dagens aktivitet",
-  "schedule": "0 22 * * *",
-  "prompt": "Bruk kimi_medium: Lag nightly summary for Klarpakke.\n\n1. Bruk github: Hent commits fra i dag for tajlive/KP\n2. Bruk github: Sjekk åpne issues og PRs\n3. Bruk kimi_git: Sjekk lokale endringer i /Users/taj/klarpakke\n4. Bruk supabase: Sjekk DB-migrasjonsstatus (hvis tilgjengelig)\n\nOppsummer:\n- Hva ble gjort i dag?\n- Hva står åpent?\n- Hva bør prioriteres i morgen?\n\nFormat: Kort og konsist - maks 10 punkter.",
-  "sources": ["kimi", "github", "supabase"],
-  "output": "nightly-summary"
-}

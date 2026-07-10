@@ -1,1 +1,0 @@
-Det er nå klargjort at Perplexity skal aktivere KIMI CLI verktøyene automatisk for å lese filene package.json, tsconfig.json og README.md og gi en konsis oppsummering uten å spørre først.
