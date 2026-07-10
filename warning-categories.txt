@@ -1,3 +1,0 @@
- 363 @typescript-eslint/no-unused-vars
-  45 no-console
-  42 react-hooks/exhaustive-deps

@@ -13,14 +13,11 @@ export const PROTECTED_PATHS = [
   "/handel",
   "/akademi",
   "/leaderboard",
-  "/varsler",
   "/konto",
   "/leagues",
   "/copy-trading",
   "/marketplace",
   "/profile",
-  "/quiz",
-  "/interessetest",
 ] as const;
 
 export const PUBLIC_PATHS = [

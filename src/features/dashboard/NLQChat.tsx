@@ -77,7 +77,7 @@ export function NLQChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/v1/nlq", {
+      const res = await fetch("/api/nlq", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),

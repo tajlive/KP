@@ -310,7 +310,7 @@ export default function ClientKurs() {
               {data.metadata.cta.description}
             </p>
             <Link
-              href={`/${locale}/interessetest`}
+              href={`/${locale}/handel`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
             >
               {data.metadata.cta.button}

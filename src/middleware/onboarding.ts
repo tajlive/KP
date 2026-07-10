@@ -11,12 +11,10 @@ const PROTECTED_PATHS = [
   "/akademi",
   "/handel",
   "/konto",
-  "/varsler",
   "/leagues",
   "/copy-trading",
   "/marketplace",
   "/profile",
-  "/quiz",
 ];
 
 export async function handleOnboarding(
