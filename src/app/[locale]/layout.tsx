@@ -332,11 +332,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         className={`${outfit.className} font-sans antialiased bg-kp-bg-primary text-kp-text-primary min-h-screen`}
         suppressHydrationWarning
       >
-        <PlausibleProvider
-          domain="klarpakke.no"
-          trackOutboundLinks={true}
-        >
-          <RootProviders
+        <RootProviders
             locale={locale}
             messages={messages}
             showVippsMarket={showVippsMarket}
@@ -346,7 +342,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           >
             {children}
           </RootProviders>
-        </PlausibleProvider>
         {/* Analytics handled via Plausible/Cloudflare. */}
         <SanityLiveWrapper />
       </body>
