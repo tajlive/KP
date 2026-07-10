@@ -130,17 +130,21 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
 
   async getPrice(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
+    // Proxy first — Cloudflare Worker IP-er blir blokkert av Binance (403/451)
     try {
-      const data = await binanceFetch<{ price: string }>(
-        `/api/v3/ticker/price?symbol=${normalized}`,
-        5000,
-        (base) => { this.lastEndpointUsed = base; },
-      );
-      return parseFloat(data.price);
+      return await fetchPriceViaProxy(normalized);
     } catch {
-      // Fallback: route through Supabase Edge Function proxy
-      console.warn(`[Binance] Direct API failed for ${normalized}, trying proxy`);
-      return fetchPriceViaProxy(normalized);
+      // Fallback til direkte Binance API hvis proxy feiler
+      try {
+        const data = await binanceFetch<{ price: string }>(
+          `/api/v3/ticker/price?symbol=${normalized}`,
+          5000,
+          (base) => { this.lastEndpointUsed = base; },
+        );
+        return parseFloat(data.price);
+      } catch {
+        throw new Error(`All Binance price sources failed for ${normalized}`);
+      }
     }
   }
 
@@ -151,15 +155,19 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
       asks: data.asks.map(([p, q]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
       timestamp: new Date(),
     });
+    // Proxy first — Cloudflare Worker IP-er blir blokkert av Binance (403/451)
     try {
-      const data = await binanceFetch<{ bids: [string, string][]; asks: [string, string][] }>(
-        `/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000,
-        (base) => { this.lastEndpointUsed = base; },
-      );
-      return parseData(data);
-    } catch {
-      console.warn(`[Binance] Direct depth failed for ${normalized}, trying proxy`);
       return parseData(await fetchDepthViaProxy(normalized, limit));
+    } catch {
+      try {
+        const data = await binanceFetch<{ bids: [string, string][]; asks: [string, string][] }>(
+          `/api/v3/depth?symbol=${normalized}&limit=${limit}`, 5000,
+          (base) => { this.lastEndpointUsed = base; },
+        );
+        return parseData(data);
+      } catch {
+        throw new Error(`All Binance depth sources failed for ${normalized}`);
+      }
     }
   }
 
@@ -188,28 +196,36 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
         };
       });
 
+    // Proxy first — Cloudflare Worker IP-er blir blokkert av Binance (403/451)
     try {
-      const data = await binanceFetch<unknown[]>(path, 15000,
-        (base) => { this.lastEndpointUsed = base; },
-      );
-      return parseKlines(data);
-    } catch {
-      console.warn(`[Binance] Direct klines failed for ${normalized}, trying proxy`);
       return parseKlines(await fetchKlinesViaProxy(normalized, interval, limit));
+    } catch {
+      try {
+        const data = await binanceFetch<unknown[]>(path, 15000,
+          (base) => { this.lastEndpointUsed = base; },
+        );
+        return parseKlines(data);
+      } catch {
+        throw new Error(`All Binance klines sources failed for ${normalized}`);
+      }
     }
   }
 
   async get24hChange(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
+    // Proxy first — Cloudflare Worker IP-er blir blokkert av Binance (403/451)
     try {
-      const data = await binanceFetch<{ priceChangePercent: string }>(
-        `/api/v3/ticker/24hr?symbol=${normalized}`, 5000,
-        (base) => { this.lastEndpointUsed = base; },
-      );
-      return parseFloat(data.priceChangePercent);
+      return await fetch24hChangeViaProxy(normalized);
     } catch {
-      console.warn(`[Binance] Direct 24h failed for ${normalized}, trying proxy`);
-      return fetch24hChangeViaProxy(normalized);
+      try {
+        const data = await binanceFetch<{ priceChangePercent: string }>(
+          `/api/v3/ticker/24hr?symbol=${normalized}`, 5000,
+          (base) => { this.lastEndpointUsed = base; },
+        );
+        return parseFloat(data.priceChangePercent);
+      } catch {
+        throw new Error(`All Binance 24h change sources failed for ${normalized}`);
+      }
     }
   }
 }
