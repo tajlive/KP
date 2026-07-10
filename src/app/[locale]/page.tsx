@@ -1,7 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { SURFACE } from "@/lib/design/tokens";
 import { LandingHero } from "@/features/landing/LandingHero";
-import { InteractiveDemo } from "@/features/landing/InteractiveDemo";
 import { SocialProofBanner } from "@/features/landing/SocialProofBanner";
 import { SafetySection } from "@/features/landing/SafetySection";
 import { TrustStrip } from "@/features/landing/TrustStrip";
