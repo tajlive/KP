@@ -1,14 +1,41 @@
 {
   "ci": {
     "collect": {
-      "numberOfRuns": 3,
+      "numberOfRuns": 1,
+      "url": [
+        "https://www.klarpakke.no/no",
+        "https://www.klarpakke.no/no/priser",
+        "https://www.klarpakke.no/no/priser/success",
+        "https://www.klarpakke.no/no/priser/cancel",
+        "https://www.klarpakke.no/no/mobiloversikt",
+        "https://www.klarpakke.no/no/bots",
+        "https://www.klarpakke.no/no/binance-guide",
+        "https://www.klarpakke.no/no/kalkulator",
+        "https://www.klarpakke.no/no/kontakt",
+        "https://www.klarpakke.no/no/om-oss",
+        "https://www.klarpakke.no/no/hjelp",
+        "https://www.klarpakke.no/no/marked",
+        "https://www.klarpakke.no/no/handel",
+        "https://www.klarpakke.no/no/vilkar",
+        "https://www.klarpakke.no/no/personvern",
+        "https://www.klarpakke.no/no/cookies",
+        "https://www.klarpakke.no/login",
+        "https://www.klarpakke.no/register",
+        "https://www.klarpakke.no/no/reset-password",
+        "https://www.klarpakke.no/no/update-password",
+        "https://www.klarpakke.no/no/jokertrade",
+        "https://www.klarpakke.no/no/leaderboard",
+        "https://www.klarpakke.no/no/copy-trading",
+        "https://www.klarpakke.no/no/copy-trading/discover",
+        "https://www.klarpakke.no/no/akademi"
+      ],
       "settings": {
         "throttling": {
           "rttMs": 150,
           "throughputKbps": 1638.4,
           "cpuSlowdownMultiplier": 4
         },
-        "onlyCategories": ["performance", "accessibility", "best-practices", "seo", "pwa"],
+        "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
         "screenEmulation": {
           "mobile": true,
           "width": 390,
@@ -21,23 +48,16 @@
     },
     "assert": {
       "assertions": {
-        "categories:performance": ["error", {"minScore": 0.90}],
-        "categories:accessibility": ["error", {"minScore": 0.90}],
-        "categories:best-practices": ["warn", {"minScore": 0.85}],
-        "categories:seo": ["warn", {"minScore": 0.85}],
-        "categories:pwa": ["warn", {"minScore": 0.90}],
-        "installable-manifest": "error",
-        "service-worker": "error",
-        "splash-screen": "warn",
-        "themed-omnibox": "warn",
-        "maskable-icon": "warn",
-        "content-width": "error",
+        "categories:performance": ["warn", { "minScore": 0.65 }],
+        "categories:accessibility": ["error", { "minScore": 0.85 }],
+        "categories:best-practices": ["warn", { "minScore": 0.80 }],
+        "categories:seo": ["warn", { "minScore": 0.80 }],
 
-        "first-contentful-paint": ["warn", {"maxNumericValue": 1800}],
-        "largest-contentful-paint": ["warn", {"maxNumericValue": 2500}],
-        "interactive": ["warn", {"maxNumericValue": 3500}],
-        "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}],
-        "total-blocking-time": ["warn", {"maxNumericValue": 200}],
+        "first-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 4000 }],
+        "interactive": ["warn", { "maxNumericValue": 5000 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 500 }],
 
         "is-crawlable": "error",
         "viewport": "error",

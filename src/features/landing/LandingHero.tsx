@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { createClient } from "@/lib/utils";
+import {
+  getClientVariant,
+  recordConversion,
+  recordImpression,
+} from "@/lib/ab-testing";
+import type { ExperimentVariant } from "@/lib/ab-testing";
 
 /** Subtle animated particle background — lightweight CSS, no lib deps */
 function AnimatedBg() {
@@ -135,7 +142,65 @@ function MobilePreview() {
   );
 }
 
+const EXPERIMENT_NAME = "landing_hero_2026";
+
+/** A/B variant heading og beskrivelse */
+const VARIANT_A = {
+  heading: (
+    <>
+      Lær krypto trading
+      <br />
+      <span className="text-[#F59E0B]">— uten å risikere en krone</span>
+    </>
+  ),
+  description:
+    "Norges første krypto-skole. Start med 100 000 kr i lekepenger og lær trading i ditt eget tempo.",
+};
+
+const VARIANT_B = {
+  heading: (
+    <>
+      Norges første krypto-skole
+      <br />
+      <span className="text-[#F59E0B]">
+        — start med 100 000 kr i dag
+      </span>
+    </>
+  ),
+  description:
+    "Ingen ekte penger på spill. Lær krypto trading uten å risikere en krone — helt gratis.",
+};
+
 export function LandingHero() {
+  const [variant, setVariant] = useState<ExperimentVariant | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const impressionLogged = useRef(false);
+
+  // Bestem variant og logg impression ved mount
+  useEffect(() => {
+    setMounted(true);
+    const v = getClientVariant(EXPERIMENT_NAME);
+    setVariant(v);
+
+    // Logg impression kun én gang
+    if (!impressionLogged.current) {
+      impressionLogged.current = true;
+      const supabase = createClient();
+      recordImpression(EXPERIMENT_NAME, v, supabase as Parameters<typeof recordImpression>[2]);
+    }
+  }, []);
+
+  const handleCTAClick = useCallback(() => {
+    const supabase = createClient();
+    recordConversion(
+      EXPERIMENT_NAME,
+      variant || "A",
+      supabase as Parameters<typeof recordConversion>[2],
+    );
+  }, [variant]);
+
+  const content = variant === "B" ? VARIANT_B : VARIANT_A;
+
   return (
     <section className="relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden bg-[#0A0B0D]">
       <AnimatedBg />
@@ -154,53 +219,37 @@ export function LandingHero() {
           <div className="flex-1 text-center lg:text-left">
             <LivePulse />
 
-            <h1 className="mt-4 sm:mt-6 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-[#F9FAFB] leading-[1.1] tracking-tight">
-              Se om krypto er noe for deg
-              <br />
-              <span className="text-[#60A5FA]">— uten å risikere en krone</span>
+            <h1
+              className="mt-4 sm:mt-6 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-[#F9FAFB] leading-[1.1] tracking-tight"
+              data-ab-variant={mounted ? variant : "A"}
+            >
+              {content.heading}
             </h1>
 
             <p className="mt-4 sm:mt-6 text-base sm:text-lg text-[#9CA3AF] max-w-lg mx-auto lg:mx-0 leading-relaxed">
-              Få 10 000 kr i lekepenger. Prøv, lær, og bestem selv når du er klar
-              for ekte handel. Null stress, null forpliktelser.
+              {content.description}
             </p>
 
-            {/* Trust bullets */}
-            <div className="mt-5 sm:mt-6 flex flex-wrap justify-center lg:justify-start gap-3 text-xs sm:text-sm text-[#9CA3AF]">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-                Gratis å starte
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-                Ingen binding
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-                Norsk support
-              </span>
-            </div>
-
-            {/* CTA */}
+            {/* CTA — gold, prominent */}
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 href="/no/signup"
-                className="btn-accent text-base sm:text-lg px-8 py-4 no-underline shadow-lg shadow-blue-500/20"
+                onClick={handleCTAClick}
+                className="btn-gold inline-flex items-center justify-center gap-2 px-10 py-4
+                  text-lg sm:text-xl font-black rounded-xl no-underline shadow-lg shadow-[#F59E0B]/30
+                  min-h-[52px] sm:min-h-[56px] transition-all"
               >
                 <Sparkles className="w-5 h-5" />
-                Prøv gratis
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/no#hvordan"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4
-                  border border-[#2A2D35] text-[#F9FAFB] font-bold text-base sm:text-lg rounded-xl
-                  hover:bg-[#1A1D26]/80 hover:border-[#3A3D45] active:scale-[0.98] transition-all
-                  min-h-[48px] sm:min-h-[52px] backdrop-blur-sm"
-              >
-                Se hvordan det fungerer
+                Start gratis
               </Link>
             </div>
+
+            {/* Trust line under CTA */}
+            <p className="mt-3 text-sm text-[#6B7280] flex items-center justify-center lg:justify-start gap-1.5">
+              <span>Ingen kredittkort</span>
+              <span className="text-[#2A2D35]">•</span>
+              <span>2 minutter å komme i gang</span>
+            </p>
           </div>
 
           {/* Right: Preview — visible on mobile too */}

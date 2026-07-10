@@ -169,6 +169,11 @@ export default function AdminLayout({
           label: t("nav.monetization"),
           icon: DollarSign,
         },
+        {
+          href: `/${locale}/admin/experiments`,
+          label: "Eksperimenter",
+          icon: FlaskConical,
+        },
       ],
     },
     {

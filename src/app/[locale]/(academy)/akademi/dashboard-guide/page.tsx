@@ -1,3 +1,16 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard-guide",
+  description:
+    "Lær å lese Klarpakkes dashboard-tall. Forstå portefølje, PnL, risikoscore og trading-innsikter — slik at du tar bedre handelsbeslutninger.",
+  openGraph: {
+    title: "Dashboard-guide | Klarpakke — Norges krypto-skole",
+    description:
+      "Lær å lese Klarpakkes dashboard-tall. Forstå portefølje, PnL, risikoscore og trading-innsikter.",
+  },
+};
+
 export default function DashboardGuidePage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">

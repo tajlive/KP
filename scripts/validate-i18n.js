@@ -158,17 +158,8 @@ function main() {
       lang === 'th' || lang === 'no' || translations[lang].keys.size === reference.keys.size
     );
   
-  // EN må være komplett (kritisk språk)
-  const enComplete = translations['en'] && 
-    translations['en'].keys.size === reference.keys.size;
-  
-  if (!enComplete) {
-    console.log('❌  EN translation is incomplete - this is required');
-    console.log('═══════════════════════════════════════════════════════════════');
-    process.exit(1);
-  }
-  
-  // Check if EN is complete (the only critical non-reference language)
+  // EN må være komplett (kritisk språk) — alle referansenøkler må finnes
+  // Ekstra nøkler i EN (utover referansen) er OK (f.eks. nye features på EN før NO)
   const enMissing = [];
   const enKeys = translations['en']?.keys || new Set();
   for (const key of reference.keys) {

@@ -9,8 +9,37 @@ const APP_ROUTES = ["/dashboard", "/admin", "/handel"];
 
 function InlineFooter() {
   const [mounted, setMounted] = useState(false);
+  const [version, setVersion] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
   const t = useTranslations("footer");
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    async function fetchHealth() {
+      try {
+        const res = await fetch("/api/health");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.version && data.version !== "unknown") {
+            setVersion(data.version);
+          }
+          if (data.timestamp) {
+            const d = new Date(data.timestamp);
+            setLastUpdated(d.toLocaleDateString("no-NO", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }));
+          }
+        }
+      } catch {
+        // silent — fallback to mount date
+      }
+    }
+    fetchHealth();
+  }, []);
 
   return (
     <footer className="bg-slate-950 border-t border-white/5 py-8">
@@ -30,7 +59,23 @@ function InlineFooter() {
         <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-white/50">
           © {new Date().getFullYear()} Klarpakke AS. Org.no: 929003292 MVA.
           <span className="mx-2">·</span>
-          <span suppressHydrationWarning className="text-white/50" title="Sist oppdatert">{mounted ? new Date().toLocaleDateString('no-NO') : '—'}</span>
+          <span suppressHydrationWarning className="text-white/50" title="Sist oppdatert">
+            {mounted
+              ? lastUpdated
+                ? lastUpdated
+                : new Date().toLocaleDateString("no-NO", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })
+              : "—"}
+          </span>
+          {version && (
+            <>
+              <span className="mx-2">·</span>
+              <span className="text-white/40 font-mono tracking-tight">{version}</span>
+            </>
+          )}
         </div>
       </div>
     </footer>

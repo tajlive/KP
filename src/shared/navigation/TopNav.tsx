@@ -5,7 +5,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Settings, User, ChevronDown, Activity } from "lucide-react";
-import { ThemeToggle } from "@/shared/theme";
+import { NotificationBell } from "@/features/notifications/NotificationBell";
+import { ThemeToggleIcon } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -233,7 +234,7 @@ export function TopNav() {
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <ActiveTraderPill locale={locale} />
-          <ThemeToggle size="sm" />
+          <ThemeToggleIcon />
           <Button
             asChild
             variant="secondary"
