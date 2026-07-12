@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
-// Root page — redirect to default locale (no).
-// Middleware (i18n redirect) is deaktivert pga worker size limit.
+// Root page — permanent redirect (308) til default locale (no)
 export default function RootPage() {
-  redirect("/no");
+  permanentRedirect("/no");
 }
