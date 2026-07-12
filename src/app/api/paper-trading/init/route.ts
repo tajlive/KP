@@ -1,47 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
-import { getOrCreatePaperTradingSession } from '@/lib/supabase/paper-trading';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * POST /api/paper-trading/init
+ * Proxy til Supabase Edge Function paper-trading-init.
  * Auto-initialiserer paper trading for innlogget bruker.
  * Idempotent: trygt å kalle flere ganger.
  */
 export async function POST(request: NextRequest) {
   try {
-    const response = NextResponse.next();
-    const supabase = createServerClient(request, response);
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl) {
       return NextResponse.json(
-        { error: 'Unauthorized', code: 'UNAUTHORIZED' },
-        { status: 401 },
+        { error: 'Supabase URL not configured', code: 'CONFIG_ERROR' },
+        { status: 500 },
       );
     }
 
-    const session = await getOrCreatePaperTradingSession(supabase, user.id);
+    const edgeFunctionUrl = `${supabaseUrl}/functions/v1/paper-trading-init`;
 
-    return NextResponse.json({
-      success: true,
-      session: {
-        id: session.id,
-        created_at: session.created_at,
-        starting_capital_nok: session.starting_capital_nok,
-        current_capital_nok: session.current_capital_nok,
-        // Bakoverkompatibilitet for eldre e2e-tester
-        starting_balance: session.starting_capital_nok,
-        current_balance: session.current_capital_nok,
+    // Forward the Authorization header (the user's Bearer JWT)
+    const authHeader = request.headers.get('Authorization');
+
+    const response = await fetch(edgeFunctionUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authHeader ? { 'Authorization': authHeader } : {}),
       },
     });
+
+    const data = await response.json();
+
+    return NextResponse.json(data, { status: response.status });
   } catch (err) {
-    console.error('[paper-trading/init] Error:', err);
+    console.error('[paper-trading/init] Proxy error:', err);
     return NextResponse.json(
       { error: 'Kunne ikke initialisere paper trading', code: 'INIT_FAILED' },
       { status: 500 },

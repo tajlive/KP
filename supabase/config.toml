@@ -83,6 +83,10 @@ verify_jwt = false  # Custom auth via KLARPAKKE_MCP_SECRET
 enabled = true
 verify_jwt = false  # Low-latency public signal feed
 
+[functions.paper-trading-init]
+enabled = true
+verify_jwt = false  # JWT verified manually inside the function
+
 # [analytics]
 # enabled = false
 # port = 54327
