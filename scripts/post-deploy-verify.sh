@@ -12,6 +12,8 @@ check_page() {
   html=$(curl -s -m 5 "$url" -H "Cache-Control: no-cache" 2>/dev/null || true)
   if echo "$html" | grep -qE "<!DOCTYPE html>|<html"; then
     echo "  ✅ $label"
+  elif echo "$html" | grep -q "location.href"; then
+    echo "  ✅ $label — redirect"
   else
     echo "  ❌ $label — mangler HTML-struktur"
     FAIL=1

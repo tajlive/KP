@@ -1,15 +1,20 @@
-import { metadata, viewport } from 'next-sanity/studio'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
-import Studio from './Studio'
 
 export const runtime = 'nodejs';
 
-export { metadata, viewport }
+// Dynamic import — sanity/studio (53MB node_modules) lastes kun når ruta besøkes
+const Studio = dynamic(() => import('./Studio'), {
+  loading: () => (
+    <div className="min-h-screen bg-[#0A0B0D] flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-2 border-[#3B82F6] border-t-transparent rounded-full" />
+    </div>
+  ),
+});
 
 export default async function StudioPage() {
-  // Protect Studio — require authenticated user
-  const supabase = await createServerClient()
+  const supabase = createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
