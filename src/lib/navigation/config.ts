@@ -345,7 +345,8 @@ export const FALLBACK_NAVIGATION: NavigationData = {
     { label: "Lær", path: "/kurs", order: 0 },
     { label: "Trade", path: "/handel", order: 1 },
     { label: "Bots", path: "/dashboard/auto-trade", order: 2 },
-    { label: "Priser", path: "/priser", order: 3 },
+    { label: "JokerTrade", path: "/jokertrade", order: 3 },
+    { label: "Priser", path: "/priser", order: 4 },
   ],
   loggedInLinks: [
     { label: "Dashboard", path: "/dashboard", order: 0 },
