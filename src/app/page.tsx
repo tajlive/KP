@@ -1,5 +1,7 @@
-// With localePrefix: 'as-needed', next-intl serves default locale (no) at /;
-// this root page is not hit for / — [locale]/page.tsx handles it via rewrite.
+import { redirect } from "next/navigation";
+
+// next-intl serves default locale (no) at / via rewrite,
+// but sometimes this root page IS hit (cache invalidation, etc.)
 export default function RootPage() {
-  return null
+  redirect("/no");
 }
