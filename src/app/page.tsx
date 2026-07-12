@@ -1,6 +1,4 @@
-import { permanentRedirect } from "next/navigation";
-
-// Root page — permanent redirect (308) til default locale (no)
+// Root — redirected via locale rewrite (localePrefix: 'always')
 export default function RootPage() {
-  permanentRedirect("/no");
+  return null
 }
