@@ -15,8 +15,14 @@ async function loadNavigationImpl(): Promise<NavigationData> {
     );
     if (result) {
       return {
-        loggedOutLinks: result.loggedOutLinks || FALLBACK_NAVIGATION.loggedOutLinks,
-        loggedInLinks: result.loggedInLinks || FALLBACK_NAVIGATION.loggedInLinks,
+        loggedOutLinks: [
+          ...(result.loggedOutLinks || FALLBACK_NAVIGATION.loggedOutLinks),
+          { label: "JokerTrade", path: "/jokertrade", order: 99 },
+        ],
+        loggedInLinks: [
+          ...(result.loggedInLinks || FALLBACK_NAVIGATION.loggedInLinks),
+          { label: "JokerTrade", path: "/jokertrade", order: 99 },
+        ],
       };
     }
   } catch {
