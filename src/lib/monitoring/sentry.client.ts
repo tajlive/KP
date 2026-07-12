@@ -22,7 +22,10 @@ if (SENTRY_DSN && process.env.NODE_ENV === "production") {
     
     // 📊 Performance: 5% (spar events)
     tracesSampleRate: 0.05,
-    
+
+    // Ikke injiser <meta name="sentry-trace"> i HTML (unngår meta foran DOCTYPE på root-sider uten locale layout)
+    tracePropagationTargets: [],
+
     // 🎬 Session replay: kun når feil oppstår
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,

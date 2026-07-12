@@ -17,7 +17,10 @@ if (SENTRY_DSN && process.env.NODE_ENV === "production") {
     environment: "production",
     release: process.env.NEXT_PUBLIC_APP_VERSION || "unknown",
     tracesSampleRate: 0.05,
-    
+
+    // Ikke injiser <meta name="sentry-trace"> i HTML
+    tracePropagationTargets: [],
+
     // Server-spesifikk støyfilter
     ignoreErrors: [
       "ECONNRESET",

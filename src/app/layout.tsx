@@ -118,12 +118,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Root layout har <html>/<body> slik at SSR-innhold (inkl. Sentry meta)
-  // havner INNI HTML, ikke utenfor. [locale]/layout.tsx legger til
-  // locale-spesifikke attributter via React-portal.
-  return (
-    <html>
-      <body>{children}</body>
-    </html>
-  );
+  // Root layout er bare en passthrough til [locale]/layout.tsx
+  // HTML-struktur (html, head, body) defineres i [locale]/layout.tsx
+  // Sentry trace injection deaktivert via server config
+  return children;
 }
