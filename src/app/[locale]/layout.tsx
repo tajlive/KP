@@ -1,4 +1,5 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import "@/lib/monitoring/sentry.client"; // Sentry: auto-capture errors (must be before NextUI)
 import { preconnect, prefetchDNS } from "react-dom";
 import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
