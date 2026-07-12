@@ -9,6 +9,7 @@
     "binding": "ASSETS"
   },
   "workers_dev": true,
+  "usage_model": "unbound",
   "routes": [
     {
       "pattern": "www.klarpakke.no/*",
