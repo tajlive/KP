@@ -1,4 +1,7 @@
-// next-intl handles this via middleware (localePrefix: 'always')
+import { redirect } from "next/navigation";
+
+// Root page — redirect to default locale (no).
+// Middleware (i18n redirect) is deaktivert pga worker size limit.
 export default function RootPage() {
-  return null
+  redirect("/no");
 }
