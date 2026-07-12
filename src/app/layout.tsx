@@ -86,10 +86,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // Google Search Console verification — configure via Cloudflare Workers env/secrets when available.
-  // verification: {
-  //   google: process.env.GOOGLE_SITE_VERIFICATION,
-  // }
   appleWebApp: {
     capable: true,
     title: "Klarpakke",
@@ -109,7 +105,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  /** iOS Safari / PWA: env(safe-area-inset-*) for dashboard nav */
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#0A0B0D" },
@@ -123,8 +118,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Root layout er bare en passthrough til [locale]/layout.tsx
-  // HTML-struktur (html, head, body) defineres i [locale]/layout.tsx
-  // Merk: I App Router kan ikke root layout og nested layout begge ha <head>
-  return children;
+  // Root layout har <html>/<body> slik at SSR-innhold (inkl. Sentry meta)
+  // havner INNI HTML, ikke utenfor. [locale]/layout.tsx legger til
+  // locale-spesifikke attributter via React-portal.
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  );
 }
