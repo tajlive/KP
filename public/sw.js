@@ -4,7 +4,7 @@
  * Cache-strategi: Network first, fallback til cache
  */
 
-const CACHE_VERSION = "5"; // Bumped 2026-07-08: Skip external URLs + RSC requests
+const CACHE_VERSION = "6"; // Bumped 2026-07-14: Individuell asset-caching, robust feilhåndtering
 const CACHE_NAME = `klarpakke-v${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -55,20 +55,32 @@ function isApiRequest(url) {
   return url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/");
 }
 
-// Installer service worker og cache statiske assets
+// Installer service worker og cache statiske assets individuelt
+// Bruker individuell caching slik at én feil ikke blokkerer resten
 self.addEventListener("install", (event) => {
   console.log("[SW] Installing...");
 
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        console.log("[SW] Caching static assets");
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .catch((err) => {
-        console.warn("[SW] Failed to cache some assets:", err);
-      })
+    caches.open(CACHE_NAME).then(async (cache) => {
+      console.log("[SW] Caching static assets");
+      const results = await Promise.allSettled(
+        STATIC_ASSETS.map(async (url) => {
+          try {
+            const response = await fetch(url);
+            if (!response.ok || response.type === "opaqueredirect" || response.redirected) {
+              console.warn("[SW] Skipping", url, "— status", response.status, "type", response.type);
+              return;
+            }
+            await cache.put(url, response);
+          } catch (err) {
+            console.warn("[SW] Skipping", url, "—", err instanceof Error ? err.message : err);
+          }
+        })
+      );
+      const failed = results.filter((r) => r.status === "rejected").length;
+      const ok = results.length - failed;
+      console.log(`[SW] Cached ${ok}/${results.length} assets`);
+    })
   );
 
   self.skipWaiting();
@@ -136,6 +148,15 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(networkFirstWithCache(request));
 });
 
+async function cacheResponse(request, response) {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response.clone());
+  } catch {
+    // Ignorer cache-feil for ikke-clonbare responses
+  }
+}
+
 /**
  * Network-first med timeout
  */
@@ -151,8 +172,7 @@ async function networkFirstWithTimeout(request, timeoutMs) {
     ]);
 
     if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      cacheResponse(request, networkResponse);
     }
 
     return networkResponse;
@@ -174,9 +194,7 @@ async function cacheFirstWithNetwork(request) {
   const networkFetch = fetch(request)
     .then((networkResponse) => {
       if (networkResponse.ok) {
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, networkResponse.clone());
-        });
+        cacheResponse(request, networkResponse);
       }
       return networkResponse;
     })
@@ -202,8 +220,7 @@ async function networkFirstWithOfflineFallback(request) {
     const networkResponse = await fetch(request);
 
     if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      cacheResponse(request, networkResponse);
     }
 
     return networkResponse;
@@ -231,8 +248,7 @@ async function networkFirstWithCache(request) {
     const networkResponse = await fetch(request);
 
     if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      cacheResponse(request, networkResponse);
     }
 
     return networkResponse;
