@@ -907,6 +907,7 @@
     "tab": {
       "overview": "Overview",
       "trades": "Trades",
+      "sessions": "Sessions",
       "analysis": "Analysis"
     },
     "kpi": {
