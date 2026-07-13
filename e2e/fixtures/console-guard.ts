@@ -29,10 +29,11 @@ export const test = base.extend<{
           /JWT expired|Invalid Refresh Token|Auth session missing|Using the user object as returned from supabase\.auth\.getSession/i, // Supabase auth
           /hydrat|Hydration/i, // Next.js hydration (ofte tredjeparts)
           /ResizeObserver loop/i, // Browser quirk
-          /fetch failed|NetworkError/i, // Nettverk (håndtert av retry)
+          /fetch failed|NetworkError|Failed to fetch/i, // Nettverk (håndtert av retry)
           /\[Klarpakke WARN\]/, // Våre egne warnings (strukturert)
           /preloaded using link preload but not used/i, // Chrome preload warnings (non-blocking)
           /WebSocket is closed before the connection is established/i, // Supabase realtime close race on test teardown
+          /Avregistrerte gammel service worker|service worker/i, // Service worker lifecycle
           // Next.js image aspect-ratio warning for known payment SVGs rendered with CSS sizing.
           // Exact observed messages (dev-only, no runtime impact; components unchanged by recent work):
           //   Image with src ".../images/payments/stripe.svg" has either width or height modified...

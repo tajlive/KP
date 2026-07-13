@@ -11,6 +11,7 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.E2E_BASE_URL || "https://www.klarpakke.no",
+    storageState: ".auth/user.json",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
