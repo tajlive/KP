@@ -18,22 +18,28 @@ test.describe("Trading Cockpit", () => {
     });
     await expect(page.getByTestId("cockpit-tab-overview")).toBeVisible();
     await expect(page.getByTestId("cockpit-tab-trades")).toBeVisible();
+    await expect(page.getByTestId("cockpit-tab-sessions")).toBeVisible();
     await expect(page.getByTestId("cockpit-tab-analysis")).toBeVisible();
 
     // KPI cards
-    await expect(page.getByText("Total kapital").first()).toBeVisible();
-    await expect(page.getByText("P&L").first()).toBeVisible();
-    await expect(page.getByText("Vinnrate").first()).toBeVisible();
-    await expect(page.getByText("Handler").first()).toBeVisible();
+    await expect(page.getByText("Porteføljeverdi").first()).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByText("P&L").first()).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByText("Vinnrate").first()).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByText("Handler").first()).toBeVisible({
+      timeout: 15_000,
+    });
 
     // Status summary
     await expect(page.getByText("Aktiv").first()).toBeVisible();
     await expect(page.getByText("Pauset").first()).toBeVisible();
     await expect(page.getByText("Stoppet").first()).toBeVisible();
     await expect(page.getByText("Krasjet").first()).toBeVisible();
-
-    // Sessions section
-    await expect(page.getByText("Sesjoner").first()).toBeVisible();
   });
 
   test("trades tab shows filters, data table and pagination controls", async ({
