@@ -15,6 +15,10 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+vi.mock("@/hooks/usePrices", () => ({
+  usePrices: () => ({ prices: {}, loading: false, isConnected: false }),
+}));
+
 vi.mock("../hooks/useCockpit", () => ({
   useCockpit: (): CockpitContextValue => ({
     mode: "paper",
@@ -71,6 +75,7 @@ describe("TradingCockpit", () => {
     expect(screen.getByTestId("cockpit-tab-overview")).toBeInTheDocument();
     expect(screen.getByTestId("cockpit-tab-trades")).toBeInTheDocument();
     expect(screen.getByTestId("cockpit-tab-analysis")).toBeInTheDocument();
+    expect(screen.getByTestId("cockpit-tab-sessions")).toBeInTheDocument();
   });
 
   it("shows onboarding wizard when auto-trading is disabled and zero trades", () => {

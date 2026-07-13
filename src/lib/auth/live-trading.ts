@@ -17,11 +17,14 @@ export async function verifyLiveEntitlement(
 ): Promise<boolean> {
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles")
-    .select("tier, binance_connected")
+    .select("tier, binance_connected, role")
     .eq("id", userId)
     .single();
 
   if (profileError || !profile) return false;
+
+  // Professor-tier users get live access automatically
+  if (profile.role === "professor" || profile.tier === "professor") return true;
 
   const tier = normalizeTier(profile.tier);
   if (!canAccessLiveAutoTrading(tier as TierSlug)) return false;

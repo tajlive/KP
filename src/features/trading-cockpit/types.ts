@@ -4,7 +4,7 @@ import type { CockpitDatabase } from "./cockpit-database.types";
 export { type DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
 export type CockpitMode = "paper" | "live";
-export type CockpitTab = "overview" | "trades" | "analysis";
+export type CockpitTab = "overview" | "trades" | "analysis" | "sessions";
 
 export interface CockpitFilters {
   dateRange: "7d" | "30d" | "90d" | "1y" | "all";

@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
 import { ModeBadge } from "./ModeBadge";
+import { usePrices } from "@/hooks/usePrices";
 import type {
   CockpitMode,
   CockpitRiskStatus,
@@ -49,6 +50,8 @@ export function CockpitHeader({
 }: CockpitHeaderProps) {
   const t = useTranslations("trading");
   const isLive = mode === "live";
+  const { prices } = usePrices();
+  const btcPrice = prices["BTCUSDT"];
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [rememberDefault, setRememberDefault] = React.useState(true);
@@ -264,16 +267,26 @@ export function CockpitHeader({
       </Dialog>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Badge
-          variant={marketDataStatus.variant}
-          icon={<Activity className="size-3" />}
-          data-testid="market-data-pill"
-          aria-label={t("cockpit.marketData.aria", {
-            status: marketDataStatus.label,
-          })}
-        >
-          {marketDataStatus.label}
-        </Badge>
+        {btcPrice ? (
+          <Badge
+            variant="success"
+            icon={<Activity className="size-3" />}
+            data-testid="market-data-pill"
+          >
+            BTC: {(btcPrice.price ?? 0).toLocaleString("no-NO", { maximumFractionDigits: 0 })} kr
+          </Badge>
+        ) : (
+          <Badge
+            variant={marketDataStatus.variant}
+            icon={<Activity className="size-3" />}
+            data-testid="market-data-pill"
+            aria-label={t("cockpit.marketData.aria", {
+              status: marketDataStatus.label,
+            })}
+          >
+            {marketDataStatus.label}
+          </Badge>
+        )}
       </div>
 
       {hasRiskBanner && riskMessage && (

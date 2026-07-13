@@ -16,6 +16,10 @@ vi.mock("sonner", () => ({
   },
 }));
 
+vi.mock("@/hooks/usePrices", () => ({
+  usePrices: () => ({ prices: {}, loading: false, isConnected: false }),
+}));
+
 const baseRiskStatus: CockpitRiskStatus = {
   dailyLossLimitReached: false,
   maxDrawdownReached: false,
