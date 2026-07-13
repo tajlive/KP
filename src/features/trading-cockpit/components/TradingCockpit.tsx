@@ -9,10 +9,9 @@ import { Button } from "@/shared/ui/button";
 import { CockpitHeader } from "./CockpitHeader";
 import { CockpitTabs } from "./CockpitTabs";
 import { Overview } from "./Overview";
-import { SessionList } from "./SessionList";
 import { TradesTab } from "./trades/TradesTab";
 import { AnalysisTab } from "./analysis/AnalysisTab";
-import { TraderStatusLog } from "./TraderStatusLog";
+import { SessionsTab } from "./SessionsTab";
 import { useCockpit } from "@/features/trading-cockpit/hooks/useCockpit";
 
 export function TradingCockpit({
@@ -41,11 +40,6 @@ export function TradingCockpit({
     hasMoreSessions,
     lastTickAt,
   } = useCockpit();
-
-  const selectedSessionId = React.useMemo(() => {
-    const active = sessions.find((s) => s.status === "active" && s.mode === mode);
-    return active?.id ?? sessions[0]?.id ?? null;
-  }, [sessions, mode]);
 
   const [isActivating, setIsActivating] = React.useState(false);
 
@@ -137,11 +131,12 @@ export function TradingCockpit({
             showOnboarding={true}
             onDismissOnboarding={() => {}}
           />
-          <TraderStatusLog sessionId={selectedSessionId} mode={mode} />
         </>
       )}
 
       {tab === "trades" && <TradesTab />}
+
+      {tab === "sessions" && <SessionsTab />}
 
       {tab === "analysis" && <AnalysisTab />}
     </div>

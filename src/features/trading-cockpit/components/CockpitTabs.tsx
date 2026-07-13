@@ -12,7 +12,7 @@ interface CockpitTabsProps {
   className?: string;
 }
 
-const TABS: CockpitTab[] = ["overview", "trades", "analysis"];
+const TABS: CockpitTab[] = ["overview", "trades", "sessions", "analysis"];
 
 export function CockpitTabs({
   activeTab,
