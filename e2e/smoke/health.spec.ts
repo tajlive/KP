@@ -22,7 +22,7 @@ test.describe("Smoke: Health Checks @smoke", () => {
     }
 
     if (!response) throw lastError;
-    expect([200, 503]).toContain(response.status());
+    expect(response.status()).toBe(200);
 
     const body = await response.json();
     expect(["healthy", "degraded", "unhealthy"]).toContain(body.status);
