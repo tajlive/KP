@@ -3,10 +3,85 @@ name: Pre-Merge Gates
 on:
   pull_request:
     branches: [main]
+  pull_request_target:
+    branches: [main]
+    types: [labeled, unlabeled]
   workflow_dispatch:
 
+# ============================================================
+# FORK / OUTSIDE COLLABORATOR GUARD
+# ============================================================
+# Self-hosted runners are in use. PRs from forks or outside
+# collaborators must be approved before workflows can run.
+# This prevents untrusted code from executing on self-hosted runners.
+# ============================================================
+
 jobs:
+  # --- FORK GUARD: Check if PR is from fork or outside collaborator ---
+  fork-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      approved: ${{ steps.check.outputs.approved }}
+    steps:
+      - name: Check fork status
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
+          BASE_REPO="${{ github.event.pull_request.base.repo.full_name }}"
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          echo "PR #$PR_NUMBER | Head: $HEAD_REPO | Base: $BASE_REPO | Author: $AUTHOR"
+
+          # Is this a fork?
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "PR is from a FORK ($HEAD_REPO -> $BASE_REPO)"
+
+            # Check if PR has approval label
+            HAS_LABEL=$(gh api "/repos/$BASE_REPO/issues/$PR_NUMBER/labels" --jq 'map(.name) | any(. == "safe-to-run" or . == "safe-to-test")' 2>/dev/null || echo "false")
+
+            if [ "$HAS_LABEL" = "true" ]; then
+              echo "PR is labeled as safe (safe-to-run / safe-to-test) — allowing execution"
+              echo "approved=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # Check if author is a known collaborator
+            IS_COLLAB=$(gh api "/repos/$BASE_REPO/collaborators/$AUTHOR" --jq '.permissions.push' 2>/dev/null || echo "false")
+
+            if [ "$IS_COLLAB" = "true" ]; then
+              echo "$AUTHOR is a collaborator — allowing execution"
+              echo "approved=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # Blocked — requires manual approval
+            echo "PR from fork by unknown user — blocked until approved"
+            echo "A maintainer must add label 'safe-to-run' to approve"
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          # Not a fork — check if author is collaborator
+          IS_COLLAB=$(gh api "/repos/$BASE_REPO/collaborators/$AUTHOR" --jq '.permissions.push' 2>/dev/null || echo "false")
+
+          if [ "$IS_COLLAB" = "true" ]; then
+            echo "$AUTHOR is a collaborator — allowing execution"
+            echo "approved=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$AUTHOR is not a collaborator — requires manual approval"
+            echo "A maintainer must add label 'safe-to-run' to approve"
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
   lint-check:
+    needs: fork-guard
+    if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -14,13 +89,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
+          cache: npm
       - run: npm ci
       - run: npx tsc --noEmit
-      - run: npm run lint -- --max-warnings 0 || echo "⚠️ Lint warnings (godkjent)"
+      - run: npm run lint -- --max-warnings 0 || echo "Lint warnings (approved)"
 
   e2e-smoke:
-    needs: lint-check
+    needs: fork-guard
+    if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +104,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
+          cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
@@ -37,7 +113,8 @@ jobs:
           npx playwright test --config=playwright.allure.config.ts --project=chromium --grep "health|critical|smoke" 2>&1 | tail -10
 
   e2e-golden-path:
-    needs: lint-check
+    needs: fork-guard
+    if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +122,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
+          cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
@@ -56,7 +133,8 @@ jobs:
           npx playwright test --config=playwright.allure.config.ts --project=chromium e2e/golden-path-auth.spec.ts
 
   lighthouse:
-    needs: lint-check
+    needs: fork-guard
+    if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -67,27 +145,42 @@ jobs:
       - run: npm install -g @lhci/cli
       - run: lhci autorun --config=.lighthouserc.json --url=https://staging.klarpakke.no
 
-  # Blokkér merge hvis noe feiler
+  # Block merge if any gate fails
   gate-status:
-    needs: [lint-check, e2e-smoke, e2e-golden-path, lighthouse]
+    needs: [fork-guard, lint-check, e2e-smoke, e2e-golden-path, lighthouse]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Check fork-guard
+        run: |
+          if [ "${{ needs.fork-guard.result }}" != "success" ]; then
+            echo "Fork guard blocked — PR from outside collaborator without approval"
+            echo "A maintainer must add label 'safe-to-run' to approve"
+            exit 1
+          fi
+          echo "Fork guard passed"
+      - name: Check lint
+        run: |
           if [ "${{ needs.lint-check.result }}" != "success" ]; then
-            echo "❌ Lint feilet — merge blokkert"
+            echo "Lint failed — merge blocked"
             exit 1
           fi
+      - name: Check e2e-smoke
+        run: |
           if [ "${{ needs.e2e-smoke.result }}" != "success" ]; then
-            echo "❌ E2E smoke feilet — merge blokkert"
+            echo "E2E smoke failed — merge blocked"
             exit 1
           fi
+      - name: Check e2e-golden-path
+        run: |
           if [ "${{ needs.e2e-golden-path.result }}" != "success" ]; then
-            echo "❌ Golden path E2E feilet — merge blokkert"
+            echo "Golden path E2E failed — merge blocked"
             exit 1
           fi
+      - name: Check lighthouse
+        run: |
           if [ "${{ needs.lighthouse.result }}" != "success" ]; then
-            echo "❌ Lighthouse QA feilet — merge blokkert"
+            echo "Lighthouse QA failed — merge blocked"
             exit 1
           fi
-          echo "✅ Alle gates grønne — merge tillatt"
+      - run: echo "All gates green — merge allowed"
