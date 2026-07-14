@@ -8,11 +8,7 @@ interface Position {
   side: "buy" | "sell";
   quantity: number;
   price: number;
-  current_price: number | null;
   pnl: number | null;
-  pnl_percent: number | null;
-  stop_loss: number | null;
-  take_profit: number | null;
   created_at: string;
 }
 
@@ -64,7 +60,6 @@ export function ActivePositions({ positions }: ActivePositionsProps) {
         {positions.map((pos) => {
           const isLong = pos.side === "buy";
           const pnlNum = Number(pos.pnl ?? 0);
-          const pnlPctNum = Number(pos.pnl_percent ?? 0);
           const isProfit = pnlNum >= 0;
 
           return (
@@ -102,19 +97,11 @@ export function ActivePositions({ positions }: ActivePositionsProps) {
                   >
                     {formatNOK(pnlNum)}
                   </p>
-                  <p
-                    className={`font-mono text-xs tabular-nums ${
-                      isProfit ? "text-[#10B981]" : "text-[#EF4444]"
-                    }`}
-                  >
-                    {pnlPctNum >= 0 ? "+" : ""}
-                    {pnlPctNum.toFixed(2)}%
-                  </p>
                 </div>
               </div>
 
               {/* Details row */}
-              <div className="grid grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
                   <p className="font-sans text-[#6B7280]">Inngang</p>
                   <p className="font-mono tabular-nums text-[#D1D5DB]">
@@ -125,47 +112,11 @@ export function ActivePositions({ positions }: ActivePositionsProps) {
                   </p>
                 </div>
                 <div>
-                  <p className="font-sans text-[#6B7280]">Pris</p>
-                  <p className="font-mono tabular-nums text-[#D1D5DB]">
-                    {Number(pos.current_price ?? pos.price).toLocaleString(
-                      "no-NO",
-                      { minimumFractionDigits: 2 },
-                    )}{" "}
-                    kr
-                  </p>
-                </div>
-                <div>
                   <p className="font-sans text-[#6B7280]">Volum</p>
                   <p className="font-mono tabular-nums text-[#D1D5DB]">
                     {Number(pos.quantity).toFixed(4)}
                   </p>
                 </div>
-              </div>
-
-              {/* SL / TP */}
-              <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
-                {pos.stop_loss && (
-                  <div className="rounded-md bg-[#7F1D1D]/30 px-3 py-1.5">
-                    <p className="font-sans text-[#EF4444]">Stop Loss</p>
-                    <p className="font-mono tabular-nums text-[#FCA5A5]">
-                      {Number(pos.stop_loss).toLocaleString("no-NO", {
-                        minimumFractionDigits: 2,
-                      })}{" "}
-                      kr
-                    </p>
-                  </div>
-                )}
-                {pos.take_profit && (
-                  <div className="rounded-md bg-[#064E3B]/30 px-3 py-1.5">
-                    <p className="font-sans text-[#10B981]">Take Profit</p>
-                    <p className="font-mono tabular-nums text-[#6EE7B7]">
-                      {Number(pos.take_profit).toLocaleString("no-NO", {
-                        minimumFractionDigits: 2,
-                      })}{" "}
-                      kr
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           );

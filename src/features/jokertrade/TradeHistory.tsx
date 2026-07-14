@@ -11,8 +11,7 @@ interface TradeRecord {
   quantity: number;
   price: number;
   pnl: number | null;
-  pnl_percent: number | null;
-  closed_at: string;
+  executed_at: string;
   created_at: string;
   joker_trade?: boolean;
   joker_explanation?: string | null;
@@ -89,7 +88,7 @@ export function TradeHistory({ trades }: TradeHistoryProps) {
               {/* Center: time + entry */}
               <div className="hidden text-center sm:block">
                 <p className="font-sans text-xs text-[#6B7280]">
-                  {formatDistanceToNow(new Date(trade.closed_at ?? trade.created_at), {
+                  {formatDistanceToNow(new Date(trade.executed_at ?? trade.created_at), {
                     addSuffix: true,
                     locale: nb,
                   })}
@@ -110,16 +109,6 @@ export function TradeHistory({ trades }: TradeHistoryProps) {
                 >
                   {formatNOK(pnlNum)}
                 </p>
-                {trade.pnl_percent !== null && (
-                  <p
-                    className={`font-mono text-[10px] tabular-nums ${
-                      isProfit ? "text-[#10B981]" : "text-[#EF4444]"
-                    }`}
-                  >
-                    {Number(trade.pnl_percent) >= 0 ? "+" : ""}
-                    {Number(trade.pnl_percent).toFixed(2)}%
-                  </p>
-                )}
                 {trade.joker_trade && trade.joker_explanation && (
                   <p className="text-[10px] text-amber-400/80 italic mt-0.5 leading-tight max-w-[200px]">
                     {trade.joker_explanation}

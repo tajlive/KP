@@ -60,35 +60,58 @@ export async function GET(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    // 3. Hent åpne posisjoner
+    // 3. Hent åpne posisjoner fra paper_trades (posisjoner som ikke er lukket)
     const { data: openPositions } = await db
-      .from("trades")
+      .from("paper_trades")
       .select(
-        "id, symbol, side, quantity, price, current_price, pnl, pnl_percent, stop_loss, take_profit, created_at",
+        "id, symbol, position_type, quantity, entry_price, profit_loss, profit_loss_percent, entry_time",
       )
-      .eq("user_id", user.id)
-      .is("closed_at", null)
-      .order("created_at", { ascending: false })
+      .eq("account_id", user.id)
+      .is("exit_time", null)
+      .order("entry_time", { ascending: false })
       .limit(3);
 
-    // 4. Hent trade history (Joker-trades har forklaring)
+    // 4. Hent trade history fra trades
     const { data: tradeHistory } = await db
       .from("trades")
       .select(
-        "id, symbol, side, quantity, price, pnl, pnl_percent, closed_at, created_at, joker_trade, joker_explanation",
+        "id, trading_pair, side, quantity, price, total_value, realized_pnl, executed_at, created_at, joker_trade, joker_explanation",
       )
       .eq("user_id", user.id)
-      .not("closed_at", "is", null)
-      .order("closed_at", { ascending: false })
+      .eq("status", "filled")
+      .order("executed_at", { ascending: false })
       .limit(20);
+
+    const positions = (openPositions || []).map((p: any) => ({
+      id: p.id,
+      symbol: p.symbol,
+      side: p.position_type === "long" ? "buy" : "sell",
+      quantity: p.quantity,
+      price: p.entry_price,
+      pnl: p.profit_loss,
+      created_at: p.entry_time,
+    }));
+
+    const history = (tradeHistory || []).map((t: any) => ({
+      id: t.id,
+      symbol: t.trading_pair,
+      side: t.side,
+      quantity: t.quantity,
+      price: t.price,
+      pnl: t.realized_pnl,
+      executed_at: t.executed_at,
+      created_at: t.created_at,
+      joker_trade: t.joker_trade,
+      joker_explanation: t.joker_explanation,
+    }));
 
     return NextResponse.json({
       success: true,
       status: "active",
       insight: latestInsight || null,
       mode: profile?.preferred_trading_mode ?? "paper",
-      positions: openPositions || [],
-      history: tradeHistory || [],
+      positions,
+      history,
     });
   } catch (error) {
     console.error("[jokertrade] GET error:", error);
