@@ -1,0 +1,19 @@
+name: Test PC Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: [self-hosted, linux]
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 2
+    steps:
+      - name: Verify runner
+        run: |
+          echo "PC-runner fungerer!"
+          uname -a
+          echo "Runner name: ${{ runner.name }}"
+          echo "Runner OS: ${{ runner.os }}"
