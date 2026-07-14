@@ -16,7 +16,11 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - run: npm run cf:build
+      - name: Build
+        run: npm run cf:build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       - name: Deploy
         run: npx wrangler deploy --minify --var APP_VERSION:${{ github.sha }}
         env:
