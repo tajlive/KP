@@ -32,11 +32,7 @@ interface Position {
   side: "buy" | "sell";
   quantity: number;
   price: number;
-  current_price: number | null;
   pnl: number | null;
-  pnl_percent: number | null;
-  stop_loss: number | null;
-  take_profit: number | null;
   created_at: string;
 }
 
@@ -47,9 +43,10 @@ interface TradeRecord {
   quantity: number;
   price: number;
   pnl: number | null;
-  pnl_percent: number | null;
-  closed_at: string;
+  executed_at: string;
   created_at: string;
+  joker_trade?: boolean;
+  joker_explanation?: string | null;
 }
 
 interface JokerTradeData {
@@ -144,11 +141,6 @@ export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
     0,
   );
   const totalPnl = openPnl + closedPnl;
-
-  const openPnlPct = data.positions.reduce(
-    (sum, p) => sum + Number(p.pnl_percent ?? 0),
-    0,
-  );
 
   // -----------------------------------------------------------------------
   // Format helpers
