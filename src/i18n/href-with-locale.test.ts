@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { hrefWithLocale } from "./href-with-locale";
 
-describe("hrefWithLocale (as-needed prefix)", () => {
-  it("norsk (default): ingen /no-prefiks", () => {
-    expect(hrefWithLocale("no", "/")).toBe("/");
-    expect(hrefWithLocale("no", "/dashboard")).toBe("/dashboard");
-    expect(hrefWithLocale("no", "/login")).toBe("/login");
+describe("hrefWithLocale (always prefix)", () => {
+  it("norsk: /no/...", () => {
+    expect(hrefWithLocale("no", "/")).toBe("/no");
+    expect(hrefWithLocale("no", "/dashboard")).toBe("/no/dashboard");
+    expect(hrefWithLocale("no", "/login")).toBe("/no/login");
   });
 
   it("engelsk: /en/...", () => {
