@@ -28,7 +28,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     return NextResponse.json({ error: 'Ikke autentisert' }, { status: 401 });
   }
 
-  let progress: any[] = [];
+  let progress: unknown[] = [];
   
   try {
     const { data, error } = await supabase
@@ -38,7 +38,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       .order('last_accessed_at', { ascending: false });
 
     if (!error && data) progress = data;
-  } catch (_) {}
+  } catch {
+    // Ikke-kritisk — progress er valgfritt
+  }
 
   const stats = {
     totalCourses: new Set(progress.map(p => p.course_id)).size,
