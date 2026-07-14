@@ -37,7 +37,7 @@ env:
 jobs:
   check-health:
     name: Check if production is stale
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       stale: ${{ steps.check.outputs.stale }}
     steps:
@@ -57,7 +57,7 @@ jobs:
     name: Build and deploy Worker
     needs: check-health
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-health.outputs.stale == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 45
 
     steps:

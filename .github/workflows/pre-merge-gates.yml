@@ -83,7 +83,7 @@ jobs:
     needs: fork-guard
     if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -98,7 +98,7 @@ jobs:
     needs: fork-guard
     if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -116,7 +116,7 @@ jobs:
     needs: fork-guard
     if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -136,7 +136,7 @@ jobs:
     needs: fork-guard
     if: needs.fork-guard.outputs.approved == 'true'
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -149,7 +149,7 @@ jobs:
   gate-status:
     needs: [fork-guard, lint-check, e2e-smoke, e2e-golden-path, lighthouse]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check fork-guard
         run: |
