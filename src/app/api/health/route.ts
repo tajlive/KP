@@ -490,8 +490,9 @@ function withTimeout<T>(
   ]).catch(() => fallback);
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const start = Date.now();
+  const requestMethod = request.method;
 
   // Try cache first
   let cached: HealthCheck | null = null;
@@ -607,7 +608,8 @@ export async function GET() {
     uptime: Math.floor((Date.now() - startTime) / 1000),
   };
 
-  const statusCode = status === "unhealthy" ? 503 : 200;
+  // Statuskode: alltid 200 for GET (klient-friendly). POST bruker 503 for CI.
+  const statusCode = requestMethod === "POST" && status === "unhealthy" ? 503 : 200;
 
   // Cache result in Redis (legacy KV provider removed)
   if (isRedisRestConfigured()) {
