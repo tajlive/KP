@@ -7,7 +7,7 @@ on:
 
 jobs:
   check:
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     defaults:
       run:
         shell: bash
@@ -97,6 +97,84 @@ jobs:
         if: success()
         run: |
           curl -s -X POST "https://sentry.io/api/0/organizations/klarpakke-h3/monitors/health-monitor/checkins/" \
-            -H "Authorization: DSN https://beff674ffc73a116bacc53a9f15e8c68@o4511701230747648.ingest.de.sentry.io/4511701234483280" \
+            -H "Authorization: DSN https:...3280" \
             -H "Content-Type: application/json" \
             -d "{\"status\": \"ok\", \"duration\": $SECONDS}"
+
+      - name: Slack notification (on failure)
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_OPS_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "⚠️  SLACK_OPS_WEBHOOK_URL not set — skipping Slack notification"
+            exit 0
+          fi
+
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          MESSAGE="*Health Monitor detected $ERRORS error(s)* on *$(date +%Y-%m-%d %H:%M)*\n\`\`\`$RESULTS\`\`\`\nEnvironment: \`${{ github.ref_name }}\`"
+
+          PAYLOAD=$(cat <<PAYLOADEOF
+          {
+            "attachments": [
+              {
+                "color": "#d63865",
+                "blocks": [
+                  {
+                    "type": "header",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "🚨 Health Monitor: $ERRORS failure(s)",
+                      "emoji": true
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "$MESSAGE"
+                    }
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "🔍 View Run",
+                          "emoji": true
+                        },
+                        "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                        "style": "danger"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "Repository: <https://github.com/${{ github.repository }}|${{ github.repository }}> | Run: #${{ github.run_id }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+          PAYLOADEOF
+          )
+
+          echo "Sending Slack notification..."
+          RESPONSE=$(curl -s -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            --data-raw "$(echo "$PAYLOAD" | python3 -c 'import sys,json; print(json.dumps(json.load(sys.stdin)))')" \
+            -w "%{http_code}" \
+            -o /dev/null)
+
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ Slack notification sent (HTTP $RESPONSE)"
+          else
+            echo "⚠️  Slack notification returned HTTP $RESPONSE"
+          fi
