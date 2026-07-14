@@ -6,12 +6,10 @@
  */
 
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 interface JokerNotification {
   id: string;
@@ -31,43 +29,35 @@ export async function GET(request: Request) {
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
 
   try {
-    // Hent Joker-trades med forklaring via REST (offentlig)
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/trades?select=id,trading_pair,side,quantity,price,executed_at,joker_explanation,user_id&joker_trade=eq.true&not.joker_explanation=is.null&order=executed_at.desc&limit=${limit}`,
-      {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-        },
-      },
-    );
+    const supabase = createClient();
 
-    if (!res.ok) {
+    // Hent Joker-trades med forklaring
+    const { data: trades, error: tradesError } = await supabase
+      .from("trades")
+      .select("id, trading_pair, side, quantity, price, executed_at, joker_explanation, user_id")
+      .eq("joker_trade", true)
+      .not("joker_explanation", "is", null)
+      .order("executed_at", { ascending: false })
+      .limit(limit);
+
+    if (tradesError) {
       return NextResponse.json(
-        { error: "Database error", status: res.status },
-        { status: res.status },
+        { error: "Database error", status: 400 },
+        { status: 400 },
       );
     }
-
-    const trades = await res.json();
 
     // Hent display_name for hver unique user_id
     const userIds = [...new Set(trades.map((t: any) => t.user_id))];
     const displayNames: Record<string, string> = {};
 
     if (userIds.length > 0) {
-      const userFilter = userIds.map((id) => `id.eq.${id}`).join(",");
-      const userRes = await fetch(
-        `${supabaseUrl}/rest/v1/user_profiles?select=id,display_name&or=(${userFilter})`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-          },
-        },
-      );
-      if (userRes.ok) {
-        const users = await userRes.json();
+      const { data: users } = await supabase
+        .from("user_profiles")
+        .select("id, display_name")
+        .in("id", userIds);
+
+      if (users) {
         for (const u of users) {
           displayNames[u.id] = u.display_name || "Trader";
         }
