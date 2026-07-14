@@ -61,8 +61,7 @@ export function AnalyticsStatGrid({
     {
       key: "winRate",
       label: t("cockpit.analysis.stats.winRate"),
-      value:
-        safeAnalytics.win_rate === null ? null : safeAnalytics.win_rate * 100,
+      value: safeAnalytics.win_rate,
       suffix: "%",
       decimals: 1,
     },
@@ -91,10 +90,7 @@ export function AnalyticsStatGrid({
     {
       key: "maxDrawdown",
       label: t("cockpit.analysis.stats.maxDrawdown"),
-      value:
-        safeAnalytics.max_drawdown_pct === null
-          ? null
-          : safeAnalytics.max_drawdown_pct * 100,
+      value: safeAnalytics.max_drawdown_pct,
       suffix: "%",
       decimals: 2,
       valueClassName: "text-rose-400",
