@@ -90,15 +90,19 @@ function parseTradesBySymbol(
 }
 
 function toAnalyticsRow(raw: Record<string, unknown>): TradingAnalytics {
+  const winRate = nullableNumber(raw.win_rate);
+  const maxDrawdown = nullableNumber(raw.max_drawdown_pct);
   return {
     total_trades: coerceNumber(raw.total_trades),
     winning_trades: coerceNumber(raw.winning_trades),
     losing_trades: coerceNumber(raw.losing_trades),
-    win_rate: nullableNumber(raw.win_rate),
+    // RPC returnerer prosent (0-100). Normaliser til desimal (0-1)
+    // for konsistens med getDashboardMetrics og resten av frontend.
+    win_rate: winRate !== null ? winRate / 100 : null,
     total_pnl: coerceNumber(raw.total_pnl),
     total_fees: coerceNumber(raw.total_fees),
     starting_capital: coerceNumber(raw.starting_capital),
-    max_drawdown_pct: nullableNumber(raw.max_drawdown_pct),
+    max_drawdown_pct: maxDrawdown !== null ? maxDrawdown / 100 : null,
     profit_factor: nullableNumber(raw.profit_factor),
     best_pair: nullableString(raw.best_pair),
     best_pair_pnl: nullableNumber(raw.best_pair_pnl),
