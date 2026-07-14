@@ -363,7 +363,7 @@ export function DashboardPro({
                         <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
                       )}
                       {effectiveStats.winRate != null && (
-                        <ExplainStatButton statType="winRate" value={effectiveStats.winRate} />
+                        <ExplainStatButton statType="winRate" value={effectiveStats.winRate != null ? effectiveStats.winRate * 100 : undefined} />
                       )}
                       {effectiveStats.currentCapital != null && (
                         <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
