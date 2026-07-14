@@ -1,15 +1,10 @@
-import { defaultLocale } from "@/i18n/config";
-
 /**
- * Lenker for next-intl `localePrefix: 'as-needed'`.
- * Standardlocale (no) har **ikke** `/no` i URL — bruk `/dashboard`, ikke `/no/dashboard`.
- * Engelsk: `/en/dashboard`.
+ * Lenker for next-intl `localePrefix: 'always'`.
+ * ALLE URL-er skal ha locale-prefix: `/no/dashboard`, `/en/dashboard`.
+ * Bruk av URL uten prefix gir ekstra server-redirects og kan bryte RSC-prefetch.
  */
 export function hrefWithLocale(locale: string, pathname: string): string {
   const p = pathname.startsWith("/") ? pathname : `/${pathname}`;
-  if (locale === defaultLocale) {
-    return p;
-  }
   if (p === "/") {
     return `/${locale}`;
   }
