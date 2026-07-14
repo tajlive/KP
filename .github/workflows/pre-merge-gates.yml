@@ -20,7 +20,7 @@ jobs:
   # --- FORK GUARD: Check if PR is from fork or outside collaborator ---
   fork-guard:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 2
     outputs:
       approved: ${{ steps.check.outputs.approved }}
