@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const metadata: Metadata = {
   title: {
     default: "Klarpakke — Norges krypto-skole",
-    template: "%s | Klarpakke — Norges krypto-skole",
+    template: "%s | Norges krypto-skole",
   },
   description:
     "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring — fra nybegynner til trader på 4 uker.",
