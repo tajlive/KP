@@ -34,7 +34,7 @@ const querySchema = z.object({
   mode: z.enum(["paper", "live"]).default("paper"),
   sessionScope: z
     .enum(["all", "active", "active_and_completed"])
-    .default("active"),
+    .default("all"),
 });
 
 export interface DashboardMetricsSuccessResponse {
