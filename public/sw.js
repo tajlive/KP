@@ -4,7 +4,7 @@
  * Cache-strategi: Network first, fallback til cache
  */
 
-const CACHE_VERSION = "6"; // Bumped 2026-07-14: Individuell asset-caching, robust feilhåndtering
+const CACHE_VERSION = "7"; // Bumped 2026-07-14 21:30: Tving refresh av JS-filer med ny Supabase-key
 const CACHE_NAME = `klarpakke-v${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
