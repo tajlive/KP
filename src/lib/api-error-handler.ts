@@ -11,10 +11,10 @@ import { NextRequest, NextResponse } from 'next/server';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-type ApiHandler = (request: NextRequest, ...args: any[]) => Promise<NextResponse>;
+type ApiHandler = (request: NextRequest, ...args: unknown[]) => Promise<NextResponse>;
 
 export function withErrorHandler(handler: ApiHandler, route?: string): ApiHandler {
-  return async (request: NextRequest, ...args: any[]) => {
+  return async (request: NextRequest, ...args: unknown[]) => {
     const start = Date.now();
     const path = route || request.nextUrl.pathname;
 
@@ -27,7 +27,7 @@ export function withErrorHandler(handler: ApiHandler, route?: string): ApiHandle
       }
       
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const duration = Date.now() - start;
       
       // Logg alle unhandled errors

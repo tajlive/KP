@@ -262,7 +262,7 @@ export type EnforcementType =
   | "backtest"
   | "liveTrading";
 
-const ENFORCERS: Record<EnforcementType, (supabase: Supa, userId: string, extra?: any) => Promise<EnforcementResult>> = {
+const ENFORCERS: Record<EnforcementType, (supabase: Supa, userId: string, extra?: unknown) => Promise<EnforcementResult>> = {
   paperTrading: (s, u, extra) => enforcePaperTradingCap(s, u, extra as number),
   autoStrategies: (s, u) => enforceStrategyLimit(s, u),
   copyTrading: (s, u) => enforceCopyTradingCap(s, u),
@@ -275,7 +275,7 @@ export async function enforceTierLimit(
   supabase: Supa,
   userId: string,
   type: EnforcementType,
-  extra?: any,
+  extra?: unknown,
 ): Promise<EnforcementResult> {
   const enforcer = ENFORCERS[type];
   if (!enforcer) return { allowed: false, reason: `Unknown enforcement type: ${type}` };

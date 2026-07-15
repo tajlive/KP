@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       .order("executed_at", { ascending: false })
       .limit(20);
 
-    const positions = (openPositions || []).map((p: any) => ({
+    const positions = (openPositions || []).map((p: unknown) => ({
       id: p.id,
       symbol: p.symbol,
       side: p.position_type === "long" ? "buy" : "sell",
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       created_at: p.entry_time,
     }));
 
-    const history = (tradeHistory || []).map((t: any) => ({
+    const history = (tradeHistory || []).map((t: unknown) => ({
       id: t.id,
       symbol: t.trading_pair,
       side: t.side,

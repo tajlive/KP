@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, data: [] });
     }
 
-    const snapshots: any[] = await snapRes.json();
+    const snapshots: unknown[] = await snapRes.json();
 
     // 2. Hent gjeldende leaderboard
     const lbRes = await fetch(
@@ -67,11 +67,11 @@ export async function GET(request: Request) {
       );
     }
 
-    const leaderboard: any[] = await lbRes.json();
+    const leaderboard: unknown[] = await lbRes.json();
 
     // 3. Finn endringer
     const snapshotRankMap = new Map<string, number>();
-    const snapshotDataMap = new Map<string, any>();
+    const snapshotDataMap = new Map<string, unknown>();
     for (const s of snapshots) {
       if (!snapshotRankMap.has(s.user_id)) {
         snapshotRankMap.set(s.user_id, s.rank);

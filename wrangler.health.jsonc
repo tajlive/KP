@@ -1,0 +1,5 @@
+{
+  "name": "klarpakke-health",
+  "main": "health-worker.js",
+  "compatibility_date": "2024-12-01"
+}

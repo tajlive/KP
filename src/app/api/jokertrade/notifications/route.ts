@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     }
 
     // Hent display_name for hver unique user_id
-    const userIds = [...new Set(trades.map((t: any) => t.user_id))];
+    const userIds = [...new Set(trades.map((t: unknown) => t.user_id))];
     const displayNames: Record<string, string> = {};
 
     if (userIds.length > 0) {
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
       }
     }
 
-    const notifications: JokerNotification[] = trades.map((t: any) => ({
+    const notifications: JokerNotification[] = trades.map((t: unknown) => ({
       id: t.id,
       user_display_name: displayNames[t.user_id] || "Trader",
       title: `🎭 ${displayNames[t.user_id] || "Trader"} — ${t.side === "buy" ? "🟦 Kjøp" : "🔴 Salg"} ${t.trading_pair}`,
