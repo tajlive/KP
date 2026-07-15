@@ -80,7 +80,7 @@ async function getCoursesWithDetails(userId?: string) {
   }
 
   // Get user badges if logged in
-  let userBadgeMap = new Map<string, { earned_at: string }>();
+  const userBadgeMap = new Map<string, { earned_at: string }>();
   if (userId) {
     const { data: userBadges } = await supabase
       .from("user_badges")

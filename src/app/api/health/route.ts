@@ -645,10 +645,10 @@ export async function POST(request: NextRequest) {
     const { error } = await withTimeout(
       supabase.auth.getSession(),
       5000,
-      { error: { message: "timeout" } } as any
+      { error: { message: "timeout" } } as unknown
     );
     results.auth = error ? { status: "error", message: error.message } : { status: "ok" };
-  } catch (e: any) { results.auth = { status: "error", message: e?.message }; }
+  } catch (e: unknown) { results.auth = { status: "error", message: e?.message }; }
 
   try {
     const res = await withTimeout(
@@ -662,7 +662,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({ endpoint: "price", symbol: "BTCUSDT" }),
       }),
       8000,
-      null as any
+      null as unknown
     );
     if (res?.ok) {
       const json = await res.json();
@@ -672,7 +672,7 @@ export async function POST(request: NextRequest) {
     } else {
       results.binance = { status: "error", message: "HTTP " + res?.status };
     }
-  } catch (e: any) { results.binance = { status: "error", message: e?.message }; }
+  } catch (e: unknown) { results.binance = { status: "error", message: e?.message }; }
 
   try {
     const lb = await withTimeout(
@@ -683,7 +683,7 @@ export async function POST(request: NextRequest) {
         },
       }),
       5000,
-      null as any
+      null as unknown
     );
     if (lb?.ok) {
       const data = await lb.json();
@@ -691,7 +691,7 @@ export async function POST(request: NextRequest) {
         ? { status: "ok", message: data[0].count + " entries" }
         : { status: "error", message: "Empty" };
     }
-  } catch (e: any) { results.leaderboard = { status: "error", message: e?.message }; }
+  } catch (e: unknown) { results.leaderboard = { status: "error", message: e?.message }; }
 
   const failed = Object.values(results).some(r => r.status !== "ok");
   return NextResponse.json({

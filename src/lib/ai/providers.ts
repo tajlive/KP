@@ -16,8 +16,8 @@
 
 // Opik er deaktivert i prod — for stor for Cloudflare Workers (37 MB+)
 // Bruk dynamisk import kun i utvikling
-let opik: any = { track: () => {} };
-let traceLLMCall: any = () => {};
+const opik: unknown = { track: () => {} };
+const traceLLMCall: unknown = () => {};
 
 // ==================== TYPES ====================
 

@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "JokerTrade™ | AI-drevet trading | Klarpakke",
+  title: "JokerTrade™ | AI-drevet trading ",
   description:
     "Din personlige AI-trader som jobber mens du sover. Automatisk analyse, intelligente signaler — null stress. Start gratis med 100 000 kr i lekepenger.",
 };
@@ -31,10 +31,10 @@ export default async function JokerTradePage({
   }
 
   // Hvis innlogget: vis landing + trading dashboard
-  let initialData: any;
+  let initialData: unknown;
 
   try {
-    const db: any = createClient();
+    const db: unknown = createClient();
 
     const { data: latestInsight } = await db
       .from("market_intelligence")
@@ -65,7 +65,7 @@ export default async function JokerTradePage({
       .order("executed_at", { ascending: false })
       .limit(10);
 
-    const positions = (openPositions ?? []).map((t: any) => ({
+    const positions = (openPositions ?? []).map((t: unknown) => ({
       ...t,
       symbol: t.trading_pair,
       pnl: t.realized_pnl ?? 0,
@@ -76,7 +76,7 @@ export default async function JokerTradePage({
       take_profit: null,
     }));
 
-    const history = (tradeHistory ?? []).map((t: any) => ({
+    const history = (tradeHistory ?? []).map((t: unknown) => ({
       ...t,
       symbol: t.trading_pair,
       pnl: t.realized_pnl ?? 0,
