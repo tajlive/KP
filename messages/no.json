@@ -1259,7 +1259,8 @@
       "language": "Språk",
       "displayCurrency": "Valuta",
       "mode": "Modus",
-      "breadcrumbYouAreHere": "Du er her"
+      "breadcrumbYouAreHere": "Du er her",
+      "jokerTrade": "JokerTrade"
     },
     "learningPath": {
       "title": "Læringsløp",

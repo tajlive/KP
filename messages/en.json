@@ -1356,7 +1356,8 @@
       "language": "Language",
       "displayCurrency": "Currency",
       "mode": "Mode",
-      "breadcrumbYouAreHere": "You are here"
+      "breadcrumbYouAreHere": "You are here",
+      "jokerTrade": "JokerTrade"
     },
     "learningPath": {
       "title": "Learning Path",
