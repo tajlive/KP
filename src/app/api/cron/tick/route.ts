@@ -1561,6 +1561,13 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // ============================================================
+  // AUTO-RECOVERY: Gjenopprett krasjede paper-sessions
+  // ============================================================
+  try {
+    await db.rpc("recover_crashed_paper_sessions");
+  } catch { /* ignore — best effort */ }
+
   const darkFleetBaseConfig: DarkFleetConfig | undefined =
     flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
       ? {
