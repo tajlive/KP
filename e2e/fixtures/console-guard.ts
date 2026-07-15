@@ -24,6 +24,7 @@ export const test = base.extend<{
         const text = msg.text();
 
         // Allow-list: forventede feil som ikke indikerer bugs
+        // KRITISK: "Supabase er ikke konfigurert" er IKKE i allow-list — skal faile testen
         const allowedPatterns = [
           /401|403|Unauthorized|Forbidden/i, // Auth errors (håndtert av UI)
           /JWT expired|Invalid Refresh Token|Auth session missing|Using the user object as returned from supabase\.auth\.getSession/i, // Supabase auth
