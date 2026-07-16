@@ -1,9 +1,0 @@
-version: 1
-agent:
-  extend: default
-  name: mempalace
-  description: >-
-    MemPalace-spesialisert agent for indeksering, søk, KG-vedlikehold,
-    og diary-analyse i Klarpakke-prosjektet.
-  system_prompt_path: ./mempalace-agent.md
-  # Use: kimi --agent-file .kimi/agents/mempalace-agent.yaml
