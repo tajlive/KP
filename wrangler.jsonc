@@ -3,7 +3,9 @@
   "name": "klarpakke",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-06-21",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -36,10 +38,7 @@
       "id": "707c647acb86464f8df2f949564734fc"
     }
   ],
-  "build": {
-    "command": "npm run cf:build",
-    "cwd": "./"
-  },
+  "build": {},
   "env": {
     "staging": {
       "name": "klarpakke-staging",
@@ -50,7 +49,9 @@
           "zone_id": "328d7de7e8e48308fd4f9d760da5b18f"
         }
       ],
-      "compatibility_flags": ["nodejs_compat"],
+      "compatibility_flags": [
+        "nodejs_compat"
+      ],
       "observability": {
         "enabled": true,
         "logs": {

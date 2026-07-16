@@ -1,0 +1,894 @@
+=== START: Thu Jul 16 05:45:42 CEST 2026 ===
+=== Step 1: Remove large deps ===
+
+up to date, audited 3125 packages in 12s
+
+506 packages are looking for funding
+  run `npm fund` for details
+
+71 vulnerabilities (3 low, 50 moderate, 16 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+=== Step 2: Clean build ===
+=== Step 3: Build (ChromaDB-safe) ===
+
+> klarpakke-universitet@1.0.0 cf:build
+> SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS="--max-old-space-size=4096" opennextjs-cloudflare build
+
+
+┌─────────────────────────────┐
+│ OpenNext — Cloudflare build │
+└─────────────────────────────┘
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+App directory: /Users/taj/klarpakke
+Next.js version : 16.2.9
+@opennextjs/cloudflare version: 1.20.1
+@opennextjs/aws version: 4.0.2
+workerd compatibility_date: 2026-06-21
+
+┌─────────────────────────────────┐
+│ OpenNext — Building Next.js app │
+└─────────────────────────────────┘
+
+
+> klarpakke-universitet@1.0.0 prebuild
+> npm run i18n:validate
+
+
+> klarpakke-universitet@1.0.0 i18n:validate
+> node scripts/validate-i18n.js
+
+🌐  i18n Validation
+═══════════════════════════════════════════════════════════════
+
+📊  Reference language: NO
+   Total keys: 3051
+
+🇳🇴  →  🇬🇧  EN
+   Keys: 3054/3051
+   📦  Extra: 3 keys (not in reference)
+       - threeSteps.step4.title
+       - threeSteps.step4.description
+       - threeSteps.step4.badge
+
+🇳🇴  →  🇹🇭  TH
+   Keys: 1675/3051
+   ❌  Missing: 1504 keys
+       - admin.nav.traderVerifications
+       - admin.traderVerifications.title
+       - admin.traderVerifications.subtitle
+       - admin.traderVerifications.trader
+       - admin.traderVerifications.statusColumn
+       ... and 1499 more
+   📦  Extra: 128 keys (not in reference)
+       - admin.system
+       - adminDashboard.title
+       - adminDashboard.verifying
+       ... and 125 more
+
+═══════════════════════════════════════════════════════════════
+⚠️   Found 1504 missing and 131 extra keys in deactivated languages
+✅  Active languages (NO, EN) are synchronized - OK to proceed
+═══════════════════════════════════════════════════════════════
+
+> klarpakke-universitet@1.0.0 build
+> bash --norc --noprofile -c 'export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"; source ~/.nvm/nvm.sh 2>/dev/null; nvm use --silent 2>/dev/null; SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS="--max-old-space-size=4096" next build'
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+▲ Next.js 16.2.9 (Turbopack)
+- Environments: .env.production.local, .env.local, .env
+- Experiments (use with caution):
+  · clientTraceMetadata
+  ✓ memoryBasedWorkersCount
+  · optimizePackageImports
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./src/lib/ai/opik-client.ts:18:24
+Module not found: Can't resolve 'opik'
+
+
+Import trace:
+  App Route:
+    ./src/lib/ai/opik-client.ts
+    ./src/lib/ai/sonar/client.ts
+    ./src/app/api/health/sonar/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled successfully in 54s
+  Running next.config.js provided runAfterProductionCompile ...
+✓ Completed runAfterProductionCompile in 20.0s
+  Skipping validation of types
+  Finished TypeScript config validation in 11ms ...
+  Collecting page data using 4 workers ...
+(node:3411) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3412) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3413) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3414) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  Generating static pages using 4 workers (0/229) ...
+  Generating static pages using 4 workers (57/229) 
+  Generating static pages using 4 workers (114/229) 
+  Generating static pages using 4 workers (171/229) 
+✓ Generating static pages using 4 workers (229/229) in 1988ms
+  Finalizing page optimization ...
+
+Route (app)                                                       Revalidate  Expire
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/[...slug]
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/ab-tests
+├ ƒ /[locale]/admin/analytics
+├ ƒ /[locale]/admin/auto-trading
+├ ƒ /[locale]/admin/auto-trading/sessions
+├ ƒ /[locale]/admin/campaign
+├ ƒ /[locale]/admin/deploy
+├ ƒ /[locale]/admin/forgot-password
+├ ƒ /[locale]/admin/health
+├ ƒ /[locale]/admin/login
+├ ƒ /[locale]/admin/marketing/ctas
+├ ƒ /[locale]/admin/monetization
+├ ƒ /[locale]/admin/monitor
+├ ƒ /[locale]/admin/reset-password
+├ ƒ /[locale]/admin/settings
+├ ƒ /[locale]/admin/students
+├ ƒ /[locale]/admin/support/impersonate
+├ ƒ /[locale]/admin/sync-status
+├ ƒ /[locale]/admin/system
+├ ƒ /[locale]/admin/trader-verifications
+├ ƒ /[locale]/admin/users
+├ ƒ /[locale]/admin/v2
+├ ƒ /[locale]/admin/v3
+├ ƒ /[locale]/akademi
+├ ƒ /[locale]/akademi/dashboard-guide
+├ ƒ /[locale]/api-dokumentasjon
+├ ƒ /[locale]/binance-guide
+├ ƒ /[locale]/bots
+├ ƒ /[locale]/callback
+├ ƒ /[locale]/checkout
+├ ƒ /[locale]/checkout/success
+├ ƒ /[locale]/cookies
+├ ƒ /[locale]/copy-trading
+├ ƒ /[locale]/copy-trading/discover
+├ ƒ /[locale]/copy-trading/traders/[id]
+├ ƒ /[locale]/dashboard
+├ ƒ /[locale]/dashboard/asset/[symbol]
+├ ƒ /[locale]/dashboard/auto-trade
+├ ƒ /[locale]/dashboard/autopilot
+├ ƒ /[locale]/dashboard/bot/[session_id]
+├ ƒ /[locale]/dashboard/historikk
+├ ƒ /[locale]/dashboard/portfolio
+├ ƒ /[locale]/dashboard/resultater
+├ ƒ /[locale]/dashboard/settings
+├ ƒ /[locale]/dashboard/trade
+├ ƒ /[locale]/feil/ikke-funnet
+├ ƒ /[locale]/feil/ingen-tilgang
+├ ƒ /[locale]/feil/serverfeil
+├ ƒ /[locale]/handel
+├ ƒ /[locale]/hjelp
+├ ƒ /[locale]/jokertrade
+├ ƒ /[locale]/kalkulator
+├ ƒ /[locale]/kontakt
+├ ƒ /[locale]/kurs
+├ ƒ /[locale]/kurs/[moduleSlug]
+├ ƒ /[locale]/kurs/[moduleSlug]/leksjon/[lessonSlug]
+├ ƒ /[locale]/kurs/grunnleggende/leksjon/introduksjon-til-krypto
+├ ƒ /[locale]/kurs/strategi/leksjon/dollar-cost-averaging
+├ ƒ /[locale]/leaderboard
+├ ƒ /[locale]/leksjon/[lessonId]
+├ ƒ /[locale]/login
+├ ƒ /[locale]/marked
+├ ƒ /[locale]/marketplace
+├ ƒ /[locale]/mobiloversikt
+├ ƒ /[locale]/om-oss
+├ ƒ /[locale]/onboarding
+├ ƒ /[locale]/onboarding/step1-welcome
+├ ƒ /[locale]/onboarding/step2-level
+├ ƒ /[locale]/onboarding/step3-trading-mode
+├ ƒ /[locale]/onboarding/step4-binance
+├ ƒ /[locale]/onboarding/step4-first-trade
+├ ƒ /[locale]/onboarding/step5-complete
+├ ○ /-/opengraph-image.png
+├ ƒ /[locale]/personvern
+├ ƒ /[locale]/priser
+├ ƒ /[locale]/priser/cancel
+├ ƒ /[locale]/priser/success
+├ ƒ /[locale]/profile
+├ ƒ /[locale]/register
+├ ƒ /[locale]/reset-password
+├ ƒ /[locale]/traders/[id]
+├ ƒ /[locale]/update-password
+├ ƒ /[locale]/velg-strategi
+├ ƒ /[locale]/velkommen
+├ ƒ /[locale]/vilkar
+├ ƒ /api/admin/campaign/recent
+├ ƒ /api/admin/campaign/stats
+├ ƒ /api/admin/cron-trigger
+├ ƒ /api/admin/dashboard/data
+├ ƒ /api/admin/errors
+├ ƒ /api/admin/errors/[id]/resolve
+├ ƒ /api/admin/funnel/stats
+├ ƒ /api/admin/github-health
+├ ƒ /api/admin/kla130
+├ ƒ /api/admin/resend-health
+├ ƒ /api/admin/sessions
+├ ƒ /api/admin/stats
+├ ƒ /api/admin/stripe-health
+├ ƒ /api/admin/support/cockpit-report
+├ ƒ /api/admin/support/cockpit-report/status
+├ ƒ /api/admin/support/impersonate/end
+├ ƒ /api/admin/support/impersonate/start
+├ ƒ /api/admin/test-binance-proxy
+├ ƒ /api/admin/trader-verifications
+├ ƒ /api/admin/user-paper-balance
+├ ƒ /api/admin/user-tier
+├ ƒ /api/admin/users
+├ ƒ /api/admin/users/sync
+├ ƒ /api/admin/verify
+├ ƒ /api/ai/analyze-trade
+├ ƒ /api/ai/autopilot/activate
+├ ƒ /api/ai/autopilot/pause
+├ ƒ /api/ai/autopilot/rebalance
+├ ƒ /api/ai/autopilot/resume
+├ ƒ /api/ai/autopilot/status
+├ ƒ /api/ai/autopilot/stop
+├ ƒ /api/ai/chat
+├ ƒ /api/ai/ensemble
+├ ƒ /api/ai/explain-strategy
+├ ƒ /api/ai/explain-trade
+├ ƒ /api/ai/insight
+├ ƒ /api/ai/market-brief
+├ ○ /api/ai/sentiment                                                    15m      1y
+├ ƒ /api/analytics
+├ ƒ /api/analytics/event
+├ ƒ /api/analytics/track
+├ ƒ /api/auth/diagnose
+├ ƒ /api/auth/vipps-callback
+├ ƒ /api/auth/vipps-url
+├ ƒ /api/backtest
+├ ƒ /api/binance-leaders
+├ ƒ /api/binance/encrypt
+├ ƒ /api/binance/keys
+├ ƒ /api/binance/test
+├ ƒ /api/chat
+├ ƒ /api/copy-trading/discover
+├ ƒ /api/copy-trading/external-follow
+├ ƒ /api/copy-trading/follow
+├ ƒ /api/copy-trading/following
+├ ƒ /api/copy-trading/leaders
+├ ƒ /api/copy-trading/resolve-trader
+├ ƒ /api/copy-trading/unfollow
+├ ƒ /api/cron/adverse-selection
+├ ƒ /api/cron/ai-engine
+├ ƒ /api/cron/ai-metrics
+├ ƒ /api/cron/auto-trade
+├ ƒ /api/cron/backtest-live-gap
+├ ƒ /api/cron/balance-drift-check
+├ ƒ /api/cron/binance-sync
+├ ƒ /api/cron/cron-health
+├ ƒ /api/cron/daily-summary
+├ ƒ /api/cron/feature-loader
+├ ƒ /api/cron/fill-rate-monitor
+├ ƒ /api/cron/health-check
+├ ƒ /api/cron/keepalive
+├ ƒ /api/cron/market-impact
+├ ƒ /api/cron/mifid2-export
+├ ƒ /api/cron/outbox-recovery
+├ ƒ /api/cron/pl-attribution
+├ ƒ /api/cron/portfolio-rebalance
+├ ƒ /api/cron/reconcile
+├ ƒ /api/cron/signal-decay
+├ ƒ /api/cron/signal-health-selfcheck
+├ ƒ /api/cron/sync-prices
+├ ƒ /api/cron/tick
+├ ƒ /api/cron/trading-tca
+├ ƒ /api/cron/twap-execute
+├ ƒ /api/cron/update-usdt-nok
+├ ƒ /api/dashboard/bot-status
+├ ƒ /api/dashboard/metrics
+├ ƒ /api/debug/i18n
+├ ƒ /api/error-report
+├ ƒ /api/exchanges/connections
+├ ƒ /api/exchanges/sync
+├ ○ /api/fx/usdt-nok                                                     30s      1y
+├ ƒ /api/gamification/achievements
+├ ƒ /api/gamification/award
+├ ƒ /api/health
+├ ƒ /api/health/metrics
+├ ƒ /api/health/oauth
+├ ƒ /api/health/sonar
+├ ƒ /api/health/websocket
+├ ƒ /api/jokertrade
+├ ƒ /api/jokertrade/leaderboard
+├ ƒ /api/jokertrade/notifications
+├ ƒ /api/leaderboard
+├ ƒ /api/leaderboard/changes
+├ ƒ /api/leads
+├ ƒ /api/live/feed
+├ ƒ /api/market-intelligence
+├ ƒ /api/market/binance-24hr
+├ ƒ /api/market/binance-prices
+├ ƒ /api/market/snapshot
+├ ƒ /api/marketplace/listings
+├ ƒ /api/marketplace/reviews
+├ ƒ /api/marketplace/subscribe
+├ ƒ /api/notifications
+├ ƒ /api/notifications/send
+├ ƒ /api/notifications/send-push
+├ ƒ /api/notifications/subscribe
+├ ƒ /api/notifications/unsubscribe
+├ ƒ /api/onboarding/complete
+├ ƒ /api/onboarding/first-paper-trade
+├ ƒ /api/onboarding/start
+├ ƒ /api/paper-trading/balance
+├ ƒ /api/paper-trading/execute
+├ ƒ /api/paper-trading/init
+├ ƒ /api/paper-trading/reset
+├ ƒ /api/paper-trading/trades/[trade_id]
+├ ƒ /api/pricing
+├ ƒ /api/progress
+├ ƒ /api/progress/[courseId]
+├ ƒ /api/revalidate
+├ ƒ /api/send-email
+├ ƒ /api/signal/current
+├ ƒ /api/signal/explanation
+├ ƒ /api/stats
+├ ƒ /api/stats/active-users
+├ ƒ /api/stats/users
+├ ƒ /api/stripe/checkout
+├ ƒ /api/stripe/customer-portal
+├ ƒ /api/stripe/verify-session
+├ ƒ /api/telemetry/backtest
+├ ƒ /api/test/auth/login
+├ ƒ /api/test/set-onboarding
+├ ƒ /api/track/click
+├ ƒ /api/track/funnel
+├ ƒ /api/track/open
+├ ƒ /api/trader-verifications/[trader_profile_id]
+├ ƒ /api/trades/[tradeId]
+├ ƒ /api/trading-cockpit
+├ ƒ /api/trading-cockpit/analytics
+├ ƒ /api/trading-cockpit/initial
+├ ƒ /api/trading-cockpit/metrics
+├ ƒ /api/trading-cockpit/sessions
+├ ƒ /api/trading-cockpit/trades
+├ ƒ /api/trading-sessions/[id]/status
+├ ƒ /api/trading-sessions/create
+├ ƒ /api/trading/auto-trade/activate
+├ ƒ /api/trading/mode
+├ ƒ /api/trading/position
+├ ƒ /api/trading/sessions
+├ ƒ /api/trading/trigger
+├ ƒ /api/trading/v3/beta/status
+├ ƒ /api/trading/v3/health
+├ ƒ /api/trading/v3/rl/signal
+├ ƒ /api/trading/v3/tax/eu-report
+├ ƒ /api/trading/v3/trades/[sessionId]
+├ ƒ /api/trading/v3/whitelabel/fees
+├ ƒ /api/user/trades
+├ ƒ /api/user/trading-analytics
+├ ƒ /api/user/trading-diagnostics
+├ ƒ /api/user/trading-sessions/restart
+├ ƒ /api/webhooks/resend
+├ ƒ /api/webhooks/sanity
+├ ƒ /api/webhooks/stripe
+├ ƒ /api/webhooks/vipps
+├ ○ /opengraph-image.png
+├ ○ /robots.txt
+├ ƒ /sitemap.xml
+└ ƒ /studio/[[...tool]]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+┌──────────────────────────────┐
+│ OpenNext — Generating bundle │
+└──────────────────────────────┘
+
+Bundling middleware function...
+Bundling static assets...
+Bundling cache assets...
+Building server function: default...
+Applying code patches: 2.387s
+# copyPackageTemplateFiles
+[35m⚙️ Bundling the OpenNext server...
+[0m
+▲ [WARNING] This case clause will never be evaluated because it duplicates an earlier case clause [duplicate-case]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:148:33717:
+      148 │ ...,right:D9(a.right,b)};case"Parameter":case"Everything":case"Th...
+          ╵                              ~~~~~~~~~~~
+
+  The earlier case clause is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:148:32332:
+      148 │ ...evel ${b}.`);return a;case"Parameter":throw Error(`Function pa...
+          ╵                              ~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "del" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36841:
+      218 │ ....restore(c.publishedId,f,e)}},del:Sm,delete:Sm,discardChanges:...
+          ╵                                  ~~~
+
+  The original key "del" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:34727:
+      218 │ ...ReferenceValidation:!0})},Ss={del:Si,delete:Si,publish:{disabl...
+          ╵                                  ~~~
+
+▲ [WARNING] Duplicate key "delete" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36848:
+      218 │ ...c.publishedId,f,e)}},del:Sm,delete:Sm,discardChanges:Sn,patch:...
+          ╵                                ~~~~~~
+
+  The original key "delete" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:34734:
+      218 │ ...Validation:!0})},Ss={del:Si,delete:Si,publish:{disabled:({sche...
+          ╵                                ~~~~~~
+
+▲ [WARNING] Duplicate key "discardChanges" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36858:
+      218 │ ...f,e)}},del:Sm,delete:Sm,discardChanges:Sn,patch:So,publish:Sp,...
+          ╵                            ~~~~~~~~~~~~~~
+
+  The original key "discardChanges" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:35992:
+      218 │ ....patch(h)])}},commit:Sh,discardChanges:{disabled:({snapshots:a...
+          ╵                            ~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "patch" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36876:
+      218 │ ...,delete:Sm,discardChanges:Sn,patch:So,publish:Sp,unpublish:Sr,...
+          ╵                                 ~~~~~
+
+  The original key "patch" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:35640:
+      218 │ ...lish",visibility:"async"})}},patch:{disabled:()=>!1,execute:({...
+          ╵                                 ~~~~~
+
+▲ [WARNING] Duplicate key "publish" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36885:
+      218 │ ...,discardChanges:Sn,patch:So,publish:Sp,unpublish:Sr,restore:Sq...
+          ╵                                ~~~~~~~
+
+  The original key "publish" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:34744:
+      218 │ ...:!0})},Ss={del:Si,delete:Si,publish:{disabled:({schema:a,typeN...
+          ╵                                ~~~~~~~
+
+▲ [WARNING] Duplicate key "unpublish" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36896:
+      218 │ ...ges:Sn,patch:So,publish:Sp,unpublish:Sr,restore:Sq},St=new aT....
+          ╵                               ~~~~~~~~~
+
+  The original key "unpublish" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36209:
+      218 │ ...cument.discard-changes"})},unpublish:{disabled:({schema:a,snap...
+          ╵                               ~~~~~~~~~
+
+▲ [WARNING] Duplicate key "restore" in object literal [duplicate-object-key]
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36909:
+      218 │ ...:So,publish:Sp,unpublish:Sr,restore:Sq},St=new aT.Subject;func...
+          ╵                                ~~~~~~~
+
+  The original key "restore" is here:
+
+    .open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0b9z3f3._.js:218:36656:
+      218 │ ...idation:!0})}},duplicate:Sl,restore:{disabled:()=>!1,execute:(...
+          ╵                                ~~~~~~~
+
+[35mWorker saved in `.open-next/worker.js` 🚀
+[0m
+OpenNext build complete.
+=== Step 4: Size check ===
+Raw: 34276 KB
+Gzipped: 8.4 MB (limit: 10 MB)
+-rw-r--r--@ 1 taj  staff    33M Jul 16 05:47 .open-next/server-functions/default/handler.mjs
+=== Step 5: Patch wrangler.jsonc ===
+=== Step 6: Deploy ===
+
+ ⛅️ wrangler 4.108.0 (update available 4.111.0)
+───────────────────────────────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+There is a newer version of Wrangler available (current: 4.108.0, latest: 4.111.0). Try upgrading, as it might support this configuration option.
+OpenNext project detected, calling `opennextjs-cloudflare deploy`
+
+┌──────────────────────────────┐
+│ OpenNext — Cloudflare deploy │
+└──────────────────────────────┘
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+There is a newer version of Wrangler available (current: 4.108.0, latest: 4.111.0). Try upgrading, as it might support this configuration option.
+There is a newer version of Wrangler available (current: 4.108.0, latest: 4.111.0). Try upgrading, as it might support this configuration option.
+There is a newer version of Wrangler available (current: 4.108.0, latest: 4.111.0). Try upgrading, as it might support this configuration option.
+Incremental cache does not need populating
+Tag cache does not need populating
+
+ ⛅️ wrangler 4.108.0 (update available 4.111.0)
+───────────────────────────────────────────────
+There is a newer version of Wrangler available (current: 4.108.0, latest: 4.111.0). Try upgrading, as it might support this configuration option.
+🌀 Building list of assets...
+✨ Read 283 files from the assets directory /Users/taj/klarpakke/.open-next/assets
+🌀 Starting asset upload...
+🌀 Found 7 new or modified static assets to upload. Proceeding with upload...
++ /BUILD_ID
++ /_next/static/chunks/1u2mjc2a7387t.js
++ /_next/static/chunks/0a37jaswqp-4d.js
++ /_next/static/chunks/1440etx-7-fvj.js
++ /_next/static/chunks/3gk-lmg91itx0.js
++ /_next/static/chunks/0h9zpzz-u7io6.js
++ /_next/static/chunks/0tqbwv0qzz8zt.js
+Uploaded 2 of 7 assets
+Uploaded 4 of 7 assets
+Uploaded 7 of 7 assets
+✨ Success! Uploaded 7 files (257 already uploaded) (2.05 sec)
+
+Total Upload: 48018.29 KiB / gzip: 10236.64 KiB
+Your Worker has access to the following bindings:
+Binding                                                          Resource                  
+env.KV_KLARPAKKE (36369d6957c14ef1a25e22dff65fdc79)              KV Namespace              
+env.KV_KLARPAKKE_STAGING (707c647acb86464f8df2f949564734fc)      KV Namespace              
+env.ASSETS                                                       Assets                    
+env.APP_VERSION ("(hidden)")                                     Environment Variable      
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mMultiple environments are defined in the Wrangler configuration file, but no target environment was specified for the deploy command.[0m
+
+  To avoid unintentional changes to the wrong environment, it is recommended to explicitly specify the target environment using the `-e|--env` flag or CLOUDFLARE_ENV env variable.
+  If your intention is to use the top-level environment of your configuration simply pass an empty string to the flag to target such environment. For example `--env=""`.
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mThis case clause will never be evaluated because it duplicates an earlier case clause[0m [duplicate-case]
+
+    .open-next/server-functions/default/handler.mjs:4001:39128:
+[37m      4001 │ ...t:D9(a10.right,b10)};case[32m"Parameter"[37m:case"Everything":case"Th...
+           ╵                             [32m~~~~~~~~~~~[0m
+
+  The earlier case clause is here:
+
+    .open-next/server-functions/default/handler.mjs:4001:37579:
+[37m      4001 │ ...${b10}.`);return a10;case[32m"Parameter"[37m:throw Error(`Function pa...
+           ╵                             [32m~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "del" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41157:
+[37m      4077 │ ...e(c10.publishedId,f10,e10)}},[32mdel[37m:Sm,delete:Sm,discardChanges:...
+           ╵                                 [32m~~~[0m
+
+  The original key "del" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:38787:
+[37m      4077 │ ...ferenceValidation:!0})},Ss2={[32mdel[37m:Si2,delete:Si2,publish:{disa...
+           ╵                                 [32m~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "delete" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41164:
+[37m      4077 │ ...blishedId,f10,e10)}},del:Sm,[32mdelete[37m:Sm,discardChanges:Sn3,patc...
+           ╵                                [32m~~~~~~[0m
+
+  The original key "delete" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:38795:
+[37m      4077 │ ...lidation:!0})},Ss2={del:Si2,[32mdelete[37m:Si2,publish:{disabled:({sc...
+           ╵                                [32m~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "discardChanges" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41174:
+[37m      4077 │ ...e10)}},del:Sm,delete:Sm,[32mdiscardChanges[37m:Sn3,patch:So3,publish:...
+           ╵                            [32m~~~~~~~~~~~~~~[0m
+
+  The original key "discardChanges" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:40220:
+[37m      4077 │ ...atch(h10)])}},commit:Sh,[32mdiscardChanges[37m:{disabled:({snapshots:...
+           ╵                            [32m~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "patch" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41193:
+[37m      4077 │ ...elete:Sm,discardChanges:Sn3,[32mpatch[37m:So3,publish:Sp,unpublish:Sr...
+           ╵                                [32m~~~~~[0m
+
+  The original key "patch" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:39804:
+[37m      4077 │ ...ish",visibility:"async"})}},[32mpatch[37m:{disabled:()=>!1,execute:({...
+           ╵                                [32m~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "publish" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41203:
+[37m      4077 │ ...scardChanges:Sn3,patch:So3,[32mpublish[37m:Sp,unpublish:Sr3,restore:S...
+           ╵                               [32m~~~~~~~[0m
+
+  The original key "publish" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:38806:
+[37m      4077 │ ...)},Ss2={del:Si2,delete:Si2,[32mpublish[37m:{disabled:({schema:a10,typ...
+           ╵                               [32m~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "unpublish" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41214:
+[37m      4077 │ ...:Sn3,patch:So3,publish:Sp,[32munpublish[37m:Sr3,restore:Sq},St2=new a...
+           ╵                              [32m~~~~~~~~~[0m
+
+  The original key "unpublish" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:40453:
+[37m      4077 │ ...ument.discard-changes"})},[32munpublish[37m:{disabled:({schema:a10,sn...
+           ╵                              [32m~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "restore" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41228:
+[37m      4077 │ ...3,publish:Sp,unpublish:Sr3,[32mrestore[37m:Sq},St2=new aT.Subject;fun...
+           ╵                               [32m~~~~~~~[0m
+
+  The original key "restore" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:40940:
+[37m      4077 │ ...dation:!0})}},duplicate:Sl,[32mrestore[37m:{disabled:()=>!1,execute:(...
+           ╵                               [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mYour Worker failed validation because it exceeded size limits.[0m
+
+  
+  A request to the Cloudflare API (/accounts/80d5b1d56a3e907150ba7348b6182894/workers/scripts/klarpakke/versions) failed.
+   - Your Worker exceeded the size limit of 10 MiB. Refer to the Workers documentation ([4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m) for more details. [code: 10027]
+  To learn more about this error, visit: [4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m
+  Here are the 5 largest dependencies included in your script:
+  
+  - .open-next/server-functions/default/handler.mjs - 46878.73 KiB
+  - .open-next/middleware/handler.mjs - 907.16 KiB
+  - .open-next/server-functions/default/node_modules/prettier/standalone.mjs - 130.83 KiB
+  - .open-next/middleware/open-next.config.mjs - 29.71 KiB
+  - .open-next/cloudflare/images.js - 21.05 KiB
+  
+  If these are unnecessary, consider removing them
+  
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mA request to the Cloudflare API (/accounts/80d5b1d56a3e907150ba7348b6182894/workers/scripts/klarpakke/versions) failed.[0m
+
+  Your Worker exceeded the size limit of 10 MiB. Refer to the Workers documentation ([4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m) for more details. [code: 10027]
+  To learn more about this error, visit: [4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m
+
+  
+  If you think this is a bug, please open an issue at: [4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+
+
+🪵  Logs were written to "/Users/taj/Library/Preferences/.wrangler/logs/wrangler-2026-07-16_03-47-34_348.log"
+ERROR Wrangler deploy command failed:
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "usage_model"
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mMultiple environments are defined in the Wrangler configuration file, but no target environment was specified for the deploy command.[0m
+
+  To avoid unintentional changes to the wrong environment, it is recommended to explicitly specify the target environment using the `-e|--env` flag or CLOUDFLARE_ENV env variable.
+  If your intention is to use the top-level environment of your configuration simply pass an empty string to the flag to target such environment. For example `--env=""`.
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mThis case clause will never be evaluated because it duplicates an earlier case clause[0m [duplicate-case]
+
+    .open-next/server-functions/default/handler.mjs:4001:39128:
+[37m      4001 │ ...t:D9(a10.right,b10)};case[32m"Parameter"[37m:case"Everything":case"Th...
+           ╵                             [32m~~~~~~~~~~~[0m
+
+  The earlier case clause is here:
+
+    .open-next/server-functions/default/handler.mjs:4001:37579:
+[37m      4001 │ ...${b10}.`);return a10;case[32m"Parameter"[37m:throw Error(`Function pa...
+           ╵                             [32m~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "del" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41157:
+[37m      4077 │ ...e(c10.publishedId,f10,e10)}},[32mdel[37m:Sm,delete:Sm,discardChanges:...
+           ╵                                 [32m~~~[0m
+
+  The original key "del" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:38787:
+[37m      4077 │ ...ferenceValidation:!0})},Ss2={[32mdel[37m:Si2,delete:Si2,publish:{disa...
+           ╵                                 [32m~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "delete" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41164:
+[37m      4077 │ ...blishedId,f10,e10)}},del:Sm,[32mdelete[37m:Sm,discardChanges:Sn3,patc...
+           ╵                                [32m~~~~~~[0m
+
+  The original key "delete" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:38795:
+[37m      4077 │ ...lidation:!0})},Ss2={del:Si2,[32mdelete[37m:Si2,publish:{disabled:({sc...
+           ╵                                [32m~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "discardChanges" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41174:
+[37m      4077 │ ...e10)}},del:Sm,delete:Sm,[32mdiscardChanges[37m:Sn3,patch:So3,publish:...
+           ╵                            [32m~~~~~~~~~~~~~~[0m
+
+  The original key "discardChanges" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:40220:
+[37m      4077 │ ...atch(h10)])}},commit:Sh,[32mdiscardChanges[37m:{disabled:({snapshots:...
+           ╵                            [32m~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "patch" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41193:
+[37m      4077 │ ...elete:Sm,discardChanges:Sn3,[32mpatch[37m:So3,publish:Sp,unpublish:Sr...
+           ╵                                [32m~~~~~[0m
+
+  The original key "patch" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:39804:
+[37m      4077 │ ...ish",visibility:"async"})}},[32mpatch[37m:{disabled:()=>!1,execute:({...
+           ╵                                [32m~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "publish" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41203:
+[37m      4077 │ ...scardChanges:Sn3,patch:So3,[32mpublish[37m:Sp,unpublish:Sr3,restore:S...
+           ╵                               [32m~~~~~~~[0m
+
+  The original key "publish" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:38806:
+[37m      4077 │ ...)},Ss2={del:Si2,delete:Si2,[32mpublish[37m:{disabled:({schema:a10,typ...
+           ╵                               [32m~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "unpublish" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41214:
+[37m      4077 │ ...:Sn3,patch:So3,publish:Sp,[32munpublish[37m:Sr3,restore:Sq},St2=new a...
+           ╵                              [32m~~~~~~~~~[0m
+
+  The original key "unpublish" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:40453:
+[37m      4077 │ ...ument.discard-changes"})},[32munpublish[37m:{disabled:({schema:a10,sn...
+           ╵                              [32m~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "restore" in object literal[0m [duplicate-object-key]
+
+    .open-next/server-functions/default/handler.mjs:4077:41228:
+[37m      4077 │ ...3,publish:Sp,unpublish:Sr3,[32mrestore[37m:Sq},St2=new aT.Subject;fun...
+           ╵                               [32m~~~~~~~[0m
+
+  The original key "restore" is here:
+
+    .open-next/server-functions/default/handler.mjs:4077:40940:
+[37m      4077 │ ...dation:!0})}},duplicate:Sl,[32mrestore[37m:{disabled:()=>!1,execute:(...
+           ╵                               [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mYour Worker failed validation because it exceeded size limits.[0m
+
+  
+  A request to the Cloudflare API (/accounts/80d5b1d56a3e907150ba7348b6182894/workers/scripts/klarpakke/versions) failed.
+   - Your Worker exceeded the size limit of 10 MiB. Refer to the Workers documentation ([4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m) for more details. [code: 10027]
+  To learn more about this error, visit: [4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m
+  Here are the 5 largest dependencies included in your script:
+  
+  - .open-next/server-functions/default/handler.mjs - 46878.73 KiB
+  - .open-next/middleware/handler.mjs - 907.16 KiB
+  - .open-next/server-functions/default/node_modules/prettier/standalone.mjs - 130.83 KiB
+  - .open-next/middleware/open-next.config.mjs - 29.71 KiB
+  - .open-next/cloudflare/images.js - 21.05 KiB
+  
+  If these are unnecessary, consider removing them
+  
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mA request to the Cloudflare API (/accounts/80d5b1d56a3e907150ba7348b6182894/workers/scripts/klarpakke/versions) failed.[0m
+
+  Your Worker exceeded the size limit of 10 MiB. Refer to the Workers documentation ([4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m) for more details. [code: 10027]
+  To learn more about this error, visit: [4mhttps://developers.cloudflare.com/workers/observability/errors/#errors-on-worker-upload[0m
+
+  
+  If you think this is a bug, please open an issue at: [4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+
+
+🪵  Logs were written to "/Users/taj/Library/Preferences/.wrangler/logs/wrangler-2026-07-16_03-47-34_348.log"
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1m[0m
+
+
+[32mIf you think this is a bug then please create an issue at https://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+Note that there is a newer version of Wrangler available (4.111.0). Consider checking whether upgrading resolves this error.
+🪵  Logs were written to "/Users/taj/Library/Preferences/.wrangler/logs/wrangler-2026-07-16_03-47-31_009.log"
