@@ -43,6 +43,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       footer,
       gamification,
       help,
+      hero,
       landing,
       legal,
       marketplace,
@@ -122,6 +123,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/help.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/help.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/hero.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/hero.json").then((m) => m.default)),
       import(`../messages/${validLocale}/landing.json`)
         .then((m) => m.default)
         .catch(() =>
@@ -211,6 +215,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       footer,
       gamification,
       help,
+      hero,
       helpPage: help,
       landing,
       legal,

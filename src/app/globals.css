@@ -150,6 +150,25 @@
     --kp-warning-bg: rgba(245, 158, 11, 0.15);
     --kp-danger: var(--kp-negative);
     --kp-danger-bg: rgba(239, 68, 68, 0.15);
+
+    /* ============================================
+       DESIGN TOKENS - Revolut/OKX-inspirert (mobil-først)
+       ============================================ */
+    --bg-primary: #0B0F19;
+    --bg-card: #131A2A;
+    --accent: #0066FF;
+    --text-primary: #F5F5F7;
+    --text-muted: #8E8E93;
+    --border-subtle: rgba(255,255,255,0.06);
+    --radius-card: 16px;
+    --radius-btn: 12px;
+    --spacing-section: 64px;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --spacing-section: 120px;
+    }
   }
 
   /* Light mode opt-in via next-themes */

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klarpakke — Jeg tapte 64 000 kr. Så bygde jeg noe bedre.</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0a0a0b;--muted:#52525b;--border:#e4e4e7;--surface:#fafafa;--bg:#ffffff;--accent:#0066cc;--accent-soft:#e8f0fe;--accent-dark:#004d99;--green:#059669;--red:#dc2626;--gold:#f59e0b;--font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono','SF Mono',monospace;--radius:12px;--shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04)}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* Hero */
+.hero{min-height:90vh;display:flex;align-items:center;position:relative;overflow:hidden;background:linear-gradient(135deg, var(--bg) 0%, var(--accent-soft) 100%)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;padding:80px 0}
+.hero-title{font-size:clamp(2.5rem,5vw,4rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:24px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:1.125rem;color:var(--muted);max-width:540px;margin-bottom:32px;line-height:1.7}
+.hero-stats{display:flex;gap:32px;margin-bottom:40px}
+.hero-stat{text-align:left}
+.hero-stat-num{font-size:2rem;font-weight:800;letter-spacing:-0.02em}
+.hero-stat-num.loss{color:var(--red)}
+.hero-stat-num.win{color:var(--green)}
+.hero-stat-label{font-size:0.875rem;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:var(--radius);font-weight:600;font-size:1rem;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none}
+.btn-primary{background:var(--accent);color:white}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--ink)}
+.btn-group{display:flex;gap:12px;flex-wrap:wrap}
+
+/* Story section */
+.story{background:var(--surface);padding:100px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.story-content{max-width:720px;margin:0 auto}
+.story-label{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:12px}
+.story h2{font-size:2rem;font-weight:700;margin-bottom:24px;letter-spacing:-0.02em}
+.story p{color:var(--muted);font-size:1.125rem;margin-bottom:20px;line-height:1.8}
+.story blockquote{border-left:3px solid var(--accent);padding:16px 24px;margin:32px 0;background:var(--accent-soft);border-radius:0 var(--radius) var(--radius) 0;font-style:italic;font-size:1.125rem;color:var(--ink)}
+.story-timeline{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-top:48px}
+.story-step{background:var(--bg);padding:24px;border-radius:var(--radius);border:1px solid var(--border)}
+.story-step-num{font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:8px}
+.story-step h3{font-size:1rem;font-weight:600;margin-bottom:8px}
+.story-step p{font-size:0.925rem;color:var(--muted);margin:0}
+
+/* Numbers section */
+.numbers{padding:80px 0}
+.numbers h2{font-size:2rem;font-weight:700;text-align:center;margin-bottom:48px;letter-spacing:-0.02em}
+.numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+.num-card{text-align:center;padding:32px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface)}
+.num-card-icon{font-size:2rem;margin-bottom:12px}
+.num-card-val{font-size:2.5rem;font-weight:800;letter-spacing:-0.02em;color:var(--accent)}
+.num-card-label{font-size:0.925rem;color:var(--muted);margin-top:4px}
+
+/* Founder section */
+.founder{background:var(--accent-soft);padding:80px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.founder-content h2{font-size:2rem;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em}
+.founder-content p{color:var(--muted);font-size:1.05rem;margin-bottom:16px;line-height:1.7}
+.founder-content .tag{display:inline-block;background:var(--accent);color:white;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;margin-right:6px;margin-bottom:6px}
+.founder-certs{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+
+/* CTA section */
+.cta-section{padding:100px 0;text-align:center;background:linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);color:white}
+.cta-section h2{font-size:2.5rem;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em}
+.cta-section p{font-size:1.125rem;opacity:0.9;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto}
+.cta-section .btn{background:white;color:var(--accent-dark)}
+.cta-section .btn:hover{background:var(--accent-soft)}
+
+/* Footer */
+footer{padding:40px 0;text-align:center;color:var(--muted);font-size:0.875rem;border-top:1px solid var(--border)}
+
+@media(max-width:768px){
+  .hero-grid{grid-template-columns:1fr;gap:32px;padding:48px 0}
+  .hero-stats{flex-wrap:wrap;gap:16px}
+  .numbers-grid{grid-template-columns:repeat(2,1fr);gap:16px}
+  .founder-grid{grid-template-columns:1fr}
+  .story-timeline{grid-template-columns:1fr;gap:16px}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <h1 class="hero-title">
+          Jeg tapte <em>64 000 kr</em> på krypto.<br>
+          Så bygde jeg noe bedre.
+        </h1>
+        <p class="hero-sub">
+          83% av tradere taper penger. Jeg var en av dem — helt til jeg brukte 16 måneder på å lære AI fra MIT, Google og Microsoft for å bygge verktøyene jeg skulle ønske jeg hadde da jeg startet.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num loss">−64 000 kr</div>
+            <div class="hero-stat-label">Det jeg tapte før jeg visste bedre</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num win">+16 måneder</div>
+            <div class="hero-stat-label">AI-utdanning for å fikse problemet</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num win">0 kr</div>
+            <div class="hero-stat-label">For å starte — lekepenger inkludert</div>
+          </div>
+        </div>
+        <div class="btn-group">
+          <a href="#" class="btn btn-primary">🎯 Start gratis</a>
+          <a href="#" class="btn btn-outline">Les min historie</a>
+        </div>
+      </div>
+      <div style="background:var(--accent-soft);border-radius:var(--radius);padding:40px;border:1px solid var(--border);text-align:center">
+        <div style="font-size:4rem;margin-bottom:16px">📈</div>
+        <div style="font-size:1.25rem;font-weight:700;margin-bottom:8px">BTC/USDT</div>
+        <div style="font-size:2.5rem;font-weight:800;color:var(--green)">+2.4%</div>
+        <div style="font-size:1.5rem;color:var(--muted)">$105,240</div>
+        <div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:8px;font-size:0.9rem;color:var(--muted)">
+          🛡️ 100 000 kr i lekepenger — null risiko
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="story">
+  <div class="container">
+    <div class="story-content">
+      <div class="story-label">Historien bak Klarpakke</div>
+      <h2>Jeg kom fra bilbransjen, ikke Wall Street.</h2>
+      <p>
+        Jeg hetter Tom. I 2022 oppdaget jeg krypto. Som alle andre trodde jeg det var en snarvei til økonomisk frihet. 
+        Jeg satte inn 64 000 kroner — hardt oppsparte penger fra jobben i bilbransjen.
+      </p>
+      <blockquote>
+        "Jeg kunne ha gått i null — eller til og med vunnet — om det ikke hadde vært for alle skjulte salærer, gebyrer og pyramidespill-lignende opplegg som tappet kontoen min før jeg i det hele tatt rakk å forstå hva som skjedde."
+      </blockquote>
+      <p>
+        Jeg ble fly forbannet. Ikke på meg selv — men på et system som er designet for at 83% skal tape. Jeg skjønte at 
+        det eneste som manglet var skikkelige verktøy. Så jeg bestemte meg for å bygge dem selv.
+      </p>
+      <div class="story-timeline">
+        <div class="story-step">
+          <div class="story-step-num">2019–2021</div>
+          <h3>🔥 Tapte 64 000 kr</h3>
+          <p>Oppdaget krypto, men ble lurt av skjulte gebyrer og MLM-opplegg som tømte kontoen.</p>
+        </div>
+        <div class="story-step">
+          <div class="story-step-num">2022–2023</div>
+          <h3>🧠 16 måneders AI-utdanning</h3>
+          <p>Kurs fra MIT, Google, Microsoft — programmering, AI, maskinlæring. Spisset alt mot trading.</p>
+        </div>
+        <div class="story-step">
+          <div class="story-step-num">2024 → Nå</div>
+          <h3>🚀 Bygde Klarpakke</h3>
+          <p>AI-drevet plattform som gir småsparere samme verktøy som institusjonelle tradere.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="numbers">
+  <div class="container">
+    <h2>Hvorfor jeg ikke vil at du skal gjøre samme feil som meg</h2>
+    <div class="numbers-grid">
+      <div class="num-card">
+        <div class="num-card-icon">📊</div>
+        <div class="num-card-val">83%</div>
+        <div class="num-card-label">av tradere taper penger — jeg var der</div>
+      </div>
+      <div class="num-card">
+        <div class="num-card-icon">🤖</div>
+        <div class="num-card-val">24/7</div>
+        <div class="num-card-label">AI-en jobber mens du sover</div>
+      </div>
+      <div class="num-card">
+        <div class="num-card-icon">📚</div>
+        <div class="num-card-val">4 uker</div>
+        <div class="num-card-label">Fra nybegynner til selvsikker trader</div>
+      </div>
+      <div class="num-card">
+        <div class="num-card-icon">🛡️</div>
+        <div class="num-card-val">0 kr</div>
+        <div class="num-card-label">Risiko — lekepenger før du går live</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="founder">
+  <div class="container">
+    <div class="founder-grid">
+      <div class="founder-content">
+        <div class="story-label">Gründer</div>
+        <h2>Hei, jeg er Tom.</h2>
+        <p>
+          Jeg kom fra bilbransjen, uten finansbakgrunn. Da jeg oppdaget krypto, trodde jeg det var enkel fortjeneste. 
+          I stedet ble jeg offer for et system mettet med skjulte kostnader og tvilsomme aktører.
+        </p>
+        <p>
+          Jeg hadde allerede god databakgrunn, men måtte spisse meg mot AI for å bygge noe som virkelig hjelper 
+          vanlige folk. Etter 16 måneder med kurs hos MIT, Google og Microsoft — pluss utallige timer med 
+          programmering — ble Klarpakke født.
+        </p>
+        <p>
+          <strong>Målet mitt er enkelt:</strong> Gi deg verktøyene til å forstå hva du er med på, og 
+          tjene mest mulig penger — uten at noen stjeler avkastningen din i gebyrer.
+        </p>
+        <div class="founder-certs">
+          <span class="tag">MIT AI</span>
+          <span class="tag">Google ML</span>
+          <span class="tag">Microsoft Azure AI</span>
+          <span class="tag">Bilbransjen → Tech</span>
+        </div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius);padding:32px;border:1px solid var(--border);text-align:center">
+        <div style="font-size:6rem;margin-bottom:16px">👨‍💼</div>
+        <div style="font-weight:700;font-size:1.25rem">Tom Jensen</div>
+        <div style="color:var(--muted);font-size:0.925rem">Gründer, Klarpakke</div>
+        <div style="margin-top:16px;padding:12px;background:var(--accent-soft);border-radius:8px;font-size:0.85rem;color:var(--accent)">
+          "Jeg bygde Klarpakke fordi jeg skulle ønske noen hadde gjort det for meg."
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <h2>Start med 100 000 kr i lekepenger</h2>
+    <p>Ingen kredittkort. Ingen binding. Bare gode verktøy bygget av noen som forstår hva du går gjennom.</p>
+    <a href="#" class="btn">🎯 Start gratis — 2 minutter</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 Klarpakke AS. Bygget av Tom, for folk flest.</p>
+  </div>
+</footer>
+
+</body>
+</html>
