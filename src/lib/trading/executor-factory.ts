@@ -64,9 +64,12 @@ export class ExecutorFactory {
     }
 
     // Decrypt API keys using RPC function
+    if (!profile.binance_api_key_id || !profile.binance_api_secret_id) {
+      throw new Error("Binance API key IDs are missing despite binance_connected flag");
+    }
     const { data: decryptedKeys, error } = await supabase.rpc("decrypt_binance_keys", {
-      key_id: profile.binance_api_key_id ?? "",
-      secret_id: profile.binance_api_secret_id ?? "",
+      key_id: profile.binance_api_key_id,
+      secret_id: profile.binance_api_secret_id,
     });
 
     if (
