@@ -20,7 +20,7 @@ export default async function JokerTradePage({
 }) {
   const { locale } = await params;
   let user=null
-try:{const a=await requireAuth(locale);user=a.user}catch{}
+try{const a=await requireAuth(locale);user=a.user}catch{}
 
   // Hvis ikke innlogget: vis kun landing-siden (hero + marketing)
   if (!user) {
