@@ -1,16 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { SURFACE } from "@/lib/design/tokens";
 import { LandingHero } from "@/features/landing/LandingHero";
-import { SocialProofBanner } from "@/features/landing/SocialProofBanner";
-import { SafetySection } from "@/features/landing/SafetySection";
-import { TrustStrip } from "@/features/landing/TrustStrip";
-import { FeaturesBentoGrid } from "@/features/landing/FeaturesBentoGrid";
-import { ThreeSteps } from "@/features/landing/ThreeSteps";
-import SanityFAQSection from "@/features/landing/SanityFAQSection";
-import { StickyCTA } from "@/features/landing/StickyCTA";
-import SanityTestimonials from "@/features/landing/SanityTestimonials";
-import { AboutKlarpakkeSection } from "@/features/landing/AboutKlarpakkeSection";
-
 import {
   MarketingPageShell,
   generateMarketingMetadata,
@@ -46,15 +36,6 @@ export default async function HomePage({ params }: HomePageProps) {
   return (
     <MarketingPageShell className={SURFACE.BG}>
       <LandingHero />
-      <SocialProofBanner />
-      <SafetySection />
-      <TrustStrip />
-      <FeaturesBentoGrid />
-      <ThreeSteps />
-      <SanityTestimonials />
-      <SanityFAQSection />
-      <AboutKlarpakkeSection locale={locale} />
-      <StickyCTA />
     </MarketingPageShell>
   );
 }
