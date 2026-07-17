@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,29 +9,27 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const period = searchParams.get("period") || "weekly";
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
   try {
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/leaderboard_entries?period=eq.${period}&is_public=eq.true&order=rank.asc&limit=50`,
-      {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-        },
-      },
-    );
+    const supabase = await createClient();
 
-    if (!res.ok) {
+    const { data, error } = await supabase
+      .from("leaderboard_entries")
+      .select("*")
+      .eq("period", period)
+      .eq("is_public", true)
+      .order("rank", { ascending: true })
+      .limit(50);
+
+    if (error) {
       return NextResponse.json(
-        { error: "Supabase error", status: res.status },
-        { status: res.status },
+        { error: error.message },
+        { status: 500 },
       );
     }
 
-    const data = await res.json();
-    return NextResponse.json(data);
+    const response = NextResponse.json(data);
+    response.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
+    return response;
   } catch (err) {
     return NextResponse.json(
       { error: String(err) },
