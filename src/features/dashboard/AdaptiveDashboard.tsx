@@ -91,7 +91,9 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
     >
       <div className="text-center space-y-2">
         <h2 className="text-2xl sm:text-3xl font-bold text-white">
-          {t("welcomeTitle", { userName: userName || "" })}
+          {userName
+            ? t("welcomeTitle", { userName })
+            : t("welcomeTitle", { userName: "" }).replace(", ", "")}
         </h2>
         <p className="text-slate-400 max-w-md mx-auto">
           {t("welcomeSubtitle")}
@@ -151,7 +153,9 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
     >
       <div className="space-y-1">
         <h2 className="text-xl font-semibold text-white">
-          {t("greatWorkTitle", { userName: userName || "" })}
+          {userName
+            ? t("greatWorkTitle", { userName })
+            : t("greatWorkTitle", { userName: "" }).replace(", ", "")}
         </h2>
         <p className="text-sm text-slate-400">
           {t("greatWorkSubtitle")}

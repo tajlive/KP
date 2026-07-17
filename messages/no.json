@@ -1261,7 +1261,6 @@
       "mode": "Modus",
       "breadcrumbYouAreHere": "Du er her",
       "profile": "Profil",
-      "profile": "Profil",
       "jokerTrade": "JokerTrade"
     },
     "learningPath": {
@@ -1659,9 +1658,9 @@
       "step2": "Start med lekepenger",
       "step3": "Gjennomfør 5 trades",
       "step4": "Gå live",
-      "welcomeTitle": "Velkommen{userName, select, '' {} other {, {userName}}}",
+      "welcomeTitle": "Velkommen, {userName}",
       "welcomeSubtitle": "Start trading-reisen her. Øv risikofritt med lekepenger før du går live.",
-      "greatWorkTitle": "Godt jobbet{userName, select, '' {} other {, {userName}}}",
+      "greatWorkTitle": "Godt jobbet, {userName}",
       "greatWorkSubtitle": "Du har kommet i gang. Fortsett å lære og bygg erfaring.",
       "activeSessionsTitle": "Dine aktive sesjoner",
       "trades": "Trades",

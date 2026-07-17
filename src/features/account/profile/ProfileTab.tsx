@@ -203,7 +203,7 @@ function ProfileTabContent() {
               className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
               onClick={() =>
                 save({
-                  full_name: fullName,
+                  full_name: fullName.trim(),
                   avatar_url: avatarUrl,
                   risk_preference: risk,
                 })
@@ -418,7 +418,7 @@ function ProfileTabContent() {
             placeholder={t("namePlaceholder")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.full_name ?? ""}
-            onBlur={(e) => patch({ full_name: e.target.value })}
+            onBlur={(e) => patch({ full_name: e.target.value.trim() })}
           />
         </div>
 
