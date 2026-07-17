@@ -313,7 +313,7 @@
     "check:deps": "node scripts/check-missing-modules.mjs",
     "test:enterprise": "npm run test:security && npm run test:performance && npm run test:a11y",
     "test:security": "npm audit --audit-level=moderate",
-    "test:performance": "echo 'Kjør: npx lighthouse https://www.klarpakke.no --preset=desktop'",
+    "test:performance": "echo 'Kj\u00f8r: npx lighthouse https://www.klarpakke.no --preset=desktop'",
     "test:a11y": "playwright test e2e/accessibility.spec.ts",
     "provision:viking-no": "node --env-file=.env.local scripts/provision-viking-no.mjs",
     "test:viking-no": "PLAYWRIGHT_TEST_BASE_URL=https://www.klarpakke.no npx playwright test e2e/critical/viking-no-paper-trading.spec.ts --project=critical-chromium",
