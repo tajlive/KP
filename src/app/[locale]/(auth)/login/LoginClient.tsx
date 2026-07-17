@@ -11,7 +11,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/utils";
 import {
   CONFIG_ERROR_MSG,
@@ -25,6 +25,7 @@ export default function LoginPage() {
   const locale = useLocale();
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -50,8 +51,9 @@ export default function LoginPage() {
         return;
       }
 
-      // Successful login — redirect client-side
-      router.push(`/${locale}/dashboard`);
+      // Successful login — redirect to intended page or dashboard
+      const next = searchParams?.get("next");
+      router.push(next || `/${locale}/dashboard`);
       router.refresh();
     } catch (err) {
       setError(
