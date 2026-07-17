@@ -58,6 +58,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       threeSteps,
       trading,
       kursPage,
+      profile,
       tradingResults,
     ] = await Promise.all([
       import(`../messages/${validLocale}/about.json`)
@@ -199,6 +200,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
       .catch(() =>
         import("../messages/en/kursPage.json").then((m) => m.default),
       ),
+      import(`../messages/${validLocale}/profile.json`)
+        .then((m) => m.default)
+        .catch(() =>
+          import("../messages/en/profile.json").then((m) => m.default),
+        ),
       import(`../messages/${validLocale}/tradingResults.json`)
       .then((m) => m.default)
       .catch(() =>

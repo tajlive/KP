@@ -19,7 +19,7 @@ import { buildAuthRedirect } from "@/lib/auth/redirects";
 export async function signInWithEmail(formData: FormData) {
   const supabase = await createServerClient();
   
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
   
   const { error } = await supabase.auth.signInWithPassword({
@@ -39,7 +39,7 @@ export async function signInWithEmail(formData: FormData) {
 export async function signUpWithEmail(formData: FormData) {
   const supabase = await createServerClient();
   
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
   const { getLocale } = await import("next-intl/server");
   const locale = await getLocale();
@@ -74,7 +74,7 @@ export async function sendPasswordReset(formData: FormData) {
   const { getLocale } = await import("next-intl/server");
   const locale = await getLocale();
   
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim();
   
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: buildAuthRedirect({ type: "password-reset", locale }),

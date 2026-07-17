@@ -28,7 +28,9 @@ interface LeaderboardChange {
 /** GET /api/leaderboard/changes?period=weekly */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const period = searchParams.get("period") || "weekly";
+  const periodRaw = searchParams.get("period") || "weekly";
+  const VALID_PERIODS = new Set(["weekly", "monthly", "all_time"]);
+  const period = VALID_PERIODS.has(periodRaw) ? periodRaw : "weekly";
 
   try {
     // 1. Hent nyeste snapshot for denne perioden
