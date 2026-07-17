@@ -1,136 +1,120 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Sparkles, ArrowRight, TrendingUp, Users, Award } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import styles from "./HeroSection.module.css";
 
 /**
- * HeroSection — mobil-først hero for Klarpakke landing
+ * HeroSection — Dark Revolut/OKX-inspired hero
  *
- * Bruker:
- *  - useTranslations('hero') for i18n
- *  - CSS-modul med var(--bg-primary), var(--accent), var(--text-primary)
- *  - Stats-horisontalscroll med scroll-snap pa mobil
- *  - Full-bredde CTA pa mobil, side-by-side pa 768px+
+ * Design:
+ *  - Dark navy (#0B0F19) + gradient bg
+ *  - "Jeg tapte 64 000 kr på krypto. Så bygde jeg noe bedre."
+ *  - Stats: −64 000 kr / +16 mnd / 0 kr
+ *  - BTC widget (placeholder)
+ *  - CTA: Start gratis + Les min historie
+ *  - Mobile-first: full-width buttons; desktop: side-by-side
  */
 export default function HeroSection() {
   const t = useTranslations("hero");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const stats = [
-    { icon: TrendingUp, value: "100 000 kr", label: t("trust.free") },
-    { icon: Users, value: "4.9/5", label: t("social_proof_rating") },
-    { icon: Award, value: "127+", label: t("social_proof_active") },
-  ];
+  const locale = useLocale();
 
   return (
     <section className={styles.section}>
-      {/* Decorative blobs */}
-      <div className={styles.blobBlue} aria-hidden />
-      <div className={styles.blobAmber} aria-hidden />
-      <div className={styles.blobGreen} aria-hidden />
+      {/* Gradient overlay */}
+      <div className={styles.gradientBg} aria-hidden />
 
       <div className={styles.inner}>
         <div className={styles.grid}>
           {/* ---- Content column ---- */}
-          <div className={`${styles.content} ${mounted ? styles.animate : ""}`}>
-            {/* Badge */}
-            <span className={styles.badge}>
-              <Sparkles size={14} />
-              {t("badge")}
-            </span>
-
+          <div className={styles.content}>
             {/* Title */}
             <h1 className={styles.title}>
-              {t.rich("title", {
-                accent: (chunks) => (
-                  <span className={styles.titleAccent}>{chunks}</span>
-                ),
-              })}
+              <span className={styles.titleLine}>{t("titleLine1")}</span>
+              <span className={styles.titleLineAlt}>{t("titleLine2")}</span>
             </h1>
 
-            {/* Subtitle */}
+            {/* Subtitle / description */}
             <p className={styles.subtitle}>{t("subtitle")}</p>
+
+            {/* Stats row */}
+            <div className={styles.stats}>
+              <div className={styles.stat}>
+                <div className={`${styles.statNum} ${styles.statLoss}`}>
+                  {t("stat1")}
+                </div>
+                <div className={styles.statLabel}>{t("stat1Label")}</div>
+              </div>
+              <div className={styles.stat}>
+                <div className={`${styles.statNum} ${styles.statWin}`}>
+                  {t("stat2")}
+                </div>
+                <div className={styles.statLabel}>{t("stat2Label")}</div>
+              </div>
+              <div className={styles.stat}>
+                <div className={`${styles.statNum} ${styles.statNeutral}`}>
+                  {t("stat3")}
+                </div>
+                <div className={styles.statLabel}>{t("stat3Label")}</div>
+              </div>
+            </div>
 
             {/* CTA buttons */}
             <div className={styles.ctaGroup}>
-              <Link href="/no/signup" className={styles.ctaPrimary}>
-                <Sparkles size={18} />
+              <Link href={`/${locale}/signup`} className={styles.ctaPrimary}>
                 {t("ctaPrimary")}
               </Link>
 
-              <Link href="/no/pricing" className={styles.ctaSecondary}>
+              <Link href={`/${locale}/about`} className={styles.ctaSecondary}>
                 {t("ctaSecondary")}
-                <ArrowRight size={18} />
               </Link>
-            </div>
-
-            {/* Trust microcopy */}
-            <div className={styles.trust}>
-              <span>{t("trust.free")}</span>
-              <span className={styles.trustDot}>•</span>
-              <span>{t("trust.noCard")}</span>
-              <span className={styles.trustDot}>•</span>
-              <span>{t("trust.cancel")}</span>
             </div>
           </div>
 
-          {/* ---- Visual column (glass card mockup) ---- */}
-          <div
-            className={`${styles.visual} ${mounted ? styles.animateScale : ""}`}
-          >
-            <div className={styles.glassCard}>
-              {/* Coin row */}
-              <div className={styles.glassRow}>
-                <div className={styles.glassLabel}>BTC / USDT</div>
-                <div className={styles.glassChange}>+2.4%</div>
+          {/* ---- BTC widget column ---- */}
+          <div className={styles.visual}>
+            <div className={styles.widgetCard}>
+              {/* Coin header */}
+              <div className={styles.widgetHeader}>
+                <div className={styles.widgetCoin}>
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    fill="none"
+                    aria-hidden
+                  >
+                    <circle cx="14" cy="14" r="14" fill="#F7931A" />
+                    <path
+                      d="M19.87 16.36c-.28 1.14-2.2 1.56-3.8 1.7l.72 2.88-1.76.44-.7-2.8c-.46.12-.94.22-1.4.32l.7 2.82-1.76.44-.72-2.88c-.38.1-.76.2-1.12.3l-.02-.1-2.42.6-.46-1.86c1.34-.34 2.38-.82 2.3-1.74.04-.52.2-2.38.24-2.74.12-.08.24-.14.38-.2-.1-.04-.2-.08-.28-.12l.84-3.36c.04-.6-.22-1.12-.8-1.36.18-.04.38-.08.58-.12l-.82-3.3 2.42-.6.8 3.2c.64-.18 1.3-.34 1.94-.5l-.8-3.2 1.76-.44.82 3.3c1.46-.28 2.58-.06 3.16.58.5.56.46 1.38.14 2.02-.62.68-1.28 1.04-1.28 1.04s.78.18 1.54.74c.64.48.9 1.28.52 2.28z"
+                      fill="white"
+                    />
+                  </svg>
+                  <span className={styles.widgetPair}>BTC / USDT</span>
+                </div>
+                <span className={styles.widgetChange}>+2.4%</span>
               </div>
 
               {/* Price */}
-              <div className={styles.glassValue}>$105,240</div>
+              <div className={styles.widgetPrice}>$105,240</div>
 
               {/* Mini chart bar */}
-              <div className={styles.glassBar}>
-                <div className={styles.glassBarFill} />
+              <div className={styles.widgetChartBar}>
+                <div className={styles.widgetChartFill} />
               </div>
 
               {/* Buy / Sell buttons */}
-              <div className={styles.glassActions}>
-                <div className={styles.glassBuy}>Kjøp</div>
-                <div className={styles.glassSell}>Selg</div>
+              <div className={styles.widgetActions}>
+                <div className={styles.widgetBuy}>Kjøp</div>
+                <div className={styles.widgetSell}>Selg</div>
               </div>
 
-              <p className={styles.glassDisclaimer}>
-                {t("disclaimer")}
-              </p>
+              {/* Tagline */}
+              <div className={styles.widgetTagline}>
+                🛡️ 100 000 kr i lekepenger — null risiko
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* ---- Stats bar (scroll-snap pa mobil) ---- */}
-        <div
-          className={`${styles.stats} ${mounted ? styles.animateDelay3 : ""}`}
-        >
-          {stats.map((stat, i) => {
-            const Icon = stat.icon;
-            return (
-              <div key={i} className={styles.statCard}>
-                <Icon
-                  size={20}
-                  style={{ color: "var(--accent)", marginBottom: 8 }}
-                  aria-hidden
-                />
-                <div className={styles.statValue}>{stat.value}</div>
-                <div className={styles.statLabel}>{stat.label}</div>
-              </div>
-            );
-          })}
         </div>
       </div>
     </section>
