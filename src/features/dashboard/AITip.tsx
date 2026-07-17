@@ -31,10 +31,10 @@ function getTip(
     };
   }
 
-  if (winRate < 40 && totalTrades >= 5) {
+  if (winRate < 0.40 && totalTrades >= 5) {
     return {
       type: "winRateLow",
-      message: t("winRateLow.message", { winRate }),
+      message: t("winRateLow.message", { winRate: Math.round(winRate * 100) }),
       action: t("winRateLow.action"),
       severity: "warning",
     };
