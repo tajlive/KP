@@ -243,18 +243,19 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
     setLoading(true);
     setFeedback(null);
     try {
-      const res = await fetch("/api/paper-trading", {
+      const res = await fetch("/api/paper-trading/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          symbol: "BTCUSDT",
+          pair: "BTC/USDT",
           side,
-          amount: Number(amount),
+          amount_nok: Number(amount),
         }),
       });
       const data = await res.json();
       if (data.success) {
-        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${data.trade.quantity.toFixed(6)} BTC · ${data.trade.amount.toLocaleString("no")} kr` });
+        const qty = (Number(amount) / price).toFixed(6);
+        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} BTC · ${Number(amount).toLocaleString("no")} kr` });
         // Send confirmation email
         fetch("/api/email/send", {
           method: "POST",
@@ -381,7 +382,7 @@ function MiniPositionList() {
   }>>([]);
 
   React.useEffect(() => {
-    fetch("/api/paper-trading?type=positions")
+    fetch("/api/paper-trading/balance")
       .then(r => r.json())
       .then(d => setPositions(d.positions || []))
       .catch(() => {});
