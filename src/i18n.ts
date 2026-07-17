@@ -57,6 +57,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       taxReport,
       threeSteps,
       trading,
+      kursPage,
       tradingResults,
     ] = await Promise.all([
       import(`../messages/${validLocale}/about.json`)
@@ -194,11 +195,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
           import("../messages/en/trading.json").then((m) => m.default),
         ),
       import(`../messages/${validLocale}/tradingResults.json`)
-        .then((m) => m.default)
-        .catch(() =>
-          import("../messages/en/tradingResults.json").then((m) => m.default),
-        ),
-    ]);
+      .then((m) => m.default)
+      .catch(() =>
+        import("../messages/en/tradingResults.json").then((m) => m.default),
+      ),
+      import(`../messages/${validLocale}/kursPage.json`)
+      .then((m) => m.default)
+      .catch(() =>
+        import("../messages/en/kursPage.json").then((m) => m.default),
+      ),
+      ]);
 
     const splits: Record<string, unknown> = {
       about,
@@ -231,6 +237,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       threeSteps,
       trading,
       tradingResults,
+      kursPage,
       contact: (metadata as Record<string, unknown>)?.contact,
     };
 
