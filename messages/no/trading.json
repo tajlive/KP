@@ -1168,5 +1168,8 @@
       "pauseAllSuccess": "Alle roboter er satt på pause.",
       "resumeAllSuccess": "Robotene er aktivert igjen."
     }
+  },
+  "modeSelector": {
+    "title": "Hvordan vil du trade?"
   }
 }

@@ -1158,5 +1158,8 @@
       "pauseAllSuccess": "All robots are paused.",
       "resumeAllSuccess": "Robots resumed."
     }
+  },
+  "modeSelector": {
+    "title": "How do you want to trade?"
   }
 }
