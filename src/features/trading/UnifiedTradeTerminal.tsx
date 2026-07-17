@@ -27,14 +27,14 @@ function LiveTicker() {
       ADAUSDT: "⬡",
     };
     const priceData: PriceData[] = [];
-    let i = 0;
-    for (const [symbol, price] of Object.entries(prices).slice(0, 5)) {
+    for (const [symbol, data] of Object.entries(prices).slice(0, 8)) {
+      const p = (data as { price?: number; price_change_percent_24h?: number | null }).price ?? 0;
+      const change = (data as { price_change_percent_24h?: number | null }).price_change_percent_24h ?? 0;
       priceData.push({
         symbol: symbol.replace("USDT", ""),
-        price: price ?? 0,
-        change24h: (Math.random() * 6 - 2).toFixed(1) as unknown as number, // temp
+        price: p,
+        change24h: change,
       });
-      i++;
     }
     return priceData.length > 0 ? priceData : [
       { symbol: "BTC", price: 63258, change24h: 2.3 },
