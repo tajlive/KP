@@ -22,5 +22,7 @@
   "badgeEarned": "Completed! 🎉",
   "badgeAvailable": "Available upon completion",
   "badgeInProgress": "In progress ({pct}%)",
-  "badgeLocked": "Locked — complete previous course first"
+  "badgeLocked": "Locked — complete previous course first",
+  "startCourse": "Start course",
+  "startCourseDescription": "Learn the basics of cryptocurrency — completely free."
 }

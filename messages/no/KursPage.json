@@ -22,5 +22,7 @@
   "badgeEarned": "Fullført! 🎉",
   "badgeAvailable": "Tilgjengelig ved fullføring",
   "badgeInProgress": "Underveis ({pct}%)",
-  "badgeLocked": "Låst — fullfør forrige kurs først"
+  "badgeLocked": "Låst — fullfør forrige kurs først",
+  "startCourse": "Start kurs",
+  "startCourseDescription": "Lær det grunnleggende om kryptovaluta — helt gratis."
 }
