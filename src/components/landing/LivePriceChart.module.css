@@ -1,0 +1,200 @@
+/* ============================================
+   LivePriceChart — SVG crypto chart CSS Module
+   Dark theme, Revolut-inspired
+   ============================================ */
+
+/* ---- Card wrapper ---- */
+.card {
+  background: var(--bg-card, #131A2A);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-card, 16px);
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  /* Ensure chart svg doesn't overflow rounded corners */
+  overflow: hidden;
+}
+
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Header row (coin icon + pair + change badge) ---- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.coinInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pair {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #f5f5f7);
+}
+
+/* ---- 24h change badge ---- */
+.change {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.changeUp {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.changeDown {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* ---- Price row ---- */
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.price {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary, #f5f5f7);
+  line-height: 1.1;
+  transition: color 0.15s ease;
+}
+
+@media (min-width: 768px) {
+  .price {
+    font-size: 2rem;
+  }
+}
+
+/* Price flash on change */
+.priceFlashUp {
+  color: #10b981 !important;
+}
+
+.priceFlashDown {
+  color: #ef4444 !important;
+}
+
+.usdtSuffix {
+  font-size: 0.8125rem;
+  color: var(--text-muted, #8e8e93);
+  font-weight: 500;
+}
+
+/* ---- Chart wrapper ---- */
+.chartWrap {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  .chartWrap {
+    height: 120px;
+  }
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- SVG path animations ---- */
+.areaPath {
+  animation: chartFadeIn 0.8s ease-out forwards;
+}
+
+.linePath {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: drawLine 1s ease-out forwards;
+}
+
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---- Footer ---- */
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  letter-spacing: 0.02em;
+}
+
+/* Live pulse dot */
+.pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
+
+/* ---- Responsive card sizing ---- */
+@media (max-width: 374px) {
+  .card {
+    padding: 14px;
+  }
+  .price {
+    font-size: 1.5rem;
+  }
+  .chartWrap {
+    height: 80px;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 24px;
+  }
+}
