@@ -15,6 +15,7 @@ import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
 import { SkeletonBlock } from "./loading-skeleton";
 
 import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
+import { KltWidget } from "@/features/gamification/KltWidget";
 
 // Eksisterende komponenter
 import { SimplifiedHero } from "./SimplifiedHero";
@@ -383,6 +384,9 @@ export function DashboardPro({
 
             {/* Daily Challenge — kun for brukere som er kommet i gang */}
             {userState !== "NyBruker" && <DailyChallenge userId={userId} />}
+
+            {/* KLT Widget — vis alltid for alle brukere */}
+            <KltWidget />
           </div>
 
           {/* Right column - 1/3 width */}
