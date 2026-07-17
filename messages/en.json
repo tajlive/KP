@@ -1358,7 +1358,6 @@
       "mode": "Mode",
       "breadcrumbYouAreHere": "You are here",
       "profile": "Profile",
-      "profile": "Profile",
       "jokerTrade": "JokerTrade"
     },
     "learningPath": {
@@ -1664,9 +1663,9 @@
       "step2": "Start paper trading",
       "step3": "Complete 5 trades",
       "step4": "Go live",
-      "welcomeTitle": "Welcome{userName, select, '' {} other {, {userName}}}",
+      "welcomeTitle": "Welcome, {userName}",
       "welcomeSubtitle": "Start your trading journey here. Practice risk-free with paper trading before going live.",
-      "greatWorkTitle": "Great work{userName, select, '' {} other {, {userName}}}",
+      "greatWorkTitle": "Great work, {userName}",
       "greatWorkSubtitle": "You're off to a good start. Keep learning and building experience.",
       "activeSessionsTitle": "Your active sessions",
       "trades": "Trades",
