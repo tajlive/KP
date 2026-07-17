@@ -33,7 +33,9 @@ export async function GET(req: Request) {
       );
     }
 
-    return NextResponse.json({ success: true, data });
+    const response = NextResponse.json({ success: true, data });
+    response.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
+    return response;
   } catch (err) {
     return NextResponse.json(
       { success: false, error: String(err) },
