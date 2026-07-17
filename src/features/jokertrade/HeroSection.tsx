@@ -110,7 +110,7 @@ export function HeroSection() {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-              5 min å sette opp
+              raskt å sette opp
             </span>
           </div>
         </div>

@@ -20,7 +20,7 @@ function InlineFooter() {
         const res = await fetch("/api/health");
         if (res.ok) {
           const data = await res.json();
-          if (data.version && data.version !== "unknown") {
+          if (data.version && data.version !== "unknown" && /^[0-9a-f]{7,40}$/i.test(data.version)) {
             setVersion(data.version);
           }
           if (data.timestamp) {

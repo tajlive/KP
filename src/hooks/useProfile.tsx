@@ -4,7 +4,8 @@ import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
 import type { Database } from "@/types/database.types";
 import { Profile } from "@/types/database";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useAuthSafe } from "@/lib/auth/new/AuthContext";
 
 type UserProfilesInsert =
   Database["public"]["Tables"]["user_profiles"]["Insert"];
@@ -17,21 +18,29 @@ export function useProfile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function load() {
+  // Hent userID fra AuthContext (ingen nettverkskall) ved render-tid
+  const authCtx = useAuthSafe();
+
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+
+      // Bruk AuthContexts user (0 nettverkskall) hvis tilgjengelig
+      let userId = authCtx.user?.id ?? null;
+      if (!userId) {
+        // Fallback: direct getUser() — kun utenfor AuthProvider
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id ?? null;
+      }
+      if (!userId) {
         setProfile(null);
         return;
       }
       const { data, error: fetchError } = await supabase
         .from("user_profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
       if (fetchError) {
         setProfile(null);
@@ -43,22 +52,24 @@ export function useProfile() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [authCtx.user?.id]);
 
-  async function save(updates: Partial<Profile>) {
+  const save = useCallback(async (updates: Partial<Profile>) => {
     setSaving(true);
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      let userId = authCtx.user?.id ?? null;
+      if (!userId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id ?? null;
+      }
+      if (!userId) {
         setError("Ikke innlogget");
         return;
       }
       const upsertPayload = {
-        id: user.id,
-        user_id: user.id,
+        id: userId,
+        user_id: userId,
         ...updates,
         updated_at: new Date().toISOString(),
       } as unknown as UserProfilesInsert;
@@ -77,16 +88,18 @@ export function useProfile() {
     } finally {
       setSaving(false);
     }
-  }
+  }, [authCtx.user?.id]);
 
-  async function patch(updates: Partial<Profile>) {
+  const patch = useCallback(async (updates: Partial<Profile>) => {
     setSaving(true);
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      let userId = authCtx.user?.id ?? null;
+      if (!userId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id ?? null;
+      }
+      if (!userId) {
         setError("Ikke innlogget");
         return;
       }
@@ -96,7 +109,7 @@ export function useProfile() {
       const { data, error: updateError } = await supabase
         .from("user_profiles")
         .update(payload as unknown as UserProfilesUpdate)
-        .eq("id", user.id)
+        .eq("id", userId)
         .select()
         .single();
       if (updateError) {
@@ -109,24 +122,26 @@ export function useProfile() {
     } finally {
       setSaving(false);
     }
-  }
+  }, [authCtx.user?.id]);
 
-  async function deleteProfile() {
+  const deleteProfile = useCallback(async () => {
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-      await supabase.from("user_profiles").delete().eq("id", user.id);
+      let userId = authCtx.user?.id ?? null;
+      if (!userId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id ?? null;
+      }
+      if (!userId) return;
+      await supabase.from("user_profiles").delete().eq("id", userId);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     }
-  }
+  }, [authCtx.user?.id]);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   return { profile, loading, saving, error, load, save, patch, deleteProfile };
 }

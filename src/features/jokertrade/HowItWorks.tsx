@@ -26,14 +26,14 @@ const STEPS: Step[] = [
     icon: <JokerIcon className="h-8 w-8 sm:h-10 sm:w-10" />,
     title: "Velg strategi",
     description:
-      "AI-en velger automatisk den beste strategien basert på markedsforholdene. Du trenger ikke gjøre noe.",
+      "AI-en velger automatisk den beste strategien basert på markedsforholdene. Du bestemmer alltid selv når du vil gå live.",
   },
   {
     number: 3,
     icon: <CoinStackIcon className="h-8 w-8 sm:h-10 sm:w-10" />,
-    title: "Tjen penger mens du sover",
+    title: "Lær mens du øver — med lekepenger",
     description:
-      "AI-en jobber 24/7 — analyserer, handler og optimerer. Du våkner opp til resultater.",
+      "AI-en analyserer og handler med lekepenger slik at du kan lære trygt. Når du er klar, går du live.",
   },
 ];
 

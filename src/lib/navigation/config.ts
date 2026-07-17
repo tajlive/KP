@@ -383,7 +383,6 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/profile",
   "/innstillinger",
   "/callback",
-  "/jokertrade",
 ];
 
 /** Returns true when `strippedPath` is (or lives under) an app-shell route. */

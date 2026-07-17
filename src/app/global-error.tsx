@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/shared/ui/button'
 import { AlertTriangle } from 'lucide-react'
 import { captureException } from '@/lib/sentry'
@@ -13,6 +13,9 @@ export default function GlobalError({
     error: Error & { digest?: string }
     reset: () => void
 }) {
+    const retryCountRef = useRef(0)
+    const [retryCount, setRetryCount] = useState(0)
+
     useEffect(() => {
         // Log error with digest for debugging
         console.error('Global Error - Digest:', (error as Error & { digest?: string }).digest)
@@ -31,6 +34,19 @@ export default function GlobalError({
         })
     }, [error])
 
+    function handleRetry() {
+        retryCountRef.current += 1
+        setRetryCount(retryCountRef.current)
+
+        if (retryCountRef.current === 1) {
+            // Første klikk: prøv reset() + router.refresh() (via full page reload i global context)
+            reset()
+        } else {
+            // Andre+ klikk (feilen vedvarer): full page reload
+            window.location.reload()
+        }
+    }
+
     return (
         <html lang="no">
             <body>
@@ -45,15 +61,15 @@ export default function GlobalError({
                         </p>
                         {error.digest && (
                             <p className="text-xs text-slate-400 font-mono mb-6">
-                                Feilkode: {error.digest}
+                                Referanse: {error.digest} (oppgi denne ved henvendelse)
                             </p>
                         )}
                         <Button
-                            onClick={() => reset()}
+                            onClick={handleRetry}
                             size="lg"
                             className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8"
                         >
-                            Last inn på nytt
+                            {retryCount >= 1 ? 'Last inn på nytt' : 'Prøv igjen'}
                         </Button>
                     </div>
                 </div>

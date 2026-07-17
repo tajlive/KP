@@ -13,6 +13,10 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/utils";
+import {
+  CONFIG_ERROR_MSG,
+  CONFIG_USER_MSG_NO,
+} from "@/lib/supabase/client";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 import { isMicrosoftOAuthEnabled } from "@/lib/auth/config";
 import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
@@ -50,7 +54,13 @@ export default function LoginPage() {
       router.push(`/${locale}/dashboard`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Innlogging feilet");
+      setError(
+        err instanceof Error && err.message === CONFIG_ERROR_MSG
+          ? CONFIG_USER_MSG_NO
+          : err instanceof Error
+            ? err.message
+            : "Innlogging feilet",
+      );
       setLoading(false);
     }
   }
@@ -62,7 +72,13 @@ export default function LoginPage() {
       await signInWithGoogle();
       // Redirect happens inside signInWithGoogle — no need to handle success
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Google-innlogging feilet");
+      setError(
+        err instanceof Error && err.message === CONFIG_ERROR_MSG
+          ? CONFIG_USER_MSG_NO
+          : err instanceof Error
+            ? err.message
+            : "Google-innlogging feilet",
+      );
       setLoading(false);
     }
   }
@@ -75,7 +91,11 @@ export default function LoginPage() {
       // Redirect happens inside signInWithMicrosoft — no need to handle success
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Microsoft-innlogging feilet",
+        err instanceof Error && err.message === CONFIG_ERROR_MSG
+          ? CONFIG_USER_MSG_NO
+          : err instanceof Error
+            ? err.message
+            : "Microsoft-innlogging feilet",
       );
       setLoading(false);
     }

@@ -307,10 +307,17 @@ export async function authMiddleware(
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn(
-      "[middleware] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY missing — skipping session refresh. Check .env.local and Cloudflare Workers env/secrets.",
+    console.error(
+      "[middleware] KRITISK: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY missing — fail-closed",
     );
-    return response;
+    // Beskyttede ruter: redirect til statisk driftsside (ingen Supabase-avhengighet)
+    if (PROTECTED_PATHS.some((p) => strippedPath.startsWith(p))) {
+      return redirectNoCache(
+        new URL(localizedPathname(locale, "/driftsfeil"), request.url),
+        302,
+      );
+    }
+    return response; // marketing-sider kan fortsatt rendres (statiske)
   }
 
   const supabase = createServerClient(

@@ -137,7 +137,7 @@ export function LeaderboardWidget() {
           <div className="text-center py-8">
             <p className="text-sm text-[#6B7280]">
               {error
-                ? "Kunne ikke laste leaderboard — prøv igjen senere"
+                ? "Leaderboard er midlertidig utilgjengelig"
                 : "Ingen tradere på topplista ennå. Bli den første!"}
             </p>
           </div>
