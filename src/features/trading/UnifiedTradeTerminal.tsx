@@ -228,9 +228,54 @@ function SparklineChart({ className }: { className?: string }) {
 // ─── Buy/Sell Panel ───
 function OrderPanel({ mode }: { mode: TradeMode }) {
   const t = useTranslations("trading");
+  const { prices } = usePrices();
   const [side, setSide] = React.useState<"buy" | "sell">("buy");
   const [amount, setAmount] = React.useState("1000");
-  const price = 63258;
+  const [loading, setLoading] = React.useState(false);
+  const [feedback, setFeedback] = React.useState<{ ok: boolean; msg: string } | null>(null);
+
+  const price = React.useMemo(() => {
+    const btc = prices["BTCUSDT"] as { price?: number } | undefined;
+    return btc?.price ?? 63258;
+  }, [prices]);
+
+  const handleTrade = async () => {
+    setLoading(true);
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/paper-trading", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          symbol: "BTCUSDT",
+          side,
+          amount: Number(amount),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${data.trade.quantity.toFixed(6)} BTC · ${data.trade.amount.toLocaleString("no")} kr` });
+        // Send confirmation email
+        fetch("/api/email/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "trade_confirmed",
+            symbol: "BTCUSDT",
+            side,
+            amount: Number(amount),
+            price: data.trade.price,
+          }),
+        }).catch(() => {});
+      } else {
+        setFeedback({ ok: false, msg: data.error || "Feil" });
+      }
+    } catch {
+      setFeedback({ ok: false, msg: "Nettverksfeil" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-3">
@@ -288,16 +333,28 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
 
       {/* Action button */}
       <button
+        onClick={handleTrade}
+        disabled={loading}
         className={cn(
           "w-full py-3 rounded-xl text-sm font-bold transition-all duration-200",
-          "shadow-lg active:scale-[0.98]",
+          "shadow-lg active:scale-[0.98] disabled:opacity-50",
           side === "buy"
             ? "bg-emerald-500 text-white hover:bg-emerald-400 shadow-emerald-500/20"
             : "bg-red-500 text-white hover:bg-red-400 shadow-red-500/20",
         )}
       >
-        {side === "buy" ? "Kjøp BTC" : "Selg BTC"}
+        {loading ? "Utfører..." : `${side === "buy" ? "Kjøp" : "Selg"} BTC`}
       </button>
+
+      {/* Feedback */}
+      {feedback && (
+        <div className={cn(
+          "text-xs text-center px-2 py-1 rounded",
+          feedback.ok ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400",
+        )}>
+          {feedback.msg}
+        </div>
+      )}
 
       {/* Mode-specific info */}
       <div className={cn(
@@ -314,11 +371,32 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
 
 // ─── Positions / Orders Mini-list ───
 function MiniPositionList() {
-  const positions = [
-    { pair: "BTC/USDT", side: "buy", amount: "0.015", pnl: "+12.5%", pnlColor: "text-emerald-400" },
-    { pair: "ETH/USDT", side: "buy", amount: "0.25", pnl: "-3.2%", pnlColor: "text-red-400" },
-    { pair: "XRP/USDT", side: "sell", amount: "500", pnl: "+1.8%", pnlColor: "text-emerald-400" },
-  ];
+  const [positions, setPositions] = React.useState<Array<{
+    symbol: string;
+    position_type: string;
+    quantity: number;
+    entry_price: number;
+    current_price?: number;
+    profit_loss?: number;
+  }>>([]);
+
+  React.useEffect(() => {
+    fetch("/api/paper-trading?type=positions")
+      .then(r => r.json())
+      .then(d => setPositions(d.positions || []))
+      .catch(() => {});
+  }, []);
+
+  const sideLabel = (type: string) => type.includes("long") ? "LONG" : "SHORT";
+  const sideColor = (type: string) => type.includes("long") ? "text-emerald-400" : "text-red-400";
+
+  if (positions.length === 0) {
+    return (
+      <div className="text-center py-4 text-xs text-slate-500">
+        Ingen åpne posisjoner
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1.5">
@@ -331,14 +409,16 @@ function MiniPositionList() {
           className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0A0D12] border border-[#1E2530] text-xs"
         >
           <div className="flex items-center gap-2">
-            <span className="text-white font-mono">{p.pair}</span>
-            <span className={cn("text-[10px] font-bold uppercase", p.side === "buy" ? "text-emerald-400" : "text-red-400")}>
-              {p.side}
+            <span className="text-white font-mono">{p.symbol?.replace("USDT", "/USDT")}</span>
+            <span className={cn("text-[10px] font-bold uppercase", sideColor(p.position_type))}>
+              {sideLabel(p.position_type)}
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-slate-400 font-mono">{p.amount}</span>
-            <span className={cn("font-mono font-bold", p.pnlColor)}>{p.pnl}</span>
+            <span className="text-slate-400 font-mono">{Number(p.quantity).toFixed(4)}</span>
+            <span className={cn("font-mono font-bold", (p.profit_loss ?? 0) >= 0 ? "text-emerald-400" : "text-red-400")}>
+              {p.profit_loss != null ? `${(p.profit_loss ?? 0) >= 0 ? "+" : ""}${Number(p.profit_loss).toFixed(0)} kr` : "—"}
+            </span>
           </div>
         </div>
       ))}
