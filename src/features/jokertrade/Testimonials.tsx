@@ -23,9 +23,9 @@ const TESTIMONIALS: Testimonial[] = [
     handle: "@mariusl",
     avatar: "👨‍💼",
     quote:
-      "Jeg skjønte aldri trading før JokerTrade. AI-en gjør alt — jeg bare sjekker resultatene på morningen. +18% første uken!",
+      "Jeg skjønte aldri trading før JokerTrade. AI-en gjør alt — jeg bare sjekker resultatene på morningen. Simulert resultat fra papirhandel — ikke garantert fremtidig avkastning.",
     rating: 5,
-    highlight: "+18% første uken",
+    highlight: "Simulert papirhandel-resultat",
   },
   {
     id: "2",

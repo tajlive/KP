@@ -13,6 +13,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { signUpWithEmail } from "@/lib/auth/new/auth-actions";
 import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 import { isMicrosoftOAuthEnabled } from "@/lib/auth/config";
+import {
+  CONFIG_ERROR_MSG,
+  CONFIG_USER_MSG_NO,
+} from "@/lib/supabase/client";
 import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
 
 export default function RegisterPage() {
@@ -44,7 +48,13 @@ export default function RegisterPage() {
       await signInWithGoogle();
       // Redirect happens inside signInWithGoogle — no need to handle success
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Google-innlogging feilet");
+      setError(
+        err instanceof Error && err.message === CONFIG_ERROR_MSG
+          ? CONFIG_USER_MSG_NO
+          : err instanceof Error
+            ? err.message
+            : "Google-innlogging feilet",
+      );
       setLoading(false);
     }
   }
@@ -57,7 +67,11 @@ export default function RegisterPage() {
       // Redirect happens inside signInWithMicrosoft — no need to handle success
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Microsoft-innlogging feilet",
+        err instanceof Error && err.message === CONFIG_ERROR_MSG
+          ? CONFIG_USER_MSG_NO
+          : err instanceof Error
+            ? err.message
+            : "Microsoft-innlogging feilet",
       );
       setLoading(false);
     }

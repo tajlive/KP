@@ -47,7 +47,7 @@ const FAQ_ITEMS: FaqItem[] = [
     id: "start",
     question: "Kan jeg starte med null erfaring?",
     answer:
-      "Absolutt. JokerTrade er designet for nybegynnere. Du trenger ingen tidligere erfaring med krypto eller trading. Sett opp kontoen på 5 minutter, få 100 000 kr i lekepenger, og la AI-en gjøre jobben. Null risiko, null stress.",
+      "Absolutt. JokerTrade er designet for nybegynnere. Du trenger ingen tidligere erfaring med krypto eller trading. Sett opp kontoen raskt, få 100 000 kr i lekepenger, og la AI-en gjøre jobben. Null risiko, null stress.",
     icon: <HelpCircle className="w-5 h-5 text-[#F59E0B]" />,
   },
 ];

@@ -5,17 +5,22 @@ import { createClient } from "@/lib/utils";
 import type { TierSlug } from "@/lib/pricing/tiers";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { queryKeys } from "@/lib/query-keys";
+import { useAuthSafe } from "@/lib/auth/new/AuthContext";
 
-async function fetchTier(): Promise<{ tier: TierSlug } | null> {
+async function fetchTierWithUser(userId: string | null): Promise<{ tier: TierSlug } | null> {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  
+  let uid = userId;
+  if (!uid) {
+    const { data: { user } } = await supabase.auth.getUser();
+    uid = user?.id ?? null;
+  }
+  if (!uid) return null;
+  
   const { data } = await supabase
     .from("user_profiles")
     .select("subscription_tier, tier")
-    .eq("id", user.id)
+    .eq("id", uid)
     .maybeSingle();
   const raw =
     (data as { subscription_tier?: string; tier?: string } | null)
@@ -25,9 +30,11 @@ async function fetchTier(): Promise<{ tier: TierSlug } | null> {
 }
 
 export function useTierQuery() {
+  const authUser = useAuthSafe().user;
+  
   const query = useQuery({
     queryKey: queryKeys.tier(null),
-    queryFn: fetchTier,
+    queryFn: () => fetchTierWithUser(authUser?.id ?? null),
     staleTime: 2 * 60 * 1000,
   });
   const tier = (query.data?.tier ?? "student") as TierSlug;

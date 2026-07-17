@@ -28,17 +28,6 @@ const TIERS = [
 export default function PriserPage() {
   return (
     <div className="min-h-screen bg-[#0A0B0D]" style={{ fontFamily: "system-ui, sans-serif" }}>
-      {/* Header */}
-      <header className="nav-glass px-6 py-4">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <a href="/no" className="font-bold text-xl text-[#F9FAFB] no-underline">Klarpakke</a>
-          <nav className="flex gap-4 items-center">
-            <a href="/no/login" className="text-[#9CA3AF] no-underline text-sm hover:text-[#F9FAFB] transition-colors">Logg inn</a>
-            <a href="/no/register" className="btn-accent text-sm px-4 py-2 no-underline">Registrer deg</a>
-          </nav>
-        </div>
-      </header>
-
       {/* Hero */}
       <section className="text-center px-6 pt-20 pb-10">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-[#F9FAFB] mb-4 tracking-tight">

@@ -55,7 +55,7 @@ export function JokerTradeLanding() {
             </a>
           </div>
           <p className="mt-4 text-[10px] text-[#6B7280]">
-            Ingen kredittkort • 5 min å sette opp • Norsk support
+            Ingen kredittkort • raskt å komme i gang • Norsk support
           </p>
         </div>
       </section>

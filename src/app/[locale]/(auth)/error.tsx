@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { captureException } from '@/lib/sentry'
@@ -16,6 +16,10 @@ export default function AuthError({
   const pathname = usePathname()
   const localeMatch = pathname?.match(/^\/(no|en|th|zh)(\/|$)/)
   const locale = localeMatch ? localeMatch[1] : 'no'
+  const retryCountRef = useRef(0)
+  const [retryCount, setRetryCount] = useState(0)
+
+  const isRegister = pathname?.includes('register')
 
   useEffect(() => {
     console.error('[Auth] Error:', error)
@@ -24,6 +28,20 @@ export default function AuthError({
       tags: { errorBoundary: 'auth-error' },
     })
   }, [error])
+
+  function handleRetry() {
+    retryCountRef.current += 1
+    setRetryCount(retryCountRef.current)
+
+    if (retryCountRef.current === 1) {
+      // Første klikk: prøv reset() + router.refresh()
+      reset()
+      router.refresh()
+    } else {
+      // Andre+ klikk (feilen vedvarer): full page reload
+      window.location.reload()
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#0A0B0D]">
@@ -35,19 +53,21 @@ export default function AuthError({
         </div>
         <h2 className="text-2xl font-bold text-[#F9FAFB] mb-3">Noe gikk galt</h2>
         <p className="text-[#9CA3AF] mb-2">
-          Vi beklager, men en uventet feil har oppstått under innloggingen. Teamet er varslet.
+          {isRegister
+            ? "Vi klarte ikke å opprette kontoen din. Teamet er varslet — prøv igjen om litt."
+            : "Vi klarte ikke å logge deg inn. Teamet er varslet — prøv igjen om litt."}
         </p>
         {error.digest && (
           <p className="text-xs text-[#6B7280] font-mono mb-6">
-            Feilkode: {error.digest}
+            Referanse: {error.digest} (oppgi denne ved henvendelse)
           </p>
         )}
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => router.refresh()}
+            onClick={handleRetry}
             className="w-full min-h-[48px] rounded-xl bg-[#3B82F6] text-white font-medium active:bg-[#2563EB] active:scale-[0.98] transition-all"
           >
-            Prøv igjen
+            {retryCount >= 1 ? 'Last inn siden på nytt' : 'Prøv igjen'}
           </button>
           <Link
             href={`/${locale}`}

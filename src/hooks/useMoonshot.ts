@@ -46,9 +46,10 @@ export function useMoonshot(options: UseMoonshotOptions = {}): UseMoonshotReturn
 
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Ikke innlogget');
+      // Bruk kun getSession() — den refresher token ved behov og returnerer access_token.
+      // Ingen redundant getUser()-kall som unødvendig kaller /auth/v1/user.
       const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Ikke innlogget');
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/moonshot-chat`,
@@ -56,7 +57,7 @@ export function useMoonshot(options: UseMoonshotOptions = {}): UseMoonshotReturn
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.access_token || ''}`,
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             message,
@@ -110,9 +111,9 @@ export function useMoonshotStream(options: UseMoonshotOptions = {}) {
 
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Ikke innlogget');
+      // Kun getSession() — getUser() er redundant her
       const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Ikke innlogget');
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/moonshot-chat`,
@@ -120,7 +121,7 @@ export function useMoonshotStream(options: UseMoonshotOptions = {}) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.access_token || ''}`,
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             message,

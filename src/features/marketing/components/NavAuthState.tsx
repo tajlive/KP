@@ -79,7 +79,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                 className={`gap-2 ${BRAND.primaryOutline}`}
               >
                 <LogIn className="w-4 h-4" />
-                {loading ? "..." : t("login")}
+                {t("login")}
               </Button>
             </Link>
             <Link href={l("/register")}>
@@ -87,7 +87,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                 size="sm"
                 className={`${BRAND.primary} shadow-md shadow-blue-500/20`}
               >
-                {loading ? "..." : t("signup")}
+                {t("signup")}
               </Button>
             </Link>
           </>

@@ -63,6 +63,10 @@ function syntheticRefreshError(): Response {
 export const CONFIG_ERROR_MSG =
   "Supabase er ikke konfigurert. Sjekk at NEXT_PUBLIC_SUPABASE_URL og NEXT_PUBLIC_SUPABASE_ANON_KEY er satt.";
 
+/** Brukervennlig melding til sluttbruker ved konfigurasjonsfeil */
+export const CONFIG_USER_MSG_NO =
+  "Vi har en midlertidig driftsfeil. Teamet er varslet — prøv igjen om litt. Ingen data er tapt.";
+
 /**
  * Get the singleton Supabase browser client
  *

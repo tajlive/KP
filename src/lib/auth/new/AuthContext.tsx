@@ -1,24 +1,57 @@
 "use client";
 
 /**
- * NY AUTH CONTEXT - Forenklet, robust
- * 
- * Prinsipper:
- * 1. Bruk standard Supabase SSR
- * 2. Ingen custom cookie-håndtering
- * 3. Enkel state: user, loading, error
- * 4. Ingen dobbel klient-opprettelse
+ * AUTH CONTEXT — Sentralisert auth-state (single source of truth)
+ *
+ * Sikringer mot /user-polling-storm:
+ * 1. Kun ÉN getUser() ved mount (via getSession)
+ * 2. 5s failsafe som alltid setter loading=false
+ * 3. Exponential backoff ved feil (2s → 60s, gi opp etter 5 forsøk)
+ * 4. Debounce min. 30s på focus/visibilitychange-refresh
+ * 5. Stopp ALL polling når document.hidden
+ * 6. Rate-limited refreshUser() — kaster hvis kalt for tidlig
+ * 7. Ingen per-komponent getUser() — alt går via AuthContext
  */
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+
+// ─── Konstanter ──────────────────────────────────────────────────────────
+
+/** Minimum tid (ms) mellom automatiske refresh-sjekker (focus/visibility) */
+const FOCUS_DEBOUNCE_MS = 30_000;
+
+/** Initielle backoff-ventetid (ms) ved feil */
+const INITIAL_BACKOFF_MS = 2_000;
+
+/** Maks backoff-ventetid (ms) */
+const MAX_BACKOFF_MS = 60_000;
+
+/** Maks antall backoff-forsøk før vi gir opp */
+const MAX_BACKOFF_ATTEMPTS = 5;
+
+/** Failsafe timeout (ms) — setter loading=false uansett */
+const FAILSAFE_TIMEOUT_MS = 5_000;
+
+/** Minimum tid (ms) mellom manuelle refreshUser()-kall */
+const REFRESH_RATE_LIMIT_MS = 10_000;
+
+// ─── Typer ───────────────────────────────────────────────────────────────
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: Error | null;
   signOut: () => Promise<void>;
+  /** Rate-limited: kaster hvis kalt innenfor REFRESH_RATE_LIMIT_MS */
   refreshUser: () => Promise<void>;
 }
 
@@ -30,88 +63,255 @@ const AuthContext = createContext<AuthContextType>({
   refreshUser: async () => {},
 });
 
+// ─── Provider ────────────────────────────────────────────────────────────
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Refs
   const initialFetchRef = useRef(false);
+  const isMountedRef = useRef(true);
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
+  const backoffCountRef = useRef(0);
+  const backoffTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const failsafeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastFocusRefreshRef = useRef(0);
+  const lastManualRefreshRef = useRef(0);
+  const isHiddenRef = useRef(false);
+  const subscriptionRef = useRef<{ unsubscribe: () => void } | null>(null);
 
-  useEffect(() => {
-    // Guard against double-execution in React Strict Mode
-    if (initialFetchRef.current) return;
-    initialFetchRef.current = true;
+  // ─── Hjelpefunksjoner ─────────────────────────────────────────────────
 
-    const supabase = createClient();
-    let isMounted = true;
+  const clearTimers = useCallback(() => {
+    if (backoffTimerRef.current) {
+      clearTimeout(backoffTimerRef.current);
+      backoffTimerRef.current = null;
+    }
+    if (failsafeTimerRef.current) {
+      clearTimeout(failsafeTimerRef.current);
+      failsafeTimerRef.current = null;
+    }
+  }, []);
 
-    // Hent initial session (getSession refreshes expired tokens, getUser does not)
-    const initAuth = async () => {
-      // Skip auth init if user is already on an error page (prevents infinite loop)
-      const search = typeof window !== "undefined" ? window.location.search : "";
-      if (search.includes("error=session_expired") || search.includes("error=access_denied")) {
-        if (isMounted) {
+  const resetBackoff = useCallback(() => {
+    backoffCountRef.current = 0;
+    clearTimers();
+  }, [clearTimers]);
+
+  /** Starter failsafe-timer: setter loading=false etter FAILSAFE_TIMEOUT_MS */
+  const startFailsafe = useCallback(() => {
+    if (failsafeTimerRef.current) clearTimeout(failsafeTimerRef.current);
+    failsafeTimerRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
+    }, FAILSAFE_TIMEOUT_MS);
+  }, []);
+
+  /** Hoved auth-init-funksjon — kalles ved mount og ved backoff-retry */
+  const initAuth = useCallback(async () => {
+    if (!isMountedRef.current) return;
+
+    // Skip hvis document er hidden (unntatt ved første mount)
+    if (isHiddenRef.current && backoffCountRef.current > 0) return;
+
+    try {
+      const supabase = supabaseRef.current ?? createClient();
+      supabaseRef.current = supabase;
+
+      // Sjekk error-params i URL (hindrer infinite loop)
+      const search =
+        typeof window !== "undefined" ? window.location.search : "";
+      if (
+        search.includes("error=session_expired") ||
+        search.includes("error=access_denied")
+      ) {
+        if (isMountedRef.current) {
           setUser(null);
           setLoading(false);
+          setError(null);
         }
+        resetBackoff();
         return;
       }
 
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (!isMounted) return;
-        if (error) {
-          // If refresh token is invalid (revoked/expired), clear session and redirect
-          if (error.message?.includes("Invalid Refresh Token")) {
-            await supabase.auth.signOut();
-            if (isMounted) {
-              setUser(null);
-              setError(null);
-              setLoading(false);
-            }
-            // Soft redirect to login without full reload if possible
-            const locale = window.location.pathname.split("/")[1] || "no";
-            window.location.replace(`/${locale}/login?error=session_expired`);
-            return;
+      const { data, error: sessionError } =
+        await supabase.auth.getSession();
+      if (!isMountedRef.current) return;
+
+      if (sessionError) {
+        // Invalid refresh token — clear session
+        if (sessionError.message?.includes("Invalid Refresh Token")) {
+          await supabase.auth.signOut();
+          if (isMountedRef.current) {
+            setUser(null);
+            setError(null);
           }
-          throw error;
+          const locale =
+            typeof window !== "undefined"
+              ? window.location.pathname.split("/")[1] || "no"
+              : "no";
+          if (typeof window !== "undefined") {
+            window.location.replace(`/${locale}/login?error=session_expired`);
+          }
+          setLoading(false);
+          resetBackoff();
+          return;
         }
-        setUser(session?.user ?? null);
-      } catch (err) {
-        if (!isMounted) return;
-        setError(err instanceof Error ? err : new Error(String(err)));
-      } finally {
-        if (isMounted) setLoading(false);
+        throw sessionError;
       }
-    };
 
-    initAuth();
+      // Suksess — nullstill backoff og sett user
+      setUser(data?.session?.user ?? null);
+      resetBackoff();
+    } catch (err) {
+      if (!isMountedRef.current) return;
 
-    // Lytt på auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!isMounted) return;
-        setUser(session?.user ?? null);
+      const fetchError = err instanceof Error ? err : new Error(String(err));
+      setError(fetchError);
+      setUser(null);
+
+      // Exponential backoff
+      backoffCountRef.current += 1;
+      if (backoffCountRef.current >= MAX_BACKOFF_ATTEMPTS) {
+        // Gi opp — sett loading=false og ikke prøv igjen
+        setLoading(false);
+        console.warn(
+          `[AuthContext] Ga opp etter ${MAX_BACKOFF_ATTEMPTS} forsøk:`,
+          fetchError.message,
+        );
+        return;
+      }
+
+      const delay = Math.min(
+        INITIAL_BACKOFF_MS * Math.pow(2, backoffCountRef.current - 1),
+        MAX_BACKOFF_MS,
+      );
+      console.warn(
+        `[AuthContext] Forsøk ${backoffCountRef.current}/${MAX_BACKOFF_ATTEMPTS} feilet. Backoff ${delay}ms:`,
+        fetchError.message,
+      );
+
+      backoffTimerRef.current = setTimeout(() => {
+        void initAuth();
+      }, delay);
+    } finally {
+      if (isMountedRef.current) {
         setLoading(false);
       }
+    }
+  }, [resetBackoff]);
+
+  // ─── Focus/visibility lytt med debounce ──────────────────────────────
+
+  const handleVisibilityChange = useCallback(() => {
+    isHiddenRef.current = document.visibilityState === "hidden";
+
+    if (document.visibilityState === "visible" && isMountedRef.current) {
+      const now = Date.now();
+      if (now - lastFocusRefreshRef.current < FOCUS_DEBOUNCE_MS) return;
+      lastFocusRefreshRef.current = now;
+
+      // Bare refresh hvis vi ikke er i backoff-loopen
+      if (backoffCountRef.current === 0) {
+        void initAuth();
+      }
+    }
+  }, [initAuth]);
+
+  const handleFocus = useCallback(() => {
+    if (document.hidden) return; // Bruk visibilitychange i stedet
+
+    const now = Date.now();
+    if (now - lastFocusRefreshRef.current < FOCUS_DEBOUNCE_MS) return;
+    lastFocusRefreshRef.current = now;
+
+    if (backoffCountRef.current === 0) {
+      // Ikke re-sett loading — gjør en stille refresh
+      void initAuth();
+    }
+  }, [initAuth]);
+
+  // ─── Mount-effekt ─────────────────────────────────────────────────────
+
+  useEffect(() => {
+    // Guard mot double-execution i Strict Mode
+    if (initialFetchRef.current) return;
+    initialFetchRef.current = true;
+
+    isMountedRef.current = true;
+    isHiddenRef.current =
+      typeof document !== "undefined" && document.hidden;
+
+    // Failsafe: set loading=false etter 5s uansett hva
+    startFailsafe();
+
+    // Initial auth-init
+    void initAuth();
+
+    // Lytt på auth state changes
+    const supabase = supabaseRef.current ?? createClient();
+    supabaseRef.current = supabase;
+    const { data: subData } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!isMountedRef.current) return;
+        setUser(session?.user ?? null);
+        if (session) {
+          setError(null);
+          resetBackoff();
+        }
+        setLoading(false);
+      },
     );
+    subscriptionRef.current = subData.subscription;
+
+    // Focus/visibility-lyttere
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
 
     return () => {
-      isMounted = false;
-      subscription.unsubscribe();
+      isMountedRef.current = false;
+      clearTimers();
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
     };
-  }, []);
+  }, [initAuth, startFailsafe, handleVisibilityChange, handleFocus, resetBackoff, clearTimers]);
 
-  const signOut = async () => {
-    const supabase = createClient();
+  // ─── Handlinger ───────────────────────────────────────────────────────
+
+  const signOut = useCallback(async () => {
+    const supabase = supabaseRef.current ?? createClient();
     await supabase.auth.signOut();
     setUser(null);
-  };
+    setError(null);
+    setLoading(false);
+    resetBackoff();
+  }, [resetBackoff]);
 
-  const refreshUser = async () => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-  };
+  const refreshUser = useCallback(async () => {
+    const now = Date.now();
+    if (now - lastManualRefreshRef.current < REFRESH_RATE_LIMIT_MS) {
+      console.warn(
+        `[AuthContext] refreshUser rate-limited — vent minst ${REFRESH_RATE_LIMIT_MS}ms`,
+      );
+      return;
+    }
+    lastManualRefreshRef.current = now;
+
+    if (isHiddenRef.current) return; // Ikke refresh når skjult
+
+    const supabase = supabaseRef.current ?? createClient();
+    const { data: userData } = await supabase.auth.getUser();
+    if (isMountedRef.current) {
+      setUser(userData?.user ?? null);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, error, signOut, refreshUser }}>
@@ -120,13 +320,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── Hooks ───────────────────────────────────────────────────────────────
+
 export const useAuth = () => useContext(AuthContext);
 
-// Safe version that returns null if not in provider (for optional auth)
+/** Safe version som returnerer null hvis ikke i provider */
 export const useAuthSafe = () => {
   try {
     return useContext(AuthContext);
   } catch {
-    return { user: null, loading: false, error: null, signOut: async () => {}, refreshUser: async () => {} };
+    return {
+      user: null,
+      loading: false,
+      error: null,
+      signOut: async () => {},
+      refreshUser: async () => {},
+    };
   }
 };

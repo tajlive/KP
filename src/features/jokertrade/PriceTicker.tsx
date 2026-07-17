@@ -25,7 +25,7 @@ interface TickerCoin {
 const TICKER_COINS: TickerCoin[] = [
   { id: "bitcoin", symbol: "BTC", name: "Bitcoin", emoji: "₿" },
   { id: "ethereum", symbol: "ETH", name: "Ethereum", emoji: "⟠" },
-  { id: "solana", symbol: "solana", name: "Solana", emoji: "◎" },
+  { id: "solana", symbol: "SOL", name: "Solana", emoji: "◎" },
 ];
 
 // ---------------------------------------------------------------------------
