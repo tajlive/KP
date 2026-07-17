@@ -442,8 +442,8 @@ export function UnifiedTradeTerminal() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold text-white sm:text-xl">Trade</h1>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-              ● LIVE
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">
+              ● BETA
             </span>
           </div>
           <ModeTabs active={mode} onChange={setMode} />
