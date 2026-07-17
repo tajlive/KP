@@ -69,9 +69,11 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 export default function DashboardClientLayout({
   children,
   initialTradingMode = "paper",
+  initialUser = null,
 }: {
   children: React.ReactNode;
   initialTradingMode?: "paper" | "live";
+  initialUser?: import("@supabase/supabase-js").User | null;
 }) {
   return (
     <>
@@ -85,7 +87,7 @@ export default function DashboardClientLayout({
         <ClientSideProviders>
           <QueryProvider>
             <ErrorBoundary>
-              <AuthProvider>
+              <AuthProvider initialUser={initialUser}>
                 <ToastProvider>
                   <TradingModeProvider initialMode={initialTradingMode}>
                     <TradeSuccessProvider>

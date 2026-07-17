@@ -35,7 +35,10 @@ export default async function DashboardLayout({
   }
 
   return (
-    <DashboardClientLayout initialTradingMode={initialTradingMode}>
+    <DashboardClientLayout
+      initialTradingMode={initialTradingMode}
+      initialUser={user}
+    >
       {children}
     </DashboardClientLayout>
   );
