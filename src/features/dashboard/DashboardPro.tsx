@@ -12,6 +12,7 @@ import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
 import { PortfolioChart } from "@/features/portfolio/PortfolioChart";
 import { StatsGrid } from "@/features/portfolio/StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
+import { TradingModeSelector } from "@/features/trading/TradingModeSelector";
 import { SkeletonBlock } from "./loading-skeleton";
 
 import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
@@ -261,6 +262,9 @@ export function DashboardPro({
             sessionMode={isPaperMode ? "paper" : "live"}
           />
         </m.div>
+
+        {/* Trading Mode Selector — Velg mellom Manuell, Auto og JokerTrade */}
+        <TradingModeSelector activeMode="manual" />
 
         {/* First Trade Reward — kun for Onboarded+ */}
         {userState !== "NyBruker" && (
