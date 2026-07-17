@@ -4083,5 +4083,15 @@
       "contactSupport": "Kontakt support",
       "contactSupportDesc": "Hvis du ser vedvarende problemer, ta kontakt med oss."
     }
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Administrer din konto, lommebok og innstillinger",
+    "tabs": {
+      "profile": "Profil",
+      "wallet": "Lommebok",
+      "settings": "Innstillinger",
+      "notifications": "Varsler"
+    }
   }
 }
