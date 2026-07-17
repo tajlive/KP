@@ -194,17 +194,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
         .catch(() =>
           import("../messages/en/trading.json").then((m) => m.default),
         ),
-      import(`../messages/${validLocale}/tradingResults.json`)
-      .then((m) => m.default)
-      .catch(() =>
-        import("../messages/en/tradingResults.json").then((m) => m.default),
-      ),
       import(`../messages/${validLocale}/kursPage.json`)
       .then((m) => m.default)
       .catch(() =>
         import("../messages/en/kursPage.json").then((m) => m.default),
       ),
-      ]);
+      import(`../messages/${validLocale}/tradingResults.json`)
+      .then((m) => m.default)
+      .catch(() =>
+        import("../messages/en/tradingResults.json").then((m) => m.default),
+      ),
+    ]);
 
     const splits: Record<string, unknown> = {
       about,
