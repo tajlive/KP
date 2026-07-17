@@ -267,10 +267,9 @@ export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
 
 export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
-  { href: "/handel", labelKey: "trade" },
-  { href: "/jokertrade", labelKey: "jokerTrade" },
-  { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
+  { href: "/trade", labelKey: "trade" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
+  { href: "/dashboard/autopilot", labelKey: "autoTrade" },
 ];
 
 export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
