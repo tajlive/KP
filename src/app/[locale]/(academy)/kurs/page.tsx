@@ -193,7 +193,7 @@ export default async function KursPage({ params }: PageProps) {
     notFound();
   }
 
-  const t = await getTranslations("KursPage");
+  const t = await getTranslations("kursPage");
 
   const requiredCourses = courses.filter((c) => c.is_required);
   const optionalCourses = courses.filter((c) => !c.is_required);
@@ -447,7 +447,7 @@ function CourseCard({ course, locale, t, difficultyLabel }: CourseCardProps) {
 
 export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
-  const t = await getTranslations("KursPage");
+  const t = await getTranslations("kursPage");
 
   return {
     title: t("metadataTitle"),
