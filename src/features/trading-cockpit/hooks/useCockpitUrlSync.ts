@@ -27,7 +27,7 @@ export function useCockpitUrlSync(): UseCockpitUrlSyncResult {
 
   const tab: CockpitTab = useMemo(() => {
     const value = searchParams.get("tab");
-    return value === "trades" || value === "analysis" ? value : DEFAULT_TAB;
+    return value === "trades" || value === "sessions" || value === "analysis" ? value : DEFAULT_TAB;
   }, [searchParams]);
 
   const hasModeParam = useMemo(
