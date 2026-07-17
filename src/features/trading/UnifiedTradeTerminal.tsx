@@ -1,0 +1,404 @@
+"use client";
+
+import * as React from "react";
+import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { usePrices } from "@/hooks/usePrices";
+
+// ─── Types ───
+type TradeMode = "manual" | "auto" | "joker";
+
+interface PriceData {
+  symbol: string;
+  price: number;
+  change24h: number;
+}
+
+// ─── Live Ticker Bar ───
+function LiveTicker() {
+  const { prices } = usePrices();
+  const tickers: PriceData[] = React.useMemo(() => {
+    const map: Record<string, string> = {
+      BTCUSDT: "₿",
+      ETHUSDT: "⟠",
+      XRPUSDT: "◎",
+      SOLUSDT: "◎",
+      ADAUSDT: "⬡",
+    };
+    const priceData: PriceData[] = [];
+    let i = 0;
+    for (const [symbol, price] of Object.entries(prices).slice(0, 5)) {
+      priceData.push({
+        symbol: symbol.replace("USDT", ""),
+        price: price ?? 0,
+        change24h: (Math.random() * 6 - 2).toFixed(1) as unknown as number, // temp
+      });
+      i++;
+    }
+    return priceData.length > 0 ? priceData : [
+      { symbol: "BTC", price: 63258, change24h: 2.3 },
+      { symbol: "ETH", price: 22450, change24h: -0.8 },
+      { symbol: "XRP", price: 3.12, change24h: 0.5 },
+      { symbol: "SOL", price: 142.3, change24h: 4.1 },
+      { symbol: "ADA", price: 0.89, change24h: -1.2 },
+    ];
+  }, [prices]);
+
+  return (
+    <div className="w-full overflow-hidden bg-[#0D1117] border-b border-[#1E2530]">
+      <div className="flex gap-0 animate-scroll-x">
+        {[...tickers, ...tickers].map((t, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-mono whitespace-nowrap border-r border-[#1E2530] shrink-0"
+          >
+            <span className="text-slate-400">{t.symbol}</span>
+            <span className="text-white font-medium">
+              {t.price.toLocaleString("no")} kr
+            </span>
+            <span
+              className={cn(
+                "text-[11px] font-bold",
+                Number(t.change24h) >= 0 ? "text-emerald-400" : "text-red-400",
+              )}
+            >
+              {Number(t.change24h) >= 0 ? "+" : ""}
+              {t.change24h}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Mode Tabs ───
+const MODES: { id: TradeMode; label: string; short: string; accent: string }[] = [
+  { id: "manual", label: "Manuell", short: "✋", accent: "data-[state=active]:border-emerald-400 data-[state=active]:text-emerald-400" },
+  { id: "auto", label: "Auto", short: "🤖", accent: "data-[state=active]:border-amber-400 data-[state=active]:text-amber-400" },
+  { id: "joker", label: "Joker", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
+];
+
+function ModeTabs({ active, onChange }: { active: TradeMode; onChange: (m: TradeMode) => void }) {
+  const t = useTranslations("trading");
+
+  return (
+    <div className="flex items-center gap-0.5 bg-[#0A0D12] rounded-xl p-0.5 border border-[#1E2530]">
+      {MODES.map((m) => (
+        <button
+          key={m.id}
+          onClick={() => onChange(m.id)}
+          data-state={active === m.id ? "active" : "inactive"}
+          className={cn(
+            "relative px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
+            "border border-transparent",
+            "text-slate-500 hover:text-slate-300",
+            m.accent,
+          )}
+        >
+          <span className="hidden sm:inline">{m.short} </span>
+          {m.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── Candlestick Chart (simple SVG) ───
+function SparklineChart({ className }: { className?: string }) {
+  const [hovered, setHovered] = React.useState<number | null>(null);
+
+  // Generate fake candle data for visual
+  const candles = React.useMemo(() => {
+    const data: { o: number; h: number; l: number; c: number }[] = [];
+    let price = 63000;
+    for (let i = 0; i < 40; i++) {
+      const open = price;
+      const change = (Math.random() - 0.48) * 1500;
+      const close = open + change;
+      const high = Math.max(open, close) + Math.random() * 500;
+      const low = Math.min(open, close) - Math.random() * 500;
+      data.push({ o: open, h: high, l: low, c: close });
+      price = close;
+    }
+    return data;
+  }, []);
+
+  const w = 800;
+  const h = 280;
+  const pad = { top: 20, right: 16, bottom: 20, left: 0 };
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top - pad.bottom;
+
+  const allPrices = candles.flatMap((c) => [c.h, c.l]);
+  const min = Math.min(...allPrices);
+  const max = Math.max(...allPrices);
+  const range = max - min || 1;
+
+  const toX = (i: number) => pad.left + (i / (candles.length - 1)) * chartW;
+  const toY = (v: number) => pad.top + chartH - ((v - min) / range) * chartH;
+
+  const candleW = Math.max(1, chartW / candles.length - 2);
+
+  // Simple line for the closing price overlay
+  const linePath = candles
+    .map((c, i) => `${i === 0 ? "M" : "L"} ${toX(i)} ${toY(c.c)}`)
+    .join(" ");
+
+  const latestPrice = candles[candles.length - 1].c;
+  const firstPrice = candles[0].o;
+  const isUp = latestPrice >= firstPrice;
+
+  return (
+    <div className={cn("relative w-full overflow-hidden rounded-xl bg-[#0A0D12] border border-[#1E2530]", className)}>
+      <div className="absolute top-3 left-4 z-10">
+        <div className="text-white text-lg font-bold font-mono">
+          {latestPrice.toLocaleString("no")} <span className="text-sm font-normal text-slate-400">NOK</span>
+        </div>
+        <div className={cn("text-xs font-medium", isUp ? "text-emerald-400" : "text-red-400")}>
+          {isUp ? "+" : ""}{((latestPrice - firstPrice) / firstPrice * 100).toFixed(2)}%
+        </div>
+      </div>
+
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+        {/* Grid lines */}
+        {[0.2, 0.4, 0.6, 0.8].map((pct, i) => (
+          <line
+            key={i}
+            x1={pad.left} y1={toY(min + range * pct)}
+            x2={w - pad.right} y2={toY(min + range * pct)}
+            stroke="#1E2530" strokeWidth="0.5" strokeDasharray="4 4"
+          />
+        ))}
+
+        {/* Area fill */}
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={isUp ? "#10B981" : "#EF4444"} stopOpacity="0.15" />
+            <stop offset="100%" stopColor={isUp ? "#10B981" : "#EF4444"} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path
+          d={`${linePath} L ${toX(candles.length - 1)} ${toY(min)} L ${toX(0)} ${toY(min)} Z`}
+          fill="url(#areaGrad)"
+        />
+        <path d={linePath} fill="none" stroke={isUp ? "#10B981" : "#EF4444"} strokeWidth="1.5" />
+
+        {/* Candle wicks */}
+        {candles.map((c, i) => {
+          const x = toX(i);
+          return (
+            <line
+              key={`w${i}`}
+              x1={x} y1={toY(c.l)}
+              x2={x} y2={toY(c.h)}
+              stroke={c.c >= c.o ? "#10B981" : "#EF4444"}
+              strokeWidth="0.8"
+              opacity="0.6"
+            />
+          );
+        })}
+
+        {/* Hover line */}
+        {hovered !== null && (
+          <line
+            x1={toX(hovered)} y1={pad.top}
+            x2={toX(hovered)} y2={h - pad.bottom}
+            stroke="#ffffff" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4"
+          />
+        )}
+      </svg>
+
+      {/* Invisible hover areas */}
+      <div
+        className="absolute inset-0"
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const idx = Math.round((x / rect.width) * (candles.length - 1));
+          setHovered(Math.max(0, Math.min(candles.length - 1, idx)));
+        }}
+        onMouseLeave={() => setHovered(null)}
+      />
+    </div>
+  );
+}
+
+// ─── Buy/Sell Panel ───
+function OrderPanel({ mode }: { mode: TradeMode }) {
+  const t = useTranslations("trading");
+  const [side, setSide] = React.useState<"buy" | "sell">("buy");
+  const [amount, setAmount] = React.useState("1000");
+  const price = 63258;
+
+  return (
+    <div className="space-y-3">
+      {/* Side toggle */}
+      <div className="flex rounded-lg bg-[#0A0D12] border border-[#1E2530] p-0.5">
+        <button
+          onClick={() => setSide("buy")}
+          className={cn(
+            "flex-1 py-2 text-sm font-bold rounded-md transition-all",
+            side === "buy"
+              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+              : "text-slate-500 hover:text-slate-300",
+          )}
+        >
+          Kjøp
+        </button>
+        <button
+          onClick={() => setSide("sell")}
+          className={cn(
+            "flex-1 py-2 text-sm font-bold rounded-md transition-all",
+            side === "sell"
+              ? "bg-red-500/20 text-red-400 border border-red-500/30"
+              : "text-slate-500 hover:text-slate-300",
+          )}
+        >
+          Selg
+        </button>
+      </div>
+
+      {/* Amount input */}
+      <div>
+        <label htmlFor="trade-amount" className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1 block">
+          Beløp (NOK)
+        </label>
+        <div className="relative">
+          <input
+            id="trade-amount"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="w-full bg-[#0A0D12] border border-[#1E2530] rounded-lg px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-[#0066FF] transition-colors"
+            placeholder="0.00"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-500 font-mono">
+            ≈ {(Number(amount) / price).toFixed(6)} BTC
+          </span>
+        </div>
+      </div>
+
+      {/* Price display */}
+      <div className="flex justify-between text-xs text-slate-500">
+        <span>1 BTC = {price.toLocaleString("no")} kr</span>
+        <span>Spread: 0.02%</span>
+      </div>
+
+      {/* Action button */}
+      <button
+        className={cn(
+          "w-full py-3 rounded-xl text-sm font-bold transition-all duration-200",
+          "shadow-lg active:scale-[0.98]",
+          side === "buy"
+            ? "bg-emerald-500 text-white hover:bg-emerald-400 shadow-emerald-500/20"
+            : "bg-red-500 text-white hover:bg-red-400 shadow-red-500/20",
+        )}
+      >
+        {side === "buy" ? "Kjøp BTC" : "Selg BTC"}
+      </button>
+
+      {/* Mode-specific info */}
+      <div className={cn(
+        "text-center text-[11px] px-3 py-1.5 rounded-lg",
+        "bg-[#0A0D12] border border-[#1E2530]",
+      )}>
+        {mode === "manual" && "Du handler selv — full kontroll"}
+        {mode === "auto" && "AI-en handler basert på dine regler"}
+        {mode === "joker" && "AI-en analyserer og handler automatisk"}
+      </div>
+    </div>
+  );
+}
+
+// ─── Positions / Orders Mini-list ───
+function MiniPositionList() {
+  const positions = [
+    { pair: "BTC/USDT", side: "buy", amount: "0.015", pnl: "+12.5%", pnlColor: "text-emerald-400" },
+    { pair: "ETH/USDT", side: "buy", amount: "0.25", pnl: "-3.2%", pnlColor: "text-red-400" },
+    { pair: "XRP/USDT", side: "sell", amount: "500", pnl: "+1.8%", pnlColor: "text-emerald-400" },
+  ];
+
+  return (
+    <div className="space-y-1.5">
+      <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider px-1">
+        Posisjoner
+      </div>
+      {positions.map((p, i) => (
+        <div
+          key={i}
+          className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0A0D12] border border-[#1E2530] text-xs"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-white font-mono">{p.pair}</span>
+            <span className={cn("text-[10px] font-bold uppercase", p.side === "buy" ? "text-emerald-400" : "text-red-400")}>
+              {p.side}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-slate-400 font-mono">{p.amount}</span>
+            <span className={cn("font-mono font-bold", p.pnlColor)}>{p.pnl}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Main Terminal ───
+export function UnifiedTradeTerminal() {
+  const t = useTranslations("trading");
+  const [mode, setMode] = React.useState<TradeMode>("manual");
+
+  return (
+    <div className="min-h-screen bg-[#0B0F19] text-white">
+      {/* Live Ticker */}
+      <LiveTicker />
+
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-3">
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-white sm:text-xl">Trade</h1>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+              ● LIVE
+            </span>
+          </div>
+          <ModeTabs active={mode} onChange={setMode} />
+        </div>
+
+        {/* Main grid: chart + panels */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-3">
+          {/* Chart column */}
+          <div className="space-y-3">
+            <SparklineChart className="h-[280px] sm:h-[380px]" />
+
+            {/* Mode description bar */}
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={cn(
+                "px-4 py-2 rounded-xl text-xs font-medium border",
+                mode === "manual" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
+                mode === "auto" && "bg-amber-500/5 border-amber-500/20 text-amber-400",
+                mode === "joker" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
+              )}
+            >
+              {mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
+              {mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
+              {mode === "joker" && "🃏 JokerTrade — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
+            </motion.div>
+          </div>
+
+          {/* Side panel: Order + Positions */}
+          <div className="space-y-3">
+            <OrderPanel mode={mode} />
+            <MiniPositionList />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

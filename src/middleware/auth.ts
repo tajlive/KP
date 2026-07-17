@@ -32,6 +32,7 @@ const PROTECTED_PATHS = [
   "/copy-trading",
   "/marketplace",
   "/profile",
+  "/trade",
 ];
 
 const AUTH_PATHS = [
