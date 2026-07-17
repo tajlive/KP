@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
+import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
+import { JokerDashboard } from "@/features/trading/JokerDashboard";
 
 // ─── Types ───
 type TradeMode = "manual" | "auto" | "joker";
@@ -473,10 +475,16 @@ export function UnifiedTradeTerminal() {
             </motion.div>
           </div>
 
-          {/* Side panel: Order + Positions */}
+          {/* Side panel: Mode-spesifikt innhold */}
           <div className="space-y-3">
-            <OrderPanel mode={mode} />
-            <MiniPositionList />
+            {mode === "manual" && (
+              <>
+                <OrderPanel mode={mode} />
+                <MiniPositionList />
+              </>
+            )}
+            {mode === "auto" && <AutoStrategyPanel />}
+            {mode === "joker" && <JokerDashboard />}
           </div>
         </div>
       </div>
