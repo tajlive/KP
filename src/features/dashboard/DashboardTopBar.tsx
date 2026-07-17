@@ -26,7 +26,7 @@ export function DashboardTopBar({
   const t = useTranslations("dashboard.topBar");
   const { formatByMode } = useCurrency();
   const isPaper = mode === "paper";
-  const href = ctaLink ?? `/${locale}/handel?mode=${mode}`;
+  const href = ctaLink ?? `/${locale}/trade?mode=${mode}`;
 
   const changeTrend =
     changePct == null ? "neutral" : changePct >= 0 ? "up" : "down";

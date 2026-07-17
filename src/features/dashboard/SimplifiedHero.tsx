@@ -26,7 +26,7 @@ export function SimplifiedHero({
   const locale = useLocale();
   const t = useTranslations("dashboard.hero");
   const isPaper = sessionMode === "paper";
-  const href = ctaLink ?? `/${locale}/handel?mode=${isPaper ? "paper" : "live"}`;
+  const href = ctaLink ?? `/${locale}/trade?mode=${isPaper ? "paper" : "live"}`;
 
   return (
     <m.div

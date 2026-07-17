@@ -103,7 +103,7 @@ async function handlePOST(request: NextRequest) {
     body: body.body,
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-72x72.png",
-    url: body.type === "trade_executed" ? "/handel" :
+    url: body.type === "trade_executed" ? "/trade" :
          body.type === "leaderboard_change" ? "/dashboard" :
          body.type === "achievement" ? "/dashboard" :
          body.type === "weekly_summary" ? "/dashboard" : "/",
