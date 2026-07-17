@@ -128,7 +128,7 @@ export function TradingCockpit({
             onLoadMoreSessions={loadMoreSessions}
             onActivateAutoTrading={handleActivateAutoTrading}
             isActivatingAutoTrading={isActivating}
-            showOnboarding={true}
+            showOnboarding={!metrics || metrics.totalTrades === 0}
             onDismissOnboarding={() => {}}
           />
         </>

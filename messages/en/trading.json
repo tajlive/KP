@@ -900,8 +900,9 @@
       "paperDescription": "Practice with virtual capital",
       "liveDescription": "Trade with real money",
       "locked": "Locked",
-      "lockedInline": "Live requires exchange + tier",
+      "lockedInline": "Live requires exchange + subscription",
       "lockedTooltip": "Live trading requires a connected exchange and valid subscription.",
+      "upgrade": "Upgrade",
       "label": "Mode: {mode}"
     },
     "tab": {

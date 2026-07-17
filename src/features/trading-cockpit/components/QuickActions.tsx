@@ -101,7 +101,7 @@ export function QuickActions({ className }: QuickActionsProps) {
   }, [mode, refresh, t, toggleAction]);
 
   const handleViewHistory = React.useCallback(() => {
-    router.push(`/${locale}/handelshistorikk`);
+    router.push(`/${locale}/dashboard/historikk`);
   }, [locale, router]);
 
   return (

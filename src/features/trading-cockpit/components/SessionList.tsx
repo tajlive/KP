@@ -97,7 +97,7 @@ export function SessionList({
             <button
               key={session.id}
               type="button"
-              onClick={() => router.push(`/${locale}/handelshistorikk`)}
+              onClick={() => router.push(`/${locale}/dashboard/historikk`)}
               className="bg-kp-card border border-kp-light rounded-2xl p-4 text-left w-full transition-colors hover:bg-kp-bg-hover"
               aria-label={`${session.trading_pair} ${session.status}`}
               data-testid={`session-card-${session.id}`}

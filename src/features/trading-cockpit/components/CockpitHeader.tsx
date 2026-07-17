@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { AlertTriangle, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,7 @@ export function CockpitHeader({
   className,
 }: CockpitHeaderProps) {
   const t = useTranslations("trading");
+  const locale = useLocale();
   const isLive = mode === "live";
   const { prices } = usePrices();
   const btcPrice = prices["BTCUSDT"];
@@ -213,9 +215,12 @@ export function CockpitHeader({
             </div>
 
             {!canUseLive && (
-              <span className="text-xs text-kp-text-muted">
-                {t("cockpit.mode.lockedInline")}
-              </span>
+              <Link
+                href={`/${locale}/priser`}
+                className="text-xs text-kp-brand hover:underline"
+              >
+                {t("cockpit.mode.upgrade")} →
+              </Link>
             )}
           </div>
         </TooltipProvider>

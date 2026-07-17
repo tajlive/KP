@@ -912,6 +912,7 @@
       "locked": "Låst",
       "lockedInline": "Live krever børs + abonnement",
       "lockedTooltip": "Live trading krever tilkoblet børs og gyldig abonnement.",
+      "upgrade": "Oppgrader",
       "label": "Modus: {mode}"
     },
     "tab": {
