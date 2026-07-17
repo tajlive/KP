@@ -28,7 +28,7 @@ const MODES: ModeCard[] = [
     tagline: "Du bestemmer alt",
     description: "Kjøp og selg selv. Full kontroll over hver trade. Lær mens du handler.",
     who: "For deg som vil lære",
-    href: "/handel",
+    href: "/trade",
     accent: "border-emerald-500/60 hover:border-emerald-400",
     bg: "from-emerald-950/40 to-emerald-900/20",
     dot: "bg-emerald-400",

@@ -7,12 +7,14 @@
 
 export const CANONICAL_REDIRECTS: Record<string, string> = {
   "/dashboard/activity": "/handelshistorikk",
-  "/dashboard/trading": "/handel",
+  "/dashboard/trading": "/trade",
   "/dashboard/innstillinger": "/profile?tab=settings",
-  "/trade": "/handel",
+  "/handel": "/trade",
   "/auto-trading": "/dashboard/auto-trade",
   "/auto-trading-ai": "/dashboard/auto-trade",
   "/innlogging": "/login",
   "/registrer": "/register",
-  "/paper": "/handel?mode=paper",
+  "/paper": "/trade?mode=paper",
+  "/handel?mode=paper": "/trade?mode=paper",
+  "/handel?mode=live": "/trade?mode=live",
 };
