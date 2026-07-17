@@ -5,6 +5,7 @@ import { HowItWorks } from "./HowItWorks";
 import { LeaderboardWidget } from "./LeaderboardWidget";
 import { Testimonials } from "./Testimonials";
 import { FAQ } from "./FAQ";
+import { JokerTradeCTA } from "./JokerTradeCTA";
 
 // ---------------------------------------------------------------------------
 // JokerTradeLanding — Public landing page komponert av alle seksjoner
@@ -38,12 +39,11 @@ export function JokerTradeLanding() {
             Start gratis med 100 000 kr i lekepenger. Null risiko, null binding.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 items-center justify-center">
-            <a
-              href="/no/signup"
+            <JokerTradeCTA
               className="btn-gold text-base sm:text-lg px-10 py-4 no-underline shadow-lg shadow-[#F59E0B]/20"
             >
               🎭 Start JokerTrade gratis
-            </a>
+            </JokerTradeCTA>
             <a
               href="/no#hvordan"
               className="inline-flex items-center justify-center gap-2 px-8 py-4

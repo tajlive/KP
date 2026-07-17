@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { JokerIcon } from "./JokerIcons";
 import { PriceTicker } from "./PriceTicker";
+import { JokerTradeCTA } from "./JokerTradeCTA";
 
 // ---------------------------------------------------------------------------
 // Animated particle background (reuse pattern from LandingHero)
@@ -80,8 +81,7 @@ export function HeroSection() {
 
           {/* CTA */}
           <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 items-center">
-            <Link
-              href="/no/signup"
+            <JokerTradeCTA
               className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base sm:text-lg
                 bg-[#F59E0B] text-[#0A0B0D]
                 shadow-[0_0_30px_rgba(245,158,11,0.4)]
@@ -91,11 +91,7 @@ export function HeroSection() {
                 hover:shadow-[0_0_50px_rgba(245,158,11,0.6)]
                 hover:scale-[1.02]
                 no-underline"
-            >
-              <Sparkles className="w-5 h-5" />
-              Start JokerTrade gratis
-              <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+            />
           </div>
 
           {/* Trust line */}
