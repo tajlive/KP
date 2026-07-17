@@ -2,52 +2,61 @@
 
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, ArrowDown } from "lucide-react";
+
+interface JokerTradeCTAProps {
+  className?: string;
+  children?: React.ReactNode;
+}
 
 /**
- * Smart JokerTrade CTA-knapp.
- * Innlogget → scroll til trading-dashboard.
- * Ikke innlogget → registreringsside.
+ * Smart JokerTrade CTA-knapp:
+ * - Innlogget → scroller til JokerTrade-dashboard
+ * - Ikke innlogget → registreringsside
+ * - Tekst tilpasses auth-state automatisk
  */
 export function JokerTradeCTA({
   className,
   children,
-}: {
-  className?: string;
-  children?: React.ReactNode;
-}) {
-  const { user, loading } = useAuth();
+}: JokerTradeCTAProps) {
+  const { user } = useAuth();
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (loading) return;
     if (user) {
-      // Scroll til JokerTradeClient (data-testid="jokertrade-client")
-      const el = document.querySelector('[data-testid="jokertrade-client"]');
+      const el = document.getElementById("jokertrade-dashboard");
       if (el) {
         el.scrollIntoView({ behavior: "smooth" });
       } else {
-        router.push("/no/jokertrade#trading");
+        router.push("/no/jokertrade#jokertrade-dashboard");
       }
     } else {
       router.push("/no/register");
     }
   };
 
+  const defaultContent = user ? (
+    <>
+      <ArrowDown className="h-5 w-5" />
+      Gå til JokerTrade
+      <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+    </>
+  ) : (
+    <>
+      <Sparkles className="h-5 w-5" />
+      Start JokerTrade gratis
+      <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+    </>
+  );
+
   return (
     <a
-      href={user ? "#trading" : "/no/register"}
+      href={user ? "#jokertrade-dashboard" : "/no/register"}
       onClick={handleClick}
       className={className}
     >
-      {children || (
-        <>
-          <Sparkles className="w-5 h-5" />
-          Start JokerTrade gratis
-          <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-        </>
-      )}
+      {children || defaultContent}
     </a>
   );
 }
