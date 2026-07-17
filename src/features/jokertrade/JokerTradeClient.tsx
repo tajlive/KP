@@ -58,7 +58,7 @@ interface JokerTradeData {
 }
 
 interface JokerTradeClientProps {
-  initialData: JokerTradeData;
+  initialData?: JokerTradeData;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,7 +66,14 @@ interface JokerTradeClientProps {
 // ---------------------------------------------------------------------------
 
 export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
-  const [data, setData] = useState<JokerTradeData>(initialData);
+  const dataInit: JokerTradeData = initialData ?? {
+    status: "active",
+    insight: null,
+    mode: "paper",
+    positions: [],
+    history: [],
+  };
+  const [data, setData] = useState<JokerTradeData>(dataInit);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [triggeringJoker, setTriggeringJoker] = useState(false);
