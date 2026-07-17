@@ -118,6 +118,19 @@ export default function RegisterPage() {
 
           <form action={handleSubmit} className="space-y-4">
             <AuthFormField
+              id="username"
+              name="username"
+              type="text"
+              label="Brukernavn"
+              placeholder="DittBrukernavn"
+              required
+              minLength={3}
+              maxLength={20}
+              pattern="[a-zA-Z0-9]+"
+              variant="public"
+            />
+
+            <AuthFormField
               id="email"
               name="email"
               type="email"

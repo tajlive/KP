@@ -41,19 +41,32 @@ export async function signUpWithEmail(formData: FormData) {
   
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
+  const username = (formData.get("username") as string)?.trim();
   const { getLocale } = await import("next-intl/server");
   const locale = await getLocale();
   
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: buildAuthRedirect({ type: "oauth-callback", locale }),
+      data: { username }, // Save username in auth metadata
     },
   });
 
   if (error) {
     return { error: error.message };
+  }
+
+  // Save username to user_profiles hvis brukeren ble opprettet umiddelbart
+  if (data?.user?.id && username) {
+    const { error: profileError } = await supabase
+      .from("user_profiles")
+      .upsert({ id: data.user.id, username }, { onConflict: "id" });
+
+    if (profileError) {
+      console.warn("[signUpWithEmail] Username save failed:", profileError.message);
+    }
   }
 
   return { success: true, message: "Check your email for confirmation" };

@@ -79,6 +79,12 @@ function welcomeEmail(name: string): string {
     <p style="font-size:14px;color:#6B7280">
       Du handler med <strong>lekepenger</strong> — 100 000 kr i virtuell kapital. Null risiko, maks læring.
     </p>
+    <div style="background:#1a1f2e;border:1px solid #2d3348;border-radius:8px;padding:16px;margin-top:16px">
+      <p style="margin:0;font-size:13px;color:#F59E0B">⚠️ <strong>Beta-testfase</strong></p>
+      <p style="margin:8px 0 0;font-size:12px;color:#9CA3AF;line-height:1.5">
+        I testperioden er kun <strong>lekepenger</strong> tilgjengelig. Du handler med ekte markedstall og vår ekte trademotor — men uten risiko. Live-handel med ekte penger åpnes etter beta.
+      </p>
+    </div>
     <a href="https://www.klarpakke.no/no/trade" style="display:inline-block;background:#0066FF;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:bold;margin-top:16px">
       Start trading →
     </a>
