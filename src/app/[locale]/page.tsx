@@ -1,10 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
-import { SURFACE } from "@/lib/design/tokens";
-import { LandingHero } from "@/features/landing/LandingHero";
-import {
-  MarketingPageShell,
-  generateMarketingMetadata,
-} from "@/shared/ui/marketing";
+import HeroSection from "@/components/landing/HeroSection";
+import { generateMarketingMetadata } from "@/shared/ui/marketing";
 
 export const runtime = "nodejs";
 
@@ -33,9 +29,5 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return (
-    <MarketingPageShell className={SURFACE.BG}>
-      <LandingHero />
-    </MarketingPageShell>
-  );
+  return (<main><HeroSection /></main>);
 }
