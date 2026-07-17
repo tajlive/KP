@@ -13,7 +13,7 @@ const TIER_GATED_ROUTES: Array<
   | { path: string; minLevel: number }
   | { path: string; minLevel: number; requireQuery: Record<string, string> }
 > = [
-  { path: "/handel", minLevel: 1, requireQuery: { mode: "live" } },
+  { path: "/trade", minLevel: 1, requireQuery: { mode: "live" } },
   { path: "/dashboard/bots", minLevel: 2 },
 ];
 

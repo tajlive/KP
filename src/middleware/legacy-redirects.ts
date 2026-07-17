@@ -18,8 +18,8 @@ interface LegacyRedirect {
  * page files.
  */
 export const LEGACY_REDIRECTS: readonly LegacyRedirect[] = [
-  { from: "/live-trading", to: "/handel", setQuery: { mode: "live" } },
-  { from: "/paper-trading", to: "/handel", setQuery: { mode: "paper" } },
+  { from: "/live-trading", to: "/trade", setQuery: { mode: "live" } },
+  { from: "/paper-trading", to: "/trade", setQuery: { mode: "paper" } },
   { from: "/tradere", to: "/copy-trading" },
   { from: "/dashboard/auto-handel", to: "/dashboard/auto-trade" },
   { from: "/dashboard/autopilot/launch", to: "/dashboard/autopilot" },
