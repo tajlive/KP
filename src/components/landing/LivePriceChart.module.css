@@ -11,6 +11,8 @@
   padding: 20px;
   width: 100%;
   max-width: 400px;
+  min-height: 200px;
+  margin: 24px 0;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
@@ -196,5 +198,6 @@
 @media (min-width: 768px) {
   .card {
     padding: 24px;
+    min-height: 300px;
   }
 }
