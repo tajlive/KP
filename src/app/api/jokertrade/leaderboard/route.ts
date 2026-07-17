@@ -5,12 +5,10 @@
  */
 
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -18,25 +16,23 @@ export async function GET(req: Request) {
   const limit = Math.min(Number(searchParams.get("limit")) || 3, 50);
 
   try {
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/leaderboard_entries?period=eq.${period}&is_public=eq.true&order=rank.asc&limit=${limit}`,
-      {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-        },
-        signal: AbortSignal.timeout(8_000),
-      },
-    );
+    const supabase = await createClient();
 
-    if (!res.ok) {
+    const { data, error } = await supabase
+      .from("leaderboard_entries")
+      .select("*")
+      .eq("period", period)
+      .eq("is_public", true)
+      .order("rank", { ascending: true })
+      .limit(limit);
+
+    if (error) {
       return NextResponse.json(
-        { success: false, error: "Supabase error", status: res.status },
-        { status: res.status },
+        { success: false, error: error.message, status: 500 },
+        { status: 500 },
       );
     }
 
-    const data = await res.json();
     return NextResponse.json({ success: true, data });
   } catch (err) {
     return NextResponse.json(
