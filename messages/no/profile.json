@@ -1,0 +1,11 @@
+{
+  "profile": {
+    "title": "Profil",
+    "tabs": {
+      "profile": "Profil",
+      "wallet": "Lommebok",
+      "settings": "Innstillinger",
+      "notifications": "Varsler"
+    }
+  }
+}
