@@ -4088,5 +4088,15 @@
       "contactSupport": "Contact support",
       "contactSupportDesc": "If you see persistent issues, reach out to us."
     }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account, wallet and settings",
+    "tabs": {
+      "profile": "Profile",
+      "wallet": "Wallet",
+      "settings": "Settings",
+      "notifications": "Notifications"
+    }
   }
 }
