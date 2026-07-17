@@ -65,9 +65,16 @@ const AuthContext = createContext<AuthContextType>({
 
 // ─── Provider ────────────────────────────────────────────────────────────
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export function AuthProvider({
+  children,
+  initialUser = null,
+}: {
+  children: React.ReactNode;
+  /** Server-verifisert bruker — starter auth-state resolved (unngår SSR/client-mismatch) */
+  initialUser?: User | null;
+}) {
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [loading, setLoading] = useState(!initialUser);
   const [error, setError] = useState<Error | null>(null);
 
   // Refs
@@ -113,6 +120,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /** Hoved auth-init-funksjon — kalles ved mount og ved backoff-retry */
   const initAuth = useCallback(async () => {
     if (!isMountedRef.current) return;
+
+    // Skip hvis vi allerede har server-verifisert bruker (initialUser)
+    if (initialUser && backoffCountRef.current === 0) {
+      setLoading(false);
+      return;
+    }
 
     // Skip hvis document er hidden (unntatt ved første mount)
     if (isHiddenRef.current && backoffCountRef.current > 0) return;
@@ -202,7 +215,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       }
     }
-  }, [resetBackoff]);
+  }, [resetBackoff, initialUser]);
 
   // ─── Focus/visibility lytt med debounce ──────────────────────────────
 
