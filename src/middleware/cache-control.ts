@@ -12,8 +12,6 @@ import { parseLocalePath } from "./locale-path";
 
 /** Routes that must never be cached by browser or CDN. */
 const NO_STORE_PATHS = [
-  // Landing page — must reflect redesign changes immediately
-  "/",
   // Auth
   "/login",
   "/register",
