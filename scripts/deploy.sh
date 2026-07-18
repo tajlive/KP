@@ -26,10 +26,13 @@ echo -e "${CYAN}╚════════════════════�
 echo "Version: ${VERSION}"
 echo ""
 
-# ─── 1. Bygg ───
-echo -e "${CYAN}🏗️  Bygger...${NC}"
-SKIP_LINT_IN_BUILD=true NODE_OPTIONS="--max-old-space-size=4096" \
-  npx opennextjs-cloudflare build 2>&1 | tail -5
+# ─── 1. Bygg (next build → opennextjs pakking) ───
+echo -e "${CYAN}🏗️  Bygger Next.js...${NC}"
+SKIP_LINT_IN_BUILD=true NODE_OPTIONS="--max-old-space-size=4096" npx next build 2>&1 | tail -3
+echo -e "${GREEN}✅ Next.js bygg ferdig${NC}"
+
+echo -e "${CYAN}📦 Pakker for Cloudflare...${NC}"
+SKIP_LINT_IN_BUILD=true npx opennextjs-cloudflare build --skipNextBuild 2>&1 | tail -5
 echo -e "${GREEN}✅ Bygg ferdig${NC}"
 
 # ─── 2. Deploy ───
