@@ -1,5 +1,10 @@
+"use client";
+
+import * as React from "react";
+import { cn } from "@/lib/utils";
+
 // ─── Auto Strategy Panel ───
-function AutoStrategyPanel() {
+export function AutoStrategyPanel() {
   const [risk, setRisk] = React.useState("medium");
   const [capital, setCapital] = React.useState("10000");
 
