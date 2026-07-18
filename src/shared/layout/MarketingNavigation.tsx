@@ -26,6 +26,7 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
         <div className="flex justify-between items-center h-14 gap-2 min-w-0">
           <Link
             href={l("/")}
+            prefetch={false}
             className="flex items-center gap-2 min-w-0 shrink-0 overflow-hidden"
           >
             <Image
