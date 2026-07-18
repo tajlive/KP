@@ -51,9 +51,9 @@ function InlineFooter() {
             <span className="text-white/60 text-sm">Norges enkleste krypto-trading</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-white/70">
-            <Link href="/vilkar" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.terms")}</Link>
-            <Link href="/personvern" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.privacy")}</Link>
-            <Link href="/kontakt" className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.contact")}</Link>
+            <Link href="/vilkar" prefetch={false} className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.terms")}</Link>
+            <Link href="/personvern" prefetch={false} className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.privacy")}</Link>
+            <Link href="/kontakt" prefetch={false} className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.contact")}</Link>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-white/50">

@@ -36,6 +36,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
           <Link
             key={link.path}
             href={l(link.path)}
+            prefetch={false}
             className="text-sm font-medium text-[#505766] hover:text-[#1A1D26] transition-colors"
           >
             {link.label}
@@ -116,6 +117,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
             <Link
               key={link.path}
               href={l(link.path)}
+              prefetch={false}
               className="block px-4 py-2 text-sm font-medium text-[#505766] hover:bg-[#F7F8FA] rounded-lg"
               onClick={() => setIsOpen(false)}
             >
