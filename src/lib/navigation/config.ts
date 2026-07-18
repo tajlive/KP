@@ -73,7 +73,7 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
   },
   {
     key: "trade",
-    href: "/handel",
+    href: "/trade",
     labelKey: "dashboard.sidebar.trade",
     icon: "TrendingUp",
     roles: ["auth"],
@@ -168,7 +168,7 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
   },
   {
     key: "trade",
-    href: "/handel",
+    href: "/trade",
     labelKey: "navigation.trade",
     icon: "TrendingUp",
     roles: ["auth"],
@@ -255,7 +255,7 @@ export const DASHBOARD_MAIN_NAV: readonly DashboardMainNavItem[] = [
 ];
 
 export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
-  { href: "/handel", labelKey: "trade" },
+  { href: "/trade", labelKey: "trade" },
   {
     href: "/dashboard/auto-trade",
     labelKey: "autoTrade",
@@ -343,7 +343,7 @@ export interface NavigationData {
 export const FALLBACK_NAVIGATION: NavigationData = {
   loggedOutLinks: [
     { label: "Lær", path: "/kurs", order: 0 },
-    { label: "Trade", path: "/handel", order: 1 },
+    { label: "Trade", path: "/trade", order: 1 },
     { label: "Bots", path: "/dashboard/auto-trade", order: 2 },
     { label: "JokerTrade", path: "/jokertrade", order: 3 },
     { label: "Priser", path: "/priser", order: 4 },
@@ -351,7 +351,7 @@ export const FALLBACK_NAVIGATION: NavigationData = {
   loggedInLinks: [
     { label: "Dashboard", path: "/dashboard", order: 0 },
     { label: "Portefølje", path: "/dashboard/portfolio", order: 1 },
-    { label: "Trade", path: "/handel", order: 2 },
+    { label: "Trade", path: "/trade", order: 2 },
     { label: "Bots", path: "/dashboard/auto-trade", order: 3 },
     { label: "Lær", path: "/kurs", order: 4 },
     { label: "Priser", path: "/priser", order: 5 },
@@ -376,7 +376,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/onboarding",
   "/akademi",
   "/konto",
-  "/handel",
+  "/trade",
   "/marked",
   "/leagues",
   "/profile",
