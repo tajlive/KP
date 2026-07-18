@@ -137,9 +137,8 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { type, ...data } = body as { type: string; [key: string]: unknown };
 
-  let email: string;
   let subject: string;
-  let html: string;
+  let html = "";
 
   // Get user email
   const email = user.email || "";
