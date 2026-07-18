@@ -118,6 +118,9 @@ async function binanceFetch<T>(
   throw lastError ?? new Error("All Binance API endpoints failed");
 }
 
+const PRICE_CACHE_TTL = 10_000; // 10 sekunder
+const priceCache = new Map<string, { price: number; timestamp: number }>();
+
 export class BinanceMarketDataProvider implements MarketDataProvider {
   private lastEndpointUsed: string | undefined;
 
@@ -131,9 +134,18 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
 
   async getPrice(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
+
+    // Sjekk cache først
+    const cached = priceCache.get(normalized);
+    if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
+      return cached.price;
+    }
+
     // Proxy first — Cloudflare Worker IP-er blir blokkert av Binance (403/451)
     try {
-      return await fetchPriceViaProxy(normalized);
+      const price = await fetchPriceViaProxy(normalized);
+      priceCache.set(normalized, { price, timestamp: Date.now() });
+      return price;
     } catch {
       // Fallback til direkte Binance API hvis proxy feiler
       try {
@@ -142,10 +154,14 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
           5000,
           (base) => { this.lastEndpointUsed = base; },
         );
-        return parseFloat(data.price);
+        const price = parseFloat(data.price);
+        priceCache.set(normalized, { price, timestamp: Date.now() });
+        return price;
       } catch {
         // CoinGecko — siste utvei (Binance blokkerer Cloudflare IP-er)
-        return await fetchPriceFromCoinGecko(normalized);
+        const price = await fetchPriceFromCoinGecko(normalized);
+        priceCache.set(normalized, { price, timestamp: Date.now() });
+        return price;
       }
     }
   }

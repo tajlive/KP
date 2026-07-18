@@ -30,7 +30,7 @@ const marketDataProvider = createBinanceMarketDataProvider();
 /** Paper-adapter parametere – alle modusspesifikke verdier samlet her. */
 export const PAPER_PARAMS = {
   feeRate: 0.001, // 0.1%
-  marketSlippageRate: 0.0005, // 0.05%
+  marketSlippageRate: 0.002, // 0.2% — realistisk slippage for retail
   minOrderValue: 10,
 };
 
