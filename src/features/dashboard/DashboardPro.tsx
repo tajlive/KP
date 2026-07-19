@@ -13,6 +13,8 @@ import { PortfolioChart } from "@/features/portfolio/PortfolioChart";
 import { StatsGrid } from "@/features/portfolio/StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
 import { TradingModeSelector } from "@/features/trading/TradingModeSelector";
+import { PriceTicker } from "./PriceTicker";
+import { RecentTrades } from "./RecentTrades";
 import { SkeletonBlock } from "./loading-skeleton";
 
 import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
@@ -32,13 +34,10 @@ import GetStartedCard from "./GetStartedCard";
 // Enterprise 2026 komponenter
 import { PersonalizedGreeting } from "./PersonalizedGreeting";
 import { ExplainStatButton } from "./ExplainStatButton";
-import { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 import { NLQChat } from "./NLQChat";
 import { AIInsightCard } from "./AIInsightCard";
 import { FeatureGate } from "@/lib/feature-flags";
 import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
-
-// Adaptive state machine
 import { computeUserState, type UserState } from "@/hooks/useUserState";
 
 import {
@@ -249,6 +248,9 @@ export function DashboardPro({
             isPriority={isPriority}
           />
 
+          {/* Price Ticker — BTC, ETH, SOL, ... */}
+          <PriceTicker />
+
         {/* Hero - Simplified balance */}
         <m.div
           initial={{ opacity: 0, y: -20 }}
@@ -271,8 +273,8 @@ export function DashboardPro({
           <FirstTradeReward totalTrades={effectiveStats.totalTrades} />
         )}
 
-        {/* Get Started Checklist Card */}
-        {userId && (
+        {/* Get Started Checklist Card — kun for nye brukere */}
+        {userId && userState !== "AktivTrader" && userState !== "PowerUser" && (
           <GetStartedCard
             userId={userId}
             completedLessons={[]}
@@ -363,6 +365,7 @@ export function DashboardPro({
                 ) : (
                   <div className="space-y-2">
                     <StatsGrid stats={statItems} updatedAt={lastUpdated} />
+                    <RecentTrades sessions={effectiveStats.recentSessions || []} />
                     <div className="flex items-center gap-3 px-1">
                       {effectiveStats.totalPnl != null && (
                         <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
@@ -402,10 +405,7 @@ export function DashboardPro({
               </FeatureGate>
             )}
 
-            {/* Trading Mode & Risk Settings */}
-            <AutoTradingConfigCard />
-
-            {/* Live Trade Feed — kun for aktive tradere */}
+          {/* Live Trade Feed — kun for aktive tradere */}
             {userState !== "NyBruker" && userState !== "Onboarded" && (
               <DashboardWidget
                 title={t("liveFeedTitle")}
@@ -420,12 +420,16 @@ export function DashboardPro({
           </div>
         </div>
 
-        {/* Advanced Analytics — Enterprise 2026. Kun for PowerUser (auto-expanded) og AktivTrader (collapsed). */}
+        {/* Advanced Analytics — link til full analyse-side */}
         {(userState === "AktivTrader" || userState === "PowerUser") && (
-          <AdvancedAnalyticsSection
-            accountBalance={effectiveStats.currentCapital}
-            defaultExpanded={userState === "PowerUser"}
-          />
+          <Link
+            href={`/${locale}/dashboard/analysis`}
+            className="block rounded-2xl border border-[#1E2530] bg-[#0A0D12] p-5 text-center hover:border-[#0066FF]/30 transition-all"
+          >
+            <p className="text-sm font-bold text-white mb-1">{t("advancedAnalyticsTitle")}</p>
+            <p className="text-xs text-slate-400">{t("advancedAnalyticsDesc")}</p>
+            <p className="text-xs text-[#0066FF] mt-2">{t("advancedAnalyticsLink")}</p>
+          </Link>
         )}
 
         {/* NLQ Chat — Enterprise 2026. Kun for PowerUser. */}

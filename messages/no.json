@@ -1600,7 +1600,10 @@
       "seeAll": "Se alle",
       "upgradeTitle": "Klar for neste nivå?",
       "upgradeDescription": "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support.",
-      "upgradeCta": "Se priser"
+      "upgradeCta": "Se priser",
+      "advancedAnalyticsTitle": "Avansert analyse",
+      "advancedAnalyticsDesc": "Equity curve, P&L heatmap, risk metrics og posisjonskalkulator",
+      "advancedAnalyticsLink": "Se full analyse →"
     },
     "nlqChat": {
       "openChat": "Åpne chat",
