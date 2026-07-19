@@ -1605,7 +1605,10 @@
       "seeAll": "See all",
       "upgradeTitle": "Ready for the next level?",
       "upgradeDescription": "Upgrade to Bachelor for live trading, advanced strategies and priority support.",
-      "upgradeCta": "See pricing"
+      "upgradeCta": "See pricing",
+      "advancedAnalyticsTitle": "Advanced Analytics",
+      "advancedAnalyticsDesc": "Equity curve, P&L heatmap, risk metrics and position calculator",
+      "advancedAnalyticsLink": "View full analysis →"
     },
     "nlqChat": {
       "openChat": "Open chat",
