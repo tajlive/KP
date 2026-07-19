@@ -7,17 +7,8 @@ import type { Database } from "@/types/database.types";
 export const dynamic = "force-dynamic";
 
 const TRACKED_SYMBOLS = [
-  "BTCUSDT",
-  "ETHUSDT",
-  "BNBUSDT",
-  "SOLUSDT",
-  "XRPUSDT",
-  "ADAUSDT",
-  "DOGEUSDT",
-  "AVAXUSDT",
-  "DOTUSDT",
-  "LINKUSDT",
-  "MATICUSDT",
+  "BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT",
+  "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT", "MATICUSDT",
 ];
 
 interface BinanceTicker {
@@ -29,10 +20,28 @@ interface BinanceTicker {
   lowPrice: string;
 }
 
+async function upsertPrices(supabase: SupabaseClient<Database>, tickers: BinanceTicker[]) {
+  const updates = tickers.map((t) => ({
+    symbol: t.symbol,
+    name: t.symbol.replace("USDT", ""),
+    price: parseFloat(t.lastPrice),
+    price_change_percent_24h: parseFloat(t.priceChangePercent),
+    volume_24h: parseFloat(t.volume),
+    high_24h: parseFloat(t.highPrice),
+    low_24h: parseFloat(t.lowPrice),
+    last_updated: new Date().toISOString(),
+  }));
+
+  const { error } = await supabase
+    .from("coin_prices")
+    .upsert(updates, { onConflict: "symbol" });
+
+  if (error) console.error("Supabase upsert error:", error);
+}
+
 /**
  * GET /api/cron/sync-prices
- * Syncs prices from Binance API to Supabase
- * Called by Supabase pg_cron, Cloudflare cron, or another authorized scheduler
+ * Syncs prices from Binance API to Supabase via Edge Function proxy
  */
 export async function GET(request: NextRequest) {
   if (!validateCronSecret(request)) {
@@ -40,9 +49,43 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch from Binance API — OPTIMIZED: request only tracked symbols
-    // Weight: 2-4 instead of 40 for all symbols
     const encodedSymbols = encodeURIComponent(JSON.stringify(TRACKED_SYMBOLS));
+    const supabase = await createClient() as SupabaseClient<Database>;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const proxySecret = process.env.BINANCE_PROXY_SECRET;
+
+    // Try via Supabase Edge Function proxy first (unngår Cloudflare IP-blokk)
+    if (supabaseUrl && proxySecret && anonKey) {
+      const proxyRes = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${anonKey}`,
+          "x-binance-proxy-secret": proxySecret,
+          apikey: anonKey,
+        },
+        body: JSON.stringify({
+          action: "publicApi",
+          publicApiPath: `/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
+        }),
+      });
+
+      if (proxyRes.ok) {
+        const proxyData = await proxyRes.json();
+        if (proxyData.ok && Array.isArray(proxyData.data)) {
+          await upsertPrices(supabase, proxyData.data as BinanceTicker[]);
+          return NextResponse.json({
+            success: true,
+            updated: proxyData.data.length,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+      console.warn("Binance proxy failed, falling back to direct API");
+    }
+
+    // Fallback: direct Binance API
     const response = await fetch(
       `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
       { next: { revalidate: 0 } },
@@ -53,46 +96,20 @@ export async function GET(request: NextRequest) {
     }
 
     const tickers: BinanceTicker[] = await response.json();
-
-    const updates = tickers.map((t) => ({
-        symbol: t.symbol,
-        name: t.symbol.replace("USDT", ""),
-        price: parseFloat(t.lastPrice),
-        price_change_percent_24h: parseFloat(t.priceChangePercent),
-        volume_24h: parseFloat(t.volume),
-        high_24h: parseFloat(t.highPrice),
-        low_24h: parseFloat(t.lowPrice),
-        last_updated: new Date().toISOString(),
-      }));
-
-    // Upsert to Supabase
-    const supabase = await createClient() as SupabaseClient<Database>;
-
-    const { error } = await supabase
-      .from("coin_prices")
-      .upsert(updates, { onConflict: "symbol" });
-
-    if (error) {
-      console.error("Supabase upsert error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    await upsertPrices(supabase, tickers);
 
     return NextResponse.json({
       success: true,
-      updated: updates.length,
-      symbols: updates.map((u) => u.symbol),
+      updated: tickers.length,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Sync prices error:", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 },
     );
   }
 }
 
-// Also support POST for pg_cron triggering
 export const POST = GET;
