@@ -3,32 +3,30 @@
 import * as React from "react";
 import Link from "next/link";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNOK } from "@/lib/format/currency";
 
 export default function PortfolioClientPage() {
   const locale = useLocale();
   const t = useTranslations("dashboard.portfolioPage");
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [user, setUser] = React.useState<{ id: string } | null>(null);
   const [paperBalance, setPaperBalance] = React.useState<number>(100000);
   const [wallets, setWallets] = React.useState<Array<{ id: string; currency: string; balance: number }> | null>(null);
 
   React.useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      setError("auth_required");
+      setLoading(false);
+      return;
+    }
     const load = async () => {
       try {
-        const supabase = getSupabaseClient();
-        const { data: { user }, error: authErr } = await supabase.auth.getUser();
-        if (authErr || !user) {
-          setError("auth_required");
-          setLoading(false);
-          return;
-        }
-        setUser({ id: user.id });
-
-        // Fetch paper balance
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("paper_balance")
@@ -37,8 +35,6 @@ export default function PortfolioClientPage() {
         if (profile) {
           setPaperBalance(Number(profile.paper_balance ?? 100000));
         }
-
-        // Fetch wallets
         const { data: walletData } = await supabase
           .from("wallets")
           .select("id, currency, balance")
@@ -52,9 +48,9 @@ export default function PortfolioClientPage() {
       }
     };
     load();
-  }, []);
+  }, [user, authLoading]);
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center">
         <div className="animate-pulse text-slate-400">Laster portefølje...</div>
