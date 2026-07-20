@@ -60,7 +60,7 @@ function shouldSend(): boolean {
   return enabled && !!dsn;
 }
 
-function logToConsole(
+export function logToConsole(
   type: "exception" | "message",
   data: unknown,
   level: SeverityLevel,
@@ -81,6 +81,54 @@ function logToConsole(
     console.warn("[GlitchTip]", payload);
   } else {
     console.info("[GlitchTip]", payload);
+  }
+}
+
+/** Send event to Sentry/GlitchTip via store API */
+async function sendToSentry(event: Record<string, unknown>) {
+  try {
+    const dsnValue = process.env.NEXT_PUBLIC_GLITCHTIP_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN;
+    if (!dsnValue) return;
+
+    // Parse DSN: https://publicKey@host/projectId
+    const dsnUrl = new URL(dsnValue);
+    const projectId = dsnUrl.pathname.replace("/", "");
+    const publicKey = dsnUrl.username;
+    const host = dsnUrl.hostname;
+    const protocol = dsnUrl.protocol;
+    const port = dsnUrl.port ? `:${dsnUrl.port}` : "";
+
+    const url = `${protocol}//${host}${port}/api/${projectId}/store/`;
+
+    const body = JSON.stringify({
+      event_id: event.eventId,
+      timestamp: event.timestamp,
+      level: event.level,
+      logger: "hermes",
+      message: event.message || event.logentry,
+      exception: event.exception
+        ? {
+            values: [event.exception],
+          }
+        : undefined,
+      tags: event.tags || {},
+      extra: event.extra || {},
+      user: event.user || {},
+      logentry: event.logentry,
+      platform: "javascript",
+      sdk: { name: "klarpakke-sentry", version: "1.0.0" },
+    });
+
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Sentry-Auth": `Sentry sentry_version=7, sentry_client=klarpakke/1.0.0, sentry_key=${publicKey}`,
+      },
+      body,
+    });
+  } catch {
+    // Silent — don't crash the app if Sentry is unreachable
   }
 }
 
@@ -118,8 +166,21 @@ export function captureException(
     return eventId;
   }
 
-  // TODO: Send envelope to NEXT_PUBLIC_GLITCHTIP_DSN when self-hosted GlitchTip is ready.
-  logToConsole("exception", error, level, { extras, tags });
+  // Send envelope to Sentry/GlitchTip DSN
+  sendToSentry({
+    eventId,
+    timestamp: new Date().toISOString(),
+    level,
+    message: error instanceof Error ? error.message : String(error),
+    exception: {
+      type: error instanceof Error ? error.constructor.name : "Error",
+      value: error instanceof Error ? error.message : String(error),
+      stacktrace: error instanceof Error ? error.stack : undefined,
+    },
+    tags: { ...tags },
+    extra: { ...extras },
+    user: currentScope().user,
+  });
   return eventId;
 }
 
@@ -152,8 +213,17 @@ export function captureMessage(
     return eventId;
   }
 
-  // TODO: Send envelope to NEXT_PUBLIC_GLITCHTIP_DSN when self-hosted GlitchTip is ready.
-  logToConsole("message", message, finalLevel, { extras: mergedExtras, tags: mergedTags });
+  // Send to Sentry/GlitchTip
+  sendToSentry({
+    eventId,
+    timestamp: new Date().toISOString(),
+    level: finalLevel,
+    message,
+    logentry: { message, params: [] },
+    tags: { ...mergedTags },
+    extra: { ...mergedExtras },
+    user: currentScope().user,
+  });
   return eventId;
 }
 
