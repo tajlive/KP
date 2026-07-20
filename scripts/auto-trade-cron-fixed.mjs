@@ -27,7 +27,7 @@ const pool = new pg.Pool({
 });
 
 // Market prices fetched from coin_prices table at runtime (fallbacks if missing)
-const MARKET_FALLBACK = { BTC: 638500.00, ETH: 22680.00, SOL: 145.80 };
+const MARKET_FALLBACK = { BTC: 620677.00, ETH: 17954.20, SOL: 734.98 };
 async function loadMarketPrices(client) {
   const { rows } = await client.query(
     "SELECT name, price FROM public.coin_prices WHERE name = ANY($1)", [SYMBOLS]
