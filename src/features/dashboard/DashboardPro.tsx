@@ -231,13 +231,7 @@ export function DashboardPro({
   ];
 
   return (
-    <WidgetErrorBoundary
-      title={t("widgetErrorTitle")}
-      message={t("widgetErrorMessage")}
-      retryLabel={t("retry")}
-      onReset={onRetry}
-      resetKeys={[userId ?? "", preferredTradingMode]}
-    >
+    <>
       <div className="min-h-screen bg-gray-50 dark:bg-slate-950 px-3 py-4 sm:p-4 md:p-8">
         <div className="max-w-7xl mx-auto space-y-5 sm:space-y-6">
           {/* Personalized Greeting — Enterprise 2026 */}
@@ -300,8 +294,15 @@ export function DashboardPro({
           />
         )}
 
-        {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Main grid wrapped in error boundary */}
+          <WidgetErrorBoundary
+            title={t("widgetErrorTitle")}
+            message={t("widgetErrorMessage")}
+            retryLabel={t("retry")}
+            onReset={onRetry}
+            resetKeys={[userId ?? "", preferredTradingMode]}
+          >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left column - 2/3 width */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Portfolio Chart — vis for alle, men tom for nye brukere */}
@@ -419,6 +420,7 @@ export function DashboardPro({
             {/* Top Traders — fjernet: viste fake/mock-data */}
           </div>
         </div>
+        </WidgetErrorBoundary>
 
         {/* Advanced Analytics — link til full analyse-side */}
         {(userState === "AktivTrader" || userState === "PowerUser") && (
@@ -465,7 +467,7 @@ export function DashboardPro({
         </m.div>
       </div>
     </div>
-    </WidgetErrorBoundary>
+    </>
   );
 }
 
