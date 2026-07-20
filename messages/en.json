@@ -1816,6 +1816,9 @@
     "advanced": "Advanced"
   },
   "landing": {
+    "metadata": {
+      "title": "Klarpakke - Build your financial future"
+    },
     "badge": "Klarpakke University",
     "hero": {
       "beta_badge": "BETA LAUNCH - ONLY 23/50 SPOTS LEFT",
@@ -2311,6 +2314,13 @@
     "openMenu": "Open menu",
     "studyProgram": "Study Program",
     "school": "School"
+  },
+  "components": {
+    "themeToggle": {
+      "switchTo": "Switch to {mode} mode",
+      "light": "Light",
+      "dark": "Dark"
+    }
   },
   "notifications": {
     "title": "Notifications",
