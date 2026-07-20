@@ -2,6 +2,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { captureException } from "@/lib/sentry";
 
 interface WidgetErrorBoundaryProps {
   children: ReactNode;
@@ -40,9 +41,7 @@ export class WidgetErrorBoundary extends Component<
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("[WidgetErrorBoundary] Widget crashed:", error, errorInfo);
     // Report to Sentry
-    import("@/lib/sentry").then(({ captureException }) => {
-      captureException(error, { extra: { componentStack: errorInfo.componentStack ?? "" } });
-    });
+    captureException(error, { extra: { componentStack: errorInfo.componentStack ?? "" } });
   }
 
   componentDidUpdate(prevProps: WidgetErrorBoundaryProps) {
