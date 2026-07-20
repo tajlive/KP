@@ -103,13 +103,13 @@ export function RiskMetricsPanel() {
   }
   if (!metrics || score == null) return null;
 
+  // Score 0 = no data, don't show risk section at all
+  if (score === 0) return null;
+
   const riskLevel =
     score >= 80 ? "low" : score >= 50 ? "moderate" : "high";
-  // If score is 0 (no trading data), show neutral instead of "high"
-  const effectiveLevel = score === 0 ? "neutral" : riskLevel;
   const riskColor =
-    score >= 80 ? "emerald" : score >= 50 ? "amber" : score === 0 ? "slate" : "red";
-
+    score >= 80 ? "emerald" : score >= 50 ? "amber" : "red";
   const cards = [
     {
       key: "sortino",
@@ -186,7 +186,7 @@ export function RiskMetricsPanel() {
               </div>
             </div>
             <p className="text-sm text-slate-400 max-w-md">
-              {t(`scoreDescription.${effectiveLevel}`)}
+              {t(`scoreDescription.${riskLevel}`)}
             </p>
           </div>
 
@@ -204,7 +204,7 @@ export function RiskMetricsPanel() {
                 <span className="text-lg text-slate-500 font-medium">/100</span>
               </div>
               <div className="text-sm font-medium text-slate-300">
-                {t(`scoreLabel.${effectiveLevel}`)}
+                {t(`scoreLabel.${riskLevel}`)}
               </div>
             </div>
             {score >= 80 ? (
