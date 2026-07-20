@@ -2119,6 +2119,7 @@
     "errorLoad": "Kunne ikke laste resultater",
     "errorTitle": "Feil ved lasting av resultater",
     "notYetLoaded": "Resultater lastes...",
+    "lastUpdated": "Sist oppdatert",
     "intervalHint": "Siste 30 dager",
     "exportCsv": "Eksportér CSV",
     "refresh": "Oppdater",
@@ -2128,7 +2129,9 @@
       "totalPnl": "Total P/L",
       "totalPnlHint": "Samlet resultat for alle handler",
       "winRate": "Andel vinnere",
-      "bestDay": "Beste dag"
+      "bestDay": "Beste dag",
+      "worstDay": "Verste dag",
+      "modeTrades": "Handler"
     },
     "outcome": {
       "win": "Vunnet",
