@@ -2288,7 +2288,10 @@
     "tagline": "Learn crypto trading the smart way",
     "home": "Home",
     "studyProgram": "Study Program",
+    "trade": "Trade",
+    "portfolio": "Portfolio",
     "account": "Account",
+    "school": "School",
     "autoTrading": "Auto-Trading",
     "paperTrading": "Paper Trading",
     "courses": "Courses",
@@ -2317,7 +2320,8 @@
   },
   "components": {
     "themeToggle": {
-      "switchTo": "Switch to {mode} mode",
+      "switchTo": "Toggle theme",
+      "toggleTheme": "Toggle theme",
       "light": "Light",
       "dark": "Dark"
     }

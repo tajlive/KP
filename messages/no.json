@@ -2281,6 +2281,8 @@
     "tagline": "Lær å trade krypto på den smarte måten",
     "home": "Hjem",
     "studyProgram": "Studieprogram",
+    "trade": "Trade",
+    "portfolio": "Portefølje",
     "school": "Skole",
     "paperTrading": "Lekepenger",
     "courses": "Kurs",
@@ -2310,7 +2312,8 @@
   },
   "components": {
     "themeToggle": {
-      "switchTo": "Bytt til {mode}-modus",
+      "switchTo": "Bytt tema",
+      "toggleTheme": "Bytt tema",
       "light": "Lyst",
       "dark": "Mørkt"
     }
