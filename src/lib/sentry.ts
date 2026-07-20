@@ -101,7 +101,7 @@ async function sendToSentry(event: Record<string, unknown>) {
     const protocol = dsnUrl.protocol;
     const port = dsnUrl.port ? `:${dsnUrl.port}` : "";
 
-    const url = `${protocol}//${host}${port}/api/${projectId}/store/`;
+    const url = `${protocol}//${host}${port}/api/${projectId}/store/?sentry_key=${publicKey}`;
 
     const body = JSON.stringify({
       event_id: event.eventId,
