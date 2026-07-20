@@ -39,6 +39,10 @@ export class WidgetErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("[WidgetErrorBoundary] Widget crashed:", error, errorInfo);
+    // Report to Sentry
+    import("@/lib/sentry").then(({ captureException }) => {
+      captureException(error, { extra: { componentStack: errorInfo.componentStack ?? "" } });
+    });
   }
 
   componentDidUpdate(prevProps: WidgetErrorBoundaryProps) {
