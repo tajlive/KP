@@ -20,7 +20,7 @@ export function RecentTrades({ sessions }: RecentTradesProps) {
     <div className="rounded-2xl bg-[#0A0D12] border border-[#1E2530] p-4 space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-white">{t("title")}</h3>
-        <Link href={`/${locale}/trade`} className="text-xs text-[#0066FF] hover:underline flex items-center gap-1">
+        <Link href={`/${locale}/dashboard/historikk`} className="text-xs text-[#0066FF] hover:underline flex items-center gap-1">
           {t("viewAll")} <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
