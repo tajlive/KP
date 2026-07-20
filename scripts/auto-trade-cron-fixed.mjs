@@ -26,7 +26,16 @@ const pool = new pg.Pool({
   connectionTimeoutMillis: 15000
 });
 
-const MARKET = { BTC: 87500.00, ETH: 4200.00, SOL: 185.00 };
+// Market prices fetched from coin_prices table at runtime (fallbacks if missing)
+const MARKET_FALLBACK = { BTC: 638500.00, ETH: 22680.00, SOL: 145.80 };
+async function loadMarketPrices(client) {
+  const { rows } = await client.query(
+    "SELECT name, price FROM public.coin_prices WHERE name = ANY($1)", [SYMBOLS]
+  );
+  const m = { ...MARKET_FALLBACK };
+  for (const r of rows) if (r.price > 0) m[r.name] = Number(r.price);
+  return m;
+}
 const SYMBOLS = ['BTC', 'ETH', 'SOL'];
 const PAIRS = { BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT' };
 
@@ -54,6 +63,8 @@ async function main() {
   const client = await pool.connect();
   try {
     console.log('[' + nowISO() + '] Auto-trading cron STARTED');
+    const MARKET = await loadMarketPrices(client);
+    console.log('Market prices:', JSON.stringify(MARKET));
 
     const TEST_EMAILS = [
       'ola.nordmann@klarpakke.test', 'kari.aas@klarpakke.test',
@@ -109,15 +120,15 @@ async function main() {
         const tradeId = randomUUID();
         const idempotencyKey = randomUUID();
         const fee = Math.round(totalValue * 0.001 * 100) / 100;
-        const sessionId = await getOrCreateSession(client, uid, symbol, account.current_balance);
+        const sessionId = await getOrCreateSession(client, uid, symbol, Number(account.current_balance));
 
         await client.query(
           'INSERT INTO public.trades (id, session_id, user_id, mode, trading_pair, side, order_type, quantity, price, total_value, fee, status, is_copy, is_mock, idempotency_key, idempotency_scope, realized_pnl, reason_code, reason_params, executed_at, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)',
           [tradeId, sessionId, uid, 'paper', PAIRS[symbol], side, 'market', quantity, price, totalValue, fee, 'filled', false, true, idempotencyKey, 'auto_trading_cron', realizedPnl, 'cron_auto', JSON.stringify({ source: 'auto_trading_cron', run: now }), now, now]
         );
 
-        const newBalance = account.current_balance + realizedPnl;
-        const newTotalPnl = (account.total_profit_loss || 0) + realizedPnl;
+        const newBalance = Number(account.current_balance) + realizedPnl;
+        const newTotalPnl = Number(account.total_profit_loss || 0) + realizedPnl;
         const newWinCount = isProfitable ? (account.win_count || 0) + 1 : (account.win_count || 0);
         const newLossCount = !isProfitable ? (account.loss_count || 0) + 1 : (account.loss_count || 0);
 
