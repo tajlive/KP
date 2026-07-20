@@ -38,7 +38,15 @@ const awardSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
-    const supabaseAuth = createServerClient(request, response);
+    // Timeout guard for createServerClient (can hang in Workers)
+    const clientPromise = createServerClient(request, response);
+    const timeout = 3000;
+    const supabaseAuth = await Promise.race([
+      clientPromise,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Supabase server client timeout")), timeout)
+      ),
+    ]) as Awaited<ReturnType<typeof createServerClient>>;
     const {
       data: { user },
       error: authError,
