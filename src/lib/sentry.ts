@@ -87,7 +87,7 @@ export function logToConsole(
   }
 }
 
-/** Send event to Sentry/GlitchTip via store API */
+/** Send event to Sentry/GlitchTip via envelope API */
 async function sendToSentry(event: Record<string, unknown>) {
   try {
     const dsnValue = process.env.NEXT_PUBLIC_GLITCHTIP_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN;
@@ -101,34 +101,47 @@ async function sendToSentry(event: Record<string, unknown>) {
     const protocol = dsnUrl.protocol;
     const port = dsnUrl.port ? `:${dsnUrl.port}` : "";
 
-    const url = `${protocol}//${host}${port}/api/${projectId}/store/?sentry_key=${publicKey}`;
+    const url = `${protocol}//${host}${port}/api/${projectId}/envelope/`;
 
-    const body = JSON.stringify({
+    // Envelope format: JSON header line + newline + JSON item
+    const envelopeHeader = JSON.stringify({
+      event_id: event.eventId,
+      dsn: dsnValue,
+      sent_at: new Date().toISOString(),
+      sdk: { name: "klarpakke-sentry", version: "1.0.0" },
+    });
+
+    const itemHeader = JSON.stringify({
+      type: "event",
+      content_type: "application/json",
+    });
+
+    const itemBody = JSON.stringify({
       event_id: event.eventId,
       timestamp: event.timestamp,
       level: event.level,
       logger: "hermes",
       message: event.message || event.logentry,
       exception: event.exception
-        ? {
-            values: [event.exception],
-          }
+        ? { values: [event.exception] }
         : undefined,
-      tags: event.tags || {},
-      extra: event.extra || {},
-      user: event.user || {},
+      tags: (event.tags as Record<string, string>) || {},
+      extra: (event.extra as Record<string, unknown>) || {},
+      user: (event.user as Record<string, unknown>) || {},
       logentry: event.logentry,
       platform: "javascript",
       sdk: { name: "klarpakke-sentry", version: "1.0.0" },
     });
 
+    // Envelope = header + \n + itemHeader + \n + itemBody
+    const envelope = `${envelopeHeader}\n${itemHeader}\n${itemBody}`;
+
     await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "X-Sentry-Auth": `Sentry sentry_version=7, sentry_client=klarpakke/1.0.0, sentry_key=${publicKey}`,
+        "Content-Type": "application/x-sentry-envelope",
       },
-      body,
+      body: envelope,
     });
   } catch {
     // Silent — don't crash the app if Sentry is unreachable

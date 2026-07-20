@@ -34,7 +34,7 @@ const nextConfig = {
   compress: true,
 
   poweredByHeader: false,
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true,
 
   // Cloudflare Workers/OpenNext routing compatibility
   // Note: API routes should not be affected by trailingSlash
