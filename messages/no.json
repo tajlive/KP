@@ -2109,6 +2109,91 @@
     "markComplete": "Merk som fullført",
     "seeFullPath": "Fullt læringsløp"
   },
+  "tradingResults": {
+    "meta": {
+      "title": "Resultater"
+    },
+    "title": "Mine resultater",
+    "subtitle": "Se dine handelsresultater og statistikk",
+    "eyebrow": "Handelsresultater",
+    "errorLoad": "Kunne ikke laste resultater",
+    "errorTitle": "Feil ved lasting av resultater",
+    "notYetLoaded": "Resultater lastes...",
+    "intervalHint": "Siste 30 dager",
+    "exportCsv": "Eksportér CSV",
+    "refresh": "Oppdater",
+    "openHistory": "Se handelshistorikk",
+    "kpi": {
+      "trades": "Antall handler",
+      "totalPnl": "Total P/L",
+      "totalPnlHint": "Samlet resultat for alle handler",
+      "winRate": "Andel vinnere",
+      "bestDay": "Beste dag"
+    },
+    "outcome": {
+      "win": "Vunnet",
+      "loss": "Tap",
+      "breakeven": "Break-even",
+      "unknown": "Ukjent"
+    },
+    "mode": {
+      "paper": "Papir",
+      "live": "Live",
+      "unknown": "Ukjent"
+    },
+    "charts": {
+      "cumulativeTitle": "Akkumulert resultat",
+      "cumulativeHint": "Utvikling over tid",
+      "cumulativeSeries": "Akkumulert P/L",
+      "outcomeTitle": "Utfallsfordeling",
+      "outcomeHint": "Antall vinnende vs tapende handler",
+      "dailyTitle": "Daglig P/L",
+      "dailyHint": "Resultat per dag",
+      "dailySeries": "Daglig P/L",
+      "pairsTitle": "P/L per handelspar",
+      "pairsHint": "Resultat fordelt på kryptovaluta",
+      "pairPnl": "P/L",
+      "modeTitle": "P/L per modus",
+      "modeHint": "Papir vs Live resultater"
+    },
+    "empty": {
+      "noTradesTitle": "Ingen handler enda",
+      "noTradesDesc": "Start med å gjøre din første handel",
+      "needTrades": "Gjør noen handler for å se statistikk",
+      "noOutcomes": "Ingen utfallsdata",
+      "needDaily": "Ingen daglig data",
+      "needPairs": "Ingen handelspar-data",
+      "needModes": "Ingen modus-data"
+    }
+  },
+  "cookieConsent": {
+    "bannerText": "Vi bruker informasjonskapsler (cookies) for å forbedre opplevelsen din.",
+    "privacyLink": "Personvernerklæring",
+    "and": "og",
+    "cookieLink": "Cookie-policy",
+    "customize": "Tilpass",
+    "decline": "Avvis",
+    "acceptAll": "Godta alle",
+    "preferencesTitle": "Cookie-preferanser",
+    "back": "Tilbake",
+    "savePreferences": "Lagre preferanser",
+    "necessary": {
+      "label": "Nødvendige",
+      "description": "Kreves for at nettstedet skal fungere"
+    },
+    "analytics": {
+      "label": "Analyse",
+      "description": "Hjelper oss forbedre nettstedet"
+    },
+    "marketing": {
+      "label": "Markedsføring",
+      "description": "Brukes til målrettet annonsering"
+    },
+    "functional": {
+      "label": "Funksjonelle",
+      "description": "Husker dine valg og preferanser"
+    }
+  },
   "legal": {
     "privacyTitle": "Personvernerklæring",
     "termsTitle": "Vilkår for bruk",
