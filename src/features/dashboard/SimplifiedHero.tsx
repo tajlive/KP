@@ -112,7 +112,7 @@ export function SimplifiedHero({
           <>
             {changePct > 0 ? "↑" : changePct < 0 ? "↓" : "→"}
             {changePct > 0 ? "+" : ""}
-            {changePct.toFixed(2)}%
+            {changePct != null ? `${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%` : "0.00%"}
           </>
         )}
         <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal ml-0.5">

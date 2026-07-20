@@ -233,7 +233,7 @@ export function CopyTradingCard() {
                     <div className="flex flex-col items-end">
                       <span className="text-sm font-bold text-emerald-600">
                         {activeSessions[0].totalPnl > 0 ? "+" : ""}
-                        {activeSessions[0].totalPnl.toFixed(0)} NOK
+                        {(activeSessions[0]?.totalPnl ?? 0).toFixed(0)} NOK
                       </span>
                       <span className="text-[10px] text-emerald-500">
                         ({activeSessions[0].totalPnlPercent}%)
