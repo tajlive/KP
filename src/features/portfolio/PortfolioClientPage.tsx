@@ -25,8 +25,9 @@ export default function PortfolioClientPage() {
     }
     const load = async () => {
       try {
-        const { createClient } = await import("@/lib/supabase/client");
-        const supabase = createClient();
+        // Timeout guard — prevent infinite loading
+        const timeout = setTimeout(() => { setLoading(false); setError("Tidsavbrudd — prøv igjen"); }, 15000);
+        const supabase = (await import("@/lib/supabase/client")).getSupabaseClient();
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("paper_balance")
@@ -41,6 +42,7 @@ export default function PortfolioClientPage() {
           .eq("user_id", user.id)
           .gt("balance", 0);
         if (walletData) setWallets(walletData);
+        clearTimeout(timeout);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Unknown error");
       } finally {
