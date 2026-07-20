@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/new/AuthContext";
-import { DashboardContent } from "@/features/dashboard/DashboardContent";
+import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/DashboardContent";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { getUserDashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
-import { client } from "@/lib/sanity/client";
+import { getUserDashboardMetrics, type DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 import { dashboardContentQuery } from "@/lib/sanity/queries";
 
 interface DashboardClientProps {
@@ -24,8 +23,8 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
     preferredTradingMode: "paper" | "live";
     onboardingCompleted: boolean;
     signupDays: number;
-    cmsData: unknown;
-    metrics: unknown;
+    cmsData?: DashboardCmsData | null;
+    metrics?: DashboardMetrics | null;
     isPriority: boolean;
   }>({ loading: true, preferredTradingMode: "paper", onboardingCompleted: false, signupDays: 1, cmsData: null, metrics: null, isPriority: false });
 
@@ -51,7 +50,8 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
         let cmsData = null;
         try {
-          cmsData = await client.fetch(dashboardContentQuery, { language: locale });
+          const { client: sanityClient } = await import("@/lib/sanity/client");
+          cmsData = await sanityClient.fetch(dashboardContentQuery, { language: locale });
         } catch { /* Sanity not configured */ }
 
         const metrics = await getUserDashboardMetrics({
