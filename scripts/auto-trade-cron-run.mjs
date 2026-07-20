@@ -26,8 +26,8 @@ const pool = new pg.Pool({
   connectionTimeoutMillis: 15000,
 });
 
-// Current market prices (July 8, 2026)
-const MARKET = { BTC: 63318, ETH: 1769, SOL: 80 };
+// Live market prices (July 20, 2026, Binance)
+const MARKET = { BTC: 65510, ETH: 1900.69, SOL: 77.62 };
 const SYMBOLS = ['BTC', 'ETH', 'SOL'];
 const PAIRS = { BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT' };
 
