@@ -7,6 +7,9 @@
  *
  * I produksjon kan `NEXT_PUBLIC_GLITCHTIP_DSN` peke til selv-hostet GlitchTip.
  * Uten DSN logges events til konsollen.
+ *
+ * Global error hooks (unhandledrejection, onerror) settes opp automatisk
+ * ved init() i produksjon.
  */
 
 export type SeverityLevel = "fatal" | "error" | "warning" | "log" | "info" | "debug";
