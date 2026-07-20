@@ -2273,6 +2273,8 @@
     }
   },
   "navigation": {
+    "siteNavAria": "Hovednavigasjon",
+    "tagline": "Lær å trade krypto på den smarte måten",
     "home": "Hjem",
     "studyProgram": "Studieprogram",
     "school": "Skole",
