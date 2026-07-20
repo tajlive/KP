@@ -12,11 +12,25 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerClient();
+    // Timeout guard: if Supabase server client hangs (Worker + httpOnly cookies), fail fast
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const supabase = await createServerClient().catch(() => null);
+    if (!supabase) {
+      clearTimeout(timeoutId);
+      return NextResponse.json(
+        { error: "Service unavailable", code: "SERVER_CLIENT_FAILED" },
+        { status: 503 },
+      );
+    }
+
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
+
+    clearTimeout(timeoutId);
 
     if (authError || !user) {
       return NextResponse.json(
