@@ -1775,6 +1775,7 @@
     "stat3": "300+",
     "stat3Label": "Handelspar",
     "cta": "🎯 Start gratis",
+    "ctaPrimary": "🎯 Start gratis",
     "ctaSecondary": "Se hva du lærer",
     "price": "$65,284.25",
     "priceLabel": "BTC / USDT",
@@ -1808,6 +1809,9 @@
     "advanced": "Avansert"
   },
   "landing": {
+    "metadata": {
+      "title": "Klarpakke - Bygg din økonomiske fremtid"
+    },
     "badge": "Klarpakke Universitet",
     "hero": {
       "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
@@ -2303,6 +2307,13 @@
     "loading": "Laster...",
     "closeMenu": "Lukk meny",
     "openMenu": "Åpne meny"
+  },
+  "components": {
+    "themeToggle": {
+      "switchTo": "Bytt til {mode}-modus",
+      "light": "Lyst",
+      "dark": "Mørkt"
+    }
   },
   "notifications": {
     "title": "Varsler",
