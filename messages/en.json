@@ -2864,6 +2864,8 @@
     "profile": {
       "title": "My Account",
       "subtitle": "Manage your profile, wallet and settings",
+      "namePlaceholder": "Your name",
+      "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
       "tabs": {
         "profile": "Profile",
         "wallet": "Wallet",

@@ -2859,6 +2859,8 @@
     "profile": {
       "title": "Min Konto",
       "subtitle": "Administrer profilen din, lommebok og innstillinger",
+      "namePlaceholder": "Ditt navn",
+      "avatarUrlPlaceholder": "https://eksempel.com/avatar.jpg",
       "tabs": {
         "profile": "Profil",
         "wallet": "Lommebok",
