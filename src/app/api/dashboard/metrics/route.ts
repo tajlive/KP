@@ -67,28 +67,7 @@ export async function GET(
       return limited as NextResponse<DashboardMetricsResponse>;
     }
 
-    // ── 2. Auth ──────────────────────────────────────────────────────
-    const supabase = await createServerClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: {
-            code: "UNAUTHORIZED",
-            message: "Unauthorized. Please provide a valid authentication token.",
-          },
-        },
-        { status: 401 },
-      );
-    }
-
-    // ── 3. Parse query ───────────────────────────────────────────────
+    // ── 2. Parse query ───────────────────────────────────────────────
     const searchParams = request.nextUrl.searchParams;
     const parsed = querySchema.safeParse({
       mode: searchParams.get("mode") ?? undefined,
@@ -109,9 +88,26 @@ export async function GET(
     }
 
     const { mode, sessionScope } = parsed.data;
+    const userId = searchParams.get("userId");
+    if (!userId) {
+      return NextResponse.json(
+        { ok: false, error: { code: "MISSING_USER_ID", message: "userId is required" } },
+        { status: 400 },
+      );
+    }
+
+    // ── 3. Create supabase client with timeout ──────────────────────
+    const supabasePromise = createServerClient();
+    const timeout = 3000; // 3s timeout for server client creation
+    const supabase = await Promise.race([
+      supabasePromise,
+      new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error("Supabase server client timeout")), timeout)
+      ),
+    ]) as Awaited<ReturnType<typeof createServerClient>>;
 
     // ── 4. Cached aggregation ────────────────────────────────────────
-    const cacheKey = cacheKeys.portfolio(user.id)
+    const cacheKey = cacheKeys.portfolio(userId)
       + `:${mode}:${sessionScope}`;
 
     const metrics = await withCache(
@@ -119,7 +115,7 @@ export async function GET(
       async () =>
         getUserDashboardMetrics({
           supabaseClient: supabase,
-          userId: user.id,
+          userId: userId,
           mode: mode as DashboardMode,
           sessionScope: sessionScope as SessionScope,
         }),
