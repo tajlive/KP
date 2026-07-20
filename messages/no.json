@@ -630,6 +630,41 @@
       "subtext": "Ingen kredittkort kreves. Start på 1 minutt."
     }
   },
+  "autopilot": {
+    "title": "Auto-Trading",
+    "subtitle": "La AI handle for deg — helt automatisk",
+    "risk": {
+      "title": "Risikonivå",
+      "conservative": {
+        "emoji": "🛡️",
+        "label": "Konservativ",
+        "desc": "Lav risiko, lavere avkastning"
+      },
+      "moderate": {
+        "emoji": "⚖️",
+        "label": "Moderat",
+        "desc": "Balansert risiko/avkastning"
+      },
+      "aggressive": {
+        "emoji": "🚀",
+        "label": "Aggressiv",
+        "desc": "Høy risiko, høy avkastning"
+      }
+    },
+    "capital": {
+      "title": "Startkapital"
+    },
+    "activate": "Aktiver Auto-Trader",
+    "errors": {
+      "activationFailed": "Kunne ikke aktivere auto-trader",
+      "generic": "Noe gikk galt"
+    },
+    "monitor": {
+      "status": {
+        "active": "Auto-Trader kjører"
+      }
+    }
+  },
   "base": {
     "brand": "Klarpakke Universitet",
     "tagline": "Norsk krypto-utdanning. Lær uten risiko.",

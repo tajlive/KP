@@ -630,6 +630,41 @@
       "subtext": "No credit card required. Start in 1 minute."
     }
   },
+  "autopilot": {
+    "title": "Auto-Trading",
+    "subtitle": "Let AI trade for you — fully automatic",
+    "risk": {
+      "title": "Risk Level",
+      "conservative": {
+        "emoji": "🛡️",
+        "label": "Conservative",
+        "desc": "Low risk, lower returns"
+      },
+      "moderate": {
+        "emoji": "⚖️",
+        "label": "Moderate",
+        "desc": "Balanced risk/return"
+      },
+      "aggressive": {
+        "emoji": "🚀",
+        "label": "Aggressive",
+        "desc": "High risk, high returns"
+      }
+    },
+    "capital": {
+      "title": "Starting Capital"
+    },
+    "activate": "Activate Auto-Trader",
+    "errors": {
+      "activationFailed": "Failed to activate auto-trader",
+      "generic": "Something went wrong"
+    },
+    "monitor": {
+      "status": {
+        "active": "Auto-Trader running"
+      }
+    }
+  },
   "base": {
     "brand": "Klarpakke University",
     "tagline": "Norwegian crypto education. Learn without risk.",
