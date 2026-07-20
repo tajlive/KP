@@ -2281,8 +2281,10 @@
     }
   },
   "navigation": {
+    "siteNavAria": "Main navigation",
+    "tagline": "Learn crypto trading the smart way",
     "home": "Home",
-    "market": "Market",
+    "studyProgram": "Study Program",
     "account": "Account",
     "autoTrading": "Auto-Trading",
     "paperTrading": "Paper Trading",
