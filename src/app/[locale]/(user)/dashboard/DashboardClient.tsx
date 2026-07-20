@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/DashboardContent";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { getUserDashboardMetrics, type DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
-import { dashboardContentQuery } from "@/lib/sanity/queries";
+import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
 interface DashboardClientProps {
   locale: string;
@@ -23,8 +22,8 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
     preferredTradingMode: "paper" | "live";
     onboardingCompleted: boolean;
     signupDays: number;
-    cmsData?: DashboardCmsData | null;
-    metrics?: DashboardMetrics | null;
+    cmsData: DashboardCmsData | null;
+    metrics: DashboardMetrics | null;
     isPriority: boolean;
   }>({ loading: true, preferredTradingMode: "paper", onboardingCompleted: false, signupDays: 1, cmsData: null, metrics: null, isPriority: false });
 
@@ -35,11 +34,16 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
       return;
     }
 
+    let cancelled = false;
     const load = async () => {
       try {
-        const timeout = setTimeout(() => setState(s => ({ ...s, loading: false, error: "Tidsavbrudd" })), 15000);
+        const timeout = setTimeout(() => {
+          if (!cancelled) setState(s => ({ ...s, loading: false, error: "Tidsavbrudd — prøv igjen" }));
+        }, 15000);
+
         const supabase = getSupabaseClient();
 
+        // Fetch profile
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, display_name, created_at, is_priority")
@@ -48,38 +52,35 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
         const preferredTradingMode = profile?.preferred_trading_mode === "live" ? "live" : "paper";
 
-        let cmsData = null;
-        try {
-          const { client: sanityClient } = await import("@/lib/sanity/client");
-          cmsData = await sanityClient.fetch(dashboardContentQuery, { language: locale });
-        } catch { /* Sanity not configured */ }
-
-        const metrics = await getUserDashboardMetrics({
-          supabaseClient: supabase as never,
-          userId: user.id,
-          mode: preferredTradingMode,
-          sessionScope: "active_and_completed",
-        });
+        // Fetch metrics via API (unngår server-only imports i client)
+        const metricsRes = await fetch(`/api/dashboard/metrics?userId=${user.id}&mode=${preferredTradingMode}`);
+        const metrics = metricsRes.ok ? await metricsRes.json() : null;
 
         clearTimeout(timeout);
-        setState({
-          loading: false,
-          userId: user.id,
-          userName: profile?.display_name ?? "",
-          preferredTradingMode,
-          onboardingCompleted: profile?.onboarding_completed ?? false,
-          signupDays: profile?.created_at
-            ? Math.max(1, Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24)))
-            : 1,
-          cmsData,
-          metrics,
-          isPriority: profile?.is_priority ?? false,
-        });
+
+        if (!cancelled) {
+          setState({
+            loading: false,
+            userId: user.id,
+            userName: profile?.display_name ?? "",
+            preferredTradingMode,
+            onboardingCompleted: profile?.onboarding_completed ?? false,
+            signupDays: profile?.created_at
+              ? Math.max(1, Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24)))
+              : 1,
+            cmsData: null,
+            metrics,
+            isPriority: profile?.is_priority ?? false,
+          });
+        }
       } catch (e) {
-        setState(s => ({ ...s, loading: false, error: e instanceof Error ? e.message : "Unknown error" }));
+        if (!cancelled) {
+          setState(s => ({ ...s, loading: false, error: e instanceof Error ? e.message : "Kunne ikke laste dashboard" }));
+        }
       }
     };
     load();
+    return () => { cancelled = true; };
   }, [user, authLoading, locale, router]);
 
   if (authLoading || state.loading) {
