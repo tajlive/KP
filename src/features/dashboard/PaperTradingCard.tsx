@@ -256,7 +256,7 @@ export function PaperTradingCard() {
             >
               {balance.isPositive ? "+" : ""}
               {formatByMode(Math.abs(balance.pnl), "paper")}
-              {" "}({balance.pnlPercentage.toFixed(2)}%)
+              {" "}({(balance.pnlPercentage ?? 0).toFixed(2)}%)
             </p>
           </div>
         </div>

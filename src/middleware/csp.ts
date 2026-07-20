@@ -124,6 +124,7 @@ export const cspMiddleware: MiddlewareFn = (
       "wss://*.sanity.io",
       "https://plausible.io",
       "https://o4509555622608896.ingest.de.sentry.io",
+      "https://*.ingest.de.sentry.io",
       ...(isDev 
         ? [
             "ws://localhost:*",
