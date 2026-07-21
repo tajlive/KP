@@ -329,7 +329,10 @@
     "resetPassword": "Reset Password",
     "choosePassword": "Choose Password",
     "loggingIn": "Logging In",
-    "login": "Login"
+    "login": "Login",
+    "id": "Id",
+    "role": "Role",
+    "count": "Count"
   },
   "auth": {
     "verify": {
@@ -464,7 +467,8 @@
         "goToLogin": "Go to login"
       }
     },
-    "loginRequiredTitle": "Log in to continue"
+    "loginRequiredTitle": "Log in to continue",
+    "next": "Next"
   },
   "autoTrade": {
     "title": "AI Auto-Trading",
@@ -912,7 +916,8 @@
       "noGuarantee": "No guarantee, you can lose everything",
       "important": "Important to know",
       "disclaimer": "The calculator shows theoretical figures. 0.1% daily return is extremely optimistic and not realistic over time. You can lose your entire investment. This is not investment advice. Do your own research."
-    }
+    },
+    "custom": "Custom"
   },
   "checkout": {
     "loading": "Loading...",
@@ -941,7 +946,14 @@
     "courseIsFree": "This course is free. No payment required.",
     "successTitle": "Payment Successful! 🎉",
     "successMessage": "You now have access to the course. Go to your dashboard to get started.",
-    "goToDashboard": "Go to Dashboard"
+    "goToDashboard": "Go to Dashboard",
+    "plan": "Plan",
+    "currency": "Currency",
+    "billingCurrency": "Billing Currency",
+    "currencyHelp": "Currency Help",
+    "perMonthSuffix": "Per Month Suffix",
+    "course": "Course",
+    "session_id": "Session Id"
   },
   "common": {
     "loading": "Loading...",
@@ -1039,8 +1051,71 @@
       "general": {
         "error": "Error",
         "saved": "Saved"
+      },
+      "paperBot": {
+        "networkError": "Network Error"
       }
-    }
+    },
+    "strategyDcaDesc": "Strategy Dca Desc",
+    "strategyTrendDesc": "Strategy Trend Desc",
+    "strategyGridDesc": "Strategy Grid Desc",
+    "strategyMultiDesc": "Strategy Multi Desc",
+    "strategyAiDesc": "Strategy Ai Desc",
+    "riskHighDesc": "Risk High Desc",
+    "sessionLimitTitle": "Session Limit Title",
+    "duplicateSessionTitle": "Duplicate Session Title",
+    "duplicateSessionDesc": "Duplicate Session Desc",
+    "liveNotAllowedTitle": "Live Not Allowed Title",
+    "startFailedTitle": "Start Failed Title",
+    "binanceNotConnectedTitle": "Binance Not Connected Title",
+    "binanceNotConnectedDesc": "Binance Not Connected Desc",
+    "liveNotAllowedDesc": "Live Not Allowed Desc",
+    "stepStart": "Step Start",
+    "startBotTitle": "Start Bot Title",
+    "stepAmount": "Step Amount",
+    "stepStrategy": "Step Strategy",
+    "modeLabel": "Mode Label",
+    "botStrategyTrend": "Bot Strategy Trend",
+    "botStrategyGridDesc": "Bot Strategy Grid Desc",
+    "strategyMulti": "Strategy Multi",
+    "botStrategyDcaDesc": "Bot Strategy Dca Desc",
+    "liveModeLabel": "Live Mode Label",
+    "strategyGrid": "Strategy Grid",
+    "connectBinanceToStart": "Connect Binance To Start",
+    "botStrategyAi": "Bot Strategy Ai",
+    "botStrategyMultiDesc": "Bot Strategy Multi Desc",
+    "paperModeLabel": "Paper Mode Label",
+    "botConfigStrategy": "Bot Config Strategy",
+    "botStrategyMulti": "Bot Strategy Multi",
+    "strategyDca": "Strategy Dca",
+    "connectBinanceCta": "Connect Binance Cta",
+    "strategyAi": "Strategy Ai",
+    "botStrategyGrid": "Bot Strategy Grid",
+    "botStrategyAiDesc": "Bot Strategy Ai Desc",
+    "botStrategyDca": "Bot Strategy Dca",
+    "botStrategyTrendDesc": "Bot Strategy Trend Desc",
+    "strategyTrend": "Strategy Trend",
+    "upgradeToStartLive": "Upgrade To Start Live",
+    "upgradeCta": "Upgrade Cta",
+    "liveWarningTitle": "Live Warning Title",
+    "liveWarningDesc": "Live Warning Desc",
+    "upgradeNotice": "Upgrade Notice",
+    "seePlans": "See Plans",
+    "chooseStrategy": "Choose Strategy",
+    "clickToSelect": "Click To Select",
+    "recommended": "Recommended",
+    "chooseRisk": "Choose Risk",
+    "customAmount": "Custom Amount",
+    "liveBalanceUnknownWarning": "Live Balance Unknown Warning",
+    "liveCapitalHighWarning": "Live Capital High Warning",
+    "selectCoins": "Select Coins",
+    "summary": "Summary",
+    "waitingForSignal": "Waiting For Signal",
+    "kellyNotice": "Kelly notice",
+    "liveConfirmWarning": "Confirm live start",
+    "starting": "Starting",
+    "startLiveBotAction": "Start live bot",
+    "startBotAction": "Start bot"
   },
   "competition": {
     "title": "Trading Competition",
@@ -1396,7 +1471,8 @@
         "pull": "Pull down to refresh",
         "release": "Release to refresh",
         "refreshing": "Refreshing..."
-      }
+      },
+      "paper_balance": "Paper Balance"
     },
     "settingsPage": {
       "title": "Settings",
@@ -1860,7 +1936,8 @@
       "activeLC": "active",
       "pausedLC": "paused",
       "stoppedLC": "stopped",
-      "live": "Live"
+      "live": "Live",
+      "crashed": "Crashed"
     },
     "error": {
       "title": "Could not load dashboard",
@@ -2021,7 +2098,8 @@
     "monthlyCompetitionOngoing": "ongoing",
     "daysLeft": "days left",
     "viewLeaderboard": "View Leaderboard",
-    "kltStoryShort": "Klt Story Short"
+    "kltStoryShort": "Klt Story Short",
+    "rank": "Rank"
   },
   "helpPage": {
     "title": "Help & Support",
@@ -2306,7 +2384,16 @@
         "title": "Title",
         "description": "Description",
         "latestSignal": "Latest Signal",
-        "updatedEveryMinute": "Updated Every Minute"
+        "updatedEveryMinute": "Updated Every Minute",
+        "feature1Title": "Feature 1 Title",
+        "feature1Desc": "Feature 1 Desc",
+        "feature2Title": "Feature 2 Title",
+        "feature2Desc": "Feature 2 Desc",
+        "feature3Title": "Feature 3 Title",
+        "feature6Title": "Feature 6 Title",
+        "feature6Desc": "Feature 6 Desc",
+        "feature7Title": "Feature 7 Title",
+        "feature7Desc": "Feature 7 Desc"
       }
     },
     "common": {
@@ -2336,7 +2423,10 @@
       "ctaPrimary": "Cta Primary",
       "empty": "Empty",
       "ctaSecondary": "Cta Secondary",
-      "trustNote": "Trust Note"
+      "trustNote": "Trust Note",
+      "gold": "Gold",
+      "silver": "Silver",
+      "bronze": "Bronze"
     },
     "liveMarketStrip": {
       "title": "Title",
@@ -3146,8 +3236,49 @@
         },
         "cta": "Cta",
         "skip": "Skip"
+      },
+      "step2": {
+        "subtitle": "Subtitle",
+        "backAriaLabel": "Back Aria Label",
+        "title": "Title"
       }
-    }
+    },
+    "canvas-confetti": "Canvas Confetti",
+    "interactive": {
+      "error": {
+        "finish": "Finish"
+      },
+      "step1": {
+        "title1": "Title 1",
+        "title2": "Title 2",
+        "description": "Description"
+      },
+      "step2": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "preloaded": "Preloaded"
+      },
+      "step3": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "playMoney": "Play Money",
+        "goalStrategy": "Goal Strategy",
+        "tooltip": "Tooltip",
+        "tradingMode": "Trading Mode",
+        "currencySuffix": "Currency Suffix",
+        "tradingModeValue": "Trading Mode Value",
+        "initializing": "Initializing",
+        "startBot": "Start Bot",
+        "status": "Status",
+        "statusValue": "Status Value"
+      },
+      "step4": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "redirecting": "Redirecting"
+      }
+    },
+    "ref": "Ref"
   },
   "orderHistory": {
     "title": "Order History",
@@ -3292,7 +3423,34 @@
       "resetFailed": "Reset failed. Please try again.",
       "resetNetwork": "Network error during reset."
     },
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "viewTrades": "View Trades",
+    "tradeHistory": "Trade History",
+    "sessionDetail": {
+      "backToHub": "Back To Hub",
+      "eyebrowLive": "Eyebrow Live",
+      "eyebrowPaper": "Eyebrow Paper",
+      "active": "Active",
+      "paused": "Paused",
+      "stopped": "Stopped",
+      "crashed": "Crashed",
+      "contextBanner": "Context Banner",
+      "capital": "Capital",
+      "startCapital": "Start Capital",
+      "winRate": "Win Rate",
+      "trades": "Trades",
+      "total": "Total",
+      "pauseBot": "Pause Bot",
+      "resume": "Resume",
+      "stopSession": "Stop Session",
+      "noTrades": "No Trades",
+      "buy": "Buy",
+      "sell": "Sell"
+    },
+    "stopSession": "Stop Session",
+    "noTrades": "No Trades",
+    "buy": "Buy",
+    "sell": "Sell"
   },
   "payment": {
     "chooseMethod": "Choose payment method",
@@ -3369,7 +3527,8 @@
       "cta": "Go to Dashboard",
       "viewProgram": "View Study Program",
       "errorTitle": "Something went wrong",
-      "backToPricing": "Back to Pricing"
+      "backToPricing": "Back to Pricing",
+      "session_id": "Session Id"
     },
     "cancel": {
       "title": "Payment Canceled",
@@ -3536,7 +3695,9 @@
       "validation_descriptionMax": "Description is too long",
       "validation_priceMin": "Price cannot be negative",
       "validation_priceMax": "Price is too high",
-      "validation_priceRequired": "Enter a price for the selected pricing model"
+      "validation_priceRequired": "Enter a price for the selected pricing model",
+      "other": "Other",
+      "free": "Free"
     }
   },
   "copyStrategy": {
@@ -4063,7 +4224,12 @@
       "INSUFFICIENT_BALANCE": "Insufficient balance",
       "SESSION_NOT_ACTIVE": "Session not active",
       "INVALID_TRADING_MODE": "Invalid trading mode"
-    }
+    },
+    "diagnosticsCopyFailed": "Diagnostics Copy Failed",
+    "diagnosticsCopied": "Diagnostics Copied",
+    "integrityPollWarning": "Integrity Poll Warning",
+    "noTradesFiltered": "No Trades Filtered",
+    "noTradesFilteredHint": "No Trades Filtered Hint"
   },
   "trading": {
     "paperMode": "Paper Trading",
@@ -4288,7 +4454,8 @@
           "label": "Aggressive",
           "description": "Higher risk, potentially higher return"
         }
-      }
+      },
+      "id": "Id"
     },
     "restart": {
       "title": "Trading is stopped",
@@ -4421,7 +4588,8 @@
         "noRecentDecisions": "No Recent Decisions",
         "tradeFailedNoReason": "Trade Failed No Reason",
         "title": "Title",
-        "loading": "Loading"
+        "loading": "Loading",
+        "last_tick_at": "Last Tick At"
       },
       "loading": "Loading",
       "kpi": {
@@ -4810,6 +4978,13 @@
           "comparisonBalanced": "Comparison Balanced",
           "comparisonAggressive": "Comparison Aggressive"
         }
+      },
+      "title": "Title",
+      "sections": {
+        "reactionTime": "Reaction Time",
+        "confirmation": "Confirmation",
+        "moreLikely": "More Likely",
+        "lessLikely": "Less Likely"
       }
     },
     "modeSelector": {
@@ -4896,12 +5071,21 @@
       "statusIdle": "Status Idle",
       "stopStrategy": "Stop Strategy",
       "starting": "Starting",
-      "startStrategy": "Start Strategy"
+      "startStrategy": "Start Strategy",
+      "livePaperHint": "Live Paper Hint",
+      "liveStatusActive": "Live Status Active",
+      "liveStatusIdle": "Live Status Idle",
+      "liveStopStrategy": "Live Stop Strategy",
+      "liveStarting": "Live Starting",
+      "liveStartStrategy": "Live Start Strategy"
     },
     "activeStrategiesPanel": {
       "title": "Title",
       "emptyHint": "Empty Hint",
-      "stop": "Stop"
+      "stop": "Stop",
+      "liveTitle": "Live Title",
+      "liveEmptyHint": "Live Empty Hint",
+      "liveStop": "Live Stop"
     },
     "recentTrades": {
       "emptyAll": "Empty All",
@@ -4998,7 +5182,52 @@
       }
     },
     "shares": "Shares",
-    "avg": "Avg"
+    "avg": "Avg",
+    "recentTradesPanel": {
+      "title": "Title",
+      "empty": "Empty",
+      "sideBuy": "Side Buy",
+      "sideSell": "Side Sell",
+      "unknownStrategy": "Unknown Strategy"
+    },
+    "tradeDetails": {
+      "automatic": "Automatic",
+      "notFound": "Not Found",
+      "close": "Close",
+      "live": "Live",
+      "paper": "Paper",
+      "result": "Result",
+      "overview": "Overview",
+      "type": "Type",
+      "strategy": "Strategy",
+      "totalValue": "Total Value",
+      "paperNotice": "Paper Notice",
+      "whyBuy": "Why Buy",
+      "confidence": "Confidence",
+      "whySell": "Why Sell",
+      "learnMore": "Learn More",
+      "readMore": "Read More",
+      "numbers": "Numbers",
+      "exitPrice": "Exit Price",
+      "stopLoss": "Stop Loss",
+      "takeProfit": "Take Profit",
+      "strategyParams": "Strategy Params",
+      "reason": "Reason",
+      "chart": "Chart",
+      "shares": "Shares",
+      "avg": "Avg",
+      "created": "Created",
+      "side": "Side",
+      "market": "Market",
+      "limit": "Limit",
+      "filled": "Filled",
+      "remaining": "Remaining",
+      "status": "Status",
+      "statusOpen": "Status Open",
+      "statusFilled": "Status Filled",
+      "statusPartial": "Status Partial",
+      "statusCancelled": "Status Cancelled"
+    }
   },
   "wallet": {
     "title": "Wallet",
@@ -5354,7 +5583,12 @@
     },
     "profile": {
       "trustPaper": "This is a Klarpakke paper/demo profile. Past results do not guarantee future returns.",
-      "trustRisk": "Risk labels are simplified and do not replace your own research."
+      "trustRisk": "Risk labels are simplified and do not replace your own research.",
+      "id": "Id",
+      "copyRequiresSubscription": "Copy Requires Subscription",
+      "couldNotCopy": "Could Not Copy",
+      "backToLeaderboard": "Back To Leaderboard",
+      "totalTradesLabel": "Total Trades Label"
     },
     "quickFollow": {
       "title": "Copy trader",

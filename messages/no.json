@@ -329,7 +329,10 @@
     "resetPassword": "Reset passord",
     "choosePassword": "Choose passord",
     "loggingIn": "Logging in",
-    "login": "Login"
+    "login": "Login",
+    "id": "Id",
+    "role": "Role",
+    "count": "Count"
   },
   "auth": {
     "verify": {
@@ -464,7 +467,8 @@
         "goToLogin": "Gå til login"
       }
     },
-    "loginRequiredTitle": "Logg inn for å fortsette"
+    "loginRequiredTitle": "Logg inn for å fortsette",
+    "next": "Next"
   },
   "autoTrade": {
     "title": "AI Auto-Trading",
@@ -912,7 +916,8 @@
       "noGuarantee": "Ingen garanti, du kan tape alt",
       "important": "Viktig å vite",
       "disclaimer": "Kalkulatoren viser teoretiske tall. 0.1% daglig avkastning er ekstremt optimistisk og ikke realistisk over tid. Du kan tape hele investeringen. Dette er ikke investeringsråd. Gjør egen research."
-    }
+    },
+    "custom": "Custom"
   },
   "checkout": {
     "loading": "Laster...",
@@ -941,7 +946,19 @@
     "courseIsFree": "Dette kurset er gratis. Ingen betaling nødvendig.",
     "successTitle": "Betaling Vellykket! 🎉",
     "successMessage": "Du har nå tilgang til kurset. Gå til dashboard for å begynne.",
-    "goToDashboard": "Gå til Dashboard"
+    "goToDashboard": "Gå til Dashboard",
+    "plan": "Plan",
+    "currency": "Currency",
+    "billingCurrency": "Billing Currency",
+    "currencyHelp": "Currency Help",
+    "perMonthSuffix": "Per Month Suffix",
+    "bachelorNoTrialTitle": "Bachelor No Trial Title",
+    "bachelorNoTrialDescription": "Bachelor No Trial Description",
+    "totalDueToday": "Total Due Today",
+    "studentPlanFree": "Student Plan Free",
+    "stripeNotConfigured": "Stripe Not Configured",
+    "course": "Course",
+    "session_id": "Session Id"
   },
   "common": {
     "loading": "Laster...",
@@ -1039,8 +1056,76 @@
       "general": {
         "error": "Feil",
         "saved": "Saved"
+      },
+      "paperBot": {
+        "networkError": "Network Error"
       }
-    }
+    },
+    "strategyDcaDesc": "Strategy Dca Desc",
+    "strategyTrendDesc": "Strategy Trend Desc",
+    "strategyGridDesc": "Strategy Grid Desc",
+    "strategyMultiDesc": "Strategy Multi Desc",
+    "strategyAiDesc": "Strategy Ai Desc",
+    "riskLowLabel": "Risk Low Label",
+    "riskLowDesc": "Risk Low Desc",
+    "riskMedLabel": "Risk Med Label",
+    "riskMedDesc": "Risk Med Desc",
+    "riskHighLabel": "Risk High Label",
+    "riskHighDesc": "Risk High Desc",
+    "sessionLimitTitle": "Session Limit Title",
+    "duplicateSessionTitle": "Duplicate Session Title",
+    "duplicateSessionDesc": "Duplicate Session Desc",
+    "liveNotAllowedTitle": "Live Not Allowed Title",
+    "startFailedTitle": "Start Failed Title",
+    "binanceNotConnectedTitle": "Binance Not Connected Title",
+    "binanceNotConnectedDesc": "Binance Not Connected Desc",
+    "liveNotAllowedDesc": "Live Not Allowed Desc",
+    "stepStart": "Step Start",
+    "startBotTitle": "Start Bot Title",
+    "stepAmount": "Step Amount",
+    "stepStrategy": "Step Strategy",
+    "modeLabel": "Mode Label",
+    "botStrategyTrend": "Bot Strategy Trend",
+    "botStrategyGridDesc": "Bot Strategy Grid Desc",
+    "strategyMulti": "Strategy Multi",
+    "botStrategyDcaDesc": "Bot Strategy Dca Desc",
+    "liveModeLabel": "Live Mode Label",
+    "strategyGrid": "Strategy Grid",
+    "connectBinanceToStart": "Connect Binance To Start",
+    "botStrategyAi": "Bot Strategy Ai",
+    "botStrategyMultiDesc": "Bot Strategy Multi Desc",
+    "paperModeLabel": "Paper Mode Label",
+    "botConfigStrategy": "Bot Config Strategy",
+    "botStrategyMulti": "Bot Strategy Multi",
+    "strategyDca": "Strategy Dca",
+    "connectBinanceCta": "Connect Binance Cta",
+    "strategyAi": "Strategy Ai",
+    "botStrategyGrid": "Bot Strategy Grid",
+    "botStrategyAiDesc": "Bot Strategy Ai Desc",
+    "botStrategyDca": "Bot Strategy Dca",
+    "botStrategyTrendDesc": "Bot Strategy Trend Desc",
+    "strategyTrend": "Strategy Trend",
+    "upgradeToStartLive": "Upgrade To Start Live",
+    "upgradeCta": "Upgrade Cta",
+    "liveWarningTitle": "Live Warning Title",
+    "liveWarningDesc": "Live Warning Desc",
+    "upgradeNotice": "Upgrade Notice",
+    "seePlans": "See Plans",
+    "chooseStrategy": "Choose Strategy",
+    "clickToSelect": "Click To Select",
+    "recommended": "Recommended",
+    "chooseRisk": "Choose Risk",
+    "customAmount": "Custom Amount",
+    "liveBalanceUnknownWarning": "Live Balance Unknown Warning",
+    "liveCapitalHighWarning": "Live Capital High Warning",
+    "selectCoins": "Select Coins",
+    "summary": "Summary",
+    "waitingForSignal": "Waiting For Signal",
+    "kellyNotice": "Kelly-advarsel",
+    "liveConfirmWarning": "Bekreft live-start",
+    "starting": "Starter",
+    "startLiveBotAction": "Start live bot",
+    "startBotAction": "Start bot"
   },
   "competition": {
     "title": "Trading Konkurranse",
@@ -1398,7 +1483,8 @@
         "pull": "Dra ned for å oppfriske",
         "release": "Slipp for å oppfriske",
         "refreshing": "Oppfrisker..."
-      }
+      },
+      "paper_balance": "Paper Balance"
     },
     "settingsPage": {
       "title": "Innstillinger",
@@ -1855,7 +1941,8 @@
       "activeLC": "aktive",
       "pausedLC": "pausete",
       "stoppedLC": "stoppete",
-      "live": "Live"
+      "live": "Live",
+      "crashed": "Crashed"
     },
     "error": {
       "title": "Kunne ikke laste dashboard",
@@ -2016,7 +2103,8 @@
     "monthlyCompetitionOngoing": "pågår",
     "daysLeft": "dager igjen",
     "viewLeaderboard": "Vis leaderboard",
-    "kltStoryShort": "Klt story short"
+    "kltStoryShort": "Klt story short",
+    "rank": "Rank"
   },
   "helpPage": {
     "title": "Hjelp & Support",
@@ -2301,7 +2389,21 @@
         "title": "Tittel",
         "description": "Beskrivelse",
         "latestSignal": "Latest signal",
-        "updatedEveryMinute": "Oppdatert every minute"
+        "updatedEveryMinute": "Oppdatert every minute",
+        "feature1Title": "Feature 1 Title",
+        "feature1Desc": "Feature 1 Desc",
+        "feature2Title": "Feature 2 Title",
+        "feature2Desc": "Feature 2 Desc",
+        "feature3Title": "Feature 3 Title",
+        "feature3Desc": "Feature 3 Desc",
+        "feature4Title": "Feature 4 Title",
+        "feature4Desc": "Feature 4 Desc",
+        "feature5Title": "Feature 5 Title",
+        "feature5Desc": "Feature 5 Desc",
+        "feature6Title": "Feature 6 Title",
+        "feature6Desc": "Feature 6 Desc",
+        "feature7Title": "Feature 7 Title",
+        "feature7Desc": "Feature 7 Desc"
       }
     },
     "common": {
@@ -2331,7 +2433,10 @@
       "ctaPrimary": "Cta primary",
       "empty": "Ingen data",
       "ctaSecondary": "Cta secondary",
-      "trustNote": "Trust note"
+      "trustNote": "Trust note",
+      "gold": "Gold",
+      "silver": "Silver",
+      "bronze": "Bronze"
     },
     "liveMarketStrip": {
       "title": "Tittel",
@@ -3141,8 +3246,54 @@
         },
         "cta": "Cta",
         "skip": "Skip"
+      },
+      "step2": {
+        "subtitle": "Subtitle",
+        "backAriaLabel": "Back Aria Label",
+        "title": "Title"
       }
-    }
+    },
+    "canvas-confetti": "Canvas Confetti",
+    "interactive": {
+      "error": {
+        "finish": "Finish"
+      },
+      "step1": {
+        "title1": "Title 1",
+        "title2": "Title 2",
+        "description": "Description",
+        "howItWorksTitle": "How It Works Title",
+        "list1": "List 1",
+        "list2": "List 2",
+        "list3": "List 3",
+        "cta": "Cta"
+      },
+      "step2": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "preloaded": "Preloaded"
+      },
+      "step3": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "playMoney": "Play Money",
+        "goalStrategy": "Goal Strategy",
+        "tooltip": "Tooltip",
+        "tradingMode": "Trading Mode",
+        "currencySuffix": "Currency Suffix",
+        "tradingModeValue": "Trading Mode Value",
+        "initializing": "Initializing",
+        "startBot": "Start Bot",
+        "status": "Status",
+        "statusValue": "Status Value"
+      },
+      "step4": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "redirecting": "Redirecting"
+      }
+    },
+    "ref": "Ref"
   },
   "orderHistory": {
     "title": "Ordrehistorikk",
@@ -3287,7 +3438,39 @@
       "resetFailed": "Nullstilling feilet. Prøv igjen.",
       "resetNetwork": "Nettverksfeil ved nullstilling."
     },
-    "saving": "Lagrer..."
+    "saving": "Lagrer...",
+    "viewTrades": "View Trades",
+    "tradeHistory": "Trade History",
+    "sessionDetail": {
+      "backToHub": "Back To Hub",
+      "eyebrowLive": "Eyebrow Live",
+      "eyebrowPaper": "Eyebrow Paper",
+      "active": "Active",
+      "paused": "Paused",
+      "stopped": "Stopped",
+      "crashed": "Crashed",
+      "contextBanner": "Context Banner",
+      "capital": "Capital",
+      "startCapital": "Start Capital",
+      "winRate": "Win Rate",
+      "trades": "Trades",
+      "total": "Total",
+      "pauseBot": "Pause Bot",
+      "resume": "Resume",
+      "stopSession": "Stop Session",
+      "noTrades": "No Trades",
+      "buy": "Buy",
+      "sell": "Sell"
+    },
+    "capital": "Capital",
+    "winRate": "Win Rate",
+    "total": "Total",
+    "pauseBot": "Pause Bot",
+    "resume": "Resume",
+    "stopSession": "Stop Session",
+    "noTrades": "No Trades",
+    "buy": "Buy",
+    "sell": "Sell"
   },
   "payment": {
     "chooseMethod": "Velg betalingsmetode",
@@ -3364,7 +3547,8 @@
       "cta": "Gå til Dashboard",
       "viewProgram": "Se Studieprogram",
       "errorTitle": "Noe gikk galt",
-      "backToPricing": "Tilbake til priser"
+      "backToPricing": "Tilbake til priser",
+      "session_id": "Session Id"
     },
     "cancel": {
       "title": "Betaling avbrutt",
@@ -3531,7 +3715,9 @@
       "validation_descriptionMax": "Beskrivelse er for lang",
       "validation_priceMin": "Pris kan ikke være negativ",
       "validation_priceMax": "Pris er for høy",
-      "validation_priceRequired": "Oppgi pris for valgt prismodell"
+      "validation_priceRequired": "Oppgi pris for valgt prismodell",
+      "other": "Other",
+      "free": "Free"
     }
   },
   "copyStrategy": {
@@ -4058,7 +4244,12 @@
       "INSUFFICIENT_BALANCE": "Utilstrekkelig saldo",
       "SESSION_NOT_ACTIVE": "Sesjon ikke aktiv",
       "INVALID_TRADING_MODE": "Ugyldig handelsmodus"
-    }
+    },
+    "diagnosticsCopyFailed": "Diagnostics Copy Failed",
+    "diagnosticsCopied": "Diagnostics Copied",
+    "integrityPollWarning": "Integrity Poll Warning",
+    "noTradesFiltered": "No Trades Filtered",
+    "noTradesFilteredHint": "No Trades Filtered Hint"
   },
   "trading": {
     "paperMode": "Lekepenger",
@@ -4283,7 +4474,8 @@
           "label": "Aggressiv",
           "description": "Høyere risiko, potensielt høyere avkastning"
         }
-      }
+      },
+      "id": "Id"
     },
     "restart": {
       "title": "Trading er stoppet",
@@ -4416,7 +4608,8 @@
         "noRecentDecisions": "No recent decisions",
         "tradeFailedNoReason": "Handel failed no reason",
         "title": "Tittel",
-        "loading": "Laster..."
+        "loading": "Laster...",
+        "last_tick_at": "Last Tick At"
       },
       "loading": "Laster...",
       "kpi": {
@@ -4805,6 +4998,17 @@
           "comparisonBalanced": "Comparison balansert",
           "comparisonAggressive": "Comparison aggressiv"
         }
+      },
+      "title": "Title",
+      "sections": {
+        "reactionTime": "Reaction Time",
+        "confirmation": "Confirmation",
+        "moreLikely": "More Likely",
+        "lessLikely": "Less Likely",
+        "comparison": "Comparison",
+        "comparisonConservative": "Comparison konservativ",
+        "comparisonBalanced": "Comparison balansert",
+        "comparisonAggressive": "Comparison aggressiv"
       }
     },
     "modeSelector": {
@@ -4891,12 +5095,21 @@
       "statusIdle": "Status idle",
       "stopStrategy": "Stopp strategi",
       "starting": "Starting",
-      "startStrategy": "Start strategi"
+      "startStrategy": "Start strategi",
+      "livePaperHint": "Live Paper Hint",
+      "liveStatusActive": "Live Status Active",
+      "liveStatusIdle": "Live Status Idle",
+      "liveStopStrategy": "Live Stop Strategy",
+      "liveStarting": "Live Starting",
+      "liveStartStrategy": "Live Start Strategy"
     },
     "activeStrategiesPanel": {
       "title": "Tittel",
       "emptyHint": "Ingen data tips",
-      "stop": "Stopp"
+      "stop": "Stopp",
+      "liveTitle": "Live Title",
+      "liveEmptyHint": "Live Empty Hint",
+      "liveStop": "Live Stop"
     },
     "recentTrades": {
       "emptyAll": "Ingen data alle",
@@ -4993,7 +5206,57 @@
       }
     },
     "shares": "Shares",
-    "avg": "Avg"
+    "avg": "Avg",
+    "recentTradesPanel": {
+      "title": "Title",
+      "empty": "Empty",
+      "sideBuy": "Side Buy",
+      "sideSell": "Side Sell",
+      "unknownStrategy": "Unknown Strategy"
+    },
+    "tradeDetails": {
+      "automatic": "Automatic",
+      "notFound": "Not Found",
+      "close": "Close",
+      "live": "Live",
+      "paper": "Paper",
+      "result": "Result",
+      "overview": "Overview",
+      "type": "Type",
+      "strategy": "Strategy",
+      "totalValue": "Total Value",
+      "paperNotice": "Paper Notice",
+      "whyBuy": "Why Buy",
+      "confidence": "Confidence",
+      "whySell": "Why Sell",
+      "learnMore": "Learn More",
+      "readMore": "Read More",
+      "numbers": "Numbers",
+      "exitPrice": "Exit Price",
+      "stopLoss": "Stop Loss",
+      "takeProfit": "Take Profit",
+      "strategyParams": "Strategy Params",
+      "buy": "Buy",
+      "sell": "Sell",
+      "quantity": "Quantity",
+      "entryPrice": "Entry Price",
+      "fee": "Fee",
+      "reason": "Reason",
+      "chart": "Chart",
+      "shares": "Shares",
+      "avg": "Avg",
+      "created": "Created",
+      "side": "Side",
+      "market": "Market",
+      "limit": "Limit",
+      "filled": "Filled",
+      "remaining": "Remaining",
+      "status": "Status",
+      "statusOpen": "Status Open",
+      "statusFilled": "Status Filled",
+      "statusPartial": "Status Partial",
+      "statusCancelled": "Status Cancelled"
+    }
   },
   "wallet": {
     "title": "Lommebok",
@@ -5349,7 +5612,13 @@
     },
     "profile": {
       "trustPaper": "Dette er en Klarpakke paper/demo-profil. Tidligere resultater garanterer ikke fremtidig avkastning.",
-      "trustRisk": "Risikoetiketter er forenklede og erstatter ikke din egen research."
+      "trustRisk": "Risikoetiketter er forenklede og erstatter ikke din egen research.",
+      "id": "Id",
+      "copyRequiresSubscription": "Copy Requires Subscription",
+      "couldNotCopy": "Could Not Copy",
+      "backToLeaderboard": "Back To Leaderboard",
+      "totalTradesLabel": "Total Trades Label",
+      "noPublicStrategies": "No Public Strategies"
     },
     "quickFollow": {
       "title": "Kopier trader",
