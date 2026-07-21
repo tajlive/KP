@@ -953,7 +953,12 @@
     "currencyHelp": "Currency Help",
     "perMonthSuffix": "Per Month Suffix",
     "course": "Course",
-    "session_id": "Session Id"
+    "session_id": "Session Id",
+    "bachelorNoTrialDescription": "Bachelor No Trial Description",
+    "bachelorNoTrialTitle": "Bachelor No Trial Title",
+    "stripeNotConfigured": "Stripe Not Configured",
+    "studentPlanFree": "Student Plan Free",
+    "totalDueToday": "Total Due Today"
   },
   "common": {
     "loading": "Loading...",
@@ -1115,7 +1120,12 @@
     "liveConfirmWarning": "Confirm live start",
     "starting": "Starting",
     "startLiveBotAction": "Start live bot",
-    "startBotAction": "Start bot"
+    "startBotAction": "Start bot",
+    "riskHighLabel": "Risk High Label",
+    "riskLowDesc": "Risk Low Desc",
+    "riskLowLabel": "Risk Low Label",
+    "riskMedDesc": "Risk Med Desc",
+    "riskMedLabel": "Risk Med Label"
   },
   "competition": {
     "title": "Trading Competition",
@@ -2393,7 +2403,12 @@
         "feature6Title": "Feature 6 Title",
         "feature6Desc": "Feature 6 Desc",
         "feature7Title": "Feature 7 Title",
-        "feature7Desc": "Feature 7 Desc"
+        "feature7Desc": "Feature 7 Desc",
+        "feature3Desc": "Feature 3 Desc",
+        "feature4Desc": "Feature 4 Desc",
+        "feature4Title": "Feature 4 Title",
+        "feature5Desc": "Feature 5 Desc",
+        "feature5Title": "Feature 5 Title"
       }
     },
     "common": {
@@ -3251,7 +3266,12 @@
       "step1": {
         "title1": "Title 1",
         "title2": "Title 2",
-        "description": "Description"
+        "description": "Description",
+        "cta": "Cta",
+        "howItWorksTitle": "How It Works Title",
+        "list1": "List 1",
+        "list2": "List 2",
+        "list3": "List 3"
       },
       "step2": {
         "title": "Title",
@@ -3450,7 +3470,12 @@
     "stopSession": "Stop Session",
     "noTrades": "No Trades",
     "buy": "Buy",
-    "sell": "Sell"
+    "sell": "Sell",
+    "capital": "Capital",
+    "pauseBot": "Pause Bot",
+    "resume": "Resume",
+    "total": "Total",
+    "winRate": "Win Rate"
   },
   "payment": {
     "chooseMethod": "Choose payment method",
@@ -4984,7 +5009,11 @@
         "reactionTime": "Reaction Time",
         "confirmation": "Confirmation",
         "moreLikely": "More Likely",
-        "lessLikely": "Less Likely"
+        "lessLikely": "Less Likely",
+        "comparison": "Comparison",
+        "comparisonAggressive": "Comparison aggressiv",
+        "comparisonBalanced": "Comparison balansert",
+        "comparisonConservative": "Comparison konservativ"
       }
     },
     "modeSelector": {
@@ -5226,7 +5255,12 @@
       "statusOpen": "Status Open",
       "statusFilled": "Status Filled",
       "statusPartial": "Status Partial",
-      "statusCancelled": "Status Cancelled"
+      "statusCancelled": "Status Cancelled",
+      "buy": "Buy",
+      "entryPrice": "Entry Price",
+      "fee": "Fee",
+      "quantity": "Quantity",
+      "sell": "Sell"
     }
   },
   "wallet": {
@@ -5588,7 +5622,8 @@
       "copyRequiresSubscription": "Copy Requires Subscription",
       "couldNotCopy": "Could Not Copy",
       "backToLeaderboard": "Back To Leaderboard",
-      "totalTradesLabel": "Total Trades Label"
+      "totalTradesLabel": "Total Trades Label",
+      "noPublicStrategies": "No Public Strategies"
     },
     "quickFollow": {
       "title": "Copy trader",
