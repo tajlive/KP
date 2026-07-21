@@ -3950,8 +3950,8 @@
       "title": "Tittel",
       "description": "Beskrivelse",
       "loading": "Laster...",
-      "cta": "Cta",
-      "sectionTitle": "Section tittel"
+      "cta": "Lagre",
+      "sectionTitle": "Kontoinformasjon"
     }
   },
   "simulator": {
@@ -4859,7 +4859,16 @@
     "robotBrain": {
       "ariaLabel": "Aria etikett",
       "badge": "Utmerkelse",
-      "disclaimer": "Disclaimer"
+      "disclaimer": "Disclaimer",
+      "line1": "AI-analyserer markedet i sanntid...",
+      "line2": "Vurderer risiko og potensial...",
+      "line3": "Sjekker tekniske indikatorer...",
+      "line4": "Overvåker prisbevegelser...",
+      "line5": "Kalkulerer optimalt inngangspunkt...",
+      "line6": "Venter på riktig signal...",
+      "chip_scan": "Scanning",
+      "chip_risk": "Risikoanalyse",
+      "chip_signal": "Signalstyrke"
     },
     "loginRequired": "Login påkrevd",
     "saveSuccess": "Lagre suksess",

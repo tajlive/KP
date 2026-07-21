@@ -3955,8 +3955,8 @@
       "title": "Title",
       "description": "Description",
       "loading": "Loading",
-      "cta": "Cta",
-      "sectionTitle": "Section Title"
+      "cta": "Save",
+      "sectionTitle": "Account Information"
     }
   },
   "simulator": {
@@ -4864,7 +4864,16 @@
     "robotBrain": {
       "ariaLabel": "Aria Label",
       "badge": "Badge",
-      "disclaimer": "Disclaimer"
+      "disclaimer": "Disclaimer",
+      "line1": "AI is analyzing the market in real-time...",
+      "line2": "Assessing risk and potential...",
+      "line3": "Checking technical indicators...",
+      "line4": "Monitoring price movements...",
+      "line5": "Calculating optimal entry point...",
+      "line6": "Waiting for the right signal...",
+      "chip_scan": "Scanning",
+      "chip_risk": "Risk Analysis",
+      "chip_signal": "Signal Strength"
     },
     "loginRequired": "Login Required",
     "saveSuccess": "Save Success",
