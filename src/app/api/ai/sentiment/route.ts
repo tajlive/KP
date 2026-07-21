@@ -22,11 +22,9 @@ interface FearGreedData {
 }
 
 export async function GET(_req: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     // Fetch from alternative.me Fear & Greed API
-    const response = await fetch, { signal: controller.signal }
+    const response = await fetch(
       "https://api.alternative.me/fng/?limit=1",
       {
         headers: {

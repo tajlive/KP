@@ -27,8 +27,6 @@ interface LeaderboardChange {
 
 /** GET /api/leaderboard/changes?period=weekly */
 export async function GET(request: Request) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const { searchParams } = new URL(request.url);
   const periodRaw = searchParams.get("period") || "weekly";
   const VALID_PERIODS = new Set(["weekly", "monthly", "all_time"]);
@@ -36,7 +34,7 @@ export async function GET(request: Request) {
 
   try {
     // 1. Hent nyeste snapshot for denne perioden
-    const snapRes = await fetch, { signal: controller.signal }
+    const snapRes = await fetch(
       `${supabaseUrl}/rest/v1/leaderboard_snapshots?select=*&period=eq.${period}&order=snapped_at.desc&limit=100`,
       {
         headers: {
@@ -54,7 +52,7 @@ export async function GET(request: Request) {
     const snapshots: unknown[] = await snapRes.json();
 
     // 2. Hent gjeldende leaderboard
-    const lbRes = await fetch, { signal: controller.signal }
+    const lbRes = await fetch(
       `${supabaseUrl}/rest/v1/leaderboard_entries?period=eq.${period}&is_public=eq.true&order=rank.asc`,
       {
         headers: {

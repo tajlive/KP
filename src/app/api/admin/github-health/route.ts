@@ -2,8 +2,6 @@ import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const start = performance.now();
 
   try {
@@ -33,7 +31,7 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    const response = await fetch, { signal: controller.signal }
+    const response = await fetch(
       "https://api.github.com/repos/tajlive/KP/actions/runs?per_page=1",
       {
         headers: {

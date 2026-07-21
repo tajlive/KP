@@ -30,7 +30,6 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
-  clearTimeout(timeoutId);
       method: "POST",
       headers: {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
@@ -129,8 +128,6 @@ function tradeConfirmedEmail(name: string, symbol: string, side: string, amount:
 
 // ─── POST /api/email/send ───
 export async function POST(request: Request) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {

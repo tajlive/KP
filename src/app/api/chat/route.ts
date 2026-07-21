@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const { messages } = await req.json();
 
@@ -23,8 +21,7 @@ export async function POST(req: Request) {
       );
     }
     // Call Perplexity API directly
-    const response = await fetch("https://api.perplexity.ai/chat/completions", , { signal: controller.signal }
-  clearTimeout(timeoutId);
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,

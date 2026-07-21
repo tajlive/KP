@@ -15,8 +15,6 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const response = NextResponse.next();
   const supabaseAuth = createServerClient(request, response);
   const {
@@ -67,7 +65,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const binanceRes = await fetch, { signal: controller.signal }
+  const binanceRes = await fetch(
     `https://api.binance.com/api/v3/ticker/24hr?symbol=${encodeURIComponent(FIRST_TRADE_SYMBOL)}`,
     { next: { revalidate: 0 } },
   );

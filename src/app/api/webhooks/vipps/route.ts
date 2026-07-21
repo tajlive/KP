@@ -22,7 +22,6 @@ async function getVippsAccessToken(): Promise<string> {
   }
 
   const res = await fetch("https://api.vipps.no/accesstoken/get", {
-  clearTimeout(timeoutId);
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,8 +40,6 @@ async function getVippsAccessToken(): Promise<string> {
 }
 
 export async function POST(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const body = await request.json();
     const eventType = request.headers.get("X-Vipps-Event-Type") || body.eventType || "unknown";

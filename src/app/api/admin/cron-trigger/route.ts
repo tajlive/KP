@@ -4,8 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const auth = await verifyAdminAccess();
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: auth.status });
@@ -17,8 +15,7 @@ export async function POST(request: NextRequest) {
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.klarpakke.no";
-  const res = await fetch(`${siteUrl}/api/cron/tick`, , { signal: controller.signal }
-  clearTimeout(timeoutId);
+  const res = await fetch(`${siteUrl}/api/cron/tick`, {
     headers: { Authorization: `Bearer ${secret}` },
   });
 
