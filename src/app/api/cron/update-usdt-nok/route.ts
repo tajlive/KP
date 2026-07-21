@@ -14,15 +14,12 @@ export const maxDuration = 15;
 const EXCHANGE_RATE_URL = "https://api.exchangerate-api.com/v4/latest/USD";
 
 export async function GET(req: Request) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const res = await fetch(EXCHANGE_RATE_URL, { next: { revalidate: 0 } }), { signal: controller.signal }
-  clearTimeout(timeoutId);
+    const res = await fetch(EXCHANGE_RATE_URL, { next: { revalidate: 0 } });
     if (!res.ok) throw new Error(`Exchange API ${res.status}`);
     const data = (await res.json()) as { rates?: { NOK?: number } };
     const usdToNok = data.rates?.NOK;

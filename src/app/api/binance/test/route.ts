@@ -30,8 +30,6 @@ async function createSignature(message: string, secret: string): Promise<string>
 }
 
 export async function POST(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const { apiKey, apiSecret, testnet } = await request.json();
 
@@ -58,8 +56,7 @@ export async function POST(request: NextRequest) {
     const url = `${baseUrl}${endpoint}?${queryString}&signature=${signature}`;
 
     // Make request to Binance
-    const response = await fetch(url, , { signal: controller.signal }
-  clearTimeout(timeoutId);
+    const response = await fetch(url, {
       headers: {
         'X-MBX-APIKEY': apiKey,
       },

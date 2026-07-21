@@ -6,8 +6,6 @@ import { validateCronSecret } from "@/lib/auth/cron";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -17,7 +15,7 @@ export async function GET(req: Request) {
     const decay = await calculateSignalDecay(supabase, 24);
 
     if (decay.overallAccuracyPct < 50 && process.env.SLACK_WEBHOOK) {
-      await fetch(process.env.SLACK_WEBHOOK, , { signal: controller.signal }
+      await fetch(process.env.SLACK_WEBHOOK, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({

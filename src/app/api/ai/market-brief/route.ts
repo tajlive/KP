@@ -54,8 +54,6 @@ function parseMarketJson(text: string): MarketBrief {
 }
 
 export async function GET() {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const db = createClient();
 
@@ -72,7 +70,7 @@ export async function GET() {
     }
 
     // Fetch latest prices from Binance
-    const pricesRes = await fetch, { signal: controller.signal }
+    const pricesRes = await fetch(
       'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]',
       { next: { revalidate: 300 } }
     );

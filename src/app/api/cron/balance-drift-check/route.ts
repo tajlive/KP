@@ -29,8 +29,6 @@ interface BalanceDriftResult {
 }
 
 export async function GET(req: Request) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -146,7 +144,7 @@ export async function GET(req: Request) {
     // Send Slack alert if any drifts detected
     if (alerts.length > 0 && process.env.SLACK_WEBHOOK) {
       try {
-        await fetch(process.env.SLACK_WEBHOOK, , { signal: controller.signal }
+        await fetch(process.env.SLACK_WEBHOOK, {
           method: "POST",
           headers: { "Content-type": "application/json" },
           body: JSON.stringify({

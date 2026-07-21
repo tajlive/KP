@@ -32,7 +32,6 @@ async function validateBinanceKeys(
 
     // Hent server-tid for signatur
     const timeRes = await fetch(`${baseUrl}/api/v3/time`);
-  clearTimeout(timeoutId);
     if (!timeRes.ok) {
       return { valid: false, error: "Kunne ikke koble til Binance API" };
     }
@@ -45,7 +44,6 @@ async function validateBinanceKeys(
     // som sjekker om nøkkelen er gyldig
 
     const response = await fetch(`${baseUrl}/api/v3/account?${queryString}`, {
-  clearTimeout(timeoutId);
       headers: {
         "X-MBX-APIKEY": apiKey,
       },
@@ -82,8 +80,6 @@ async function validateBinanceKeys(
  * Nøklene krypteres av Supabase Edge Function (binance-connect)
  */
 export async function POST(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const {
       data: { user },
@@ -143,8 +139,7 @@ export async function POST(request: NextRequest) {
     // (vi sender til binance-connect som håndterer kryptering)
     const edgeFunctionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/binance-connector`;
 
-    const edgeResponse = await fetch(edgeFunctionUrl, , { signal: controller.signal }
-  clearTimeout(timeoutId);
+    const edgeResponse = await fetch(edgeFunctionUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,

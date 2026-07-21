@@ -44,8 +44,6 @@ async function upsertPrices(supabase: SupabaseClient<Database>, tickers: Binance
  * Syncs prices from Binance API to Supabase via Edge Function proxy
  */
 export async function GET(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   if (!validateCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -59,8 +57,7 @@ export async function GET(request: NextRequest) {
 
     // Try via Supabase Edge Function proxy first (unngår Cloudflare IP-blokk)
     if (supabaseUrl && proxySecret && anonKey) {
-      const proxyRes = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, , { signal: controller.signal }
-  clearTimeout(timeoutId);
+      const proxyRes = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +86,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fallback: direct Binance API
-    const response = await fetch, { signal: controller.signal }
+    const response = await fetch(
       `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
       { next: { revalidate: 0 } },
     );

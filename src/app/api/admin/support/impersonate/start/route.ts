@@ -44,7 +44,6 @@ async function passwordGrantLogin(
   }
 
   const response = await fetch(`${url}/auth/v1/token?grant_type=password`, {
-  clearTimeout(timeoutId);
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -75,8 +74,6 @@ async function passwordGrantLogin(
 }
 
 export async function POST(request: NextRequest) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const auth = await verifyAdminAccess();
   if (!auth.ok) {
     return NextResponse.json(
