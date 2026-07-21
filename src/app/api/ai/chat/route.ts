@@ -65,6 +65,7 @@ async function chatWithPerplexity(
   } = options;
 
   const response = await fetch("https://api.perplexity.ai/chat/completions", {
+  clearTimeout(timeoutId);
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -106,6 +107,8 @@ interface ChatRequest {
 }
 
 export async function POST(req: Request) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const body: ChatRequest = await req.json();
     const {

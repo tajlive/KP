@@ -2,6 +2,8 @@ import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_request: NextRequest) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const start = performance.now();
 
   try {
@@ -32,7 +34,8 @@ export async function GET(_request: NextRequest) {
     }
 
     // Test Stripe API-tilkobling
-    const response = await fetch("https://api.stripe.com/v1/account", {
+    const response = await fetch("https://api.stripe.com/v1/account", , { signal: controller.signal }
+  clearTimeout(timeoutId);
       headers: {
         Authorization: `Bearer ${stripeKey}`,
       },
@@ -52,7 +55,7 @@ export async function GET(_request: NextRequest) {
     const account = await response.json();
 
     // Sjekk webhook-konfigurasjon
-    const webhooksResponse = await fetch(
+    const webhooksResponse = await fetch, { signal: controller.signal }
       "https://api.stripe.com/v1/webhook_endpoints",
       {
         headers: {

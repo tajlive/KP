@@ -19,6 +19,7 @@ async function fetchCurrentPrices(symbols: string[]): Promise<Record<string, num
 
   try {
     const res = await fetch(`${baseUrl}/api/v3/ticker/price`, {
+  clearTimeout(timeoutId);
       next: { revalidate: 60 },
     });
     
@@ -43,6 +44,7 @@ async function fetchCurrentPrices(symbols: string[]): Promise<Record<string, num
 async function isAssetVolatile(symbol: string): Promise<{ volatile: boolean, change: number }> {
   try {
     const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=15m&limit=1`, {
+  clearTimeout(timeoutId);
       next: { revalidate: 60 }
     });
     if (!res.ok) return { volatile: false, change: 0 };
@@ -64,6 +66,8 @@ async function isAssetVolatile(symbol: string): Promise<{ volatile: boolean, cha
 }
 
 export async function POST(req: NextRequest) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     if (!validateCronSecret(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

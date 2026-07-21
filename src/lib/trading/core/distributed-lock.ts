@@ -114,6 +114,7 @@ export async function acquireLock(
       }
       
       // Lock is held by someone else
+      console.error(`[DEBUG-LOCK] busy key=${key} existing=${existing}`);
       if (attempt < maxAttempts - 1) {
         await sleep(opts.retryDelayMs!);
       }
