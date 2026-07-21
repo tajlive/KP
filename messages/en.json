@@ -2116,6 +2116,94 @@
     "markComplete": "Mark as complete",
     "seeFullPath": "Full learning path"
   },
+  "tradingResults": {
+    "meta": {
+      "title": "Results"
+    },
+    "title": "My Results",
+    "subtitle": "View your trading results and statistics",
+    "eyebrow": "Trading Results",
+    "errorLoad": "Could not load results",
+    "errorTitle": "Error loading results",
+    "notYetLoaded": "Loading results...",
+    "lastUpdated": "Last updated",
+    "intervalHint": "Last 30 days",
+    "exportCsv": "Export CSV",
+    "refresh": "Refresh",
+    "openHistory": "View trade history",
+    "kpi": {
+      "trades": "Trades",
+      "totalPnl": "Total P/L",
+      "totalPnlHint": "Combined result for all trades",
+      "winRate": "Win Rate",
+      "bestDay": "Best Day",
+      "worstDay": "Worst Day",
+      "modeTrades": "Trades"
+    },
+    "outcome": {
+      "win": "Won",
+      "loss": "Loss",
+      "breakeven": "Break-even",
+      "unknown": "Unknown"
+    },
+    "mode": {
+      "paper": "Paper",
+      "live": "Live",
+      "unknown": "Unknown"
+    },
+    "charts": {
+      "cumulativeTitle": "Cumulative Result",
+      "cumulativeHint": "Performance over time",
+      "cumulativeSeries": "Cumulative P/L",
+      "outcomeTitle": "Outcome Distribution",
+      "outcomeHint": "Winning vs losing trades",
+      "dailyTitle": "Daily P/L",
+      "dailyHint": "Result per day",
+      "dailySeries": "Daily P/L",
+      "pairsTitle": "P/L by Trading Pair",
+      "pairsHint": "Results by cryptocurrency",
+      "pairPnl": "P/L",
+      "modeTitle": "P/L by Mode",
+      "modeHint": "Paper vs Live results"
+    },
+    "empty": {
+      "noTradesTitle": "No trades yet",
+      "noTradesDesc": "Start by making your first trade",
+      "needTrades": "Make some trades to see statistics",
+      "noOutcomes": "No outcome data",
+      "needDaily": "No daily data",
+      "needPairs": "No trading pair data",
+      "needModes": "No mode data"
+    }
+  },
+  "cookieConsent": {
+    "bannerText": "We use cookies to improve your experience.",
+    "privacyLink": "Privacy Policy",
+    "and": "and",
+    "cookieLink": "Cookie Policy",
+    "customize": "Customize",
+    "decline": "Decline",
+    "acceptAll": "Accept All",
+    "preferencesTitle": "Cookie Preferences",
+    "back": "Back",
+    "savePreferences": "Save Preferences",
+    "necessary": {
+      "label": "Necessary",
+      "description": "Required for the site to function"
+    },
+    "analytics": {
+      "label": "Analytics",
+      "description": "Helps us improve the site"
+    },
+    "marketing": {
+      "label": "Marketing",
+      "description": "Used for targeted advertising"
+    },
+    "functional": {
+      "label": "Functional",
+      "description": "Remembers your choices and preferences"
+    }
+  },
   "legal": {
     "privacyTitle": "Privacy Policy",
     "termsTitle": "Terms of Service",
@@ -2325,6 +2413,7 @@
     "home": "Home",
     "studyProgram": "Study Program",
     "trade": "Trade",
+    "market": "Market",
     "portfolio": "Portfolio",
     "account": "Account",
     "school": "School",
