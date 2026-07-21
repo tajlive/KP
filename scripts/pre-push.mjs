@@ -131,13 +131,14 @@ function anyMatch(files, patterns) {
 
 async function runGate1() {
   logGate(1, "Statisk analyse (parallel)");
-  const [typeCheck, lint, i18n] = await Promise.all([
+  const [typeCheck, lint, i18n, i18nUsage] = await Promise.all([
     exec("npm run type-check", "Type check"),
     exec("npm run lint:gate", "Lint gate"),
     exec("npm run i18n:validate", "i18n validation"),
+    exec("npm run i18n:usage", "i18n usage validation"),
   ]);
 
-  if (!typeCheck.ok || !lint.ok || !i18n.ok) {
+  if (!typeCheck.ok || !lint.ok || !i18n.ok || !i18nUsage.ok) {
     failed = true;
     return;
   }
