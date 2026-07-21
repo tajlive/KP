@@ -54,7 +54,20 @@
     "users": "Brukere",
     "students": "Studenter",
     "nav": {
-      "traderVerifications": "Trader verifikasjoner"
+      "traderVerifications": "Trader verifikasjoner",
+      "sectionOverview": "Section oversikt",
+      "analytics": "Analytics",
+      "campaign": "Campaign",
+      "monetization": "Monetization",
+      "sectionUsers": "Section users",
+      "sectionProduct": "Section product",
+      "abTests": "Ab tests",
+      "autoTrading": "Auto trading",
+      "tradingSessions": "Trading økter",
+      "sectionSystem": "Section system",
+      "adminV2": "Admin",
+      "sectionSupport": "Section support",
+      "impersonate": "Impersonate"
     },
     "traderVerifications": {
       "title": "Trader verifikasjoner",
@@ -240,7 +253,83 @@
     "confirmNewPassword": "Gjenta nytt passord",
     "updating": "Oppdaterer...",
     "saveNewPassword": "Lagre nytt passord",
-    "changeToAdmin": "Endre til Admin"
+    "changeToAdmin": "Endre til Admin",
+    "usersPage": {
+      "students": {
+        "ariaFilterRole": "Aria filter rolle",
+        "filterAllRoles": "Filter alle roles"
+      },
+      "roles": {
+        "admin": "Admin",
+        "founder": "Founder",
+        "analyst": "Analyst",
+        "trader": "Trader",
+        "student": "Student"
+      },
+      "tierError": "Nivå feil",
+      "tierUpdated": "Nivå oppdatert",
+      "paperError": "Papir feil",
+      "paperSaved": "Papir saved",
+      "reportError": "Report feil",
+      "reportReady": "Report ready",
+      "reportFailed": "Report failed",
+      "ariaFilterRole": "Aria filter rolle",
+      "filterAllRoles": "Filter alle roles",
+      "ariaFilterTier": "Aria filter nivå",
+      "filterAllTiers": "Filter alle tiers",
+      "ariaFilterSource": "Aria filter kilde",
+      "filterAllSources": "Filter alle sources",
+      "ariaSelectAllUsers": "Aria select alle users",
+      "paperBalance": "Papir balanse",
+      "setPaper": "Set papir",
+      "cockpitReport": "Cockpit report",
+      "impersonate": "Impersonate",
+      "paperModalTitle": "Papir modal tittel",
+      "paperModalHint": "Papir modal tips",
+      "balanceKr": "Balanse kr",
+      "syncSessions": "Sync økter",
+      "resetBaseline": "Reset baseline",
+      "savePaper": "Lagre papir",
+      "reportModalTitle": "Report modal tittel",
+      "reportModalHint": "Report modal tips",
+      "reportStatus": "Report status",
+      "reportPending": "Report pending",
+      "reportRunning": "Report running",
+      "reportDone": "Report done",
+      "reportQueueing": "Report queueing",
+      "reportJobId": "Report job id",
+      "reportDownload": "Report download",
+      "reportExpires": "Report expires",
+      "reportClose": "Report lukk"
+    },
+    "totalUsers": "Totalt users",
+    "send": "Send",
+    "serviceStatus": "Service status",
+    "allServicesNormal": "Alle services normal",
+    "impersonation": {
+      "title": "Tittel",
+      "description": "Beskrivelse",
+      "warningTitle": "Warning tittel",
+      "warningText": "Warning text",
+      "email": "E-post",
+      "emailPlaceholder": "E-post plassholder",
+      "password": "Passord",
+      "passwordPlaceholder": "Passord plassholder",
+      "passwordHint": "Passord tips",
+      "reason": "Reason",
+      "reasonPlaceholder": "Reason plassholder",
+      "starting": "Starting",
+      "start": "Start",
+      "endSessionAria": "End økt aria",
+      "ending": "Ending",
+      "endSession": "End økt"
+    },
+    "searchUsers": "Søk users",
+    "selectTier": "Select nivå",
+    "resetPassword": "Reset passord",
+    "choosePassword": "Choose passord",
+    "loggingIn": "Logging in",
+    "login": "Login"
   },
   "auth": {
     "verify": {
@@ -874,7 +963,84 @@
     "edit": "Rediger",
     "update": "Oppdater",
     "submit": "Send inn",
-    "refresh": "Oppdater side"
+    "refresh": "Oppdater side",
+    "title": "Tittel",
+    "unexpectedError": "Unexpected feil",
+    "speedOnboarding": {
+      "timerPrefix": "Timer prefix",
+      "step1": {
+        "title": "Tittel",
+        "subtitle": "Undertittel"
+      },
+      "step2": {
+        "title": "Tittel",
+        "subtitle": "Undertittel",
+        "startingCapital": "Starting kapital",
+        "paperTradingZeroRisk": "Papir trading zero risiko",
+        "starting": "Starting",
+        "startTrading": "Start trading"
+      },
+      "step3": {
+        "title": "Tittel",
+        "line1": "Line",
+        "line2": "Line",
+        "line3": "Line",
+        "goToDashboard": "Gå til dashboard",
+        "viewActivity": "Vis activity"
+      }
+    },
+    "interactive": {
+      "error": {
+        "finish": "Fullfør"
+      },
+      "step1": {
+        "title1": "Tittel",
+        "title2": "Tittel",
+        "description": "Beskrivelse",
+        "howItWorksTitle": "How it works tittel",
+        "list1": "List",
+        "list2": "List",
+        "list3": "List",
+        "cta": "Cta"
+      },
+      "step2": {
+        "title": "Tittel",
+        "subtitle": "Undertittel",
+        "preloaded": "Preloaded"
+      },
+      "step3": {
+        "title": "Tittel",
+        "subtitle": "Undertittel",
+        "goalStrategy": "Goal strategi",
+        "playMoney": "Play money",
+        "currencySuffix": "Valuta suffix",
+        "tooltip": "Tooltip",
+        "tradingMode": "Trading modus",
+        "tradingModeValue": "Trading modus verdi",
+        "status": "Status",
+        "statusValue": "Status verdi",
+        "initializing": "Initializing",
+        "startBot": "Start bot"
+      },
+      "step4": {
+        "title": "Tittel",
+        "subtitle": "Undertittel",
+        "redirecting": "Redirecting"
+      }
+    },
+    "mobile": {
+      "step2": {
+        "backAriaLabel": "Tilbake aria etikett",
+        "title": "Tittel",
+        "subtitle": "Undertittel"
+      }
+    },
+    "toasts": {
+      "general": {
+        "error": "Feil",
+        "saved": "Saved"
+      }
+    }
   },
   "competition": {
     "title": "Trading Konkurranse",
@@ -1191,7 +1357,10 @@
     "amount": "Beløp",
     "profit": "Profitt",
     "loss": "Tap",
-    "recentTrades": "Nylige handler",
+    "recentTrades": {
+      "title": "Tittel",
+      "viewAll": "Vis alle"
+    },
     "noTrades": "Ingen handler ennå. Trykk «Sync Binance» for å laste dine Binance-handler.",
     "bought": "Kjøpte",
     "sold": "Solgte",
@@ -1639,7 +1808,9 @@
       "upgradeCta": "Se priser",
       "advancedAnalyticsTitle": "Avansert analyse",
       "advancedAnalyticsDesc": "Equity curve, P&L heatmap, risk metrics og posisjonskalkulator",
-      "advancedAnalyticsLink": "Se full analyse →"
+      "advancedAnalyticsLink": "Se full analyse →",
+      "smartActionsTitle": "Smart actions tittel",
+      "liveFeedTitle": "Live feed tittel"
     },
     "nlqChat": {
       "openChat": "Åpne chat",
@@ -1683,7 +1854,8 @@
       "noFiltered": "Ingen {status} sessions",
       "activeLC": "aktive",
       "pausedLC": "pausete",
-      "stoppedLC": "stoppete"
+      "stoppedLC": "stoppete",
+      "live": "Live"
     },
     "error": {
       "title": "Kunne ikke laste dashboard",
@@ -1711,6 +1883,95 @@
       "leaderboardTitle": "🏆 Leaderboard",
       "leaderboardDesc": "Sammenlign deg med andre tradere og klatre på rangeringen.",
       "leaderboardCta": "Se rangering →"
+    },
+    "hero": {
+      "paperMode": "Papir modus",
+      "liveMode": "Live modus",
+      "noData": "Ingen data",
+      "latestChange": "Latest change",
+      "ctaPaper": "Cta papir",
+      "ctaLive": "Cta live"
+    },
+    "signalPreview": {
+      "title": "Tittel",
+      "liveBadge": "Live utmerkelse",
+      "staleBadge": "Stale utmerkelse",
+      "errorBadge": "Feil utmerkelse",
+      "emptyBadge": "Ingen data utmerkelse",
+      "demoBadge": "Demo utmerkelse",
+      "curated": "Curated",
+      "seeAll": "Se alle",
+      "empty": "Ingen data",
+      "directionBuy": "Direction kjøp",
+      "directionSell": "Direction selg"
+    },
+    "homeOverview": {
+      "title": "Tittel",
+      "subtitle": "Undertittel"
+    },
+    "riskNote": {
+      "title": "Tittel",
+      "body": "Body",
+      "settingsCta": "Innstillinger cta"
+    },
+    "modeBar": {
+      "live": "Live",
+      "paper": "Papir",
+      "noSessionDesc": "No økt desc",
+      "liveDesc": "Live desc",
+      "paperDesc": "Papir desc"
+    },
+    "portfolioHero": {
+      "balanceLabel": "Balanse etikett",
+      "periodLabel": "Period etikett",
+      "pnlHint": "P/l tips",
+      "footerHint": "Footer tips"
+    },
+    "marketDesk": {
+      "livePricesHeading": "Live prices heading",
+      "title": "Tittel",
+      "subtitle": "Undertittel",
+      "myPositions": "My positions",
+      "seeAll": "Se alle",
+      "integrityPollWarning": "Integrity poll warning",
+      "recentTrades": "Recent handler",
+      "integritySyncAria": "Integrity sync aria",
+      "noTrades": "Ingen handler",
+      "noPositions": "No positions",
+      "close": "Lukk",
+      "buy": "Kjøp",
+      "chart": "Chart"
+    },
+    "dataSource": {
+      "prices": "Prices",
+      "pricesEducational": "Prices educational"
+    },
+    "coinbase": {
+      "marketTitle": "Marked tittel",
+      "marketSubtitle": "Marked undertittel",
+      "topMovers": "Top movers",
+      "goToTrade": "Go to handel",
+      "orderSubmittedPaper": "Order submitted papir",
+      "tradeFailed": "Handel failed",
+      "networkError": "Nettverksfeil",
+      "loadingPrice": "Laster... pris",
+      "backToTrade": "Tilbake to handel",
+      "buySellPaper": "Kjøp selg papir",
+      "buySellPaperDesc": "Kjøp selg papir desc",
+      "amountNok": "Beløp nok",
+      "buy": "Kjøp",
+      "sell": "Selg",
+      "watchlistTitle": "Watchlist tittel",
+      "viewMarket": "Vis marked",
+      "quickActionsGroupAria": "Quick actions group aria",
+      "send": "Send"
+    },
+    "portfolioStats": {
+      "totalEquity": "Totalt equity",
+      "available": "Available",
+      "marginUsed": "Margin used",
+      "totalPnl": "Totalt p/l",
+      "percentUsed": "Percent used"
     }
   },
   "footer": {
@@ -1753,7 +2014,9 @@
     },
     "monthlyPrize": "Månedlig konkurranse med lekepenger",
     "monthlyCompetitionOngoing": "pågår",
-    "daysLeft": "dager igjen"
+    "daysLeft": "dager igjen",
+    "viewLeaderboard": "Vis leaderboard",
+    "kltStoryShort": "Klt story short"
   },
   "helpPage": {
     "title": "Hjelp & Support",
@@ -1770,32 +2033,32 @@
       "privacyLink": "Personvernerklæring →",
       "termsLink": "Vilkår for bruk →"
     },
-    "faqs": [
-      {
-        "q": "Hva er Klarpakke Universitet?",
-        "a": "Klarpakke Universitet er en norsk plattform for krypto-utdanning. Vi tilbyr kurs, simulator, lekepenger og quizer – alt for å lære deg trading på en trygg måte. Alt er 100% simulert, så du kan øve uten å risikere ekte penger."
+    "faqs": {
+      "0": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "Hvilke planer finnes og hva koster de?",
-        "a": "Vi har fire planer: Gratis (0 kr) gir deg en smakebit. Basis (199 kr/mnd) inkluderer alle grunnkurs. Komplett (399 kr/mnd) er vår mest populære plan med alt i Basis pluss avanserte kurs, sertifikat og webinarer. Pro (999 kr/mnd) gir ekstra ressurser og prioritert support."
+      "1": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "Kan jeg tape penger?",
-        "a": "Nei! Alt på Klarpakke Universitet er simulert. Når du bruker lekepenger eller simulatoren, handler du med lekepenger. Du kan ikke tape ekte penger her. Dette er et trygt sted å lære før du eventuelt bruker ekte penger hos en ekstern megler."
+      "2": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "Hvordan sier jeg opp?",
-        "a": "Du kan kansellere når som helst fra kontoinnstillingene dine. Du beholder tilgangen til slutten av den betalte perioden. Det er ingen bindingstid – du bestemmer selv hvor lenge du vil være med."
+      "3": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "Hvordan starter jeg med lekepenger?",
-        "a": "Registrer deg gratis, så får du automatisk 100 000 kr i lekepenger. Gå til Lekepenger-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+      "4": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "Hva lærer jeg i kursene?",
-        "a": "Grunnkursene dekker hva krypto er, hvordan trading fungerer, og grunnleggende risikostyring. Avanserte kurs går dypere inn i teknisk analyse, strategier og trading-psykologi. Alt er på norsk og tilpasset norske småsparere."
+      "5": {
+        "q": "Q",
+        "a": "A"
       }
-    ]
+    }
   },
   "hero": {
     "title": "Klarpakke",
@@ -2022,7 +2285,71 @@
       "buy": "Kjøp BTC",
       "sell": "Selg BTC",
       "overlay": "Registrer deg for å handle med ekte data",
-      "overlayCta": "Start gratis nå"
+      "overlayCta": "Start gratis nå",
+      "liveBadge": "Live utmerkelse",
+      "offlineNotice": "Offline notice",
+      "staleNotice": "Stale notice",
+      "livePrice": "Live pris",
+      "overlayLoggedIn": "Overlay logged in",
+      "overlayLoggedInCta": "Overlay logged in cta"
+    },
+    "bentoGrid": {
+      "liveSignalCard": {
+        "buy": "Kjøp",
+        "sell": "Selg",
+        "hold": "Hold",
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "latestSignal": "Latest signal",
+        "updatedEveryMinute": "Oppdatert every minute"
+      }
+    },
+    "common": {
+      "feature1Title": "Feature tittel",
+      "feature1Desc": "Feature desc",
+      "feature2Title": "Feature tittel",
+      "feature2Desc": "Feature desc",
+      "feature3Title": "Feature tittel",
+      "feature3Desc": "Feature desc",
+      "feature4Title": "Feature tittel",
+      "feature4Desc": "Feature desc",
+      "feature5Title": "Feature tittel",
+      "feature5Desc": "Feature desc",
+      "feature6Title": "Feature tittel",
+      "feature6Desc": "Feature desc",
+      "feature7Title": "Feature tittel",
+      "feature7Desc": "Feature desc"
+    },
+    "leaderboard": {
+      "returnLabel": "Return etikett",
+      "kltLabel": "Klt etikett",
+      "badge": "Utmerkelse",
+      "title": "Tittel",
+      "subtitle": "Undertittel",
+      "emptyTitle": "Ingen data tittel",
+      "emptyBody": "Ingen data body",
+      "ctaPrimary": "Cta primary",
+      "empty": "Ingen data",
+      "ctaSecondary": "Cta secondary",
+      "trustNote": "Trust note"
+    },
+    "liveMarketStrip": {
+      "title": "Tittel",
+      "offlineNotice": "Offline notice",
+      "staleNotice": "Stale notice",
+      "error": "Feil",
+      "empty": "Ingen data",
+      "volume": "Volume"
+    },
+    "paperHero": {
+      "badge": "Utmerkelse",
+      "title": "Tittel",
+      "titleAccent": "Tittel accent",
+      "subtitle": "Undertittel",
+      "ctaPrimary": "Cta primary",
+      "ctaSecondary": "Cta secondary",
+      "trust1": "Trust",
+      "trust3": "Trust"
     }
   },
   "tradingGuide": {
@@ -2314,6 +2641,48 @@
           "content": "Spørsmål om vilkårene? Kontakt oss på:"
         }
       }
+    },
+    "cookies": {
+      "title": "Tittel",
+      "whatAreCookies": {
+        "title": "Tittel",
+        "content": "Content"
+      },
+      "categories": {
+        "title": "Tittel",
+        "necessary": {
+          "name": "Navn",
+          "description": "Beskrivelse"
+        },
+        "analytics": {
+          "name": "Navn",
+          "description": "Beskrivelse"
+        },
+        "marketing": {
+          "name": "Navn",
+          "description": "Beskrivelse"
+        },
+        "functional": {
+          "name": "Navn",
+          "description": "Beskrivelse"
+        }
+      },
+      "thirdParty": {
+        "title": "Tittel",
+        "sentry": "Sentry",
+        "google": "Google",
+        "supabase": "Supabase"
+      },
+      "manage": {
+        "title": "Tittel",
+        "lastUpdated": "Sist oppdatert",
+        "revoke": "Revoke",
+        "noConsent": "No consent"
+      },
+      "contact": {
+        "title": "Tittel",
+        "content": "Content"
+      }
     }
   },
   "liveTrading": {
@@ -2472,7 +2841,13 @@
     "leagues": "Konkurranser",
     "loading": "Laster...",
     "closeMenu": "Lukk meny",
-    "openMenu": "Åpne meny"
+    "openMenu": "Åpne meny",
+    "logout": "Logout",
+    "selectExchange": "Select exchange",
+    "security": {
+      "title": "Tittel",
+      "warning": "Warning"
+    }
   },
   "components": {
     "themeToggle": {
@@ -2480,6 +2855,9 @@
       "toggleTheme": "Bytt tema",
       "light": "Lyst",
       "dark": "Mørkt"
+    },
+    "livePill": {
+      "label": "Etikett"
     }
   },
   "notifications": {
@@ -2636,6 +3014,133 @@
       "error": {
         "saveFailed": "Kunne ikke lagre svarene dine. Sjekk nettverket og prøv igjen.",
         "retryHint": "Klikk «Fortsett» for å prøve på nytt."
+      }
+    },
+    "welcomePage": {
+      "benefits": {
+        "items": {
+          "paperMoney": {
+            "title": "Tittel",
+            "desc": "Desc"
+          },
+          "journal": {
+            "title": "Tittel",
+            "desc": "Desc"
+          },
+          "influence": {
+            "title": "Tittel",
+            "desc": "Desc"
+          },
+          "kltPoints": {
+            "title": "Tittel",
+            "desc": "Desc"
+          }
+        },
+        "title": "Tittel",
+        "subtitle": "Undertittel"
+      },
+      "steps": {
+        "items": {
+          "checkStatus": {
+            "title": "Tittel",
+            "desc": "Desc",
+            "action": "Action"
+          },
+          "dashboard": {
+            "title": "Tittel",
+            "desc": "Desc",
+            "action": "Action"
+          },
+          "wait": {
+            "title": "Tittel",
+            "desc": "Desc"
+          }
+        },
+        "title": "Tittel"
+      },
+      "hero": {
+        "title": "Tittel",
+        "highlight": "Highlight",
+        "subtitle": "Undertittel"
+      },
+      "safety": {
+        "title": "Tittel",
+        "desc": "Desc"
+      },
+      "cta": {
+        "title": "Tittel",
+        "subtitle": "Undertittel",
+        "button": "Button"
+      },
+      "footer": {
+        "questions": "Questions"
+      }
+    },
+    "paperSetup": {
+      "error": "Feil",
+      "loading": "Laster...",
+      "title": "Tittel",
+      "subtitle": "Undertittel",
+      "badge": "Utmerkelse",
+      "virtual": "Virtual",
+      "balanceLabel": "Balanse etikett",
+      "currencySuffix": "Valuta suffix",
+      "whatIs": "What is",
+      "tooltip": "Tooltip",
+      "cta": "Cta"
+    },
+    "step4": {
+      "error": "Feil",
+      "title": "Tittel",
+      "subtitle": "Undertittel",
+      "security": {
+        "title": "Tittel",
+        "description": "Beskrivelse"
+      },
+      "apiKey": {
+        "label": "Etikett",
+        "placeholder": "Plassholder"
+      },
+      "apiSecret": {
+        "label": "Etikett",
+        "placeholder": "Plassholder"
+      },
+      "connecting": "Connecting",
+      "cta": "Cta",
+      "skipping": "Skipping",
+      "skip": "Skip"
+    },
+    "aiMapping": {
+      "coachName": "Coach navn",
+      "subtitle": "Undertittel",
+      "title": "Tittel",
+      "cta": "Cta",
+      "skip": "Skip"
+    },
+    "trustBar": {
+      "bankid": "Bankid",
+      "encrypted": "Encrypted",
+      "regulated": "Regulated"
+    },
+    "mobile": {
+      "step3": {
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "selectedStrategy": "Selected strategi",
+        "loading": "Laster...",
+        "cta": "Cta"
+      },
+      "step1": {
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "badgesAriaLabel": "Badges aria etikett",
+        "badges": {
+          "bankid": "Bankid",
+          "finanstilsynet": "Finanstilsynet",
+          "noHiddenFees": "No hidden fees"
+        },
+        "cta": "Cta",
+        "skip": "Skip"
       }
     }
   },
@@ -2798,7 +3303,8 @@
     "errors": {
       "checkout_failed": "Kunne ikke starte betaling",
       "unexpected": "Kunne ikke starte betaling. Prøv igjen."
-    }
+    },
+    "securePaymentNoVipps": "Secure payment no vipps"
   },
   "pricing": {
     "metadata": {
@@ -2881,7 +3387,15 @@
     "savePercent": "Spar {percent}%",
     "perMonth": "per måned",
     "getStarted": "Kom i gang",
-    "mostPopular": "MEST POPULÆR"
+    "mostPopular": "MEST POPULÆR",
+    "tiers": {
+      "student": {
+        "period": "Period"
+      }
+    },
+    "sectionTitle": "Section tittel",
+    "description": "Beskrivelse",
+    "disclaimer": "Disclaimer"
   },
   "pricingCancel": {
     "title": "Betaling avbrutt",
@@ -3098,7 +3612,9 @@
       "finishTrack": "Fullfør \"{track}\"",
       "settings": "Innstillinger",
       "deleteProfile": "Slett profil",
-      "profile": "Profil"
+      "profile": "Profil",
+      "fullNamePlaceholder": "Full navn plassholder",
+      "avatarPlaceholder": "Avatar plassholder"
     },
     "api": {
       "title": "API Innstillinger",
@@ -3242,6 +3758,14 @@
       "preview": "Forhåndsvisning",
       "darkModeActive": "Mørk modus aktiv",
       "lightModeActive": "Lys modus aktiv"
+    },
+    "billing": {
+      "error": "Feil",
+      "title": "Tittel",
+      "description": "Beskrivelse",
+      "loading": "Laster...",
+      "cta": "Cta",
+      "sectionTitle": "Section tittel"
     }
   },
   "simulator": {
@@ -3410,7 +3934,26 @@
           "10 000 KLT tokens/mnd",
           "Tidlig tilgang til nye funksjoner"
         ]
-      }
+      },
+      "loading": "Laster...",
+      "backToPricing": "Tilbake to pricing",
+      "yourOrder": "Your order",
+      "billingCurrency": "Billing valuta",
+      "currencyHelp": "Valuta help",
+      "perMonthSuffix": "Per month suffix",
+      "bachelorNoTrialTitle": "Bachelor no trial tittel",
+      "bachelorNoTrialDescription": "Bachelor no trial beskrivelse",
+      "trialPeriod": "Trial period",
+      "trialDescription": "Trial beskrivelse",
+      "totalDueToday": "Totalt due i dag",
+      "totalToday": "Totalt i dag",
+      "paymentMethod": "Payment method",
+      "paymentDescription": "Payment beskrivelse",
+      "studentPlanFree": "Student plan free",
+      "stripeNotConfigured": "Stripe not configured",
+      "securePayment": "Secure payment",
+      "cardForInternational": "Card for international",
+      "secureNote": "Secure note"
     }
   },
   "taxReport": {
@@ -3654,7 +4197,23 @@
     "total": "Totalt",
     "fee": "Gebyr",
     "confirmTrade": "Bekreft Handel",
-    "positions": "Posisjoner",
+    "positions": {
+      "empty": {
+        "title": "Tittel",
+        "description": "Beskrivelse"
+      },
+      "columns": {
+        "symbol": "Symbol",
+        "side": "Side",
+        "size": "Størrelse",
+        "entry": "Entry",
+        "current": "Current",
+        "pnl": "P/L",
+        "action": "Action"
+      },
+      "close": "Lukk",
+      "totalUnrealizedPnL": "Totalt unrealized pn l"
+    },
     "noPositions": "Ingen åpne posisjoner",
     "unrealizedPnL": "Urealisert P&L",
     "realizedPnL": "Realisert P&L",
@@ -3734,7 +4293,707 @@
       "button": "Restart handel",
       "unknownError": "En feil oppstod",
       "networkError": "Nettverksfeil"
-    }
+    },
+    "rejectReason": {
+      "NO_RISK_PROFILE": "N ris profil",
+      "BOT_NOT_HEALTHY": "Bo no healthy",
+      "LIVE_NOT_ALLOWED": "Liv no allowed",
+      "POSITION_LIMIT_EXCEEDED": "Positio limi exceeded",
+      "EXPOSURE_LIMIT_EXCEEDED": "Exposur limi exceeded",
+      "DAILY_LOSS_LIMIT_EXCEEDED": "Dail los limi exceeded",
+      "DAILY_LOSS_CHECK_FAILED": "Dail los chec failed",
+      "PAIR_NOT_ALLOWED": "Pai no allowed",
+      "LEVERAGE_NOT_ALLOWED": "Leverag no allowed",
+      "INSUFFICIENT_BALANCE": "Insufficien balanse",
+      "SESSION_NOT_ACTIVE": "Sessio no aktiv",
+      "INVALID_TRADING_MODE": "Invali tradin modus"
+    },
+    "notLoggedIn": "Not logged in",
+    "fetchError": "Fetch feil",
+    "diagnosticsCopyFailed": "Diagnostics copy failed",
+    "diagnosticsCopied": "Diagnostics copied",
+    "title": "Tittel",
+    "subtitle": "Undertittel",
+    "copyDiagnostics": "Copy diagnostics",
+    "exportCsv": "Export csv",
+    "filterAll": "Filter alle",
+    "filterPaper": "Filter papir",
+    "filterLive": "Filter live",
+    "totalTrades": "Totalt antall handler",
+    "wins": "Wins",
+    "losses": "Losses",
+    "totalRealizedPnl": "Totalt realized p/l",
+    "decisionLogTitle": "Decision log tittel",
+    "integrityPollWarning": "Integrity poll warning",
+    "decisionLogHint": "Decision log tips",
+    "decisionsEmpty": "Decisions ingen data",
+    "decisionAllow": "Decision allow",
+    "decisionReject": "Decision reject",
+    "decisionModify": "Decision modify",
+    "live": "Live",
+    "paper": "Papir",
+    "retry": "Retry",
+    "noTradesFiltered": "No handler filtered",
+    "noTradesFilteredHint": "No handler filtered tips",
+    "noTrades": "Ingen handler",
+    "noTradesHint": "No handler tips",
+    "date": "Dato",
+    "pair": "Par",
+    "whyColumn": "Why column",
+    "side": "Side",
+    "quantity": "Antall",
+    "entryPrice": "Entry pris",
+    "pnl": "P/L",
+    "mode": "Modus",
+    "status": "Status",
+    "whyMissing": "Why missing",
+    "noRealizedPnlExplainer": "No realized p/l explainer",
+    "noRealizedPnlShort": "No realized p/l short",
+    "cockpit": {
+      "riskBanner": {
+        "crashed": "Crashed",
+        "dailyLossLimit": "Daily tap limit",
+        "maxDrawdown": "Maks drawdown",
+        "title": "Tittel"
+      },
+      "marketData": {
+        "stale": "Stale",
+        "delayed": "Delayed",
+        "ok": "Ok"
+      },
+      "error": {
+        "description": "Beskrivelse",
+        "title": "Tittel",
+        "retry": "Retry",
+        "analyticsFailed": "Analytics failed"
+      },
+      "header": {
+        "title": "Tittel"
+      },
+      "mode": {
+        "live": "Live",
+        "paper": "Papir",
+        "paperShort": "Papir short",
+        "lockedTooltip": "Locked tooltip",
+        "liveShort": "Live short",
+        "upgrade": "Upgrade"
+      },
+      "liveModeConfirm": {
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "rememberDefault": "Remember default",
+        "cancel": "Avbryt",
+        "confirm": "Bekreft"
+      },
+      "activation": {
+        "pausedTitle": "Pauset tittel",
+        "missingTitle": "Missing tittel",
+        "pausedDescription": "Pauset beskrivelse",
+        "missingDescription": "Missing beskrivelse",
+        "activateButton": "Activate button",
+        "success": "Suksess",
+        "error": "Feil"
+      },
+      "empty": {
+        "sessionsTitle": "Økter tittel",
+        "sessionsDescription": "Økter beskrivelse"
+      },
+      "sessions": {
+        "columns": {
+          "startingCapital": "Starting kapital",
+          "currentCapital": "Current kapital",
+          "pair": "Par",
+          "status": "Status",
+          "pnl": "P/L",
+          "updatedAt": "Oppdatert at"
+        },
+        "loading": "Laster...",
+        "loadMore": "Load mer",
+        "title": "Tittel"
+      },
+      "statusLog": {
+        "evaluatingSignals": "Evaluating signals",
+        "noRecentDecisions": "No recent decisions",
+        "tradeFailedNoReason": "Handel failed no reason",
+        "title": "Tittel",
+        "loading": "Laster..."
+      },
+      "loading": "Laster...",
+      "kpi": {
+        "portfolioValue": "Portefølje verdi",
+        "winRate": "Andel vinnere",
+        "totalTrades": "Totalt antall handler",
+        "totalPnl": "Totalt p/l"
+      },
+      "toast": {
+        "startRobotExisting": "Start robot existing",
+        "startRobotSuccess": "Start robot suksess",
+        "sessionStatusChanged": {
+          "title": "Tittel"
+        }
+      },
+      "quickActions": {
+        "error": "Feil",
+        "startRobot": "Start robot",
+        "viewHistory": "Vis historikk"
+      },
+      "trades": {
+        "side": {
+          "buy": "Kjøp",
+          "sell": "Selg"
+        },
+        "filters": {
+          "open": "Open",
+          "reset": "Reset",
+          "remove": "Fjern",
+          "title": "Tittel",
+          "apply": "Apply",
+          "search": "Søk",
+          "placeholder": "Plassholder",
+          "dateRange": "Dato range",
+          "pair": "Par",
+          "all": "Alle",
+          "side": "Side",
+          "tradeStatus": "Handel status",
+          "sessionStatus": "Økt status"
+        },
+        "title": "Tittel",
+        "error": {
+          "title": "Tittel",
+          "retry": "Retry"
+        },
+        "noTradesTitle": "No handler tittel",
+        "noTradesDescription": "No handler beskrivelse",
+        "loading": "Laster...",
+        "loadMore": "Load mer",
+        "columns": {
+          "price": "Pris",
+          "quantity": "Antall",
+          "fee": "Fee",
+          "totalValue": "Totalt verdi",
+          "realizedPnl": "Realized p/l",
+          "effectivePnl": "Effective p/l",
+          "executedAt": "Executed at",
+          "createdAt": "Created at"
+        },
+        "details": {
+          "reason": "Reason",
+          "readMore": "Les mer",
+          "noSignal": "No signal",
+          "id": "Id",
+          "sessionId": "Økt id",
+          "title": "Tittel",
+          "description": "Beskrivelse"
+        }
+      },
+      "realtime": {
+        "newTrade": {
+          "title": "Tittel"
+        }
+      },
+      "analysis": {
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "empty": {
+          "title": "Tittel",
+          "description": "Beskrivelse"
+        },
+        "period": {
+          "label": "Etikett"
+        },
+        "chart": {
+          "symbolTitle": "Symbol tittel",
+          "togglePnl": "Toggle p/l",
+          "toggleTrades": "Toggle handler",
+          "pnlTitle": "P/l tittel",
+          "pnl": "P/L"
+        },
+        "stats": {
+          "totalTrades": "Totalt antall handler",
+          "winRate": "Andel vinnere",
+          "totalPnl": "Totalt p/l",
+          "totalFees": "Totalt fees",
+          "profitFactor": "Profitt factor",
+          "maxDrawdown": "Maks drawdown",
+          "bestPair": "Best par",
+          "worstPair": "Worst par",
+          "bestSession": "Best økt",
+          "worstSession": "Worst økt"
+        }
+      }
+    },
+    "toggleAria": "Toggle aria",
+    "paperTrading": {
+      "card": {
+        "loading": "Laster...",
+        "empty": "Ingen data",
+        "error": "Feil",
+        "currentBalance": "Current balanse",
+        "startingCapital": "Starting kapital",
+        "pnl": "P/L"
+      },
+      "modeBanner": {
+        "live": "Live",
+        "paper": "Papir"
+      },
+      "mySessions": "My økter",
+      "workspaceHeader": {
+        "subtitle": "Undertittel",
+        "badge": "Utmerkelse",
+        "title": "Tittel"
+      },
+      "backToOverview": "Tilbake to oversikt",
+      "backToDashboard": "Tilbake til dashboard",
+      "sessions": {
+        "maxActiveReached": "Max aktiv reached",
+        "maxActiveStudent": "Max aktiv student",
+        "showHistory": "Vis historikk"
+      },
+      "errors": {
+        "validationFailed": "Validation failed",
+        "unauthorized": "Unauthorized",
+        "forbidden": "Forbidden",
+        "generic": "Generic",
+        "missingSessionId": "Missing økt id",
+        "network": "Network",
+        "resetFailed": "Reset failed",
+        "resetNetwork": "Reset network"
+      },
+      "confirmResetAll": "Bekreft reset alle",
+      "resetSuccess": "Reset suksess",
+      "now": "Now",
+      "active": "Aktiv",
+      "paused": "Pauset",
+      "stopped": "Stoppet",
+      "crashed": "Crashed",
+      "stats": {
+        "availableBalance": "Available balanse"
+      },
+      "resetSession": "Reset økt",
+      "newSession": "New økt",
+      "noSessions": "Ingen økter",
+      "description": "Beskrivelse",
+      "refreshList": "Oppdater list",
+      "binanceUpdateInfo": "Binance update info",
+      "tradingPair": "Trading par",
+      "startCapital": "Start kapital",
+      "cancel": "Avbryt",
+      "start": "Start",
+      "noSessionsDesc": "No økter desc",
+      "startFirst": "Start first",
+      "modePaper": "Modus papir",
+      "modeLive": "Modus live",
+      "started": "Started",
+      "trades": "Handler"
+    },
+    "riskMetrics": {
+      "loadError": "Load feil",
+      "sortinoRatio": "Sortino ratio",
+      "sortinoTooltip": "Sortino tooltip",
+      "calmarRatio": "Calmar ratio",
+      "calmarTooltip": "Calmar tooltip",
+      "var95": "Var",
+      "var95Tooltip": "Var tooltip",
+      "maxConsecutiveLosses": "Max consecutive losses",
+      "maxConsecutiveLossesTooltip": "Max consecutive losses tooltip",
+      "omegaRatio": "Omega ratio",
+      "omegaTooltip": "Omega tooltip",
+      "gainPainRatio": "Gain pain ratio",
+      "gainPainTooltip": "Gain pain tooltip",
+      "scoreTitle": "Score tittel",
+      "panelTooltip": "Panel tooltip",
+      "hideDetails": "Skjul details",
+      "showDetails": "Vis details"
+    },
+    "positionLots": {
+      "loading": "Laster...",
+      "error": "Feil",
+      "noPosition": "No position",
+      "title": "Tittel",
+      "totalUnrealizedPnL": "Totalt unrealized pn l",
+      "lot": "Lot",
+      "entryPrice": "Entry pris",
+      "quantity": "Antall",
+      "age": "Age",
+      "unrealizedPnL": "Urealisert P/L",
+      "totalQuantity": "Totalt antall",
+      "weightedEntry": "Weighted entry"
+    },
+    "tradeAmountSlider": {
+      "balance": "Balanse",
+      "maxPerTrade": "Max per handel",
+      "alreadyInMarket": "Already in marked",
+      "title": "Tittel",
+      "status": {
+        "blocked": {
+          "description": "Beskrivelse"
+        },
+        "warning": {
+          "title": "Tittel"
+        },
+        "caution": {
+          "description": "Beskrivelse"
+        },
+        "ok": {
+          "description": "Beskrivelse"
+        }
+      },
+      "whatThisMeans": "What this means",
+      "paperTrading": {
+        "title": "Tittel",
+        "description": "Beskrivelse"
+      }
+    },
+    "signalFeed": {
+      "title": "Tittel",
+      "statusLive": "Status live",
+      "statusStale": "Status stale",
+      "statusEmpty": "Status ingen data",
+      "statusError": "Status feil",
+      "updatedPrefix": "Oppdatert prefix",
+      "refreshAria": "Oppdater aria",
+      "emptyTitle": "Ingen data tittel",
+      "emptyBody": "Ingen data body",
+      "emptyFooter": "Ingen data footer",
+      "directionBuy": "Direction kjøp",
+      "directionSell": "Direction selg",
+      "directionHold": "Direction hold",
+      "priceEntry": "Pris entry",
+      "locked": "Locked",
+      "priceStop": "Pris stopp",
+      "priceTarget": "Pris target"
+    },
+    "robotBrain": {
+      "ariaLabel": "Aria etikett",
+      "badge": "Utmerkelse",
+      "disclaimer": "Disclaimer"
+    },
+    "loginRequired": "Login påkrevd",
+    "saveSuccess": "Lagre suksess",
+    "saveError": "Lagre feil",
+    "loading": "Laster...",
+    "toggleLabel": "Toggle etikett",
+    "enabledDesc": "Enabled desc",
+    "disabledDesc": "Disabled desc",
+    "modeLabel": "Modus etikett",
+    "paperDesc": "Papir desc",
+    "liveDesc": "Live desc",
+    "riskLabel": "Risiko etikett",
+    "maxTradeSize": "Max handel størrelse",
+    "minAmount": "Min beløp",
+    "maxAmount": "Max beløp",
+    "saving": "Saving",
+    "save": "Lagre",
+    "desk": {
+      "liveAiInsights": "Live ai insights",
+      "sonarLoadError": "Sonar load feil",
+      "upgradeForMore": "Upgrade for mer",
+      "upgradeDesc": "Upgrade desc",
+      "welcomeEmpty": "Welcome ingen data",
+      "totalValue": "Totalt verdi",
+      "cash": "Kontanter",
+      "pnl": "P/L",
+      "winRate": "Andel vinnere"
+    },
+    "botStatus": {
+      "risk": {
+        "low": "Lav",
+        "balanced": "Balansert",
+        "high": "Høy"
+      },
+      "soon": "Soon",
+      "leaderboard": "Leaderboard",
+      "market": "Marked",
+      "overview": "Oversikt",
+      "advanced": "Avansert",
+      "botControlCenter": "Bot control center",
+      "description": "Beskrivelse",
+      "myStrategies": "My strategies",
+      "strategies": {
+        "empty": "Ingen data"
+      },
+      "paper": "Papir",
+      "plTotal": "Pl totalt",
+      "recentTrades": "Recent handler",
+      "seeAll": "Se alle",
+      "action": "Action",
+      "symbol": "Symbol",
+      "price": "Pris",
+      "value": "Verdi",
+      "time": "Tid",
+      "trades": {
+        "empty": "Ingen data"
+      },
+      "portfolioValue": "Portefølje verdi",
+      "dailyResult": "Daily result",
+      "weeklyResult": "Weekly result",
+      "monthlyResult": "Monthly result",
+      "winRate": "Andel vinnere",
+      "quickActions": "Quick actions",
+      "newStrategy": "New strategi",
+      "newStrategyDesc": "New strategi desc",
+      "stopAll": "Stopp alle",
+      "emergencyStop": "Emergency stopp",
+      "copyTrading": "Copy trading",
+      "followSuccessfulTraders": "Follow successful traders",
+      "botIsWorking": "Bot is working",
+      "waitingForYou": "Waiting for you",
+      "yourBotIsRunning": "Your bot is running",
+      "on": "On",
+      "noStrategiesDescription": "No strategies beskrivelse",
+      "riskLabel": "Risiko etikett",
+      "pauseBot": "Pause bot",
+      "startNow": "Start now",
+      "lastCompletedAction": "Last fullført action",
+      "noTradesYet": "No handler yet",
+      "currentStatus": "Current status",
+      "scanningMarket": "Scanning marked",
+      "monitoringPriceMovements": "Monitoring pris movements",
+      "nextCheck": "Next check",
+      "advancedStatistics": "Avansert statistikk",
+      "detailedPerformanceMetrics": "Detailed resultat metrics",
+      "needsDailyReturnSeries": "Needs daily return series",
+      "goodRiskAdjustedReturns": "Good risiko adjusted returns",
+      "belowOptimal": "Below optimal",
+      "maxDrawdown": "Maks drawdown",
+      "needsEquityCurve": "Needs equity curve",
+      "lowRisk": "Lav risiko",
+      "higherRisk": "Higher risiko",
+      "avgTrade": "Gj.snitt handel",
+      "positionSize": "Position størrelse",
+      "profitLossBreakdown": "Profitt tap breakdown",
+      "today": "I dag",
+      "thisWeek": "Denne uken",
+      "thisMonth": "Denne måneden",
+      "totalPl": "Totalt pl",
+      "bestTrade": "Best handel",
+      "worstTrade": "Worst handel",
+      "kryptoProfessor": "Krypto professor",
+      "smartTradingInsights": "Smart trading insights"
+    },
+    "advancedStats": {
+      "errorRunBacktest": "Feil run backtest",
+      "backtestFailed": "Backtest failed",
+      "backtestUnavailable": "Backtest unavailable",
+      "tabOverview": "Tab oversikt",
+      "tabPerformance": "Tab resultat",
+      "tabHistory": "Tab historikk",
+      "statTotalTrades": "Stat totalt handler",
+      "statWinRate": "Stat vinn rate",
+      "statProfitFactor": "Stat profitt factor",
+      "statMaxDrawdown": "Stat max drawdown",
+      "sectionTradeStats": "Section handel statistikk",
+      "labelWinningTrades": "Etikett winning handler",
+      "labelLosingTrades": "Etikett losing handler",
+      "labelBestTrade": "Etikett best handel",
+      "labelWorstTrade": "Etikett worst handel",
+      "monthlyPnLTitle": "Monthly pn l tittel",
+      "emptySignals": "Ingen data signals",
+      "labelWinRate": "Etikett vinn rate",
+      "emptyBacktests": "Ingen data backtests"
+    },
+    "aggressivitySlider": {
+      "levels": {
+        "title": "Tittel",
+        "sections": {
+          "reactionTime": "Reaction tid",
+          "confirmation": "Confirmation",
+          "moreLikely": "Mer likely",
+          "lessLikely": "Mindre likely",
+          "comparison": "Comparison",
+          "comparisonConservative": "Comparison konservativ",
+          "comparisonBalanced": "Comparison balansert",
+          "comparisonAggressive": "Comparison aggressiv"
+        }
+      }
+    },
+    "modeSelector": {
+      "title": "Tittel"
+    },
+    "sessionDetail": {
+      "active": "Aktiv",
+      "paused": "Pauset",
+      "stopped": "Stoppet",
+      "crashed": "Crashed",
+      "sessionDetail": {
+        "backToHub": "Tilbake to hub",
+        "eyebrowLive": "Eyebrow live",
+        "eyebrowPaper": "Eyebrow papir"
+      },
+      "contextBanner": "Context banner",
+      "capital": "Kapital",
+      "startCapital": "Start kapital",
+      "winRate": "Andel vinnere",
+      "trades": "Handler",
+      "total": "Totalt",
+      "pauseBot": "Pause bot",
+      "resume": "Gjenoppta",
+      "stopSession": "Stopp økt",
+      "noTrades": "Ingen handler",
+      "buy": "Kjøp",
+      "sell": "Selg",
+      "trialExpiringSoon": "Trial expiring soon",
+      "specialOffer": "Special offer",
+      "trialWarning": "Trial warning",
+      "subtitle": "Undertittel",
+      "trialProgress": "Trial fremdrift",
+      "upgradeNow": "Upgrade now",
+      "seePlans": "See plans",
+      "trialExpiredTitle": "Trial expired tittel",
+      "trialExpired": "Trial expired",
+      "upgradePrompt": "Upgrade prompt",
+      "upgrade": "Upgrade"
+    },
+    "liveStrategy": {
+      "back": "Tilbake",
+      "paperBadge": "Papir utmerkelse",
+      "liveBadge": "Live utmerkelse",
+      "warmupAnalyzing": "Warmup analyzing",
+      "statPnl": "Stat p/l",
+      "statWinRate": "Stat vinn rate",
+      "statTrades": "Stat handler",
+      "statMaxDrawdown": "Stat max drawdown",
+      "currentPrice": "Current pris",
+      "botLogTitle": "Bot log tittel",
+      "waitingForSignals": "Waiting for signals"
+    },
+    "botDetail": {
+      "back": "Tilbake",
+      "botDetails": "Bot details",
+      "paperTrading": "Papir trading",
+      "started": "Started",
+      "openTradeHistory": "Open handel historikk",
+      "trades": "Handler",
+      "total": "Totalt",
+      "trades1": "Handler",
+      "runtime": "Runtime",
+      "equityChart": "Equity chart",
+      "equityPreview": "Equity preview",
+      "tradeHistory": "Handel historikk",
+      "noTradesYet": "No handler yet",
+      "time": "Tid",
+      "pair": "Par",
+      "side": "Side",
+      "quantity": "Antall",
+      "price": "Pris",
+      "buy": "Kjøp",
+      "sell": "Selg",
+      "strategyInfo": "Strategi info",
+      "strategy": "Strategi",
+      "riskLevel": "Risiko nivå",
+      "activePairs": "Aktiv pairs"
+    },
+    "strategyPicker": {
+      "title": "Tittel",
+      "paperHint": "Papir tips",
+      "ariaClose": "Aria lukk",
+      "statusActive": "Status aktiv",
+      "statusIdle": "Status idle",
+      "stopStrategy": "Stopp strategi",
+      "starting": "Starting",
+      "startStrategy": "Start strategi"
+    },
+    "activeStrategiesPanel": {
+      "title": "Tittel",
+      "emptyHint": "Ingen data tips",
+      "stop": "Stopp"
+    },
+    "recentTrades": {
+      "emptyAll": "Ingen data alle",
+      "emptyPaper": "Ingen data papir",
+      "emptyLive": "Ingen data live",
+      "empty": "Ingen data",
+      "filter": "Filter",
+      "filterAll": "Filter alle",
+      "filterPaper": "Filter papir",
+      "filterLive": "Filter live",
+      "time": "Tid",
+      "symbol": "Symbol",
+      "tradeType": "Handel type",
+      "strategy": "Strategi",
+      "size": "Størrelse",
+      "pnl": "P/L",
+      "paperShort": "Papir short",
+      "buy": "Kjøp",
+      "sell": "Selg",
+      "modePaper": "Modus papir",
+      "modeLive": "Modus live"
+    },
+    "performance": {
+      "keepTrading": "Keep trading",
+      "bestDay": "Beste dag",
+      "worstDay": "Verste dag",
+      "avgTrade": "Gj.snitt handel",
+      "maxDrawdown": "Maks drawdown",
+      "dailyHeatmap": "Daily heatmap",
+      "loss": "Tap",
+      "profit": "Profitt"
+    },
+    "automatic": "Automatisk",
+    "notFound": "Not found",
+    "close": "Lukk",
+    "result": "Result",
+    "overview": "Oversikt",
+    "type": "Type",
+    "strategy": "Strategi",
+    "totalValue": "Totalt verdi",
+    "paperNotice": "Papir notice",
+    "whyBuy": "Why kjøp",
+    "confidence": "Confidence",
+    "whySell": "Why selg",
+    "learnMore": "Lær mer",
+    "readMore": "Les mer",
+    "numbers": "Numbers",
+    "exitPrice": "Exit pris",
+    "stopLoss": "Stopp tap",
+    "takeProfit": "Take profitt",
+    "strategyParams": "Strategi params",
+    "empty": "Ingen data",
+    "sideBuy": "Side kjøp",
+    "sideSell": "Side selg",
+    "unknownStrategy": "Ukjent strategi",
+    "chips": {
+      "automatic": "Automatisk",
+      "signal": "Signal",
+      "confidence": "Confidence"
+    },
+    "charts": {
+      "cash": "Kontanter",
+      "startTrading": "Start trading",
+      "allocation": "Allocation",
+      "noAllocation": "No allocation",
+      "equityCurve": "Equity curve",
+      "cumulativePnl": "Cumulative p/l",
+      "noTradesYet": "No handler yet"
+    },
+    "tradingModeSelector": {
+      "title": "Tittel",
+      "paper": {
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "feature1": "Feature",
+        "feature2": "Feature",
+        "feature3": "Feature"
+      },
+      "live": {
+        "title": "Tittel",
+        "description": "Beskrivelse",
+        "warning": "Warning",
+        "feature1": "Feature",
+        "feature2": "Feature",
+        "feature3": "Feature"
+      },
+      "locked": {
+        "comingSoon": "Kommer snart",
+        "connectExchange": "Connect exchange"
+      },
+      "liveWarning": {
+        "title": "Tittel",
+        "description": "Beskrivelse"
+      }
+    },
+    "shares": "Shares",
+    "avg": "Avg"
   },
   "wallet": {
     "title": "Lommebok",
@@ -4136,7 +5395,9 @@
     "copyRequiresSubscription": "Kopiering av tradere krever betalt abonnement",
     "followLimitReached": "Du kan følge maks {limit} tradere på ditt nivå",
     "couldNotCopy": "Kunne ikke kopiere trader",
-    "nowCopying": "Du kopierer nå {name}!"
+    "nowCopying": "Du kopierer nå {name}!",
+    "copy": "Copy",
+    "winRate": "Andel vinnere"
   },
   "pnlBreakdown": {
     "title": "Slik forstår du resultatene dine",
@@ -4288,6 +5549,44 @@
       "wallet": "Lommebok",
       "settings": "Innstillinger",
       "notifications": "Varsler"
-    }
+    },
+    "loading": "Laster...",
+    "loadingProfile": "Laster... profil",
+    "profile": "Profil",
+    "noProfileFound": "No profil found",
+    "fullName": "Full navn",
+    "fullNamePlaceholder": "Full navn plassholder",
+    "avatar": "Avatar",
+    "avatarPlaceholder": "Avatar plassholder",
+    "riskLevel": "Risiko nivå",
+    "riskOptions": {
+      "safe": "Safe",
+      "normal": "Normal",
+      "advanced": "Avansert"
+    },
+    "savingProfile": "Saving profil",
+    "saveProfile": "Lagre profil",
+    "myProfile": "My profil",
+    "streakDescription": "Streak beskrivelse",
+    "yourSubscription": "Your subscription",
+    "includedInSubscription": "Included in subscription",
+    "badges": "Badges",
+    "noBadgesYet": "No badges yet",
+    "settings": "Innstillinger",
+    "namePlaceholder": "Navn plassholder",
+    "avatarUrlPlaceholder": "Avatar url plassholder",
+    "deleteProfile": "Slett profil"
+  },
+  "AdminSessions": {
+    "unknownError": "Ukjent feil",
+    "confirmStopBot": "Bekreft stopp bot",
+    "searchSessions": "Søk økter",
+    "allStatuses": "Alle statuses",
+    "statusActive": "Status aktiv",
+    "statusStopped": "Status stoppet",
+    "statusCrashed": "Status crashed",
+    "statusPaused": "Status pauset",
+    "unknown": "Ukjent",
+    "stop": "Stopp"
   }
 }
