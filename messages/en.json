@@ -54,7 +54,20 @@
     "users": "Users",
     "students": "Students",
     "nav": {
-      "traderVerifications": "Trader verifications"
+      "traderVerifications": "Trader verifications",
+      "sectionOverview": "Section Overview",
+      "analytics": "Analytics",
+      "campaign": "Campaign",
+      "monetization": "Monetization",
+      "sectionUsers": "Section Users",
+      "sectionProduct": "Section Product",
+      "abTests": "Ab Tests",
+      "autoTrading": "Auto Trading",
+      "tradingSessions": "Trading Sessions",
+      "sectionSystem": "Section System",
+      "adminV2": "Admin",
+      "sectionSupport": "Section Support",
+      "impersonate": "Impersonate"
     },
     "traderVerifications": {
       "title": "Trader verifications",
@@ -240,7 +253,83 @@
     "confirmNewPassword": "Confirm new password",
     "updating": "Updating...",
     "saveNewPassword": "Save new password",
-    "changeToAdmin": "Change to Admin"
+    "changeToAdmin": "Change to Admin",
+    "usersPage": {
+      "students": {
+        "ariaFilterRole": "Aria Filter Role",
+        "filterAllRoles": "Filter All Roles"
+      },
+      "roles": {
+        "admin": "Admin",
+        "founder": "Founder",
+        "analyst": "Analyst",
+        "trader": "Trader",
+        "student": "Student"
+      },
+      "tierError": "Tier Error",
+      "tierUpdated": "Tier Updated",
+      "paperError": "Paper Error",
+      "paperSaved": "Paper Saved",
+      "reportError": "Report Error",
+      "reportReady": "Report Ready",
+      "reportFailed": "Report Failed",
+      "ariaFilterRole": "Aria Filter Role",
+      "filterAllRoles": "Filter All Roles",
+      "ariaFilterTier": "Aria Filter Tier",
+      "filterAllTiers": "Filter All Tiers",
+      "ariaFilterSource": "Aria Filter Source",
+      "filterAllSources": "Filter All Sources",
+      "ariaSelectAllUsers": "Aria Select All Users",
+      "paperBalance": "Paper Balance",
+      "setPaper": "Set Paper",
+      "cockpitReport": "Cockpit Report",
+      "impersonate": "Impersonate",
+      "paperModalTitle": "Paper Modal Title",
+      "paperModalHint": "Paper Modal Hint",
+      "balanceKr": "Balance Kr",
+      "syncSessions": "Sync Sessions",
+      "resetBaseline": "Reset Baseline",
+      "savePaper": "Save Paper",
+      "reportModalTitle": "Report Modal Title",
+      "reportModalHint": "Report Modal Hint",
+      "reportStatus": "Report Status",
+      "reportPending": "Report Pending",
+      "reportRunning": "Report Running",
+      "reportDone": "Report Done",
+      "reportQueueing": "Report Queueing",
+      "reportJobId": "Report Job Id",
+      "reportDownload": "Report Download",
+      "reportExpires": "Report Expires",
+      "reportClose": "Report Close"
+    },
+    "totalUsers": "Total Users",
+    "send": "Send",
+    "serviceStatus": "Service Status",
+    "allServicesNormal": "All Services Normal",
+    "impersonation": {
+      "title": "Title",
+      "description": "Description",
+      "warningTitle": "Warning Title",
+      "warningText": "Warning Text",
+      "email": "Email",
+      "emailPlaceholder": "Email Placeholder",
+      "password": "Password",
+      "passwordPlaceholder": "Password Placeholder",
+      "passwordHint": "Password Hint",
+      "reason": "Reason",
+      "reasonPlaceholder": "Reason Placeholder",
+      "starting": "Starting",
+      "start": "Start",
+      "endSessionAria": "End Session Aria",
+      "ending": "Ending",
+      "endSession": "End Session"
+    },
+    "searchUsers": "Search Users",
+    "selectTier": "Select Tier",
+    "resetPassword": "Reset Password",
+    "choosePassword": "Choose Password",
+    "loggingIn": "Logging In",
+    "login": "Login"
   },
   "auth": {
     "verify": {
@@ -874,7 +963,84 @@
     "edit": "Edit",
     "update": "Update",
     "submit": "Submit",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "title": "Title",
+    "unexpectedError": "Unexpected Error",
+    "speedOnboarding": {
+      "timerPrefix": "Timer Prefix",
+      "step1": {
+        "title": "Title",
+        "subtitle": "Subtitle"
+      },
+      "step2": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "startingCapital": "Starting Capital",
+        "paperTradingZeroRisk": "Paper Trading Zero Risk",
+        "starting": "Starting",
+        "startTrading": "Start Trading"
+      },
+      "step3": {
+        "title": "Title",
+        "line1": "Line",
+        "line2": "Line",
+        "line3": "Line",
+        "goToDashboard": "Go To Dashboard",
+        "viewActivity": "View Activity"
+      }
+    },
+    "interactive": {
+      "error": {
+        "finish": "Finish"
+      },
+      "step1": {
+        "title1": "Title",
+        "title2": "Title",
+        "description": "Description",
+        "howItWorksTitle": "How It Works Title",
+        "list1": "List",
+        "list2": "List",
+        "list3": "List",
+        "cta": "Cta"
+      },
+      "step2": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "preloaded": "Preloaded"
+      },
+      "step3": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "goalStrategy": "Goal Strategy",
+        "playMoney": "Play Money",
+        "currencySuffix": "Currency Suffix",
+        "tooltip": "Tooltip",
+        "tradingMode": "Trading Mode",
+        "tradingModeValue": "Trading Mode Value",
+        "status": "Status",
+        "statusValue": "Status Value",
+        "initializing": "Initializing",
+        "startBot": "Start Bot"
+      },
+      "step4": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "redirecting": "Redirecting"
+      }
+    },
+    "mobile": {
+      "step2": {
+        "backAriaLabel": "Back Aria Label",
+        "title": "Title",
+        "subtitle": "Subtitle"
+      }
+    },
+    "toasts": {
+      "general": {
+        "error": "Error",
+        "saved": "Saved"
+      }
+    }
   },
   "competition": {
     "title": "Trading Competition",
@@ -1189,7 +1355,10 @@
     "amount": "Amount",
     "profit": "Profit",
     "loss": "Loss",
-    "recentTrades": "Recent Trades",
+    "recentTrades": {
+      "title": "Title",
+      "viewAll": "View All"
+    },
     "noTrades": "No trades yet. Click \"Sync Binance\" to load your Binance trades.",
     "bought": "Bought",
     "sold": "Sold",
@@ -1644,7 +1813,9 @@
       "upgradeCta": "See pricing",
       "advancedAnalyticsTitle": "Advanced Analytics",
       "advancedAnalyticsDesc": "Equity curve, P&L heatmap, risk metrics and position calculator",
-      "advancedAnalyticsLink": "View full analysis →"
+      "advancedAnalyticsLink": "View full analysis →",
+      "smartActionsTitle": "Smart Actions Title",
+      "liveFeedTitle": "Live Feed Title"
     },
     "nlqChat": {
       "openChat": "Open chat",
@@ -1688,7 +1859,8 @@
       "noFiltered": "No {status} sessions",
       "activeLC": "active",
       "pausedLC": "paused",
-      "stoppedLC": "stopped"
+      "stoppedLC": "stopped",
+      "live": "Live"
     },
     "error": {
       "title": "Could not load dashboard",
@@ -1716,6 +1888,95 @@
       "leaderboardTitle": "🏆 Leaderboard",
       "leaderboardDesc": "Compare yourself with other traders and climb the ranks.",
       "leaderboardCta": "View ranking →"
+    },
+    "hero": {
+      "paperMode": "Paper Mode",
+      "liveMode": "Live Mode",
+      "noData": "No Data",
+      "latestChange": "Latest Change",
+      "ctaPaper": "Cta Paper",
+      "ctaLive": "Cta Live"
+    },
+    "signalPreview": {
+      "title": "Title",
+      "liveBadge": "Live Badge",
+      "staleBadge": "Stale Badge",
+      "errorBadge": "Error Badge",
+      "emptyBadge": "Empty Badge",
+      "demoBadge": "Demo Badge",
+      "curated": "Curated",
+      "seeAll": "See All",
+      "empty": "Empty",
+      "directionBuy": "Direction Buy",
+      "directionSell": "Direction Sell"
+    },
+    "homeOverview": {
+      "title": "Title",
+      "subtitle": "Subtitle"
+    },
+    "riskNote": {
+      "title": "Title",
+      "body": "Body",
+      "settingsCta": "Settings Cta"
+    },
+    "modeBar": {
+      "live": "Live",
+      "paper": "Paper",
+      "noSessionDesc": "No Session Desc",
+      "liveDesc": "Live Desc",
+      "paperDesc": "Paper Desc"
+    },
+    "portfolioHero": {
+      "balanceLabel": "Balance Label",
+      "periodLabel": "Period Label",
+      "pnlHint": "Pnl Hint",
+      "footerHint": "Footer Hint"
+    },
+    "marketDesk": {
+      "livePricesHeading": "Live Prices Heading",
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "myPositions": "My Positions",
+      "seeAll": "See All",
+      "integrityPollWarning": "Integrity Poll Warning",
+      "recentTrades": "Recent Trades",
+      "integritySyncAria": "Integrity Sync Aria",
+      "noTrades": "No Trades",
+      "noPositions": "No Positions",
+      "close": "Close",
+      "buy": "Buy",
+      "chart": "Chart"
+    },
+    "dataSource": {
+      "prices": "Prices",
+      "pricesEducational": "Prices Educational"
+    },
+    "coinbase": {
+      "marketTitle": "Market Title",
+      "marketSubtitle": "Market Subtitle",
+      "topMovers": "Top Movers",
+      "goToTrade": "Go To Trade",
+      "orderSubmittedPaper": "Order Submitted Paper",
+      "tradeFailed": "Trade Failed",
+      "networkError": "Network Error",
+      "loadingPrice": "Loading Price",
+      "backToTrade": "Back To Trade",
+      "buySellPaper": "Buy Sell Paper",
+      "buySellPaperDesc": "Buy Sell Paper Desc",
+      "amountNok": "Amount Nok",
+      "buy": "Buy",
+      "sell": "Sell",
+      "watchlistTitle": "Watchlist Title",
+      "viewMarket": "View Market",
+      "quickActionsGroupAria": "Quick Actions Group Aria",
+      "send": "Send"
+    },
+    "portfolioStats": {
+      "totalEquity": "Total Equity",
+      "available": "Available",
+      "marginUsed": "Margin Used",
+      "totalPnl": "Total Pnl",
+      "percentUsed": "Percent Used"
     }
   },
   "footer": {
@@ -1758,7 +2019,9 @@
     },
     "monthlyPrize": "Monthly paper trading competition",
     "monthlyCompetitionOngoing": "ongoing",
-    "daysLeft": "days left"
+    "daysLeft": "days left",
+    "viewLeaderboard": "View Leaderboard",
+    "kltStoryShort": "Klt Story Short"
   },
   "helpPage": {
     "title": "Help & Support",
@@ -1775,32 +2038,32 @@
       "privacyLink": "Privacy Policy →",
       "termsLink": "Terms of Service →"
     },
-    "faqs": [
-      {
-        "q": "What is Klarpakke University?",
-        "a": "Klarpakke University is a Norwegian crypto education platform. We offer courses, simulators, paper trading and quizzes – everything to teach you trading safely. All trading is 100% simulated, so you can practice without risking real money."
+    "faqs": {
+      "0": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "What plans exist and what do they cost?",
-        "a": "We have four plans: Free (0 kr) gives you a taste. Basic (199 kr/mo) includes all basic courses. Complete (399 kr/mo) is our most popular plan with everything in Basic plus advanced courses, certificate and webinars. Pro (999 kr/mo) gives extra resources and priority support."
+      "1": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "Can I lose money?",
-        "a": "No! Everything at Klarpakke University is simulated. When you use paper trading or the simulator, you trade with virtual money. You cannot lose real money here. This is a safe place to learn before potentially using real money with an external broker."
+      "2": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "How do I cancel?",
-        "a": "You can cancel anytime from your account settings. You keep access until the end of the paid period. There is no lock-in period – you decide how long you want to stay."
+      "3": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "How do I start with paper trading?",
-        "a": "Sign up for free, and you automatically get 100,000 kr virtual capital. Go to the Paper Trading page, select a cryptocurrency, and press buy to make your first trade. It is completely risk-free!"
+      "4": {
+        "q": "Q",
+        "a": "A"
       },
-      {
-        "q": "What do I learn in the courses?",
-        "a": "Basic courses cover what crypto is, how trading works, and basic risk management. Advanced courses go deeper into technical analysis, strategies and trading psychology. Everything is in plain language."
+      "5": {
+        "q": "Q",
+        "a": "A"
       }
-    ]
+    }
   },
   "hero": {
     "title": "Klarpakke",
@@ -1815,17 +2078,15 @@
     "stat2Label": "Uptime",
     "stat3": "300+",
     "stat3Label": "Trading pairs",
-    "cta": "🎯 Start free",
+    "cta": "Start free",
     "ctaSecondary": "See what you'll learn",
     "price": "$65,284.25",
     "priceLabel": "BTC / USDT",
     "priceChange": "-12.20%",
     "description": "Norway's only platform with courses, paper trading and autotrading. Start free with kr 10,000 in virtual money — no credit card.",
-    "cta": "Start free",
     "badge": "🇳🇴 Norway's leading crypto academy",
     "tagline": "From beginner to confident trader",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "See what you'll learn",
     "trust": "No credit card · Norwegian guidance · BankID secured",
     "stats": {
       "weeks": "Live market data",
@@ -2029,7 +2290,71 @@
       "buy": "Buy BTC",
       "sell": "Sell BTC",
       "overlay": "Sign up to trade with real data",
-      "overlayCta": "Start for free"
+      "overlayCta": "Start for free",
+      "liveBadge": "Live Badge",
+      "offlineNotice": "Offline Notice",
+      "staleNotice": "Stale Notice",
+      "livePrice": "Live Price",
+      "overlayLoggedIn": "Overlay Logged In",
+      "overlayLoggedInCta": "Overlay Logged In Cta"
+    },
+    "bentoGrid": {
+      "liveSignalCard": {
+        "buy": "Buy",
+        "sell": "Sell",
+        "hold": "Hold",
+        "title": "Title",
+        "description": "Description",
+        "latestSignal": "Latest Signal",
+        "updatedEveryMinute": "Updated Every Minute"
+      }
+    },
+    "common": {
+      "feature1Title": "Feature Title",
+      "feature1Desc": "Feature Desc",
+      "feature2Title": "Feature Title",
+      "feature2Desc": "Feature Desc",
+      "feature3Title": "Feature Title",
+      "feature3Desc": "Feature Desc",
+      "feature4Title": "Feature Title",
+      "feature4Desc": "Feature Desc",
+      "feature5Title": "Feature Title",
+      "feature5Desc": "Feature Desc",
+      "feature6Title": "Feature Title",
+      "feature6Desc": "Feature Desc",
+      "feature7Title": "Feature Title",
+      "feature7Desc": "Feature Desc"
+    },
+    "leaderboard": {
+      "returnLabel": "Return Label",
+      "kltLabel": "Klt Label",
+      "badge": "Badge",
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "emptyTitle": "Empty Title",
+      "emptyBody": "Empty Body",
+      "ctaPrimary": "Cta Primary",
+      "empty": "Empty",
+      "ctaSecondary": "Cta Secondary",
+      "trustNote": "Trust Note"
+    },
+    "liveMarketStrip": {
+      "title": "Title",
+      "offlineNotice": "Offline Notice",
+      "staleNotice": "Stale Notice",
+      "error": "Error",
+      "empty": "Empty",
+      "volume": "Volume"
+    },
+    "paperHero": {
+      "badge": "Badge",
+      "title": "Title",
+      "titleAccent": "Title Accent",
+      "subtitle": "Subtitle",
+      "ctaPrimary": "Cta Primary",
+      "ctaSecondary": "Cta Secondary",
+      "trust1": "Trust",
+      "trust3": "Trust"
     }
   },
   "tradingGuide": {
@@ -2321,6 +2646,48 @@
           "content": "Questions about the terms? Contact us at:"
         }
       }
+    },
+    "cookies": {
+      "title": "Title",
+      "whatAreCookies": {
+        "title": "Title",
+        "content": "Content"
+      },
+      "categories": {
+        "title": "Title",
+        "necessary": {
+          "name": "Name",
+          "description": "Description"
+        },
+        "analytics": {
+          "name": "Name",
+          "description": "Description"
+        },
+        "marketing": {
+          "name": "Name",
+          "description": "Description"
+        },
+        "functional": {
+          "name": "Name",
+          "description": "Description"
+        }
+      },
+      "thirdParty": {
+        "title": "Title",
+        "sentry": "Sentry",
+        "google": "Google",
+        "supabase": "Supabase"
+      },
+      "manage": {
+        "title": "Title",
+        "lastUpdated": "Last Updated",
+        "revoke": "Revoke",
+        "noConsent": "No Consent"
+      },
+      "contact": {
+        "title": "Title",
+        "content": "Content"
+      }
     }
   },
   "liveTrading": {
@@ -2480,8 +2847,12 @@
     "loading": "Loading...",
     "closeMenu": "Close menu",
     "openMenu": "Open menu",
-    "studyProgram": "Study Program",
-    "school": "School"
+    "logout": "Logout",
+    "selectExchange": "Select Exchange",
+    "security": {
+      "title": "Title",
+      "warning": "Warning"
+    }
   },
   "components": {
     "themeToggle": {
@@ -2489,6 +2860,9 @@
       "toggleTheme": "Toggle theme",
       "light": "Light",
       "dark": "Dark"
+    },
+    "livePill": {
+      "label": "Label"
     }
   },
   "notifications": {
@@ -2645,6 +3019,133 @@
       "error": {
         "saveFailed": "Could not save your answers. Check your connection and try again.",
         "retryHint": "Click 'Continue' to try again."
+      }
+    },
+    "welcomePage": {
+      "benefits": {
+        "items": {
+          "paperMoney": {
+            "title": "Title",
+            "desc": "Desc"
+          },
+          "journal": {
+            "title": "Title",
+            "desc": "Desc"
+          },
+          "influence": {
+            "title": "Title",
+            "desc": "Desc"
+          },
+          "kltPoints": {
+            "title": "Title",
+            "desc": "Desc"
+          }
+        },
+        "title": "Title",
+        "subtitle": "Subtitle"
+      },
+      "steps": {
+        "items": {
+          "checkStatus": {
+            "title": "Title",
+            "desc": "Desc",
+            "action": "Action"
+          },
+          "dashboard": {
+            "title": "Title",
+            "desc": "Desc",
+            "action": "Action"
+          },
+          "wait": {
+            "title": "Title",
+            "desc": "Desc"
+          }
+        },
+        "title": "Title"
+      },
+      "hero": {
+        "title": "Title",
+        "highlight": "Highlight",
+        "subtitle": "Subtitle"
+      },
+      "safety": {
+        "title": "Title",
+        "desc": "Desc"
+      },
+      "cta": {
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "button": "Button"
+      },
+      "footer": {
+        "questions": "Questions"
+      }
+    },
+    "paperSetup": {
+      "error": "Error",
+      "loading": "Loading",
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "badge": "Badge",
+      "virtual": "Virtual",
+      "balanceLabel": "Balance Label",
+      "currencySuffix": "Currency Suffix",
+      "whatIs": "What Is",
+      "tooltip": "Tooltip",
+      "cta": "Cta"
+    },
+    "step4": {
+      "error": "Error",
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "security": {
+        "title": "Title",
+        "description": "Description"
+      },
+      "apiKey": {
+        "label": "Label",
+        "placeholder": "Placeholder"
+      },
+      "apiSecret": {
+        "label": "Label",
+        "placeholder": "Placeholder"
+      },
+      "connecting": "Connecting",
+      "cta": "Cta",
+      "skipping": "Skipping",
+      "skip": "Skip"
+    },
+    "aiMapping": {
+      "coachName": "Coach Name",
+      "subtitle": "Subtitle",
+      "title": "Title",
+      "cta": "Cta",
+      "skip": "Skip"
+    },
+    "trustBar": {
+      "bankid": "Bankid",
+      "encrypted": "Encrypted",
+      "regulated": "Regulated"
+    },
+    "mobile": {
+      "step3": {
+        "title": "Title",
+        "description": "Description",
+        "selectedStrategy": "Selected Strategy",
+        "loading": "Loading",
+        "cta": "Cta"
+      },
+      "step1": {
+        "title": "Title",
+        "description": "Description",
+        "badgesAriaLabel": "Badges Aria Label",
+        "badges": {
+          "bankid": "Bankid",
+          "finanstilsynet": "Finanstilsynet",
+          "noHiddenFees": "No Hidden Fees"
+        },
+        "cta": "Cta",
+        "skip": "Skip"
       }
     }
   },
@@ -2807,7 +3308,8 @@
     "errors": {
       "checkout_failed": "Could not start payment",
       "unexpected": "Could not start payment. Please try again."
-    }
+    },
+    "securePaymentNoVipps": "Secure Payment No Vipps"
   },
   "pricing": {
     "metadata": {
@@ -2890,7 +3392,15 @@
     "savePercent": "Save {percent}%",
     "perMonth": "per month",
     "getStarted": "Get started",
-    "mostPopular": "Most Popular"
+    "mostPopular": "Most Popular",
+    "tiers": {
+      "student": {
+        "period": "Period"
+      }
+    },
+    "sectionTitle": "Section Title",
+    "description": "Description",
+    "disclaimer": "Disclaimer"
   },
   "pricingCancel": {
     "title": "Payment Cancelled",
@@ -3107,7 +3617,9 @@
       "finishTrack": "Complete \"{track}\"",
       "settings": "Settings",
       "deleteProfile": "Delete Profile",
-      "profile": "Profile"
+      "profile": "Profile",
+      "fullNamePlaceholder": "Full Name Placeholder",
+      "avatarPlaceholder": "Avatar Placeholder"
     },
     "api": {
       "title": "API Settings",
@@ -3251,6 +3763,14 @@
       "preview": "Preview",
       "darkModeActive": "Dark mode active",
       "lightModeActive": "Light mode active"
+    },
+    "billing": {
+      "error": "Error",
+      "title": "Title",
+      "description": "Description",
+      "loading": "Loading",
+      "cta": "Cta",
+      "sectionTitle": "Section Title"
     }
   },
   "simulator": {
@@ -3419,7 +3939,26 @@
           "10,000 KLT tokens/mo",
           "Early access to new features"
         ]
-      }
+      },
+      "loading": "Loading",
+      "backToPricing": "Back To Pricing",
+      "yourOrder": "Your Order",
+      "billingCurrency": "Billing Currency",
+      "currencyHelp": "Currency Help",
+      "perMonthSuffix": "Per Month Suffix",
+      "bachelorNoTrialTitle": "Bachelor No Trial Title",
+      "bachelorNoTrialDescription": "Bachelor No Trial Description",
+      "trialPeriod": "Trial Period",
+      "trialDescription": "Trial Description",
+      "totalDueToday": "Total Due Today",
+      "totalToday": "Total Today",
+      "paymentMethod": "Payment Method",
+      "paymentDescription": "Payment Description",
+      "studentPlanFree": "Student Plan Free",
+      "stripeNotConfigured": "Stripe Not Configured",
+      "securePayment": "Secure Payment",
+      "cardForInternational": "Card For International",
+      "secureNote": "Secure Note"
     }
   },
   "taxReport": {
@@ -3637,7 +4176,23 @@
     "total": "Total",
     "fee": "Fee",
     "confirmTrade": "Confirm Trade",
-    "positions": "Positions",
+    "positions": {
+      "empty": {
+        "title": "Title",
+        "description": "Description"
+      },
+      "columns": {
+        "symbol": "Symbol",
+        "side": "Side",
+        "size": "Size",
+        "entry": "Entry",
+        "current": "Current",
+        "pnl": "Pnl",
+        "action": "Action"
+      },
+      "close": "Close",
+      "totalUnrealizedPnL": "Total Unrealized Pn L"
+    },
     "noPositions": "No open positions",
     "unrealizedPnL": "Unrealized P&L",
     "realizedPnL": "Realized P&L",
@@ -3743,7 +4298,707 @@
       "button": "Restart trading",
       "unknownError": "An error occurred",
       "networkError": "Network error"
-    }
+    },
+    "rejectReason": {
+      "NO_RISK_PROFILE": "N Ris Profile",
+      "BOT_NOT_HEALTHY": "Bo No Healthy",
+      "LIVE_NOT_ALLOWED": "Liv No Allowed",
+      "POSITION_LIMIT_EXCEEDED": "Positio Limi Exceeded",
+      "EXPOSURE_LIMIT_EXCEEDED": "Exposur Limi Exceeded",
+      "DAILY_LOSS_LIMIT_EXCEEDED": "Dail Los Limi Exceeded",
+      "DAILY_LOSS_CHECK_FAILED": "Dail Los Chec Failed",
+      "PAIR_NOT_ALLOWED": "Pai No Allowed",
+      "LEVERAGE_NOT_ALLOWED": "Leverag No Allowed",
+      "INSUFFICIENT_BALANCE": "Insufficien Balance",
+      "SESSION_NOT_ACTIVE": "Sessio No Active",
+      "INVALID_TRADING_MODE": "Invali Tradin Mode"
+    },
+    "notLoggedIn": "Not Logged In",
+    "fetchError": "Fetch Error",
+    "diagnosticsCopyFailed": "Diagnostics Copy Failed",
+    "diagnosticsCopied": "Diagnostics Copied",
+    "title": "Title",
+    "subtitle": "Subtitle",
+    "copyDiagnostics": "Copy Diagnostics",
+    "exportCsv": "Export Csv",
+    "filterAll": "Filter All",
+    "filterPaper": "Filter Paper",
+    "filterLive": "Filter Live",
+    "totalTrades": "Total Trades",
+    "wins": "Wins",
+    "losses": "Losses",
+    "totalRealizedPnl": "Total Realized Pnl",
+    "decisionLogTitle": "Decision Log Title",
+    "integrityPollWarning": "Integrity Poll Warning",
+    "decisionLogHint": "Decision Log Hint",
+    "decisionsEmpty": "Decisions Empty",
+    "decisionAllow": "Decision Allow",
+    "decisionReject": "Decision Reject",
+    "decisionModify": "Decision Modify",
+    "live": "Live",
+    "paper": "Paper",
+    "retry": "Retry",
+    "noTradesFiltered": "No Trades Filtered",
+    "noTradesFilteredHint": "No Trades Filtered Hint",
+    "noTrades": "No Trades",
+    "noTradesHint": "No Trades Hint",
+    "date": "Date",
+    "pair": "Pair",
+    "whyColumn": "Why Column",
+    "side": "Side",
+    "quantity": "Quantity",
+    "entryPrice": "Entry Price",
+    "pnl": "Pnl",
+    "mode": "Mode",
+    "status": "Status",
+    "whyMissing": "Why Missing",
+    "noRealizedPnlExplainer": "No Realized Pnl Explainer",
+    "noRealizedPnlShort": "No Realized Pnl Short",
+    "cockpit": {
+      "riskBanner": {
+        "crashed": "Crashed",
+        "dailyLossLimit": "Daily Loss Limit",
+        "maxDrawdown": "Max Drawdown",
+        "title": "Title"
+      },
+      "marketData": {
+        "stale": "Stale",
+        "delayed": "Delayed",
+        "ok": "Ok"
+      },
+      "error": {
+        "description": "Description",
+        "title": "Title",
+        "retry": "Retry",
+        "analyticsFailed": "Analytics Failed"
+      },
+      "header": {
+        "title": "Title"
+      },
+      "mode": {
+        "live": "Live",
+        "paper": "Paper",
+        "paperShort": "Paper Short",
+        "lockedTooltip": "Locked Tooltip",
+        "liveShort": "Live Short",
+        "upgrade": "Upgrade"
+      },
+      "liveModeConfirm": {
+        "title": "Title",
+        "description": "Description",
+        "rememberDefault": "Remember Default",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      },
+      "activation": {
+        "pausedTitle": "Paused Title",
+        "missingTitle": "Missing Title",
+        "pausedDescription": "Paused Description",
+        "missingDescription": "Missing Description",
+        "activateButton": "Activate Button",
+        "success": "Success",
+        "error": "Error"
+      },
+      "empty": {
+        "sessionsTitle": "Sessions Title",
+        "sessionsDescription": "Sessions Description"
+      },
+      "sessions": {
+        "columns": {
+          "startingCapital": "Starting Capital",
+          "currentCapital": "Current Capital",
+          "pair": "Pair",
+          "status": "Status",
+          "pnl": "Pnl",
+          "updatedAt": "Updated At"
+        },
+        "loading": "Loading",
+        "loadMore": "Load More",
+        "title": "Title"
+      },
+      "statusLog": {
+        "evaluatingSignals": "Evaluating Signals",
+        "noRecentDecisions": "No Recent Decisions",
+        "tradeFailedNoReason": "Trade Failed No Reason",
+        "title": "Title",
+        "loading": "Loading"
+      },
+      "loading": "Loading",
+      "kpi": {
+        "portfolioValue": "Portfolio Value",
+        "winRate": "Win Rate",
+        "totalTrades": "Total Trades",
+        "totalPnl": "Total Pnl"
+      },
+      "toast": {
+        "startRobotExisting": "Start Robot Existing",
+        "startRobotSuccess": "Start Robot Success",
+        "sessionStatusChanged": {
+          "title": "Title"
+        }
+      },
+      "quickActions": {
+        "error": "Error",
+        "startRobot": "Start Robot",
+        "viewHistory": "View History"
+      },
+      "trades": {
+        "side": {
+          "buy": "Buy",
+          "sell": "Sell"
+        },
+        "filters": {
+          "open": "Open",
+          "reset": "Reset",
+          "remove": "Remove",
+          "title": "Title",
+          "apply": "Apply",
+          "search": "Search",
+          "placeholder": "Placeholder",
+          "dateRange": "Date Range",
+          "pair": "Pair",
+          "all": "All",
+          "side": "Side",
+          "tradeStatus": "Trade Status",
+          "sessionStatus": "Session Status"
+        },
+        "title": "Title",
+        "error": {
+          "title": "Title",
+          "retry": "Retry"
+        },
+        "noTradesTitle": "No Trades Title",
+        "noTradesDescription": "No Trades Description",
+        "loading": "Loading",
+        "loadMore": "Load More",
+        "columns": {
+          "price": "Price",
+          "quantity": "Quantity",
+          "fee": "Fee",
+          "totalValue": "Total Value",
+          "realizedPnl": "Realized Pnl",
+          "effectivePnl": "Effective Pnl",
+          "executedAt": "Executed At",
+          "createdAt": "Created At"
+        },
+        "details": {
+          "reason": "Reason",
+          "readMore": "Read More",
+          "noSignal": "No Signal",
+          "id": "Id",
+          "sessionId": "Session Id",
+          "title": "Title",
+          "description": "Description"
+        }
+      },
+      "realtime": {
+        "newTrade": {
+          "title": "Title"
+        }
+      },
+      "analysis": {
+        "title": "Title",
+        "description": "Description",
+        "empty": {
+          "title": "Title",
+          "description": "Description"
+        },
+        "period": {
+          "label": "Label"
+        },
+        "chart": {
+          "symbolTitle": "Symbol Title",
+          "togglePnl": "Toggle Pnl",
+          "toggleTrades": "Toggle Trades",
+          "pnlTitle": "Pnl Title",
+          "pnl": "Pnl"
+        },
+        "stats": {
+          "totalTrades": "Total Trades",
+          "winRate": "Win Rate",
+          "totalPnl": "Total Pnl",
+          "totalFees": "Total Fees",
+          "profitFactor": "Profit Factor",
+          "maxDrawdown": "Max Drawdown",
+          "bestPair": "Best Pair",
+          "worstPair": "Worst Pair",
+          "bestSession": "Best Session",
+          "worstSession": "Worst Session"
+        }
+      }
+    },
+    "toggleAria": "Toggle Aria",
+    "paperTrading": {
+      "card": {
+        "loading": "Loading",
+        "empty": "Empty",
+        "error": "Error",
+        "currentBalance": "Current Balance",
+        "startingCapital": "Starting Capital",
+        "pnl": "Pnl"
+      },
+      "modeBanner": {
+        "live": "Live",
+        "paper": "Paper"
+      },
+      "mySessions": "My Sessions",
+      "workspaceHeader": {
+        "subtitle": "Subtitle",
+        "badge": "Badge",
+        "title": "Title"
+      },
+      "backToOverview": "Back To Overview",
+      "backToDashboard": "Back To Dashboard",
+      "sessions": {
+        "maxActiveReached": "Max Active Reached",
+        "maxActiveStudent": "Max Active Student",
+        "showHistory": "Show History"
+      },
+      "errors": {
+        "validationFailed": "Validation Failed",
+        "unauthorized": "Unauthorized",
+        "forbidden": "Forbidden",
+        "generic": "Generic",
+        "missingSessionId": "Missing Session Id",
+        "network": "Network",
+        "resetFailed": "Reset Failed",
+        "resetNetwork": "Reset Network"
+      },
+      "confirmResetAll": "Confirm Reset All",
+      "resetSuccess": "Reset Success",
+      "now": "Now",
+      "active": "Active",
+      "paused": "Paused",
+      "stopped": "Stopped",
+      "crashed": "Crashed",
+      "stats": {
+        "availableBalance": "Available Balance"
+      },
+      "resetSession": "Reset Session",
+      "newSession": "New Session",
+      "noSessions": "No Sessions",
+      "description": "Description",
+      "refreshList": "Refresh List",
+      "binanceUpdateInfo": "Binance Update Info",
+      "tradingPair": "Trading Pair",
+      "startCapital": "Start Capital",
+      "cancel": "Cancel",
+      "start": "Start",
+      "noSessionsDesc": "No Sessions Desc",
+      "startFirst": "Start First",
+      "modePaper": "Mode Paper",
+      "modeLive": "Mode Live",
+      "started": "Started",
+      "trades": "Trades"
+    },
+    "riskMetrics": {
+      "loadError": "Load Error",
+      "sortinoRatio": "Sortino Ratio",
+      "sortinoTooltip": "Sortino Tooltip",
+      "calmarRatio": "Calmar Ratio",
+      "calmarTooltip": "Calmar Tooltip",
+      "var95": "Var",
+      "var95Tooltip": "Var Tooltip",
+      "maxConsecutiveLosses": "Max Consecutive Losses",
+      "maxConsecutiveLossesTooltip": "Max Consecutive Losses Tooltip",
+      "omegaRatio": "Omega Ratio",
+      "omegaTooltip": "Omega Tooltip",
+      "gainPainRatio": "Gain Pain Ratio",
+      "gainPainTooltip": "Gain Pain Tooltip",
+      "scoreTitle": "Score Title",
+      "panelTooltip": "Panel Tooltip",
+      "hideDetails": "Hide Details",
+      "showDetails": "Show Details"
+    },
+    "positionLots": {
+      "loading": "Loading",
+      "error": "Error",
+      "noPosition": "No Position",
+      "title": "Title",
+      "totalUnrealizedPnL": "Total Unrealized Pn L",
+      "lot": "Lot",
+      "entryPrice": "Entry Price",
+      "quantity": "Quantity",
+      "age": "Age",
+      "unrealizedPnL": "Unrealized Pn L",
+      "totalQuantity": "Total Quantity",
+      "weightedEntry": "Weighted Entry"
+    },
+    "tradeAmountSlider": {
+      "balance": "Balance",
+      "maxPerTrade": "Max Per Trade",
+      "alreadyInMarket": "Already In Market",
+      "title": "Title",
+      "status": {
+        "blocked": {
+          "description": "Description"
+        },
+        "warning": {
+          "title": "Title"
+        },
+        "caution": {
+          "description": "Description"
+        },
+        "ok": {
+          "description": "Description"
+        }
+      },
+      "whatThisMeans": "What This Means",
+      "paperTrading": {
+        "title": "Title",
+        "description": "Description"
+      }
+    },
+    "signalFeed": {
+      "title": "Title",
+      "statusLive": "Status Live",
+      "statusStale": "Status Stale",
+      "statusEmpty": "Status Empty",
+      "statusError": "Status Error",
+      "updatedPrefix": "Updated Prefix",
+      "refreshAria": "Refresh Aria",
+      "emptyTitle": "Empty Title",
+      "emptyBody": "Empty Body",
+      "emptyFooter": "Empty Footer",
+      "directionBuy": "Direction Buy",
+      "directionSell": "Direction Sell",
+      "directionHold": "Direction Hold",
+      "priceEntry": "Price Entry",
+      "locked": "Locked",
+      "priceStop": "Price Stop",
+      "priceTarget": "Price Target"
+    },
+    "robotBrain": {
+      "ariaLabel": "Aria Label",
+      "badge": "Badge",
+      "disclaimer": "Disclaimer"
+    },
+    "loginRequired": "Login Required",
+    "saveSuccess": "Save Success",
+    "saveError": "Save Error",
+    "loading": "Loading",
+    "toggleLabel": "Toggle Label",
+    "enabledDesc": "Enabled Desc",
+    "disabledDesc": "Disabled Desc",
+    "modeLabel": "Mode Label",
+    "paperDesc": "Paper Desc",
+    "liveDesc": "Live Desc",
+    "riskLabel": "Risk Label",
+    "maxTradeSize": "Max Trade Size",
+    "minAmount": "Min Amount",
+    "maxAmount": "Max Amount",
+    "saving": "Saving",
+    "save": "Save",
+    "desk": {
+      "liveAiInsights": "Live Ai Insights",
+      "sonarLoadError": "Sonar Load Error",
+      "upgradeForMore": "Upgrade For More",
+      "upgradeDesc": "Upgrade Desc",
+      "welcomeEmpty": "Welcome Empty",
+      "totalValue": "Total Value",
+      "cash": "Cash",
+      "pnl": "Pnl",
+      "winRate": "Win Rate"
+    },
+    "botStatus": {
+      "risk": {
+        "low": "Low",
+        "balanced": "Balanced",
+        "high": "High"
+      },
+      "soon": "Soon",
+      "leaderboard": "Leaderboard",
+      "market": "Market",
+      "overview": "Overview",
+      "advanced": "Advanced",
+      "botControlCenter": "Bot Control Center",
+      "description": "Description",
+      "myStrategies": "My Strategies",
+      "strategies": {
+        "empty": "Empty"
+      },
+      "paper": "Paper",
+      "plTotal": "Pl Total",
+      "recentTrades": "Recent Trades",
+      "seeAll": "See All",
+      "action": "Action",
+      "symbol": "Symbol",
+      "price": "Price",
+      "value": "Value",
+      "time": "Time",
+      "trades": {
+        "empty": "Empty"
+      },
+      "portfolioValue": "Portfolio Value",
+      "dailyResult": "Daily Result",
+      "weeklyResult": "Weekly Result",
+      "monthlyResult": "Monthly Result",
+      "winRate": "Win Rate",
+      "quickActions": "Quick Actions",
+      "newStrategy": "New Strategy",
+      "newStrategyDesc": "New Strategy Desc",
+      "stopAll": "Stop All",
+      "emergencyStop": "Emergency Stop",
+      "copyTrading": "Copy Trading",
+      "followSuccessfulTraders": "Follow Successful Traders",
+      "botIsWorking": "Bot Is Working",
+      "waitingForYou": "Waiting For You",
+      "yourBotIsRunning": "Your Bot Is Running",
+      "on": "On",
+      "noStrategiesDescription": "No Strategies Description",
+      "riskLabel": "Risk Label",
+      "pauseBot": "Pause Bot",
+      "startNow": "Start Now",
+      "lastCompletedAction": "Last Completed Action",
+      "noTradesYet": "No Trades Yet",
+      "currentStatus": "Current Status",
+      "scanningMarket": "Scanning Market",
+      "monitoringPriceMovements": "Monitoring Price Movements",
+      "nextCheck": "Next Check",
+      "advancedStatistics": "Advanced Statistics",
+      "detailedPerformanceMetrics": "Detailed Performance Metrics",
+      "needsDailyReturnSeries": "Needs Daily Return Series",
+      "goodRiskAdjustedReturns": "Good Risk Adjusted Returns",
+      "belowOptimal": "Below Optimal",
+      "maxDrawdown": "Max Drawdown",
+      "needsEquityCurve": "Needs Equity Curve",
+      "lowRisk": "Low Risk",
+      "higherRisk": "Higher Risk",
+      "avgTrade": "Avg Trade",
+      "positionSize": "Position Size",
+      "profitLossBreakdown": "Profit Loss Breakdown",
+      "today": "Today",
+      "thisWeek": "This Week",
+      "thisMonth": "This Month",
+      "totalPl": "Total Pl",
+      "bestTrade": "Best Trade",
+      "worstTrade": "Worst Trade",
+      "kryptoProfessor": "Krypto Professor",
+      "smartTradingInsights": "Smart Trading Insights"
+    },
+    "advancedStats": {
+      "errorRunBacktest": "Error Run Backtest",
+      "backtestFailed": "Backtest Failed",
+      "backtestUnavailable": "Backtest Unavailable",
+      "tabOverview": "Tab Overview",
+      "tabPerformance": "Tab Performance",
+      "tabHistory": "Tab History",
+      "statTotalTrades": "Stat Total Trades",
+      "statWinRate": "Stat Win Rate",
+      "statProfitFactor": "Stat Profit Factor",
+      "statMaxDrawdown": "Stat Max Drawdown",
+      "sectionTradeStats": "Section Trade Stats",
+      "labelWinningTrades": "Label Winning Trades",
+      "labelLosingTrades": "Label Losing Trades",
+      "labelBestTrade": "Label Best Trade",
+      "labelWorstTrade": "Label Worst Trade",
+      "monthlyPnLTitle": "Monthly Pn L Title",
+      "emptySignals": "Empty Signals",
+      "labelWinRate": "Label Win Rate",
+      "emptyBacktests": "Empty Backtests"
+    },
+    "aggressivitySlider": {
+      "levels": {
+        "title": "Title",
+        "sections": {
+          "reactionTime": "Reaction Time",
+          "confirmation": "Confirmation",
+          "moreLikely": "More Likely",
+          "lessLikely": "Less Likely",
+          "comparison": "Comparison",
+          "comparisonConservative": "Comparison Conservative",
+          "comparisonBalanced": "Comparison Balanced",
+          "comparisonAggressive": "Comparison Aggressive"
+        }
+      }
+    },
+    "modeSelector": {
+      "title": "Title"
+    },
+    "sessionDetail": {
+      "active": "Active",
+      "paused": "Paused",
+      "stopped": "Stopped",
+      "crashed": "Crashed",
+      "sessionDetail": {
+        "backToHub": "Back To Hub",
+        "eyebrowLive": "Eyebrow Live",
+        "eyebrowPaper": "Eyebrow Paper"
+      },
+      "contextBanner": "Context Banner",
+      "capital": "Capital",
+      "startCapital": "Start Capital",
+      "winRate": "Win Rate",
+      "trades": "Trades",
+      "total": "Total",
+      "pauseBot": "Pause Bot",
+      "resume": "Resume",
+      "stopSession": "Stop Session",
+      "noTrades": "No Trades",
+      "buy": "Buy",
+      "sell": "Sell",
+      "trialExpiringSoon": "Trial Expiring Soon",
+      "specialOffer": "Special Offer",
+      "trialWarning": "Trial Warning",
+      "subtitle": "Subtitle",
+      "trialProgress": "Trial Progress",
+      "upgradeNow": "Upgrade Now",
+      "seePlans": "See Plans",
+      "trialExpiredTitle": "Trial Expired Title",
+      "trialExpired": "Trial Expired",
+      "upgradePrompt": "Upgrade Prompt",
+      "upgrade": "Upgrade"
+    },
+    "liveStrategy": {
+      "back": "Back",
+      "paperBadge": "Paper Badge",
+      "liveBadge": "Live Badge",
+      "warmupAnalyzing": "Warmup Analyzing",
+      "statPnl": "Stat Pnl",
+      "statWinRate": "Stat Win Rate",
+      "statTrades": "Stat Trades",
+      "statMaxDrawdown": "Stat Max Drawdown",
+      "currentPrice": "Current Price",
+      "botLogTitle": "Bot Log Title",
+      "waitingForSignals": "Waiting For Signals"
+    },
+    "botDetail": {
+      "back": "Back",
+      "botDetails": "Bot Details",
+      "paperTrading": "Paper Trading",
+      "started": "Started",
+      "openTradeHistory": "Open Trade History",
+      "trades": "Trades",
+      "total": "Total",
+      "trades1": "Trades",
+      "runtime": "Runtime",
+      "equityChart": "Equity Chart",
+      "equityPreview": "Equity Preview",
+      "tradeHistory": "Trade History",
+      "noTradesYet": "No Trades Yet",
+      "time": "Time",
+      "pair": "Pair",
+      "side": "Side",
+      "quantity": "Quantity",
+      "price": "Price",
+      "buy": "Buy",
+      "sell": "Sell",
+      "strategyInfo": "Strategy Info",
+      "strategy": "Strategy",
+      "riskLevel": "Risk Level",
+      "activePairs": "Active Pairs"
+    },
+    "strategyPicker": {
+      "title": "Title",
+      "paperHint": "Paper Hint",
+      "ariaClose": "Aria Close",
+      "statusActive": "Status Active",
+      "statusIdle": "Status Idle",
+      "stopStrategy": "Stop Strategy",
+      "starting": "Starting",
+      "startStrategy": "Start Strategy"
+    },
+    "activeStrategiesPanel": {
+      "title": "Title",
+      "emptyHint": "Empty Hint",
+      "stop": "Stop"
+    },
+    "recentTrades": {
+      "emptyAll": "Empty All",
+      "emptyPaper": "Empty Paper",
+      "emptyLive": "Empty Live",
+      "empty": "Empty",
+      "filter": "Filter",
+      "filterAll": "Filter All",
+      "filterPaper": "Filter Paper",
+      "filterLive": "Filter Live",
+      "time": "Time",
+      "symbol": "Symbol",
+      "tradeType": "Trade Type",
+      "strategy": "Strategy",
+      "size": "Size",
+      "pnl": "Pnl",
+      "paperShort": "Paper Short",
+      "buy": "Buy",
+      "sell": "Sell",
+      "modePaper": "Mode Paper",
+      "modeLive": "Mode Live"
+    },
+    "performance": {
+      "keepTrading": "Keep Trading",
+      "bestDay": "Best Day",
+      "worstDay": "Worst Day",
+      "avgTrade": "Avg Trade",
+      "maxDrawdown": "Max Drawdown",
+      "dailyHeatmap": "Daily Heatmap",
+      "loss": "Loss",
+      "profit": "Profit"
+    },
+    "automatic": "Automatic",
+    "notFound": "Not Found",
+    "close": "Close",
+    "result": "Result",
+    "overview": "Overview",
+    "type": "Type",
+    "strategy": "Strategy",
+    "totalValue": "Total Value",
+    "paperNotice": "Paper Notice",
+    "whyBuy": "Why Buy",
+    "confidence": "Confidence",
+    "whySell": "Why Sell",
+    "learnMore": "Learn More",
+    "readMore": "Read More",
+    "numbers": "Numbers",
+    "exitPrice": "Exit Price",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "strategyParams": "Strategy Params",
+    "empty": "Empty",
+    "sideBuy": "Side Buy",
+    "sideSell": "Side Sell",
+    "unknownStrategy": "Unknown Strategy",
+    "chips": {
+      "automatic": "Automatic",
+      "signal": "Signal",
+      "confidence": "Confidence"
+    },
+    "charts": {
+      "cash": "Cash",
+      "startTrading": "Start Trading",
+      "allocation": "Allocation",
+      "noAllocation": "No Allocation",
+      "equityCurve": "Equity Curve",
+      "cumulativePnl": "Cumulative Pnl",
+      "noTradesYet": "No Trades Yet"
+    },
+    "tradingModeSelector": {
+      "title": "Title",
+      "paper": {
+        "title": "Title",
+        "description": "Description",
+        "feature1": "Feature",
+        "feature2": "Feature",
+        "feature3": "Feature"
+      },
+      "live": {
+        "title": "Title",
+        "description": "Description",
+        "warning": "Warning",
+        "feature1": "Feature",
+        "feature2": "Feature",
+        "feature3": "Feature"
+      },
+      "locked": {
+        "comingSoon": "Coming Soon",
+        "connectExchange": "Connect Exchange"
+      },
+      "liveWarning": {
+        "title": "Title",
+        "description": "Description"
+      }
+    },
+    "shares": "Shares",
+    "avg": "Avg"
   },
   "wallet": {
     "title": "Wallet",
@@ -4145,7 +5400,9 @@
     "copyRequiresSubscription": "Copy trading requires a paid subscription",
     "followLimitReached": "You can follow max {limit} traders at your level",
     "couldNotCopy": "Could not copy trader",
-    "nowCopying": "You are now copying {name}!"
+    "nowCopying": "You are now copying {name}!",
+    "copy": "Copy",
+    "winRate": "Win Rate"
   },
   "pnlBreakdown": {
     "title": "Understanding your results",
@@ -4297,6 +5554,44 @@
       "wallet": "Wallet",
       "settings": "Settings",
       "notifications": "Notifications"
-    }
+    },
+    "loading": "Loading",
+    "loadingProfile": "Loading Profile",
+    "profile": "Profile",
+    "noProfileFound": "No Profile Found",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Full Name Placeholder",
+    "avatar": "Avatar",
+    "avatarPlaceholder": "Avatar Placeholder",
+    "riskLevel": "Risk Level",
+    "riskOptions": {
+      "safe": "Safe",
+      "normal": "Normal",
+      "advanced": "Advanced"
+    },
+    "savingProfile": "Saving Profile",
+    "saveProfile": "Save Profile",
+    "myProfile": "My Profile",
+    "streakDescription": "Streak Description",
+    "yourSubscription": "Your Subscription",
+    "includedInSubscription": "Included In Subscription",
+    "badges": "Badges",
+    "noBadgesYet": "No Badges Yet",
+    "settings": "Settings",
+    "namePlaceholder": "Name Placeholder",
+    "avatarUrlPlaceholder": "Avatar Url Placeholder",
+    "deleteProfile": "Delete Profile"
+  },
+  "AdminSessions": {
+    "unknownError": "Unknown Error",
+    "confirmStopBot": "Confirm Stop Bot",
+    "searchSessions": "Search Sessions",
+    "allStatuses": "All Statuses",
+    "statusActive": "Status Active",
+    "statusStopped": "Status Stopped",
+    "statusCrashed": "Status Crashed",
+    "statusPaused": "Status Paused",
+    "unknown": "Unknown",
+    "stop": "Stop"
   }
 }
