@@ -129,6 +129,7 @@ const commonGlobals = {
   TextDecoder: "readonly",
   AbortController: "readonly",
   AbortSignal: "readonly",
+  DOMException: "readonly",
   // Crypto
   crypto: "readonly",
   Crypto: "readonly",

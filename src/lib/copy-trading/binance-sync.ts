@@ -50,21 +50,28 @@ export async function fetchBinanceLeaderboardRaw(
 ): Promise<BinanceLeaderboardEntry[]> {
   const url = `${BINANCE_FAPI}/fapi/v1/leaderboard?period=${period}&tradeType=PERPETUAL&isIsolated=false&isShared=false&limit=${limit}`;
 
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    next: { revalidate: 300 },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 300 },
+      signal: controller.signal,
+    });
 
-  if (!res.ok) {
-    throw new Error(`Binance leaderboard API error: ${res.status}`);
+    if (!res.ok) {
+      throw new Error(`Binance leaderboard API error: ${res.status}`);
+    }
+
+    const json = (await res.json()) as { data?: unknown };
+    if (!json.data || !Array.isArray(json.data)) {
+      throw new Error("Invalid Binance leaderboard response");
+    }
+
+    return json.data as BinanceLeaderboardEntry[];
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const json = (await res.json()) as { data?: unknown };
-  if (!json.data || !Array.isArray(json.data)) {
-    throw new Error("Invalid Binance leaderboard response");
-  }
-
-  return json.data as BinanceLeaderboardEntry[];
 }
 
 /**
@@ -75,17 +82,24 @@ export async function fetchBinanceTraderPositions(
 ): Promise<BinancePosition[]> {
   const url = `${BINANCE_FAPI}/fapi/v1/leaderboardPosition?encryptedUid=${encryptedUid}&tradeType=PERPETUAL`;
 
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    next: { revalidate: 120 },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 120 },
+      signal: controller.signal,
+    });
 
-  if (!res.ok) {
-    throw new Error(`Binance positions API error: ${res.status}`);
+    if (!res.ok) {
+      throw new Error(`Binance positions API error: ${res.status}`);
+    }
+
+    const json = (await res.json()) as { data?: unknown };
+    return (json.data || []) as BinancePosition[];
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const json = (await res.json()) as { data?: unknown };
-  return (json.data || []) as BinancePosition[];
 }
 
 /**
