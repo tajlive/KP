@@ -89,6 +89,14 @@ async function main() {
     testUsers = Object.entries(VERIFIED_USERS).map(([email, id]) => ({ id, email }));
   }
   if (testUsers.length !== 10) throw new Error(`Forventet 10 testbrukere, fant ${testUsers.length}`);
+
+  // Idempotens: hopp over brukere som allerede har fått cron-trade siste 45 min (denne kjøringen)
+  const since = new Date(Date.now() - 45*60e3).toISOString();
+  const { data: recent } = await supabase.from('trades').select('user_id').eq('idempotency_scope','auto_trading_cron').gte('created_at', since);
+  const doneSet = new Set((recent||[]).map(r => r.user_id));
+  testUsers = testUsers.filter(u => !doneSet.has(u.id));
+  console.log(`Gjenstår ${testUsers.length} brukere uten trade i denne kjøringen`);
+  if (testUsers.length === 0) { console.log('INGENTING Å GJØRE – alle brukere allerede tradet'); return; }
   console.log(`Fant ${testUsers.length} testbrukere`);
 
   const userIds = testUsers.map(u => u.id);
@@ -124,13 +132,21 @@ async function main() {
     const fee = r2(totalValue * 0.001);
     const realizedPnl = profitable ? r2(rand(50, 800)) : r2(rand(-750, -40));
 
-    // Ny session per trade (samme mønster som tidligere kjøringer)
-    const { data: session, error: sErr } = await supabase.from('trading_sessions').insert({
-      user_id: user.id, mode: 'paper', status: 'active', trading_pair: PAIRS[symbol],
-      strategy_id: 'dca', current_capital: account.current_balance, initial_capital: account.initial_balance,
-      current_capital_nok: account.current_balance, starting_capital_nok: account.current_balance,
-    }).select('id').single();
-    if (sErr) throw sErr;
+    // Gjenbruk aktiv session hvis den finnes (unik indeks på user+pair+strategi)
+    let session, createdSession = false;
+    const { data: existing } = await supabase.from('trading_sessions').select('id')
+      .eq('user_id', user.id).eq('trading_pair', PAIRS[symbol]).eq('strategy_id', 'dca').eq('status', 'active').limit(1).maybeSingle();
+    if (existing) {
+      session = existing;
+    } else {
+      const { data: ns, error: sErr } = await supabase.from('trading_sessions').insert({
+        user_id: user.id, mode: 'paper', status: 'active', trading_pair: PAIRS[symbol],
+        strategy_id: 'dca', current_capital: account.current_balance, initial_capital: account.initial_balance,
+        current_capital_nok: account.current_balance, starting_capital_nok: account.current_balance,
+      }).select('id').single();
+      if (sErr) throw sErr;
+      session = ns; createdSession = true;
+    }
 
     const { error: tErr } = await supabase.from('trades').insert({
       id: randomUUID(), session_id: session.id, user_id: user.id, mode: 'paper',
@@ -153,7 +169,7 @@ async function main() {
     }).eq('id', account.id);
     if (pErr) throw pErr;
 
-    await supabase.from('trading_sessions').update({
+    if (createdSession) await supabase.from('trading_sessions').update({
       status: 'stopped', stopped_at: now, total_trades: 1,
       winning_trades: profitable ? 1 : 0, losing_trades: profitable ? 0 : 1, total_pnl: realizedPnl,
     }).eq('id', session.id);

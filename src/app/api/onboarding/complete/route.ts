@@ -16,6 +16,8 @@ import {
 import { trackCriticalAction } from "@/lib/sentry";
 
 export async function POST(request: NextRequest) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const requestId = getOrCreateRequestId(request);
   try {
     const response = NextResponse.next();
@@ -100,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     // Send velkomst-e-post (ikke-blokkerende)
     try {
-      await fetch("/api/notifications/welcome", {
+      await fetch("/api/notifications/welcome", , { signal: controller.signal }
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

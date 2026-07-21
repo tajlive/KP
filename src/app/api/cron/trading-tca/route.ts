@@ -16,6 +16,8 @@ const SLIPPAGE_ALERT_BPS = 20;
 const COST_ALERT_PCT = 0.15; // 0.15% of volume
 
 export async function GET(req: Request) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -33,7 +35,7 @@ export async function GET(req: Request) {
     }
 
     if (alerts.length > 0 && process.env.SLACK_WEBHOOK) {
-      await fetch(process.env.SLACK_WEBHOOK, {
+      await fetch(process.env.SLACK_WEBHOOK, , { signal: controller.signal }
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({

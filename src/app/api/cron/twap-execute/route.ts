@@ -14,6 +14,7 @@ async function fetchPrice(symbol: string): Promise<number> {
   if (symbol === "USDT") return 1.0;
   try {
     const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}USDT`);
+  clearTimeout(timeoutId);
     if (!res.ok) return 0;
     const data = await res.json();
     return parseFloat(data.price);
@@ -23,6 +24,8 @@ async function fetchPrice(symbol: string): Promise<number> {
 }
 
 export async function POST(req: NextRequest) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     if (!validateCronSecret(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

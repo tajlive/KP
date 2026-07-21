@@ -26,11 +26,13 @@ interface LiveEvent {
 
 /** GET /api/live/feed?limit=20 */
 export async function GET(request: Request) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   const { searchParams } = new URL(request.url);
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
 
   try {
-    const res = await fetch(
+    const res = await fetch, { signal: controller.signal }
       `${supabaseUrl}/rest/v1/live_events?select=*&order=created_at.desc&limit=${limit}`,
       {
         headers: {
