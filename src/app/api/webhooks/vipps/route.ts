@@ -16,27 +16,27 @@ async function getVippsAccessToken(): Promise<string> {
   const clientId = process.env.VIPPS_CLIENT_ID;
   const clientSecret = process.env.VIPPS_CLIENT_SECRET;
   const subscriptionKey = process.env.VIPPS_SUBSCRIPTION_KEY;
-
   if (!clientId || !clientSecret || !subscriptionKey) {
     throw new Error("Missing Vipps credentials");
   }
-
-  const res = await fetch("https://api.vipps.no/accesstoken/get", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "client_id": clientId,
-      "client_secret": clientSecret,
-      "Ocp-Apim-Subscription-Key": subscriptionKey,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Vipps auth failed: ${res.status}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch("https://api.vipps.no/accesstoken/get", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "client_id": clientId,
+        "client_secret": clientSecret,
+        "Ocp-Apim-Subscription-Key": subscriptionKey,
+      },
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`Vipps auth failed: ${res.status}`);
+    return (await res.json()).access_token;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const data = await res.json();
-  return data.access_token;
 }
 
 export async function POST(request: NextRequest) {

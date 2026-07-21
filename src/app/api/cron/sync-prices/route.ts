@@ -48,12 +48,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
     const encodedSymbols = encodeURIComponent(JSON.stringify(TRACKED_SYMBOLS));
     const supabase = await createClient() as SupabaseClient<Database>;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const proxySecret = process.env.BINANCE_PROXY_SECRET;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     // Try via Supabase Edge Function proxy first (unngår Cloudflare IP-blokk)
     if (supabaseUrl && proxySecret && anonKey) {
@@ -61,10 +66,11 @@ export async function GET(request: NextRequest) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${anonKey}`,
+          "Authorization": `Bearer ${anonKey}`,
           "x-binance-proxy-secret": proxySecret,
           apikey: anonKey,
         },
+        signal: controller.signal,
         body: JSON.stringify({
           action: "publicApi",
           publicApiPath: `/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
@@ -75,6 +81,7 @@ export async function GET(request: NextRequest) {
         const proxyData = await proxyRes.json();
         if (proxyData.ok && Array.isArray(proxyData.data)) {
           await upsertPrices(supabase, proxyData.data as BinanceTicker[]);
+          clearTimeout(timeoutId);
           return NextResponse.json({
             success: true,
             updated: proxyData.data.length,
@@ -88,7 +95,7 @@ export async function GET(request: NextRequest) {
     // Fallback: direct Binance API
     const response = await fetch(
       `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
-      { next: { revalidate: 0 } },
+      { signal: controller.signal },
     );
 
     if (!response.ok) {
@@ -97,6 +104,7 @@ export async function GET(request: NextRequest) {
 
     const tickers: BinanceTicker[] = await response.json();
     await upsertPrices(supabase, tickers);
+    clearTimeout(timeoutId);
 
     return NextResponse.json({
       success: true,
@@ -104,6 +112,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error("Sync prices error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },

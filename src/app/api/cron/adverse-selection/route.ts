@@ -15,13 +15,18 @@ export async function GET(req: Request) {
     const adverse = await calculateAdverseSelection(supabase, 24);
 
     if (adverse.overall.alertTriggered && process.env.SLACK_WEBHOOK) {
-      await fetch(process.env.SLACK_WEBHOOK, {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({
-          text: `🚨 *Adverse Selection Alert* — ${adverse.overall.adverseSelectionPct.toFixed(1)}% adverse (${adverse.overall.toxicFlowScore.toFixed(0)}/100 toxic)\n\nWorst symbols:\n${adverse.bySymbol.slice(0, 3).map(s => `- ${s.symbol}: ${s.adversePct.toFixed(1)}% adverse`).join("\n")}`,
-        }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      try {
+        await fetch(process.env.SLACK_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ text: `🚨 *Adverse Selection Alert* — ${adverse.overall.adverseSelectionPct.toFixed(1)}% adverse` }),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
     }
 
     return NextResponse.json(adverse);
