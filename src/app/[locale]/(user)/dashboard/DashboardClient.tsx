@@ -4,11 +4,25 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/DashboardContent";
-import { getSupabaseClient } from "@/lib/supabase/client";
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
 interface DashboardClientProps {
   locale: string;
+}
+
+interface ProfileResponse {
+  ok: boolean;
+  profile?: {
+    id: string;
+    display_name: string | null;
+    paper_balance: number;
+    tier: string | null;
+    preferred_trading_mode: string | null;
+    onboarding_completed: boolean | null;
+    created_at: string | null;
+    is_priority: boolean | null;
+  };
+  error?: string;
 }
 
 export default function DashboardClient({ locale }: DashboardClientProps) {
@@ -41,18 +55,20 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
           if (!cancelled) setState(s => ({ ...s, loading: false, error: "Tidsavbrudd — prøv igjen" }));
         }, 15000);
 
-        const supabase = getSupabaseClient();
+        // Fetch profile via API (timeout-safe)
+        const profileRes = await fetch(`/api/user/profile?userId=${user.id}`);
+        const profileData: ProfileResponse = await profileRes.json();
 
-        // Fetch profile
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, display_name, created_at, is_priority")
-          .eq("id", user.id)
-          .single();
+        if (!profileData.ok || !profileData.profile) {
+          clearTimeout(timeout);
+          if (!cancelled) setState(s => ({ ...s, loading: false, error: profileData.error || "Kunne ikke laste profil" }));
+          return;
+        }
 
-        const preferredTradingMode = profile?.preferred_trading_mode === "live" ? "live" : "paper";
+        const profile = profileData.profile;
+        const preferredTradingMode = profile.preferred_trading_mode === "live" ? "live" : "paper";
 
-        // Fetch metrics via API (unngår server-only imports i client)
+        // Fetch metrics via API
         const metricsRes = await fetch(`/api/dashboard/metrics?userId=${user.id}&mode=${preferredTradingMode}`);
         const metrics = metricsRes.ok ? await metricsRes.json() : null;
 
@@ -62,15 +78,15 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
           setState({
             loading: false,
             userId: user.id,
-            userName: profile?.display_name ?? "",
+            userName: profile.display_name ?? "",
             preferredTradingMode,
-            onboardingCompleted: profile?.onboarding_completed ?? false,
-            signupDays: profile?.created_at
+            onboardingCompleted: profile.onboarding_completed ?? false,
+            signupDays: profile.created_at
               ? Math.max(1, Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24)))
               : 1,
             cmsData: null,
             metrics,
-            isPriority: profile?.is_priority ?? false,
+            isPriority: profile.is_priority ?? false,
           });
         }
       } catch (e) {
