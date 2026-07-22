@@ -417,6 +417,21 @@ const eslintConfig = [
   // Override for test-filer
   {
     files: ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+    languageOptions: {
+      globals: {
+        describe: "readonly",
+        it: "readonly",
+        test: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        afterAll: "readonly",
+        vi: "readonly",
+        vitest: "readonly",
+        assert: "readonly",
+      },
+    },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "no-console": "off",

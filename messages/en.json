@@ -1649,7 +1649,9 @@
       "mode": "Mode",
       "breadcrumbYouAreHere": "You are here",
       "profile": "Profile",
-      "jokerTrade": "JokerTrade"
+      "jokerTrade": "JokerTrade",
+      "analysis": "Analysis",
+      "market": "Market"
     },
     "learningPath": {
       "title": "Learning Path",
@@ -1681,7 +1683,7 @@
       "subtitle": "+200 KLT",
       "description": "Keep trading to earn more rewards.",
       "dismiss": "Dismiss",
-      "stats": "{count} trade(s) completed"
+      "stats": "{count} trades completed"
     },
     "paperToLive": {
       "title": "Paper trading progress",
@@ -1890,7 +1892,15 @@
         "balanceSub": "Available capital",
         "balanceHelp": "Current capital = starting capital + realized PnL. Open positions are not included."
       },
-      "scopeLabel": "Based on active and completed {mode} sessions",
+      "scopeLabel": "Based on active and completed sessions",
+      "chart": {
+        "title": "Your portfolio",
+        "emptyTitle": "No trade history yet",
+        "emptyDesc": "Start your first practice session to see the chart",
+        "errorTitle": "The chart could not be displayed",
+        "errorMessage": "We could not load the portfolio chart right now. Please try again.",
+        "retry": "Refresh"
+      },
       "sessionsTitle": "Your sessions",
       "lastUpdated": "Last updated",
       "seeAll": "See all",
@@ -1974,15 +1984,18 @@
       "return": "Return",
       "leaderboardTitle": "🏆 Leaderboard",
       "leaderboardDesc": "Compare yourself with other traders and climb the ranks.",
-      "leaderboardCta": "View ranking →"
+      "leaderboardCta": "View ranking →",
+      "jokerTradeTitle": "🎭 JokerTrade — the AI trades for you",
+      "jokerTradeDesc": "Let the AI find trade ideas. You choose the amount and approve each trade.",
+      "jokerTradeCta": "Explore JokerTrade →"
     },
     "hero": {
       "paperMode": "Paper Mode",
       "liveMode": "Live Mode",
       "noData": "No Data",
       "latestChange": "Latest Change",
-      "ctaPaper": "Cta Paper",
-      "ctaLive": "Cta Live"
+      "ctaPaper": "Start trading",
+      "ctaLive": "Start live trading"
     },
     "signalPreview": {
       "title": "Title",
@@ -4798,10 +4811,20 @@
       "omegaTooltip": "Omega Tooltip",
       "gainPainRatio": "Gain Pain Ratio",
       "gainPainTooltip": "Gain Pain Tooltip",
-      "scoreTitle": "Score Title",
-      "panelTooltip": "Panel Tooltip",
+      "scoreTitle": "Risk Score",
+      "panelTooltip": "An overall assessment of your portfolio's risk level based on multiple metrics. Higher score = lower risk.",
       "hideDetails": "Hide Details",
-      "showDetails": "Show Details"
+      "showDetails": "Show Details",
+      "scoreDescription": {
+        "low": "Low risk — your portfolio shows solid risk metrics",
+        "moderate": "Moderate risk — your portfolio has room for improvement",
+        "high": "High risk — your portfolio needs attention"
+      },
+      "scoreLabel": {
+        "low": "Low Risk",
+        "moderate": "Moderate Risk",
+        "high": "High Risk"
+      }
     },
     "positionLots": {
       "loading": "Loading",

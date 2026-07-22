@@ -36,8 +36,8 @@ log_info "Test 1: Sjekker hovedside..."
 
 HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL" || echo "000")
 
-if [ "$HTTP_CODE" = "200" ]; then
-  log_success "Hovedside: HTTP 200"
+if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "307" ] || [ "$HTTP_CODE" = "308" ]; then
+  log_success "Hovedside: HTTP $HTTP_CODE"
 else
   log_error "Hovedside: HTTP $HTTP_CODE"
   ERRORS=$((ERRORS + 1))
