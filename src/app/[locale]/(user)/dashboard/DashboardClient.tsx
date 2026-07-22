@@ -97,7 +97,8 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
     };
     load();
     return () => { cancelled = true; };
-  }, [user, authLoading, locale, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading, locale]);
 
   if (authLoading || state.loading) {
     return (
