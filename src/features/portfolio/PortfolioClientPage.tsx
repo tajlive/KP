@@ -46,6 +46,7 @@ export default function PortfolioClientPage() {
       }
     };
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]);
 
   if (authLoading || loading) {
