@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * @deprecated Ingen aktive importers (verifisert 2026-07-22). Canonical
+ * onboarding-flyt er `SpeedOnboarding` (via /onboarding → ClientOnboarding).
+ * `InteractiveOnboardingWizard` lever videre med eget ansvar: strategy-setup
+ * i UnifiedTradingDashboard (KLA-98). Beholdt for bakoverkompatibilitet —
+ * slett når onboardingStore-koblingen er sanert.
+ * Se .hermes/plans/2026-07-22_225030-ny-bruker-reise.md
+ */
 import { useEffect } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { useOnboardingStore } from "@/store/onboardingStore";
