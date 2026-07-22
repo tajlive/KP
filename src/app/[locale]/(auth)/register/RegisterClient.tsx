@@ -88,7 +88,10 @@ export default function RegisterPage() {
             description: t("pages.register.confirmationSent"),
           }}
         >
-          <div className="text-center">
+          <div className="text-center space-y-3">
+            <p className="text-sm text-slate-400">
+              {t("pages.register.paperCreditsAwait")}
+            </p>
             <Link
               href={`/${locale}/login`}
               className="text-blue-400 hover:text-blue-300"

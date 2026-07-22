@@ -26,6 +26,7 @@ import {
   reportTradingIntegrityPollFailure,
 } from "@/lib/sentry";
 import { tradesPollIntervalAfterFailures } from "@/lib/trading/trading-integrity-sync";
+import { trackOnboardingStep } from "@/lib/analytics/onboarding-events";
 import { meTradesSuccessSchema } from "@/lib/trading/me-trades-api";
 import {
   matchesModeFilter,
@@ -59,6 +60,13 @@ export default function ClientHandelshistorikk() {
     [pollCycleFailures],
   );
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  // OnboardingChecklist-punkt 3: marker at brukeren har sett historikken.
+  // Flagg leses av useOnboardingState på dashboard.
+  useEffect(() => {
+    window.localStorage.setItem("kp_history_viewed", "1");
+    trackOnboardingStep("history_viewed");
+  }, []);
 
   const formatRejectionReason = useCallback(
     (code: string | null | undefined): string | null => {
