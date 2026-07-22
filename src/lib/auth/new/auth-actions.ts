@@ -62,7 +62,8 @@ export async function signUpWithEmail(formData: FormData) {
   if (data?.user?.id && username) {
     const { error: profileError } = await supabase
       .from("user_profiles")
-      .upsert({ id: data.user.id, username }, { onConflict: "id" });
+      // Insert krever id (NOT NULL); user_id er PK. Samme mønster som trading/sessions/route.ts
+      .upsert({ id: data.user.id, user_id: data.user.id, username });
 
     if (profileError) {
       console.warn("[signUpWithEmail] Username save failed:", profileError.message);

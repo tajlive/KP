@@ -65,13 +65,6 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ["auth"],
   },
   {
-    key: "market",
-    href: "/marked",
-    labelKey: "navigation.market",
-    icon: "Globe",
-    roles: ["auth"],
-  },
-  {
     key: "trade",
     href: "/trade",
     labelKey: "dashboard.sidebar.trade",
@@ -79,10 +72,10 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ["auth"],
   },
   {
-    key: "jokerTrade",
-    href: "/jokertrade",
-    labelKey: "navigation.jokerTrade",
-    icon: "Zap",
+    key: "autoTrade",
+    href: "/dashboard/auto-trade",
+    labelKey: "dashboard.sidebar.autoTrade",
+    icon: "Bot",
     roles: ["auth"],
   },
   {
@@ -92,7 +85,7 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     icon: "User",
     roles: ["auth"],
   },
-  // Sekundære flyter beholdes i side-/top-navigasjon
+  // Sekundære flyter beholdes utenfor primærnav
   {
     key: "home",
     href: "/dashboard",
@@ -101,10 +94,10 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ["auth"],
   },
   {
-    key: "autoTrade",
-    href: "/dashboard/auto-trade",
-    labelKey: "dashboard.sidebar.autoTrade",
-    icon: "Bot",
+    key: "market",
+    href: "/marked",
+    labelKey: "navigation.market",
+    icon: "Globe",
     roles: ["auth"],
   },
   {
@@ -119,6 +112,13 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     href: "/kurs",
     labelKey: "navigation.courses",
     icon: "BookOpen",
+    roles: ["auth"],
+  },
+  {
+    key: "jokerTrade",
+    href: "/jokertrade",
+    labelKey: "navigation.jokerTrade",
+    icon: "Zap",
     roles: ["auth"],
   },
 ];
@@ -148,21 +148,21 @@ export const ADMIN_NAV_CONFIG: NavItem[] = [
   },
 ];
 
-/** Mobil-bottom-tabs — fire kjerneflyter. */
+/** Mobil-bottom-tabs — fire kjerneflyter (mobil er primærflaten). */
 export const MOBILE_BOTTOM_TABS: NavItem[] = [
+  {
+    key: "home",
+    href: "/dashboard",
+    labelKey: "navigation.home",
+    icon: "Home",
+    roles: ["auth"],
+    mobileOnly: true,
+  },
   {
     key: "portfolio",
     href: "/dashboard/portfolio",
     labelKey: "navigation.portfolio",
     icon: "PieChart",
-    roles: ["auth"],
-    mobileOnly: true,
-  },
-  {
-    key: "market",
-    href: "/marked",
-    labelKey: "navigation.market",
-    icon: "Globe",
     roles: ["auth"],
     mobileOnly: true,
   },
@@ -233,7 +233,9 @@ export type DashboardSidebarLabelKey =
   | "admin"
   | "referral"
   | "taxReport"
-  | "jokerTrade";
+  | "jokerTrade"
+  | "analysis"
+  | "market";
 
 export type DashboardMainNavItem = {
   href: string;
@@ -267,21 +269,28 @@ export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
 
 export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
-  { href: "/trade", labelKey: "trade" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
-  { href: "/dashboard/autopilot", labelKey: "autoTrade" },
+  { href: "/trade", labelKey: "trade" },
+  { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
 ];
 
 export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
-  { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
+  { href: "/trade", labelKey: "trade" },
+  { href: "/profile", labelKey: "profile" },
 ];
 
 /** Ekstra sider tilgjengelig via "Mer" dropdown i TopNav */
 export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
-  { href: "/dashboard/referral", labelKey: "referral" },
+  { href: "/dashboard/historikk", labelKey: "history" },
+  { href: "/dashboard/resultater", labelKey: "results" },
+  { href: "/dashboard/analysis", labelKey: "analysis" },
+  { href: "/marked", labelKey: "market" },
+  { href: "/kurs", labelKey: "learn" },
   { href: "/jokertrade", labelKey: "jokerTrade" },
+  { href: "/dashboard/referral", labelKey: "referral" },
+  { href: "/dashboard/settings", labelKey: "settings" },
 ];
 
 export const dashboardNavigation = {
@@ -343,19 +352,15 @@ export interface NavigationData {
 export const FALLBACK_NAVIGATION: NavigationData = {
   loggedOutLinks: [
     { label: "Lær", path: "/kurs", order: 0 },
-    { label: "Trade", path: "/trade", order: 1 },
-    { label: "Bots", path: "/dashboard/auto-trade", order: 2 },
-    { label: "JokerTrade", path: "/jokertrade", order: 3 },
-    { label: "Priser", path: "/priser", order: 4 },
+    { label: "Priser", path: "/priser", order: 1 },
+    { label: "Om oss", path: "/om-oss", order: 2 },
   ],
   loggedInLinks: [
-    { label: "Dashboard", path: "/dashboard", order: 0 },
+    { label: "Hjem", path: "/dashboard", order: 0 },
     { label: "Portefølje", path: "/dashboard/portfolio", order: 1 },
-    { label: "Trade", path: "/trade", order: 2 },
-    { label: "Bots", path: "/dashboard/auto-trade", order: 3 },
-    { label: "Lær", path: "/kurs", order: 4 },
-    { label: "Priser", path: "/priser", order: 5 },
-    { label: "JokerTrade", path: "/jokertrade", order: 6 },
+    { label: "Handel", path: "/trade", order: 2 },
+    { label: "Auto", path: "/dashboard/auto-trade", order: 3 },
+    { label: "Konto", path: "/profile", order: 4 },
   ],
 };
 
@@ -377,6 +382,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/akademi",
   "/konto",
   "/trade",
+  "/jokertrade",
   "/marked",
   "/leagues",
   "/profile",

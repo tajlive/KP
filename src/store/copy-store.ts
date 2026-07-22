@@ -286,7 +286,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
       follower_id: user.id,
       leader_id: leaderId,
       max_trade_amount: config.maxAllocationNok,
-      scale_factor: config.sizingMode === "proportional" ? 1 : null,
+      scale_factor: config.sizingMode === "proportional" ? 1 : undefined,
       allocation_percent: config.sizingMode === "proportional" ? 100 : 10,
       is_active: true,
     });

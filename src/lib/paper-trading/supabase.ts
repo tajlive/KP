@@ -210,7 +210,7 @@ export async function createTrade(
       price: trade.entry_price,
       total_value: trade.quantity * trade.entry_price,
       fee: 0,
-      status: trade.status === 'OPEN' ? 'pending' : 'executed',
+      status: trade.status === 'OPEN' ? 'pending' : 'filled',
       idempotency_key: `${Date.now()}-${Math.random()}`,
       executed_at: trade.opened_at,
       mode: 'paper',
@@ -454,7 +454,7 @@ export async function getSimulationStats(simulationId: string) {
     .from('trades')
     .select('*')
     .eq('session_id', simulationId)
-    .eq('status', 'executed');
+    .eq('status', 'filled');
 
   if (error || !trades) return null;
 

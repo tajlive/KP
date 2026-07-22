@@ -45,7 +45,7 @@ export function useProfile() {
       if (fetchError) {
         setProfile(null);
       } else {
-        setProfile(data as Profile);
+        setProfile(data as unknown as Profile);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));

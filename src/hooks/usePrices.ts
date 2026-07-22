@@ -10,6 +10,7 @@
  */
 
 import { binanceWebSocket } from "@/lib/websocket/BinanceWebSocket";
+import { usdtPriceToNok } from "@/lib/market/nok";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { RealtimeChannel } from "@supabase/realtime-js";
@@ -85,13 +86,16 @@ export function usePrices() {
       setPrices((prev) => {
         const next = { ...prev };
         Object.entries(updatedPrices).forEach(([symbol, price]) => {
+          // Binance WebSocket gir USDT-priser, mens coin_prices i DB er NOK.
+          // Normaliser alltid til NOK før state oppdateres.
+          const priceNok = usdtPriceToNok(price);
           if (next[symbol]) {
-            next[symbol] = { ...next[symbol], price };
+            next[symbol] = { ...next[symbol], price: priceNok };
           } else {
             // Create minimal entry if missing
             next[symbol] = {
               symbol,
-              price,
+              price: priceNok,
               created_at: new Date().toISOString(),
               id: "", // Placeholder
               name: symbol.replace("USDT", ""),

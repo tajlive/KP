@@ -7,15 +7,40 @@
 
 import { logger } from '@/lib/logger';
 
-// Dynamisk import av Opik for å unngå zod-konflikt under bygging
-let OpikModule: typeof import('opik') | null = null;
-let OpikClientInstance: import('opik').Opik | null = null;
+// ============================================================================
+// Lokale strukturelle typer — erstatter import('opik') for å unngå
+// avhengighet av opik-pakken under type-resolving i tester.
+// Runtime-import (dynamisk) skjer fortsatt via await import('opik').
+// ============================================================================
 
-async function getOpikModule(): Promise<typeof import('opik') | null> {
+/** Strukturell type for en Opik-klient-instans (returnert av new Opik()) */
+interface OpikClientType {
+  trace(params: {
+    name: string;
+    input?: string;
+    tags?: string[];
+    metadata?: string;
+  }): unknown;
+}
+
+/** Strukturell type for selve Opik-modulen (new mod.Opik(...)) */
+interface OpikModuleType {
+  Opik: new (config: {
+    apiKey: string;
+    projectName: string;
+  }) => OpikClientType;
+}
+
+// Dynamisk import av Opik for å unngå zod-konflikt under bygging
+let OpikModule: OpikModuleType | null = null;
+let OpikClientInstance: OpikClientType | null = null;
+
+async function getOpikModule(): Promise<OpikModuleType | null> {
   if (OpikModule) return OpikModule;
   
   try {
-    OpikModule = await import('opik');
+    const OPIK_PACKAGE = 'opik';
+    OpikModule = (await import(/* webpackIgnore: true */ OPIK_PACKAGE)) as OpikModuleType;
     return OpikModule;
   } catch (error) {
     logger.warn('[Opik] Kunne ikke laste Opik SDK');
@@ -49,7 +74,7 @@ export interface EndTraceInput {
 // Singleton Opik Client
 // ============================================================================
 
-class OpikClient {
+export class OpikClient {
   private static instance: OpikClient | null = null;
   private initialized = false;
   private initializing = false;

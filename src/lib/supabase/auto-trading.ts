@@ -73,7 +73,7 @@ export async function getAutoTradingConfig(
         (data.risk_profile as "conservative" | "moderate" | "aggressive") ||
           "moderate"
       ],
-    max_trade_size_nok: data.max_position_percent * 1000, // Approximate conversion
+    max_trade_size_nok: (data.max_position_percent ?? 0) * 1000, // Approximate conversion
     created_at: data.created_at ?? "",
     updated_at: data.updated_at ?? "",
   };
@@ -123,7 +123,7 @@ export async function upsertAutoTradingConfig(
           (data.risk_profile as "conservative" | "moderate" | "aggressive") ||
             "moderate"
         ],
-      max_trade_size_nok: data.max_position_percent * 1000,
+      max_trade_size_nok: (data.max_position_percent ?? 0) * 1000,
       created_at: data.created_at ?? "",
       updated_at: data.updated_at ?? "",
     };
@@ -163,7 +163,7 @@ export async function upsertAutoTradingConfig(
           (data.risk_profile as "conservative" | "moderate" | "aggressive") ||
             "moderate"
         ],
-      max_trade_size_nok: data.max_position_percent * 1000,
+      max_trade_size_nok: (data.max_position_percent ?? 0) * 1000,
       created_at: data.created_at ?? "",
       updated_at: data.updated_at ?? "",
     };
@@ -226,7 +226,7 @@ export async function getActiveAutoTraders(): Promise<AutoTradingConfig[]> {
         (item.risk_profile as "conservative" | "moderate" | "aggressive") ||
           "moderate"
       ],
-    max_trade_size_nok: item.max_position_percent * 1000,
+    max_trade_size_nok: (item.max_position_percent ?? 0) * 1000,
     created_at: item.created_at ?? "",
     updated_at: item.updated_at ?? "",
   }));
@@ -254,18 +254,20 @@ export async function getRecentTradingSignals(
     throw new Error("Failed to get trading signals");
   }
 
-  // Extract prices from analysis_data where ai-engine stores them,
-  // then batch-fetch any missing prices from Binance
+  // Extract prices from adjustments where ai-engine stores them,
+  // then batch-fetch any missing prices from Binance.
+  // ai_decision_log-kolonner: adjustments(Json), sentiment_classification,
+  // sentiment_value, explanation — symbol ligger i adjustments-json.
   const signals = (data || []).map((item: Tables<"ai_decision_log">) => {
-    const analysisData = item.analysis_data as Record<string, unknown> | null;
+    const analysisData = item.adjustments as Record<string, unknown> | null;
     const storedPrice = analysisData?.current_price as number | undefined;
     return {
       id: item.id,
-      symbol: item.symbol,
-      action: item.decision_type.toLowerCase() as "buy" | "sell",
-      confidence: item.sentiment_score ?? 0,
+      symbol: (analysisData?.symbol as string | undefined) ?? "UNKNOWN",
+      action: String(item.sentiment_classification ?? "hold").toLowerCase() as "buy" | "sell",
+      confidence: item.sentiment_value ?? 0,
       price: storedPrice ?? 0,
-      reasoning: item.decision_reason || "",
+      reasoning: item.explanation || "",
       created_at: item.created_at ?? "",
     };
   });

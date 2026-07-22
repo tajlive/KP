@@ -116,6 +116,7 @@ import type { StrategyEngine } from '@/lib/trading/strategies';
 import { createBinanceMarketDataProvider } from '@/lib/trading/canonical/market-data';
 import { getUsdtToNokRate } from '@/lib/trading/currency';
 import { computeFill } from '@/lib/trading/canonical/execution/fill-model';
+import { FILL_CONSTANTS } from '@/lib/trading/canonical/execution/fill-constants';
 import { roundToLotSize } from '@/lib/trading/canonical/symbols/lot-sizes';
 import {
   createLedger,
@@ -222,10 +223,10 @@ export const STRATEGY_METHODOLOGY: Record<StrategyType, Methodology> = {
   },
 };
 
-// Kanoniske backtest-parametere — samme som src/lib/trading/backtestEngine.ts
-const FEE_RATE = 0.001;
-const MARKET_SLIPPAGE_RATE = 0.0005;
-const MIN_ORDER_VALUE_USDT = 10;
+// Kanoniske backtest-parametere — fra canonical FILL_CONSTANTS
+const FEE_RATE = FILL_CONSTANTS.feeRate;
+const MARKET_SLIPPAGE_RATE = FILL_CONSTANTS.marketSlippageRate;
+const MIN_ORDER_VALUE_USDT = FILL_CONSTANTS.minOrderValue;
 
 const marketDataProvider = createBinanceMarketDataProvider();
 
@@ -418,8 +419,8 @@ function runBacktestWithSharedStrategies(
   const symbol = options?.symbol ?? 'BTCUSDT';
   const maxPositionPct = options?.maxPositionPct ?? 1.0;
   const feeRate = options?.feeRate ?? FEE_RATE;
-  // options.slippagePct er i prosent (default 0.05 => 0.0005 rate)
-  const marketSlippageRate = (options?.slippagePct ?? 0.05) / 100;
+  // options.slippagePct er i prosent (default 0.2 => 0.002 rate)
+  const marketSlippageRate = (options?.slippagePct ?? 0.2) / 100;
 
   // Resolve strategy from shared registry
   const strategyKey = STRATEGY_KEY_MAP[strategyType];
@@ -944,7 +945,7 @@ function runBacktestLegacy(
   const symbol = options?.symbol ?? 'BTCUSDT';
   const maxPositionPct = options?.maxPositionPct ?? 1.0;
   const feeRate = options?.feeRate ?? FEE_RATE;
-  const marketSlippageRate = (options?.slippagePct ?? 0.05) / 100;
+  const marketSlippageRate = (options?.slippagePct ?? 0.2) / 100;
 
   const rawProfile = buildRawRiskProfile(options, 'ENSEMBLE_AI', symbol);
   const limits = resolveRiskLimits('paper', rawProfile);

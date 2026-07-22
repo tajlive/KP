@@ -61,16 +61,14 @@ export async function getDashboardMetrics(
       .gte("last_sign_in_at", weekAgo.toISOString()); // Using last_sign_in_at as proxy for active
 
     // 3. Calculate MRR (Monthly Recurring Revenue)
-    // Assuming 'subscriptions' table has 'amount' and 'status'
+    // TODO: subscriptions har ikke amount-kolonne — regn ut fra tier_slug/pris når prismodell er på plass
     const { data: subscriptions } = await supabase
       .from("subscriptions")
-      .select("amount")
+      .select("status")
       .eq("status", "active");
 
-    const mrr = (subscriptions || []).reduce(
-      (sum, sub) => sum + (sub.amount || 0),
-      0,
-    );
+    // MRR er 0 inntil amount-kolonne legges til i subscriptions
+    const mrr = 0;
 
     // 4. Conversion Rate (Page View -> Signup)
     // Simplification: Total Users / Total 'page_view' in funnel (if exists)

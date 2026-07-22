@@ -364,7 +364,7 @@ export async function getSentimentMetrics(): Promise<{
     const { count: blockedCount } = await supabase
       .from('ai_decision_log')
       .select('*', { count: 'exact', head: true })
-      .eq('decision_type', 'SENTIMENT_BLOCK')
+      .eq('sentiment_classification', 'SENTIMENT_BLOCK')
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
     return {

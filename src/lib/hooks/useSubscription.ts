@@ -64,7 +64,8 @@ export function useSubscription() {
     fetchSubscription();
   }, []);
 
-  const currentTier = (subscription?.tier_slug ?? 'student') as TierSlug;
+  const rawTier = (subscription?.tier_slug ?? 'student') as TierSlug;
+  const currentTier = (rawTier in TIERS ? rawTier : 'student') as TierSlug;
 
   function hasAccess(minTier: TierSlug): boolean {
     return TIER_ORDER.indexOf(currentTier) >= TIER_ORDER.indexOf(minTier);

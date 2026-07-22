@@ -303,7 +303,7 @@ export async function getOpenTrades(
     .from("trades") // ← var: auto_trading_trades
     .select("*")
     .eq("session_id", sessionId)
-    .eq("status", "OPEN")
+    .eq("status", "filled") // "OPEN" finnes ikke i status-enum
     .order("opened_at", { ascending: false });
 
   if (error) {

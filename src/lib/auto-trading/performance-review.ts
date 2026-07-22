@@ -132,7 +132,7 @@ export async function generateWeeklyReview(
       .from("trading_sessions")
       .select("id")
       .eq("user_id", userId)
-      .eq("status", "ACTIVE")
+      .eq("status", "active")
       .single();
 
     if (session) activeSessionId = session.id;
@@ -847,7 +847,7 @@ export async function runWeeklyReviews(): Promise<{
   const { data: activeSessions, error } = await supabase
     .from("trading_sessions")
     .select("user_id, id")
-    .eq("status", "ACTIVE");
+    .eq("status", "active");
 
   if (error) {
     return { processed: 0, issues: [error.message] };

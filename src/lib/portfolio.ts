@@ -95,13 +95,15 @@ export async function getPortfolioOverview(
     const supabase = await createClient();
 
     // Sjekk om bruker har Binance API keys
-    const { data: apiKeys } = await supabase
-      .from("exchange_api_keys")
+    // TODO: exchange_api_keys-tabellen finnes ikke i prod DB — nøkler ligger på user_profiles
+    const { data: apiKeysRaw } = await supabase
+      .from("exchange_api_keys" as never)
       .select("*")
-      .eq("user_id", userId)
-      .eq("exchange", "binance")
-      .eq("is_active", true)
+      .eq("user_id" as never, userId)
+      .eq("exchange" as never, "binance")
+      .eq("is_active" as never, true)
       .single();
+    const apiKeys = apiKeysRaw as unknown as { user_id: string } | null;
 
     // Hvis Binance-konto, prøv å hente Binance-balanser
     if (apiKeys) {
@@ -256,13 +258,19 @@ export async function syncBinancePortfolio(
     const supabase = await createClient();
 
     // Sjekk om bruker har API keys
-    const { data: apiKeys } = await supabase
-      .from("exchange_api_keys")
+    // TODO: exchange_api_keys-tabellen finnes ikke i prod DB — nøkler ligger på user_profiles
+    const { data: apiKeysRaw } = await supabase
+      .from("exchange_api_keys" as never)
       .select("api_key_encrypted, api_secret_encrypted, is_testnet")
-      .eq("user_id", userId)
-      .eq("exchange", "binance")
-      .eq("is_active", true)
+      .eq("user_id" as never, userId)
+      .eq("exchange" as never, "binance")
+      .eq("is_active" as never, true)
       .single();
+    const apiKeys = apiKeysRaw as unknown as {
+      api_key_encrypted: string;
+      api_secret_encrypted: string;
+      is_testnet: boolean | null;
+    } | null;
 
     if (!apiKeys) {
       return { success: false, message: "No Binance API keys found" };

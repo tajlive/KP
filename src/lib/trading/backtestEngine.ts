@@ -19,6 +19,7 @@ import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
 import { computeFill } from "./canonical/execution/fill-model";
+import { FILL_CONSTANTS } from "./canonical/execution/fill-constants";
 import { roundToLotSize } from "./canonical/symbols/lot-sizes";
 import { getUsdtToNokRate, getUsdtToNokRateAsync } from "./currency";
 import {
@@ -158,12 +159,12 @@ export interface StrategyConfig {
 // KONFIGURASJON
 // ============================================================================
 
-const DEFAULT_FEE_RATE = 0.001; // 0.1% Binance taker fee
+const DEFAULT_FEE_RATE = FILL_CONSTANTS.feeRate;
 
-/** Kanoniske backtest-fill-parametere (samme som paper executor). */
-export const FEE_RATE = 0.001;
-export const MARKET_SLIPPAGE_RATE = 0.0005;
-export const MIN_ORDER_VALUE_USDT = 10;
+/** Kanoniske backtest-fill-parametere (fra canonical FILL_CONSTANTS). */
+export const FEE_RATE = FILL_CONSTANTS.feeRate;
+export const MARKET_SLIPPAGE_RATE = FILL_CONSTANTS.marketSlippageRate;
+export const MIN_ORDER_VALUE_USDT = FILL_CONSTANTS.minOrderValue;
 
 export const STRATEGY_CONFIGS: Record<RiskProfile, StrategyConfig> = {
   konservativ: {

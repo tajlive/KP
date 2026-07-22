@@ -70,28 +70,29 @@ export async function executeBacktest(input: BacktestInput) {
 
   if (strategy === 'ENSEMBLE_AI') {
     const fromDate = new Date(Date.now() - period * 24 * 60 * 60 * 1000).toISOString();
+    // ai_decision_log-kolonner: timestamp, sentiment_classification, sentiment_value, adjustments.
+    // symbol-kolonne finnes ikke — symbol ligger i adjustments-json; filtreres i minnet.
     const { data: logSignals, error: logError } = await supabase
       .from('ai_decision_log')
-      .select('executed_at, decision_type, sentiment_score, analysis_data')
-      .eq('symbol', finalSymbol)
-      .gte('executed_at', fromDate)
-      .order('executed_at', { ascending: true });
+      .select('timestamp, sentiment_classification, sentiment_value, adjustments')
+      .gte('timestamp', fromDate)
+      .order('timestamp', { ascending: true });
 
     if (logError) {
       console.error('[Backtest] ai_decision_log query error:', logError);
     }
 
     const ensembleSignals = (logSignals || []).filter((row) => {
-      const data = row.analysis_data as Record<string, unknown> | null | undefined;
-      return data && data.ensemble === true;
+      const data = row.adjustments as Record<string, unknown> | null | undefined;
+      return data && data.ensemble === true && data.symbol === finalSymbol;
     });
 
     externalSignals = generateSignalsFromLog(
       candles,
       ensembleSignals.map((s) => ({
-        timestamp: s.executed_at ?? new Date().toISOString(),
-        decision_type: s.decision_type,
-        sentiment_score: s.sentiment_score ?? 0,
+        timestamp: s.timestamp ?? new Date().toISOString(),
+        decision_type: s.sentiment_classification,
+        sentiment_score: s.sentiment_value ?? 0,
       }))
     );
   }
