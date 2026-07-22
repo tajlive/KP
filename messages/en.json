@@ -2077,6 +2077,13 @@
       "marginUsed": "Margin Used",
       "totalPnl": "Total Pnl",
       "percentUsed": "Percent Used"
+    },
+    "onboardingChecklist": {
+      "title": "Get started",
+      "accountCreated": "Account created",
+      "firstTrade": "Make your first trade",
+      "seeResult": "See your results",
+      "complete": "You're up and running! Checklist complete."
     }
   },
   "footer": {
