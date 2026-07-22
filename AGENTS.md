@@ -108,7 +108,33 @@ reasoning_effort: max
 ```
 
 - K2.7 Highspeed: gratis via pi OAuth, fungerer med temperature=1
-- K3 weights slippes 27. juli under MIT-lisens → selv-hosting mulig
+- K3 weights slippes 27. juli under Modified MIT — selv-hosting krever ~650 GB–1 TB minne og 64+ GPUer. Ikke aktuelt for oss. Bruk hosted API.
+
+## 🧭 Modellruting & grenser (K3 / K2.7)
+
+### Modellvalg
+| Oppgavetype | Modell |
+|---|---|
+| Arkitektur, multi-fil refaktorering, vanskelig debugging | **K3** |
+| i18n-nøkler, små UI-justeringer, enkle scripts, batch-jobber | **K2.7 Highspeed** (gratis) |
+
+### K3-regler (kjente fallgruver)
+1. **Aldri bytt modell midt i en økt.** K3 er trent på å bevare reasoning-historikk; mid-session switch gir ustabil output. Start ny økt ved modellbytte.
+2. **K3 er overproaktiv.** Den tar egne beslutninger ved tvetydighet. Grensene under er derfor bindende.
+3. **Hallusinasjonsraten er høyere enn K2.** Verifiser alltid med `npm run lint && npm run test:unit` etter endringer.
+4. **Prompt-caching:** cache-treff koster 10× mindre ($0.30 vs $3.00/M input). Unngå å redigere AGENTS.md/.hermes.md midt i tunge økter — det invaliderer cachen.
+5. Reasoning-trace telles som output-tokens ($15/M). Bruk K2.7 til rutinearbeid.
+
+### Grenser (gjelder ALLE agenter)
+- ❌ **Aldri** kjør `npm run deploy` uten eksplisitt samtykke fra Tom
+- ❌ **Aldri** endre DB-migrasjoner, triggere eller RLS-policies uten å vise diff og få godkjenning først
+- ❌ **Aldri** endre Stripe/Vipps-integrasjonen uten eksplisitt oppdrag
+- ⚠️ **Stopp og spør** hvis en endring berører flere enn 10 filer
+- ⚠️ **Stopp og spør** ved tvetydighet om scope — ikke gjett (jf. `48ebef74e` hvor et script manglet kode og måtte reverteres)
+- ✅ Etter hver økt: `npm run lint && npm run test:unit` skal være grønn før commit
+
+### Fallback
+Hvis K3-endepunktet er tregt/nede: bytt til K2.7 Highspeed i **ny økt** (aldri mid-session).
 
 ## 🐛 Kjente issues
 
