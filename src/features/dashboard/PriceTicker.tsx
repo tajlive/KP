@@ -20,7 +20,20 @@ export function PriceTicker() {
         const res = await fetch("/api/market/snapshot");
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
-        if (!cancelled) setPrices(data.assets?.slice(0, 8) ?? []);
+        const assets = Array.isArray(data?.assets) ? data.assets : [];
+        const normalized = assets
+          .slice(0, 8)
+          .map((asset: { symbol?: string; price?: number | string; change24h?: number | string; change24hPct?: number | string }) => {
+            const price = Number(asset?.price);
+            const change24h = Number(asset?.change24h ?? asset?.change24hPct);
+            return {
+              symbol: String(asset?.symbol ?? ""),
+              price: Number.isFinite(price) ? price : 0,
+              change24h: Number.isFinite(change24h) ? change24h : 0,
+            };
+          })
+          .filter((asset: CoinPrice) => asset.symbol.length > 0);
+        if (!cancelled) setPrices(normalized);
       } catch {
         if (!cancelled) setError(true);
       }

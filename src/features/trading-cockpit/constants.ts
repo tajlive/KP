@@ -19,6 +19,7 @@ export const TAB_URL_MAP: Record<CockpitTab, string> = {
   overview: "overview",
   trades: "trades",
   analysis: "analysis",
+  sessions: "sessions",
 };
 
 export const COCKPIT_MODES = ["paper", "live"] as const;

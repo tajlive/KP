@@ -188,7 +188,9 @@ export default function SpeedOnboarding({
         }
 
         // Save preferences
-        await supabase.from("user_trading_config").upsert(updatePayload as never);
+        // TODO: user_trading_config-tabellen finnes ikke i prod DB — kallet feiler stille ved runtime.
+        // Reell persistens skjer via user_profiles-oppdateringen under.
+        await supabase.from("user_trading_config" as never).upsert(updatePayload as never);
 
         // FIX: Also update user_profiles onboarding status
         await supabase

@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
 import { JokerDashboard } from "@/features/trading/JokerDashboard";
+import { formatNOK } from "@/lib/format/currency";
+import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/market/nok";
 
 // ─── Types ───
 type TradeMode = "manual" | "auto" | "joker";
@@ -39,11 +41,11 @@ function LiveTicker() {
       });
     }
     return priceData.length > 0 ? priceData : [
-      { symbol: "BTC", price: 63258, change24h: 2.3 },
-      { symbol: "ETH", price: 22450, change24h: -0.8 },
-      { symbol: "XRP", price: 3.12, change24h: 0.5 },
-      { symbol: "SOL", price: 142.3, change24h: 4.1 },
-      { symbol: "ADA", price: 0.89, change24h: -1.2 },
+      { symbol: "BTC", price: usdtPriceToNok(63258), change24h: 2.3 },
+      { symbol: "ETH", price: usdtPriceToNok(2245), change24h: -0.8 },
+      { symbol: "XRP", price: usdtPriceToNok(3.12), change24h: 0.5 },
+      { symbol: "SOL", price: usdtPriceToNok(142.3), change24h: 4.1 },
+      { symbol: "ADA", price: usdtPriceToNok(0.89), change24h: -1.2 },
     ];
   }, [prices]);
 
@@ -57,7 +59,7 @@ function LiveTicker() {
           >
             <span className="text-slate-400">{t.symbol}</span>
             <span className="text-white font-medium">
-              {t.price.toLocaleString("no")} kr
+              {formatNOK(t.price, { locale: "nb-NO", fractionDigits: t.price > 1000 ? 0 : 2 })}
             </span>
             <span
               className={cn(
@@ -107,122 +109,40 @@ function ModeTabs({ active, onChange }: { active: TradeMode; onChange: (m: Trade
   );
 }
 
-// ─── Candlestick Chart (simple SVG) ───
-function SparklineChart({ className }: { className?: string }) {
-  const [hovered, setHovered] = React.useState<number | null>(null);
+// ─── Price Card (real NOK price instead of fake chart) ───
+function PriceCard({ className }: { className?: string }) {
+  const { prices } = usePrices();
 
-  // Generate fake candle data for visual
-  const candles = React.useMemo(() => {
-    const data: { o: number; h: number; l: number; c: number }[] = [];
-    let price = 63000;
-    for (let i = 0; i < 40; i++) {
-      const open = price;
-      const change = (Math.random() - 0.48) * 1500;
-      const close = open + change;
-      const high = Math.max(open, close) + Math.random() * 500;
-      const low = Math.min(open, close) - Math.random() * 500;
-      data.push({ o: open, h: high, l: low, c: close });
-      price = close;
-    }
-    return data;
-  }, []);
-
-  const w = 800;
-  const h = 280;
-  const pad = { top: 20, right: 16, bottom: 20, left: 0 };
-  const chartW = w - pad.left - pad.right;
-  const chartH = h - pad.top - pad.bottom;
-
-  const allPrices = candles.flatMap((c) => [c.h, c.l]);
-  const min = Math.min(...allPrices);
-  const max = Math.max(...allPrices);
-  const range = max - min || 1;
-
-  const toX = (i: number) => pad.left + (i / (candles.length - 1)) * chartW;
-  const toY = (v: number) => pad.top + chartH - ((v - min) / range) * chartH;
-
-  const candleW = Math.max(1, chartW / candles.length - 2);
-
-  // Simple line for the closing price overlay
-  const linePath = candles
-    .map((c, i) => `${i === 0 ? "M" : "L"} ${toX(i)} ${toY(c.c)}`)
-    .join(" ");
-
-  const latestPrice = candles[candles.length - 1].c;
-  const firstPrice = candles[0].o;
-  const isUp = latestPrice >= firstPrice;
+  const btc = prices["BTCUSDT"] as { price?: number; price_change_percent_24h?: number | null } | undefined;
+  const priceNok = btc?.price ?? usdtPriceToNok(63258);
+  const change24h = btc?.price_change_percent_24h ?? 0;
+  const priceUsdt = nokPriceToUsdt(priceNok);
 
   return (
-    <div className={cn("relative w-full overflow-hidden rounded-xl bg-[#0A0D12] border border-[#1E2530]", className)}>
-      <div className="absolute top-3 left-4 z-10">
-        <div className="text-white text-lg font-bold font-mono">
-          {latestPrice.toLocaleString("no")} <span className="text-sm font-normal text-slate-400">NOK</span>
+    <div className={cn("relative w-full rounded-xl bg-[#0A0D12] border border-[#1E2530] p-4 sm:p-6", className)}>
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">
+            BTC / NOK
+          </div>
+          <div className="text-white text-2xl sm:text-3xl font-bold font-mono">
+            {formatNOK(priceNok, { locale: "nb-NO", fractionDigits: 0 })}
+          </div>
+          <div className={cn(
+            "text-xs font-medium mt-1",
+            Number(change24h) >= 0 ? "text-emerald-400" : "text-red-400",
+          )}>
+            {Number(change24h) >= 0 ? "+" : ""}{change24h}% (24h)
+          </div>
         </div>
-        <div className={cn("text-xs font-medium", isUp ? "text-emerald-400" : "text-red-400")}>
-          {isUp ? "+" : ""}{((latestPrice - firstPrice) / firstPrice * 100).toFixed(2)}%
+        <div className="text-right">
+          <div className="text-[11px] text-slate-500">USDT-kurs</div>
+          <div className="text-white font-mono text-sm">
+            {formatNOK(priceUsdt, { locale: "nb-NO", style: "decimal", fractionDigits: 2 })}
+          </div>
+          <div className="text-[11px] text-slate-500 mt-1">1 USD ≈ {getDisplayUsdtToNokRate()} NOK</div>
         </div>
       </div>
-
-      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
-        {/* Grid lines */}
-        {[0.2, 0.4, 0.6, 0.8].map((pct, i) => (
-          <line
-            key={i}
-            x1={pad.left} y1={toY(min + range * pct)}
-            x2={w - pad.right} y2={toY(min + range * pct)}
-            stroke="#1E2530" strokeWidth="0.5" strokeDasharray="4 4"
-          />
-        ))}
-
-        {/* Area fill */}
-        <defs>
-          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isUp ? "#10B981" : "#EF4444"} stopOpacity="0.15" />
-            <stop offset="100%" stopColor={isUp ? "#10B981" : "#EF4444"} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path
-          d={`${linePath} L ${toX(candles.length - 1)} ${toY(min)} L ${toX(0)} ${toY(min)} Z`}
-          fill="url(#areaGrad)"
-        />
-        <path d={linePath} fill="none" stroke={isUp ? "#10B981" : "#EF4444"} strokeWidth="1.5" />
-
-        {/* Candle wicks */}
-        {candles.map((c, i) => {
-          const x = toX(i);
-          return (
-            <line
-              key={`w${i}`}
-              x1={x} y1={toY(c.l)}
-              x2={x} y2={toY(c.h)}
-              stroke={c.c >= c.o ? "#10B981" : "#EF4444"}
-              strokeWidth="0.8"
-              opacity="0.6"
-            />
-          );
-        })}
-
-        {/* Hover line */}
-        {hovered !== null && (
-          <line
-            x1={toX(hovered)} y1={pad.top}
-            x2={toX(hovered)} y2={h - pad.bottom}
-            stroke="#ffffff" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4"
-          />
-        )}
-      </svg>
-
-      {/* Invisible hover areas */}
-      <div
-        className="absolute inset-0"
-        onMouseMove={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const idx = Math.round((x / rect.width) * (candles.length - 1));
-          setHovered(Math.max(0, Math.min(candles.length - 1, idx)));
-        }}
-        onMouseLeave={() => setHovered(null)}
-      />
     </div>
   );
 }
@@ -236,12 +156,19 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
   const [loading, setLoading] = React.useState(false);
   const [feedback, setFeedback] = React.useState<{ ok: boolean; msg: string } | null>(null);
 
-  const price = React.useMemo(() => {
+  const amountNum = Number(amount);
+  const amountError = amountNum <= 0 ? "Beløpet må være større enn 0" : "";
+
+  const priceNok = React.useMemo(() => {
     const btc = prices["BTCUSDT"] as { price?: number } | undefined;
-    return btc?.price ?? 63258;
+    return btc?.price ?? usdtPriceToNok(63258);
   }, [prices]);
 
   const handleTrade = async () => {
+    if (amountNum <= 0) {
+      setFeedback({ ok: false, msg: "Beløpet må være større enn 0" });
+      return;
+    }
     setLoading(true);
     setFeedback(null);
     try {
@@ -256,8 +183,8 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       });
       const data = await res.json();
       if (data.success) {
-        const qty = (Number(amount) / price).toFixed(6);
-        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} BTC · ${Number(amount).toLocaleString("no")} kr` });
+        const qty = (Number(amount) / priceNok).toFixed(6);
+        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} BTC · ${formatNOK(Number(amount), { locale: "nb-NO" })}` });
         // Send confirmation email
         fetch("/api/email/send", {
           method: "POST",
@@ -323,14 +250,17 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
             placeholder="0.00"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-500 font-mono">
-            ≈ {(Number(amount) / price).toFixed(6)} BTC
+            ≈ {(Number(amount) / priceNok).toFixed(6)} BTC
           </span>
         </div>
+        {amountError && (
+          <p className="text-[11px] text-red-400 mt-1">{amountError}</p>
+        )}
       </div>
 
       {/* Price display */}
       <div className="flex justify-between text-xs text-slate-500">
-        <span>1 BTC = {price.toLocaleString("no")} kr</span>
+        <span>1 BTC = {priceNok.toLocaleString("no")} kr</span>
         <span>Spread: 0.02%</span>
       </div>
 
@@ -455,7 +385,7 @@ export function UnifiedTradeTerminal() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-3">
           {/* Chart column */}
           <div className="space-y-3">
-            <SparklineChart className="h-[280px] sm:h-[380px]" />
+            <PriceCard className="h-[280px] sm:h-[380px]" />
 
             {/* Mode description bar */}
             <motion.div

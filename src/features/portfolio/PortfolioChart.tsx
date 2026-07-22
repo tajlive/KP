@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { m } from "framer-motion";
+import { useTranslations } from "next-intl";
 import {
   AreaChart,
   Area,
@@ -64,6 +65,7 @@ function SkeletonChart() {
 }
 
 export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioChartProps) {
+  const t = useTranslations("dashboard.dashboardPro.chart");
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState("1M");
@@ -91,10 +93,12 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       if (sessionId) {
         sessionQuery = sessionQuery.eq("id", sessionId);
       } else if (userId) {
+        // Alle ikke-arkiverte sesjoner (ikke kun 'active') — ellers forsvinner
+        // handelshistorikken når sesjoner stoppes, og grafen lyver "Ingen handler".
         sessionQuery = sessionQuery
           .eq("user_id", userId)
           .eq("mode", mode)
-          .eq("status", "active")
+          .is("archived", false)
           .order("updated_at", { ascending: false });
       }
 
@@ -106,17 +110,28 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         return;
       }
 
-      // Aggregate capital across ALL active sessions (matches getUserDashboardMetrics)
-      const totalStarting = sessions.reduce(
+      // Anker startkapital til paper_accounts (source of truth for saldo).
+      // Summering av sesjoners startkapital gir meningsløse tall (N × 100k).
+      // NB: kolonnenavn i konstant — i18n-scanneren tolker ellers
+      // enkolonnes-select som et t()-kall (falsk positiv).
+      const ACCOUNT_COLUMNS = "initial_balance";
+      let accountStart: number | null = null;
+      if (userId && mode === "paper" && !sessionId) {
+        const { data: account } = await supabase
+          .from("paper_accounts")
+          .select(ACCOUNT_COLUMNS)
+          .eq("user_id", userId)
+          .maybeSingle();
+        accountStart =
+          account?.initial_balance != null ? Number(account.initial_balance) : null;
+      }
+
+      const fallbackStarting = sessions.reduce(
         (sum, s) => sum + (Number(s.starting_capital_nok) || 0),
         0
       );
-      const totalCurrent = sessions.reduce(
-        (sum, s) => sum + (Number(s.current_capital_nok) || 0),
-        0
-      );
-      setStartingValue(totalStarting || 100000);
-      setCurrentValue(totalCurrent || 100000);
+      const totalStarting = accountStart ?? (fallbackStarting || 100000);
+      setStartingValue(totalStarting);
 
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysBack);
@@ -168,6 +183,8 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       if (chartData.length > 0) {
         const first = chartData[0].value;
         const last = chartData[chartData.length - 1].value;
+        // Header-verdi = siste punkt på kurven (selvkonsistent graf)
+        setCurrentValue(last);
         const change = ((last - first) / first) * 100;
         setChangePercent(change);
       }
@@ -267,10 +284,10 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         transition={{ duration: 0.5 }}
       >
         <p className="text-lg font-medium text-gray-700 dark:text-slate-300">
-          Ingen handelshistorikk ennå
+          {t("emptyTitle")}
         </p>
         <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">
-          Start din første øvingssesjon for å se grafen
+          {t("emptyDesc")}
         </p>
       </m.div>
     );
@@ -278,9 +295,9 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
 
   return (
     <WidgetErrorBoundary
-      title="Grafen kunne ikke vises"
-      message="Vi kunne ikke laste porteføljegrafen akkurat nå. Prøv på nytt."
-      retryLabel="Oppdater"
+      title={t("errorTitle")}
+      message={t("errorMessage")}
+      retryLabel={t("retry")}
       onReset={fetchPortfolioData}
       resetKeys={[selectedPeriod, userId, sessionId]}
     >
@@ -292,7 +309,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       >
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <div>
-            <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">Din portefølje</p>
+            <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">{t("title")}</p>
             <div className="flex items-center gap-3">
               <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(currentValue)}

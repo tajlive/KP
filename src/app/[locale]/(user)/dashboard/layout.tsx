@@ -25,7 +25,6 @@ export default async function DashboardLayout({
   return (
     <DashboardClientLayout
       initialTradingMode="paper"
-      initialUser={null}
     >
       {children}
     </DashboardClientLayout>

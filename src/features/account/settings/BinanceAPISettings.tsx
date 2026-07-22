@@ -64,7 +64,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setApiKeys((data || []) as ApiKey[]);
+      setApiKeys((data || []) as unknown as ApiKey[]);
     } catch (error: unknown) {
       console.error('Error loading API keys:', getErrorMessage(error));
     } finally {
@@ -139,17 +139,18 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
       const { error } = await supabase.from('api_keys').insert({
         user_id: user.id,
         exchange: form.testnet ? 'binance_testnet' : 'binance',
-        label: form.label,
-        api_key: form.apiKey,
-        api_secret: encryptedSecret,
+        // Kolonnemapping mot faktisk DB-skjema: api_key_encrypted/api_secret_encrypted.
+        // label og test_status finnes ikke som kolonner — droppet.
+        api_key_encrypted: form.apiKey,
+        api_secret_encrypted: encryptedSecret,
         is_active: true,
-        last_tested_at: new Date().toISOString(),
-        test_status: 'success',
-        permissions: {
-          spot: accountInfo.permissions?.includes('SPOT') || false,
-          futures: accountInfo.permissions?.includes('FUTURES') || false,
-          margin: accountInfo.permissions?.includes('MARGIN') || false,
-        },
+        is_testnet: form.testnet,
+        last_used_at: new Date().toISOString(),
+        permissions: [
+          accountInfo.permissions?.includes('SPOT') ? 'spot' : null,
+          accountInfo.permissions?.includes('FUTURES') ? 'futures' : null,
+          accountInfo.permissions?.includes('MARGIN') ? 'margin' : null,
+        ].filter((p): p is string => p !== null),
       });
 
       if (error) throw error;

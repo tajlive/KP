@@ -15,6 +15,15 @@ interface NavAuthStateProps {
   navData: NavigationData;
 }
 
+const GUEST_MARKETING_PATHS = new Set(["/kurs", "/priser", "/om-oss"]);
+const AUTH_MARKETING_PATHS = new Set([
+  "/dashboard",
+  "/dashboard/portfolio",
+  "/trade",
+  "/dashboard/auto-trade",
+  "/profile",
+]);
+
 export function NavAuthState({ navData }: NavAuthStateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
@@ -25,8 +34,12 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
   const l = (path: string) => hrefWithLocale(locale, path === "/" ? "/" : path);
 
   const mainLinks = user
-    ? navData.loggedInLinks.map((link) => ({ path: link.path, label: link.label }))
-    : navData.loggedOutLinks.map((link) => ({ path: link.path, label: link.label }));
+    ? navData.loggedInLinks
+        .filter((link) => AUTH_MARKETING_PATHS.has(link.path))
+        .map((link) => ({ path: link.path, label: link.label }))
+    : navData.loggedOutLinks
+        .filter((link) => GUEST_MARKETING_PATHS.has(link.path))
+        .map((link) => ({ path: link.path, label: link.label }));
 
   return (
     <>

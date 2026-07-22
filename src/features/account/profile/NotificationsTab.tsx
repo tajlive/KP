@@ -49,10 +49,12 @@ export function NotificationsTab() {
         .single();
 
       if (data) {
+        // Kolonnemapping mot faktisk DB-skjema:
+        // email_trades→trading_alerts, email_news→marketing_emails, push_trades→push_transactions
         setPrefs({
-          email_trades: data.email_trades ?? true,
-          email_news: data.email_news ?? false,
-          push_trades: data.push_trades ?? true,
+          email_trades: data.trading_alerts ?? true,
+          email_news: data.marketing_emails ?? false,
+          push_trades: data.push_transactions ?? true,
         });
       }
     } catch {
@@ -72,9 +74,10 @@ export function NotificationsTab() {
         .from("notification_preferences")
         .upsert({
           user_id: user.id,
-          email_trades: newPrefs.email_trades,
-          email_news: newPrefs.email_news,
-          push_trades: newPrefs.push_trades,
+          // Kolonnemapping mot faktisk DB-skjema (se loadPrefs)
+          trading_alerts: newPrefs.email_trades,
+          marketing_emails: newPrefs.email_news,
+          push_transactions: newPrefs.push_trades,
           updated_at: new Date().toISOString(),
         }, { onConflict: "user_id" });
 

@@ -207,6 +207,7 @@ function ActiveTraderView({
   onRetry,
   cmsData,
   isPriority,
+  userName,
 }: Omit<AdaptiveDashboardProps, "userState" | "userName"> & { userName?: string | null }) {
   // Delegate to the existing rich DashboardPro for active traders
   return (
@@ -220,6 +221,7 @@ function ActiveTraderView({
       onRetry={onRetry}
       cmsData={cmsData}
       isPriority={isPriority}
+      userName={userName ?? undefined}
     />
   );
 }
@@ -271,7 +273,7 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         </div>
       </m.div>
 
-      {/* JokerTrade CTA */}
+      {/* JokerTrade CTA — sekundær, under folden (progressive disclosure) */}
       <m.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -281,17 +283,17 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         <div className="flex items-center justify-between gap-4">
           <div>
             <h4 className="text-sm font-semibold text-amber-300">
-              🎭 JokerTrade — AI-en trader for deg
+              {t("jokerTradeTitle")}
             </h4>
             <p className="text-xs text-[#9CA3AF] mt-0.5">
-              La AI finne de beste trades. Du bare ser pengene vokse.
+              {t("jokerTradeDesc")}
             </p>
           </div>
           <a
             href={`/${locale}/jokertrade`}
             className="btn-gold text-xs px-3 py-1.5"
           >
-            Prøv JokerTrade →
+            {t("jokerTradeCta")}
           </a>
         </div>
       </m.div>
@@ -351,6 +353,7 @@ export function AdaptiveDashboard({
         >
           <ActiveTraderView
             userId={userId}
+            userName={userName}
             preferredTradingMode={preferredTradingMode}
             stats={stats}
             isLoading={isLoading}
@@ -373,6 +376,7 @@ export function AdaptiveDashboard({
         >
           <PowerUserView
             userId={userId}
+            userName={userName}
             preferredTradingMode={preferredTradingMode}
             stats={stats}
             isLoading={isLoading}

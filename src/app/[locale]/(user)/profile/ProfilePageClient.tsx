@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
@@ -8,6 +8,7 @@ import { ProfileTab } from "@/features/account/profile/ProfileTab";
 import { WalletTab } from "@/features/account/profile/WalletTab";
 import { SettingsTab } from "@/features/account/profile/SettingsTab";
 import { NotificationsTab } from "@/features/account/profile/NotificationsTab";
+import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { User, Wallet, Settings, Bell } from "lucide-react";
 
 type TabValue = "profile" | "wallet" | "settings" | "notifications";
@@ -16,15 +17,57 @@ interface ProfilePageClientProps {
   initialTab?: string;
 }
 
-
 export function ProfilePageClient({ initialTab }: ProfilePageClientProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("profile");
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabValue>(
-    (initialTab as TabValue) || "profile"
+    (initialTab as TabValue) || "profile",
   );
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/user/profile", {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => {
+        if (cancelled) return;
+        if (res.status === 401) {
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(true);
+        }
+        setAuthChecked(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setIsAuthenticated(false);
+        setAuthChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-kp-bg-primary py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-20 text-kp-text-muted">
+            {t("loading")}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginRequired next={`/${locale}/profile`} />;
+  }
 
   const TAB_CONFIG: { value: TabValue; label: string; icon: React.ReactNode }[] = [
     { value: "profile", label: t("tabs.profile"), icon: <User className="w-4 h-4" /> },
@@ -36,7 +79,7 @@ export function ProfilePageClient({ initialTab }: ProfilePageClientProps) {
   const handleTabChange = (value: string) => {
     const tab = value as TabValue;
     setActiveTab(tab);
-    
+
     // Update URL with tab parameter without reloading
     const params = new URLSearchParams(searchParams?.toString() || "");
     params.set("tab", tab);

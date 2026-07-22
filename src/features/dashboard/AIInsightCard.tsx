@@ -167,7 +167,6 @@ export function AIInsightCard() {
                     <p className="text-sm text-red-300">
                       {t("error")}
                     </p>
-                    <p className="text-xs text-red-400/70 mt-0.5">{error}</p>
                   </div>
                   <button
                     onClick={() => fetchInsight(activeTab)}

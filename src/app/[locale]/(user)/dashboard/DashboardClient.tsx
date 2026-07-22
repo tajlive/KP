@@ -69,7 +69,8 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
         // Fetch metrics via API
         const metricsRes = await fetch(`/api/dashboard/metrics?userId=${profile.id}&mode=${preferredTradingMode}`);
-        const metrics = metricsRes.ok ? await metricsRes.json() : null;
+        const metricsJson = metricsRes.ok ? await metricsRes.json() : null;
+        const metrics = metricsJson?.ok ? (metricsJson.data as DashboardMetrics) : null;
 
         clearTimeout(timeout);
 

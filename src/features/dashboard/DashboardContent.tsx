@@ -107,6 +107,23 @@ export function DashboardContent({
         currentCapital: data.totalCapital,
         startingCapital: data.startingCapital,
         winningTrades: data.winningTrades,
+        sessionCount: data.sessionCount,
+        // DB-rader → PaperTradingList sin TradingSession-type (narrowing + null-guards)
+        recentSessions: (data.recentSessions ?? []).map((s) => ({
+          id: s.id,
+          mode: (s.mode === "live" ? "live" : "paper") as "paper" | "live",
+          status: (["active", "paused", "stopped", "crashed"].includes(s.status)
+            ? s.status
+            : "stopped") as "active" | "paused" | "stopped" | "crashed",
+          trading_pair: s.trading_pair,
+          strategy_id: s.strategy_id,
+          current_capital_nok: s.current_capital_nok ?? 0,
+          starting_capital_nok: s.starting_capital_nok ?? 0,
+          total_pnl: s.total_pnl ?? 0,
+          winning_trades: s.winning_trades ?? 0,
+          total_trades: s.total_trades ?? 0,
+          created_at: s.created_at,
+        })),
       }
     : null;
 

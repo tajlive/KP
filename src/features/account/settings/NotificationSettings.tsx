@@ -82,9 +82,10 @@ export default function NotificationSettings() {
                     .single()
                 
                 if (data && !error) {
+                    // DB-raden har flere kolonner enn NotificationPrefs — cast delvis
                     setPrefs({
                         ...defaultPrefs,
-                        ...data,
+                        ...(data as Partial<NotificationPrefs>),
                     })
                 }
             }

@@ -24,7 +24,6 @@ function CheckoutContent() {
     title: string;
     description: string;
     price_nok: number;
-    is_free: boolean;
   } | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -64,7 +63,8 @@ function CheckoutContent() {
         return;
       }
 
-      if (data.is_free) {
+      // courses table has no is_free column — check price_nok instead
+      if (!data.price_nok || data.price_nok <= 0) {
         setError(t("courseIsFree"));
         return;
       }
@@ -74,7 +74,6 @@ function CheckoutContent() {
         title: (data as { title?: string | null }).title ?? "",
         description: (data as { description?: string | null }).description ?? "",
         price_nok: (data as { price_nok?: number | null }).price_nok ?? 0,
-        is_free: Boolean((data as { is_free?: boolean | null }).is_free),
       });
     } catch (err: unknown) {
       setError(getErrorMessage(err));

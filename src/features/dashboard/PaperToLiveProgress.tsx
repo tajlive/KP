@@ -54,7 +54,7 @@ export function PaperToLiveProgress({
                   {t("title")}
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-slate-400">
-                  {t("progress", { current: totalTrades, target: TARGET_TRADES })}
+                  {t("progress", { current: Math.min(totalTrades, TARGET_TRADES), target: TARGET_TRADES })}
                 </p>
               </div>
             </div>

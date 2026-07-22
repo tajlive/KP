@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
 import { useHaptic } from "@/hooks/use-haptic";
 
-type TabId = "portfolio" | "market" | "trade" | "account";
+type TabId = "home" | "portfolio" | "trade" | "account";
 
 interface Tab {
   id: TabId;
@@ -124,6 +124,7 @@ const CopyFilled = ({ className }: { className?: string }) => (
 
 // Map icon names from nav config to icon components
 const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledIcon: React.FC<{ className?: string }> }> = {
+  Home: { icon: HomeIcon, filledIcon: HomeFilled },
   TrendingUp: { icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
   PieChart: { icon: PieChartIcon, filledIcon: PieChartFilled },
   Globe: { icon: GlobeIcon, filledIcon: GlobeFilled },
@@ -142,6 +143,14 @@ const TABS: Tab[] = MOBILE_BOTTOM_TABS.map(navItem => {
   };
 });
 
+// Match longest href first so "/dashboard/portfolio" treffer Portefølje, ikke Hjem
+const TABS_BY_SPECIFICITY: Tab[] = [...TABS].sort(
+  (a, b) => b.href.length - a.href.length,
+);
+
+const matchesTab = (path: string, fullPath: string): boolean =>
+  path === fullPath || path.startsWith(`${fullPath}/`);
+
 const ACTIVE_COLOR = "var(--kp-brand)";
 const INACTIVE_COLOR = "var(--kp-text-muted)";
 const ACTIVE_GLOW = "var(--kp-brand-glow)";
@@ -155,28 +164,16 @@ export function BottomTabs() {
   // Initialiser activeTab basert på pathname for å unngå hydration mismatch
   // Server og klient må ha samme initial verdi
   const getInitialTab = (): TabId => {
-    // Default til "portfolio" - konsistent for både server og klient
-    return "portfolio";
+    // Default til "home" - konsistent for både server og klient
+    return "home";
   };
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab);
-  
-  // Helper to check if a tab should be active based on current pathname
-  const getActiveTabFromPath = (path: string): TabId => {
-    // Check for exact match or starts with for nested routes
-    for (const tab of TABS) {
-      const fullPath = `/${locale}${tab.href}`;
-      if (path.startsWith(fullPath)) {
-        return tab.id;
-      }
-    }
-    return "portfolio";
-  };
   const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    const currentTab = TABS.find((tab) =>
-      pathname.startsWith(`/${locale}${tab.href}`)
+    const currentTab = TABS_BY_SPECIFICITY.find((tab) =>
+      matchesTab(pathname, `/${locale}${tab.href}`)
     );
 
     if (currentTab) {
