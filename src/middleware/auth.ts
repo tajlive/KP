@@ -102,12 +102,19 @@ async function validateImpersonationSession(
 ): Promise<ImpersonationBanner | null> {
   try {
     const supabase = createClient();
-    const { data: session, error } = await supabase
-      .from("support_impersonation_sessions")
+    // TODO: support_impersonation_sessions finnes ikke i prod DB ennå (migrasjon 20260708000003 ikke kjørt)
+    const { data: sessionRaw, error } = await supabase
+      .from("support_impersonation_sessions" as never)
       .select("id, expires_at, ended_at, revoked_at")
-      .eq("token_jti", decrypted.jti)
-      .eq("target_user_id", decrypted.targetUserId)
+      .eq("token_jti" as never, decrypted.jti)
+      .eq("target_user_id" as never, decrypted.targetUserId)
       .maybeSingle();
+    const session = sessionRaw as unknown as {
+      id: string;
+      expires_at: string;
+      ended_at: string | null;
+      revoked_at: string | null;
+    } | null;
 
     if (error || !session) return null;
     if (session.ended_at || session.revoked_at) return null;

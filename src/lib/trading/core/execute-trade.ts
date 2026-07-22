@@ -25,6 +25,7 @@ import {
 } from "@/lib/trading/safety/risk-validator";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import { computeFill } from "@/lib/trading/canonical/execution/fill-model";
+import { FILL_CONSTANTS } from "@/lib/trading/canonical/execution/fill-constants";
 import { calculatePnlFromTrades, type TradePnlInput } from "@/lib/trading/canonical/pnl/trade-pnl";
 import { acquireTradeLock } from "./distributed-lock";
 import { makeIdempotencyKey, withIdempotency } from "@/lib/trading/idempotency";
@@ -36,11 +37,7 @@ export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
 const PAPER_DEFAULT_CAPITAL = 100000;
 
 /** Estimerte fill-parametere brukt til forhåndsvalidering av kapital/kostnad. */
-export const ESTIMATED_FILL_PARAMS = {
-  feeRate: 0.001, // 0.1%
-  marketSlippageRate: 0.0005, // 0.05%
-  minOrderValue: 10,
-};
+export const ESTIMATED_FILL_PARAMS = FILL_CONSTANTS;
 
 export async function executeTrade(
   supabase: SupabaseClient<Database>,

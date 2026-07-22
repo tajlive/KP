@@ -31,7 +31,7 @@ const NO_STORE_PATHS = [
   "/konto",
   "/leagues",
   // Trading
-  "/handel",
+  "/trade",
   "/autopilot",
   "/marked",
   // Social / commerce

@@ -119,10 +119,10 @@ async function binanceFetch<T>(
 }
 
 const PRICE_CACHE_TTL = 10_000; // 10 sekunder
-const priceCache = new Map<string, { price: number; timestamp: number }>();
 
 export class BinanceMarketDataProvider implements MarketDataProvider {
   private lastEndpointUsed: string | undefined;
+  private priceCache = new Map<string, { price: number; timestamp: number }>();
 
   /**
    * Returns the last Binance endpoint that successfully served a request.
@@ -136,7 +136,7 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     const normalized = symbol.toUpperCase();
 
     // Sjekk cache først
-    const cached = priceCache.get(normalized);
+    const cached = this.priceCache.get(normalized);
     if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
       return cached.price;
     }
@@ -144,7 +144,7 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
     // Proxy first — Cloudflare Worker IP-er blir blokkert av Binance (403/451)
     try {
       const price = await fetchPriceViaProxy(normalized);
-      priceCache.set(normalized, { price, timestamp: Date.now() });
+      this.priceCache.set(normalized, { price, timestamp: Date.now() });
       return price;
     } catch {
       // Fallback til direkte Binance API hvis proxy feiler
@@ -155,12 +155,12 @@ export class BinanceMarketDataProvider implements MarketDataProvider {
           (base) => { this.lastEndpointUsed = base; },
         );
         const price = parseFloat(data.price);
-        priceCache.set(normalized, { price, timestamp: Date.now() });
+        this.priceCache.set(normalized, { price, timestamp: Date.now() });
         return price;
       } catch {
         // CoinGecko — siste utvei (Binance blokkerer Cloudflare IP-er)
         const price = await fetchPriceFromCoinGecko(normalized);
-        priceCache.set(normalized, { price, timestamp: Date.now() });
+        this.priceCache.set(normalized, { price, timestamp: Date.now() });
         return price;
       }
     }

@@ -30,7 +30,7 @@ async function fetchProfileWithUser(userId: string | null): Promise<Profile | nu
     .eq("id", uid)
     .single();
   if (error) return null;
-  return data as Profile;
+  return data as unknown as Profile;
 }
 
 export function useProfileQuery() {
@@ -63,7 +63,7 @@ export function useProfileQuery() {
         .select()
         .single();
       if (error) throw new Error(error.message);
-      return data as Profile;
+      return data as unknown as Profile;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.profile(null) });

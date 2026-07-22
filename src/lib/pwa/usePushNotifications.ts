@@ -80,7 +80,6 @@ export function usePushNotifications(userId: string | null): PushState {
           endpoint: subscription.endpoint,
           auth: toB64(authKey),
           p256dh: toB64(p256dhKey),
-          updated_at: new Date().toISOString(),
         }, { onConflict: 'endpoint' })
 
       setIsSubscribed(true)

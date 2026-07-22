@@ -411,7 +411,7 @@ export async function executeTrade(
       .from("trades")
       .select("*")
       .eq("session_id", sessionId)
-      .eq("status", "OPEN");
+      .eq("status", "filled"); // "OPEN" finnes ikke i status-enum — filled = utførte handler
 
     const correlationCheck = checkNewTradeCorrelation(
       signal.symbol,
@@ -434,7 +434,7 @@ export async function executeTrade(
       .from("trades")
       .select("*")
       .eq("session_id", sessionId)
-      .eq("status", "CLOSED")
+      .eq("status", "filled") // "CLOSED" finnes ikke i status-enum — filled = utførte handler
       .limit(50);
 
     const closedTrades = (historicalTradesData ||
@@ -1182,7 +1182,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
     .from("trades")
     .select("*")
     .eq("user_id", userId)
-    .eq("status", "OPEN");
+    .eq("status", "filled"); // "OPEN" finnes ikke i status-enum
 
   if (!openTrades || openTrades.length === 0) return;
 

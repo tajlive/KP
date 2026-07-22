@@ -151,7 +151,7 @@ export async function recordImpression(
     if (userId) {
       query.eq("user_id", userId);
     } else {
-      query.eq("anonymous_id", anonymousId);
+      query.eq("anonymous_id", anonymousId ?? "");
     }
 
     const { data: existing } = await query.maybeSingle();
@@ -193,7 +193,7 @@ export async function recordConversion(
     if (userId) {
       query.eq("user_id", userId);
     } else {
-      query.eq("anonymous_id", anonymousId);
+      query.eq("anonymous_id", anonymousId ?? "");
     }
 
     await query;

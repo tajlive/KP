@@ -17,7 +17,12 @@
 // Opik er deaktivert i prod — for stor for Cloudflare Workers (37 MB+)
 // Bruk dynamisk import kun i utvikling
 const opik: unknown = { track: () => {} };
-const traceLLMCall: unknown = () => {};
+
+// Placeholder trace function — Opik is conditionally loaded
+const traceLLMCall = <T>(
+  _params: { functionName: string; prompt: string },
+  llmFn: () => Promise<T>,
+): Promise<T> => llmFn();
 
 // ==================== TYPES ====================
 

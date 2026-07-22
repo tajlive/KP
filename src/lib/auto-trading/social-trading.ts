@@ -68,7 +68,7 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
       "user_auto_trading_configs.strategy_id",
       originalTrade.strategy_used ?? "",
     )
-    .eq("status", "ACTIVE");
+    .eq("status", "active");
 
   if (followersError || !followers) return;
   for (const follower of followers as {

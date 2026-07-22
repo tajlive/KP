@@ -31,7 +31,7 @@ export function withErrorHandler(handler: ApiHandler, route?: string): ApiHandle
       const duration = Date.now() - start;
       
       // Logg alle unhandled errors
-      await logError(path, 500, duration, error?.message || 'unknown');
+      await logError(path, 500, duration, error instanceof Error ? error.message : 'unknown');
 
       return NextResponse.json(
         { error: 'Intern serverfeil. Feilen er logget og vil bli fikset automatisk.' },

@@ -209,7 +209,7 @@ export class RiskGuardrails {
     let todayRiskExposure = 0;
     if (todayTrades) {
       for (const trade of todayTrades) {
-        if (trade.status === "filled" || trade.status === "open") {
+        if (trade.status === "filled") {
           todayRiskExposure += parseFloat(String(trade.total_value ?? 0));
         }
       }

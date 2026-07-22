@@ -56,7 +56,7 @@ export async function checkRebalanceNeeded(
     .from("trades")
     .select("*")
     .eq("session_id", sessionId)
-    .eq("status", "OPEN");
+    .eq("status", "filled"); // "OPEN" finnes ikke i status-enum
 
   if (!positions || positions.length === 0) {
     return { needsRebalance: false, deviations: [], suggestedTrades: [] };

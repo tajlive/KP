@@ -23,16 +23,13 @@ import type {
 } from "./order-executor";
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
 import { computeFill } from "./canonical/execution/fill-model";
+import { FILL_CONSTANTS } from "./canonical/execution/fill-constants";
 import { getUsdtToNokRateAsync, usdtToNok } from "./currency";
 
 const marketDataProvider = createBinanceMarketDataProvider();
 
-/** Paper-adapter parametere – alle modusspesifikke verdier samlet her. */
-export const PAPER_PARAMS = {
-  feeRate: 0.001, // 0.1%
-  marketSlippageRate: 0.002, // 0.2% — realistisk slippage for retail
-  minOrderValue: 10,
-};
+/** Paper-adapter parametere – re-eksportert fra canonical FILL_CONSTANTS. */
+export const PAPER_PARAMS = FILL_CONSTANTS;
 
 export class PaperExecutor implements OrderExecutor {
   constructor(

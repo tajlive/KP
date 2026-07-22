@@ -139,8 +139,10 @@ export async function getUserDashboardMetrics(
     const totalTrades = Number(row.total_trades ?? 0);
     const winningTrades = Number(row.winning_trades ?? 0);
     const losingTrades = Number(row.losing_trades ?? 0);
-    let totalCapital = Number(row.total_deployed_capital ?? 0);
-    let startingCapital = Number(row.starting_capital ?? 0);
+    let totalCapital = Number(row.total_capital ?? 0);
+    let startingCapital = 0;
+
+    // RPC may not return starting_capital; derive from fallback when needed
 
     // Fallback to profile if no capital data exists
     if (totalCapital === 0 && mode === "paper") {
@@ -182,11 +184,26 @@ export async function getUserDashboardMetrics(
   }
 }
 
-/** Fetch paper_balance fallback from user_profiles. */
+/** Fetch paper balance: paper_accounts.current_balance first, then user_profiles.paper_balance. */
 async function getProfileFallback(
   supabaseClient: SupabaseClient<Database>,
   userId: string,
 ): Promise<{ totalCapital: number; startingCapital: number }> {
+  // Primary: paper_accounts.current_balance (source of truth)
+  const { data: paperAccount } = await supabaseClient
+    .from("paper_accounts")
+    .select("current_balance")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (typeof paperAccount?.current_balance === "number") {
+    return {
+      totalCapital: paperAccount.current_balance,
+      startingCapital: 100_000,
+    };
+  }
+
+  // Secondary fallback: user_profiles.paper_balance (synced by DB trigger)
   const { data: profile, error: profileError } = await supabaseClient
     .from("user_profiles")
     .select("paper_balance")
@@ -254,7 +271,7 @@ async function tsAggregationFallback(
     .eq("user_id", userId)
     .eq("mode", mode)
     .is("archived", false)
-    .in("status", statuses);
+    .in("status", statuses as readonly ("active" | "paused" | "crashed" | "stopped")[]);
 
   if (sessionsError) {
     throw new DashboardMetricsError(

@@ -6,8 +6,12 @@
  */
 
 export const CANONICAL_REDIRECTS: Record<string, string> = {
-  "/dashboard/activity": "/handelshistorikk",
+  "/dashboard/activity": "/dashboard/historikk",
+  "/handelshistorikk": "/dashboard/historikk",
   "/dashboard/trading": "/trade",
+  "/dashboard/trade": "/trade",
+  "/dashboard/autopilot": "/dashboard/auto-trade",
+  "/bots": "/dashboard/auto-trade",
   "/dashboard/innstillinger": "/profile?tab=settings",
   "/handel": "/trade",
   "/auto-trading": "/dashboard/auto-trade",

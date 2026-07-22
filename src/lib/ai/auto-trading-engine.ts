@@ -329,7 +329,7 @@ export class AutoTradingEngine {
         order_type: 'market',
         price: decision.targetPrice,
         quantity: positionSize,
-        status: 'open',
+        status: 'pending', // 'open' finnes ikke i status-enum — pending = lagt inn, venter fyll
         mode: 'paper',
         idempotency_key: `${this.config.userId}-${decision.symbol}-${Date.now()}`,
         fee: 0,
