@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Check, Circle } from "lucide-react";
+import { trackOnboardingStep } from "@/lib/analytics/onboarding-events";
 
 interface OnboardingChecklistProps {
   /** Brukeren har en aktiv konto (alltid true for innloggede, men testbart) */
@@ -24,6 +26,11 @@ export function OnboardingChecklist({
   hasViewedHistory,
 }: OnboardingChecklistProps) {
   const t = useTranslations("dashboard.onboardingChecklist");
+
+  // Funnel: sjekklisten er sett (dedupes i helper + server)
+  useEffect(() => {
+    trackOnboardingStep("checklist_viewed");
+  }, []);
 
   const items = [
     {
