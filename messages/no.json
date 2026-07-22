@@ -2072,6 +2072,13 @@
       "marginUsed": "Margin used",
       "totalPnl": "Totalt p/l",
       "percentUsed": "Percent used"
+    },
+    "onboardingChecklist": {
+      "title": "Kom i gang",
+      "accountCreated": "Konto opprettet",
+      "firstTrade": "Gjør din første handel",
+      "seeResult": "Se resultatet ditt",
+      "complete": "Du er i gang! Sjekklisten er fullført."
     }
   },
   "footer": {

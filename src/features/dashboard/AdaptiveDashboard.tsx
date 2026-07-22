@@ -10,6 +10,8 @@ import { AITip } from "./AITip";
 import { SmartActions } from "./SmartActions";
 import { useCurrency } from "@/hooks/useCurrency";
 
+import { OnboardingChecklist } from "./OnboardingChecklist";
+import { useOnboardingState } from "@/hooks/useOnboardingState";
 import { DashboardPro } from "./DashboardPro";
 import type { DashboardCmsData } from "./DashboardContent";
 import {
@@ -42,45 +44,24 @@ export interface UserStats {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Progress indicator (onboarding)                                    */
+/*  Checklist wrapper — henter state fra hook                          */
 /* ------------------------------------------------------------------ */
-function OnboardingProgress({ step }: { step: number }) {
-  const t = useTranslations("dashboard.adaptive");
-  const steps = [
-    t("step1"),
-    t("step2"),
-    t("step3"),
-    t("step4"),
-  ];
-
+function OnboardingChecklistFromState({ userId }: { userId: string }) {
+  const { tradeCount, hasViewedHistory } = useOnboardingState(userId);
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between text-xs text-slate-400">
-        <span>{t("progress")}</span>
-        <span>
-          {step}/{steps.length}
-        </span>
-      </div>
-      <div className="flex gap-1.5">
-        {steps.map((_, i) => (
-          <div
-            key={i}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${
-              i < step ? "bg-emerald-500" : "bg-[#1A1D26]"
-            }`}
-          />
-        ))}
-      </div>
-    </div>
+    <OnboardingChecklist
+      hasAccount
+      tradeCount={tradeCount}
+      hasViewedHistory={hasViewedHistory}
+    />
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Empty state hero (new users)                                       */
+/*  New user state — checklist-driven onboarding                       */
 /* ------------------------------------------------------------------ */
-function NewUserHero({ userName, preferredTradingMode }: { userName?: string | null; preferredTradingMode: "paper" | "live" }) {
+function NewUserHero({ userId, userName, preferredTradingMode }: { userId: string; userName?: string | null; preferredTradingMode: "paper" | "live" }) {
   const t = useTranslations("dashboard.adaptive");
-  const isLive = preferredTradingMode === "live";
 
   return (
     <m.div
@@ -100,7 +81,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
         </p>
       </div>
 
-      <OnboardingProgress step={isLive ? 3 : 1} />
+      <OnboardingChecklistFromState userId={userId} />
 
       <SmartActions userState="NyBruker" compact />
 
@@ -162,7 +143,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
         </p>
       </div>
 
-      <OnboardingProgress step={isLive ? 3 : 2} />
+      <OnboardingChecklistFromState userId={userId} />
 
       {stats && (
         <>
@@ -327,7 +308,7 @@ export function AdaptiveDashboard({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <NewUserHero userName={userName} preferredTradingMode={preferredTradingMode} />
+          <NewUserHero userId={userId} userName={userName} preferredTradingMode={preferredTradingMode} />
         </m.div>
       )}
 
