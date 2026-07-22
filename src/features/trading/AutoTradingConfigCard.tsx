@@ -117,6 +117,9 @@ export function AutoTradingConfigCard() {
           .from("user_auto_trading_configs")
           .insert({
             user_id: user.id,
+            // strategy_id er NOT NULL — tabellen er tom og auto_strategies finnes ikke,
+            // så "default" er den eneste praktiske verdien per nå
+            strategy_id: "default",
             is_enabled: config.enabled,
             is_paper_trading: config.mode === "paper",
             trading_capital_nok: config.max_trade_size_nok,

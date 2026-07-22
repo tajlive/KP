@@ -14,7 +14,6 @@ import { StatsGrid } from "@/features/portfolio/StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
 import { TradingModeSelector } from "@/features/trading/TradingModeSelector";
 import { PriceTicker } from "./PriceTicker";
-import { RecentTrades } from "./RecentTrades";
 import { SkeletonBlock } from "./loading-skeleton";
 
 import { DailyChallenge } from "@/features/account/gamification/DailyChallenge";
@@ -259,8 +258,11 @@ export function DashboardPro({
           />
         </m.div>
 
-        {/* Trading Mode Selector — Velg mellom Manuell, Auto og JokerTrade */}
-        <TradingModeSelector activeMode="manual" />
+        {/* Trading Mode Selector — Manuell/Auto/JokerTrade. Skjules for NyBruker:
+            nye brukere skal ha én tydelig CTA (lekepenger), ikke tre modusvalg øverst. */}
+        {userState !== "NyBruker" && (
+          <TradingModeSelector activeMode="manual" />
+        )}
 
         {/* First Trade Reward — kun for Onboarded+ */}
         {userState !== "NyBruker" && (
@@ -366,7 +368,8 @@ export function DashboardPro({
                 ) : (
                   <div className="space-y-2">
                     <StatsGrid stats={statItems} updatedAt={lastUpdated} />
-                    <RecentTrades sessions={effectiveStats.recentSessions || []} />
+                    {/* TODO: RecentTrades krever ekte trades-feed (Trade[]) — metrics-APIet
+                        har kun recentSessions. Skjult til /api/dashboard/metrics returnerer trades. */}
                     <div className="flex items-center gap-3 px-1">
                       {effectiveStats.totalPnl != null && (
                         <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
@@ -386,7 +389,7 @@ export function DashboardPro({
             {/* Scope label */}
             {!isLoading && !isError && (
               <p className="text-xs text-slate-500 text-center">
-                {t("scopeLabel", { mode: isPaperMode ? "paper" : "live" })}
+                {t("scopeLabel")}
               </p>
             )}
 

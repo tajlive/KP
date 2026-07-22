@@ -3,16 +3,16 @@
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { TradingSession } from "@/features/trading/paper/PaperTradingList";
+import type { Trade } from "@/types/trading";
 
 interface RecentTradesProps {
-  sessions: TradingSession[];
+  trades: Trade[];
 }
 
-export function RecentTrades({ sessions }: RecentTradesProps) {
+export function RecentTrades({ trades }: RecentTradesProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.recentTrades");
-  const recent = sessions.slice(0, 5);
+  const recent = trades.slice(0, 5);
 
   if (recent.length === 0) return null;
 

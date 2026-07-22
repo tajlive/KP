@@ -1,9 +1,10 @@
-export const dynamic = 'force-dynamic';
+import { redirect } from "next/navigation";
 
-import ClientDashboardSettings from "./ClientDashboardSettings";
+interface SettingsPageProps {
+  params: Promise<{ locale: string }>;
+}
 
-export const runtime = 'nodejs';
-
-export default function Page() {
-  return <ClientDashboardSettings />;
+export default async function SettingsPage({ params }: SettingsPageProps) {
+  const { locale } = await params;
+  redirect(`/${locale}/profile?tab=settings`);
 }

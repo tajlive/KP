@@ -102,7 +102,7 @@ export default function AdvancedStatsModal({
         .from("trades")
         .select("*")
         .eq("session_id", strategy.id)
-        .in("status", ["filled", "executed"])
+        .in("status", ["filled"])
         .order("executed_at", { ascending: true });
 
       if (!trades || trades.length === 0) {

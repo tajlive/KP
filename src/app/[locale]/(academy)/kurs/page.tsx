@@ -57,26 +57,36 @@ interface ModuleWithProgress extends CourseModule {
 async function getCoursesWithDetails(userId?: string) {
   const supabase = await createClient();
 
-  // Get all published modules with badges
+  // Get all published modules (no nested join — course_modules has no FK to course_badges in types)
   const { data: modules, error } = await supabase
     .from("course_modules")
-    .select(`
-      *,
-      course_badges (
-        badge_emoji,
-        badge_label_no,
-        badge_label_en,
-        badge_description_no,
-        badge_description_en,
-        badge_color
-      )
-    `)
+    .select("*")
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
   if (error || !modules) {
     console.error("Error fetching modules:", error);
     return [];
+  }
+
+  // Fetch badges separately (course_modules has no FK relationship to course_badges)
+  const { data: allBadges } = await supabase
+    .from("course_badges")
+    .select("module_id, badge_emoji, badge_label_no, badge_label_en, badge_description_no, badge_description_en, badge_color")
+    .in("module_id", modules.map((m) => m.id));
+
+  const badgeByModuleId = new Map<string, {
+    badge_emoji: string;
+    badge_label_no: string;
+    badge_label_en: string;
+    badge_description_no: string | null;
+    badge_description_en: string | null;
+    badge_color: string;
+  }>();
+  if (allBadges) {
+    for (const b of allBadges) {
+      badgeByModuleId.set(b.module_id, b);
+    }
   }
 
   // Get user badges if logged in
@@ -99,16 +109,7 @@ async function getCoursesWithDetails(userId?: string) {
 
   // For each module, get lesson counts and user progress
   const modulesWithProgress = await Promise.all(
-    modules.map(async (module: CourseModule & {
-      course_badges: {
-        badge_emoji: string;
-        badge_label_no: string;
-        badge_label_en: string;
-        badge_description_no: string | null;
-        badge_description_en: string | null;
-        badge_color: string;
-      }[] | null;
-    }) => {
+    modules.map(async (module) => {
       // Get all published lessons for this module
       const { data: lessons, error: lessonsError } = await supabase
         .from("course_lessons")
@@ -136,8 +137,8 @@ async function getCoursesWithDetails(userId?: string) {
         : 0;
       const isCompleted = progressPercent === 100 && lessonCount > 0;
 
-      // Build badge info
-      const moduleBadge = module.course_badges?.[0] || null;
+      // Build badge info — look up from separate query (no FK relationship in types)
+      const moduleBadge = badgeByModuleId.get(module.id) || null;
       const earnedBadge = moduleBadge && userId
         ? userBadgeMap.has(module.id)
         : false;
@@ -314,7 +315,7 @@ export default async function KursPage({ params }: PageProps) {
 interface CourseCardProps {
   course: ModuleWithProgress;
   locale: string;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   difficultyLabel: (diff: string | null) => string;
 }
 

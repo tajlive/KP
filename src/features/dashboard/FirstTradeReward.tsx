@@ -20,7 +20,9 @@ export function FirstTradeReward({ totalTrades }: FirstTradeRewardProps) {
 
   useEffect(() => {
     const wasDismissed = localStorage.getItem(REWARD_DISMISSED_KEY) === "true";
-    if (totalTrades > 0 && !wasDismissed) {
+    // Kun ved faktisk første handel (1 trade). Tidligere: totalTrades > 0,
+    // som viste "Gratulerer med din første handel" også for erfarne brukere.
+    if (totalTrades === 1 && !wasDismissed) {
       // Small delay for dramatic effect
       const timer = setTimeout(() => setVisible(true), 600);
       return () => clearTimeout(timer);
@@ -33,7 +35,7 @@ export function FirstTradeReward({ totalTrades }: FirstTradeRewardProps) {
     localStorage.setItem(REWARD_DISMISSED_KEY, "true");
   };
 
-  if (totalTrades === 0 || dismissed) return null;
+  if (totalTrades !== 1 || dismissed) return null;
 
   return (
     <AnimatePresence>

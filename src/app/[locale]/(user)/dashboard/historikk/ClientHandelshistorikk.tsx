@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { createClient } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { useLocale, useTranslations } from "next-intl";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
@@ -100,18 +99,6 @@ export default function ClientHandelshistorikk() {
     async (silent = false) => {
       if (!silent) setLoading(true);
       setFetchError(null);
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setSignedIn(!!user);
-
-      if (!user) {
-        setTrades([]);
-        setDecisions([]);
-        if (!silent) setLoading(false);
-        return;
-      }
 
       try {
         const res = await fetch("/api/user/trades?limit=200", {
@@ -121,6 +108,7 @@ export default function ClientHandelshistorikk() {
         const json: unknown = await res.json();
 
         if (res.status === 401) {
+          setSignedIn(false);
           if (silent) {
             setIntegrityPollWarning(true);
             setPollCycleFailures((f) => f + 1);
@@ -134,6 +122,7 @@ export default function ClientHandelshistorikk() {
           }
           setTrades([]);
         } else if (!res.ok) {
+          setSignedIn(true);
           const msg =
             typeof json === "object" &&
             json !== null &&
@@ -154,6 +143,7 @@ export default function ClientHandelshistorikk() {
           }
           setTrades([]);
         } else {
+          setSignedIn(true);
           const parsed = meTradesSuccessSchema.safeParse(json);
           if (!parsed.success) {
             if (silent) {
@@ -195,20 +185,34 @@ export default function ClientHandelshistorikk() {
         setTrades([]);
       }
 
-      const decisionsRes = await supabase
-        .from("trade_decisions")
-        .select(
-          "id, decision_type, trading_mode, symbol, side, requested_quantity, requested_price, rejection_reason, created_at",
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (decisionsRes.error) {
-        console.warn("trade_decisions fetch:", decisionsRes.error.message);
+      // Fetch decisions from API instead of direct supabase
+      try {
+        const decisionsRes = await fetch(
+          "/api/user/trade-decisions?limit=50",
+          {
+            credentials: "same-origin",
+            headers: { Accept: "application/json" },
+          },
+        );
+        const decisionsJson: unknown = await decisionsRes.json();
+        if (
+          decisionsRes.ok &&
+          typeof decisionsJson === "object" &&
+          decisionsJson !== null &&
+          "ok" in decisionsJson &&
+          (decisionsJson as Record<string, unknown>).ok === true &&
+          "decisions" in decisionsJson
+        ) {
+          setDecisions(
+            (decisionsJson as Record<string, unknown>)
+              .decisions as TradeDecisionRow[],
+          );
+        } else {
+          setDecisions([]);
+        }
+      } catch {
+        console.warn("handelshistorikk /api/user/trade-decisions failed");
         setDecisions([]);
-      } else {
-        setDecisions((decisionsRes.data as TradeDecisionRow[]) ?? []);
       }
 
       if (!silent) setLoading(false);
@@ -233,27 +237,8 @@ export default function ClientHandelshistorikk() {
     }
   }, [t]);
 
-  /**
-   * Én effekt: abonner først (INITIAL_SESSION kan fyres synkront når sesjon finnes),
-   * deretter første fetch — unngår at getSession() på første tick er tom mens JWT finnes.
-   */
   useEffect(() => {
-    const supabase = createClient();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") {
-        setTrades([]);
-        setDecisions([]);
-        setSignedIn(false);
-        return;
-      }
-      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
-        void fetchTrades(true);
-      }
-    });
     void fetchTrades(false);
-    return () => subscription.unsubscribe();
   }, [fetchTrades]);
 
   /** Nye live/paper-rader uten manuell refresh (Realtime krever JWT; polling er robust på denne siden). */
@@ -496,7 +481,7 @@ export default function ClientHandelshistorikk() {
                   {tTrading("tradeHistory.errorTitle")}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-                  {tTrading("tradeHistory.errorDescription")}
+                  {fetchError}
                 </p>
               </div>
               <Button
@@ -666,5 +651,3 @@ export default function ClientHandelshistorikk() {
     </div>
   );
 }
-
-

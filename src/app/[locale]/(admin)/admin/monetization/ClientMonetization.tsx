@@ -3,7 +3,6 @@
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { createClient } from "@/lib/utils";
-import { Profile } from "@/types/database";
 import { DollarSign, MousePointer, TrendingUp, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,6 +14,22 @@ interface MonetizationStats {
   conversionRate: number;
 }
 
+// Local type matching actual beta_signups columns in prod DB
+interface BetaSignup {
+  id: string;
+  student_nummer: number;
+  erfaring: string;
+  laeringsmaal: string[];
+  email: string;
+  handle: string | null;
+  tokens_credited: boolean | null;
+  created_at: string | null;
+  // Extended fields accessed in UI (may exist as DB additions not yet in generated types)
+  binance_clicked?: boolean | null;
+  exchange_connected?: string | boolean | null;
+  onboarding_step?: string | null;
+}
+
 export default function MonetizationPage() {
   const [stats, setStats] = useState<MonetizationStats>({
     totalStudents: 0,
@@ -23,7 +38,7 @@ export default function MonetizationPage() {
     clickRate: 0,
     conversionRate: 0,
   });
-  const [students, setStudents] = useState<Profile[]>([]);
+  const [students, setStudents] = useState<BetaSignup[]>([]);
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient();
@@ -38,10 +53,10 @@ export default function MonetizationPage() {
       if (error) throw error;
 
       const totalStudents = data?.length || 0;
-      const binanceClicked =
-        data?.filter((s: Profile) => s.binance_clicked).length || 0;
-      const exchangeConnected =
-        data?.filter((s: Profile) => s.exchange_connected).length || 0;
+      // TODO: beta_signups har ikke binance_clicked/exchange_connected-kolonner i DB.
+      // Viser 0 til kolonnene eventuelt legges til (migrasjon kreves).
+      const binanceClicked = 0;
+      const exchangeConnected = 0;
 
       setStats({
         totalStudents,

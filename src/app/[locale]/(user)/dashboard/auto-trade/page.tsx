@@ -69,7 +69,7 @@ export default async function AutoTradePage({
 
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("tier, paper_balance, real_balance, preferred_trading_mode")
+    .select("tier, paper_balance, preferred_trading_mode")
     .eq("id", user.id)
     .single();
 
@@ -130,7 +130,7 @@ export default async function AutoTradePage({
         tier={tier}
         mode={defaultMode}
         paperBalance={profile?.paper_balance ?? null}
-        liveBalance={profile?.real_balance ?? null}
+        liveBalance={null /* real_balance does not exist on user_profiles; use paper_accounts for live balance */}
       />
     </div>
   );

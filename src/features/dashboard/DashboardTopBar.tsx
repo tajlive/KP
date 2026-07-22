@@ -28,8 +28,12 @@ export function DashboardTopBar({
   const isPaper = mode === "paper";
   const href = ctaLink ?? `/${locale}/trade?mode=${mode}`;
 
+  // Guard against NaN / Infinity / -Infinity
+  const safeChangePct =
+    typeof changePct === "number" && Number.isFinite(changePct) ? changePct : null;
+
   const changeTrend =
-    changePct == null ? "neutral" : changePct >= 0 ? "up" : "down";
+    safeChangePct == null ? "neutral" : safeChangePct >= 0 ? "up" : "down";
 
   const TrendIcon =
     changeTrend === "up"
@@ -90,12 +94,12 @@ export function DashboardTopBar({
               }`}
             >
               <TrendIcon className="w-3 h-3" />
-              {changePct == null ? (
+              {safeChangePct == null ? (
                 <span>{t("noData")}</span>
               ) : (
                 <>
-                  {changePct > 0 ? "+" : ""}
-                  {changePct.toFixed(2)}%
+                  {safeChangePct > 0 ? "+" : ""}
+                  {safeChangePct.toFixed(2)}%
                 </>
               )}
             </div>
