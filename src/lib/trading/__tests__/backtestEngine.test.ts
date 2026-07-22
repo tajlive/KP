@@ -7,6 +7,7 @@ import {
   runBacktest,
   strategyIdToRiskProfile,
   STRATEGY_CONFIGS,
+  MARKET_SLIPPAGE_RATE,
   type OHLCV,
 } from '../backtestEngine';
 import {
@@ -198,8 +199,8 @@ describe('Backtest Engine', () => {
 
       // Finn første salgshandel (delvis TP).
       const firstSell = result.trades[0];
-      // Markedsordre i backtest får slippage på 0.05 % ved salg.
-      expect(firstSell.exitPrice).toBeCloseTo(basePrice * 1.06 * (1 - 0.0005), 4);
+      // Markedsordre i backtest får kanonisk slippage ved salg.
+      expect(firstSell.exitPrice).toBeCloseTo(basePrice * 1.06 * (1 - MARKET_SLIPPAGE_RATE), 4);
 
       // Kjøp bruker 50 % av kapital ved basePrice.
       const buyCapital = initialCapital * 0.5;
@@ -486,7 +487,7 @@ describe('Backtest Engine', () => {
       const totalSoldQty = result.trades.reduce((sum, t) => sum + t.size, 0);
       const entryPrice = result.trades[0].entryPrice;
       // Hele posisjonen skal tilsvare ~80 % av kapitalen (med fees/slippage).
-      const slippageFeeFactor = (1 + 0.0005) * (1 + customConfig.feeRate);
+      const slippageFeeFactor = (1 + MARKET_SLIPPAGE_RATE) * (1 + customConfig.feeRate);
       const expectedQty =
         (initialCapital * customConfig.maxPositionPct * (1 - customConfig.feeRate) * slippageFeeFactor) /
         entryPrice;

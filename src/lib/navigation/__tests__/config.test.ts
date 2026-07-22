@@ -13,48 +13,30 @@ import {
   DASHBOARD_MAIN_NAV,
   DASHBOARD_TRADING_NAV,
   DASHBOARD_MORE_NAV,
+  DASHBOARD_COINBASE_TOP_NAV,
+  DASHBOARD_COINBASE_BOTTOM_NAV,
 } from "../config";
 import type { NavLink, NavItem } from "../config";
 
 describe("FALLBACK_NAVIGATION", () => {
-  it("skal ha JokerTrade i loggedOutLinks", () => {
-    const jt: NavLink | undefined = FALLBACK_NAVIGATION.loggedOutLinks.find(
-      (l: NavLink) => l.path === "/jokertrade",
-    );
-    expect(jt).toBeDefined();
-    expect(jt!.label).toBe("JokerTrade");
-  });
-
-  it("skal ha JokerTrade i loggedInLinks", () => {
-    const jt: NavLink | undefined = FALLBACK_NAVIGATION.loggedInLinks.find(
-      (l: NavLink) => l.path === "/jokertrade",
-    );
-    expect(jt).toBeDefined();
-    expect(jt!.label).toBe("JokerTrade");
-    expect(jt!.order).toBe(6);
-  });
-
-  it("loggedOutLinks skal ha JokerTrade i listen", () => {
+  it("loggedOutLinks skal være enkel: Lær, Priser, Om oss", () => {
     const paths: string[] = FALLBACK_NAVIGATION.loggedOutLinks.map(
       (l: NavLink) => l.path,
     );
-    expect(paths).toContain("/jokertrade");
+    expect(paths).toEqual(["/kurs", "/priser", "/om-oss"]);
   });
 
-  it("loggedOutLinks skal ha Priser som siste element", () => {
-    const last: NavLink =
-      FALLBACK_NAVIGATION.loggedOutLinks[
-        FALLBACK_NAVIGATION.loggedOutLinks.length - 1
-      ];
-    expect(last.path).toBe("/priser");
-  });
-
-  it("loggedInLinks skal ha JokerTrade som siste element", () => {
-    const last: NavLink =
-      FALLBACK_NAVIGATION.loggedInLinks[
-        FALLBACK_NAVIGATION.loggedInLinks.length - 1
-      ];
-    expect(last.path).toBe("/jokertrade");
+  it("loggedInLinks skal være kort og porteføljeførst", () => {
+    const paths: string[] = FALLBACK_NAVIGATION.loggedInLinks.map(
+      (l: NavLink) => l.path,
+    );
+    expect(paths).toEqual([
+      "/dashboard",
+      "/dashboard/portfolio",
+      "/trade",
+      "/dashboard/auto-trade",
+      "/profile",
+    ]);
   });
 });
 
@@ -89,10 +71,22 @@ describe("AUTH_NAV_CONFIG", () => {
   it("skal ha nøkkelfunksjoner: portfolio, handel, historikk, profil", () => {
     const paths: string[] = AUTH_NAV_CONFIG.map((l: NavItem) => l.href);
     expect(paths).toContain("/dashboard/portfolio");
-    expect(paths).toContain("/handel");
+    expect(paths).toContain("/trade");
     expect(paths).toContain("/dashboard/historikk");
     expect(paths).toContain("/profile");
     expect(paths).toContain("/dashboard/auto-trade");
+  });
+
+  it("skal være porteføljeførst uten duplikate canonical routes", () => {
+    const hrefs = AUTH_NAV_CONFIG.map((l) => l.href);
+    expect(hrefs.slice(0, 4)).toEqual([
+      "/dashboard/portfolio",
+      "/trade",
+      "/dashboard/auto-trade",
+      "/profile",
+    ]);
+    expect(new Set(hrefs).size).toBe(hrefs.length);
+    expect(hrefs).not.toContain("/dashboard/autopilot");
   });
 });
 
@@ -108,11 +102,11 @@ describe("ADMIN_NAV_CONFIG", () => {
 });
 
 describe("MOBILE_BOTTOM_TABS", () => {
-  it("skal ha portfolio, market, trade og account", () => {
+  it("skal ha home, portfolio, trade og account — i den rekkefølgen", () => {
     const keys: string[] = MOBILE_BOTTOM_TABS.map(
       (l: NavItem) => l.key,
     );
-    expect(keys).toEqual(["portfolio", "market", "trade", "account"]);
+    expect(keys).toEqual(["home", "portfolio", "trade", "account"]);
   });
 
   it("alle tabs skal være mobileOnly", () => {
@@ -168,7 +162,7 @@ describe("getMobileTabs", () => {
 describe("isAppShellPath", () => {
   it("skal returnere true for kjente app-shell-stier", () => {
     expect(isAppShellPath("/dashboard")).toBe(true);
-    expect(isAppShellPath("/handel")).toBe(true);
+    expect(isAppShellPath("/trade")).toBe(true);
     expect(isAppShellPath("/marked")).toBe(true);
     expect(isAppShellPath("/jokertrade")).toBe(true);
     expect(isAppShellPath("/admin")).toBe(true);
@@ -213,11 +207,45 @@ describe("DASHBOARD_TRADING_NAV", () => {
   });
 });
 
+describe("DASHBOARD_COINBASE_TOP_NAV", () => {
+  it("skal være kort og bruke canonical auto-route", () => {
+    const hrefs = DASHBOARD_COINBASE_TOP_NAV.map((l) => l.href);
+    expect(hrefs).toEqual([
+      "/dashboard",
+      "/dashboard/portfolio",
+      "/trade",
+      "/dashboard/auto-trade",
+    ]);
+    expect(hrefs).not.toContain("/dashboard/autopilot");
+  });
+});
+
+describe("DASHBOARD_COINBASE_BOTTOM_NAV", () => {
+  it("skal speile mobile-first hovedflyt", () => {
+    const hrefs = DASHBOARD_COINBASE_BOTTOM_NAV.map((l) => l.href);
+    expect(hrefs).toEqual([
+      "/dashboard",
+      "/dashboard/portfolio",
+      "/trade",
+      "/profile",
+    ]);
+  });
+});
+
 describe("DASHBOARD_MORE_NAV", () => {
-  it("skal ha referral og jokerTrade", () => {
+  it("skal samle sekundære sider under Mer", () => {
     const keys: string[] = DASHBOARD_MORE_NAV.map(
       (l) => l.labelKey,
     );
-    expect(keys).toEqual(["referral", "jokerTrade"]);
+    expect(keys).toEqual([
+      "history",
+      "results",
+      "analysis",
+      "market",
+      "learn",
+      "jokerTrade",
+      "referral",
+      "settings",
+    ]);
   });
 });

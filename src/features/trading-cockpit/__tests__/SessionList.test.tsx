@@ -47,10 +47,10 @@ describe("SessionList", () => {
     expect(screen.getByTestId("session-card-session-1")).toBeInTheDocument();
   });
 
-  it("navigates to handelshistorikk when a mobile session card is clicked", () => {
+  it("navigates to dashboard historikk when a mobile session card is clicked", () => {
     renderSessionList();
     fireEvent.click(screen.getByTestId("session-card-session-1"));
-    expect(mockPush).toHaveBeenCalledWith("/no/handelshistorikk");
+    expect(mockPush).toHaveBeenCalledWith("/no/dashboard/historikk");
   });
 
   it("does not call window.alert", () => {

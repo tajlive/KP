@@ -6,6 +6,10 @@ function makeRequest(pathname: string): NextRequest {
   return new NextRequest(new URL(`https://www.klarpakke.no${pathname}`));
 }
 
+function runCacheControl(request: NextRequest, response?: NextResponse): NextResponse {
+  return cacheControlMiddleware(request, response) as NextResponse;
+}
+
 describe("cacheControlMiddleware", () => {
   it.each([
     "/no/login",
@@ -14,30 +18,31 @@ describe("cacheControlMiddleware", () => {
     "/en/callback",
   ])("sets no-store for auth route %s", (path) => {
     const req = makeRequest(path);
-    const res = cacheControlMiddleware(req);
+    const res = runCacheControl(req);
     expect(res.headers.get("Cache-Control")).toContain("no-store");
     expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
   });
 
   it.each([
     "/no/dashboard",
-    "/en/handel",
+    "/en/trade",
     "/no/admin",
     "/no/marked",
   ])("sets no-store for dashboard/admin route %s", (path) => {
     const req = makeRequest(path);
-    const res = cacheControlMiddleware(req);
+    const res = runCacheControl(req);
     expect(res.headers.get("Cache-Control")).toContain("no-store");
   });
 
   it.each([
     "/no",
     "/en",
-  ])("sets no-store for landing page %s", (path) => {
+  ])("sets edge-cache headers for landing page %s", (path) => {
     const req = makeRequest(path);
-    const res = cacheControlMiddleware(req);
-    expect(res.headers.get("Cache-Control")).toContain("no-store");
-    expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
+    const res = runCacheControl(req);
+    const cc = res.headers.get("Cache-Control");
+    expect(cc).toContain("public");
+    expect(cc).toContain("s-maxage=300");
   });
 
   it.each([
@@ -46,7 +51,7 @@ describe("cacheControlMiddleware", () => {
     "/en/kontakt",
   ])("sets edge-cache headers for marketing page %s", (path) => {
     const req = makeRequest(path);
-    const res = cacheControlMiddleware(req);
+    const res = runCacheControl(req);
     const cc = res.headers.get("Cache-Control");
     expect(cc).toContain("s-maxage=300");
     expect(cc).toContain("stale-while-revalidate=86400");
@@ -59,7 +64,7 @@ describe("cacheControlMiddleware", () => {
     "/no/cookies",
   ])("sets edge-cache headers for legal page %s", (path) => {
     const req = makeRequest(path);
-    const res = cacheControlMiddleware(req);
+    const res = runCacheControl(req);
     const cc = res.headers.get("Cache-Control");
     expect(cc).toContain("s-maxage=300");
     expect(cc).toContain("stale-while-revalidate=86400");
@@ -70,7 +75,7 @@ describe("cacheControlMiddleware", () => {
     "keeps no-store for auth page %s even when removed from marketing paths",
     (path) => {
       const req = makeRequest(path);
-      const res = cacheControlMiddleware(req);
+      const res = runCacheControl(req);
       expect(res.headers.get("Cache-Control")).toContain("no-store");
       expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
     },
@@ -80,7 +85,7 @@ describe("cacheControlMiddleware", () => {
     "does not override Cache-Control for non-marketing, non-auth route %s",
     (path) => {
       const req = makeRequest(path);
-      const res = cacheControlMiddleware(req);
+      const res = runCacheControl(req);
       expect(res.headers.get("Cache-Control")).toBeNull();
       expect(res.headers.get("CDN-Cache-Control")).toBeNull();
     },
@@ -91,7 +96,7 @@ describe("cacheControlMiddleware", () => {
     const existing = NextResponse.next();
     existing.headers.set("Cache-Control", "public, max-age=60");
 
-    const res = cacheControlMiddleware(req, existing);
+    const res = runCacheControl(req, existing);
     expect(res.headers.get("Cache-Control")).toBe("public, max-age=60");
   });
 
@@ -100,7 +105,7 @@ describe("cacheControlMiddleware", () => {
     const existing = NextResponse.next();
     existing.headers.set("x-existing", "1");
 
-    const res = cacheControlMiddleware(req, existing);
+    const res = runCacheControl(req, existing);
     expect(res.headers.get("x-existing")).toBe("1");
     expect(res.headers.get("Cache-Control")).toContain("no-store");
   });
