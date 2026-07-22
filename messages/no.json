@@ -445,7 +445,8 @@
         "createAccount": "Opprett konto",
         "passwordPlaceholder": "Minst 8 tegn",
         "haveAccount": "Har du allerede konto?",
-        "logIn": "Logg inn"
+        "logIn": "Logg inn",
+        "paperCreditsAwait": "Etter bekreftelse venter 100 000 kr i lekepenger på dashbordet ditt — klar til din første handel."
       },
       "resetPassword": {
         "title": "Glemt passord?",
@@ -5295,6 +5296,18 @@
       "statusFilled": "Status Filled",
       "statusPartial": "Status Partial",
       "statusCancelled": "Status Cancelled"
+    },
+    "firstTrade": {
+      "title": "Din første handel",
+      "stepCoin": "Velg krypto",
+      "stepAmount": "Velg beløp",
+      "stepConfirm": "Bekreft",
+      "confirmCta": "Bekreft kjøp",
+      "summary": "Du kjøper {coin} for {amount} kr",
+      "paperBadge": "Lekepenger",
+      "minError": "Minimumsbeløp er 50 kr",
+      "exitToFull": "Gå til full terminal",
+      "seeResult": "Se handelen din"
     }
   },
   "wallet": {

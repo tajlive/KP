@@ -13,6 +13,10 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 import { UnifiedTradeTerminal } from "../UnifiedTradeTerminal";
 
 describe("UnifiedTradeTerminal validation", () => {

@@ -445,7 +445,8 @@
         "createAccount": "Create account",
         "passwordPlaceholder": "At least 8 characters",
         "haveAccount": "Already have an account?",
-        "logIn": "Log in"
+        "logIn": "Log in",
+        "paperCreditsAwait": "After confirmation, 100,000 kr in paper money awaits on your dashboard — ready for your first trade."
       },
       "resetPassword": {
         "title": "Forgot password?",
@@ -5300,6 +5301,18 @@
       "fee": "Fee",
       "quantity": "Quantity",
       "sell": "Sell"
+    },
+    "firstTrade": {
+      "title": "Your first trade",
+      "stepCoin": "Choose crypto",
+      "stepAmount": "Choose amount",
+      "stepConfirm": "Confirm",
+      "confirmCta": "Confirm purchase",
+      "summary": "You are buying {coin} for {amount} kr",
+      "paperBadge": "Paper money",
+      "minError": "Minimum amount is 50 kr",
+      "exitToFull": "Go to full terminal",
+      "seeResult": "See your trade"
     }
   },
   "wallet": {
