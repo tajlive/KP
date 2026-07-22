@@ -2,11 +2,15 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
 import { JokerDashboard } from "@/features/trading/JokerDashboard";
+import { FirstTradeFlow } from "@/features/trading/FirstTradeFlow";
+import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
 import { formatNOK } from "@/lib/format/currency";
 import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/market/nok";
 
@@ -363,6 +367,43 @@ function MiniPositionList() {
 export function UnifiedTradeTerminal() {
   const t = useTranslations("trading");
   const [mode, setMode] = React.useState<TradeMode>("manual");
+  const searchParams = useSearchParams();
+  // Guided første-gangs-modus: opt-in via /trade?first=1 (fra OnboardingChecklist).
+  // Eksisterende brukere og vanlig /trade påvirkes ikke.
+  const isFirstTrade = searchParams.get("first") === "1";
+  const [firstTradeDone, setFirstTradeDone] = React.useState(false);
+
+  if (isFirstTrade) {
+    return (
+      <div className="min-h-screen bg-[#0B0F19] text-white">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-bold text-white sm:text-xl">Trade</h1>
+            <Link
+              href="/trade"
+              className="text-sm text-slate-400 underline-offset-4 hover:underline"
+            >
+              {t("firstTrade.exitToFull")}
+            </Link>
+          </div>
+
+          {firstTradeDone ? (
+            <div className="mx-auto max-w-md space-y-4 text-center">
+              <FirstTradeReward totalTrades={1} />
+              <Link
+                href="/dashboard/historikk"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-emerald-500 px-6 py-3 text-base font-bold text-black hover:bg-emerald-400"
+              >
+                {t("firstTrade.seeResult")}
+              </Link>
+            </div>
+          ) : (
+            <FirstTradeFlow onComplete={() => setFirstTradeDone(true)} />
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white">
