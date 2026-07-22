@@ -62,13 +62,13 @@ export async function PATCH(
 
     // Oppdater status — arkiver ved stopp for å holde totalene rene
     const updates: {
-      status: string;
+      status: "active" | "paused" | "crashed" | "stopped";
       updated_at: string;
       archived?: boolean;
       archived_at?: string;
       stopped_at?: string;
     } = {
-      status,
+      status: status as "active" | "paused" | "crashed" | "stopped",
       updated_at: new Date().toISOString(),
     };
     if (status === "stopped") {

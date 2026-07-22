@@ -96,12 +96,12 @@ export async function POST(request: NextRequest) {
     // Convert to trade records
     const tradeRecords = trades.map(t => ({
       date: new Date(t.created_at),
-      symbol: t.symbol || 'BTC/USDT',
+      symbol: t.trading_pair || 'BTC/USDT',
       side: t.side?.toLowerCase() as 'buy' | 'sell',
       quantity: parseFloat(((t.quantity as unknown) as string) || '0'),
       price: parseFloat(((t.price as unknown) as string) || '0'),
       fees: parseFloat(((t.fee as unknown) as string) || '0'),
-      total: parseFloat(((t.total as unknown) as string) || '0'),
+      total: parseFloat(((t.total_value as unknown) as string) || '0'),
       currency: 'USD'
     }));
     

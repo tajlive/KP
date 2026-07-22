@@ -44,7 +44,6 @@ async function handlePOST(request: NextRequest) {
       endpoint: body.subscription.endpoint,
       p256dh: body.subscription.keys.p256dh,
       auth: body.subscription.keys.auth,
-      updated_at: new Date().toISOString(),
     },
     { onConflict: "endpoint" },
   );

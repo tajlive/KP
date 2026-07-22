@@ -85,16 +85,17 @@ export async function GET(request: NextRequest) {
 
   const { data: rows, error } = await supabase.rpc("get_trades_paginated", {
     p_user_id: user.id,
-    p_cursor: cursor,
+    // Genererte typer krever non-null args — SQL-funksjonen håndterer tomme verdier som "alle"
+    p_cursor: cursor ?? "",
     p_limit: limit,
     p_mode: mode,
-    p_trade_statuses: status?.length ? status : null,
-    p_session_statuses: sessionStatus?.length ? sessionStatus : null,
-    p_side: side,
-    p_pair: pair,
-    p_search: search,
-    p_from: from || null,
-    p_to: to || null,
+    p_trade_statuses: status?.length ? (status as string[]) : [],
+    p_session_statuses: sessionStatus?.length ? (sessionStatus as string[]) : [],
+    p_side: side ?? "",
+    p_pair: pair ?? "",
+    p_search: search ?? "",
+    p_from: from || "",
+    p_to: to || "",
   });
 
   if (error) {

@@ -96,17 +96,23 @@ export async function GET(
       );
     }
 
-    // ── 3. Create supabase client with timeout ──────────────────────
-    const supabasePromise = createServerClient();
-    const timeout = 3000; // 3s timeout for server client creation
-    const supabase = await Promise.race([
-      supabasePromise,
-      new Promise<null>((_, reject) =>
-        setTimeout(() => reject(new Error("Supabase server client timeout")), timeout)
-      ),
-    ]) as Awaited<ReturnType<typeof createServerClient>>;
+    // ── 3a. Authenticate and authorize ────────────────────────────────
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, error: { code: "UNAUTHORIZED", message: "Ikke innlogget" } },
+        { status: 401 },
+      );
+    }
+    if (userId !== user.id) {
+      return NextResponse.json(
+        { ok: false, error: { code: "FORBIDDEN", message: "Ikke tilgang til denne brukeren" } },
+        { status: 403 },
+      );
+    }
 
-    // ── 4. Cached aggregation ────────────────────────────────────────
+    // ── 3b. Cached aggregation ────────────────────────────────────────
     const cacheKey = cacheKeys.portfolio(userId)
       + `:${mode}:${sessionScope}`;
 
@@ -119,7 +125,7 @@ export async function GET(
           mode: mode as DashboardMode,
           sessionScope: sessionScope as SessionScope,
         }),
-      15 * 1000, // 15 seconds — trading data changes frequently, keep it fresh
+      mode === "paper" ? 5 * 1000 : 15 * 1000, // paper: 5s, live: 15s
     );
 
     const durationMs = Date.now() - startTime;

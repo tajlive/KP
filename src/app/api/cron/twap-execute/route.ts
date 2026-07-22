@@ -173,7 +173,6 @@ export async function POST(req: NextRequest) {
                 await supabase.from("trades").insert({
                   session_id: sessionId,
                   user_id: order.user_id,
-                  symbol: order.symbol,
                   trading_pair: `${order.symbol}/USDT`,
                   side: order.side,
                   quantity,

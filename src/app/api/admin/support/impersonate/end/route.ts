@@ -63,7 +63,18 @@ export async function POST(request: NextRequest) {
 
   const supabase = createClient();
 
-  const { error: updateError } = await supabase
+  // TODO: Opprett support_impersonation_sessions-tabell i DB — mangler i supabase-typene
+  const sb = supabase as unknown as {
+    from: (table: string) => {
+      update: (vals: Record<string, unknown>) => {
+        eq: (col: string, val: string) => Promise<{
+          error: { message: string } | null;
+          data: unknown;
+        }>;
+      };
+    };
+  };
+  const { error: updateError } = await sb
     .from("support_impersonation_sessions")
     .update({ ended_at: new Date().toISOString() })
     .eq("token_jti", payload.jti);

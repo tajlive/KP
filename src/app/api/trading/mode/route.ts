@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
             error: "Live trading krever Bachelor-tier eller høyere",
             code: "TIER_LIMIT",
             required: "bachelor",
-            current: entitlements?.[0]?.subscription_tier || "student",
+            current: entitlements?.[0]?.tier_slug || "student",
           },
           { status: 403 },
         );

@@ -59,13 +59,17 @@ export async function POST(_request: NextRequest) {
     }
 
     const supabase = createClient();
-    const { data: result, error } = await supabase.rpc(
-      "check_and_award_achievements",
-      { p_user_id: user.id }
-    );
+    // TODO: check_and_award_achievements RPC doesn't exist in DB.
+    // Use direct query + award_achievement instead once implemented.
+    // For now return empty result so frontend is not blocked.
+    const { data: result, error } = await supabase
+      .from("user_achievements")
+      .select("achievement_type, earned_at, metadata")
+      .eq("user_id", user.id)
+      .order("earned_at", { ascending: false });
 
     if (error) {
-      console.error("check_and_award_achievements error:", error);
+      console.error("Fetch achievements error:", error);
       return NextResponse.json(
         { awarded: [], achievements: [] },
         { status: 200 }

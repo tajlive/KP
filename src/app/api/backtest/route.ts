@@ -88,29 +88,30 @@ export async function POST(request: NextRequest) {
 
     if (strategy === 'ENSEMBLE_AI') {
       const fromDate = new Date(Date.now() - period * 24 * 60 * 60 * 1000).toISOString();
+      // ai_decision_log columns: timestamp, sentiment_value, sentiment_classification, adjustments
+      // NOTE: no 'symbol' or 'executed_at' columns exist — filter by strategy_id instead
       const { data: logSignals, error: logError } = await supabase
         .from('ai_decision_log')
-        .select('executed_at, decision_type, sentiment_score, analysis_data')
-        .eq('symbol', finalSymbol)
-        .gte('executed_at', fromDate)
-        .order('executed_at', { ascending: true });
+        .select('timestamp, sentiment_classification, sentiment_value, adjustments')
+        .gte('timestamp', fromDate)
+        .order('timestamp', { ascending: true });
 
       if (logError) {
         console.error('[Backtest] ai_decision_log query error:', logError);
       }
 
-      // Filter to ensemble signals only if analysis_data has ensemble flag
+      // Filter to ensemble signals only if adjustments/explanation has ensemble flag
       const ensembleSignals = (logSignals || []).filter((row) => {
-        const data = row.analysis_data as Record<string, unknown> | null | undefined;
-        return data && data.ensemble === true;
+        const adj = row.adjustments as Record<string, unknown> | null | undefined;
+        return adj && adj.ensemble === true;
       });
 
       externalSignals = generateSignalsFromLog(
         candles,
         ensembleSignals.map((s) => ({
-          timestamp: s.executed_at ?? new Date().toISOString(),
-          decision_type: s.decision_type,
-          sentiment_score: s.sentiment_score ?? 0,
+          timestamp: s.timestamp ?? new Date().toISOString(),
+          decision_type: s.sentiment_classification,
+          sentiment_score: s.sentiment_value ?? 0,
         }))
       );
     }

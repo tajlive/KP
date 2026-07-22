@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { validateCronSecret } from "@/lib/auth/cron";
+import { usdtPriceToNok } from "@/lib/market/nok";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
@@ -24,11 +25,11 @@ async function upsertPrices(supabase: SupabaseClient<Database>, tickers: Binance
   const updates = tickers.map((t) => ({
     symbol: t.symbol,
     name: t.symbol.replace("USDT", ""),
-    price: parseFloat(t.lastPrice),
+    price: usdtPriceToNok(parseFloat(t.lastPrice)),
     price_change_percent_24h: parseFloat(t.priceChangePercent),
     volume_24h: parseFloat(t.volume),
-    high_24h: parseFloat(t.highPrice),
-    low_24h: parseFloat(t.lowPrice),
+    high_24h: usdtPriceToNok(parseFloat(t.highPrice)),
+    low_24h: usdtPriceToNok(parseFloat(t.lowPrice)),
     last_updated: new Date().toISOString(),
   }));
 

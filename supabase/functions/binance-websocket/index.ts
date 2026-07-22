@@ -6,6 +6,9 @@ const TRACKED_SYMBOLS = [
   "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "MATICUSDT"
 ];
 
+const USDT_NOK_RATE = Number(Deno.env.get('USDT_NOK_RATE') ?? '10.92')
+const toNok = (priceUsdt: number) => priceUsdt * (Number.isFinite(USDT_NOK_RATE) && USDT_NOK_RATE > 0 ? USDT_NOK_RATE : 10.92)
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -38,11 +41,11 @@ serve(async (req) => {
       }) => ({
         symbol: t.symbol,
         name: t.symbol.replace('USDT', ''),
-        price: parseFloat(t.lastPrice),
+        price: toNok(parseFloat(t.lastPrice)),
         price_change_percent_24h: parseFloat(t.priceChangePercent),
         volume_24h: parseFloat(t.volume),
-        high_24h: parseFloat(t.highPrice),
-        low_24h: parseFloat(t.lowPrice),
+        high_24h: toNok(parseFloat(t.highPrice)),
+        low_24h: toNok(parseFloat(t.lowPrice)),
         last_updated: new Date().toISOString()
       }))
 

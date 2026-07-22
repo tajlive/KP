@@ -32,33 +32,49 @@ export async function POST(request: NextRequest) {
     }
     
     // Get current fear/greed index
+    // market_sentiment har kolonnene fear_greed_index/recorded_at (ikke value/trend/timestamp)
     const { data: fearGreed } = await supabase
       .from('market_sentiment')
-      .select('value, trend')
-      .order('timestamp', { ascending: false })
+      .select('fear_greed_index, recorded_at')
+      .order('recorded_at', { ascending: false })
       .limit(1)
       .single();
-    
-    const fearGreedIndex = fearGreed?.value ?? 50;
-    const fearGreedTrend = Number(fearGreed?.trend) || 0;
-    
-    // Get latest technical indicators
-    const { data: indicators } = await supabase
-      .from('technical_indicators')
+
+    const fearGreedIndex = fearGreed?.fear_greed_index ?? 50;
+    // TODO: trend-kolonne finnes ikke i market_sentiment — kan beregnes fra historikk
+    const fearGreedTrend = 0;
+
+    // TODO: technical_indicators-tabellen finnes ikke i prod DB — query feiler ved runtime
+    interface IndicatorRow {
+      rsi: number | null;
+      macd: number | null;
+      macd_signal: number | null;
+      bb_upper: number | null;
+      bb_lower: number | null;
+      bb_middle: number | null;
+      atr: number | null;
+      ema20: number | null;
+      ema50: number | null;
+      adx: number | null;
+    }
+    const { data: indicatorsRaw } = await supabase
+      .from('technical_indicators' as never)
       .select('*')
-      .eq('symbol', symbol)
-      .order('timestamp', { ascending: false })
+      .eq('symbol' as never, symbol)
+      .order('timestamp' as never, { ascending: false })
       .limit(1)
       .single();
-    
-    // Get active RL agent
-    const { data: agentData } = await supabase
-      .from('rl_agents')
+    const indicators = indicatorsRaw as unknown as IndicatorRow | null;
+
+    // TODO: rl_agents-tabellen finnes ikke i prod DB — query feiler ved runtime
+    const { data: agentDataRaw } = await supabase
+      .from('rl_agents' as never)
       .select('state_vector, config')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .eq('is_active' as never, true)
+      .order('created_at' as never, { ascending: false })
       .limit(1)
       .single();
+    const agentData = agentDataRaw as unknown as { state_vector: string } | null;
     
     let action: number;
     let confidence: number;
@@ -66,7 +82,6 @@ export async function POST(request: NextRequest) {
     
     if (agentData?.state_vector) {
       // Use RL agent
-      // @ts-expect-error - deserialize method signature mismatch
       const agent = PPOAgent.deserialize(Buffer.from(agentData.state_vector).toString());
       
       const state = PPOAgent.encodeState(

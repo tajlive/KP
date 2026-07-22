@@ -351,7 +351,8 @@ export async function POST(
 
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, side, price, quantity, realized_pnl, executed_at, symbol, trading_pair, mode")
+      // NB: ingen "symbol"-kolonne i trades — trading_pair er riktig felt
+      .select("id, side, price, quantity, realized_pnl, executed_at, trading_pair, mode")
       .eq("user_id", userId)
       .gte("executed_at", thirtyDaysAgo)
       .order("executed_at", { ascending: true });
@@ -364,7 +365,6 @@ export async function POST(
     const tradeList: Trade[] = (trades ?? []).map((t) => ({
       ...t,
       realized_pnl: t.realized_pnl ?? undefined,
-      symbol: t.symbol ?? undefined,
       mode: t.mode ?? undefined,
     })) as Trade[];
     const metrics = computeMetrics(tradeList);

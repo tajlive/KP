@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
       .eq("user_id", user.id)
       .order("started_at", { ascending: false });
 
-    if (mode) query = query.eq("mode", mode);
-    if (statusFilter) query = query.eq("status", statusFilter);
+    if (mode) query = query.eq("mode", mode as "paper" | "live");
+    if (statusFilter) query = query.eq("status", statusFilter as "active" | "paused" | "crashed" | "stopped");
 
     const { data: sessions, error } = await query;
 
@@ -202,12 +202,12 @@ export async function PATCH(request: NextRequest) {
   const newStatus = validActions[action];
 
   const updates: {
-    status: string;
+    status: "active" | "paused" | "crashed" | "stopped";
     stopped_at?: string;
     archived?: boolean;
     archived_at?: string;
   } = {
-    status: newStatus,
+    status: newStatus as "active" | "paused" | "crashed" | "stopped",
   };
 
   if (action === "stop") {
