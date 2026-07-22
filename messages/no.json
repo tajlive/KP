@@ -268,8 +268,8 @@
       },
       "tierError": "Nivå feil",
       "tierUpdated": "Nivå oppdatert",
-      "paperError": "Papir feil",
-      "paperSaved": "Papir saved",
+      "paperError": "Kunne ikke sette lekepenger-saldo",
+      "paperSaved": "Lekepenger-saldo lagret",
       "reportError": "Report feil",
       "reportReady": "Report ready",
       "reportFailed": "Report failed",
@@ -280,16 +280,16 @@
       "ariaFilterSource": "Aria filter kilde",
       "filterAllSources": "Filter alle sources",
       "ariaSelectAllUsers": "Aria select alle users",
-      "paperBalance": "Papir balanse",
-      "setPaper": "Set papir",
+      "paperBalance": "Lekepenger-balanse",
+      "setPaper": "Sett lekepenger",
       "cockpitReport": "Cockpit report",
       "impersonate": "Impersonate",
-      "paperModalTitle": "Papir modal tittel",
-      "paperModalHint": "Papir modal tips",
+      "paperModalTitle": "Juster lekepenger-saldo",
+      "paperModalHint": "Ny saldo gjelder fra neste økt.",
       "balanceKr": "Balanse kr",
       "syncSessions": "Sync økter",
       "resetBaseline": "Reset baseline",
-      "savePaper": "Lagre papir",
+      "savePaper": "Lagre lekepenger",
       "reportModalTitle": "Report modal tittel",
       "reportModalHint": "Report modal tips",
       "reportStatus": "Report status",
@@ -1306,7 +1306,7 @@
       "time": "20 min"
     },
     "course3": {
-      "title": "Din første papirhandel",
+      "title": "Din første handel",
       "level": "Nybegynner",
       "time": "10 min"
     }
@@ -1552,7 +1552,9 @@
       "mode": "Modus",
       "breadcrumbYouAreHere": "Du er her",
       "profile": "Profil",
-      "jokerTrade": "JokerTrade"
+      "jokerTrade": "JokerTrade",
+      "analysis": "Analyse",
+      "market": "Marked"
     },
     "learningPath": {
       "title": "Læringsløp",
@@ -1676,14 +1678,14 @@
       "subtitle": "+200 KLT",
       "description": "Fortsett å handle for å samle flere belønninger.",
       "dismiss": "Lukk",
-      "stats": "{count} trade(s) fullført"
+      "stats": "{count} handler fullført"
     },
     "paperToLive": {
       "title": "Lekepenger fremgang",
-      "progress": "{current}/{target} trades fullført",
-      "unlockText": "Fullfør {remaining} trades for å låse opp live trading preview",
+      "progress": "{current}/{target} handler fullført",
+      "unlockText": "Fullfør {remaining} handler til for å låse opp forhåndsvisning av live-handel",
       "unlocked": "Live trading preview er ulåst!",
-      "winningTrades": "{count} vinners"
+      "winningTrades": "{count} vinnere"
     },
     "emptyBotState": {
       "title": "Velg din første strategi",
@@ -1869,11 +1871,11 @@
       "widgetErrorTitle": "Dashboard-widgeten kunne ikke lastes",
       "widgetErrorMessage": "Vi kunne ikke vise denne delen av dashboardet akkurat nå. Prøv på nytt, eller last siden på nytt hvis problemet vedvarer.",
       "retry": "Prøv igjen",
-      "emptyState": "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk.",
-      "emptyStatePaper": "Ingen handler ennå. Start en papirhandel fra /handel for å se handler her.",
-      "emptyStateLive": "Ingen live-handler ennå. Koble til Binance og start live-trading fra /handel.",
-      "showingPaper": "Viser papirhandler",
-      "showingLive": "Viser livehandler",
+      "emptyState": "Ingen handler ennå for valgt modus. Start en ny økt for å se statistikk.",
+      "emptyStatePaper": "Ingen handler ennå. Start en lekepenger-handel fra /trade for å se handler her.",
+      "emptyStateLive": "Ingen live-handler ennå. Koble til Binance og start live-handel fra /trade.",
+      "showingPaper": "Viser lekepenger",
+      "showingLive": "Viser live-handler",
       "stats": {
         "totalReturn": "Total avkastning",
         "totalReturnSub": "Akkumulert profitt",
@@ -1885,7 +1887,15 @@
         "balanceSub": "Tilgjengelig kapital",
         "balanceHelp": "Gjeldende kapital = startkapital + realisert PnL. Åpne posisjoner er ikke inkludert."
       },
-      "scopeLabel": "Basert på aktive og fullførte {mode}-sessions",
+      "scopeLabel": "Basert på aktive og fullførte sesjoner",
+      "chart": {
+        "title": "Din portefølje",
+        "emptyTitle": "Ingen handelshistorikk ennå",
+        "emptyDesc": "Start din første øvelsesøkt for å se grafen",
+        "errorTitle": "Grafen kunne ikke vises",
+        "errorMessage": "Vi kunne ikke laste porteføljegrafen akkurat nå. Prøv på nytt.",
+        "retry": "Oppdater"
+      },
       "sessionsTitle": "Dine sesjoner",
       "lastUpdated": "Sist oppdatert",
       "seeAll": "Se alle",
@@ -1969,15 +1979,18 @@
       "return": "Avkastning",
       "leaderboardTitle": "🏆 Leaderboard",
       "leaderboardDesc": "Sammenlign deg med andre tradere og klatre på rangeringen.",
-      "leaderboardCta": "Se rangering →"
+      "leaderboardCta": "Se rangering →",
+      "jokerTradeTitle": "🎭 JokerTrade — AI-en trader for deg",
+      "jokerTradeDesc": "La AI finne trade-idéer. Du velger beløp og godkjenner hver trade.",
+      "jokerTradeCta": "Utforsk JokerTrade →"
     },
     "hero": {
-      "paperMode": "Papir modus",
-      "liveMode": "Live modus",
+      "paperMode": "Lekepenger-modus",
+      "liveMode": "Live-modus",
       "noData": "Ingen data",
       "latestChange": "Latest change",
-      "ctaPaper": "Cta papir",
-      "ctaLive": "Cta live"
+      "ctaPaper": "Start handel",
+      "ctaLive": "Start live-handel"
     },
     "signalPreview": {
       "title": "Tittel",
@@ -2167,7 +2180,7 @@
     "price": "$65,284.25",
     "priceLabel": "BTC / USDT",
     "priceChange": "-12.20%",
-    "description": "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 10 000 i øvingspenger — ingen kredittkort.",
+    "description": "Norges eneste plattform med kurs, lekepenger og autohandel. Start gratis med kr 10 000 i øvingspenger — ingen kredittkort.",
     "badge": "🇳🇴 Norges ledende crypto-akademi",
     "tagline": "Fra nybegynner til selvsikker trader",
     "trust": "Ingen kredittkort · Norsk veiledning · BankID-sikker",
@@ -2366,7 +2379,7 @@
       "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
     },
     "demoWidget": {
-      "title": "Prøv papirhandel — helt gratis",
+      "title": "Prøv lekepenger — helt gratis",
       "subtitle": "Klikk kjøp og selg for å se hvordan trading fungerer. Ingen registrering nødvendig.",
       "portfolio": "Portefølje",
       "positionLabel": "Posisjon",
@@ -2589,7 +2602,7 @@
       "pairsHint": "Resultat fordelt på kryptovaluta",
       "pairPnl": "P/L",
       "modeTitle": "P/L per modus",
-      "modeHint": "Papir vs Live resultater"
+      "modeHint": "Lekepenger vs Live resultater"
     },
     "empty": {
       "noTradesTitle": "Ingen handler enda",
@@ -3110,8 +3123,8 @@
       "nextSteps": {
         "title": "Hva skjer nå?",
         "step1": "Utforsk dashboardet",
-        "step2": "Start din første papirhandel",
-        "step3": "Fullfør kurset «Din første papirhandel»"
+        "step2": "Start din første lekepenger-handel",
+        "step3": "Fullfør kurset «Din første handel»"
       }
     },
     "step1": {
@@ -4205,7 +4218,7 @@
     "exportCsv": "Eksportér CSV",
     "copyDiagnostics": "Kopier diagnostikk",
     "filterAll": "Alle",
-    "filterPaper": "Kun papir",
+    "filterPaper": "Kun lekepenger",
     "filterLive": "Kun live",
     "totalPnl": "Total P&L",
     "totalRealizedPnl": "Realisert P&L (sum)",
@@ -4221,7 +4234,7 @@
     "fetchError": "Kunne ikke laste handler. Sjekk nettverk og prøv igjen.",
     "notLoggedIn": "Du er ikke innlogget. Logg inn for å se dine handler.",
     "retry": "Prøv igjen",
-    "noTradesHint": "Ingen rader i databasen for din bruker ennå. Utfør en papirhandel fra handelsdesk, eller sjekk at filteret «Alle» er valgt.",
+    "noTradesHint": "Ingen rader i databasen for din bruker ennå. Gjør en lekepenger-handel fra handelsdesken, eller sjekk at filteret «Alle» er valgt.",
     "whyColumn": "Hvorfor",
     "whyMissing": "Ingen signaltekst",
     "decisionLogTitle": "Beslutningslogg",
@@ -4509,7 +4522,7 @@
     "copyDiagnostics": "Copy diagnostics",
     "exportCsv": "Export csv",
     "filterAll": "Filter alle",
-    "filterPaper": "Filter papir",
+    "filterPaper": "Filter lekepenger",
     "filterLive": "Filter live",
     "totalTrades": "Totalt antall handler",
     "wins": "Wins",
@@ -4780,23 +4793,33 @@
       "trades": "Handler"
     },
     "riskMetrics": {
-      "loadError": "Load feil",
-      "sortinoRatio": "Sortino ratio",
-      "sortinoTooltip": "Sortino tooltip",
-      "calmarRatio": "Calmar ratio",
-      "calmarTooltip": "Calmar tooltip",
-      "var95": "Var",
-      "var95Tooltip": "Var tooltip",
-      "maxConsecutiveLosses": "Max consecutive losses",
-      "maxConsecutiveLossesTooltip": "Max consecutive losses tooltip",
-      "omegaRatio": "Omega ratio",
-      "omegaTooltip": "Omega tooltip",
-      "gainPainRatio": "Gain pain ratio",
-      "gainPainTooltip": "Gain pain tooltip",
-      "scoreTitle": "Score tittel",
-      "panelTooltip": "Panel tooltip",
-      "hideDetails": "Skjul details",
-      "showDetails": "Vis details"
+      "loadError": "Kunne ikke laste risikodata.",
+      "sortinoRatio": "Sortino-forhold",
+      "sortinoTooltip": "Måler risikojustert avkastning. Over 1 er bra.",
+      "calmarRatio": "Calmar-forhold",
+      "calmarTooltip": "Sammenligner årlig avkastning mot maksimalt tap. Over 1 er bra.",
+      "var95": "Value at Risk (95%)",
+      "var95Tooltip": "Maks forventet tap en dårlig dag med 95 % sikkerhet.",
+      "maxConsecutiveLosses": "Maks sammenhengende tap",
+      "maxConsecutiveLossesTooltip": "Flest tap på rad. Under 3 er bra.",
+      "omegaRatio": "Omega-forhold",
+      "omegaTooltip": "Sannsynlighet for gevinst vs. tap. Over 1 er bra.",
+      "gainPainRatio": "Gevinst/smerte-forhold",
+      "gainPainTooltip": "Forhold mellom total gevinst og totalt tap. Over 1 er bra.",
+      "scoreTitle": "Risikoscore",
+      "panelTooltip": "En samlet vurdering av porteføljens risikonivå basert på flere nøkkeltall. Høyere score = lavere risiko.",
+      "hideDetails": "Skjul detaljer",
+      "showDetails": "Vis detaljer",
+      "scoreDescription": {
+        "low": "Lav risiko — porteføljen viser sunne risikotall",
+        "moderate": "Moderat risiko — porteføljen har forbedringspotensial",
+        "high": "Høy risiko — porteføljen trenger oppmerksomhet"
+      },
+      "scoreLabel": {
+        "low": "Lav risiko",
+        "moderate": "Moderat risiko",
+        "high": "Høy risiko"
+      }
     },
     "positionLots": {
       "loading": "Laster...",
@@ -5127,7 +5150,7 @@
       "empty": "Ingen data",
       "filter": "Filter",
       "filterAll": "Filter alle",
-      "filterPaper": "Filter papir",
+      "filterPaper": "Filter lekepenger",
       "filterLive": "Filter live",
       "time": "Tid",
       "symbol": "Symbol",
