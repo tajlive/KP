@@ -3,32 +3,30 @@
 import * as React from "react";
 import Link from "next/link";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
-import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNOK } from "@/lib/format/currency";
 
 export default function PortfolioClientPage() {
   const locale = useLocale();
   const t = useTranslations("dashboard.portfolioPage");
-  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [paperBalance, setPaperBalance] = React.useState<number>(100000);
   const [wallets, setWallets] = React.useState<Array<{ id: string; currency: string; balance: number }> | null>(null);
 
   React.useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      setError("auth_required");
-      setLoading(false);
-      return;
-    }
+    let cancelled = false;
     const load = async () => {
       try {
-        const timeout = setTimeout(() => { setLoading(false); setError("Tidsavbrudd — prøv igjen"); }, 15000);
+        const timeout = setTimeout(() => { setLoading(false); setError("Tidsavbrudd — prøv igjen"); }, 10000);
 
-        // Fetch profile via API (timeout-safe)
-        const res = await fetch(`/api/user/profile?userId=${user.id}`);
+        // Fetch profile via API (independent of AuthContext — avoids Supabase client hang)
+        const res = await fetch(`/api/user/profile`);
+        if (res.status === 401) {
+          clearTimeout(timeout);
+          if (!cancelled) { setError("auth_required"); setLoading(false); }
+          return;
+        }
         const data = await res.json();
 
         if (data.ok && data.profile) {
@@ -39,17 +37,16 @@ export default function PortfolioClientPage() {
         }
 
         clearTimeout(timeout);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       } catch (e) {
-        setLoading(false);
-        setError(e instanceof Error ? e.message : "Kunne ikke laste portefølje");
+        if (!cancelled) { setLoading(false); setError(e instanceof Error ? e.message : "Kunne ikke laste portefølje"); }
       }
     };
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading]);
+    return () => { cancelled = true; };
+  }, []);
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center">
         <div className="animate-pulse text-slate-400">Laster portefølje...</div>
