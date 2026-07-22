@@ -15,13 +15,13 @@ const SYMBOLS = [
   'DOTUSDT', 'LINKUSDT', 'AVAXUSDT', 'MATICUSDT', 'DOGEUSDT',
 ];
 
+import { fetchKlinesViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
+
 // OPTIMIZED: Only fetch 55 candles — computeFeatures needs max 50 (SMA50)
 // Saves 45% of klines API weight vs 100 candles
+// Uses Supabase Edge Function proxy (unngår Cloudflare IP-blokk mot Binance)
 async function fetchHourlyCandles(symbol: string, limit = 55) {
-  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=${limit}`;
-  const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
-  if (!res.ok) throw new Error(`Binance API error: ${res.status} for ${symbol}`);
-  const data = await res.json() as [number, string, string, string, string, string][];
+  const data = await fetchKlinesViaProxy(symbol, "1h", limit) as [number, string, string, string, string, string][];
   return data.map((c) => ({
     open: parseFloat(c[1]),
     high: parseFloat(c[2]),
