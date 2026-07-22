@@ -24,8 +24,9 @@ interface MockOpts {
     total_trades: number | null;
     winning_trades: number | null;
     losing_trades: number | null;
-    total_deployed_capital: number | null;
-    starting_capital: number | null;
+    // Matcher reell RPC-respons (get_dashboard_metrics): total_capital,
+    // ingen starting_capital / total_deployed_capital
+    total_capital: number | null;
   } | null;
   rpcError?: { message: string } | null;
   sessions?: Array<{
@@ -36,9 +37,11 @@ interface MockOpts {
   }>;
   trades?: Array<{ realized_pnl: number | null }>;
   profile?: { paper_balance: number } | null;
+  paperAccount?: { current_balance: number } | null;
   sessionError?: { message: string } | null;
   tradeError?: { message: string } | null;
   profileError?: { message: string } | null;
+  paperAccountError?: { message: string } | null;
 }
 
 function createMockSupabase(opts: MockOpts = {}): SupabaseClient<Database> {
@@ -48,9 +51,11 @@ function createMockSupabase(opts: MockOpts = {}): SupabaseClient<Database> {
     sessions = [],
     trades = [],
     profile = null,
+    paperAccount = null,
     sessionError = null,
     tradeError = null,
     profileError = null,
+    paperAccountError = null,
   } = opts;
 
   const mockQueryBuilder = (table: string): MockQueryBuilder => {
@@ -101,10 +106,18 @@ function createMockSupabase(opts: MockOpts = {}): SupabaseClient<Database> {
     Promise.resolve({ data: profile, error: profileError }),
   );
 
+  const paperAccountBuilder = mockQueryBuilder("paper_accounts");
+  paperAccountBuilder.select = vi.fn(() => paperAccountBuilder);
+  paperAccountBuilder.eq = vi.fn(() => paperAccountBuilder);
+  paperAccountBuilder.maybeSingle = vi.fn(() =>
+    Promise.resolve({ data: paperAccount, error: paperAccountError }),
+  );
+
   const from = vi.fn((table: string) => {
     if (table === "trading_sessions") return sessionsBuilder;
     if (table === "trades") return tradesBuilder;
     if (table === "user_profiles") return profileBuilder;
+    if (table === "paper_accounts") return paperAccountBuilder;
     return mockQueryBuilder(table);
   });
 
@@ -131,8 +144,9 @@ describe("getUserDashboardMetrics", () => {
         total_trades: 4,
         winning_trades: 2,
         losing_trades: 1,
-        total_deployed_capital: 105000,
-        starting_capital: 100000,
+        // Reell RPC returnerer total_capital (ikke total_deployed_capital)
+        // og har ingen starting_capital — den blir da 0 uten profil-fallback
+        total_capital: 105000,
       },
     });
 
@@ -149,7 +163,7 @@ describe("getUserDashboardMetrics", () => {
     expect(result.losingTrades).toBe(1);
     expect(result.winRate).toBeCloseTo(2 / 3, 2);
     expect(result.totalCapital).toBe(105000);
-    expect(result.startingCapital).toBe(100000);
+    expect(result.startingCapital).toBe(0);
   });
 
   it("returns zeroes via RPC when user has no trades", async () => {
@@ -159,8 +173,7 @@ describe("getUserDashboardMetrics", () => {
         total_trades: 0,
         winning_trades: 0,
         losing_trades: 0,
-        total_deployed_capital: 100000,
-        starting_capital: 100000,
+        total_capital: 100000,
       },
     });
 
@@ -184,8 +197,8 @@ describe("getUserDashboardMetrics", () => {
         total_trades: 1,
         winning_trades: 1,
         losing_trades: 0,
-        total_deployed_capital: 200000,
-        starting_capital: 150000,
+        // Reell RPC returnerer total_capital (ikke total_deployed_capital)
+        total_capital: 200000,
       },
     });
 
@@ -242,6 +255,24 @@ describe("getUserDashboardMetrics", () => {
 
     expect(result.totalCapital).toBe(75000);
     expect(result.startingCapital).toBe(100000);
+    expect(result.totalTrades).toBe(0);
+  });
+
+  it("uses paper_accounts.current_balance before user_profiles.paper_balance", async () => {
+    const supabase = createMockSupabase({
+      rpcResult: null, // empty array from RPC
+      paperAccount: { current_balance: 100_000 },
+      profile: { paper_balance: 1 }, // would be wrong if used
+    });
+
+    const result = await getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId: "user-1",
+      mode: "paper",
+    });
+
+    expect(result.totalCapital).toBe(100_000);
+    expect(result.startingCapital).toBe(100_000);
     expect(result.totalTrades).toBe(0);
   });
 

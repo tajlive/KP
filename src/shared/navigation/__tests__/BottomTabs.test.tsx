@@ -29,9 +29,29 @@ describe("BottomTabs", () => {
     expect(portfolio).toHaveAttribute("aria-current", "page");
   });
 
+  it("marks home tab as active on /dashboard (ikke på under-sider)", () => {
+    usePathnameMock.mockReturnValue("/no/dashboard");
+    render(<BottomTabs />);
+    expect(screen.getByTestId("bottom-tab-home")).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByTestId("bottom-tab-portfolio")).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
+  it("renderer alle fire faner: home, portfolio, trade, account", () => {
+    render(<BottomTabs />);
+    expect(screen.getByTestId("bottom-tab-home")).toBeInTheDocument();
+    expect(screen.getByTestId("bottom-tab-portfolio")).toBeInTheDocument();
+    expect(screen.getByTestId("bottom-tab-trade")).toBeInTheDocument();
+    expect(screen.getByTestId("bottom-tab-account")).toBeInTheDocument();
+  });
+
   it("navigates on tab press", () => {
     render(<BottomTabs />);
     fireEvent.click(screen.getByTestId("bottom-tab-trade"));
-    expect(pushMock).toHaveBeenCalledWith("/no/handel");
+    expect(pushMock).toHaveBeenCalledWith("/no/trade");
   });
 });

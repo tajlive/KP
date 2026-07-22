@@ -127,9 +127,9 @@ describe("QuickActions", () => {
     expect(mockRefresh).toHaveBeenCalled();
   });
 
-  it("navigates to handelshistorikk when viewing history", () => {
+  it("navigates to dashboard historikk when viewing history", () => {
     renderQuickActions();
     fireEvent.click(screen.getByText("cockpit.quickActions.viewHistory"));
-    expect(mockPush).toHaveBeenCalledWith("/no/handelshistorikk");
+    expect(mockPush).toHaveBeenCalledWith("/no/dashboard/historikk");
   });
 });

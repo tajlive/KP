@@ -93,7 +93,7 @@ describe("GET /api/trading-cockpit/analytics", () => {
     });
   });
 
-  it("passes null for omitted filters", async () => {
+  it("passes empty values for omitted filters", async () => {
     setupAuth("user-1");
     setupRpc({
       total_trades: 0,
@@ -126,13 +126,13 @@ describe("GET /api/trading-cockpit/analytics", () => {
     expect(mockRpc).toHaveBeenCalledWith("get_trading_analytics", {
       p_user_id: "user-1",
       p_mode: "paper",
-      p_trade_statuses: null,
-      p_session_statuses: null,
-      p_side: null,
-      p_pair: null,
-      p_search: null,
-      p_from: null,
-      p_to: null,
+      p_trade_statuses: [],
+      p_session_statuses: [],
+      p_side: "",
+      p_pair: "",
+      p_search: "",
+      p_from: "",
+      p_to: "",
     });
   });
 });

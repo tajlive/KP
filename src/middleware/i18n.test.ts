@@ -71,4 +71,25 @@ describe("i18nMiddleware", () => {
     expect(res.status).toBe(308);
     expect(res.headers.get("location")).toBe("http://localhost/en/dashboard");
   });
+
+  it("redirects /dashboard/autopilot to canonical /dashboard/auto-trade", async () => {
+    const req = new NextRequest(new URL("http://localhost/no/dashboard/autopilot"));
+    const res = await i18nMiddleware(req);
+    expect(res.status).toBe(308);
+    expect(res.headers.get("location")).toBe("http://localhost/no/dashboard/auto-trade");
+  });
+
+  it("redirects /bots to canonical /dashboard/auto-trade", async () => {
+    const req = new NextRequest(new URL("http://localhost/no/bots"));
+    const res = await i18nMiddleware(req);
+    expect(res.status).toBe(308);
+    expect(res.headers.get("location")).toBe("http://localhost/no/dashboard/auto-trade");
+  });
+
+  it("redirects /dashboard/trade to canonical /trade", async () => {
+    const req = new NextRequest(new URL("http://localhost/no/dashboard/trade"));
+    const res = await i18nMiddleware(req);
+    expect(res.status).toBe(308);
+    expect(res.headers.get("location")).toBe("http://localhost/no/trade");
+  });
 });
