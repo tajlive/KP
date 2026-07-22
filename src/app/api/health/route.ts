@@ -642,16 +642,16 @@ export async function POST(request: NextRequest) {
   const results: Record<string, { status: string; message?: string }> = {};
 
   try {
-    const { error } = await withTimeout(
+    const { error } = (await withTimeout(
       supabase.auth.getSession(),
       5000,
       { error: { message: "timeout" } } as unknown
-    );
+    )) as { error: { message: string } | null };
     results.auth = error ? { status: "error", message: error.message } : { status: "ok" };
-  } catch (e: unknown) { results.auth = { status: "error", message: e?.message }; }
+  } catch (e: unknown) { results.auth = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
 
   try {
-    const res = await withTimeout(
+    const res = (await withTimeout(
       fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + "/functions/v1/binance-proxy", {
         method: "POST",
         headers: {
@@ -663,19 +663,19 @@ export async function POST(request: NextRequest) {
       }),
       8000,
       null as unknown
-    );
+    )) as Response | null;
     if (res?.ok) {
-      const json = await res.json();
+      const json = (await res.json()) as { data?: { price?: string } } | null;
       results.binance = json?.data?.price
         ? { status: "ok", message: "BTCUSDT: " + json.data.price }
         : { status: "error", message: "No price" };
     } else {
       results.binance = { status: "error", message: "HTTP " + res?.status };
     }
-  } catch (e: unknown) { results.binance = { status: "error", message: e?.message }; }
+  } catch (e: unknown) { results.binance = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
 
   try {
-    const lb = await withTimeout(
+    const lb = (await withTimeout(
       fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + "/rest/v1/leaderboard_entries?select=count", {
         headers: {
           apikey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
@@ -684,14 +684,14 @@ export async function POST(request: NextRequest) {
       }),
       5000,
       null as unknown
-    );
+    )) as Response | null;
     if (lb?.ok) {
-      const data = await lb.json();
-      results.leaderboard = data?.[0]?.count > 0
-        ? { status: "ok", message: data[0].count + " entries" }
+      const data = (await lb.json()) as Array<{ count: number }> | null;
+      results.leaderboard = (data?.[0]?.count ?? 0) > 0
+        ? { status: "ok", message: data![0].count + " entries" }
         : { status: "error", message: "Empty" };
     }
-  } catch (e: unknown) { results.leaderboard = { status: "error", message: e?.message }; }
+  } catch (e: unknown) { results.leaderboard = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
 
   const failed = Object.values(results).some(r => r.status !== "ok");
   return NextResponse.json({

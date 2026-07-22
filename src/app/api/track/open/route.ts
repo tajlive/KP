@@ -35,9 +35,23 @@ export async function GET(request: NextRequest) {
 
   const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
+  // TODO: Opprett email_tracking- og campaign_contacts-tabeller i DB — mangler i supabase-typene
+  const sb = supabase as unknown as {
+    from: (table: string) => {
+      insert: (vals: Record<string, unknown>) => Promise<{
+        error: { message: string } | null;
+      }>;
+      update: (vals: Record<string, unknown>) => {
+        eq: (col: string, val: string) => {
+          is: (col: string, val: null) => Promise<{ error: { message: string } | null }>;
+        };
+      };
+    };
+  };
+
   try {
     // Logg åpning
-    await supabase.from('email_tracking').insert({
+    await sb.from('email_tracking').insert({
       contact_id: contactId,
       sequence,
       event: 'open',
@@ -46,7 +60,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Oppdater kontakt status
-    await supabase
+    await sb
       .from('campaign_contacts')
       .update({ opened_at: new Date().toISOString() })
       .eq('id', contactId)

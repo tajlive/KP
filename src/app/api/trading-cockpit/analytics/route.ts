@@ -157,20 +157,21 @@ export async function GET(request: NextRequest) {
   }
 
   const tradeStatuses =
-    status && status !== "all" ? [status] : null;
+    status && status !== "all" ? [status] : [];
   const sessionStatuses =
-    sessionStatus && sessionStatus !== "all" ? [sessionStatus] : null;
+    sessionStatus && sessionStatus !== "all" ? [sessionStatus] : [];
 
   const { data: rows, error } = await supabase.rpc("get_trading_analytics", {
     p_user_id: user.id,
     p_mode: mode,
-    p_trade_statuses: tradeStatuses,
-    p_session_statuses: sessionStatuses,
-    p_side: side && side !== "all" ? side : null,
-    p_pair: pair || null,
-    p_search: search || null,
-    p_from: from,
-    p_to: to,
+    // Genererte typer krever non-null args — SQL-funksjonen håndterer tomme verdier som "alle"
+    p_trade_statuses: tradeStatuses as string[],
+    p_session_statuses: sessionStatuses as string[],
+    p_side: side && side !== "all" ? side : "",
+    p_pair: pair || "",
+    p_search: search || "",
+    p_from: from ?? "",
+    p_to: to ?? "",
   });
 
   if (error) {

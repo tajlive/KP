@@ -48,7 +48,18 @@ export async function GET(request: Request) {
     }
 
     // Hent display_name for hver unique user_id
-    const userIds = [...new Set(trades.map((t: unknown) => t.user_id))];
+    interface JokerTradeNotifRow {
+      id: string;
+      trading_pair: string;
+      side: string;
+      quantity: number;
+      price: number;
+      executed_at: string | null;
+      joker_explanation: string | null;
+      user_id: string;
+    }
+    const tradeRows = (trades ?? []) as unknown as JokerTradeNotifRow[];
+    const userIds = [...new Set(tradeRows.map((t) => t.user_id))];
     const displayNames: Record<string, string> = {};
 
     if (userIds.length > 0) {
@@ -64,7 +75,7 @@ export async function GET(request: Request) {
       }
     }
 
-    const notifications: JokerNotification[] = trades.map((t: unknown) => ({
+    const notifications: JokerNotification[] = tradeRows.map((t) => ({
       id: t.id,
       user_display_name: displayNames[t.user_id] || "Trader",
       title: `🎭 ${displayNames[t.user_id] || "Trader"} — ${t.side === "buy" ? "🟦 Kjøp" : "🔴 Salg"} ${t.trading_pair}`,
@@ -73,7 +84,7 @@ export async function GET(request: Request) {
       side: t.side,
       quantity: t.quantity,
       price: t.price,
-      executed_at: t.executed_at,
+      executed_at: t.executed_at ?? "",
     }));
 
     return NextResponse.json({ success: true, data: notifications });

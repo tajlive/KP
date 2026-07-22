@@ -69,17 +69,8 @@ export async function GET() {
       console.error('Week count error:', weekError);
     }
 
-    // Get channel breakdown (if source field exists)
-    const { data: channelData, error: channelError } = await supabase
-      .from('beta_signups')
-      .select('source');
-
-    const channels = {
-      linkedin: channelData?.filter(u => u.source === 'linkedin').length || 0,
-      email: channelData?.filter(u => u.source === 'email').length || 0,
-      facebook: channelData?.filter(u => u.source === 'facebook').length || 0,
-      direct: channelData?.filter(u => !u.source || u.source === 'direct').length || 0,
-    };
+    // TODO: beta_signups har ikke source-kolonne — utelat kanalnedbrytning inntil kolonnen er på plass
+    const channels = { linkedin: 0, email: 0, facebook: 0, direct: total || 0 };
 
     const totalUsers = total || 0;
     const remaining = Math.max(0, 100 - totalUsers);

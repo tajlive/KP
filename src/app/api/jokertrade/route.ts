@@ -82,7 +82,17 @@ export async function GET(request: NextRequest) {
       .order("executed_at", { ascending: false })
       .limit(20);
 
-    const positions = (openPositions || []).map((p: unknown) => ({
+    // db er any-cast (untyped client) — eksplisitte rad-typer for mappingene
+    interface PaperPositionRow {
+      id: string;
+      symbol: string;
+      position_type: string;
+      quantity: number;
+      entry_price: number;
+      profit_loss: number | null;
+      entry_time: string;
+    }
+    const positions = ((openPositions || []) as PaperPositionRow[]).map((p) => ({
       id: p.id,
       symbol: p.symbol,
       side: p.position_type === "long" ? "buy" : "sell",
@@ -92,7 +102,19 @@ export async function GET(request: NextRequest) {
       created_at: p.entry_time,
     }));
 
-    const history = (tradeHistory || []).map((t: unknown) => ({
+    interface JokerTradeRow {
+      id: string;
+      trading_pair: string;
+      side: string;
+      quantity: number;
+      price: number;
+      realized_pnl: number | null;
+      executed_at: string | null;
+      created_at: string;
+      joker_trade: boolean | null;
+      joker_explanation: string | null;
+    }
+    const history = ((tradeHistory || []) as JokerTradeRow[]).map((t) => ({
       id: t.id,
       symbol: t.trading_pair,
       side: t.side,

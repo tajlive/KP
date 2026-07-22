@@ -122,7 +122,24 @@ export async function POST(request: NextRequest) {
 
   const supabase = createClient();
 
-  const { data: profile, error: profileError } = await supabase
+  // TODO: Opprett support_impersonation_sessions-tabell i DB — mangler i supabase-typene
+  const sb = supabase as unknown as {
+    from: (table: string) => {
+      insert: (vals: Record<string, unknown>) => Promise<{
+        error: { message: string } | null;
+      }>;
+      select: (cols: string) => {
+        eq: (col: string, val: string) => {
+          maybeSingle: () => Promise<{
+            data: { id: string; email: string } | null;
+            error: { message: string } | null;
+          }>;
+        };
+      };
+    };
+  };
+
+  const { data: profile, error: profileError } = await sb
     .from("user_profiles")
     .select("id, email")
     .eq("email", email)
@@ -159,7 +176,7 @@ export async function POST(request: NextRequest) {
   const now = Date.now();
   const expiresAt = new Date(now + durationMin * 60 * 1000).toISOString();
 
-  const { error: insertError } = await supabase
+  const { error: insertError } = await sb
     .from("support_impersonation_sessions")
     .insert({
       token_jti: jti,

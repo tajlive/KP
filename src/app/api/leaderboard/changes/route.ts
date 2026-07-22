@@ -49,7 +49,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, data: [] });
     }
 
-    const snapshots: unknown[] = await snapRes.json();
+    // REST-JSON er utypet — eksplisitte rad-typer
+    interface SnapshotRow {
+      user_id: string;
+      rank: number;
+    }
+    const snapshots: SnapshotRow[] = await snapRes.json();
 
     // 2. Hent gjeldende leaderboard
     const lbRes = await fetch(
@@ -69,11 +74,18 @@ export async function GET(request: Request) {
       );
     }
 
-    const leaderboard: unknown[] = await lbRes.json();
+    interface LeaderboardRow {
+      user_id: string;
+      rank: number;
+      user_display_name: string | null;
+      return_pct: number | null;
+      win_rate: number | null;
+    }
+    const leaderboard: LeaderboardRow[] = await lbRes.json();
 
     // 3. Finn endringer
     const snapshotRankMap = new Map<string, number>();
-    const snapshotDataMap = new Map<string, unknown>();
+    const snapshotDataMap = new Map<string, SnapshotRow>();
     for (const s of snapshots) {
       if (!snapshotRankMap.has(s.user_id)) {
         snapshotRankMap.set(s.user_id, s.rank);

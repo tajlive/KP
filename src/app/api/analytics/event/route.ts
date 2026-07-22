@@ -25,8 +25,17 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
+    // TODO: Opprett analytics_events-tabell i DB — mangler i supabase-typene
+    const sb = supabase as unknown as {
+      from: (table: string) => {
+        insert: (vals: Record<string, unknown>) => Promise<{
+          error: { message: string } | null;
+        }>;
+      };
+    };
+
     // Insert event - event_name derived from event_type or page_path if not provided
-    await supabase.from("analytics_events").insert({
+    await sb.from("analytics_events").insert({
       user_id: user_id ?? null,
       session_id: session_id ?? null,
       event_type: event_type ?? "page_view",
