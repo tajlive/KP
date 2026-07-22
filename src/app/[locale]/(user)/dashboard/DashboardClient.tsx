@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth/new/AuthContext";
 import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/DashboardContent";
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
@@ -26,7 +25,6 @@ interface ProfileResponse {
 }
 
 export default function DashboardClient({ locale }: DashboardClientProps) {
-  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [state, setState] = useState<{
     loading: boolean;
@@ -42,21 +40,22 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
   }>({ loading: true, preferredTradingMode: "paper", onboardingCompleted: false, signupDays: 1, cmsData: null, metrics: null, isPriority: false });
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.push(`/${locale}/login?next=/${locale}/dashboard`);
-      return;
-    }
-
     let cancelled = false;
+
     const load = async () => {
       try {
         const timeout = setTimeout(() => {
           if (!cancelled) setState(s => ({ ...s, loading: false, error: "Tidsavbrudd — prøv igjen" }));
-        }, 15000);
+        }, 10000);
 
-        // Fetch profile via API (timeout-safe)
-        const profileRes = await fetch(`/api/user/profile?userId=${user.id}`);
+        // Fetch profile via API (independent of AuthContext — avoids Supabase client hang)
+        const profileRes = await fetch(`/api/user/profile`);
+        if (profileRes.status === 401) {
+          clearTimeout(timeout);
+          router.push(`/${locale}/login?next=/${locale}/dashboard`);
+          return;
+        }
+
         const profileData: ProfileResponse = await profileRes.json();
 
         if (!profileData.ok || !profileData.profile) {
@@ -69,7 +68,7 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
         const preferredTradingMode = profile.preferred_trading_mode === "live" ? "live" : "paper";
 
         // Fetch metrics via API
-        const metricsRes = await fetch(`/api/dashboard/metrics?userId=${user.id}&mode=${preferredTradingMode}`);
+        const metricsRes = await fetch(`/api/dashboard/metrics?userId=${profile.id}&mode=${preferredTradingMode}`);
         const metrics = metricsRes.ok ? await metricsRes.json() : null;
 
         clearTimeout(timeout);
@@ -77,7 +76,7 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
         if (!cancelled) {
           setState({
             loading: false,
-            userId: user.id,
+            userId: profile.id,
             userName: profile.display_name ?? "",
             preferredTradingMode,
             onboardingCompleted: profile.onboarding_completed ?? false,
@@ -97,10 +96,9 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
     };
     load();
     return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading, locale]);
+  }, [locale, router]);
 
-  if (authLoading || state.loading) {
+  if (state.loading) {
     return (
       <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center">
         <div className="animate-pulse text-slate-400">Laster...</div>
