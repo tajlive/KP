@@ -33,7 +33,7 @@ export default function PortfolioClientPage() {
           setPaperBalance(Number(data.profile.paper_balance ?? 100000));
         }
         if (data.wallets) {
-          setWallets(data.wallets.filter((w: { currency: string }) => w.currency !== "NOK"));
+          setWallets(data.wallets);
         }
 
         clearTimeout(timeout);
