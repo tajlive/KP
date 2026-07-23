@@ -129,7 +129,7 @@ function PriceSparkline({ className }: { className?: string }) {
         if (!res.ok) return;
         const raw = (await res.json()) as unknown[];
         const closes = raw
-          .map((k) => Number((k as unknown[])[4]))
+          .map((k) => usdtPriceToNok(Number((k as unknown[])[4])))
           .filter((n) => Number.isFinite(n) && n > 0);
         if (!cancelled && closes.length > 1) setPoints(closes);
       } catch {
@@ -233,7 +233,7 @@ function PriceCard({ className }: { className?: string }) {
         </div>
       </div>
       <PriceSparkline className="flex-1 mt-4" />
-      <div className="text-[10px] text-slate-600 mt-2">BTC/USDT · 15m · siste 10 timer · Binance</div>
+      <div className="text-xs text-slate-500 mt-2">BTC/NOK · 15-minutters lys · siste 10 timer · Kilde: Binance</div>
     </div>
   );
 }
