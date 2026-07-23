@@ -70,7 +70,14 @@ export async function signUpWithEmail(formData: FormData) {
     }
   }
 
-  return { success: true, message: "Check your email for confirmation" };
+  return {
+    success: true,
+    message: "Check your email for confirmation",
+    // Med mailer_autoconfirm (e-postbekreftelse AV) returnerer Supabase en
+    // aktiv sesjon med det samme — klienten kan da sende brukeren rett til
+    // dashboard uten e-post-vegg.
+    hasSession: data.session != null,
+  };
 }
 
 export async function signOut() {
