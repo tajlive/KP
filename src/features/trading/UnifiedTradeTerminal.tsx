@@ -88,29 +88,59 @@ const MODES: { id: TradeMode; label: string; short: string; accent: string }[] =
   { id: "joker", label: "Joker", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
 ];
 
-function ModeTabs({ active, onChange }: { active: TradeMode; onChange: (m: TradeMode) => void }) {
+function ModeTabs({ active, onChange, locked }: { active: TradeMode; onChange: (m: TradeMode) => void; locked: TradeMode[] }) {
   const t = useTranslations("trading");
 
   return (
     <div className="flex items-center gap-0.5 bg-[#0A0D12] rounded-xl p-0.5 border border-[#1E2530]">
-      {MODES.map((m) => (
-        <button
-          key={m.id}
-          onClick={() => onChange(m.id)}
-          data-state={active === m.id ? "active" : "inactive"}
-          className={cn(
-            "relative px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
-            "border border-transparent",
-            "text-slate-500 hover:text-slate-300",
-            m.accent,
-          )}
-        >
-          <span className="hidden sm:inline">{m.short} </span>
-          {m.label}
-        </button>
-      ))}
+      {MODES.map((m) => {
+        const isLocked = locked.includes(m.id);
+        return (
+          <button
+            key={m.id}
+            onClick={() => onChange(m.id)}
+            data-state={active === m.id ? "active" : "inactive"}
+            aria-disabled={isLocked}
+            className={cn(
+              "relative px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
+              "border border-transparent",
+              "text-slate-500 hover:text-slate-300",
+              isLocked && "opacity-50",
+              m.accent,
+            )}
+          >
+            <span className="hidden sm:inline">{isLocked ? "🔒" : m.short} </span>
+            {m.label}
+          </button>
+        );
+      })}
     </div>
   );
+}
+
+// ─── Progressiv avsløring: Auto/Joker låses opp etter første handel ───
+// Kilde: /api/paper-trading/balance → recentTrades. null = ukjent ennå
+// (viser ulåst mens vi laster — eksisterende brukere skal ikke flimre).
+function useHasTraded() {
+  const [hasTraded, setHasTraded] = React.useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch("/api/paper-trading/balance")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d) setHasTraded((d.recentTrades?.length ?? 0) > 0);
+      })
+      .catch(() => {});
+    const onTrade = () => setHasTraded(true);
+    window.addEventListener("kp:trade-executed", onTrade);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("kp:trade-executed", onTrade);
+    };
+  }, []);
+
+  return hasTraded;
 }
 
 // ─── Price Sparkline (real Binance 15m klines, client-side) ───
@@ -276,6 +306,8 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       if (data.success) {
         const qty = (Number(amount) / priceNok).toFixed(6);
         setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} BTC · ${formatNOK(Number(amount), { locale: "nb-NO" })}` });
+        // Progressiv avsløring: lås opp Auto/Joker i denne sesjonen
+        window.dispatchEvent(new Event("kp:trade-executed"));
         // Send confirmation email
         fetch("/api/email/send", {
           method: "POST",
@@ -454,6 +486,33 @@ function MiniPositionList() {
 export function UnifiedTradeTerminal() {
   const t = useTranslations("trading");
   const [mode, setMode] = React.useState<TradeMode>("manual");
+  const hasTraded = useHasTraded();
+  const [lockHint, setLockHint] = React.useState(false);
+  const [showUnlock, setShowUnlock] = React.useState(false);
+  const prevHasTraded = React.useRef<boolean | null>(null);
+
+  const lockedModes: TradeMode[] = hasTraded === false ? ["auto", "joker"] : [];
+
+  React.useEffect(() => {
+    if (hasTraded === true && prevHasTraded.current === false) {
+      setLockHint(false);
+      setShowUnlock(true);
+      const id = setTimeout(() => setShowUnlock(false), 6000);
+      prevHasTraded.current = hasTraded;
+      return () => clearTimeout(id);
+    }
+    prevHasTraded.current = hasTraded;
+  }, [hasTraded]);
+
+  const handleModeChange = (m: TradeMode) => {
+    if (lockedModes.includes(m)) {
+      setLockHint(true);
+      return;
+    }
+    setLockHint(false);
+    setMode(m);
+  };
+
   const searchParams = useSearchParams();
   // Guided første-gangs-modus: opt-in via /trade?first=1 (fra OnboardingChecklist).
   // Eksisterende brukere og vanlig /trade påvirkes ikke.
@@ -506,7 +565,7 @@ export function UnifiedTradeTerminal() {
               ● BETA
             </span>
           </div>
-          <ModeTabs active={mode} onChange={setMode} />
+          <ModeTabs active={mode} onChange={handleModeChange} locked={lockedModes} />
         </div>
 
         {/* Main grid: chart + panels */}
@@ -517,19 +576,23 @@ export function UnifiedTradeTerminal() {
 
             {/* Mode description bar */}
             <motion.div
-              key={mode}
+              key={showUnlock ? "unlock" : lockHint ? "lock" : mode}
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "px-4 py-2 rounded-xl text-xs font-medium border",
-                mode === "manual" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
-                mode === "auto" && "bg-amber-500/5 border-amber-500/20 text-amber-400",
-                mode === "joker" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
+                showUnlock && "bg-violet-500/10 border-violet-500/30 text-violet-300",
+                !showUnlock && lockHint && "bg-slate-500/5 border-slate-500/20 text-slate-400",
+                !showUnlock && !lockHint && mode === "manual" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
+                !showUnlock && !lockHint && mode === "auto" && "bg-amber-500/5 border-amber-500/20 text-amber-400",
+                !showUnlock && !lockHint && mode === "joker" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
               )}
             >
-              {mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
-              {mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
-              {mode === "joker" && "🃏 JokerTrade — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
+              {showUnlock && "🔓 Auto og Joker er låst opp! Sett dine egne regler — eller la AI-en handle for deg."}
+              {!showUnlock && lockHint && "🔒 Låses opp etter din første handel — gjør ett kjøp i Manuell modus, så åpnes Auto og Joker."}
+              {!showUnlock && !lockHint && mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
+              {!showUnlock && !lockHint && mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
+              {!showUnlock && !lockHint && mode === "joker" && "🃏 JokerTrade — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
             </motion.div>
           </div>
 
