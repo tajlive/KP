@@ -4273,7 +4273,8 @@
     "integrityPollWarning": "Integrity Poll Warning",
     "noTradesFiltered": "No Trades Filtered",
     "noTradesFilteredHint": "No Trades Filtered Hint",
-    "emptyCta": "Gjør din første handel"
+    "emptyCta": "Gjør din første handel",
+    "errorTitle": "Kunne ikke laste handler"
   },
   "trading": {
     "paperMode": "Lekepenger",
