@@ -1162,7 +1162,8 @@
     "howToWin": "How to win?",
     "howToWinDesc": "Highest percentage return (ROI) wins. We adjust for risk by looking at Sharpe ratio.",
     "whatIsCopying": "What is copying?",
-    "whatIsCopyingDesc": "When you copy a trader, you start a bot with the same risk profile and strategy as them."
+    "whatIsCopyingDesc": "When you copy a trader, you start a bot with the same risk profile and strategy as them.",
+    "emptyCta": "Start trading"
   },
   "contact": {
     "title": "Contact us",
@@ -2046,7 +2047,8 @@
       "noPositions": "No Positions",
       "close": "Close",
       "buy": "Buy",
-      "chart": "Chart"
+      "chart": "Chart",
+      "emptyCta": "Start trading"
     },
     "dataSource": {
       "prices": "Prices",
@@ -4275,7 +4277,8 @@
     "diagnosticsCopied": "Diagnostics Copied",
     "integrityPollWarning": "Integrity Poll Warning",
     "noTradesFiltered": "No Trades Filtered",
-    "noTradesFilteredHint": "No Trades Filtered Hint"
+    "noTradesFilteredHint": "No Trades Filtered Hint",
+    "emptyCta": "Make your first trade"
   },
   "trading": {
     "paperMode": "Paper Trading",

@@ -8,6 +8,7 @@ import { LeaderboardEntry } from '@/types/paper-trading'
 import { usePaperTrading } from '@/hooks/usePaperTrading'
 import { toast } from 'sonner'
 import { Button } from '@/shared/ui/button'
+import { EmptyState } from '@/shared/ui/EmptyState'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import {
     Trophy,
@@ -230,10 +231,13 @@ export default function CompetitionClient({
                                 ))}
                             </div>
                         ) : leaderboard.length === 0 ? (
-                            <div className="p-12 text-center">
-                                <Trophy className="w-16 h-16 text-[#2A2D35] mx-auto mb-4" />
-                                <p className="text-[#F9FAFB] font-medium text-lg mb-2">{tComp('noActive')}</p>
-                                <p className="text-sm text-[#6B7280] max-w-sm mx-auto">Ingen tradere har resultater ennå. Start trading for å komme på lista!</p>
+                            <div className="p-6">
+                                <EmptyState
+                                    variant="trophy"
+                                    title={tComp('noActive')}
+                                    description="Ingen tradere har resultater ennå. Start trading for å komme på lista!"
+                                    action={{ label: tComp('emptyCta'), href: `/${params.locale}/trade` }}
+                                />
                             </div>
                         ) : (
                             <div className="divide-y divide-[#2A2D35]">
