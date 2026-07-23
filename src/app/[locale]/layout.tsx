@@ -119,7 +119,8 @@ export async function generateMetadata({
     ],
     openGraph: {
       images: [
-        { url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" },
+        // Dynamisk generert (fallback til statisk ved feil — se /api/og)
+        { url: `/api/og?lang=${isNo ? "no" : "en"}`, width: 1200, height: 630, alt: "Klarpakke" },
       ],
     },
     manifest: "/manifest.json",
