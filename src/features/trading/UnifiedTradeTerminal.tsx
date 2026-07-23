@@ -113,6 +113,91 @@ function ModeTabs({ active, onChange }: { active: TradeMode; onChange: (m: Trade
   );
 }
 
+// ─── Price Sparkline (real Binance 15m klines, client-side) ───
+const SPARK_KLINES_URL =
+  "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=40";
+const SPARK_POLL_MS = 30_000;
+
+function PriceSparkline({ className }: { className?: string }) {
+  const [points, setPoints] = React.useState<number[]>([]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(SPARK_KLINES_URL);
+        if (!res.ok) return;
+        const raw = (await res.json()) as unknown[];
+        const closes = raw
+          .map((k) => Number((k as unknown[])[4]))
+          .filter((n) => Number.isFinite(n) && n > 0);
+        if (!cancelled && closes.length > 1) setPoints(closes);
+      } catch {
+        /* nettverksfeil — behold forrige graf */
+      }
+    };
+    load();
+    const id = setInterval(load, SPARK_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
+  const W = 100;
+  const H = 36;
+  const PAD = 1.5;
+
+  let linePath = "";
+  let areaPath = "";
+  let up = true;
+  if (points.length >= 2) {
+    const min = Math.min(...points);
+    const max = Math.max(...points);
+    const range = max - min || 1;
+    const stepX = (W - PAD * 2) / (points.length - 1);
+    const toY = (v: number) => H - PAD - ((v - min) / range) * (H - PAD * 2);
+    const pts = points.map((v, i) => `${(PAD + i * stepX).toFixed(2)},${toY(v).toFixed(2)}`);
+    linePath = `M${pts[0]} L${pts.slice(1).join(" ")}`;
+    areaPath = `${linePath} L${(W - PAD).toFixed(2)},${H - PAD} L${PAD},${H - PAD} Z`;
+    up = points[points.length - 1] >= points[0];
+  }
+
+  const stroke = up ? "#34d399" : "#f87171";
+
+  return (
+    <div className={cn("relative min-h-0", className)}>
+      {linePath ? (
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          className="w-full h-full"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={stroke} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d={areaPath} fill="url(#sparkFill)" stroke="none" />
+          <path
+            d={linePath}
+            fill="none"
+            stroke={stroke}
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      ) : (
+        <div className="w-full h-full rounded-lg bg-slate-800/30 animate-pulse" />
+      )}
+    </div>
+  );
+}
+
 // ─── Price Card (real NOK price instead of fake chart) ───
 function PriceCard({ className }: { className?: string }) {
   const { prices } = usePrices();
@@ -123,7 +208,7 @@ function PriceCard({ className }: { className?: string }) {
   const priceUsdt = nokPriceToUsdt(priceNok);
 
   return (
-    <div className={cn("relative w-full rounded-xl bg-[#0A0D12] border border-[#1E2530] p-4 sm:p-6", className)}>
+    <div className={cn("relative w-full rounded-xl bg-[#0A0D12] border border-[#1E2530] p-4 sm:p-6 flex flex-col", className)}>
       <div className="flex items-center justify-between">
         <div>
           <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">
@@ -147,6 +232,8 @@ function PriceCard({ className }: { className?: string }) {
           <div className="text-[11px] text-slate-500 mt-1">1 USD ≈ {getDisplayUsdtToNokRate()} NOK</div>
         </div>
       </div>
+      <PriceSparkline className="flex-1 mt-4" />
+      <div className="text-[10px] text-slate-600 mt-2">BTC/USDT · 15m · siste 10 timer · Binance</div>
     </div>
   );
 }
