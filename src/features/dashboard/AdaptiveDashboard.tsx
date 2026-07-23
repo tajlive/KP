@@ -11,7 +11,7 @@ import { SmartActions } from "./SmartActions";
 import { useCurrency } from "@/hooks/useCurrency";
 
 import { OnboardingChecklist } from "./OnboardingChecklist";
-import { useOnboardingState } from "@/hooks/useOnboardingState";
+import { useOnboardingFlags } from "@/hooks/useOnboardingState";
 import { DashboardPro } from "./DashboardPro";
 import type { DashboardCmsData } from "./DashboardContent";
 import {
@@ -46,8 +46,8 @@ export interface UserStats {
 /* ------------------------------------------------------------------ */
 /*  Checklist wrapper — henter state fra hook                          */
 /* ------------------------------------------------------------------ */
-function OnboardingChecklistFromState({ userId }: { userId: string }) {
-  const { tradeCount, hasViewedHistory } = useOnboardingState(userId);
+function OnboardingChecklistFromState({ tradeCount }: { tradeCount: number }) {
+  const { hasViewedHistory } = useOnboardingFlags();
   return (
     <OnboardingChecklist
       hasAccount
@@ -60,7 +60,7 @@ function OnboardingChecklistFromState({ userId }: { userId: string }) {
 /* ------------------------------------------------------------------ */
 /*  New user state — checklist-driven onboarding                       */
 /* ------------------------------------------------------------------ */
-function NewUserHero({ userId, userName, preferredTradingMode }: { userId: string; userName?: string | null; preferredTradingMode: "paper" | "live" }) {
+function NewUserHero({ tradeCount, userName, preferredTradingMode }: { tradeCount: number; userName?: string | null; preferredTradingMode: "paper" | "live" }) {
   const t = useTranslations("dashboard.adaptive");
 
   return (
@@ -81,7 +81,7 @@ function NewUserHero({ userId, userName, preferredTradingMode }: { userId: strin
         </p>
       </div>
 
-      <OnboardingChecklistFromState userId={userId} />
+      <OnboardingChecklistFromState tradeCount={tradeCount} />
 
       <SmartActions userState="NyBruker" compact />
 
@@ -143,7 +143,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
         </p>
       </div>
 
-      <OnboardingChecklistFromState userId={userId} />
+      <OnboardingChecklistFromState tradeCount={stats?.totalTrades ?? 0} />
 
       {stats && (
         <>
@@ -308,7 +308,7 @@ export function AdaptiveDashboard({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <NewUserHero userId={userId} userName={userName} preferredTradingMode={preferredTradingMode} />
+          <NewUserHero tradeCount={stats?.totalTrades ?? 0} userName={userName} preferredTradingMode={preferredTradingMode} />
         </m.div>
       )}
 
