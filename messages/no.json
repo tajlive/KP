@@ -2075,11 +2075,11 @@
       "percentUsed": "Percent used"
     },
     "onboardingChecklist": {
-      "title": "Kom i gang",
+      "title": "Kom i gang — 3 enkle steg",
       "accountCreated": "Konto opprettet",
       "firstTrade": "Gjør din første handel",
       "seeResult": "Se resultatet ditt",
-      "complete": "Du er i gang! Sjekklisten er fullført."
+      "complete": "Du er i gang! Alle 3 steg er fullført."
     }
   },
   "footer": {
@@ -4798,7 +4798,8 @@
       "modePaper": "Modus papir",
       "modeLive": "Modus live",
       "started": "Started",
-      "trades": "Handler"
+      "trades": "Handler",
+      "viewTrades": "Se handler"
     },
     "riskMetrics": {
       "loadError": "Kunne ikke laste risikodata.",
