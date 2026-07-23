@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import LivePriceChart from "./LivePriceChart";
 import styles from "./HeroSection.module.css";
 
 /**
@@ -10,9 +10,9 @@ import styles from "./HeroSection.module.css";
  *
  * Design:
  *  - Dark navy (#0B0F19) + gradient bg
- *  - "Jeg tapte 64 000 kr på krypto. Så bygde jeg noe bedre."
- *  - Stats: −64 000 kr / +16 mnd / 0 kr
- *  - Live BTC price chart (Binance API, SVG area chart)
+ *  - "Jeg tapte 64 000 kr på krypto. Du trenger ikke gjøre det samme."
+ *  - Stats (verifiserbare fakta): 100 000 kr lekepenger / Live sanntidskurser / 0 kr innskudd
+ *  - Produkt-preview: ekte dashboard-screenshot i telefonramme
  *  - CTA: Start gratis + Les min historie
  *  - Mobile-first: full-width buttons; desktop: side-by-side
  */
@@ -41,19 +41,19 @@ export default function HeroSection() {
             {/* Stats row */}
             <div className={styles.stats}>
               <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statLoss}`}>
+                <div className={`${styles.statNum} ${styles.statWin}`}>
                   {t("stat1")}
                 </div>
                 <div className={styles.statLabel}>{t("stat1Label")}</div>
               </div>
               <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statWin}`}>
+                <div className={`${styles.statNum} ${styles.statBrand}`}>
                   {t("stat2")}
                 </div>
                 <div className={styles.statLabel}>{t("stat2Label")}</div>
               </div>
               <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statNeutral}`}>
+                <div className={`${styles.statNum} ${styles.statWin}`}>
                   {t("stat3")}
                 </div>
                 <div className={styles.statLabel}>{t("stat3Label")}</div>
@@ -72,9 +72,18 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* ---- Live BTC widget ---- */}
+          {/* ---- Product preview: ekte dashboard i telefonramme ---- */}
           <div className={styles.visual}>
-            <LivePriceChart />
+            <div className={styles.phoneFrame}>
+              <Image
+                src="/screenshots/hero-dashboard.png"
+                alt="Klarpakke-appen: dashboard med lekepenger, sjekkliste og statistikk"
+                fill
+                priority
+                sizes="(max-width: 768px) 300px, 340px"
+                className={styles.phoneImg}
+              />
+            </div>
           </div>
         </div>
       </div>

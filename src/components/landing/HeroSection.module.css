@@ -212,6 +212,36 @@
   color: #facc15;
 }
 
+.statBrand {
+  color: #3d7aff;
+}
+
+/* Product preview: telefonramme rundt ekte dashboard-screenshot */
+.phoneFrame {
+  position: relative;
+  width: 280px;
+  height: 560px;
+  border-radius: 44px;
+  border: 2px solid rgba(61, 122, 255, 0.35);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(61, 122, 255, 0.12);
+  overflow: hidden;
+  background: #161719;
+}
+
+.phoneImg {
+  object-fit: cover;
+  object-position: top center;
+}
+
+@media (min-width: 1024px) {
+  .phoneFrame {
+    width: 320px;
+    height: 640px;
+  }
+}
+
 .statLabel {
   font-size: 0.75rem;
   color: #6b7280;
