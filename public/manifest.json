@@ -101,5 +101,28 @@
     }
   ],
   "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-dashboard.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Kom i gang på minutter — sjekkliste som guider deg trygt i gang"
+    },
+    {
+      "src": "/screenshots/mobile-trade.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Din første handel — steg for steg, med lekepenger"
+    },
+    {
+      "src": "/screenshots/mobile-portfolio.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Følg resultatene dine — portefølje, historikk og utvikling"
+    }
+  ]
 }
