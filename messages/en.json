@@ -2080,11 +2080,11 @@
       "percentUsed": "Percent Used"
     },
     "onboardingChecklist": {
-      "title": "Get started",
+      "title": "Get started — 3 simple steps",
       "accountCreated": "Account created",
       "firstTrade": "Make your first trade",
       "seeResult": "See your results",
-      "complete": "You're up and running! Checklist complete."
+      "complete": "You're up and running! All 3 steps complete."
     }
   },
   "footer": {
@@ -4803,7 +4803,8 @@
       "modePaper": "Mode Paper",
       "modeLive": "Mode Live",
       "started": "Started",
-      "trades": "Trades"
+      "trades": "Trades",
+      "viewTrades": "View trades"
     },
     "riskMetrics": {
       "loadError": "Load Error",
