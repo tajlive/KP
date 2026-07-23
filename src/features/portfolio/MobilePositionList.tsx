@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useHaptic } from "@/hooks/use-haptic";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 import { MobileTradingCard } from "@/shared/ui/mobile-trading-card";
+import { EmptyState } from "@/shared/ui/EmptyState";
 import { SwipeAction } from "@/shared/ui/swipe-action";
 import { PullToRefreshIndicator } from "@/shared/ui/pull-to-refresh-indicator";
 import { MARKET_DESK } from "@/lib/design/market-desk";
@@ -63,9 +64,11 @@ export function MobilePositionList({
 
   if (positions.length === 0) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-slate-500 text-sm">{t("marketDesk.noPositions")}</p>
-      </div>
+      <EmptyState
+        variant="wallet"
+        title={t("marketDesk.noPositions")}
+        action={{ label: t("marketDesk.emptyCta"), href: `/${locale}/handel` }}
+      />
     );
   }
 
@@ -181,9 +184,11 @@ export function DesktopPositionList({
 
   if (positions.length === 0) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-slate-500 text-sm">{t("marketDesk.noPositions")}</p>
-      </div>
+      <EmptyState
+        variant="wallet"
+        title={t("marketDesk.noPositions")}
+        action={{ label: t("marketDesk.emptyCta"), href: `/${locale}/handel` }}
+      />
     );
   }
 

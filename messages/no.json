@@ -1162,7 +1162,8 @@
     "howToWin": "Hvordan vinne?",
     "howToWinDesc": "Høyest prosentvis avkastning (ROI) vinner. Vi justerer for risiko ved å se på Sharpe-ratio.",
     "whatIsCopying": "Hva er kopiering?",
-    "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem."
+    "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem.",
+    "emptyCta": "Start trading"
   },
   "contact": {
     "title": "Kontakt oss",
@@ -2041,7 +2042,8 @@
       "noPositions": "No positions",
       "close": "Lukk",
       "buy": "Kjøp",
-      "chart": "Chart"
+      "chart": "Chart",
+      "emptyCta": "Start handel"
     },
     "dataSource": {
       "prices": "Prices",
@@ -4270,7 +4272,8 @@
     "diagnosticsCopied": "Diagnostics Copied",
     "integrityPollWarning": "Integrity Poll Warning",
     "noTradesFiltered": "No Trades Filtered",
-    "noTradesFilteredHint": "No Trades Filtered Hint"
+    "noTradesFilteredHint": "No Trades Filtered Hint",
+    "emptyCta": "Gjør din første handel"
   },
   "trading": {
     "paperMode": "Lekepenger",

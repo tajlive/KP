@@ -41,6 +41,7 @@ import {
 } from "./trade-history.types";
 import { TradeHistoryStatCard } from "./TradeHistoryStatCard";
 import { useCurrency } from "@/hooks/useCurrency";
+import { EmptyState } from "@/shared/ui/EmptyState";
 import type { TradingMode } from "@/lib/trading-api";
 
 // Legacy local type — now imported from trade-history.types.ts
@@ -518,14 +519,12 @@ export default function ClientHandelshistorikk() {
               </p>
             </div>
           ) : filteredTrades.length === 0 ? (
-            <div className="text-center py-12 px-4 space-y-2">
-              <p className="text-slate-600 dark:text-slate-300">
-                {t("noTrades")}
-              </p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                {t("noTradesHint")}
-              </p>
-            </div>
+            <EmptyState
+              variant="chart"
+              title={t("noTrades")}
+              description={t("noTradesHint")}
+              action={{ label: t("emptyCta"), href: `/${locale}/trade?first=1` }}
+            />
           ) : (
             <div className="overflow-x-auto" data-testid="trade-history-table">
               <table className="w-full text-left">
