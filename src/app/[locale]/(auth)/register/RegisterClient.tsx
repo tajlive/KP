@@ -35,6 +35,10 @@ export default function RegisterPage() {
     if (result?.error) {
       setError(result.error);
       setLoading(false);
+    } else if (result?.hasSession) {
+      // E-postbekreftelse er AV (mailer_autoconfirm): brukeren er logget inn
+      // umiddelbart — send rett til dashboard (Finelo-mønsteret).
+      window.location.href = `/${locale}/dashboard`;
     } else {
       setSuccess(true);
       setLoading(false);
