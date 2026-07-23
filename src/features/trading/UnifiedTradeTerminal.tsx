@@ -127,8 +127,14 @@ function useHasTraded() {
   React.useEffect(() => {
     let cancelled = false;
     fetch("/api/paper-trading/balance")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
+      .then(async (r) => {
+        // 404 NO_SESSION = bruker uten paper-konto => ingen handler ennå
+        if (r.status === 404) {
+          if (!cancelled) setHasTraded(false);
+          return;
+        }
+        if (!r.ok) return; // 401/503/nettverk — ikke lås ut eksisterende brukere
+        const d = await r.json().catch(() => null);
         if (!cancelled && d) setHasTraded((d.recentTrades?.length ?? 0) > 0);
       })
       .catch(() => {});
