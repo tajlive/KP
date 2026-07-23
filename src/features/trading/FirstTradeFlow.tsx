@@ -14,7 +14,7 @@ const COINS: { id: Coin; pair: string; name: string }[] = [
   { id: "SOL", pair: "SOL/USDT", name: "Solana" },
 ];
 
-const QUICK_AMOUNTS = [100, 500, 1000] as const;
+const QUICK_AMOUNTS = [200, 500, 1000];
 const MIN_AMOUNT = 50;
 
 interface FirstTradeFlowProps {

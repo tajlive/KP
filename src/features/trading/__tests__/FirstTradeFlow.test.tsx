@@ -50,7 +50,7 @@ describe("FirstTradeFlow", () => {
   it("går til beløpssteg med hurtigvalg etter coin-valg", () => {
     render(<FirstTradeFlow onComplete={vi.fn()} />);
     fireEvent.click(screen.getByTestId("coin-BTC"));
-    expect(screen.getByTestId("amount-100")).toBeInTheDocument();
+    expect(screen.getByTestId("amount-200")).toBeInTheDocument();
     expect(screen.getByTestId("amount-500")).toBeInTheDocument();
     expect(screen.getByTestId("amount-1000")).toBeInTheDocument();
   });
@@ -78,7 +78,7 @@ describe("FirstTradeFlow", () => {
     const onComplete = vi.fn();
     render(<FirstTradeFlow onComplete={onComplete} />);
     fireEvent.click(screen.getByTestId("coin-BTC"));
-    fireEvent.click(screen.getByTestId("amount-100"));
+    fireEvent.click(screen.getByTestId("amount-200"));
     fireEvent.click(screen.getByTestId("confirm-trade"));
     await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1));
   });
