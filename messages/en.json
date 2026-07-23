@@ -1684,7 +1684,7 @@
       "subtitle": "+200 KLT",
       "description": "Keep trading to earn more rewards.",
       "dismiss": "Dismiss",
-      "stats": "{count} trades completed"
+      "stats": "{count} trade completed"
     },
     "paperToLive": {
       "title": "Paper trading progress",
