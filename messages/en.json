@@ -4278,7 +4278,8 @@
     "integrityPollWarning": "Integrity Poll Warning",
     "noTradesFiltered": "No Trades Filtered",
     "noTradesFilteredHint": "No Trades Filtered Hint",
-    "emptyCta": "Make your first trade"
+    "emptyCta": "Make your first trade",
+    "errorTitle": "Couldn't load trades"
   },
   "trading": {
     "paperMode": "Paper Trading",

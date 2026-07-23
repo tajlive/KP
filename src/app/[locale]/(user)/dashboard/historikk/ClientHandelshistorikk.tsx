@@ -47,7 +47,6 @@ import type { TradingMode } from "@/lib/trading-api";
 // Legacy local type — now imported from trade-history.types.ts
 export default function ClientHandelshistorikk() {
   const t = useTranslations("tradeHistory");
-  const tTrading = useTranslations("trading");
   const locale = useLocale();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [decisions, setDecisions] = useState<TradeDecisionRow[]>([]);
@@ -487,7 +486,7 @@ export default function ClientHandelshistorikk() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {tTrading("tradeHistory.errorTitle")}
+                  {t("errorTitle")}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
                   {fetchError}
