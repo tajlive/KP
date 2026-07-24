@@ -8,7 +8,6 @@ import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
 import { Card } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { RiskBadge } from "@/shared/ui/RiskBadge";
-import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { Gamepad2, Info } from "lucide-react";
 import {
@@ -27,7 +26,6 @@ export default function OnboardingStep3() {
   const t = useTranslations("onboarding.paperSetup");
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
@@ -36,22 +34,20 @@ export default function OnboardingStep3() {
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // KLA-auth: browser-klienten er alltid anon — onboarding-state
+        // hentes via server-API som leser httpOnly auth-cookie
+        const res = await fetch("/api/user/onboarding", {
+          credentials: "same-origin",
+        });
 
-        if (!user) {
+        if (res.status === 401) {
           router.push(`${hrefWithLocale(locale, "/login")}?next=/${locale}/onboarding/step3-trading-mode`);
           return;
         }
 
-        const { data: profile, error: profileError } = await supabase
-          .from("user_profiles")
-          .select("onboarding_step, onboarding_completed")
-          .eq("id", user.id)
-          .single();
-
-        if (profileError) throw profileError;
+        const json = await res.json().catch(() => null);
+        if (!res.ok || !json?.ok) throw new Error("Kunne ikke hente onboarding-state");
+        const profile = json.onboarding;
 
         if (profile?.onboarding_completed) {
           router.push(`/${locale}/dashboard`);
@@ -94,26 +90,22 @@ export default function OnboardingStep3() {
     };
 
     checkStatus();
-  }, [router, supabase, locale]);
+  }, [router, locale, t]);
 
   const handleContinue = async () => {
     setLoading(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) throw new Error(t("error"));
-
-      const { error: updateError } = await supabase
-        .from("user_profiles")
-        .update({
+      const res = await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           onboarding_step: 3,
           paper_balance: PAPER_START_BALANCE,
-        })
-        .eq("id", user.id);
+        }),
+      });
 
-      if (updateError) throw updateError;
+      if (!res.ok) throw new Error(t("error"));
 
       router.push(`/${locale}/onboarding/step4-first-trade`);
     } catch (err) {
