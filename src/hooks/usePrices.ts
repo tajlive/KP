@@ -10,7 +10,24 @@
  */
 
 import { binanceWebSocket } from "@/lib/websocket/BinanceWebSocket";
-import { usdtPriceToNok } from "@/lib/market/nok";
+import { getDisplayUsdtToNokRate, usdtPriceToNok } from "@/lib/market/nok";
+
+// KLA-fx: normaliser med SANNTIDS USDT/NOK-rate (/api/fx/usdt-nok).
+// Statisk build-time fallback (10.92) gir ~14% feil priser.
+let liveUsdtNokRate: number | null = null;
+let rateFetchStarted = false;
+function getLiveUsdtNokRate(): number {
+  if (!rateFetchStarted && typeof window !== "undefined") {
+    rateFetchStarted = true;
+    fetch("/api/fx/usdt-nok")
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d?.rate === "number" && d.rate > 0) liveUsdtNokRate = d.rate;
+      })
+      .catch(() => {});
+  }
+  return liveUsdtNokRate ?? getDisplayUsdtToNokRate();
+}
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { RealtimeChannel } from "@supabase/realtime-js";
@@ -88,7 +105,7 @@ export function usePrices() {
         Object.entries(updatedPrices).forEach(([symbol, price]) => {
           // Binance WebSocket gir USDT-priser, mens coin_prices i DB er NOK.
           // Normaliser alltid til NOK før state oppdateres.
-          const priceNok = usdtPriceToNok(price);
+          const priceNok = usdtPriceToNok(price, getLiveUsdtNokRate());
           if (next[symbol]) {
             next[symbol] = { ...next[symbol], price: priceNok };
           } else {
@@ -140,11 +157,12 @@ export function useAnimatedPrice(symbol: string) {
 
   return {
     price: priceData?.price || 0,
+    // Pris i state er NOK (normalisert i usePrices) — ikke USD.
     formattedPrice:
       priceData?.price?.toLocaleString("no-NO", {
         style: "currency",
-        currency: "USD",
-      }) || "$0.00",
+        currency: "NOK",
+      }) || "0 kr",
     priceDirection:
       priceData?.price_change_24h && priceData.price_change_24h >= 0
         ? "up"

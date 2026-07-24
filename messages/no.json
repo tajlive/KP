@@ -2005,11 +2005,11 @@
     },
     "signalPreview": {
       "title": "Tittel",
-      "liveBadge": "Live utmerkelse",
-      "staleBadge": "Stale utmerkelse",
-      "errorBadge": "Feil utmerkelse",
-      "emptyBadge": "Ingen data utmerkelse",
-      "demoBadge": "Demo utmerkelse",
+      "liveBadge": "Live",
+      "staleBadge": "Utdatert",
+      "errorBadge": "Feil",
+      "emptyBadge": "Ingen data",
+      "demoBadge": "Demo",
       "curated": "Curated",
       "seeAll": "Se alle",
       "empty": "Ingen data",
@@ -2406,7 +2406,7 @@
       "sell": "Selg BTC",
       "overlay": "Registrer deg for å handle med ekte data",
       "overlayCta": "Start gratis nå",
-      "liveBadge": "Live utmerkelse",
+      "liveBadge": "Live",
       "offlineNotice": "Offline notice",
       "staleNotice": "Stale notice",
       "livePrice": "Live pris",
@@ -2479,7 +2479,7 @@
       "volume": "Volume"
     },
     "paperHero": {
-      "badge": "Utmerkelse",
+      "badge": "Lekepenger",
       "title": "Tittel",
       "titleAccent": "Tittel accent",
       "subtitle": "Undertittel",
@@ -3220,7 +3220,7 @@
       "loading": "Laster...",
       "title": "Tittel",
       "subtitle": "Undertittel",
-      "badge": "Utmerkelse",
+      "badge": "Lekepenger",
       "virtual": "Virtual",
       "balanceLabel": "Balanse etikett",
       "currencySuffix": "Valuta suffix",
@@ -3613,7 +3613,7 @@
     },
     "sectionTitle": "Section tittel",
     "description": "Beskrivelse",
-    "disclaimer": "Disclaimer"
+    "disclaimer": "Ansvarsfraskrivelse"
   },
   "pricingCancel": {
     "title": "Betaling avbrutt",
@@ -4768,7 +4768,7 @@
       "mySessions": "My økter",
       "workspaceHeader": {
         "subtitle": "Undertittel",
-        "badge": "Utmerkelse",
+        "badge": "Lekepenger",
         "title": "Tittel"
       },
       "backToOverview": "Tilbake to oversikt",
@@ -4905,8 +4905,8 @@
     },
     "robotBrain": {
       "ariaLabel": "Aria etikett",
-      "badge": "Utmerkelse",
-      "disclaimer": "Disclaimer",
+      "badge": "AI-overvåking",
+      "disclaimer": "Ansvarsfraskrivelse",
       "line1": "AI-analyserer markedet i sanntid...",
       "line2": "Vurderer risiko og potensial...",
       "line3": "Sjekker tekniske indikatorer...",
@@ -5106,8 +5106,8 @@
     },
     "liveStrategy": {
       "back": "Tilbake",
-      "paperBadge": "Papir utmerkelse",
-      "liveBadge": "Live utmerkelse",
+      "paperBadge": "Lekepenger",
+      "liveBadge": "Live",
       "warmupAnalyzing": "Warmup analyzing",
       "statPnl": "Stat p/l",
       "statWinRate": "Stat vinn rate",
@@ -5582,7 +5582,7 @@
     "maxCoinsNotice": "Maks {limit} valutaer for {tier}-nivå",
     "summary": "Oppsummering",
     "waitingForSignal": "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt.",
-    "kellyNotice": "🛡️ Sikret av Kelly-kriteriet. Vår KI justerer automatisk risiko basert på profitt for å matematisk forhindre at du taper innsatsen din.",
+    "kellyNotice": "🛡️ Boten bruker Kelly-kriteriet til å tilpasse posisjonsstørrelsen etter hvordan det går. Det reduserer risikoen, men fjerner den ikke — du kan fortsatt tape penger.",
     "starting": "Starter...",
     "startBotAction": "Start bot",
     "startLiveBotAction": "Start live-bot",

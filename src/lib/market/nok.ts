@@ -1,4 +1,6 @@
-const FALLBACK_USDT_NOK = 10.92;
+// Sist kjente sanntidsrate (per 2026-07). Sanntidsrate hentes fra
+// /api/fx/usdt-nok — denne er kun fallback før/fra build.
+const FALLBACK_USDT_NOK = 9.61;
 
 export function getDisplayUsdtToNokRate(): number {
   const env = process.env.NEXT_PUBLIC_USDT_NOK_RATE;

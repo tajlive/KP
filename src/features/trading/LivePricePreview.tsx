@@ -25,7 +25,13 @@ export function LivePricePreview({ symbol, className = "", showInNok = false }: 
     useAnimatedPrice(symbol);
   const usdtNokRate = useUsdtNokRate();
 
-  const displayPrice = showInNok && price > 0 ? price * usdtNokRate : price;
+  // Pris fra usePrices er ALLEREDE NOK (normalisert der). Multiplikasjon her
+  // ga dobbel konvertering (BTC viste 6,8 mill. kr i stedet for ~625 000 kr).
+  const displayPrice = showInNok
+    ? price
+    : price > 0 && usdtNokRate > 0
+      ? price / usdtNokRate
+      : price;
   const formattedPrice = displayPrice > 0
     ? new Intl.NumberFormat("no-NO", {
         style: "currency",
