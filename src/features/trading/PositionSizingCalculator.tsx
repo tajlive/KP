@@ -23,6 +23,10 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
   const units = entryPrice > 0 ? positionSize / entryPrice : 0;
   const leverage = accountBalance > 0 ? positionSize / accountBalance : 0;
 
+  // Norsk tallformat (92 418,17) — toLocaleString() uten locale gir US-format.
+  const fmtNok = (n: number) =>
+    n.toLocaleString("nb-NO", { maximumFractionDigits: 2 });
+
   const isOverLeveraged = leverage > 5;
   const isRiskTooHigh = riskPercent > 2;
 
@@ -63,7 +67,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
           <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("accountBalance")}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">
-            {accountBalance.toLocaleString()} NOK
+            {fmtNok(accountBalance)} NOK
           </span>
         </div>
 
@@ -142,11 +146,11 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       <div className="mt-5 p-4 bg-slate-800 rounded-xl space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("riskAmount")}</span>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">{riskAmount.toLocaleString()} NOK</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white">{fmtNok(riskAmount)} NOK</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("positionSize")}</span>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">{positionSize.toLocaleString()} NOK</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white">{fmtNok(positionSize)} NOK</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("units")}</span>
