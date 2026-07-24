@@ -17,7 +17,7 @@ export default function AnalysisPage() {
         <ArrowLeft className="w-4 h-4" />
         Tilbake til dashboard
       </Link>
-      <AdvancedAnalyticsSection />
+      <AdvancedAnalyticsSection defaultExpanded />
     </div>
   );
 }

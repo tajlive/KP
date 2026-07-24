@@ -1755,8 +1755,9 @@
       "tryAgain": "Try again",
       "riskMetrics": "Risk Metrics",
       "maxLossStreak": "Max loss streak",
-      "riskMetricsTitle": "Risk Metrics",
-      "maxLossStreakLabel": "Max loss streak"
+      "riskMetricsTitle": "Risikonøkkeltall",
+      "maxLossStreakLabel": "Lengste tapsrekke",
+      "cash": "Kontanter"
     },
     "winLossHeatmap": {
       "noData": "Not enough data for heatmap",
@@ -1772,7 +1773,7 @@
         "Sat",
         "Sun"
       ],
-      "subtitle": "{winningDays} green · {losingDays} red · {winRate}% win rate",
+      "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
     },
     "demoChart": {
@@ -1783,11 +1784,11 @@
       "demoLabel": "DEMO — Your results will look like this"
     },
     "assetAllocation": {
-      "noData": "No pair data available",
+      "noData": "Ingen beholdning å vise ennå",
       "title": "Asset Allocation",
       "other": "Other",
       "trades": "trades",
-      "infoTooltip": "Distribution of your P&L by trading pair. Helps you see which markets you perform best in, and whether your portfolio is diversified enough."
+      "infoTooltip": "Fordeling av kapitalen din: åpne posisjoner (til kostpris) og kontanter. Hjelper deg å se hvor mye som er investert vs. tilgjengelig."
     },
     "equityCurve": {
       "noData": "Not enough data for equity curve",

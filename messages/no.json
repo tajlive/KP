@@ -1750,8 +1750,9 @@
       "tryAgain": "Prøv igjen",
       "riskMetrics": "Risk Metrics",
       "maxLossStreak": "Max tap streak",
-      "riskMetricsTitle": "Risk Metrics",
-      "maxLossStreakLabel": "Max tap streak"
+      "riskMetricsTitle": "Risikonøkkeltall",
+      "maxLossStreakLabel": "Lengste tapsrekke",
+      "cash": "Kontanter"
     },
     "winLossHeatmap": {
       "noData": "Ikke nok data for heatmap",
@@ -1767,7 +1768,7 @@
         "Lør",
         "Søn"
       ],
-      "subtitle": "{winningDays} grønne · {losingDays} røde · {winRate}% vinnrate",
+      "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
     },
     "demoChart": {
@@ -1778,11 +1779,11 @@
       "demoLabel": "DEMO — Slik vil dine resultater se ut"
     },
     "assetAllocation": {
-      "noData": "Ingen pair-data tilgjengelig",
+      "noData": "Ingen beholdning å vise ennå",
       "title": "Aktivaallokering",
       "other": "Annet",
       "trades": "handler",
-      "infoTooltip": "Fordeling av din P&L etter trading pair. Hjelper deg å se hvilke markeder du presterer best i, og om porteføljen din er diversifisert nok."
+      "infoTooltip": "Fordeling av kapitalen din: åpne posisjoner (til kostpris) og kontanter. Hjelper deg å se hvor mye som er investert vs. tilgjengelig."
     },
     "equityCurve": {
       "noData": "Ikke nok data for equity curve",
