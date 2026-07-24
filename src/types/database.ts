@@ -19,7 +19,7 @@ export interface Profile {
   exchange_connected?: boolean | null;
   binance_clicked?: boolean | null;
   student_nummer?: string | null;
-  risk_preference?: 'conservative' | 'aggressive' | 'moderate' | string | null;
+  risk_tolerance?: 'conservative' | 'aggressive' | 'moderate' | string | null;
   telegram_connected?: boolean | null;
   telegram_username?: string | null;
   created_at?: string | null;
@@ -179,7 +179,7 @@ export interface BetaApplication {
   name?: string | null;
   phone?: string | null;
   status?: 'pending' | 'approved' | 'rejected' | string;
-  risk_preference?: string | null;
+  risk_tolerance?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }

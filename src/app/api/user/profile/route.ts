@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
-      .select("id, display_name, full_name, avatar_url, risk_preference, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority")
+      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority")
       .eq("id", userId)
       .maybeSingle();
 
@@ -68,7 +68,7 @@ const PATCHABLE_FIELDS = [
   "display_name",
   "full_name",
   "avatar_url",
-  "risk_preference",
+  "risk_tolerance",
 ] as const;
 
 /**
@@ -127,7 +127,7 @@ export async function PATCH(request: NextRequest) {
         ...updates,
         updated_at: new Date().toISOString(),
       } as Database["public"]["Tables"]["user_profiles"]["Insert"])
-      .select("id, display_name, full_name, avatar_url, risk_preference, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority")
+      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority")
       .single();
 
     if (upsertError) {
