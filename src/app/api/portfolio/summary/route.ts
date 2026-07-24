@@ -26,18 +26,32 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient();
 
+    // Kun ikke-arkiverte sesjoner — ellers forurenser historiske
+    // (avsluttede/arkiverte) epoker statistikk og posisjoner.
+    const { data: sessions } = await supabase
+      .from("trading_sessions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("mode", "paper")
+      .is("archived", false);
+
+    const sessionIds = (sessions ?? []).map((s) => s.id);
+
     const [accountRes, tradesRes] = await Promise.all([
       supabase
         .from("paper_accounts")
         .select("current_balance, initial_balance")
         .eq("user_id", user.id)
         .maybeSingle(),
-      supabase
-        .from("trades")
-        .select("trading_pair, side, quantity, price, total_value, realized_pnl")
-        .eq("user_id", user.id)
-        .eq("mode", "paper")
-        .eq("status", "filled"),
+      sessionIds.length === 0
+        ? { data: [], error: null }
+        : await supabase
+            .from("trades")
+            .select("trading_pair, side, quantity, price, total_value, realized_pnl")
+            .eq("user_id", user.id)
+            .eq("mode", "paper")
+            .eq("status", "filled")
+            .in("session_id", sessionIds),
     ]);
 
     if (tradesRes.error) {

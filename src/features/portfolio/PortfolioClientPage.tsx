@@ -111,11 +111,22 @@ export default function PortfolioClientPage() {
     [summary],
   );
   const { coins } = useRealtimePrices(positionSymbols.length > 0 ? positionSymbols : undefined);
+  // binance-24hr returnerer USDT-priser — konverter til NOK (trades.price er NOK).
+  const [usdtNok, setUsdtNok] = React.useState<number | null>(null);
+  React.useEffect(() => {
+    fetch("/api/fx/usdt-nok")
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d.rate === "number" && d.rate > 0) setUsdtNok(d.rate);
+      })
+      .catch(() => {});
+  }, []);
   const priceBySymbol = React.useMemo(() => {
     const map = new Map<string, number>();
-    for (const c of coins) map.set(c.symbol.toUpperCase(), c.price);
+    if (usdtNok == null) return map;
+    for (const c of coins) map.set(c.symbol.toUpperCase(), c.price * usdtNok);
     return map;
-  }, [coins]);
+  }, [coins, usdtNok]);
 
   if (loading) {
     return (
