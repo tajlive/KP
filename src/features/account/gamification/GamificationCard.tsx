@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Trophy, Target, Zap, Medal, Crown } from "lucide-react";
-import { createClient } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 
 interface UserLevel {
@@ -54,8 +53,6 @@ export function GamificationCard() {
     }
     
     const fetchGamification = async () => {
-      const supabase = createClient();
-      
       // NOTE: user_levels table does not exist in database (verified 2024-03-10)
       // Using default level values until table is created
       // TODO: Create user_levels migration when gamification feature is ready
@@ -66,17 +63,39 @@ export function GamificationCard() {
         total_xp: 0,
         rank: "Student",
       });
-      
-      // Fetch achievements (table exists)
-      const achievementsResult = await (supabase
-        .from("user_achievements")
-        .select("*")
-        .eq("user_id", user.id));
-      
-      if (achievementsResult.data) {
-        setAchievements((achievementsResult.data as unknown as Achievement[]));
+
+      // KLA-auth: browser-klienten er alltid anon — achievements hentes via
+      // server-API. user_achievements har (achievement_type, earned_at,
+      // metadata) — mappes til komponentens Achievement-shape.
+      try {
+        const res = await fetch("/api/gamification/achievements", {
+          credentials: "same-origin",
+        });
+        if (res.ok) {
+          const json = await res.json().catch(() => null);
+          const rows = (json?.achievements ?? []) as {
+            achievement_type: string;
+            earned_at: string | null;
+            metadata: { description?: string } | null;
+          }[];
+          setAchievements(
+            rows.map((r, i) => ({
+              id: `${r.achievement_type}-${i}`,
+              name: r.achievement_type
+                .replace(/_/g, " ")
+                .replace(/^\w/, (c) => c.toUpperCase()),
+              description: r.metadata?.description ?? "",
+              icon: r.achievement_type,
+              unlocked_at: r.earned_at,
+              progress: 1,
+              target: 1,
+            })),
+          );
+        }
+      } catch (e) {
+        console.error("Failed to load achievements", e);
       }
-      
+
       setLoading(false);
     };
     

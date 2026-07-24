@@ -18,7 +18,6 @@ import { format } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import type { Trade, TradingMode } from "@/lib/trading-api";
 import { useCurrency } from "@/hooks/useCurrency";
 import {
@@ -42,39 +41,6 @@ interface TradeWithDetails extends Trade {
   aiConfidence?: number;
   aiDecisionType?: string;
   strategyParams?: Record<string, unknown>;
-}
-
-// Database trade type matching Supabase schema
-// Uses unknown first to avoid type mismatch with Supabase return type
-interface DbTrade {
-  id: string;
-  session_id?: string;
-  symbol: string;
-  side: string;
-  quantity: number;
-  price: number;
-  total_value: number;
-  fee: number;
-  realized_pnl: number | null;
-  status?: string;
-  mode: string;
-  is_copy?: boolean;
-  created_at: string;
-  executed_at?: string;
-  strategy_signal?: Record<string, unknown>;
-  exit_price?: number;
-  stop_loss?: number;
-  take_profit?: number;
-  exit_reason?: string;
-  ai_decision_id?: string;
-}
-
-// AI decision type from database
-interface AiDecision {
-  sentiment_reasoning?: string;
-  sentiment_confidence?: number;
-  sentiment_recommendation?: string;
-  [key: string]: unknown;
 }
 
 export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps) {
@@ -135,62 +101,10 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
           return;
         }
 
-        // Fallback: Direct Supabase call
-        const supabase = createClient();
-
-        const { data: tradeData, error: tradeError } = await supabase
-          .from("trades")
-          .select("*")
-          .eq("id", tradeId)
-          .single();
-
-        if (tradeError) throw tradeError;
-
-        const dbTrade = tradeData as unknown as DbTrade;
-
-        let aiData: AiDecision | null = null;
-        const decisionId = dbTrade.ai_decision_id || (dbTrade.strategy_signal?.decision_id as string);
-        if (decisionId) {
-          const { data: aiDecision } = await supabase
-            .from("ai_decision_log")
-            .select("sentiment_reasoning, sentiment_confidence, sentiment_recommendation")
-            .eq("id", decisionId)
-            .maybeSingle();
-          aiData = aiDecision as AiDecision | null;
-        }
-
-        const baseTrade: Trade = {
-          id: dbTrade.id,
-          session_id: dbTrade.session_id ?? dbTrade.id,
-          symbol: dbTrade.symbol,
-          side: dbTrade.side as "buy" | "sell",
-          quantity: dbTrade.quantity,
-          price: dbTrade.price,
-          total_value: dbTrade.total_value,
-          fee: dbTrade.fee,
-          realized_pnl: dbTrade.realized_pnl,
-          status: (dbTrade.status as Trade["status"]) ?? "filled",
-          mode: dbTrade.mode as "paper" | "live",
-          is_copy: dbTrade.is_copy ?? false,
-          strategy_signal: dbTrade.strategy_signal,
-          executed_at: dbTrade.executed_at ?? dbTrade.created_at,
-          created_at: dbTrade.created_at,
-        };
-
-        const enrichedTrade: TradeWithDetails = {
-          ...baseTrade,
-          entryPrice: dbTrade.price,
-          exitPrice: dbTrade.exit_price ?? dbTrade.price,
-          stopLoss: dbTrade.stop_loss ?? (dbTrade.strategy_signal?.stop_loss as number),
-          takeProfit: dbTrade.take_profit ?? (dbTrade.strategy_signal?.take_profit as number),
-          exitReason: dbTrade.exit_reason ?? (dbTrade.strategy_signal?.exit_reason as string),
-          aiReasoning: aiData?.sentiment_reasoning,
-          aiConfidence: aiData?.sentiment_confidence,
-          aiDecisionType: aiData?.sentiment_recommendation,
-          strategyParams: dbTrade.strategy_signal,
-        };
-
-        setTrade(enrichedTrade);
+        // KLA-auth: anon supabase-fallback fjernet — browser-klienten er
+        // alltid anon (RLS → stille 0 rader). /api/trades/[id] er eneste
+        // kilde; ved feil vises feilmelding i stedet for falsk fallback.
+        setError(tCommon("analysisError"));
       } catch (err) {
         console.error("Failed to fetch trade details:", err);
         setError(tCommon("analysisError"));

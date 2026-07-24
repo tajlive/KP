@@ -13,7 +13,6 @@ import {
   Info,
   Trophy,
 } from "lucide-react";
-import { createClient } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useTranslations } from "next-intl";
 
@@ -46,36 +45,25 @@ export function KLTWallet() {
   useEffect(() => {
     if (!user) return;
 
-    const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-
     const fetchKLTData = async () => {
-      const supabase = createClient();
-
-      const [balanceRes, txResult, rankRes] = await Promise.all([
-        supabase
-          .from("user_klt_balances")
-          .select("*")
-          .eq("user_id", user.id)
-          .single(),
-        supabase
-          .from("klt_transactions")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(10),
-        supabase
-          .from("leaderboard_monthly")
-          .select("rank")
-          .eq("user_id", user.id)
-          .eq("month", thisMonth)
-          .maybeSingle(),
-      ]);
-
-      if (balanceRes.data) setBalance(balanceRes.data as KLTBalance);
-      if (txResult.data) setTransactions(txResult.data as KLTTransaction[]);
-      if (rankRes.data?.rank != null) setMonthlyRank(rankRes.data.rank);
-
-      setLoading(false);
+      // KLA-auth: browser-klienten er alltid anon — KLT-data hentes via
+      // server-API som leser httpOnly auth-cookie
+      try {
+        const res = await fetch("/api/user/klt-wallet", {
+          credentials: "same-origin",
+        });
+        if (res.ok) {
+          const json = await res.json().catch(() => null);
+          if (json?.balance) setBalance(json.balance as KLTBalance);
+          if (json?.transactions)
+            setTransactions(json.transactions as KLTTransaction[]);
+          if (json?.monthlyRank != null) setMonthlyRank(json.monthlyRank);
+        }
+      } catch (e) {
+        console.error("Failed to load KLT wallet", e);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchKLTData();

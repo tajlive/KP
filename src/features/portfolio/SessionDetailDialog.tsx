@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -349,23 +348,37 @@ export function SessionDetailDialog({
   open,
   onOpenChange,
 }: SessionDetailDialogProps) {
-  const supabase = createClient();
   const [trades, setTrades] = useState<TradeData[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchTrades = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("trades")
-      .select(
-        "id, side, quantity, price, realized_pnl, created_at, trading_pair, strategy_signal, status, fee",
-      )
-      .eq("session_id", session.id)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
+    try {
+      // KLA-auth: browser-klienten er alltid anon — handler hentes via
+      // server-API (user_id-scopet, session_id-filter)
+      const res = await fetch(
+        `/api/user/trades?session_id=${encodeURIComponent(session.id)}&limit=200`,
+        { credentials: "same-origin" },
+      );
+      if (!res.ok) {
+        setLoading(false);
+        return;
+      }
+      const json = await res.json().catch(() => null);
+      const rows = (json?.trades ?? []) as {
+        id: string;
+        side: string;
+        quantity: number;
+        price: number;
+        realized_pnl: number | null;
+        created_at: string;
+        trading_pair: string;
+        strategy_signal: unknown;
+        status: string;
+        fee: number | null;
+      }[];
       setTrades(
-        data.map((row) => ({
+        rows.map((row) => ({
           id: row.id,
           side: row.side as "buy" | "sell",
           quantity: Number(row.quantity),
@@ -378,9 +391,11 @@ export function SessionDetailDialog({
           fee: row.fee != null ? Number(row.fee) : null,
         })),
       );
+    } catch (e) {
+      console.error("[SessionDetailDialog] trades fetch:", e);
     }
     setLoading(false);
-  }, [session.id, supabase]);
+  }, [session.id]);
 
   useEffect(() => {
     if (open) void fetchTrades();

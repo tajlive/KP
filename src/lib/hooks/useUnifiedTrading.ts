@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { createClient } from "@/lib/utils";
 import { TradingMode } from "@/types/trading";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -131,7 +130,6 @@ export function useUnifiedTrading(
 ): UnifiedTradingState {
   const { user } = useAuth();
   const router = useRouter();
-  const supabase = createClient();
 
   const [mode, setModeState] = useState<TradingMode>("paper");
   const [session, setSession] = useState<TradingSession | null>(null);
@@ -215,20 +213,20 @@ export function useUnifiedTrading(
     if (!user || !session) return;
 
     try {
-      const { data, error: queryError } = await supabase
-        .from("trades")
-        .select("*")
-        .eq("session_id", session.id)
-        .order("executed_at", { ascending: false })
-        .limit(50);
-
-      if (!queryError && data) {
-        setTrades(data as Parameters<typeof setTrades>[0]);
+      // KLA-auth: browser-klienten er alltid anon — handler hentes via
+      // server-API (user_id-scopet, session_id-filter)
+      const res = await fetch(
+        `/api/user/trades?session_id=${encodeURIComponent(session.id)}&limit=50`,
+        { credentials: "same-origin" },
+      );
+      if (res.ok) {
+        const json = await res.json().catch(() => null);
+        setTrades((json?.trades ?? []) as Parameters<typeof setTrades>[0]);
       }
     } catch {
       // Non-critical
     }
-  }, [user, session, supabase]);
+  }, [user, session]);
 
   // Initial load
   useEffect(() => {

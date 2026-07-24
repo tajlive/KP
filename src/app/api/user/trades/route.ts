@@ -40,26 +40,41 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Ekskluder arkivert test-era — arkivert betyr "ikke en del av den
-    // reelle historikken" (konsistent med portefølje-siden).
-    const { data: sessions } = await supabase
-      .from("trading_sessions")
-      .select("id")
-      .eq("user_id", user.id)
-      .is("archived", false);
-
-    const sessionIds = (sessions ?? []).map((s) => s.id);
-    if (sessionIds.length === 0) {
-      return NextResponse.json(
-        { ok: true as const, trades: [], diagnostic_id, limit },
-        { status: 200 },
+    // Eksplisitt session_id-parameter: brukes av sesjon-detaljvisninger.
+    // Da hentes handler for akkurat den sesjonen (også arkivert — brukeren
+    // har eksplisitt bedt om detaljene), fortsatt user_id-scopet.
+    const sessionIdParam = request.nextUrl.searchParams.get("session_id");
+    const sessionIdValid =
+      sessionIdParam != null &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        sessionIdParam,
       );
+
+    let sessionIds: string[];
+    if (sessionIdValid) {
+      sessionIds = [sessionIdParam];
+    } else {
+      // Ekskluder arkivert test-era — arkivert betyr "ikke en del av den
+      // reelle historikken" (konsistent med portefølje-siden).
+      const { data: sessions } = await supabase
+        .from("trading_sessions")
+        .select("id")
+        .eq("user_id", user.id)
+        .is("archived", false);
+
+      sessionIds = (sessions ?? []).map((s) => s.id);
+      if (sessionIds.length === 0) {
+        return NextResponse.json(
+          { ok: true as const, trades: [], diagnostic_id, limit },
+          { status: 200 },
+        );
+      }
     }
 
     const { data, error } = await supabase
       .from("trades")
       .select(
-        "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at, strategy_signal",
+        "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at, strategy_signal, session_id, fee, order_type",
       )
       .eq("user_id", user.id)
       .in("session_id", sessionIds)

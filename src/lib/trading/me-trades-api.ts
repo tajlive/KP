@@ -14,6 +14,9 @@ export const meTradeRowSchema = z.object({
   created_at: z.string(),
   executed_at: z.string().nullable(),
   strategy_signal: z.unknown().nullable(),
+  session_id: z.string().uuid().nullable().optional(),
+  fee: z.coerce.number().nullable().optional(),
+  order_type: z.string().nullable().optional(),
 });
 
 export const meTradesSuccessSchema = z.object({

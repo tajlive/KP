@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -25,29 +24,23 @@ export default function EnsembleAIDashboard({ lang = "no" }: EnsembleAIDashboard
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    const db = createClient();
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-    const [{ data: s }, { data: sig }, { data: feat }] = await Promise.all([
-      db.from("ai_agent_stats").select("*").eq("timeframe", "1h").order("updated_at", { ascending: false }),
-      db
-        .from("trading_signals")
-        .select("*")
-        .eq("signal_type", "ensemble_ai")
-        .gte("created_at", since)
-        .order("created_at", { ascending: false })
-        .limit(50),
-      db
-        .from("ai_feature_store")
-        .select("*")
-        .eq("timeframe", "1h")
-        .order("as_of", { ascending: false })
-        .limit(20),
-    ]);
-
-    setStats((s as AgentStat[]) ?? []);
-    setSignals((sig as TradingSignal[]) ?? []);
-    setFeatures((feat as FeatureRow[]) ?? []);
+    // KLA-auth: browser-klienten er alltid anon — ensemble-data hentes via
+    // server-API
+    try {
+      const res = await fetch("/api/ai/ensemble-stats", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) {
+        setLoading(false);
+        return;
+      }
+      const json = await res.json().catch(() => null);
+      setStats((json?.stats as AgentStat[]) ?? []);
+      setSignals((json?.signals as TradingSignal[]) ?? []);
+      setFeatures((json?.features as FeatureRow[]) ?? []);
+    } catch (e) {
+      console.error("[EnsembleAIDashboard] fetch:", e);
+    }
     setLoading(false);
   }, []);
 
