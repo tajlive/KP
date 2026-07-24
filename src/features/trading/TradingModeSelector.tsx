@@ -40,7 +40,7 @@ const MODES: ModeCard[] = [
     tagline: "Du + AI sammen",
     description: "Sett dine regler og strategi. AI-en utfører handlene for deg — du beholder kontrollen.",
     who: "For deg som vil effektivisere",
-    href: "/dashboard/autopilot",
+    href: "/dashboard/auto-trade",
     accent: "border-amber-500/60 hover:border-amber-400",
     bg: "from-amber-950/40 to-amber-900/20",
     dot: "bg-amber-400",
