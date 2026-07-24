@@ -1,6 +1,7 @@
 /**
  * AutoTradingConfigCard - Unit Tests
- * Supabase chain: .from().select().eq().maybeSingle().returns<T>()
+ * KLA-auth: komponenten henter konfig via /api/user/auto-trading-config
+ * (server leser httpOnly auth-cookie) — testen mocker fetch.
  */
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -14,29 +15,9 @@ class MockResizeObserver {
 }
 global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 
-// Supabase chain mock
-// Kjedet: .from().select().eq().maybeSingle().returns<T>() -> Promise<{error,data}>
-const mockReturnsChain = vi.fn();
-const mockMaybeSingleChain = vi.fn(() => ({
-  returns: mockReturnsChain,
-}));
-const mockSelectChain = {
-  select: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  maybeSingle: mockMaybeSingleChain,
-  update: vi.fn().mockReturnThis(),
-  insert: vi.fn(),
-};
-const mockFrom = vi.fn(() => mockSelectChain);
-const mockGetUser = vi.fn();
-
-vi.mock('@/lib/utils', () => ({
-  createClient: () => ({
-    auth: { getUser: mockGetUser },
-    from: mockFrom,
-  }),
-  cn: (...args: unknown[]) => (args.filter(Boolean) as string[]).join(' '),
-}));
+// fetch-mock for /api/user/auto-trading-config
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
 const mockToastSuccess = vi.fn();
 const mockToastError = vi.fn();
@@ -91,25 +72,17 @@ const renderWithI18n = (component: React.ReactNode) => {
   );
 };
 
-function setupUser(id = 'user-abc') {
-  const userPayload = { user: { id } };
-  mockGetUser.mockResolvedValue(Object.fromEntries([['data', userPayload]]));
-}
-
 function setupConfig(cfg: CfgShape) {
-  mockReturnsChain.mockResolvedValue(
-    Object.fromEntries([['data', cfg], ['error', null]])
-  );
+  mockFetch.mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({ ok: true, config: cfg }),
+  } as Response);
 }
 
 describe('AutoTradingConfigCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset chain mocks
-    mockMaybeSingleChain.mockReturnValue({ returns: mockReturnsChain });
-    mockSelectChain.select.mockReturnThis();
-    mockSelectChain.eq.mockReturnThis();
-    setupUser();
     setupConfig(null);
   });
 
@@ -134,7 +107,18 @@ describe('AutoTradingConfigCard', () => {
     });
   });
 
-  it('viser Balansert som default naar DB returnerer null', async () => {
+  it('henter konfig fra /api/user/auto-trading-config med same-origin credentials', async () => {
+    const { AutoTradingConfigCard } = await import('../AutoTradingConfigCard');
+    await act(async () => { renderWithI18n(<AutoTradingConfigCard />); });
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/user/auto-trading-config',
+        expect.objectContaining({ credentials: 'same-origin' }),
+      );
+    });
+  });
+
+  it('viser Balansert som default naar API returnerer null', async () => {
     setupConfig(null);
     const { AutoTradingConfigCard } = await import('../AutoTradingConfigCard');
     await act(async () => { renderWithI18n(<AutoTradingConfigCard />); });

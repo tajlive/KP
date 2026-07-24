@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import { CopyTradingRequirements, CopyTradingStatus } from "@/types/trading";
 import { useEffect, useState } from "react";
 
@@ -38,38 +37,39 @@ export function useCopyTrading() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
-
   useEffect(() => {
     const fetchCopyTradingStatus = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) {
+        // KLA-auth: browser-klienten er alltid anon — tier og trade-telling
+        // hentes via server-APIer som leser httpOnly auth-cookie
+        const profileRes = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
+        if (!profileRes.ok) {
           setIsLoading(false);
           return;
         }
+        const profileJson = await profileRes.json().catch(() => null);
+        const subscriptionTier = profileJson?.profile?.tier || "student";
 
-        const { data: profile, error: profileError } = await supabase
-          .from("user_profiles")
-          .select("tier")
-          .eq("id", user.id)
-          .single();
+        // Tell paper-trades via analytics-APIets modeSplit
+        let paperTradesCount = 0;
+        const analyticsRes = await fetch("/api/user/trading-analytics", {
+          credentials: "same-origin",
+        });
+        if (analyticsRes.ok) {
+          const analytics = await analyticsRes.json().catch(() => null);
+          const split = analytics?.modeSplit as
+            | { mode: string; trades: number }[]
+            | undefined;
+          paperTradesCount =
+            split?.find((m) => m.mode === "paper")?.trades ?? 0;
+        }
 
-        if (profileError) throw profileError;
-
-        // Count trades from canonical trades table
-        const { count: paperTradesCount } = await supabase
-          .from("trades")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("mode", "paper");
         const currentMode = "paper";
-        const subscriptionTier = profile?.tier || "student";
 
         const { canCopyTrade, reason } = checkCopyTradingEligibility(
-          paperTradesCount ?? 0,
+          paperTradesCount,
           currentMode,
           subscriptionTier,
         );
@@ -92,7 +92,7 @@ export function useCopyTrading() {
         setStatus({
           canCopyTrade,
           reason,
-          paperTradesCount: paperTradesCount ?? 0,
+          paperTradesCount,
           currentMode,
           subscriptionTier,
           activeSessions,

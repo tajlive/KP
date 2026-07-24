@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/shared/ui/button";
@@ -20,7 +20,7 @@ import {
   copyStrategyRequestSchema,
   type CopyStrategyRequest,
 } from "@/lib/strategies/copy-strategy-schema";
-import { cn, createClient } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export { copyStrategyRequestSchema, type CopyStrategyRequest };
 
@@ -37,7 +37,6 @@ export function CopyStrategyForm({
   onSuccess,
 }: CopyStrategyFormProps) {
   const t = useTranslations("copyStrategy");
-  const supabase = useMemo(() => createClient(), []);
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<CopyStrategyRequest>({
@@ -66,16 +65,9 @@ export function CopyStrategyForm({
   const onSubmit = async (values: CopyStrategyRequest) => {
     setSubmitting(true);
     try {
-      const {
-        data: { user },
-        error: authErr,
-      } = await supabase.auth.getUser();
-
-      if (authErr || !user) {
-        toast.error(t("errorNotSignedIn"));
-        return;
-      }
-
+      // KLA-auth: browser-klienten er alltid anon — pre-sjekk med getUser()
+      // ga alltid «ikke innlogget». POST-ruten autentiserer selv server-side
+      // via httpOnly auth-cookie; 401 håndteres under.
       const res = await fetch(
         `/api/strategies/${encodeURIComponent(strategyId)}/copy`,
         {
@@ -94,6 +86,11 @@ export function CopyStrategyForm({
       );
 
       const json: unknown = await res.json().catch(() => ({}));
+
+      if (res.status === 401) {
+        toast.error(t("errorNotSignedIn"));
+        return;
+      }
 
       if (!res.ok) {
         const errMsg =

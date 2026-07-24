@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/shared/ui/button";
-import { createClient } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { AnimatePresence, m } from "framer-motion";
 import {
@@ -125,16 +124,6 @@ export default function SpeedOnboarding({
   const [countdown, setCountdown] = useState(60);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
-  const [referrerId, setReferrerId] = useState<string | null>(null);
-
-  // Parse "?ref=" from URL
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get("ref");
-      if (ref) setReferrerId(ref);
-    }
-  }, []);
 
   // Countdown timer
   useEffect(() => {
@@ -155,54 +144,28 @@ export default function SpeedOnboarding({
     );
   }, []);
 
-  // Helper to generate a random 8-character referral code
-  const generateReferralCode = () =>
-    Math.random().toString(36).substring(2, 10).toUpperCase();
-
   async function handleStart() {
     if (!selectedRisk) return;
     setIsStarting(true);
 
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+      // getUser() ga alltid null, så hele denne blokka (inkl. startTrading)
+      // ble hoppet over. Onboarding-status lagres via server-API.
+      // user_trading_config-tabellen finnes ikke i prod — upserten er fjernet
+      // (var allerede stille død). Persistens skjer i user_profiles.
+      const res = await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          onboarding_completed: true,
+          onboarding_step: 5,
+          onboarding_completed_at: new Date().toISOString(),
+        }),
+      });
 
-      if (user) {
-        // Build payload matching the schema in user_trading_config
-        const updatePayload: { [key: string]: unknown } = {
-          user_id: user.id,
-          risk_level: selectedRisk,
-          selected_pairs: selectedCoins.map((c) => `${c}USDT`),
-          paper_balance: 100000,
-          is_active: true,
-          updated_at: new Date().toISOString(),
-          // Generate a referral code for this user if they don't have one
-          referral_code: generateReferralCode(),
-        };
-
-        // If they were referred by someone, add it
-        if (referrerId) {
-          updatePayload.referred_by = referrerId;
-        }
-
-        // Save preferences
-        // TODO: user_trading_config-tabellen finnes ikke i prod DB — kallet feiler stille ved runtime.
-        // Reell persistens skjer via user_profiles-oppdateringen under.
-        await supabase.from("user_trading_config" as never).upsert(updatePayload as never);
-
-        // FIX: Also update user_profiles onboarding status
-        await supabase
-          .from("user_profiles")
-          .update({
-            onboarding_completed: true,
-            onboarding_step: 5,
-            onboarding_completed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", user.id);
-
+      if (res.ok) {
         // Start paper trading session
         await startTrading({
           mode: "paper",

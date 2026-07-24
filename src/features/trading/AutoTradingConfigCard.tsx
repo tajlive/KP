@@ -7,7 +7,6 @@ import { Label } from "@/shared/ui/label";
 import { Switch } from "@/shared/ui/switch";
 import { Slider } from "@/shared/ui/slider";
 import { Button } from "@/shared/ui/button";
-import { createClient } from "@/lib/utils";
 import { toast } from "sonner";
 import { Bot, Shield, AlertCircle, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,7 +40,6 @@ export function AutoTradingConfigCard() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const supabase = createClient();
 
   useEffect(() => {
     fetchConfig();
@@ -49,27 +47,20 @@ export function AutoTradingConfigCard() {
 
   const fetchConfig = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // KLA-auth: browser-klienten er alltid anon — konfig hentes via
+      // server-API som leser httpOnly auth-cookie
+      const res = await fetch("/api/user/auto-trading-config", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
 
-      type UserAutoTradingConfig = {
+      const json = await res.json().catch(() => null);
+      const data = json?.config as {
         is_enabled: boolean | null;
         is_paper_trading: boolean | null;
         trading_capital_nok: number | null;
         risk_level: string | null;
-      };
-
-      const { data, error } = await supabase
-        .from("user_auto_trading_configs")
-        .select("is_enabled, is_paper_trading, trading_capital_nok, risk_level")
-        .eq("user_id", user.id)
-        .maybeSingle()
-        .returns<UserAutoTradingConfig>();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Error fetching config:", error);
-        return;
-      }
+      } | null;
 
       if (data) {
         setConfig({
@@ -89,42 +80,27 @@ export function AutoTradingConfigCard() {
   const saveConfig = async () => {
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const res = await fetch("/api/user/auto-trading-config", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          is_enabled: config.enabled,
+          is_paper_trading: config.mode === "paper",
+          trading_capital_nok: config.max_trade_size_nok,
+          risk_level: config.risk_level,
+        }),
+      });
+
+      if (res.status === 401) {
         toast.error(t("loginRequired"));
         return;
       }
-
-      const { data: existingConfig } = await supabase
-        .from("user_auto_trading_configs")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (existingConfig) {
-        await supabase
-          .from("user_auto_trading_configs")
-          .update({
-            is_enabled: config.enabled,
-            is_paper_trading: config.mode === "paper",
-            trading_capital_nok: config.max_trade_size_nok,
-            risk_level: config.risk_level,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", existingConfig.id);
-      } else {
-        await supabase
-          .from("user_auto_trading_configs")
-          .insert({
-            user_id: user.id,
-            // strategy_id er NOT NULL — tabellen er tom og auto_strategies finnes ikke,
-            // så "default" er den eneste praktiske verdien per nå
-            strategy_id: "default",
-            is_enabled: config.enabled,
-            is_paper_trading: config.mode === "paper",
-            trading_capital_nok: config.max_trade_size_nok,
-            risk_level: config.risk_level,
-          });
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        console.error("Error saving config:", json?.error);
+        toast.error(t("saveError"));
+        return;
       }
 
       toast.success(t("saveSuccess"));
