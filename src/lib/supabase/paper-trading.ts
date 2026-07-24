@@ -56,6 +56,7 @@ export async function createPaperTradingSession(
   // happens via BotWizard which calls the startPaperTrading Server Action.
   const strategyId = 'dca';
   let startingCapital = 100000;
+  let autoEnabled = false;
   try {
     const { data: cfg } = await supabase
       .from("user_auto_trading_configs")
@@ -65,6 +66,7 @@ export async function createPaperTradingSession(
     if (cfg?.is_enabled && cfg?.trading_capital_nok) {
       startingCapital = cfg.trading_capital_nok;
     }
+    autoEnabled = cfg?.is_enabled === true;
   } catch {
     // ignore config fetch errors
   }
@@ -76,7 +78,10 @@ export async function createPaperTradingSession(
       trading_pair: 'BTCUSDT',
       mode: 'paper',
       strategy_id: strategyId,
-      status: 'active',
+      // 'paused' med mindre brukeren selv har skrudd på auto-handel:
+      // cron-ticken henter kun status='active', så en paused sesjon handles
+      // manuelt av brukeren uten at boten kjører i bakgrunnen.
+      status: autoEnabled ? 'active' : 'paused',
       starting_capital_nok: startingCapital,
       current_capital_nok: startingCapital,
       started_at: new Date().toISOString(),
@@ -106,7 +111,8 @@ export async function createPaperTradingSession(
 }
 
 /**
- * Get user's active paper trading session
+ * Get user's paper trading session (active or paused — paused = manuell
+ * handel uten auto-bot, cron-ticken rører kun 'active').
  */
 export async function getPaperTradingSession(
   supabase: Supa,
@@ -117,7 +123,9 @@ export async function getPaperTradingSession(
     .select("*")
     .eq("user_id", userId)
     .eq("mode", 'paper')
-    .eq("status", 'active')
+    .in('status', ['active', 'paused'])
+    .order('updated_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) {
@@ -268,13 +276,13 @@ export async function getOrCreatePaperTradingSession(
   supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
-  // Hent ALLE aktive paper-sessions for brukeren
-  const { data: allActive, error: fetchErr } = await supabase
+  // Hent aktive + pausede paper-sessions (paused = manuell sesjon uten bot)
+  const { data: allSessions, error: fetchErr } = await supabase
     .from('trading_sessions')
     .select('*')
     .eq('user_id', userId)
     .eq('mode', 'paper')
-    .eq('status', 'active')
+    .in('status', ['active', 'paused'])
     .order('started_at', { ascending: false });
 
   if (fetchErr) {
@@ -282,9 +290,16 @@ export async function getOrCreatePaperTradingSession(
     throw new Error('Failed to fetch paper trading sessions');
   }
 
-  // Ingen aktive: opprett ny
-  if (!allActive || allActive.length === 0) {
+  // Ingen i det hele tatt: opprett ny (paused med mindre brukeren har skrudd på auto)
+  if (!allSessions || allSessions.length === 0) {
     return createPaperTradingSession(supabase, userId);
+  }
+
+  // Kun pausede sesjoner: returner nyeste — IKKE opprett en ny (ellers
+  // ville hver init-kall opprettet enda en paused sesjon)
+  const allActive = allSessions.filter((s) => s.status === 'active');
+  if (allActive.length === 0) {
+    return allSessions[0] as unknown as PaperTradingSession;
   }
 
   // Multi-bot support: only stop true duplicates (same pair + same strategy).
