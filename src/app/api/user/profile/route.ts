@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
-      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority, ui_theme")
+      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority, ui_theme, font_size_preference, high_contrast_mode")
       .eq("id", userId)
       .maybeSingle();
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      profile,
+      profile: { ...profile, email: user.email },
       wallets: wallets || [],
       duration_ms: Date.now() - startTime,
     });
@@ -88,6 +88,8 @@ const PATCHABLE_FIELDS = [
   "avatar_url",
   "risk_tolerance",
   "ui_theme",
+  "font_size_preference",
+  "high_contrast_mode",
 ] as const;
 
 /**
@@ -154,7 +156,7 @@ export async function PATCH(request: NextRequest) {
         ...updates,
         updated_at: new Date().toISOString(),
       } as Database["public"]["Tables"]["user_profiles"]["Insert"])
-      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority, ui_theme")
+      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority, ui_theme, font_size_preference, high_contrast_mode")
       .single();
 
     if (upsertError) {
@@ -170,7 +172,7 @@ export async function PATCH(request: NextRequest) {
         RISK_DB_TO_UI[profile.risk_tolerance] ?? profile.risk_tolerance;
     }
 
-    return NextResponse.json({ ok: true, profile });
+    return NextResponse.json({ ok: true, profile: { ...profile, email: user.email } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Ukjent feil";
     return NextResponse.json(

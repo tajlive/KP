@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/utils";
 import { 
   Bell, 
   BellOff, 
@@ -27,7 +26,6 @@ const DEFAULT_PREFS: NotificationPrefs = {
 };
 
 export function NotificationsTab() {
-  const supabase = createClient();
   const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -39,15 +37,14 @@ export function NotificationsTab() {
 
   async function loadPrefs() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // KLA-auth: browser-klienten er alltid anon — preferanser via server-API
+      const res = await fetch("/api/user/notification-preferences", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
 
-      const { data } = await supabase
-        .from("notification_preferences")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
+      const json = await res.json().catch(() => null);
+      const data = json?.preferences;
       if (data) {
         // Kolonnemapping mot faktisk DB-skjema:
         // email_trades→trading_alerts, email_news→marketing_emails, push_trades→push_transactions
@@ -67,21 +64,19 @@ export function NotificationsTab() {
   async function savePrefs(newPrefs: NotificationPrefs) {
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from("notification_preferences")
-        .upsert({
-          user_id: user.id,
+      const res = await fetch("/api/user/notification-preferences", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           // Kolonnemapping mot faktisk DB-skjema (se loadPrefs)
           trading_alerts: newPrefs.email_trades,
           marketing_emails: newPrefs.email_news,
           push_transactions: newPrefs.push_trades,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: "user_id" });
+        }),
+      });
 
-      if (error) throw error;
+      if (!res.ok) throw new Error("Lagring feilet");
 
       setPrefs(newPrefs);
       toast.success("Varslingsinnstillinger lagret");

@@ -41,7 +41,6 @@ const DEFAULT_EMAIL_PREFS: EmailPrefs = {
 // ─── Email Preferences Section ───────────────────────────────────────────────
 
 function EmailPrefsSection() {
-  const supabase = createClient();
   const [prefs, setPrefs] = useState<EmailPrefs>(DEFAULT_EMAIL_PREFS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,17 +51,14 @@ function EmailPrefsSection() {
 
   async function loadPrefs() {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      // KLA-auth: browser-klienten er alltid anon — preferanser via server-API
+      const res = await fetch("/api/user/email-preferences", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
 
-      const { data } = await supabase
-        .from("email_preferences")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
+      const json = await res.json().catch(() => null);
+      const data = json?.preferences;
       if (data) {
         setPrefs({
           gamification_emails: data.gamification_emails ?? true,
@@ -83,22 +79,13 @@ function EmailPrefsSection() {
   async function savePrefs(newPrefs: EmailPrefs) {
     setSaving(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from("email_preferences")
-        .upsert(
-          {
-            user_id: user.id,
-            ...newPrefs,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id" },
-        );
-      if (error) throw error;
+      const res = await fetch("/api/user/email-preferences", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPrefs),
+      });
+      if (!res.ok) throw new Error("Lagring feilet");
 
       setPrefs(newPrefs);
       toast.success("E-postinnstillinger lagret");
@@ -227,18 +214,22 @@ function PasswordSection() {
   async function sendReset() {
     setLoading(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user?.email) return;
+      // KLA-auth: browser-klienten er alltid anon — e-post hentes via
+      // server-API (profile inkluderer email fra auth-brukeren)
+      const res = await fetch("/api/user/profile", {
+        credentials: "same-origin",
+      });
+      const json = await res.json().catch(() => null);
+      const email = json?.profile?.email;
+      if (!res.ok || !email) throw new Error("Ikke innlogget");
 
-      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: buildAuthRedirect({ type: "password-reset", locale }),
       });
       if (error) throw error;
 
       setSent(true);
-      toast.success("Tilbakestillingslenke sendt til " + user.email);
+      toast.success("Tilbakestillingslenke sendt til " + email);
     } catch {
       toast.error("Kunne ikke sende e-post");
     } finally {

@@ -8870,8 +8870,10 @@ export type Database = {
           email_daily_digest: boolean
           email_on_crash: boolean
           email_on_trade: boolean
+          font_size_preference: string
           full_name: string | null
           google_id: string | null
+          high_contrast_mode: boolean
           id: string
           is_priority: boolean | null
           learning_progress: Json
@@ -8919,8 +8921,10 @@ export type Database = {
           email_daily_digest?: boolean
           email_on_crash?: boolean
           email_on_trade?: boolean
+          font_size_preference?: string
           full_name?: string | null
           google_id?: string | null
+          high_contrast_mode?: boolean
           id: string
           is_priority?: boolean | null
           learning_progress?: Json
@@ -8968,8 +8972,10 @@ export type Database = {
           email_daily_digest?: boolean
           email_on_crash?: boolean
           email_on_trade?: boolean
+          font_size_preference?: string
           full_name?: string | null
           google_id?: string | null
+          high_contrast_mode?: boolean
           id?: string
           is_priority?: boolean | null
           learning_progress?: Json
