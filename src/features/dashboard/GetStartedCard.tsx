@@ -13,7 +13,6 @@ import { m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { createClient } from "@/lib/utils";
 
 interface GetStartedCardProps {
   userId: string;
@@ -119,22 +118,17 @@ export default function GetStartedCard({
   useEffect(() => {
     const checkDismissed = async () => {
       try {
-        const supabase = createClient();
-        // DEFENSIV: Håndter case hvor kolonne mangler eller er null
-        const { data, error } = await supabase
-          .from("user_profiles")
-          .select("dismissed_get_started_card")
-          .eq("id", userId)
-          .maybeSingle();
-
-        // Hvis feil eller ingen data, ikke kast — behandle som ikke-avvist
-        if (error) {
-          console.warn("[GetStarted] Kunne ikke hente dismissed-status:", error.message);
+        // KLA-auth: browser-klienten er alltid anon — dismissed-status
+        // hentes via server-API
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) {
           setIsLoading(false);
           return;
         }
-
-        if (data?.dismissed_get_started_card) {
+        const json = await res.json().catch(() => null);
+        if (json?.profile?.dismissed_get_started_card) {
           setIsDismissed(true);
           setIsVisible(false);
         }
@@ -166,14 +160,16 @@ export default function GetStartedCard({
 
     // Lagre i databasen (defensivt)
     try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({ dismissed_get_started_card: true })
-        .eq("id", userId);
-      
-      if (error) {
-        console.warn("[GetStarted] Kunne ikke lagre dismissed-status:", error.message);
+      // KLA-auth: browser-klienten er alltid anon — dismissed-status
+      // lagres via server-API
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ dismissed_get_started_card: true }),
+      });
+      if (!res.ok) {
+        console.warn("[GetStarted] Kunne ikke lagre dismissed-status:", res.status);
       }
     } catch (error) {
       console.warn("[GetStarted] Feil ved lagring av dismissed status:", error);

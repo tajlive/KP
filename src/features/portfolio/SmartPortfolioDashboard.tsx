@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
 
 type ChartValue = number | string | readonly (number | string)[] | undefined;
-import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, m } from "framer-motion";
 import { Wallet, ShieldCheck, Zap, History, TrendingUp, Info, AlertCircle, CheckCircle2, Activity, ArrowRight, RefreshCcw, BarChart3 } from "lucide-react";
@@ -35,39 +34,6 @@ interface RebalanceOrder {
   twap_chunks: number;
   executed_chunks: number;
 }
-
-// Minimal typed query builders for portfolio tables not yet in generated DB types
-type PortfolioConfigResult = { data: RebalanceConfig | null; error: Error | null };
-type PortfolioOrderResult = { data: RebalanceOrder[] | null; error: Error | null };
-
-type PortfolioConfigQuery = {
-  select(columns: string): {
-    eq(column: string, value: string): {
-      maybeSingle(): Promise<PortfolioConfigResult>;
-    };
-  };
-  insert(values: object): {
-    select(): {
-      single(): Promise<PortfolioConfigResult>;
-    };
-  };
-  update(values: object): {
-    eq(column: string, value: string): Promise<{ error: Error | null }>;
-  };
-};
-
-type PortfolioOrderQuery = {
-  select(columns: string): {
-    eq(column: string, value: string): {
-      in(column: string, values: string[]): Promise<PortfolioOrderResult>;
-    };
-  };
-};
-
-type PortfolioClient = {
-  from(table: "portfolio_rebalance_configs"): PortfolioConfigQuery;
-  from(table: "portfolio_rebalance_orders"): PortfolioOrderQuery;
-};
 
 const COLORS = [
   "#0052FF", // BRAND_COLOR.DEFAULT
@@ -105,51 +71,21 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
     setMounted(true);
   }, []);
 
-  const supabase = createClient();
-  const portfolioDb = supabase as unknown as PortfolioClient;
-
   useEffect(() => {
     async function fetchData() {
       try {
-        const [walletsRes, configRes, ordersRes] = await Promise.all([
-          supabase.from("wallets").select("*").eq("user_id", userId),
-          portfolioDb.from("portfolio_rebalance_configs").select("*").eq("user_id", userId).maybeSingle(),
-          portfolioDb.from("portfolio_rebalance_orders")
-            .select("*")
-            .eq("user_id", userId)
-            .in("status", ["pending", "partial"])
-        ]);
+        // KLA-auth: browser-klienten er alltid anon — wallets/config/orders
+        // hentes via server-API; default-config auto-opprettes der
+        const res = await fetch("/api/portfolio/rebalance", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) return;
+        const json = await res.json().catch(() => null);
+        if (!json) return;
 
-        if (walletsRes.data) setWallets(walletsRes.data);
-        if (ordersRes.data) setActiveOrders(ordersRes.data);
-        
-        if (configRes.data) {
-          setConfig(configRes.data);
-        } else {
-          // Create default config if missing
-          const defaultConfig = {
-            user_id: userId,
-            is_active: false,
-            threshold_percent: 5,
-            target_allocations: {
-              "BTC": 0.50,
-              "ETH": 0.30,
-              "SOL": 0.10,
-              "BNB": 0.05,
-              "XRP": 0.05
-            }
-          };
-          
-          const { data: newConfig, error: insertError } = await portfolioDb
-            .from("portfolio_rebalance_configs")
-            .insert(defaultConfig)
-            .select()
-            .single();
-            
-          if (!insertError && newConfig) {
-            setConfig(newConfig);
-          }
-        }
+        if (json.wallets) setWallets(json.wallets);
+        if (json.activeOrders) setActiveOrders(json.activeOrders);
+        if (json.config) setConfig(json.config);
       } catch (err) {
         console.error("Error fetching portfolio data", err);
       } finally {
@@ -158,36 +94,27 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
     }
     fetchData();
 
-    // Subscribe to real-time updates for orders
-    const channel = supabase
-      .channel('rebalance-orders')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'portfolio_rebalance_orders',
-        filter: `user_id=eq.${userId}` 
-      }, () => {
-        fetchData();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId, supabase]);
+    // KLA-auth: anon realtime-klient faar aldri events pga RLS —
+    // polling hvert 30. sek i stedet (skikkelig realtime = fase 4)
+    const interval = setInterval(fetchData, 30_000);
+    return () => clearInterval(interval);
+  }, [userId]);
 
   const toggleAutopilot = async () => {
     if (!config) return;
     const newStatus = !config.is_active;
-    const { error } = await portfolioDb
-      .from("portfolio_rebalance_configs")
-      .update({ is_active: newStatus })
-      .eq("id", config.id);
-    
-    if (!error) {
+    // KLA-auth: via server-API
+    const res = await fetch("/api/portfolio/rebalance", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ is_active: newStatus }),
+    });
+
+    if (res.ok) {
       setConfig({ ...config, is_active: newStatus });
     } else {
-      console.error("Failed to toggle autopilot", error);
+      console.error("Failed to toggle autopilot", res.status);
     }
   };
 

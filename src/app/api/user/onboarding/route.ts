@@ -24,6 +24,7 @@ const PATCHABLE_FIELDS = [
   "onboarding_completed",
   "onboarding_completed_at",
   "binance_connected",
+  "setup_completed_at",
 ] as const;
 
 type PatchableField = (typeof PATCHABLE_FIELDS)[number];

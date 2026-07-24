@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
-      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority, ui_theme, font_size_preference, high_contrast_mode")
+      .select("id, display_name, full_name, avatar_url, risk_tolerance, paper_balance, tier, preferred_trading_mode, onboarding_completed, created_at, is_priority, ui_theme, font_size_preference, high_contrast_mode, dismissed_get_started_card")
       .eq("id", userId)
       .maybeSingle();
 
@@ -90,7 +90,14 @@ const PATCHABLE_FIELDS = [
   "ui_theme",
   "font_size_preference",
   "high_contrast_mode",
+  "dismissed_get_started_card",
 ] as const;
+
+// Felter som er boolean i DB (unntatt fra string-kravet under)
+const BOOLEAN_FIELDS = new Set<string>([
+  "high_contrast_mode",
+  "dismissed_get_started_card",
+]);
 
 /**
  * PATCH: upsert av egen profil (opprett ved manglende rad, ellers oppdater).
@@ -124,7 +131,14 @@ export async function PATCH(request: NextRequest) {
     for (const field of PATCHABLE_FIELDS) {
       if (field in body) {
         let value = body[field];
-        if (value !== null && typeof value !== "string") {
+        if (BOOLEAN_FIELDS.has(field)) {
+          if (typeof value !== "boolean") {
+            return NextResponse.json(
+              { ok: false, error: `Ugyldig verdi for ${field}` },
+              { status: 400 }
+            );
+          }
+        } else if (value !== null && typeof value !== "string") {
           return NextResponse.json(
             { ok: false, error: `Ugyldig verdi for ${field}` },
             { status: 400 }
