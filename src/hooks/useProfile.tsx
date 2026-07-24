@@ -1,143 +1,85 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
-import type { Database } from "@/types/database.types";
 import { Profile } from "@/types/database";
 import { useEffect, useState, useCallback } from "react";
-import { useAuthSafe } from "@/lib/auth/new/AuthContext";
 
-type UserProfilesInsert =
-  Database["public"]["Tables"]["user_profiles"]["Insert"];
-type UserProfilesUpdate =
-  Database["public"]["Tables"]["user_profiles"]["Update"];
-
+/**
+ * useProfile — leser/skriver brukerprofil via /api/user/profile.
+ *
+ * KLA-auth: browser-supabase er ALLTID anon (httpOnly auth-cookie),
+ * så direkte .from("user_profiles") gir 0 rader (RLS) og falsk
+ * "ingen profil". All profil-data går derfor gjennom server-ruta
+ * som gjør getUser() + eksplisitt user_id-filter.
+ */
 export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Hent userID fra AuthContext (ingen nettverkskall) ved render-tid
-  const authCtx = useAuthSafe();
-
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const supabase = createClient();
-
-      // Bruk AuthContexts user (0 nettverkskall) hvis tilgjengelig
-      let userId = authCtx.user?.id ?? null;
-      if (!userId) {
-        // Fallback: direct getUser() — kun utenfor AuthProvider
-        const { data: { user } } = await supabase.auth.getUser();
-        userId = user?.id ?? null;
-      }
-      if (!userId) {
+      const res = await fetch("/api/user/profile", {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
         setProfile(null);
-        return;
-      }
-      const { data, error: fetchError } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-      if (fetchError) {
-        setProfile(null);
+        if (res.status !== 401) setError(body?.error ?? null);
       } else {
-        setProfile(data as unknown as Profile);
+        setProfile((body.profile ?? null) as unknown as Profile | null);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     } finally {
       setLoading(false);
     }
-  }, [authCtx.user?.id]);
+  }, []);
 
   const save = useCallback(async (updates: Partial<Profile>) => {
     setSaving(true);
     try {
-      const supabase = createClient();
-      let userId = authCtx.user?.id ?? null;
-      if (!userId) {
-        const { data: { user } } = await supabase.auth.getUser();
-        userId = user?.id ?? null;
-      }
-      if (!userId) {
-        setError("Ikke innlogget");
-        return;
-      }
-      const upsertPayload = {
-        id: userId,
-        user_id: userId,
-        ...updates,
-        updated_at: new Date().toISOString(),
-      } as unknown as UserProfilesInsert;
-      const { data, error: upsertError } = await supabase
-        .from("user_profiles")
-        .upsert(upsertPayload)
-        .select()
-        .single();
-      if (upsertError) {
-        setError(upsertError.message);
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
+        setError(body?.error ?? "Lagring feilet");
       } else {
-        setProfile((data ?? null) as unknown as Profile | null);
+        setProfile((body.profile ?? null) as unknown as Profile | null);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     } finally {
       setSaving(false);
     }
-  }, [authCtx.user?.id]);
+  }, []);
 
-  const patch = useCallback(async (updates: Partial<Profile>) => {
-    setSaving(true);
-    try {
-      const supabase = createClient();
-      let userId = authCtx.user?.id ?? null;
-      if (!userId) {
-        const { data: { user } } = await supabase.auth.getUser();
-        userId = user?.id ?? null;
-      }
-      if (!userId) {
-        setError("Ikke innlogget");
-        return;
-      }
-      const payload = { ...updates, updated_at: new Date().toISOString() };
-      if ("created_at" in payload && payload.created_at === null)
-        delete (payload as Record<string, unknown>).created_at;
-      const { data, error: updateError } = await supabase
-        .from("user_profiles")
-        .update(payload as unknown as UserProfilesUpdate)
-        .eq("id", userId)
-        .select()
-        .single();
-      if (updateError) {
-        setError(updateError.message);
-      } else {
-        setProfile((data ?? null) as unknown as Profile | null);
-      }
-    } catch (e: unknown) {
-      setError(getErrorMessage(e));
-    } finally {
-      setSaving(false);
-    }
-  }, [authCtx.user?.id]);
+  // patch og save er samme operasjon server-side (upsert av whitelistet felt)
+  const patch = save;
 
   const deleteProfile = useCallback(async () => {
     try {
-      const supabase = createClient();
-      let userId = authCtx.user?.id ?? null;
-      if (!userId) {
-        const { data: { user } } = await supabase.auth.getUser();
-        userId = user?.id ?? null;
+      const res = await fetch("/api/user/profile", {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
+        setError(body?.error ?? "Sletting feilet");
+      } else {
+        setProfile(null);
       }
-      if (!userId) return;
-      await supabase.from("user_profiles").delete().eq("id", userId);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     }
-  }, [authCtx.user?.id]);
+  }, []);
 
   useEffect(() => {
     load();

@@ -312,12 +312,12 @@
       "warningTitle": "Warning tittel",
       "warningText": "Warning text",
       "email": "E-post",
-      "emailPlaceholder": "E-post plassholder",
+      "emailPlaceholder": "deg@eksempel.no",
       "password": "Passord",
-      "passwordPlaceholder": "Passord plassholder",
+      "passwordPlaceholder": "Skriv inn passord",
       "passwordHint": "Passord tips",
       "reason": "Reason",
-      "reasonPlaceholder": "Reason plassholder",
+      "reasonPlaceholder": "Årsak for innlogging som bruker",
       "starting": "Starting",
       "start": "Start",
       "endSessionAria": "End økt aria",
@@ -3238,11 +3238,11 @@
       },
       "apiKey": {
         "label": "Etikett",
-        "placeholder": "Plassholder"
+        "placeholder": "Lim inn API-nøkkelen"
       },
       "apiSecret": {
         "label": "Etikett",
-        "placeholder": "Plassholder"
+        "placeholder": "Lim inn API-hemmeligheten"
       },
       "connecting": "Connecting",
       "cta": "Cta",
@@ -3833,8 +3833,8 @@
       "settings": "Innstillinger",
       "deleteProfile": "Slett profil",
       "profile": "Profil",
-      "fullNamePlaceholder": "Full navn plassholder",
-      "avatarPlaceholder": "Avatar plassholder"
+      "fullNamePlaceholder": "Ola Nordmann",
+      "avatarPlaceholder": "https://eksempel.no/bilde.jpg"
     },
     "api": {
       "title": "API Innstillinger",
@@ -4678,7 +4678,7 @@
           "title": "Tittel",
           "apply": "Apply",
           "search": "Søk",
-          "placeholder": "Plassholder",
+          "placeholder": "Søk i handler",
           "dateRange": "Dato range",
           "pair": "Par",
           "all": "Alle",
@@ -5892,9 +5892,9 @@
     "profile": "Profil",
     "noProfileFound": "No profil found",
     "fullName": "Full navn",
-    "fullNamePlaceholder": "Full navn plassholder",
+    "fullNamePlaceholder": "Ola Nordmann",
     "avatar": "Avatar",
-    "avatarPlaceholder": "Avatar plassholder",
+    "avatarPlaceholder": "https://eksempel.no/bilde.jpg",
     "riskLevel": "Risiko nivå",
     "riskOptions": {
       "safe": "Safe",
@@ -5910,8 +5910,8 @@
     "badges": "Badges",
     "noBadgesYet": "No badges yet",
     "settings": "Innstillinger",
-    "namePlaceholder": "Navn plassholder",
-    "avatarUrlPlaceholder": "Avatar url plassholder",
+    "namePlaceholder": "Ola Nordmann",
+    "avatarUrlPlaceholder": "https://eksempel.no/bilde.jpg",
     "deleteProfile": "Slett profil"
   },
   "AdminSessions": {
