@@ -42,6 +42,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Oversett DB-verdi (low/medium/high) til UI-verdi (safe/normal/advanced)
+    if (profile && typeof profile.risk_tolerance === "string") {
+      profile.risk_tolerance =
+        RISK_DB_TO_UI[profile.risk_tolerance] ?? profile.risk_tolerance;
+    }
+
     // Fetch wallets
     const { data: wallets, error: walletsError } = await supabase
       .from("wallets")
@@ -62,6 +68,18 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// UI bruker safe/normal/advanced — DB CHECK krever low/medium/high
+const RISK_UI_TO_DB: Record<string, string> = {
+  safe: "low",
+  normal: "medium",
+  advanced: "high",
+};
+const RISK_DB_TO_UI: Record<string, string> = {
+  low: "safe",
+  medium: "normal",
+  high: "advanced",
+};
 
 // Felter brukeren kan endre selv — whitelist mot masse-tilordning
 const PATCHABLE_FIELDS = [
@@ -102,12 +120,16 @@ export async function PATCH(request: NextRequest) {
     const updates: Record<string, unknown> = {};
     for (const field of PATCHABLE_FIELDS) {
       if (field in body) {
-        const value = body[field];
+        let value = body[field];
         if (value !== null && typeof value !== "string") {
           return NextResponse.json(
             { ok: false, error: `Ugyldig verdi for ${field}` },
             { status: 400 }
           );
+        }
+        // UI (safe/normal/advanced) -> DB (low/medium/high, CHECK constraint)
+        if (field === "risk_tolerance" && typeof value === "string") {
+          value = RISK_UI_TO_DB[value] ?? value;
         }
         updates[field] = value;
       }
@@ -139,6 +161,12 @@ export async function PATCH(request: NextRequest) {
         { ok: false, error: upsertError.message },
         { status: 500 }
       );
+    }
+
+    // Tilbake til UI-verdi i responsen (safe/normal/advanced)
+    if (profile && typeof profile.risk_tolerance === "string") {
+      profile.risk_tolerance =
+        RISK_DB_TO_UI[profile.risk_tolerance] ?? profile.risk_tolerance;
     }
 
     return NextResponse.json({ ok: true, profile });
