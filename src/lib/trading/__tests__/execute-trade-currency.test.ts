@@ -171,7 +171,9 @@ describe("Trade Currency Audit Trail", () => {
       user_id: "user-123",
       current_capital_nok: 100000,
       current_capital: 100000,
-      status: "active",
+      // Den nettopp auto-opprettede sesjonen er paused — manuell handel
+      // skal likevel gå gjennom (cron henter kun 'active').
+      status: "paused",
       mode: "paper",
       strategy_config: {},
       open_position: null,
