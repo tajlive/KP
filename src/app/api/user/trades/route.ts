@@ -40,12 +40,29 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Ekskluder arkivert test-era — arkivert betyr "ikke en del av den
+    // reelle historikken" (konsistent med portefølje-siden).
+    const { data: sessions } = await supabase
+      .from("trading_sessions")
+      .select("id")
+      .eq("user_id", user.id)
+      .is("archived", false);
+
+    const sessionIds = (sessions ?? []).map((s) => s.id);
+    if (sessionIds.length === 0) {
+      return NextResponse.json(
+        { ok: true as const, trades: [], diagnostic_id, limit },
+        { status: 200 },
+      );
+    }
+
     const { data, error } = await supabase
       .from("trades")
       .select(
         "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at, strategy_signal",
       )
       .eq("user_id", user.id)
+      .in("session_id", sessionIds)
       .order("created_at", { ascending: false })
       .limit(limit);
 
