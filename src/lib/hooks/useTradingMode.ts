@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import {
   BinanceConnection,
   TradingMode,
@@ -8,6 +7,17 @@ import {
 } from "@/types/trading";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * useTradingMode — leser trading-modus og Binance-tilkobling.
+ *
+ * KLA-auth: Browser-supabase er alltid anon (httpOnly auth-cookie).
+ * Tidligere versjon leste/skrev user_profiles direkte fra browseren —
+ * det gjorde Binance-tilkobling STILLE ØDELAGT (skrivingen persiserte
+ * aldri). Alt går nå via server-autentiserte API-ruter:
+ * - GET/POST /api/trading/mode   (modus + entitlement-sjekk)
+ * - GET/POST/DELETE /api/binance/keys (nøkkel-lagring via Edge Function)
+ * - GET /api/user/profile        (paper_balance)
+ */
 export function useTradingMode() {
   const [state, setState] = useState<TradingModeState>({
     mode: "paper",
@@ -27,55 +37,48 @@ export function useTradingMode() {
     },
   );
 
-  const supabase = createClient();
-
   // Fetch initial trading mode and Binance connection status
   useEffect(() => {
     const fetchTradingMode = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) {
+        const res = await fetch("/api/trading/mode", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) {
           setState((prev) => ({ ...prev, isLoading: false }));
           return;
         }
+        const json = await res.json();
 
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("tier")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        // Bachelor+ har live trading per TIERS; canSwitchToLive krever også binance_connected
-        const { canAccessLiveAutoTrading } =
-          await import("@/types/subscription");
-        const tier = (profile?.tier ||
-          "student") as import("@/lib/pricing/tiers").TierSlug;
-        const hasLiveTier = canAccessLiveAutoTrading(tier);
-
-        // Sjekk om Binance er koblet (trengs for live)
-        const { data: profileFull } = await supabase
-          .from("user_profiles")
-          .select("binance_connected")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        const canSwitchToLive =
-          hasLiveTier && Boolean(profileFull?.binance_connected);
+        // Paper-saldo hentes fra profilen (source of truth: paper_accounts,
+        // eksponert via /api/user/profile)
+        let paperBalance = 100000;
+        try {
+          const profileRes = await fetch("/api/user/profile", {
+            credentials: "same-origin",
+          });
+          if (profileRes.ok) {
+            const profileJson = await profileRes.json();
+            const balance = profileJson?.profile?.paper_balance;
+            if (typeof balance === "number") paperBalance = balance;
+          }
+        } catch {
+          // Behold default
+        }
 
         setState((prev) => ({
           ...prev,
-          mode: "paper",
-          canSwitchToLive,
+          mode: json.mode === "live" ? "live" : "paper",
+          canSwitchToLive: Boolean(json.canSwitchToLive),
+          paperBalance,
           isLoading: false,
         }));
 
         setBinanceConnection({
-          isConnected: canSwitchToLive,
-          apiKeyLast4: canSwitchToLive ? "****" : null,
+          isConnected: Boolean(json.binanceConnected),
+          apiKeyLast4: json.binanceConnected ? "****" : null,
           connectedAt: null,
-          balance: null, // Would fetch from Binance API
+          balance: null,
         });
       } catch (err) {
         setState((prev) => ({
@@ -88,7 +91,7 @@ export function useTradingMode() {
     };
 
     fetchTradingMode();
-  }, [supabase]);
+  }, []);
 
   // Switch trading mode
   const switchMode = useCallback(
@@ -112,18 +115,17 @@ export function useTradingMode() {
           error: null,
         }));
 
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
-
-        // Persist to database
-        const { error } = await supabase.rpc("set_trading_mode", {
-          user_uuid: user.id,
-          new_mode: newMode,
+        const res = await fetch("/api/trading/mode", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: newMode }),
         });
 
-        if (error) throw error;
+        if (!res.ok) {
+          const json = await res.json().catch(() => ({}));
+          throw new Error(json.error || "Failed to switch trading mode");
+        }
 
         return true;
       } catch (err) {
@@ -140,49 +142,26 @@ export function useTradingMode() {
         return false;
       }
     },
-    [supabase, state.canSwitchToLive],
+    [state.canSwitchToLive, state.mode],
   );
 
-  // Connect Binance API
+  // Connect Binance API — server verifiserer nøkler, tier og krypterer
   const connectBinance = useCallback(
     async (apiKey: string, apiSecret: string): Promise<boolean> => {
       try {
         setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
-
-        // Verify API key against Binance
-        const isValid = await verifyBinanceApiKey(apiKey, apiSecret);
-        if (!isValid) {
-          throw new Error("Invalid Binance API key or secret");
-        }
-
-        // Encrypt and store API credentials via secure API route
-        const encryptResponse = await fetch("/api/binance/encrypt", {
+        const res = await fetch("/api/binance/keys", {
           method: "POST",
+          credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey, apiSecret }),
+          body: JSON.stringify({ apiKey, apiSecret, isTestnet: false }),
         });
 
-        if (!encryptResponse.ok) {
-          throw new Error("Failed to encrypt API credentials");
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(json.error || "Failed to connect Binance");
         }
-
-        const { encryptedKey, encryptedSecret } = await encryptResponse.json();
-
-        const { error } = await supabase
-          .from("user_profiles")
-          .update({
-            binance_connected: true,
-            binance_api_key_id: encryptedKey,
-            binance_api_secret_id: encryptedSecret,
-          })
-          .eq("id", user.id);
-
-        if (error) throw error;
 
         setState((prev) => ({
           ...prev,
@@ -208,7 +187,7 @@ export function useTradingMode() {
         return false;
       }
     },
-    [supabase],
+    [],
   );
 
   // Disconnect Binance
@@ -216,22 +195,15 @@ export function useTradingMode() {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const res = await fetch("/api/binance/keys", {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
 
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({
-          binance_connected: false,
-          binance_api_key_id: null,
-          binance_api_secret_id: null,
-          trading_mode: "paper",
-        } as never)
-        .eq("id", user.id);
-
-      if (error) throw error;
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error || "Failed to disconnect Binance");
+      }
 
       setState((prev) => ({
         ...prev,
@@ -257,7 +229,7 @@ export function useTradingMode() {
       }));
       return false;
     }
-  }, [supabase]);
+  }, []);
 
   return {
     ...state,
@@ -266,56 +238,4 @@ export function useTradingMode() {
     connectBinance,
     disconnectBinance,
   };
-}
-
-// Verify Binance API key
-async function verifyBinanceApiKey(
-  apiKey: string,
-  apiSecret: string,
-): Promise<boolean> {
-  try {
-    const timestamp = Date.now();
-    const queryString = `timestamp=${timestamp}`;
-
-    // Create signature (would use crypto library in production)
-    const encoder = new TextEncoder();
-    const cryptoKey = await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(apiSecret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["sign"],
-    );
-    const signature = await crypto.subtle.sign(
-      "HMAC",
-      cryptoKey,
-      encoder.encode(queryString),
-    );
-    const signatureHex = Array.from(new Uint8Array(signature))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-
-    const response = await fetch(
-      `https://api.binance.com/api/v3/account?${queryString}&signature=${signatureHex}`,
-      {
-        headers: { "X-MBX-APIKEY": apiKey },
-      },
-    );
-
-    if (!response.ok) return false;
-
-    const data = await response.json();
-
-    // Check that API key does NOT have withdraw permissions
-    if (data.permissions?.includes("WITHDRAW")) {
-      throw new Error(
-        "API key must NOT have withdraw permission for security reasons",
-      );
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Binance API verification failed:", error);
-    return false;
-  }
 }

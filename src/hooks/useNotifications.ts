@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { RealtimeChannel } from "@supabase/realtime-js";
-import { createClient } from "@/lib/utils";
+import { useState, useEffect } from "react";
 import {
   isPushSupported,
   requestNotificationPermission,
@@ -21,13 +19,20 @@ interface Notification {
   action_url?: string;
 }
 
-interface NotificationPreferences {
-  price_alerts: boolean;
-  trade_executed: boolean;
-  course_reminder: boolean;
-  marketing_emails: boolean;
-}
-
+/**
+ * useNotifications — varsler til NotificationBell.
+ *
+ * KLA-auth: Browser-supabase er alltid anon (httpOnly auth-cookie) —
+ * tidligere versjon leste notifications/notification_preferences direkte
+ * (alltid 0 rader) og kalte RPC mark_notifications_read (finnes ikke i
+ * DB — verifisert). Alt går nå via /api/notifications (server-auth).
+ *
+ * Realtime-subscription er fjernet: anon-klienten mottar aldri
+ * RLS-beskyttede postgres_changes, så kanalen var død kode.
+ *
+ * preferences/updatePreferences er fjernet — ingen konsumenter (YAGNI).
+ * NotificationsTab håndteres i egen fase av browser-klient-sweepen.
+ */
 export function useNotifications() {
   const [permission, setPermission] =
     useState<NotificationPermission>("default");
@@ -35,11 +40,31 @@ export function useNotifications() {
   const [isSupported, setIsSupported] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [preferences, setPreferences] =
-    useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
+  // Fetch notifications via server-autentisert API
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch("/api/notifications", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
+      const json = await res.json();
+      setNotifications((json.notifications ?? []) as Notification[]);
+      setUnreadCount(json.unreadCount ?? 0);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check push subscription status
+  const checkSubscription = async () => {
+    if (!isPushSupported()) return;
+    const subscription = await getPushSubscription();
+    setIsSubscribed(!!subscription);
+  };
 
   // Initialize
   useEffect(() => {
@@ -51,62 +76,8 @@ export function useNotifications() {
 
     checkSubscription();
     fetchNotifications();
-    fetchPreferences();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Check push subscription status
-  const checkSubscription = async () => {
-    if (!isPushSupported()) return;
-
-    const subscription = await getPushSubscription();
-    setIsSubscribed(!!subscription);
-  };
-
-  // Fetch notifications from server
-  const fetchNotifications = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-
-      setNotifications((data || []) as unknown as Notification[]);
-
-      // Calculate unread count
-      const unread = (data || []).filter((n) => !n.is_read).length;
-      setUnreadCount(unread);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    }
-  };
-
-  // Fetch preferences
-  const fetchPreferences = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("notification_preferences")
-        .select("*")
-        .single();
-
-      if (error && error.code !== "PGRST116") throw error;
-
-      setPreferences(
-        (data as NotificationPreferences | null) || {
-          price_alerts: true,
-          trade_executed: true,
-          course_reminder: true,
-          marketing_emails: false,
-        },
-      );
-    } catch (error) {
-      console.error("Error fetching preferences:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Request permission and subscribe
   const subscribe = async () => {
@@ -140,14 +111,19 @@ export function useNotifications() {
     }
   };
 
-  // Mark notifications as read
+  // Mark notifications as read (alle, eller gitte ids)
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-        const { error } = await (supabase as unknown as { rpc: (name: string, params?: Record<string, unknown>) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc("mark_notifications_read", {
-        p_notification_ids: notificationIds || null,
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          notificationIds ? { ids: notificationIds } : {},
+        ),
       });
 
-      if (error) throw error;
+      if (!res.ok) throw new Error("PATCH failed");
 
       // Update local state
       if (notificationIds) {
@@ -166,75 +142,16 @@ export function useNotifications() {
     }
   };
 
-  // Update preferences
-  const updatePreferences = async (
-    newPrefs: Partial<NotificationPreferences>,
-  ) => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return false;
-      const { error } = await supabase
-        .from("notification_preferences")
-        .upsert({ ...preferences, ...newPrefs, user_id: user.id } as never);
-
-      if (error) throw error;
-
-      setPreferences((prev) => (prev ? { ...prev, ...newPrefs } : null));
-      return true;
-    } catch (error) {
-      console.error("Error updating preferences:", error);
-      return false;
-    }
-  };
-
-  // Real-time subscription for new notifications
-  const channelRef = useRef<RealtimeChannel | null>(null);
-
-  useEffect(() => {
-    const channelName = `notifications-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const subscription = supabase
-      .channel(channelName)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-        },
-        (payload) => {
-          const newNotification = payload.new as Notification;
-          setNotifications((prev) => [newNotification, ...prev]);
-          if (!newNotification.is_read) {
-            setUnreadCount((prev) => prev + 1);
-          }
-        },
-      )
-      .subscribe();
-
-    channelRef.current = subscription;
-
-    return () => {
-      if (channelRef.current) {
-        void supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-      }
-    };
-  }, [supabase]);
-
   return {
     permission,
     isSubscribed,
     isSupported,
     notifications,
     unreadCount,
-    preferences,
     loading,
     subscribe,
     unsubscribe,
     markAsRead,
-    updatePreferences,
     refresh: fetchNotifications,
   };
 }

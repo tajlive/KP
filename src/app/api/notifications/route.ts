@@ -160,5 +160,59 @@ async function handlePOST(request: NextRequest) {
   );
 }
 
+// ============================================================
+// PATCH — Merk notifikasjoner som lest (innlogget bruker, egne rader)
+// Body: { ids?: string[] } — uten ids merkes ALLE som lest.
+// (Erstatter RPC mark_notifications_read som aldri har eksistert i DB.)
+// ============================================================
+async function handlePATCH(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let ids: string[] | null = null;
+  try {
+    const body = await request.json();
+    if (Array.isArray(body?.ids) && body.ids.length > 0) {
+      ids = body.ids.filter((id: unknown) => typeof id === "string");
+    }
+  } catch {
+    // Tom body = merk alle
+  }
+
+  let query = supabase
+    .from("notifications")
+    // database.types.ts har ingen Update-shape for notifications — cast som
+    // ellers i kodebasen (kolonnene is_read/read er verifisert i GET-select).
+    .update({ is_read: true, read: true } as never)
+    .eq("user_id", user.id)
+    .eq("is_read", false);
+
+  if (ids && ids.length > 0) {
+    query = query.in("id", ids);
+  }
+
+  const { error } = await query;
+
+  if (error) {
+    console.error("[Notifications] PATCH error:", error);
+    return NextResponse.json(
+      { error: "Kunne ikke merke som lest" },
+      { status: 500 },
+    );
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
 export const GET = withErrorHandler(handleGET, "/api/notifications");
 export const POST = withErrorHandler(handlePOST, "/api/notifications");
+export const PATCH = withErrorHandler(handlePATCH, "/api/notifications");
