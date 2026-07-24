@@ -89,12 +89,23 @@ describe("canonical risk-engine", () => {
     expect(result.limits?.profileName).toBe("paper-demo");
   });
 
-  it("rejects when session is not active", async () => {
+  it("tillater manuell paper-handel på paused sesjon (bot er likevel stoppet — cron henter kun active)", async () => {
     const supabase = createMockSupabase();
     const result = await checkTradeRisk(
       supabase,
       baseTrade,
       { ...baseSession, status: "paused" },
+      null,
+    );
+    expect(result.allowed).toBe(true);
+  });
+
+  it("rejects when live session is not active", async () => {
+    const supabase = createMockSupabase();
+    const result = await checkTradeRisk(
+      supabase,
+      { ...baseTrade, tradingMode: "live" },
+      { ...baseSession, mode: "live", status: "paused" },
       null,
     );
     expect(result.allowed).toBe(false);

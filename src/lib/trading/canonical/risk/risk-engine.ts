@@ -95,8 +95,13 @@ export async function checkTradeRisk(
   profile: RawRiskProfile | null,
   options: RiskEngineOptions = {},
 ): Promise<RiskCheckResult> {
-  // 1. Sjekk session status
-  if (session.status !== "active") {
+  // 1. Sjekk session status.
+  // Paused paper-sesjon = manuell handel uten bot (auto-opprettede sesjoner
+  // er paused by design). Cron-ticken henter kun status='active', saa bot-
+  // veien treffer aldri denne unntaket.
+  const isManualPaperOnPaused =
+    trade.tradingMode === "paper" && session.status === "paused";
+  if (session.status !== "active" && !isManualPaperOnPaused) {
     return {
       allowed: false,
       rejectionReason: "SESSION_NOT_ACTIVE",
