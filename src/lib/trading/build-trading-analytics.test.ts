@@ -68,7 +68,7 @@ describe("buildTradingAnalytics", () => {
     expect(payload.cumulativePnl[1]?.cumulative).toBe(6);
   });
 
-  it("effectivePnlDelta prefers realized_pnl then signed notional", () => {
+  it("effectivePnlDelta uses realized_pnl only; open fills count as 0", () => {
     const base = {
       id: "x",
       trading_pair: "X",
@@ -76,6 +76,7 @@ describe("buildTradingAnalytics", () => {
       created_at: "2026-01-01T00:00:00.000Z",
       executed_at: "2026-01-01T00:00:00.000Z",
     };
+    // Åpent kjøp er en kontant→aktiva-konvertering, ikke et tap.
     expect(
       effectivePnlDelta({
         ...base,
@@ -83,7 +84,7 @@ describe("buildTradingAnalytics", () => {
         realized_pnl: null,
         total_value: 100,
       }),
-    ).toBe(-100);
+    ).toBe(0);
     expect(
       effectivePnlDelta({
         ...base,
@@ -94,7 +95,7 @@ describe("buildTradingAnalytics", () => {
     ).toBe(7);
   });
 
-  it("uses signed total_value when realized_pnl is null (paper fills)", () => {
+  it("fills without realized_pnl do not move P/L charts", () => {
     const payload = buildTradingAnalytics([
       {
         id: "a",
@@ -120,8 +121,13 @@ describe("buildTradingAnalytics", () => {
 
     expect(payload.aggregates.totalRealizedPnl).toBe(0);
     expect(payload.aggregates.noRealizedPnlCount).toBe(2);
-    expect(payload.aggregates.totalEffectivePnl).toBe(200);
-    expect(payload.cumulativePnl[1]?.cumulative).toBe(200);
-    expect(payload.dailyPnl).toEqual([{ day: "2026-03-02", pnl: 200 }]);
+    expect(payload.aggregates.totalEffectivePnl).toBe(0);
+    expect(payload.cumulativePnl[1]?.cumulative).toBe(0);
+    expect(payload.dailyPnl).toEqual([{ day: "2026-03-02", pnl: 0 }]);
+    // Uten lukkede handler: ingen vinn/tap/break-even — alt er "ukjent".
+    expect(payload.aggregates.effectiveWinCount).toBe(0);
+    expect(payload.aggregates.effectiveLossCount).toBe(0);
+    expect(payload.aggregates.effectiveBreakevenCount).toBe(0);
+    expect(payload.winLossSlices).toEqual([]);
   });
 });
