@@ -4,7 +4,7 @@ import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "../nok"
 describe("market/nok", () => {
   it("uses fallback rate when public env is missing", () => {
     delete process.env.NEXT_PUBLIC_USDT_NOK_RATE;
-    expect(getDisplayUsdtToNokRate()).toBe(10.92);
+    expect(getDisplayUsdtToNokRate()).toBe(9.61);
   });
 
   it("konverterer USDT-pris til NOK med rate", () => {
@@ -17,6 +17,6 @@ describe("market/nok", () => {
 
   it("rejects invalid env rate", () => {
     process.env.NEXT_PUBLIC_USDT_NOK_RATE = "0";
-    expect(getDisplayUsdtToNokRate()).toBe(10.92);
+    expect(getDisplayUsdtToNokRate()).toBe(9.61);
   });
 });

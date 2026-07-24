@@ -109,7 +109,12 @@ export default async function AutoTradePage({
                     className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700/50 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors"
                   >
                     <ModeBadge mode={s.mode as "paper" | "live"} />
-                    <span className="capitalize">{s.strategy_id}</span>
+                    {/* dca -> DCA, trend_following -> Trend following */}
+                    <span>
+                      {s.strategy_id === "dca"
+                        ? "DCA"
+                        : (s.strategy_id ?? "").replace(/_/g, " ")}
+                    </span>
                     <span className="text-blue-400">·</span>
                     <span>{s.trading_pair?.replace("USDT", "")}</span>
                     <span className="text-blue-400">·</span>
