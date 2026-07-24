@@ -2,9 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { StripeCheckoutButton } from "../StripeCheckoutButton";
 
-const mockGetUser = vi.fn();
-const mockPush = vi.fn();
-
 // Mock next-intl
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
@@ -17,22 +14,42 @@ vi.mock("next-intl", () => ({
   },
 }));
 
-// Mock Supabase client
-vi.mock("@/lib/utils", () => ({
-  createClient: () => ({
-    auth: { getUser: () => mockGetUser() },
-  }),
-  cn: (...classes: (string | boolean | undefined)[]) => classes.filter(Boolean).join(" "),
-}));
-
 // Mock window.location
 Object.defineProperty(window, "location", {
   writable: true,
   value: { href: "", pathname: "/no/priser" },
 });
 
-// Mock fetch
+// Mock fetch — komponenten bruker server-APIer (KLA-auth):
+// /api/user/profile for auth-sjekk (401 = utlogget), /api/stripe/checkout for betaling
 global.fetch = vi.fn();
+
+function mockAuth(authenticated: boolean) {
+  vi.mocked(fetch).mockImplementation((input) => {
+    const url = typeof input === "string" ? input : String(input);
+    if (url.includes("/api/user/profile")) {
+      return Promise.resolve(
+        authenticated
+          ? ({
+              ok: true,
+              status: 200,
+              json: () => Promise.resolve({ profile: { id: "user-123" } }),
+            } as unknown as Response)
+          : ({
+              ok: false,
+              status: 401,
+              json: () => Promise.resolve({ error: "Ikke innlogget" }),
+            } as unknown as Response),
+      );
+    }
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () =>
+        Promise.resolve({ url: "https://checkout.stripe.com/test" }),
+    } as unknown as Response);
+  });
+}
 
 describe("StripeCheckoutButton", () => {
   const defaultProps = {
@@ -55,7 +72,7 @@ describe("StripeCheckoutButton", () => {
   });
 
   it("redirects to login when user is not authenticated", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockAuth(false);
     render(<StripeCheckoutButton {...defaultProps} />);
     fireEvent.click(screen.getByRole("button"));
 
@@ -66,13 +83,7 @@ describe("StripeCheckoutButton", () => {
   });
 
   it("redirects to Stripe checkout URL on success", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-123", email: "test@example.com" } },
-    });
-    vi.mocked(fetch).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ url: "https://checkout.stripe.com/test" }),
-    } as Response);
+    mockAuth(true);
 
     render(<StripeCheckoutButton {...defaultProps} />);
     fireEvent.click(screen.getByRole("button"));
@@ -83,11 +94,8 @@ describe("StripeCheckoutButton", () => {
   });
 
   it("shows loading state while processing", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-123", email: "test@example.com" } },
-    });
     vi.mocked(fetch).mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 100))
+      () => new Promise((resolve) => setTimeout(resolve, 100)),
     );
 
     render(<StripeCheckoutButton {...defaultProps} />);
@@ -97,13 +105,21 @@ describe("StripeCheckoutButton", () => {
   });
 
   it("shows error message on checkout failure", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-123", email: "test@example.com" } },
+    vi.mocked(fetch).mockImplementation((input) => {
+      const url = typeof input === "string" ? input : String(input);
+      if (url.includes("/api/user/profile")) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ profile: { id: "user-123" } }),
+        } as unknown as Response);
+      }
+      return Promise.resolve({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ error: "Price not found" }),
+      } as unknown as Response);
     });
-    vi.mocked(fetch).mockResolvedValue({
-      ok: false,
-      json: () => Promise.resolve({ error: "Price not found" }),
-    } as Response);
 
     render(<StripeCheckoutButton {...defaultProps} />);
     fireEvent.click(screen.getByRole("button"));
@@ -114,37 +130,46 @@ describe("StripeCheckoutButton", () => {
   });
 
   it("calls API with correct body", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-123", email: "test@example.com" } },
-    });
-    vi.mocked(fetch).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ url: "https://checkout.stripe.com/test" }),
-    } as Response);
+    mockAuth(true);
 
     render(<StripeCheckoutButton {...defaultProps} currency="EUR" />);
     fireEvent.click(screen.getByRole("button"));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith("/api/stripe/checkout", expect.objectContaining({
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: expect.stringContaining("\"tier\":\"bachelor\""),
-      }));
-      const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string);
+      const checkoutCall = vi
+        .mocked(fetch)
+        .mock.calls.find(([input]) =>
+          String(input).includes("/api/stripe/checkout"),
+        );
+      expect(checkoutCall).toBeDefined();
+      const [, init] = checkoutCall!;
+      expect(init?.method).toBe("POST");
+      const body = JSON.parse(init?.body as string);
+      expect(body.tier).toBe("bachelor");
       expect(body.currency).toBe("EUR");
-      expect(body.userId).toBe("user-123");
+      expect(body.priceId).toBe("price_test123");
+      // userId/userEmail sendes IKKE — server henter bruker fra auth-cookie
+      expect(body.userId).toBeUndefined();
+      expect(body.userEmail).toBeUndefined();
     });
   });
 
   it("handles missing checkout URL gracefully", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-123", email: "test@example.com" } },
+    vi.mocked(fetch).mockImplementation((input) => {
+      const url = typeof input === "string" ? input : String(input);
+      if (url.includes("/api/user/profile")) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ profile: { id: "user-123" } }),
+        } as unknown as Response);
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ url: null }),
+      } as unknown as Response);
     });
-    vi.mocked(fetch).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ url: null }),
-    } as Response);
 
     render(<StripeCheckoutButton {...defaultProps} />);
     fireEvent.click(screen.getByRole("button"));
