@@ -4,7 +4,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Slider } from "@/shared/ui/slider";
 import { StrategyType, createPaperTrade } from "@/lib/trading-api";
-import { cn, createClient } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { AnimatePresence, m } from "framer-motion";
 import {
   ArrowRight,
@@ -202,22 +202,17 @@ export default function InteractiveOnboardingWizard({
       });
 
       // Mark profile as setup complete
-      const supabase = createClient();
-      await supabase
-        .from("user_profiles")
-        .update({
+      // KLA-auth: browser-klienten er alltid anon — profil-oppdatering
+      // skjer via server-API
+      await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
           setup_completed_at: new Date().toISOString(),
           onboarding_step: 999, // Use a high number to indicate completion
-        })
-        .eq("id", userId);
-
-      // Also update user_profiles as fallback
-      await supabase
-        .from("user_profiles")
-        .update({
-          setup_completed_at: new Date().toISOString(),
-        })
-        .eq("id", userId);
+        }),
+      });
 
       localStorage.setItem(`auto-trading-setup-${userId}`, "completed");
 

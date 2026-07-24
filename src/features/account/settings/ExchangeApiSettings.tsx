@@ -11,7 +11,6 @@ import {
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { createClient } from "@/lib/utils";
 import {
   AlertCircle,
   Building2,
@@ -33,7 +32,10 @@ import { useTranslations } from "next-intl";
 
 interface ApiKey {
   id: string;
+  /** Visnings-exchange (kan ha _testnet-suffiks for badge) */
   exchange: string;
+  /** Raa exchange for API-kall ("binance" | "kraken") */
+  rawExchange: string;
   label: string;
   api_key: string;
   is_active: boolean;
@@ -50,7 +52,6 @@ import { BINANCE_REFERRAL } from "@/lib/constants/binance";
 
 export function ExchangeApiSettings() {
   const t = useTranslations("settings.api");
-  const supabase = createClient();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -75,13 +76,45 @@ export function ExchangeApiSettings() {
   const loadApiKeys = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("api_keys")
-        .select("*")
-        .order("created_at", { ascending: false });
+      // KLA-auth: browser-klienten er alltid anon — tilkoblinger hentes via
+      // server-API (exchange_connections; legacy api_keys-tabell er doed)
+      const res = await fetch("/api/exchanges/connections", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json().catch(() => null);
 
-      if (error) throw error;
-      setApiKeys(((data || []) as unknown as ApiKey[]));
+      const mapped: ApiKey[] = (json?.connections ?? []).map(
+        (c: {
+          id: string;
+          exchange: string;
+          isActive: boolean;
+          isTestnet: boolean;
+          lastValidatedAt: string | null;
+          lastError: string | null;
+        }) => ({
+          id: c.id,
+          exchange: c.exchange + (c.isTestnet ? "_testnet" : ""),
+          rawExchange: c.exchange,
+          label:
+            c.exchange === "kraken"
+              ? "Kraken"
+              : c.isTestnet
+                ? "Binance Testnet"
+                : "Binance",
+          // Serveren returnerer aldri noekkelen — kun maskert plassholder
+          api_key: "",
+          is_active: c.isActive,
+          last_tested_at: c.lastValidatedAt,
+          test_status: c.lastError
+            ? "failed"
+            : c.lastValidatedAt
+              ? "success"
+              : "pending",
+          permissions: {},
+        }),
+      );
+      setApiKeys(mapped);
     } catch (error) {
       console.error("Error loading API keys:", error);
       toast.error(t("loadError"));
@@ -139,23 +172,22 @@ export function ExchangeApiSettings() {
 
     setLoading(true);
     try {
-      // Use edge function for secure storage
-      const { error } = await supabase.functions.invoke("connect-exchange", {
-        body: {
-          exchange: form.testnet ? "binance_testnet" : "binance",
-          api_key: form.apiKey,
-          api_secret: form.apiSecret,
-          label: form.label,
-          is_testnet: form.testnet,
-          permissions: {
-            spot: accountInfo.permissions?.includes("SPOT") || false,
-            futures: accountInfo.permissions?.includes("FUTURES") || false,
-            margin: accountInfo.permissions?.includes("MARGIN") || false,
-          },
-        },
+      // KLA-auth: lagring via server-API (validerer + krypterer server-side;
+      // legacy connect-exchange edge-funksjon er ikke deployet)
+      const res = await fetch("/api/exchanges/connections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          exchange: "binance",
+          apiKey: form.apiKey,
+          apiSecret: form.apiSecret,
+          isTestnet: form.testnet,
+          permissions: ["balances", "trade_history", "open_orders", "trading"],
+        }),
       });
-
-      if (error) throw error;
+      const json = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
       toast.success(t("saveSuccess"));
       setForm({
@@ -175,13 +207,17 @@ export function ExchangeApiSettings() {
     }
   };
 
-  const deleteApiKey = async (id: string) => {
+  const deleteApiKey = async (exchange: string) => {
     if (!confirm("Er du sikker på at du vil slette denne API-nøkkelen?"))
       return;
 
     try {
-      const { error } = await supabase.from("api_keys").delete().eq("id", id);
-      if (error) throw error;
+      // KLA-auth: sletting (revoke) via server-API
+      const res = await fetch(
+        `/api/exchanges/connections?exchange=${encodeURIComponent(exchange)}`,
+        { method: "DELETE", credentials: "same-origin" },
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       await loadApiKeys();
       toast.success(t("deleteSuccess"));
     } catch (_error) {
@@ -352,7 +388,7 @@ export function ExchangeApiSettings() {
                         </div>
 
                         <Button
-                          onClick={() => deleteApiKey(key.id)}
+                          onClick={() => deleteApiKey(key.rawExchange)}
                           variant="ghost"
                           size="sm"
                           className="text-red-400 hover:text-red-300 hover:bg-red-500/10"

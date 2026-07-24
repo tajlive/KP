@@ -1,218 +1,166 @@
-import { createClient as createSupabaseServiceClient } from "@supabase/supabase-js";
-import { createServerClient } from "@/lib/supabase/server";
-import { withErrorHandler } from "@/lib/api-error-handler";
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-// Tillatte notification types (matcher DB enum)
-const VALID_TYPES = [
-  "trade_executed",
-  "leaderboard_change",
-  "achievement",
-  "weekly_summary",
-  "signal_new",
-  "signal_executed",
-  "price_alert",
-  "subscription_expiring",
-  "subscription_expired",
-  "achievement_unlocked",
-  "leaderboard_update",
-  "system",
-  "system_alert",
-  "security_alert",
-] as const;
+/**
+ * /api/notifications — brukerens varsler.
+ *
+ * KLA-auth: NotificationTray leste/skrev notifications via browser-supabase
+ * (alltid anon — stille tomt/bruddsikrede kall). Server-ruta gjoer alt
+ * user_id-scopet med ekte auth fra httpOnly-cookie.
+ *
+ * GET            → siste 20 varsler (nyeste foerst) + ulest-antall
+ * PATCH {id}     → marker ett varsel lest
+ * PATCH {all:true} → marker alle lest
+ * DELETE ?id=    → slett ett varsel
+ */
 
-type NotificationType = (typeof VALID_TYPES)[number];
-
-// ============================================================
-// GET — Hent siste 10 notifikasjoner for innlogget bruker
-// ============================================================
-async function handleGET(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createServerClient(request, response);
-
+async function getAuthedSupabase() {
+  const { createServerClient } = await import("@/lib/supabase/server");
+  const supabase = await createServerClient();
   const {
     data: { user },
-    error: authError,
+    error,
   } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // Hent siste 10 notifikasjoner
-  const { data, error } = await supabase
-    .from("notifications")
-    .select("id, type, title, body, is_read, data, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(10);
-
-  if (error) {
-    console.error("[Notifications] GET error:", error);
-    return NextResponse.json(
-      { error: "Kunne ikke hente notifikasjoner" },
-      { status: 500 },
-    );
-  }
-
-  // Tell uleste
-  const { count: unreadCount } = await supabase
-    .from("notifications")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .eq("is_read", false);
-
-  return NextResponse.json({
-    notifications: data ?? [],
-    unreadCount: unreadCount ?? 0,
-  });
+  if (error || !user) return { supabase, user: null };
+  return { supabase, user };
 }
 
-// ============================================================
-// POST (internal) — Opprett notifikasjon (kalles av SmartTrader,
-// leaderboard-endringer, achievements, etc.)
-// ============================================================
-async function handlePOST(request: NextRequest) {
-  // Sjekk CRON_SECRET for internal kall
-  const authHeader = request.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-
-  // Tillat service_role (Supabase internal) og CRON_SECRET
-  const isServiceRole =
-    authHeader?.startsWith("Bearer ") &&
-    authHeader.slice(7) === process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  const isCronJob = cronSecret && authHeader === `Bearer ${cronSecret}`;
-
-  if (!isServiceRole && !isCronJob) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const body: {
-    user_id: string;
-    type: string;
-    title: string;
-    body: string;
-    data?: Record<string, unknown>;
-  } = await request.json();
-
-  // Valider obligatoriske felt
-  if (!body.user_id || !body.type || !body.title || !body.body) {
-    return NextResponse.json(
-      { error: "Mangler påkrevde felt: user_id, type, title, body" },
-      { status: 400 },
-    );
-  }
-
-  // Valider type
-  if (!VALID_TYPES.includes(body.type as NotificationType)) {
-    return NextResponse.json(
-      {
-        error: `Ugyldig notification type. Tillatte: ${VALID_TYPES.join(", ")}`,
-      },
-      { status: 400 },
-    );
-  }
-
-  // Opprett via service client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-
-  if (!supabaseUrl || !serviceKey) {
-    return NextResponse.json(
-      { error: "Serverkonfigurasjonsfeil" },
-      { status: 500 },
-    );
-  }
-
-  const supabase = createSupabaseServiceClient(supabaseUrl, serviceKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  const { data, error } = await supabase
-    .from("notifications")
-    .insert({
-      user_id: body.user_id,
-      type: body.type,
-      title: body.title,
-      body: body.body,
-      data: body.data ?? {},
-      is_read: false,
-      read: false,
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    console.error("[Notifications] POST error:", error);
-    return NextResponse.json(
-      { error: "Kunne ikke opprette notifikasjon" },
-      { status: 500 },
-    );
-  }
-
-  return NextResponse.json(
-    { ok: true, notification_id: data?.id },
-    { status: 201 },
-  );
-}
-
-// ============================================================
-// PATCH — Merk notifikasjoner som lest (innlogget bruker, egne rader)
-// Body: { ids?: string[] } — uten ids merkes ALLE som lest.
-// (Erstatter RPC mark_notifications_read som aldri har eksistert i DB.)
-// ============================================================
-async function handlePATCH(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createServerClient(request, response);
-
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  let ids: string[] | null = null;
+export async function GET() {
   try {
-    const body = await request.json();
-    if (Array.isArray(body?.ids) && body.ids.length > 0) {
-      ids = body.ids.filter((id: unknown) => typeof id === "string");
+    const { supabase, user } = await getAuthedSupabase();
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, error: "Ikke innlogget" },
+        { status: 401 },
+      );
     }
-  } catch {
-    // Tom body = merk alle
-  }
 
-  let query = supabase
-    .from("notifications")
-    // database.types.ts har ingen Update-shape for notifications — cast som
-    // ellers i kodebasen (kolonnene is_read/read er verifisert i GET-select).
-    .update({ is_read: true, read: true } as never)
-    .eq("user_id", user.id)
-    .eq("is_read", false);
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("id, type, title, body, data, is_read, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
 
-  if (ids && ids.length > 0) {
-    query = query.in("id", ids);
-  }
+    if (error) {
+      return NextResponse.json(
+        { ok: false, error: error.message },
+        { status: 500 },
+      );
+    }
 
-  const { error } = await query;
-
-  if (error) {
-    console.error("[Notifications] PATCH error:", error);
+    const notifications = data ?? [];
+    return NextResponse.json({
+      ok: true,
+      notifications,
+      unreadCount: notifications.filter((n) => !n.is_read).length,
+    });
+  } catch (err) {
     return NextResponse.json(
-      { error: "Kunne ikke merke som lest" },
+      { ok: false, error: err instanceof Error ? err.message : "Ukjent feil" },
       { status: 500 },
     );
   }
-
-  return NextResponse.json({ ok: true });
 }
 
-export const GET = withErrorHandler(handleGET, "/api/notifications");
-export const POST = withErrorHandler(handlePOST, "/api/notifications");
-export const PATCH = withErrorHandler(handlePATCH, "/api/notifications");
+export async function PATCH(request: NextRequest) {
+  try {
+    const { supabase, user } = await getAuthedSupabase();
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, error: "Ikke innlogget" },
+        { status: 401 },
+      );
+    }
+
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json(
+        { ok: false, error: "Ugyldig body" },
+        { status: 400 },
+      );
+    }
+
+    if (body.all === true) {
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("user_id", user.id)
+        .eq("is_read", false);
+      if (error) {
+        return NextResponse.json(
+          { ok: false, error: error.message },
+          { status: 500 },
+        );
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    if (typeof body.id === "string" && body.id.length > 0) {
+      // user_id-filter: man kan kun røre egne varsler
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("id", body.id)
+        .eq("user_id", user.id);
+      if (error) {
+        return NextResponse.json(
+          { ok: false, error: error.message },
+          { status: 500 },
+        );
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    return NextResponse.json(
+      { ok: false, error: "Mangler id eller all" },
+      { status: 400 },
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { ok: false, error: err instanceof Error ? err.message : "Ukjent feil" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { supabase, user } = await getAuthedSupabase();
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, error: "Ikke innlogget" },
+        { status: 401 },
+      );
+    }
+
+    const id = request.nextUrl.searchParams.get("id");
+    if (!id) {
+      return NextResponse.json(
+        { ok: false, error: "Mangler id" },
+        { status: 400 },
+      );
+    }
+
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      return NextResponse.json(
+        { ok: false, error: error.message },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return NextResponse.json(
+      { ok: false, error: err instanceof Error ? err.message : "Ukjent feil" },
+      { status: 500 },
+    );
+  }
+}

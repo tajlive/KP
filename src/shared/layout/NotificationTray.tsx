@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/lib/auth/new/AuthContext";
-import { createClient } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { nb } from "date-fns/locale";
 import {
@@ -31,32 +30,16 @@ export function NotificationTray() {
   const [isOpen, setIsOpen] = useState(false);
   const trayRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-  const supabase = createClient();
 
   useEffect(() => {
     if (!user) return;
 
     fetchNotifications();
 
-    const channel = supabase
-      .channel("notifications-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          fetchNotifications(); // Refresh on any change
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // KLA-auth: anon realtime-klient faar aldri events pga RLS —
+    // polling hvert 30. sek i stedet (skikkelig realtime = fase 4)
+    const interval = setInterval(fetchNotifications, 30_000);
+    return () => clearInterval(interval);
   }, [user]);
 
   useEffect(() => {
@@ -73,23 +56,24 @@ export function NotificationTray() {
   const fetchNotifications = async () => {
     if (!user) return;
 
-    // Fetch latest 20 notifications
-    const { data, error } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    if (error) {
+    // KLA-auth: browser-klienten er alltid anon — varsler hentes via
+    // server-API (user_id-scopet)
+    try {
+      const res = await fetch("/api/notifications", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
+      const json = await res.json().catch(() => null);
+      if (json?.notifications) {
+        setNotifications(json.notifications as Notification[]);
+        setUnreadCount(
+          typeof json.unreadCount === "number"
+            ? json.unreadCount
+            : (json.notifications as Notification[]).filter((n) => !n.is_read).length,
+        );
+      }
+    } catch (error) {
       console.error("Error fetching notifications:", error);
-      return;
-    }
-
-    if (data) {
-      const notificationsData = (data as Notification[]);
-      setNotifications(notificationsData);
-      setUnreadCount(notificationsData.filter((n) => !n.is_read).length);
     }
   };
 
@@ -102,7 +86,12 @@ export function NotificationTray() {
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
 
-    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ id }),
+    });
   };
 
   const markAllAsRead = async () => {
@@ -112,11 +101,12 @@ export function NotificationTray() {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     setUnreadCount(0);
 
-    await supabase
-      .from("notifications")
-      .update({ is_read: true })
-      .eq("user_id", user.id)
-      .eq("is_read", false);
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ all: true }),
+    });
   };
 
   const deleteNotification = async (id: string, e: React.MouseEvent) => {
@@ -130,7 +120,10 @@ export function NotificationTray() {
 
     setNotifications((prev) => prev.filter((n) => n.id !== id));
 
-    await supabase.from("notifications").delete().eq("id", id);
+    await fetch(`/api/notifications?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      credentials: "same-origin",
+    });
   };
 
   const getIcon = (type: string) => {
