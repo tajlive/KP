@@ -2600,7 +2600,7 @@
       "win": "Vunnet",
       "loss": "Tap",
       "breakeven": "Break-even",
-      "unknown": "Ukjent"
+      "unknown": "Uten resultat"
     },
     "mode": {
       "paper": "Papir",
