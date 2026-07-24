@@ -124,6 +124,10 @@ export async function PATCH(request: NextRequest) {
       .from("user_profiles")
       .upsert({
         id: user.id,
+        // RLS: ON CONFLICT evaluerer INSERT-policyen (user_id = auth.uid())
+        // paa den nye raden FOER konflikt-loesning — user_id MA med selv
+        // naar raden finnes og vi egentlig bare oppdaterer.
+        user_id: user.id,
         ...updates,
         updated_at: new Date().toISOString(),
       } as Database["public"]["Tables"]["user_profiles"]["Insert"])
