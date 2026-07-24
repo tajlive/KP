@@ -118,7 +118,7 @@ export class PaperExecutor implements OrderExecutor {
         .select("id, current_capital_nok")
         .eq("user_id", this.userId)
         .eq("mode", "paper")
-        .eq("status", "active")
+        .in("status", ["active", "paused"])
         .order("started_at", { ascending: false })
         .limit(1)
         .single();
@@ -170,7 +170,9 @@ export class PaperExecutor implements OrderExecutor {
         .select("id")
         .eq("user_id", this.userId)
         .eq("mode", "paper")
-        .eq("status", "active")
+        .in("status", ["active", "paused"])
+        .order("started_at", { ascending: false })
+        .limit(1)
         .single();
 
       if (!session) return null;
