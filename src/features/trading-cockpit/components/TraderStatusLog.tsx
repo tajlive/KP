@@ -6,7 +6,6 @@ import { formatDistanceToNow } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { ChevronDown, ChevronUp, Activity, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import type { CockpitMode } from "@/features/trading-cockpit/types";
 
@@ -72,38 +71,27 @@ export function TraderStatusLog({
     }
 
     let cancelled = false;
-    const supabase = createClient();
 
     async function load() {
       setLoading(true);
       try {
-        const [logsResult, sessionResult] = await Promise.all([
-          supabase
-            .from("trading_logs")
-            .select("action, details, created_at")
-            .eq("session_id", sessionId as string)
-            .in("action", ["regime_signal", "trade_executed", "live_trade_failed"])
-            .order("created_at", { ascending: false })
-            .limit(5),
-          supabase
-            .from("trading_sessions")
-            .select("last_tick_at")
-            .eq("id", sessionId as string)
-            .single(),
-        ]);
-
-        if (cancelled) return;
+        // KLA-auth: browser-klienten er alltid anon — logger hentes via
+        // server-API (user_id-scopet)
+        const res = await fetch(
+          `/api/user/trading-logs?session_id=${encodeURIComponent(sessionId as string)}`,
+          { credentials: "same-origin" },
+        );
+        if (cancelled || !res.ok) return;
+        const json = await res.json().catch(() => null);
 
         setLogs(
-          (logsResult.data ?? []).map((row) => ({
+          ((json?.logs ?? []) as TradingLogRow[]).map((row) => ({
             action: row.action as TradingLogAction,
             details: (row.details as TradingLogDetails | null) ?? null,
             created_at: row.created_at,
           })),
         );
-        setLastTickAt(
-          sessionResult.data?.last_tick_at ? String(sessionResult.data.last_tick_at) : null,
-        );
+        setLastTickAt(json?.lastTickAt ? String(json.lastTickAt) : null);
       } catch (err) {
         console.error("[TraderStatusLog] failed to load logs:", err);
       } finally {

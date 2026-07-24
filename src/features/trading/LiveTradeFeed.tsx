@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { useLocale, useTranslations } from "next-intl";
@@ -43,49 +42,32 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
   const t = useTranslations("trading");
   const router = useRouter();
   const dateLocale = locale === "no" ? nb : enUS;
-  const supabaseRef = useRef(createClient());
 
   const fetchTrades = async () => {
     setLoading(true);
     try {
-      const supabase = supabaseRef.current;
-
-      const { data: tradesData, error: tradesError } = await supabase
-        .from("trades")
-        .select("id, user_id, trading_pair, side, realized_pnl, created_at, mode")
-        .eq("mode", "live")
-        .order("created_at", { ascending: false })
-        .limit(limit);
-
-      if (tradesError) {
-        console.error("LiveTradeFeed trades error:", tradesError);
+      // KLA-auth: browser-klienten er alltid anon — feed hentes via
+      // server-API (display_name joines server-side)
+      const res = await fetch(`/api/live-feed?limit=${limit}`, {
+        credentials: "same-origin",
+      });
+      if (!res.ok) {
         setTrades([]);
         setLoading(false);
         return;
       }
+      const json = await res.json().catch(() => null);
+      const rows = (json?.trades ?? []) as {
+        id: string;
+        userName: string;
+        symbol: string;
+        side: string;
+        pnl: number;
+        created_at: string;
+      }[];
 
-      if (!tradesData || tradesData.length === 0) {
-        setTrades([]);
-        setLoading(false);
-        return;
-      }
-
-      const userIds = [...new Set(tradesData.map((t) => t.user_id).filter(Boolean))];
-
-      const { data: profilesData } = await supabase
-        .from("user_profiles")
-        .select("user_id, display_name, full_name")
-        .in("user_id", userIds);
-
-      const profileMap = new Map(
-        (profilesData || []).map((p) => [
-          p.user_id,
-          p.display_name || p.full_name || "Trader",
-        ])
-      );
-
-      const mappedTrades: LiveTrade[] = tradesData.map((t) => {
-        const name = profileMap.get(t.user_id) || "Trader";
+      const mappedTrades: LiveTrade[] = rows.map((t) => {
+        const name = t.userName || "Trader";
         const initials = name
           .split(" ")
           .map((n) => n[0])
@@ -96,9 +78,9 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
           id: t.id,
           userName: name,
           userInitials: initials,
-          symbol: t.trading_pair,
+          symbol: t.symbol,
           side: t.side as "buy" | "sell",
-          pnl: Number(t.realized_pnl) || 0,
+          pnl: t.pnl,
           strategy: "Live",
           time: new Date(t.created_at),
           countryCode: "NO",
@@ -106,14 +88,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
       });
 
       setTrades(mappedTrades);
-
-      const { count: activeCount } = await supabase
-        .from("trading_sessions")
-        .select("user_id", { count: "exact", head: true })
-        .eq("status", "active")
-        .eq("mode", "live");
-
-      setActiveTraders(activeCount ?? null);
+      setActiveTraders(json?.activeTraders ?? null);
     } catch (error) {
       console.error("LiveTradeFeed error:", error);
       setTrades([]);
@@ -122,65 +97,13 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
     }
   };
 
+  // KLA-auth: supabase-realtime fra browser er alltid anon (RLS → ingen
+  // events). Erstattet med polling hvert 30. sek. Skikkelig realtime = Fase 4.
   useEffect(() => {
     fetchTrades();
-
-    const supabase = supabaseRef.current;
-    const channel = supabase
-      .channel("live-trades-feed")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "trades",
-          filter: "mode=eq.live",
-        },
-        (payload) => {
-          const newTrade = payload.new as {
-            id: string;
-            user_id: string;
-            trading_pair: string;
-            side: string;
-            realized_pnl: number | null;
-            created_at: string;
-          };
-
-          supabase
-            .from("user_profiles")
-            .select("display_name, full_name")
-            .eq("user_id", newTrade.user_id)
-            .single()
-            .then(({ data: profile }) => {
-              const name = profile?.display_name || profile?.full_name || "Trader";
-              const initials = name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase();
-
-              const mapped: LiveTrade = {
-                id: newTrade.id,
-                userName: name,
-                userInitials: initials,
-                symbol: newTrade.trading_pair,
-                side: newTrade.side as "buy" | "sell",
-                pnl: Number(newTrade.realized_pnl) || 0,
-                strategy: "Live",
-                time: new Date(newTrade.created_at),
-                countryCode: "NO",
-              };
-
-              setTrades((prev) => [mapped, ...prev].slice(0, limit));
-            });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
+    const interval = setInterval(fetchTrades, 30000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
   const timeAgo = (date: Date) => {

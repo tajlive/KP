@@ -95,15 +95,23 @@ export default function AdvancedStatsModal({
   const fetchStats = useCallback(async () => {
     setLoading(true);
     try {
-      const supabase = createClient();
-
-      // Fetch all trades for this strategy
-      const { data: trades } = await supabase
-        .from("trades")
-        .select("*")
-        .eq("session_id", strategy.id)
-        .in("status", ["filled"])
-        .order("executed_at", { ascending: true });
+      // KLA-auth: browser-klienten er alltid anon — data hentes via
+      // server-API; beregningen skjer fortsatt her
+      const res = await fetch(
+        `/api/user/strategy-stats?session_id=${encodeURIComponent(strategy.id)}`,
+        { credentials: "same-origin" },
+      );
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      const trades = (json?.trades ?? []) as {
+        id: string;
+        trading_pair: string;
+        side: string;
+        realized_pnl: number | null;
+        mode: string;
+        created_at: string;
+        executed_at: string | null;
+        total_value: number;
+      }[];
 
       if (!trades || trades.length === 0) {
         setStats({
@@ -168,7 +176,7 @@ export default function AdvancedStatsModal({
 
       const dailyMap = new Map<string, number>();
       trades.forEach((t, i) => {
-        const date = t.executed_at.split("T")[0];
+        const date = (t.executed_at ?? t.created_at).split("T")[0];
         const current = dailyMap.get(date) || 0;
         dailyMap.set(date, current + deltas[i]!);
       });
@@ -179,7 +187,7 @@ export default function AdvancedStatsModal({
       // Monthly P&L
       const monthlyMap = new Map<string, number>();
       trades.forEach((t, i) => {
-        const month = t.executed_at.slice(0, 7);
+        const month = (t.executed_at ?? t.created_at).slice(0, 7);
         const current = monthlyMap.get(month) || 0;
         monthlyMap.set(month, current + deltas[i]!);
       });
@@ -211,37 +219,34 @@ export default function AdvancedStatsModal({
   }, [strategy.id]);
 
   const fetchSignals = useCallback(async () => {
-    const supabase = createClient();
     try {
-      const { data, error } = await supabase
-        .from("signals")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      setSignals((data || []) as unknown as Signal[]);
+      // KLA-auth: via server-API (samme rute som stats)
+      const res = await fetch(
+        `/api/user/strategy-stats?session_id=${encodeURIComponent(strategy.id)}`,
+        { credentials: "same-origin" },
+      );
+      if (!res.ok) return;
+      const json = await res.json().catch(() => null);
+      setSignals((json?.signals ?? []) as unknown as Signal[]);
     } catch (error) {
       console.error("Failed to fetch signals:", error);
     }
-  }, []);
+  }, [strategy.id]);
 
   const fetchBacktests = useCallback(async () => {
-    const supabase = createClient();
     try {
-      const { data, error } = await supabase
-        .from("auto_trading_backtests")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      setBacktests((data || []) as unknown as Backtest[]);
+      // KLA-auth: via server-API (samme rute som stats)
+      const res = await fetch(
+        `/api/user/strategy-stats?session_id=${encodeURIComponent(strategy.id)}`,
+        { credentials: "same-origin" },
+      );
+      if (!res.ok) return;
+      const json = await res.json().catch(() => null);
+      setBacktests((json?.backtests ?? []) as unknown as Backtest[]);
     } catch (error) {
       console.error("Failed to fetch backtests:", error);
     }
-  }, [userId]);
+  }, [strategy.id]);
 
   const runBacktest = useCallback(async () => {
     setLoadingBacktest(true);

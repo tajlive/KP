@@ -32,7 +32,6 @@ import {
   Info,
 } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
 import { canUseAutoTradingNow } from "@/types/subscription";
 import { useCurrency } from "@/hooks/useCurrency";
 import { formatNumberFull } from "@/lib/utils/format-number";
@@ -101,7 +100,6 @@ export function PaperTradingSessionDetail({
   const t = useTranslations("paperTrading");
   const td = useTranslations("trading.sessionDetail");
   const router = useRouter();
-  const supabase = createClient();
   const { format } = useCurrency();
 
   const [session, setSession] = useState<TradingSession>(initialSession);
@@ -132,38 +130,36 @@ export function PaperTradingSessionDetail({
   };
 
   const refetchTrades = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("trades")
-      .select(
-        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at, strategy_signal, trading_pair, status, fee, order_type",
-      )
-      .eq("session_id", session.id)
-      .order("executed_at", { ascending: false })
-      .limit(100);
-
-    if (error) {
-      console.error("[PaperTradingSessionDetail] trades refetch:", error);
-      return;
+    // KLA-auth: browser-klienten er alltid anon — handler hentes via
+    // server-API (user_id-scopet, session_id-filter)
+    try {
+      const res = await fetch(
+        `/api/user/trades?session_id=${encodeURIComponent(session.id)}&limit=100`,
+        { credentials: "same-origin" },
+      );
+      if (!res.ok) return;
+      const json = await res.json().catch(() => null);
+      const rows = (json?.trades ?? []) as Record<string, unknown>[];
+      setTrades(
+        rows.map((row) => ({
+          id: String(row.id),
+          side: row.side as "buy" | "sell",
+          quantity: Number(row.quantity),
+          price: Number(row.price),
+          realized_pnl: row.realized_pnl != null ? Number(row.realized_pnl) : null,
+          total_value: row.total_value != null ? Number(row.total_value) : undefined,
+          created_at: String(row.executed_at ?? row.created_at ?? ""),
+          strategy_signal: row.strategy_signal != null ? String(row.strategy_signal) : null,
+          trading_pair: row.trading_pair != null ? String(row.trading_pair) : null,
+          status: row.status != null ? String(row.status) : null,
+          fee: row.fee != null ? Number(row.fee) : null,
+          order_type: row.order_type != null ? String(row.order_type) : null,
+        })),
+      );
+    } catch (e) {
+      console.error("[PaperTradingSessionDetail] trades refetch:", e);
     }
-    if (!data) return;
-
-    setTrades(
-      data.map((row) => ({
-        id: row.id,
-        side: row.side as "buy" | "sell",
-        quantity: Number(row.quantity),
-        price: Number(row.price),
-        realized_pnl: row.realized_pnl,
-        total_value: row.total_value ?? undefined,
-        created_at: row.executed_at ?? row.created_at,
-        strategy_signal: (row as Record<string, unknown>).strategy_signal as string | null,
-        trading_pair: (row as Record<string, unknown>).trading_pair as string | null,
-        status: (row as Record<string, unknown>).status as string | null,
-        fee: (row as Record<string, unknown>).fee as number | null,
-        order_type: (row as Record<string, unknown>).order_type as string | null,
-      })),
-    );
-  }, [session.id, supabase]);
+  }, [session.id]);
 
   /** Mot utdatert RSC-cache og manglende realtime: hent ferske handler ved mount + når fanen blir synlig. */
   useEffect(() => {
@@ -187,60 +183,15 @@ export function PaperTradingSessionDetail({
     }
   }, [initialSession.mode, userTier, trialStartedAt, locale, router]);
 
-  // Realtime subscription for trades
+  // KLA-auth: supabase-realtime fra browser er alltid anon (RLS → ingen
+  // events). Erstattet med polling hvert 15. sek. — sesjonsoppdateringer
+  // hentes ved synlighets-refetch. Skikkelig realtime = Fase 4.
   useEffect(() => {
-    const channel = supabase
-      .channel(`session-${session.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "trades",
-          filter: `session_id=eq.${session.id}`,
-        },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          const mapped: Trade = {
-            id: String(row.id),
-            side: row.side as "buy" | "sell",
-            quantity: Number(row.quantity),
-            price: Number(row.price),
-            realized_pnl:
-              row.realized_pnl != null ? Number(row.realized_pnl) : null,
-            total_value:
-              row.total_value != null ? Number(row.total_value) : undefined,
-            created_at: String(row.executed_at ?? row.created_at ?? ""),
-            strategy_signal: row.strategy_signal != null ? String(row.strategy_signal) : null,
-            trading_pair: row.trading_pair != null ? String(row.trading_pair) : null,
-            status: row.status != null ? String(row.status) : null,
-            fee: row.fee != null ? Number(row.fee) : null,
-            order_type: row.order_type != null ? String(row.order_type) : null,
-          };
-          setTrades((prev) => {
-            if (prev.some((t) => t.id === mapped.id)) return prev;
-            return [mapped, ...prev];
-          });
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "trading_sessions",
-          filter: `id=eq.${session.id}`,
-        },
-        (payload) => {
-          setSession(payload.new as TradingSession);
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [session.id, supabase]);
+    const interval = setInterval(() => {
+      void refetchTrades();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [refetchTrades]);
 
   const handleStatusChange = async (
     newStatus: "active" | "paused" | "stopped",

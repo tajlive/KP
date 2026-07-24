@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
 
 import { AlertCircle, CheckCircle, Loader2, Shield, Lock, CreditCard, Gift } from "lucide-react";
@@ -15,7 +14,6 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const t = useTranslations("checkout");
-  const supabase = createClient();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,19 +47,22 @@ function CheckoutContent() {
 
   async function loadCourse() {
     try {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("id", courseId as string)
-        .eq("is_published", true)
-        .single();
+      // KLA-auth: browser-klienten er alltid anon — kursdata hentes via
+      // public server-API (kun publiserte felt)
+      const res = await fetch(`/api/courses/${encodeURIComponent(courseId as string)}`);
+      const json = await res.json().catch(() => null);
 
-      if (error) throw error;
-
-      if (!data) {
+      if (!res.ok || !json?.course) {
         setError(t("courseNotFound"));
         return;
       }
+
+      const data = json.course as {
+        id: string;
+        title: string | null;
+        description: string | null;
+        price_nok: number | null;
+      };
 
       // courses table has no is_free column — check price_nok instead
       if (!data.price_nok || data.price_nok <= 0) {
@@ -70,10 +71,10 @@ function CheckoutContent() {
       }
 
       setCourse({
-        id: (data as { id: string }).id,
-        title: (data as { title?: string | null }).title ?? "",
-        description: (data as { description?: string | null }).description ?? "",
-        price_nok: (data as { price_nok?: number | null }).price_nok ?? 0,
+        id: data.id,
+        title: data.title ?? "",
+        description: data.description ?? "",
+        price_nok: data.price_nok ?? 0,
       });
     } catch (err: unknown) {
       setError(getErrorMessage(err));
