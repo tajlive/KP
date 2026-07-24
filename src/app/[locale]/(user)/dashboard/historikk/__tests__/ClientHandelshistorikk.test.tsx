@@ -192,7 +192,8 @@ describe("ClientHandelshistorikk", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Handelshistorikk")).toBeInTheDocument();
-      expect(screen.getByText("BTC")).toBeInTheDocument();
+      // BTC rendres både i mobil-kortlisten og desktop-tabellen
+      expect(screen.getAllByText("BTC").length).toBeGreaterThan(0);
       expect(screen.getByText("ETH")).toBeInTheDocument();
     });
   });
