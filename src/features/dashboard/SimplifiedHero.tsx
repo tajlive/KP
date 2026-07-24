@@ -44,35 +44,7 @@ export function SimplifiedHero({
         />
       </div>
 
-      {/* Session mode badge */}
-      <m.div
-        className="flex justify-center mb-5"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1, duration: 0.3 }}
-      >
-        <span
-          className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase backdrop-blur-sm ${
-            isPaper
-              ? "bg-blue-500/12 text-blue-500 dark:text-blue-400 border border-blue-500/20"
-              : "bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-          }`}
-        >
-          <span className="relative flex h-2 w-2">
-            <span
-              className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${
-                isPaper ? "bg-blue-400" : "bg-emerald-400"
-              }`}
-            />
-            <span
-              className={`relative inline-flex rounded-full h-2 w-2 ${
-                isPaper ? "bg-blue-500" : "bg-emerald-500"
-              }`}
-            />
-          </span>
-          {isPaper ? t("paperMode") : t("liveMode")}
-        </span>
-      </m.div>
+      {/* Mode vises allerede i top-bar og toggle — ingen tredje pill her */}
 
       {/* Balance — animated counter or no-data dash */}
       <m.div

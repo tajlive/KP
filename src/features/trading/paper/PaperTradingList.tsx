@@ -357,7 +357,7 @@ export function PaperTradingList({
       {/* Saldo KPI-kort — samme stil som dashboard-kort */}
       <Card className={`overflow-hidden ${cardBase}`}>
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 dark:bg-emerald-400/20 flex items-center justify-center">
                 <Banknote className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />

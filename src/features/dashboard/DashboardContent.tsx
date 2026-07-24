@@ -7,7 +7,6 @@ import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import { computeUserState } from "@/hooks/useUserState";
 import { AdaptiveDashboard } from "./AdaptiveDashboard";
 import TradingModeToggle from "@/features/trading/TradingModeToggle";
-import { Badge } from "@/shared/ui/badge";
 import { DashboardTopBar } from "./DashboardTopBar";
 import { useTradingMode } from "@/context/TradingModeContext";
 import type { DashboardMode } from "@/hooks/useDashboardMetrics";
@@ -138,12 +137,8 @@ export function DashboardContent({
       />
 
       <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
-          <Badge variant="outline" className="w-fit text-xs">
-            {mode === "paper"
-              ? t("dashboardPro.showingPaper")
-              : t("dashboardPro.showingLive")}
-          </Badge>
+        <div className="flex justify-end mb-4 sm:mb-6">
+          {/* Mode-pillen vises i DashboardTopBar — badge fjernet (var 3. gjentakelse) */}
           <TradingModeToggle
             mode={mode}
             onToggle={handleModeChange}

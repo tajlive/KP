@@ -13,7 +13,6 @@ import {
   CartesianGrid,
 } from "recharts";
 import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { SkeletonBlock } from "@/features/dashboard/loading-skeleton";
 import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
 
@@ -82,48 +81,39 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
   const fetchPortfolioData = async () => {
     setLoading(true);
     try {
-      const supabase = createClient();
       const period = TIME_PERIODS.find((p) => p.key === selectedPeriod);
       const daysBack = period?.days || 30;
 
-      let sessionQuery = supabase
-        .from("trading_sessions")
-        .select("id, starting_capital_nok, current_capital_nok, started_at");
+      // Data hentes via server-API: auth-cookien er httpOnly, saa browser-
+      // klienten kjorer som anon og RLS gir 0 rader. Se api/portfolio/chart.
+      const params = new URLSearchParams({
+        mode,
+        days: String(daysBack),
+      });
+      if (sessionId) params.set("sessionId", sessionId);
 
-      if (sessionId) {
-        sessionQuery = sessionQuery.eq("id", sessionId);
-      } else if (userId) {
-        // Alle ikke-arkiverte sesjoner (ikke kun 'active') — ellers forsvinner
-        // handelshistorikken når sesjoner stoppes, og grafen lyver "Ingen handler".
-        sessionQuery = sessionQuery
-          .eq("user_id", userId)
-          .eq("mode", mode)
-          .is("archived", false)
-          .order("updated_at", { ascending: false });
-      }
-
-      const { data: sessions, error: sessionError } = await sessionQuery;
-
-      if (sessionError || !sessions || sessions.length === 0) {
+      const res = await fetch(`/api/portfolio/chart?${params.toString()}`);
+      if (!res.ok) {
         setHasData(false);
         setLoading(false);
         return;
       }
 
-      // Anker startkapital til paper_accounts (source of truth for saldo).
-      // Summering av sesjoners startkapital gir meningsløse tall (N × 100k).
-      // NB: kolonnenavn i konstant — i18n-scanneren tolker ellers
-      // enkolonnes-select som et t()-kall (falsk positiv).
-      const ACCOUNT_COLUMNS = "initial_balance";
-      let accountStart: number | null = null;
-      if (userId && mode === "paper" && !sessionId) {
-        const { data: account } = await supabase
-          .from("paper_accounts")
-          .select(ACCOUNT_COLUMNS)
-          .eq("user_id", userId)
-          .maybeSingle();
-        accountStart =
-          account?.initial_balance != null ? Number(account.initial_balance) : null;
+      const { sessions, trades: allTrades, accountStart } = (await res.json()) as {
+        sessions: Array<{ id: string; starting_capital_nok: number | null }>;
+        trades: Array<{
+          created_at: string;
+          realized_pnl: number | null;
+          side: string;
+          total_value: number;
+        }>;
+        accountStart: number | null;
+      };
+
+      if (!sessions || sessions.length === 0) {
+        setHasData(false);
+        setLoading(false);
+        return;
       }
 
       const fallbackStarting = sessions.reduce(
@@ -133,38 +123,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       const totalStarting = accountStart ?? (fallbackStarting || 100000);
       setStartingValue(totalStarting);
 
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - daysBack);
-
-      // Fetch trades from ALL active sessions (not just the most recent one)
-      const sessionIds = sessions.map((s) => s.id);
-      const CHUNK_SIZE = 500;
-      let allTrades: Array<{
-        created_at: string;
-        realized_pnl: number | null;
-        side: string;
-        total_value: number;
-      }> = [];
-
-      for (let i = 0; i < sessionIds.length; i += CHUNK_SIZE) {
-        const chunk = sessionIds.slice(i, i + CHUNK_SIZE);
-        const { data: trades, error: tradesError } = await supabase
-          .from("trades")
-          .select("created_at, realized_pnl, side, total_value")
-          .in("session_id", chunk)
-          .gte("created_at", startDate.toISOString())
-          .order("created_at", { ascending: true });
-
-        if (tradesError) {
-          console.error("PortfolioChart trades error:", tradesError);
-          continue;
-        }
-        if (trades) {
-          allTrades = allTrades.concat(trades);
-        }
-      }
-
-      if (allTrades.length === 0) {
+      if (!allTrades || allTrades.length === 0) {
         setHasData(false);
         setLoading(false);
         return;

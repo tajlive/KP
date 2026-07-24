@@ -1912,8 +1912,8 @@
       "advancedAnalyticsTitle": "Advanced Analytics",
       "advancedAnalyticsDesc": "Equity curve, P&L heatmap, risk metrics and position calculator",
       "advancedAnalyticsLink": "View full analysis →",
-      "smartActionsTitle": "Smart Actions Title",
-      "liveFeedTitle": "Live Feed Title"
+      "smartActionsTitle": "Smart Actions",
+      "liveFeedTitle": "Live Trades"
     },
     "nlqChat": {
       "openChat": "Open chat",

@@ -115,7 +115,7 @@ export default function TradingModeToggle({
                 transition={{ duration: 0.25 }}
               >
                 <Icon className="size-4 shrink-0" aria-hidden />
-                <span className="hidden sm:inline">{labels[value]}</span>
+                <span className="text-xs sm:text-sm">{labels[value]}</span>
               </motion.span>
             );
           })}
