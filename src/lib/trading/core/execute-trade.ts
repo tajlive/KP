@@ -152,8 +152,12 @@ async function executeTradeWithLock(
           };
         }
 
-        // Recurse with resolved sessionId (safe because we now have a session)
-        return executeTrade(supabase, {
+        // Recurse with resolved sessionId (safe because we now have a session).
+        // Kall executeTradeWithLock direkte — den ytre executeTrade holder
+        // allerede trade-låsen; et nytt kall til executeTrade ville forsøkt å
+        // ta samme lås og alltid feilet med CONCURRENT_TRADE_BLOCKED (brukere
+        // uten sesjon kunne aldri gjennomføre sin aller første handel).
+        return executeTradeWithLock(supabase, {
           ...request,
           sessionId: newSession.id,
         });
