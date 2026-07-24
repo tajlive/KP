@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/hooks/useCurrency";
-import { createClient } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui";
@@ -121,53 +120,45 @@ export function PaperTradingList({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Supabase realtime: oppdater listen når trading_sessions endres for denne brukeren.
-  // Abonnementet pauses når dokumentet er skjult for å spare batteri.
+  // KLA-auth: anon realtime-klient faar aldri events pga RLS — polling
+  // hvert 20. sek i stedet. Pauset naar dokumentet er skjult (batteri).
   useEffect(() => {
     if (!userId) return;
 
-    const supabase = createClient();
-    let channel = supabase.channel("paper-trading-sessions");
-
-    const subscribe = () => {
-      channel = supabase
-        .channel("paper-trading-sessions")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "trading_sessions",
-            filter: `user_id=eq.${userId}`,
-          },
-          () => {
-            setLastUpdated(new Date());
-            router.refresh();
-          },
-        )
-        .subscribe();
+    const refresh = () => {
+      setLastUpdated(new Date());
+      router.refresh();
     };
 
-    const unsubscribe = () => {
-      supabase.removeChannel(channel);
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    const start = () => {
+      if (!interval) interval = setInterval(refresh, 20_000);
+    };
+    const stop = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        unsubscribe();
+        stop();
       } else {
-        subscribe();
+        refresh(); // hent ferskt ved tilbakekomst
+        start();
       }
     };
 
     if (document.visibilityState === "visible") {
-      subscribe();
+      start();
     }
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      unsubscribe();
+      stop();
     };
   }, [userId, router]);
 

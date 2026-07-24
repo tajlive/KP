@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import {
   BarChart3,
   Calendar,
@@ -71,85 +70,17 @@ export function CtaAnalyticsDashboard({
   const [showExperimentsOnly, setShowExperimentsOnly] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'funnel'>('overview');
 
-  const supabase = createClient();
-
   const fetchData = async (days: number) => {
     setLoading(true);
     try {
-      // Try to get data from materialized view first
-      const { data: funnelData, error: funnelError } = await supabase
-        .from('marketing_funnel_summary' as 'user_profiles')
-        .select('*')
-        .gte('last_click_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
-        .returns<FunnelSummary[]>();
-
-      if (!funnelError && funnelData && funnelData.length > 0) {
-        // Use funnel summary data
-        const formattedData: CtaAggregate[] = funnelData.map(item => ({
-          tracking_id: item.tracking_id,
-          route: item.funnel_stage,
-          total_clicks: item.total_clicks,
-          unique_users: item.total_clicks, // Approximation
-          locale: 'no',
-          experiment_key: item.experiment_key,
-          variant_key: item.variant_key,
-          funnel_stage: item.funnel_stage,
-          users_signed_up: item.users_signed_up,
-          users_with_first_paper: item.users_with_first_paper,
-          users_with_first_auto_trade: item.users_with_first_auto_trade,
-        }));
-        setData(formattedData);
-      } else {
-        // Fallback to raw events
-        const { data: events } = await supabase
-          .from('marketing_cta_events' as 'user_profiles')
-          .select('tracking_id, route, locale, experiment_key, variant_key, funnel_stage, user_id')
-          .gte('created_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
-          .returns<CtaEvent[]>();
-
-        const aggregates = (events || []).reduce((acc, event) => {
-          const key = `${event.tracking_id}-${event.route}-${event.locale}`;
-          if (!acc[key]) {
-            acc[key] = {
-              tracking_id: event.tracking_id,
-              route: event.route,
-              total_clicks: 0,
-              unique_users: new Set<string>(),
-              locale: event.locale,
-              experiment_key: event.experiment_key,
-              variant_key: event.variant_key,
-              funnel_stage: event.funnel_stage || 'general',
-            };
-          }
-          acc[key].total_clicks++;
-          if (event.user_id) {
-            acc[key].unique_users.add(event.user_id);
-          }
-          return acc;
-        }, {} as Record<string, {
-          tracking_id: string;
-          route: string;
-          total_clicks: number;
-          unique_users: Set<string>;
-          locale: string;
-          experiment_key: string | null;
-          variant_key: string | null;
-          funnel_stage: string;
-        }>);
-
-        const formattedData: CtaAggregate[] = Object.values(aggregates).map(item => ({
-          tracking_id: item.tracking_id,
-          route: item.route,
-          total_clicks: item.total_clicks,
-          unique_users: item.unique_users.size,
-          locale: item.locale,
-          experiment_key: item.experiment_key,
-          variant_key: item.variant_key,
-          funnel_stage: item.funnel_stage,
-        }));
-
-        setData(formattedData);
-      }
+      // KLA-auth: browser-klienten er alltid anon — aggregasjon skjer
+      // server-side (marketing_funnel_summary-viewet finnes ikke i DB)
+      const res = await fetch(`/api/admin/cta-analytics?days=${days}`, {
+        credentials: "same-origin",
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+      setData((json?.data ?? []) as CtaAggregate[]);
     } catch (err) {
       console.error('Failed to fetch data:', err);
     } finally {

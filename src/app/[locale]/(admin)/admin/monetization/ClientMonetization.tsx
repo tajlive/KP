@@ -2,7 +2,6 @@
 
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { createClient } from "@/lib/utils";
 import { DollarSign, MousePointer, TrendingUp, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -41,16 +40,16 @@ export default function MonetizationPage() {
   const [students, setStudents] = useState<BetaSignup[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
-
   const fetchData = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from("beta_signups")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      // KLA-auth: browser-klienten er alltid anon — beta-signups hentes
+      // via admin-API (getUser + allowlist)
+      const res = await fetch("/api/admin/beta-signups", {
+        credentials: "same-origin",
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+      const data = (json?.signups ?? []) as BetaSignup[];
 
       const totalStudents = data?.length || 0;
       // TODO: beta_signups har ikke binance_clicked/exchange_connected-kolonner i DB.
@@ -77,7 +76,7 @@ export default function MonetizationPage() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     fetchData();
