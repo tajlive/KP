@@ -2,70 +2,66 @@
 
 import { useEffect, useCallback } from "react";
 import { useTheme } from "@/shared/theme";
-import { createClient } from "@/lib/utils";
 
 export type ThemePreference = "system" | "light" | "dark";
 
+const VALID_THEMES: ThemePreference[] = ["system", "light", "dark"];
+
 /**
- * Hook som synkroniserer tema-valg med Supabase user_profiles
- * - Laster fra Supabase ved mount (hvis innlogget)
- * - Lagrer til Supabase når bruker endrer tema
- * - Fallback til localStorage (håndtert av next-themes)
+ * Hook som synkroniserer tema-valg med user_profiles.ui_theme.
+ *
+ * KLA-auth: Browser-supabase er alltid anon (httpOnly auth-cookie) —
+ * lesing/skriving går via /api/user/profile som autentiserer server-side.
+ * Fallback til localStorage (håndtert av next-themes).
  */
 export function useThemePreference() {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const supabase = createClient();
 
-  // Last tema fra Supabase ved mount
+  // Last tema fra profilen ved mount
   useEffect(() => {
     const loadThemeFromProfile = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("ui_theme")
-          .eq("id", user.id)
-          .single();
-
-        // Type assertion needed until ui_theme is in generated types
-        // See: supabase/migrations/20260403180000_add_ui_theme_to_user_profiles.sql
-        const uiTheme = (profile as { ui_theme?: string } | null)?.ui_theme;
-        if (uiTheme && uiTheme !== theme) {
-          // Valider at verdien er gyldig
-          const validThemes: ThemePreference[] = ["system", "light", "dark"];
-          if (validThemes.includes(uiTheme as ThemePreference)) {
-            setTheme(uiTheme as ThemePreference);
-          }
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) return;
+        const json = await res.json();
+        const uiTheme = json?.profile?.ui_theme as string | undefined;
+        if (
+          uiTheme &&
+          uiTheme !== theme &&
+          VALID_THEMES.includes(uiTheme as ThemePreference)
+        ) {
+          setTheme(uiTheme as ThemePreference);
         }
       } catch {
-        // Silently fail - next-themes vil bruke localStorage
+        // Silent fail — next-themes bruker localStorage
       }
     };
 
     loadThemeFromProfile();
-  }, [supabase, setTheme, theme]);
+    // theme er med vilje utelatt — vi skal bare laste én gang ved mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTheme]);
 
-  // Lagre tema til Supabase
+  // Lagre tema til profilen
   const saveThemePreference = useCallback(
     async (newTheme: ThemePreference) => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        await supabase
-          .from("user_profiles")
-          .update({ ui_theme: newTheme, updated_at: new Date().toISOString() } as never)
-          .eq("id", user.id);
+        await fetch("/api/user/profile", {
+          method: "PATCH",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ui_theme: newTheme }),
+        });
       } catch {
-        // Silently fail - localStorage fungerer fortsatt
+        // Silent fail — localStorage fungerer fortsatt
       }
     },
-    [supabase]
+    []
   );
 
-  // Wrapper for setTheme som også lagrer til Supabase
+  // Wrapper for setTheme som også persisterer
   const setThemeWithPersistence = useCallback(
     (newTheme: ThemePreference) => {
       setTheme(newTheme);
