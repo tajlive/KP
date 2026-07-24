@@ -26,18 +26,23 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Kun ikke-arkiverte sesjoner — ellers forurenser historiske
-    // (avsluttede/arkiverte) epoker statistikk og posisjoner.
+    // Statistikk: ikke-arkiverte sesjoner (samme scope som grafen).
     const { data: sessions } = await supabase
       .from("trading_sessions")
-      .select("id")
+      .select("id, status")
       .eq("user_id", user.id)
       .eq("mode", "paper")
       .is("archived", false);
 
     const sessionIds = (sessions ?? []).map((s) => s.id);
+    // Posisjoner: kun aktive/pausete sesjoner — stoppete sesjoner er
+    // avviklet; a aggregere "apne" beholdninger fra dem gir fantom-
+    // posisjoner (og gamle handler kan ha enhetsfeil i pris).
+    const liveSessionIds = (sessions ?? [])
+      .filter((s) => s.status === "active" || s.status === "paused")
+      .map((s) => s.id);
 
-    const [accountRes, tradesRes] = await Promise.all([
+    const [accountRes, tradesRes, openTradesRes] = await Promise.all([
       supabase
         .from("paper_accounts")
         .select("current_balance, initial_balance")
@@ -52,6 +57,15 @@ export async function GET(request: NextRequest) {
             .eq("mode", "paper")
             .eq("status", "filled")
             .in("session_id", sessionIds),
+      liveSessionIds.length === 0
+        ? { data: [], error: null }
+        : await supabase
+            .from("trades")
+            .select("trading_pair, side, quantity, price, total_value, realized_pnl")
+            .eq("user_id", user.id)
+            .eq("mode", "paper")
+            .eq("status", "filled")
+            .in("session_id", liveSessionIds),
     ]);
 
     if (tradesRes.error) {
@@ -67,22 +81,27 @@ export async function GET(request: NextRequest) {
     }
 
     const trades = tradesRes.data ?? [];
+    const openTrades = openTradesRes.data ?? [];
 
+    // Statistikk over hele (ikke-arkiverte) historikken.
     let totalPnl = 0;
     let closedCount = 0;
     let winCount = 0;
-    const positionsMap = new Map<
-      string,
-      { symbol: string; tradingPair: string; qty: number; costBasis: number }
-    >();
-
     for (const t of trades) {
       if (t.realized_pnl != null) {
         totalPnl += Number(t.realized_pnl);
         closedCount += 1;
         if (Number(t.realized_pnl) > 0) winCount += 1;
       }
+    }
 
+    // Posisjoner kun fra aktive/pausete sesjoner.
+    const positionsMap = new Map<
+      string,
+      { symbol: string; tradingPair: string; qty: number; costBasis: number }
+    >();
+
+    for (const t of openTrades) {
       const pair = t.trading_pair || "UKJENT";
       const key = pair.replace("/", "");
       const qty = Number(t.quantity) || 0;
