@@ -6,7 +6,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { AnimatedNumber } from "@/shared/ui/AnimatedNumber";
-import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { CheckCircle2, Loader2, Shield, ListChecks } from "lucide-react";
@@ -18,7 +17,6 @@ export default function OnboardingStep5() {
   const t = useTranslations("onboarding.step5");
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
@@ -31,22 +29,21 @@ export default function OnboardingStep5() {
     const completeOnboarding = async () => {
       try {
         setError(null);
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // KLA-auth: browser-klienten er alltid anon — onboarding-state
+        // hentes via server-API som leser httpOnly auth-cookie
+        const res = await fetch("/api/user/onboarding", {
+          credentials: "same-origin",
+        });
 
-        if (!user) {
+        if (res.status === 401) {
           router.push(
             `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step5-complete`)}`
           );
           return;
         }
 
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("onboarding_step, onboarding_completed, paper_balance")
-          .eq("id", user.id)
-          .single();
+        const json = await res.json().catch(() => null);
+        const profile = json?.onboarding;
 
         // Hvis allerede fullført, vis suksess
         if (profile?.onboarding_completed) {
@@ -83,7 +80,7 @@ export default function OnboardingStep5() {
     };
 
     completeOnboarding();
-  }, [router, supabase, locale, t]);
+  }, [router, locale, t]);
 
   const handleGoToDashboard = () => {
     setLoading(true);

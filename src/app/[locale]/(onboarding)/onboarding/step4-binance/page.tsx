@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { Link2, SkipForward, Eye, EyeOff, Shield } from "lucide-react";
 import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
@@ -16,7 +15,6 @@ export default function OnboardingStep4() {
   const t = useTranslations("onboarding.step4");
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
   const [apiKey, setApiKey] = useState("");
   const [apiSecret, setApiSecret] = useState("");
   const [showSecret, setShowSecret] = useState(false);
@@ -27,22 +25,21 @@ export default function OnboardingStep4() {
   // Sjekk auth
   useEffect(() => {
     const checkStatus = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // KLA-auth: browser-klienten er alltid anon — onboarding-state
+      // hentes via server-API som leser httpOnly auth-cookie
+      const res = await fetch("/api/user/onboarding", {
+        credentials: "same-origin",
+      });
 
-      if (!user) {
+      if (res.status === 401) {
         router.push(
           `${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step4-binance`)}`
         );
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("onboarding_step, onboarding_completed, binance_connected")
-        .eq("id", user.id)
-        .single();
+      const json = await res.json().catch(() => null);
+      const profile = json?.onboarding;
 
       if (profile?.onboarding_completed) {
         router.push(`/${locale}/dashboard`);
@@ -70,22 +67,17 @@ export default function OnboardingStep4() {
     };
 
     checkStatus();
-  }, [router, supabase, locale]);
+  }, [router, locale]);
 
   const handleConnect = async () => {
     if (!apiKey || !apiSecret) return;
 
     setConnecting(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) throw new Error("Ikke autentisert");
-
-      // Kall API for å validere og lagre Binance keys
+      // Kall API for å validere og lagre Binance keys (server-auth)
       const response = await fetch("/api/binance/keys", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           apiKey,
@@ -99,16 +91,18 @@ export default function OnboardingStep4() {
         throw new Error(error.message || "Kunne ikke koble til Binance");
       }
 
-      // Oppdater profil
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({
+      // Oppdater profil via server-API (verifiserer at nøkler finnes)
+      const patchRes = await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           onboarding_step: 4,
           binance_connected: true,
-        })
-        .eq("id", user.id);
+        }),
+      });
 
-      if (error) throw error;
+      if (!patchRes.ok) throw new Error("Kunne ikke lagre onboarding-status");
 
       router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {
@@ -121,21 +115,15 @@ export default function OnboardingStep4() {
   const handleSkip = async () => {
     setLoading(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Oppdater onboarding_step uten å koble Binance (server-auth)
+      const res = await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ onboarding_step: 4 }),
+      });
 
-      if (!user) throw new Error("Ikke autentisert");
-
-      // Oppdater onboarding_step uten å koble Binance
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({
-          onboarding_step: 4,
-        })
-        .eq("id", user.id);
-
-      if (error) throw error;
+      if (!res.ok) throw new Error("Kunne ikke lagre onboarding-status");
 
       router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {

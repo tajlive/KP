@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Button } from "@/shared/ui/button";
-import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
 import { Wallet, TrendingUp, Target, Rocket, ChevronRight, ChevronLeft } from "lucide-react";
@@ -58,7 +57,6 @@ export default function OnboardingStep2Level() {
   const t = useTranslations("onboarding");
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
 
   const [checking, setChecking] = useState(true);
   const [selected, setSelected] = useState<CapitalOption | null>(null);
@@ -68,17 +66,17 @@ export default function OnboardingStep2Level() {
     let mounted = true;
     const checkStatus = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        // KLA-auth: browser-klienten er alltid anon — onboarding-state
+        // hentes via server-API som leser httpOnly auth-cookie
+        const res = await fetch("/api/user/onboarding", {
+          credentials: "same-origin",
+        });
+        if (res.status === 401) {
           router.push(`${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step2-level`)}`);
           return;
         }
-
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("onboarding_step, onboarding_completed, trading_experience, paper_balance")
-          .eq("id", user.id)
-          .single();
+        const json = await res.json().catch(() => null);
+        const profile = json?.onboarding;
 
         if (profile?.onboarding_completed) {
           router.push(`/${locale}/dashboard`);
@@ -110,26 +108,24 @@ export default function OnboardingStep2Level() {
     };
     checkStatus();
     return () => { mounted = false; };
-  }, [router, supabase, locale]);
+  }, [router, locale]);
 
   const handleContinue = async () => {
     if (!selected || loading) return;
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user");
-
-      const { error: updateError } = await supabase
-        .from("user_profiles")
-        .update({
+      const res = await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           paper_balance: selected,
           onboarding_step: 2,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
+        }),
+      });
 
-      if (updateError) throw updateError;
+      if (!res.ok) throw new Error("Lagring feilet");
 
       router.push(`/${locale}/onboarding/step4-first-trade`);
     } catch {

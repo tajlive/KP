@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui/button";
-import { createClient } from "@/lib/supabase/client";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { OnboardingStickyFooter } from "@/features/onboarding/OnboardingStickyFooter";
 import {
@@ -101,7 +100,6 @@ const triggerConfetti = async () => {
 export default function OnboardingStep4FirstTrade() {
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
 
   const [checking, setChecking] = useState(true);
   const [btcPrice, setBtcPrice] = useState<number | null>(null);
@@ -116,17 +114,17 @@ export default function OnboardingStep4FirstTrade() {
     let mounted = true;
     const checkStatus = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        // KLA-auth: browser-klienten er alltid anon — onboarding-state
+        // hentes via server-API som leser httpOnly auth-cookie
+        const res = await fetch("/api/user/onboarding", {
+          credentials: "same-origin",
+        });
+        if (res.status === 401) {
           router.push(`${hrefWithLocale(locale, "/login")}?next=${encodeURIComponent(`/${locale}/onboarding/step4-first-trade`)}`);
           return;
         }
-
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("onboarding_step, onboarding_completed, paper_balance")
-          .eq("id", user.id)
-          .single();
+        const json = await res.json().catch(() => null);
+        const profile = json?.onboarding;
 
         if (profile?.onboarding_completed) {
           router.push(`/${locale}/dashboard`);
@@ -154,7 +152,7 @@ export default function OnboardingStep4FirstTrade() {
     };
     checkStatus();
     return () => { mounted = false; };
-  }, [router, supabase, locale]);
+  }, [router, locale]);
 
   // Fetch BTC price
   useEffect(() => {
@@ -213,19 +211,19 @@ export default function OnboardingStep4FirstTrade() {
         });
       }
 
-      // Fullfør onboarding
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from("user_profiles")
-          .update({
-            onboarding_step: 3,
-            onboarding_completed: true,
-            onboarding_completed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", user.id);
-      }
+      // Fullfør onboarding via server-API
+      await fetch("/api/user/onboarding", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          onboarding_step: 3,
+          onboarding_completed: true,
+          onboarding_completed_at: new Date().toISOString(),
+        }),
+      }).catch(() => {
+        // Ikke-blokkerende — konfetti skal vises uansett
+      });
 
       setSuccess(true);
       setLoading(false);
@@ -235,7 +233,7 @@ export default function OnboardingStep4FirstTrade() {
     } catch {
       setLoading(false);
     }
-  }, [loading, success, btcPrice, supabase]);
+  }, [loading, success, btcPrice]);
 
   const handleGoToDashboard = () => {
     router.push(`/${locale}/dashboard`);
