@@ -38,7 +38,18 @@ const FORMATTERS: Record<Currency, Intl.NumberFormat> = {
   }),
 };
 
+const NOK_SMALL = new Intl.NumberFormat("nb-NO", {
+  style: "currency",
+  currency: "NOK",
+  maximumFractionDigits: 2,
+});
+
 export function formatCurrency(amount: number, currency: Currency): string {
+  // Små NOK-beløp (< 100 kr) trenger desimaler — ellers vises f.eks.
+  // DOGE-pris 1,62 kr som "1 kr" (faktafeil).
+  if (currency === "NOK" && Math.abs(amount) < 100) {
+    return NOK_SMALL.format(amount);
+  }
   return FORMATTERS[currency].format(amount);
 }
 
