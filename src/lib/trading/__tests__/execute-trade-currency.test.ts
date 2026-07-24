@@ -76,6 +76,7 @@ describe("Trade Currency Audit Trail", () => {
           }),
           update: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
+          in: vi.fn().mockReturnThis(),
           order: vi.fn().mockReturnThis(),
           limit: vi.fn().mockReturnThis(),
           maybeSingle: vi.fn().mockResolvedValue({
@@ -193,6 +194,7 @@ describe("Trade Currency Audit Trail", () => {
         ),
         update: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         limit: vi.fn().mockReturnThis(),
         maybeSingle: vi.fn(() =>
@@ -223,9 +225,11 @@ describe("Trade Currency Audit Trail", () => {
 
     expect(result.success).toBe(true);
     expect(vi.mocked(acquireTradeLock)).toHaveBeenCalledTimes(1);
-    expect(
-      insertCalls.find((c) => c.table === "trading_sessions"),
-    ).toBeDefined();
+    const sessionInsert = insertCalls.find((c) => c.table === "trading_sessions");
+    expect(sessionInsert).toBeDefined();
+    // Auto-opprettet sesjon skal være 'paused' — cron-ticken henter kun
+    // 'active', så boten handler ikke før brukeren selv skrur på auto.
+    expect(sessionInsert?.payload.status).toBe("paused");
     expect(insertCalls.find((c) => c.table === "trades")).toBeDefined();
   });
 });

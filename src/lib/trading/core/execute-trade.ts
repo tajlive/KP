@@ -86,7 +86,7 @@ async function executeTradeWithLock(
             .eq("id", sessionId)
             .eq("user_id", request.userId)
             .eq("mode", "paper")
-            .eq("status", "active")
+            .in("status", ["active", "paused"])
             .maybeSingle()
         : await supabase
             .from("trading_sessions")
@@ -95,7 +95,7 @@ async function executeTradeWithLock(
             )
             .eq("user_id", request.userId)
             .eq("mode", "paper")
-            .eq("status", "active")
+            .in("status", ["active", "paused"])
             .order("updated_at", { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -118,14 +118,17 @@ async function executeTradeWithLock(
           };
         }
 
-        // Auto-create default paper session
+        // Auto-create default paper session.
+        // status='paused': cron-ticken henter kun 'active', så boten handler
+        // IKKE før brukeren selv skrur på auto-handel. Manuelle handler
+        // går likevel — sesjonsoppslaget under aksepterer 'paused'.
         const now = new Date().toISOString();
         const { data: newSession, error: createError } = await supabase
           .from("trading_sessions")
           .insert({
             user_id: request.userId,
             mode: "paper",
-            status: "active",
+            status: "paused",
             strategy_id: "dca",
             strategy_config: {},
             trading_pair: request.symbol.toUpperCase(),
