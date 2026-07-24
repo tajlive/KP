@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { BinanceAPISettings } from "@/features/account";
-import { createClient } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Card } from "@coinbase/cds-web/cards";
@@ -17,24 +16,31 @@ interface UserData {
 export default function ClientDashboardSettings() {
   const params = useParams();
   const _locale = params?.locale as string;
-  const supabase = createClient();
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) {
+        // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+        // brukerdata hentes via server-API (profile inkluderer email)
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) {
+          setLoading(false);
+          return;
+        }
+        const json = await res.json().catch(() => null);
+        const profile = json?.profile;
+        if (!profile) {
           setLoading(false);
           return;
         }
         setUser({
-          id: user.id,
-          email: user.email || "",
-          full_name: user.user_metadata?.full_name || null,
+          id: profile.id,
+          email: profile.email || "",
+          full_name: profile.full_name || null,
         });
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -43,7 +49,7 @@ export default function ClientDashboardSettings() {
       }
     };
     fetchUser();
-  }, [supabase]);
+  }, []);
 
   if (loading) {
     return (

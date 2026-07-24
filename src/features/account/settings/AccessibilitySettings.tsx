@@ -1,12 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/utils";
-import type { Database } from "@/types/database.types";
 import { useTranslations } from "next-intl";
-
-type UserProfilesUpdate =
-  Database["public"]["Tables"]["user_profiles"]["Update"];
 
 type ProfileA11yFields = {
   font_size_preference?: "normal" | "large";
@@ -15,7 +10,6 @@ type ProfileA11yFields = {
 
 export default function AccessibilitySettings() {
   const t = useTranslations("settings.accessibility");
-  const supabase = createClient();
   const [fontSize, setFontSize] = useState<"normal" | "large">("normal");
   const [highContrast, setHighContrast] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -23,21 +17,16 @@ export default function AccessibilitySettings() {
   useEffect(() => {
     async function loadSettings() {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const { data } = await supabase
-            .from("user_profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-
-          const prefs = data as unknown as ProfileA11yFields | null;
+        // KLA-auth: browser-klienten er alltid anon — innstillinger hentes
+        // og lagres via server-API som leser httpOnly auth-cookie
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
+        if (res.ok) {
+          const json = await res.json().catch(() => null);
+          const prefs = json?.profile as ProfileA11yFields | undefined;
           if (prefs) {
-            setFontSize(
-              (prefs.font_size_preference as "normal" | "large") || "normal",
-            );
+            setFontSize(prefs.font_size_preference || "normal");
             setHighContrast(prefs.high_contrast_mode || false);
 
             // Apply to document
@@ -61,23 +50,18 @@ export default function AccessibilitySettings() {
   async function saveFontSize(size: "normal" | "large") {
     setFontSize(size);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from("user_profiles")
-          .update({
-            font_size_preference: size,
-          } as unknown as UserProfilesUpdate)
-          .eq("id", user.id);
+      await fetch("/api/user/profile", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ font_size_preference: size }),
+      });
 
-        // Apply to document
-        if (size === "large") {
-          document.documentElement.classList.add("text-lg");
-        } else {
-          document.documentElement.classList.remove("text-lg");
-        }
+      // Apply to document
+      if (size === "large") {
+        document.documentElement.classList.add("text-lg");
+      } else {
+        document.documentElement.classList.remove("text-lg");
       }
     } catch (error) {
       console.error("Failed to save font size:", error);
@@ -87,23 +71,18 @@ export default function AccessibilitySettings() {
   async function saveHighContrast(enabled: boolean) {
     setHighContrast(enabled);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from("user_profiles")
-          .update({
-            high_contrast_mode: enabled,
-          } as unknown as UserProfilesUpdate)
-          .eq("id", user.id);
+      await fetch("/api/user/profile", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ high_contrast_mode: enabled }),
+      });
 
-        // Apply to document
-        if (enabled) {
-          document.documentElement.classList.add("high-contrast");
-        } else {
-          document.documentElement.classList.remove("high-contrast");
-        }
+      // Apply to document
+      if (enabled) {
+        document.documentElement.classList.add("high-contrast");
+      } else {
+        document.documentElement.classList.remove("high-contrast");
       }
     } catch (error) {
       console.error("Failed to save high contrast:", error);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useProfile } from "@/hooks/useProfile";
-import { createClient } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -72,28 +71,14 @@ function ProfileContent() {
 
   const fetchBadges = useCallback(async () => {
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      // KLA-auth: browser-klienten er alltid anon — badges via server-API
+      const res = await fetch("/api/user/badges", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
 
-      // user_badges table not in generated Supabase types
-      const { data: badgeData } = await (
-        supabase as unknown as {
-          from: (t: string) => {
-            select: (s: string) => {
-              eq: (
-                c: string,
-                v: string,
-              ) => Promise<{ data: Record<string, unknown>[] | null }>;
-            };
-          };
-        }
-      )
-        .from("user_badges")
-        .select("*")
-        .eq("user_id", user.id);
+      const json = await res.json().catch(() => null);
+      const badgeData = json?.badges as Record<string, unknown>[] | undefined;
       if (badgeData?.length) {
         setEarnedBadges(
           badgeData.map((b: Record<string, unknown>) => ({
@@ -113,18 +98,28 @@ function ProfileContent() {
 
   useEffect(() => {
     async function checkAuth() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+      // auth-sjekk via server-API. 401 betyr reelt utlogget.
+      try {
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
+        if (res.status === 401 || !res.ok) {
+          const supportedLocales = ["no", "en", "th", "zh"];
+          const safeLocale = supportedLocales.includes(locale) ? locale : "no";
+          router.push(
+            `/${safeLocale}/innlogging?next=${encodeURIComponent(pathname ?? "/")}`,
+          );
+        } else {
+          setIsAuthenticated(true);
+        }
+      } catch {
+        // Nettverksfeil — behandle som utlogget
         const supportedLocales = ["no", "en", "th", "zh"];
         const safeLocale = supportedLocales.includes(locale) ? locale : "no";
         router.push(
           `/${safeLocale}/innlogging?next=${encodeURIComponent(pathname ?? "/")}`,
         );
-      } else {
-        setIsAuthenticated(true);
       }
       setAuthChecked(true);
     }
