@@ -2,7 +2,7 @@
 
 import { useProfile } from "@/hooks/useProfile";
 import { createClient } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
@@ -54,7 +54,6 @@ const TIER_COLORS: Record<TierSlug, string> = {
 
 function ProfileTabContent() {
   const t = useTranslations("settings.profile");
-  const router = useRouter();
   const pathname = usePathname();
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -111,24 +110,32 @@ function ProfileTabContent() {
   }, []);
 
   useEffect(() => {
-    async function checkAuth() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        const supportedLocales = ["no", "en", "th", "zh"];
-        const safeLocale = supportedLocales.includes(locale) ? locale : "no";
-        router.push(
-          `/${safeLocale}/innlogging?next=${encodeURIComponent(pathname ?? "/")}`,
-        );
-      } else {
-        setIsAuthenticated(true);
-      }
-      setAuthChecked(true);
-    }
-    checkAuth();
-  }, [router, pathname, locale]);
+    // KLA-auth: IKKE browser-supabase getUser() — auth-cookien er httpOnly,
+    // browser-klienten er alltid anon -> falsk "utlogget" -> redirect-loop
+    // til /innlogging -> middleware -> /dashboard (gjorde /profile ubrukelig).
+    // Auth-status hentes fra server-API i stedet; side-nivå-guard
+    // (ProfilePageClient -> LoginRequired) håndterer selve utloggingen.
+    let cancelled = false;
+    fetch("/api/user/profile", {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => {
+        if (cancelled) return;
+        setIsAuthenticated(res.status !== 401);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setIsAuthenticated(false);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setAuthChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) fetchBadges();
