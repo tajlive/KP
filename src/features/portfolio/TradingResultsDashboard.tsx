@@ -161,13 +161,16 @@ export default function TradingResultsDashboard() {
 
 
 
-  const totalPnl = data?.aggregates.totalEffectivePnl ?? 0;
+  // KPI "Total P/L" = realisert P&L (konsistent med portefølje/historikk).
+  // totalEffectivePnl inkluderer kontantstrøm fra åpne kjøp — misvisende som overskrift.
+  const totalPnl = data?.aggregates.totalRealizedPnl ?? 0;
   const pnlPositive = totalPnl >= 0;
   const sampleTrades = data?.tradeCount ?? 0;
   const knownPnlCount =
     (data?.aggregates.effectiveWinCount ?? 0) +
     (data?.aggregates.effectiveLossCount ?? 0) +
     (data?.aggregates.effectiveBreakevenCount ?? 0);
+  const unknownCount = Math.max(0, sampleTrades - knownPnlCount);
 
   const exportCsv = useCallback(() => {
     if (!data || data.tradeCount === 0) return;
@@ -227,10 +230,11 @@ export default function TradingResultsDashboard() {
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 shadow-sm">
                 {t("kpi.trades")}: {sampleTrades}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 shadow-sm">
-                {t("outcome.unknown")}:{" "}
-                {Math.max(0, sampleTrades - knownPnlCount)}
-              </span>
+              {unknownCount > 0 && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 shadow-sm">
+                  {t("outcome.unknown")}: {unknownCount}
+                </span>
+              )}
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0052FF]/40 bg-[#0052FF]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#0047E0] dark:text-[#9CC4FF] shadow-sm">
                 {t("intervalHint")}
               </span>
