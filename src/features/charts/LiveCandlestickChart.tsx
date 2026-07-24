@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, CrosshairMode, LineStyle, IChartApi, ISeriesApi, CandlestickData, Time } from "lightweight-charts";
+import { createChart, ColorType, CrosshairMode, LineStyle, IChartApi, ISeriesApi, CandlestickData, Time, CandlestickSeries, createSeriesMarkers } from "lightweight-charts";
 
 interface Trade {
   time: number;
@@ -52,9 +52,9 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     });
     chartRef.current = chart;
 
-    // Candlestick series — lightweight-charts types omit addCandlestickSeries at runtime
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const candleSeries = (chart as any).addCandlestickSeries({
+    // Candlestick series — lightweight-charts v5: addCandlestickSeries er
+    // fjernet, bruk addSeries(CandlestickSeries, ...)
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: "#22C55E",
       downColor: "#EF4444",
       borderDownColor: "#EF4444",
@@ -64,7 +64,8 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
     });
     candleSeriesRef.current = candleSeries;
 
-    // Buy/sell markers
+    // Buy/sell markers — v5: setMarkers er fjernet fra series,
+    // bruk createSeriesMarkers
     const markers = trades
       .filter((t) => t.side)
       .map((t) => ({
@@ -73,9 +74,9 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
         color: t.side === "buy" ? "#3B82F6" : "#EF4444",
         shape: t.side === "buy" ? "arrowUp" as const : "arrowDown" as const,
         text: t.side === "buy" ? "KJØP" : "SALG",
-        size: 2,
+        size: 2 as const,
       }));
-    candleSeries.setMarkers(markers);
+    createSeriesMarkers(candleSeries, markers);
 
     // Fetch live data
     const fetchData = async () => {
