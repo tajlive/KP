@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import { TierSlug, getTierDisplayName } from "@/types/subscription";
 import { Loader2, Lock } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -37,72 +36,32 @@ export function SubscriptionGate({
   const [entitlements, setEntitlements] = useState<UserEntitlements | null>(
     null,
   );
-  const supabase = createClient();
   const locale = useLocale();
 
   useEffect(() => {
     const checkEntitlements = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie).
+        // Edge-funksjonen get-entitlements finnes ikke deployet, og
+        // browser-klienten kan uansett ikke lese user_profiles (RLS + anon).
+        // Tier hentes via server-API som leser auth-cookie.
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
 
-        if (!user) {
+        if (res.status === 401) {
           setEntitlements({ tier: "student", hasAccess: false });
-          setLoading(false);
           return;
         }
 
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) {
-          setEntitlements({ tier: "student", hasAccess: false });
-          setLoading(false);
-          return;
-        }
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-
-        // Kall get-entitlements edge function
-        const response = await fetch(
-          `${supabaseUrl}/functions/v1/get-entitlements`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${session?.access_token || ""}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (!response.ok) {
-          // Fallback: sjekk profiles-tabellen direkte
-          const { data: profile } = await supabase
-            .from("user_profiles")
-            .select("subscription_tier, subscription_status")
-            .eq("id", user.id)
-            .single();
-
-          const tier = ((profile as { subscription_tier?: string } | null)?.subscription_tier as TierSlug) || "student";
-          const hasAccess = checkTierAccess(tier, requiredTier);
-
-          setEntitlements({
-            tier,
-            hasAccess,
-            expiresAt: undefined,
-          });
-          setLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-        const tier = (data.tier as TierSlug) || "student";
+        const json = await res.json().catch(() => null);
+        const tier = (json?.profile?.tier as TierSlug) || "student";
         const hasAccess = checkTierAccess(tier, requiredTier);
 
         setEntitlements({
           tier,
           hasAccess,
-          expiresAt: data.expires_at,
+          expiresAt: undefined,
         });
       } catch (error) {
         console.error("Error checking entitlements:", error);
@@ -113,7 +72,7 @@ export function SubscriptionGate({
     };
 
     checkEntitlements();
-  }, [supabase, requiredTier]);
+  }, [requiredTier]);
 
   if (loading) {
     return (
@@ -167,28 +126,22 @@ function checkTierAccess(userTier: TierSlug, requiredTier: TierSlug): boolean {
 export function useSubscription() {
   const [tier, setTier] = useState<TierSlug>("student");
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   useEffect(() => {
     const fetchSubscription = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // KLA-auth: tier via server-API (browser-klient er alltid anon)
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
 
-        if (!user) {
+        if (res.status === 401) {
           setTier("student");
-          setLoading(false);
           return;
         }
 
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("subscription_tier")
-          .eq("id", user.id)
-          .single();
-
-        setTier(((profile as { subscription_tier?: string } | null)?.subscription_tier as TierSlug) || "student");
+        const json = await res.json().catch(() => null);
+        setTier((json?.profile?.tier as TierSlug) || "student");
       } catch (error) {
         console.error("Error fetching subscription:", error);
         setTier("student");
@@ -198,7 +151,7 @@ export function useSubscription() {
     };
 
     fetchSubscription();
-  }, [supabase]);
+  }, []);
 
   return { tier, loading };
 }

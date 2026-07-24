@@ -17,7 +17,6 @@ import { CARD, RADIUS, SHADOW, SURFACE, TABLE } from "@/lib/design/tokens";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
 import { useTranslations } from "next-intl";
 
@@ -57,7 +56,6 @@ export function ClientPricingPage() {
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [products, setProducts] = useState<PricingProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const supabase = createClient();
 
   // Hent priser fra API
   useEffect(() => {
@@ -136,27 +134,27 @@ export function ClientPricingPage() {
     setLoadingTier(tierSlug);
 
     try {
-      // Sjekk om bruker er logget inn
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+      // auth-sjekk via server-API. 401 betyr reelt utlogget.
+      const authRes = await fetch("/api/user/profile", {
+        credentials: "same-origin",
+      });
 
-      if (!user) {
+      if (authRes.status === 401) {
         toast.error("Du må være logget inn for å abonnere");
         router.push(`/${locale}/innlogging?redirect=/priser`);
         return;
       }
 
-      // Stripe - via vår API
+      // Stripe - via vår API (server henter bruker fra auth-cookie)
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tier: tierSlug,
           currency: "NOK",
           priceId: priceId || undefined,
-          userId: user.id,
-          userEmail: user.email,
         }),
       });
 

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Rocket, X, TrendingUp, Shield, Zap, Crown } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { localizedPathname } from "@/middleware/locale-path";
 
 interface UpgradeGateProps {
@@ -50,49 +49,39 @@ export function UpgradeGate({
   useEffect(() => {
     const checkUserStats = async () => {
       try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+        // profil og trade-stats hentes via server-APIer.
+        const [profileRes, analyticsRes] = await Promise.all([
+          fetch("/api/user/profile", { credentials: "same-origin" }),
+          fetch("/api/user/trading-analytics", { credentials: "same-origin" }),
+        ]);
 
-        if (!user) return;
+        if (profileRes.status === 401) return; // Ikke innlogget — ingen gate
 
-        // Hent user profile
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("tier, paper_balance")
-          .eq("user_id", user.id)
-          .single();
+        const profileJson = await profileRes.json().catch(() => null);
+        const analyticsJson = await analyticsRes.json().catch(() => null);
 
-        // Hent trades count
-        const { count: tradesCount } = await supabase
-          .from("trades")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id);
+        const profile = profileJson?.profile;
+        const aggregates = analyticsJson?.aggregates;
 
-        // Beregn stats fra trades
-        const { data: trades } = await supabase
-          .from("trades")
-          .select("realized_pnl")
-          .eq("user_id", user.id)
-          .limit(100);
-
-        const winningTrades = trades?.filter((t) => (t.realized_pnl || 0) > 0) || [];
-        const totalPnl = trades?.reduce((sum, t) => sum + (t.realized_pnl || 0), 0) || 0;
-        const currentBalance = profile?.paper_balance || 0;
+        const tradesCount = analyticsJson?.tradeCount ?? 0;
+        const winRate = Math.round(aggregates?.winRateRealizedPct ?? 0);
+        const totalPnl = aggregates?.totalRealizedPnl ?? 0;
+        const currentBalance = Number(profile?.paper_balance) || 0;
         const startingBalance = currentBalance - totalPnl;
-        const totalReturn = startingBalance > 0 ? (totalPnl / startingBalance) * 100 : 0;
+        const totalReturn =
+          startingBalance > 0 ? (totalPnl / startingBalance) * 100 : 0;
 
         setStats({
-          tradesCount: tradesCount || 0,
-          winRate: trades?.length ? Math.round((winningTrades.length / trades.length) * 100) : 0,
+          tradesCount,
+          winRate,
           totalReturn: Math.round(totalReturn * 10) / 10,
           totalProfit: Math.round(totalPnl),
           currentTier: profile?.tier || "student",
         });
 
         // Trigger gate hvis nok trades
-        if ((tradesCount || 0) >= triggerTradesCount && profile?.tier === "student") {
+        if (tradesCount >= triggerTradesCount && profile?.tier === "student") {
           setShowGate(true);
         }
       } catch (error) {
