@@ -312,12 +312,12 @@
       "warningTitle": "Warning Title",
       "warningText": "Warning Text",
       "email": "Email",
-      "emailPlaceholder": "Email Placeholder",
+      "emailPlaceholder": "you@example.com",
       "password": "Password",
-      "passwordPlaceholder": "Password Placeholder",
+      "passwordPlaceholder": "Enter password",
       "passwordHint": "Password Hint",
       "reason": "Reason",
-      "reasonPlaceholder": "Reason Placeholder",
+      "reasonPlaceholder": "Reason for impersonation",
       "starting": "Starting",
       "start": "Start",
       "endSessionAria": "End Session Aria",
@@ -3243,11 +3243,11 @@
       },
       "apiKey": {
         "label": "Label",
-        "placeholder": "Placeholder"
+        "placeholder": "Paste your API key"
       },
       "apiSecret": {
         "label": "Label",
-        "placeholder": "Placeholder"
+        "placeholder": "Paste your API secret"
       },
       "connecting": "Connecting",
       "cta": "Cta",
@@ -3838,8 +3838,8 @@
       "settings": "Settings",
       "deleteProfile": "Delete Profile",
       "profile": "Profile",
-      "fullNamePlaceholder": "Full Name Placeholder",
-      "avatarPlaceholder": "Avatar Placeholder"
+      "fullNamePlaceholder": "John Doe",
+      "avatarPlaceholder": "https://example.com/photo.jpg"
     },
     "api": {
       "title": "API Settings",
@@ -4683,7 +4683,7 @@
           "title": "Title",
           "apply": "Apply",
           "search": "Search",
-          "placeholder": "Placeholder",
+          "placeholder": "Search trades",
           "dateRange": "Date Range",
           "pair": "Pair",
           "all": "All",
@@ -5897,9 +5897,9 @@
     "profile": "Profile",
     "noProfileFound": "No Profile Found",
     "fullName": "Full Name",
-    "fullNamePlaceholder": "Full Name Placeholder",
+    "fullNamePlaceholder": "John Doe",
     "avatar": "Avatar",
-    "avatarPlaceholder": "Avatar Placeholder",
+    "avatarPlaceholder": "https://example.com/photo.jpg",
     "riskLevel": "Risk Level",
     "riskOptions": {
       "safe": "Safe",
@@ -5915,8 +5915,8 @@
     "badges": "Badges",
     "noBadgesYet": "No Badges Yet",
     "settings": "Settings",
-    "namePlaceholder": "Name Placeholder",
-    "avatarUrlPlaceholder": "Avatar Url Placeholder",
+    "namePlaceholder": "John Doe",
+    "avatarUrlPlaceholder": "https://example.com/photo.jpg",
     "deleteProfile": "Delete Profile"
   },
   "AdminSessions": {
