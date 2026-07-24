@@ -1863,8 +1863,8 @@
         "message": "Sterkt! {winRate}% win rate og positiv avkastning. Vurder å øke kapitalen gradvis."
       },
       "tryCopy": {
-        "message": "Nye trades registrert. Se på topp-tradere for inspirasjon.",
-        "action": "Se leaderboards"
+        "message": "Nye handler registrert. Sjekk topptrederne for inspirasjon.",
+        "action": "Se rangering"
       }
     },
     "dashboardPro": {
@@ -1893,7 +1893,7 @@
       "chart": {
         "title": "Din portefølje",
         "emptyTitle": "Ingen handelshistorikk ennå",
-        "emptyDesc": "Start din første øvelsesøkt for å se grafen",
+        "emptyDesc": "Gjør din første handel for å se grafen",
         "errorTitle": "Grafen kunne ikke vises",
         "errorMessage": "Vi kunne ikke laste porteføljegrafen akkurat nå. Prøv på nytt.",
         "retry": "Oppdater"
@@ -1902,13 +1902,13 @@
       "lastUpdated": "Sist oppdatert",
       "seeAll": "Se alle",
       "upgradeTitle": "Klar for neste nivå?",
-      "upgradeDescription": "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support.",
+      "upgradeDescription": "Oppgrader til Bachelor for live trading, avanserte strategier og prioritert support.",
       "upgradeCta": "Se priser",
       "advancedAnalyticsTitle": "Avansert analyse",
-      "advancedAnalyticsDesc": "Equity curve, P&L heatmap, risk metrics og posisjonskalkulator",
+      "advancedAnalyticsDesc": "Egenkapitalkurve, P&L-varmekart, risikomål og posisjonskalkulator",
       "advancedAnalyticsLink": "Se full analyse →",
-      "smartActionsTitle": "Smart actions tittel",
-      "liveFeedTitle": "Live feed tittel"
+      "smartActionsTitle": "Smarte handlinger",
+      "liveFeedTitle": "Handler i sanntid"
     },
     "nlqChat": {
       "openChat": "Åpne chat",
@@ -1990,7 +1990,7 @@
       "paperMode": "Lekepenger-modus",
       "liveMode": "Live-modus",
       "noData": "Ingen data",
-      "latestChange": "Latest change",
+      "latestChange": "Siste endring",
       "ctaPaper": "Start handel",
       "ctaLive": "Start live-handel"
     },
