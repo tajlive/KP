@@ -71,6 +71,9 @@ class WebSocketManager {
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private isDestroyed = false;
   private isManualClose = false;
+  // KLA-WS: symboler registrert MENS state==="connecting" er ikke med i
+  // stream-URLen (connect() bygger den synkront). Reconnect ved open.
+  private reconnectOnOpen = false;
   
   // Heartbeat
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
@@ -139,6 +142,10 @@ class WebSocketManager {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       if (this.state !== "connecting") {
         this.connect();
+      } else {
+        // connect() bygde stream-URL før dette symbolet ble registrert —
+        // kobol om på nytt med alle symboler straks tilkoblingen åpner.
+        this.reconnectOnOpen = true;
       }
     } else if (this.state === "connected") {
       // Already connected, reconnect to include new symbol
@@ -289,6 +296,14 @@ class WebSocketManager {
     this.reconnectAttempts = 0;
     this.consecutiveFailures = 0;
     this.isManualClose = false;
+
+    // Nye symboler ble registrert mens vi koblet til — streamen dekker dem
+    // ikke ennå. Reconnect én gang med full symbolliste.
+    if (this.reconnectOnOpen) {
+      this.reconnectOnOpen = false;
+      this.reconnect();
+      return;
+    }
     this.metrics.connectCount++;
     this.metrics.lastConnectAt = Date.now();
     
