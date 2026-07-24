@@ -2587,7 +2587,7 @@
     "errorLoad": "Could not load results",
     "errorTitle": "Error loading results",
     "notYetLoaded": "Loading results...",
-    "lastUpdated": "Last updated",
+    "lastUpdated": "Last updated {time}",
     "intervalHint": "Last 30 days",
     "exportCsv": "Export CSV",
     "refresh": "Refresh",
@@ -2625,7 +2625,9 @@
       "pairsHint": "Results by cryptocurrency",
       "pairPnl": "P/L",
       "modeTitle": "P/L by Mode",
-      "modeHint": "Paper vs Live results"
+      "modeHint": "Paper vs Live results",
+      "worstDayBadge": "Verste dag: {day} · {amount}",
+      "modeTrades": "{count, plural, one {# handel} other {# handler}}"
     },
     "empty": {
       "noTradesTitle": "No trades yet",

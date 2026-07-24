@@ -2582,7 +2582,7 @@
     "errorLoad": "Kunne ikke laste resultater",
     "errorTitle": "Feil ved lasting av resultater",
     "notYetLoaded": "Resultater lastes...",
-    "lastUpdated": "Sist oppdatert",
+    "lastUpdated": "Sist oppdatert {time}",
     "intervalHint": "Siste 30 dager",
     "exportCsv": "Eksportér CSV",
     "refresh": "Oppdater",
@@ -2620,7 +2620,9 @@
       "pairsHint": "Resultat fordelt på kryptovaluta",
       "pairPnl": "P/L",
       "modeTitle": "P/L per modus",
-      "modeHint": "Lekepenger vs Live resultater"
+      "modeHint": "Lekepenger vs Live resultater",
+      "worstDayBadge": "Verste dag: {day} · {amount}",
+      "modeTrades": "{count, plural, one {# handel} other {# handler}}"
     },
     "empty": {
       "noTradesTitle": "Ingen handler enda",

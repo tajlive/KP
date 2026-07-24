@@ -92,12 +92,23 @@ export async function GET(request: NextRequest) {
     }
 
     const supabase = createClient();
+
+    // Ekskluder arkivert test-era — konsistent med portefølje og historikk.
+    const { data: sessions } = await supabase
+      .from("trading_sessions")
+      .select("id")
+      .eq("user_id", user.id)
+      .is("archived", false);
+
+    const sessionIds = (sessions ?? []).map((s) => s.id);
+
     const { data: rows, error } = await supabase
       .from("trades")
       .select(
         "id, trading_pair, side, realized_pnl, mode, created_at, executed_at, total_value",
       )
       .eq("user_id", user.id)
+      .in("session_id", sessionIds.length > 0 ? sessionIds : ["__none__"])
       .order("created_at", { ascending: false })
       .limit(MAX_TRADES);
 
