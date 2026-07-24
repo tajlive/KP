@@ -198,7 +198,12 @@ async function executeTradeWithLock(
       };
     }
 
-    if (session.status !== "active") {
+    // Paused paper-sesjon = manuell handel uten bot. Cron-ticken henter kun
+    // status='active', saa denne guarden treffer aldri bot-veien — men den
+    // skal heller ikke blokkere brukerens egne manuelle handler.
+    const isManualPaperOnPaused =
+      request.mode === "paper" && session.status === "paused";
+    if (session.status !== "active" && !isManualPaperOnPaused) {
       return {
         success: false,
         error: `Session is ${session.status}, cannot execute trades`,
