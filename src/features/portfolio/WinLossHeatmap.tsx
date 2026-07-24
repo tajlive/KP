@@ -109,7 +109,10 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
 
   const winningDays = data.filter((d) => d.pnl > 0).length;
   const losingDays = data.filter((d) => d.pnl < 0).length;
-  const winRate = data.length > 0 ? (winningDays / data.length) * 100 : 0;
+  // Vinnrate over dager med faktisk resultat — dager uten lukkede handler
+  // (pnl = 0) teller ikke med, ellers blir raten villedende lav.
+  const resultDays = winningDays + losingDays;
+  const winRate = resultDays > 0 ? (winningDays / resultDays) * 100 : 0;
 
   // Show max 12 weeks at a time
   const WEEKS_PER_PAGE = 12;

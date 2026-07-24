@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, BarChart3 } from "lucide-react";
@@ -25,6 +25,15 @@ interface TradingAnalytics {
   };
 }
 
+interface PortfolioSummary {
+  balance: number | null;
+  positions: Array<{
+    symbol: string;
+    qty: number;
+    avgBuyPrice: number;
+  }>;
+}
+
 interface AdvancedAnalyticsSectionProps {
   accountBalance?: number;
   defaultExpanded?: boolean;
@@ -35,6 +44,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
   const t = useTranslations("dashboard.advancedAnalytics");
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [analytics, setAnalytics] = useState<TradingAnalytics | null>(null);
+  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -44,16 +54,24 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
 
     setLoading(true);
     setFetchError(null);
-    fetch("/api/user/trading-analytics")
-      .then((r) => {
+    // Analyse + portefølje-sammendrag (reell saldo og posisjoner) i parallell.
+    Promise.all([
+      fetch("/api/user/trading-analytics").then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
-      })
-      .then((data) => {
-        if (data.ok) {
-          setAnalytics(data as TradingAnalytics);
+      }),
+      fetch("/api/portfolio/summary")
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ])
+      .then(([analyticsData, summaryData]) => {
+        if (analyticsData?.ok) {
+          setAnalytics(analyticsData as TradingAnalytics);
         } else {
           setFetchError(t("loadError"));
+        }
+        if (summaryData?.balance != null) {
+          setSummary(summaryData as PortfolioSummary);
         }
       })
       .catch(() => {
@@ -64,6 +82,23 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
         setHasFetched(true);
       });
   }, [isExpanded, hasFetched]);
+
+  // Sann aktivaallokering: åpne posisjoner (kostpris) + kontanter.
+  const allocationSlices = useMemo(() => {
+    if (!summary) return undefined;
+    const positionSlices = summary.positions.map((p) => ({
+      name: p.symbol,
+      value: p.qty * p.avgBuyPrice,
+    }));
+    const deployed = positionSlices.reduce((s, p) => s + p.value, 0);
+    const cash = Math.max(0, (summary.balance ?? 0) - deployed);
+    const slices = [...positionSlices];
+    if (cash > 0) slices.push({ name: t("cash"), value: cash });
+    return slices;
+  }, [summary, t]);
+
+  // Reell kontobalanse til kalkulatoren (fallback: prop/default).
+  const effectiveBalance = summary?.balance ?? accountBalance;
 
   return (
     <div className="mt-6">
@@ -123,10 +158,10 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <AssetAllocationChart
-                data={analytics?.topPairs}
+                slices={allocationSlices}
                 loading={loading}
               />
-              <PositionSizingCalculator accountBalance={accountBalance} />
+              <PositionSizingCalculator accountBalance={effectiveBalance} />
             </div>
 
             {/* Risk metrics with explanations */}
