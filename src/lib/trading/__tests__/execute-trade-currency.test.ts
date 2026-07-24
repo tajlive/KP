@@ -154,4 +154,78 @@ describe("Trade Currency Audit Trail", () => {
     expect(rate).toBeGreaterThan(0);
     expect(Number.isFinite(rate)).toBe(true);
   });
+
+  it("første handel uten sesjon: auto-oppretter sesjon og tar lås kun én gang", async () => {
+    // Regresjon: rekursjonen etter session-auto-create kalte executeTrade på
+    // nytt og forsøkte å ta samme trade-lås to ganger → førstehandelen til
+    // splitter nye brukere feilet alltid med CONCURRENT_TRADE_BLOCKED.
+    const { acquireTradeLock } = await import("../core/distributed-lock");
+    const { executeTrade } = await import("../core/execute-trade");
+
+    // Første oppslag (uten sessionId) finner ingen sesjon → auto-create.
+    // Deretter slår pipeline opp den nyopprettede sesjonen på id.
+    let maybeSingleCalls = 0;
+    const sessionRow = {
+      id: "session-123",
+      user_id: "user-123",
+      current_capital_nok: 100000,
+      current_capital: 100000,
+      status: "active",
+      mode: "paper",
+      strategy_config: {},
+      open_position: null,
+    };
+    const fromMock = vi.fn((table: string) => {
+      const chain = {
+        select: vi.fn().mockReturnThis(),
+        insert: vi.fn(
+          (payload: Record<string, unknown>[] | Record<string, unknown>) => {
+            const p = Array.isArray(payload) ? payload[0] : payload;
+            insertCalls.push({ table, payload: p });
+            return {
+              select: vi.fn().mockReturnValue({
+                single: vi
+                  .fn()
+                  .mockResolvedValue({ data: { id: "session-123" }, error: null }),
+              }),
+            };
+          },
+        ),
+        update: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        maybeSingle: vi.fn(() =>
+          Promise.resolve(
+            maybeSingleCalls++ === 0
+              ? { data: null, error: null }
+              : { data: sessionRow, error: null },
+          ),
+        ),
+        single: vi.fn().mockResolvedValue({ data: sessionRow, error: null }),
+        rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+      };
+      return chain;
+    });
+    mockSupabase.from =
+      fromMock as unknown as SupabaseClient<Database>["from"];
+
+    const result = await executeTrade(mockSupabase as SupabaseClient<Database>, {
+      userId: "user-123",
+      symbol: "BTCUSDT",
+      side: "buy",
+      quantity: 0.1,
+      price: 50000,
+      orderType: "market",
+      mode: "paper",
+      // Merk: ingen sessionId — ny bruker uten sesjon
+    });
+
+    expect(result.success).toBe(true);
+    expect(vi.mocked(acquireTradeLock)).toHaveBeenCalledTimes(1);
+    expect(
+      insertCalls.find((c) => c.table === "trading_sessions"),
+    ).toBeDefined();
+    expect(insertCalls.find((c) => c.table === "trades")).toBeDefined();
+  });
 });

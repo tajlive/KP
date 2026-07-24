@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     const { data: recentTrades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, trading_pair, side, quantity, price, total_value, fee, status, created_at")
+      .select("id, trading_pair, side, quantity, price, total_value, fee, status, created_at, strategy_signal")
       .eq("session_id", session.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false })
@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
         fee: t.fee,
         status: t.status,
         created_at: t.created_at,
+        is_bot: t.strategy_signal != null,
       })) as Array<{
         id: string;
         symbol: string;
@@ -89,6 +90,7 @@ export async function GET(request: NextRequest) {
         fee: number;
         status: string;
         created_at: string;
+        is_bot: boolean;
       }>,
     });
   } catch (err) {

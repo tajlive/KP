@@ -135,7 +135,13 @@ function useHasTraded() {
         }
         if (!r.ok) return; // 401/503/nettverk — ikke lås ut eksisterende brukere
         const d = await r.json().catch(() => null);
-        if (!cancelled && d) setHasTraded((d.recentTrades?.length ?? 0) > 0);
+        // Bare manuelle handler teller — DCA-botens auto-handler (is_bot)
+        // skal ikke låse opp Auto/Joker for brukeren.
+        if (!cancelled && d)
+          setHasTraded(
+            (d.recentTrades?.filter((t: { is_bot?: boolean }) => !t.is_bot)
+              ?.length ?? 0) > 0,
+          );
       })
       .catch(() => {});
     const onTrade = () => setHasTraded(true);
