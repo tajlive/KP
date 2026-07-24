@@ -357,7 +357,7 @@ export default function ClientHandelshistorikk() {
 
           {filteredTrades.length > 0 && (
             <div
-              className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+              className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4"
               data-testid="trade-history-aggregates"
             >
               <TradeHistoryStatCard
@@ -384,11 +384,13 @@ export default function ClientHandelshistorikk() {
           )}
         </PremiumPanel>
 
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-            {t("decisionLogTitle")}
-          </h2>
-        </div>
+        {filteredDecisions.length > 0 && (
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              {t("decisionLogTitle")}
+            </h2>
+          </div>
+        )}
 
         {signedIn && integrityPollWarning && !fetchError && (
           <p
@@ -400,16 +402,12 @@ export default function ClientHandelshistorikk() {
           </p>
         )}
 
-        {signedIn && !loading && !fetchError && (
+        {signedIn && !loading && !fetchError && filteredDecisions.length > 0 && (
           <PremiumPanel className="space-y-3 p-4 sm:p-6">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               {t("decisionLogHint")}
             </p>
-            {filteredDecisions.length === 0 ? (
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {t("decisionsEmpty")}
-              </p>
-            ) : (
+            {(
               <ul className="divide-y divide-slate-100 dark:divide-slate-800 max-h-72 overflow-y-auto">
                 {filteredDecisions.map((d) => {
                   const allow = d.decision_type === "allow";
@@ -525,7 +523,97 @@ export default function ClientHandelshistorikk() {
               action={{ label: t("emptyCta"), href: `/${locale}/trade?first=1` }}
             />
           ) : (
-            <div className="overflow-x-auto" data-testid="trade-history-table">
+            <>
+            {/* Mobil: kompakte kort med side, beløp og P&L fremhevet */}
+            <div
+              className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800"
+              data-testid="trade-history-cards"
+            >
+              {filteredTrades.map((trade) => {
+                const isBuy =
+                  String(trade.side).toLowerCase() === "buy" ||
+                  String(trade.side).toUpperCase() === "LONG";
+                const pair = (trade.trading_pair ?? "").replace("USDT", "");
+                const hasRealized =
+                  trade.realized_pnl != null &&
+                  Number.isFinite(Number(trade.realized_pnl));
+                const pnl = hasRealized ? Number(trade.realized_pnl) : null;
+                const sig = parseStrategySignal(trade.strategy_signal);
+                const whyText = sig
+                  ? explainStrategySignalJson(sig, locale)
+                  : null;
+                return (
+                  <div key={trade.id} className="py-3 space-y-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium shrink-0 ${
+                            isBuy
+                              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                              : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                          }`}
+                        >
+                          {isBuy ? (
+                            <ArrowUp className="w-3 h-3" />
+                          ) : (
+                            <ArrowDown className="w-3 h-3" />
+                          )}
+                          {isBuy ? t("buy") : t("sell")}
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {pair}
+                        </span>
+                      </div>
+                      <span className="font-semibold tabular-nums text-slate-900 dark:text-white shrink-0">
+                        {formatByMode(
+                          Number(trade.total_value),
+                          trade.mode as TradingMode,
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="whitespace-nowrap">
+                        {formatDate(trade.created_at)} ·{" "}
+                        {tradeModeBucket(trade.mode) === "live"
+                          ? t("live")
+                          : t("paper")}
+                      </span>
+                      {hasRealized && pnl != null ? (
+                        <span
+                          className={`font-semibold tabular-nums ${
+                            pnl > 0
+                              ? "text-green-600 dark:text-green-400"
+                              : pnl < 0
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-slate-600 dark:text-slate-400"
+                          }`}
+                        >
+                          {pnl > 0 ? "+" : pnl < 0 ? "-" : ""}
+                          {formatByMode(
+                            Math.abs(pnl),
+                            trade.mode as TradingMode,
+                          )}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                      {Number(trade.quantity).toFixed(6)} {pair} @{" "}
+                      {formatByMode(
+                        Number(trade.price),
+                        trade.mode as TradingMode,
+                      )}
+                    </div>
+                    {whyText && (
+                      <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1">
+                        {whyText}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {/* Desktop: full tabell */}
+            <div className="overflow-x-auto hidden sm:block" data-testid="trade-history-table">
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/70">
@@ -651,6 +739,7 @@ export default function ClientHandelshistorikk() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </PremiumTradingShell>
