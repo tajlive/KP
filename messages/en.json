@@ -2064,10 +2064,10 @@
       "pricesEducational": "Prices Educational"
     },
     "coinbase": {
-      "marketTitle": "Market Title",
-      "marketSubtitle": "Market Subtitle",
-      "topMovers": "Top Movers",
-      "goToTrade": "Go To Trade",
+      "marketTitle": "Marked",
+      "marketSubtitle": "Sanntidspriser på de mest handlede kryptovalutaene",
+      "topMovers": "Største bevegelser (24 t)",
+      "goToTrade": "Gå til handel",
       "orderSubmittedPaper": "Order Submitted Paper",
       "tradeFailed": "Trade Failed",
       "networkError": "Network Error",
