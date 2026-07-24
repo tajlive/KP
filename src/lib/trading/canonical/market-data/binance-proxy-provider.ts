@@ -20,7 +20,7 @@ interface ProxyError {
   status?: number;
 }
 
-async function fetchViaProxy(path: string): Promise<unknown> {
+export async function fetchViaProxy(path: string): Promise<unknown> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const proxySecret = process.env.BINANCE_PROXY_SECRET;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
