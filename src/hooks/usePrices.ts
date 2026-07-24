@@ -99,15 +99,21 @@ export function usePrices() {
       });
 
     // 2. Binance WebSocket for Priority Symbols (Active UI)
-    const callback = (updatedPrices: Record<string, number>) => {
+    const callback = (
+      updatedPrices: Record<string, { price: number; changePercent24h?: number }>,
+    ) => {
       setPrices((prev) => {
         const next = { ...prev };
-        Object.entries(updatedPrices).forEach(([symbol, price]) => {
+        Object.entries(updatedPrices).forEach(([symbol, tick]) => {
           // Binance WebSocket gir USDT-priser, mens coin_prices i DB er NOK.
           // Normaliser alltid til NOK før state oppdateres.
-          const priceNok = usdtPriceToNok(price, getLiveUsdtNokRate());
+          const priceNok = usdtPriceToNok(tick.price, getLiveUsdtNokRate());
+          const changePatch =
+            typeof tick.changePercent24h === "number"
+              ? { price_change_percent_24h: tick.changePercent24h }
+              : {};
           if (next[symbol]) {
-            next[symbol] = { ...next[symbol], price: priceNok };
+            next[symbol] = { ...next[symbol], price: priceNok, ...changePatch };
           } else {
             // Create minimal entry if missing
             next[symbol] = {
@@ -133,7 +139,12 @@ export function usePrices() {
     const unsubscribe = binanceWebSocket.subscribeToTickers(
       PRIORITY_SYMBOLS,
       (ticker) => {
-        callback({ [ticker.symbol]: ticker.price });
+        callback({
+          [ticker.symbol]: {
+            price: ticker.price,
+            changePercent24h: ticker.changePercent24h,
+          },
+        });
       },
     );
 

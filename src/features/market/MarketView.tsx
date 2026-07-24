@@ -58,9 +58,11 @@ export function MarketView({ userId }: { userId: string }) {
               >
                 <p className="text-sm font-semibold text-kp-text-primary">{base}</p>
                 <p className="text-xs text-kp-text-secondary">
-                  {row.price.toLocaleString(numberLocale, {
-                    maximumFractionDigits: 2,
-                  })}
+                  {row.price > 0
+                    ? `${row.price.toLocaleString(numberLocale, {
+                        maximumFractionDigits: row.price < 100 ? 2 : 0,
+                      })} kr`
+                    : "—"}
                 </p>
                 <p
                   className={`text-xs font-medium ${
