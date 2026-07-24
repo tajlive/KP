@@ -4,7 +4,6 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { createClient } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
@@ -71,243 +70,36 @@ export default function CreatorProfileClient({
   const [isLoading, setIsLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
 
-  /** Returnerer kanonisk auth user id for strategier / copy_trading (RLS). */
-  const fetchTraderProfile = useCallback(async (): Promise<string | null> => {
+  // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+  // profil, strategier og follow-status hentes via server-API
+  const loadTraderData = useCallback(async () => {
     try {
-      const supabase = createClient();
-
-      const { data: botData } = await supabase
-        .from("leaderboard_bots")
-        .select("*")
-        .eq("id", traderId)
-        .maybeSingle();
-
-      if (botData) {
-        setProfile({
-          id: botData.id,
-          userId: botData.user_id,
-          displayName: botData.display_name,
-          bio: null,
-          avatarUrl: botData.avatar_url,
-          isPublic: true,
-          performanceFeePct: botData.performance_fee_pct || 0,
-          followerCount: botData.follower_count || 0,
-          verified: false,
-          allTimeRoi: botData.pnl_all_time || 0,
-          winRate: botData.win_rate || 0,
-          sharpeRatio: botData.sharpe_ratio || 0,
-          totalTrades: 0,
-          isKlarpakkePaperDemo: true,
-        });
-        return botData.user_id;
+      const res = await fetch(
+        `/api/copy-trading/trader/${encodeURIComponent(traderId)}`,
+        { credentials: "same-origin" },
+      );
+      if (res.status === 404) {
+        setProfile(null);
+        setPublicStrategies([]);
+        return;
+      }
+      if (!res.ok) {
+        console.error("Error fetching trader:", res.status);
+        setProfile(null);
+        setPublicStrategies([]);
+        return;
       }
 
-      const { data: tpById } = await supabase
-        .from("trader_profiles")
-        .select("*")
-        .eq("id", traderId)
-        .maybeSingle();
-      const profileData =
-        tpById ??
-        (
-          await supabase
-            .from("trader_profiles")
-            .select("*")
-            .eq("user_id", traderId)
-            .maybeSingle()
-        ).data;
-
-      if (profileData) {
-        setProfile({
-          id: profileData.id,
-          userId: profileData.user_id,
-          displayName: profileData.display_name,
-          bio: profileData.bio,
-          avatarUrl: profileData.avatar_url,
-          isPublic: profileData.is_public ?? false,
-          performanceFeePct: profileData.performance_fee_pct || 0,
-          followerCount: profileData.follower_count || 0,
-          verified: profileData.verified || false,
-          allTimeRoi: profileData.all_time_roi || 0,
-          winRate: profileData.win_rate || 0,
-          sharpeRatio: profileData.sharpe_ratio || 0,
-          totalTrades: profileData.total_trades || 0,
-        });
-        return profileData.user_id;
-      }
-
-      let upRow = (
-        await supabase
-          .from("user_profiles")
-          .select("id, user_id, display_name")
-          .eq("id", traderId)
-          .maybeSingle()
-      ).data;
-
-      if (!upRow) {
-        upRow = (
-          await supabase
-            .from("user_profiles")
-            .select("id, user_id, display_name")
-            .eq("user_id", traderId)
-            .maybeSingle()
-        ).data;
-      }
-
-      const up = upRow as {
-        id: string;
-        user_id: string;
-        display_name: string | null;
-      } | null;
-
-      if (up?.user_id) {
-        setProfile({
-          id: up.id,
-          userId: up.user_id,
-          displayName: up.display_name || "Anonym Trader",
-          bio: null,
-          avatarUrl: null,
-          isPublic: true,
-          performanceFeePct: 0,
-          followerCount: 0,
-          verified: false,
-          allTimeRoi: 0,
-          winRate: 0,
-          sharpeRatio: 0,
-          totalTrades: 0,
-        });
-        return up.user_id;
-      }
-
-      setProfile(null);
-      return null;
+      const json = await res.json().catch(() => null);
+      setProfile((json?.profile as TraderProfile | null) ?? null);
+      setPublicStrategies(
+        (json?.strategies as PublicStrategy[] | undefined) ?? [],
+      );
+      setIsFollowing(json?.isFollowing === true);
     } catch (error) {
       console.error("Error fetching trader profile:", error);
       setProfile(null);
-      return null;
-    }
-  }, [traderId]);
-
-  const fetchPublicStrategies = useCallback(
-    async (strategyOwnerUserId: string) => {
-      try {
-        const supabase = createClient();
-
-        type UserStrategy = {
-          id: string;
-          strategy_type: string;
-          mode: string;
-          total_pnl: number | null;
-          total_trades: number | null;
-          subscriber_count: number | null;
-          is_public: boolean | null;
-          is_active: boolean | null;
-        };
-
-        const { data: strategies } = await supabase
-          .from("user_strategies")
-          .select("*")
-          .eq("user_id", strategyOwnerUserId)
-          .eq("is_public", true)
-          .eq("is_active", true)
-          .returns<UserStrategy[]>();
-
-        if (strategies && strategies.length > 0) {
-          setPublicStrategies(
-            strategies.map((s) => ({
-              id: s.id,
-              strategyType: s.strategy_type,
-              tradingPair: "",
-              mode: s.mode as "paper" | "live",
-              totalPnl: s.total_pnl || 0,
-              winRate: 0,
-              totalTrades: s.total_trades || 0,
-              subscriberCount: s.subscriber_count || 0,
-              isPublic: s.is_public ?? true,
-            })),
-          );
-          return;
-        }
-
-        type TradingSession = {
-          id: string;
-          strategy_id: string;
-          trading_pair: string;
-          mode: string;
-          total_pnl: number;
-          total_trades: number;
-          winning_trades: number;
-          losing_trades: number;
-        };
-
-        const { data: sessions } = await supabase
-          .from("trading_sessions")
-          .select("*")
-          .eq("user_id", strategyOwnerUserId)
-          .eq("status", "active")
-          .returns<TradingSession[]>();
-
-        if (sessions) {
-          setPublicStrategies(
-            sessions.map((s) => ({
-              id: s.id,
-              strategyType: s.strategy_id,
-              tradingPair: s.trading_pair,
-              mode: s.mode as "paper" | "live",
-              totalPnl: s.total_pnl || 0,
-              winRate:
-                s.winning_trades + s.losing_trades > 0
-                  ? ((s.winning_trades || 0) / (s.winning_trades + s.losing_trades)) * 100
-                  : 0,
-              totalTrades: s.total_trades || 0,
-              subscriberCount: 0,
-              isPublic: true,
-            })),
-          );
-        } else {
-          setPublicStrategies([]);
-        }
-      } catch (error) {
-        console.error("Error fetching public strategies:", error);
-        setPublicStrategies([]);
-      }
-    },
-    [],
-  );
-
-  const checkIfFollowing = useCallback(async () => {
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setIsFollowing(false);
-        return;
-      }
-
-      const res = await fetch(
-        `/api/copy-trading/resolve-trader?raw=${encodeURIComponent(traderId)}`,
-        { credentials: "include" },
-      );
-      if (!res.ok) {
-        setIsFollowing(false);
-        return;
-      }
-      const body = (await res.json()) as { authUserId: string };
-      const { data: follow } = await supabase
-        .from("copy_trading_follows")
-        .select("id")
-        .eq("follower_id", user.id)
-        .eq("leader_id", body.authUserId)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      setIsFollowing(!!follow);
-    } catch (error) {
-      console.error("Error checking follow status:", error);
-      setIsFollowing(false);
+      setPublicStrategies([]);
     }
   }, [traderId]);
 
@@ -317,11 +109,7 @@ export default function CreatorProfileClient({
       setIsLoading(true);
       setPublicStrategies([]);
       try {
-        const canonicalAuthId = await fetchTraderProfile();
-        if (cancelled) return;
-        await fetchPublicStrategies(canonicalAuthId ?? traderId);
-        if (cancelled) return;
-        await checkIfFollowing();
+        await loadTraderData();
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -329,7 +117,7 @@ export default function CreatorProfileClient({
     return () => {
       cancelled = true;
     };
-  }, [traderId, fetchTraderProfile, fetchPublicStrategies, checkIfFollowing]);
+  }, [traderId, loadTraderData]);
 
   const handleFollow = async () => {
     try {

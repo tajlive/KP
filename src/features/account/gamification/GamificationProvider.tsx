@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import {
   ReactNode,
   createContext,
@@ -36,20 +35,22 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadState = async () => {
       try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return;
+        // KLA-auth: browser-klienten er alltid anon — state hentes via
+        // server-API (GET /api/gamification/award leser auth-cookie)
+        const res = await fetch("/api/gamification/award", {
+          credentials: "same-origin",
+        });
 
-        const { data } = await supabase
-          .from("user_gamification")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        if (data) {
-          setState(data);
+        if (res.ok) {
+          const json = await res.json().catch(() => null);
+          if (json?.state) {
+            setState(json.state);
+          } else {
+            setState({ current_level: 1, total_xp: 0, current_streak: 0 });
+          }
+        } else if (res.status === 401) {
+          // Utlogget — ingen gamification-state
+          return;
         } else {
           setState({ current_level: 1, total_xp: 0, current_streak: 0 });
         }
