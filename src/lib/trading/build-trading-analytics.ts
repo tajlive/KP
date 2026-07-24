@@ -15,37 +15,26 @@ export type TradeAnalyticsInput = {
   total_value: number | null;
 };
 
-/** Aggregates from closed-position P&L plus net settlement flow for fills without realized_pnl. */
+/** Aggregates from closed-position P&L; open fills (no realized_pnl) contribute 0. */
 export type TradingAnalyticsAggregates = TradeHistoryAggregates & {
   totalEffectivePnl: number;
-  /** Taps-/gevinst-rader etter effectivePnlDelta (handler uten realisert P&L inkludert). */
+  /** Taps-/gevinst-rader blant lukkede handler (realized_pnl satt). */
   effectiveWinCount: number;
   effectiveLossCount: number;
   effectiveBreakevenCount: number;
 };
 
-function normalizeSide(side: string): "buy" | "sell" | "other" {
-  const s = side.trim().toLowerCase();
-  if (s === "buy" || s === "long" || s === "b") return "buy";
-  if (s === "sell" || s === "short" || s === "s") return "sell";
-  return "other";
-}
-
 /**
  * Per-trade contribution for charts and headline totals.
- * Prefer DB `realized_pnl` when set; otherwise approximate with signed notional
- * (buy = cash out, sell = cash in) so paper fills without closed-loop P&L still move charts.
+ * Only realized P&L counts: an open buy is a cash→asset conversion, NOT a
+ * loss. The old fallback (signed notional) treated every open buy as a loss,
+ * which produced nonsense like "−564 901 kr" on a 100k paper account
+ * (cf. trade-effective-pnl.ts, which already works around that bug).
  */
 export function effectivePnlDelta(row: TradeAnalyticsInput): number {
   if (row.realized_pnl != null && Number.isFinite(Number(row.realized_pnl))) {
     return Number(row.realized_pnl);
   }
-  const tv = row.total_value;
-  if (tv == null || !Number.isFinite(Number(tv))) return 0;
-  const abs = Math.abs(Number(tv));
-  const leg = normalizeSide(row.side);
-  if (leg === "buy") return -abs;
-  if (leg === "sell") return abs;
   return 0;
 }
 
@@ -193,6 +182,11 @@ export function buildTradingAnalytics(
   let effectiveLossCount = 0;
   let effectiveBreakevenCount = 0;
   for (const row of sorted) {
+    // Kun lukkede handler (realized_pnl satt) teller som vinn/tap/break-even.
+    // Åpne handler uten resultat regnes som "ukjent" (tradeCount - kjente).
+    if (row.realized_pnl == null || !Number.isFinite(Number(row.realized_pnl))) {
+      continue;
+    }
     const d = effectivePnlDelta(row);
     if (d > 0) effectiveWinCount += 1;
     else if (d < 0) effectiveLossCount += 1;
@@ -207,7 +201,7 @@ export function buildTradingAnalytics(
     effectiveBreakevenCount,
   };
 
-  /** Kake-diagram: effektiv P&L per rad (samme som kurver/total), ikke bare realisert_pnl. */
+  /** Kake-diagram: vinn/tap/break-even blant lukkede handler. */
   const winLossSlices = [
     { key: "win" as const, value: effectiveWinCount, fill: WIN_COLOR },
     { key: "loss" as const, value: effectiveLossCount, fill: LOSS_COLOR },
