@@ -206,7 +206,7 @@ function ProfileContent() {
                 save({
                   full_name: fullName,
                   avatar_url: avatarUrl,
-                  risk_preference: risk,
+                  risk_tolerance: risk,
                 })
               }
             >
@@ -444,8 +444,8 @@ function ProfileContent() {
             id="profileRisk"
             title={t("riskLevel")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
-            defaultValue={profile.risk_preference ?? "normal"}
-            onChange={(e) => patch({ risk_preference: e.target.value })}
+            defaultValue={profile.risk_tolerance ?? "normal"}
+            onChange={(e) => patch({ risk_tolerance: e.target.value })}
           >
             <option value="safe">{t("riskOptions.safe")}</option>
             <option value="normal">{t("riskOptions.normal")}</option>
