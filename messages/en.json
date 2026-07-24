@@ -3985,12 +3985,12 @@
       "lightModeActive": "Light mode active"
     },
     "billing": {
-      "error": "Error",
-      "title": "Title",
-      "description": "Description",
-      "loading": "Loading",
-      "cta": "Save",
-      "sectionTitle": "Account Information"
+      "sectionTitle": "Abonnement og betaling",
+      "title": "Administrer abonnementet ditt",
+      "description": "Se fakturaer, bytt plan eller avslutt abonnementet i den sikre betalingsportalen (Stripe).",
+      "cta": "Åpne betalingsportal",
+      "loading": "Åpner…",
+      "error": "Kunne ikke åpne betalingsportalen. Prøv igjen."
     }
   },
   "simulator": {
