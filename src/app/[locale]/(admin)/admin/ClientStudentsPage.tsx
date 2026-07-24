@@ -1,7 +1,6 @@
 "use client";
 
 import { banUser, grantFounderStatus } from "@/actions/admin/users"; // Import Server Actions
-import { createClient } from "@/lib/utils"; // Use client-side client for fetching
 import { AlertTriangle, Ban, Crown, Search, Shield } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
@@ -37,14 +36,14 @@ export default function ClientStudentsPage() {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setUsers((data as unknown as User[]) || []);
+      // KLA-auth: browser-klienten er alltid anon — brukerlisten hentes
+      // via admin-API (getUser + allowlist)
+      const res = await fetch("/api/admin/students", {
+        credentials: "same-origin",
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+      setUsers((json?.users as unknown as User[]) || []);
     } catch (err) {
       console.error("Error fetching users:", getErrorMessage(err));
       toast.error(t("loadUsersError"));
@@ -130,13 +129,18 @@ export default function ClientStudentsPage() {
     if (!confirmAction) return;
 
     try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({ role: confirmAction.newRole })
-        .eq("id", confirmAction.userId);
-
-      if (error) throw error;
+      // KLA-auth: rolle-endring via admin-API
+      const res = await fetch("/api/admin/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          userId: confirmAction.userId,
+          role: confirmAction.newRole,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
       toast.success(t("roleUpdated"));
       await fetchUsers();

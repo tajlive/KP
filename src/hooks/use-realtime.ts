@@ -3,6 +3,11 @@
 /**
  * useRealtime — subscribe to Supabase Realtime channels for database changes.
  * Used for bot status updates, copy-trade events, marketplace changes.
+ *
+ * ⚠️ KLA-auth: browser-klienten er ALLTID anon (httpOnly sb-cookie) —
+ * RLS gir stille 0 events paa disse channel-ene. Nye features skal bruke
+ * polling mot server-APIer (15–30 s). Skikkelig server-push er et eget
+ * redesign. Denne hooken beholdes kun for eksisterende konsumenter.
  */
 
 import { createClient } from "@/lib/supabase/client";

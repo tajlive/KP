@@ -9,7 +9,6 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { createClient } from "@/lib/utils";
 import { Portfolio, Trade, UserStrategy, TradingMode } from "@/lib/trading-api";
 import { useCurrency } from "@/hooks/useCurrency";
 import { cn } from "@/lib/utils";
@@ -77,33 +76,6 @@ interface RealtimeUpdate {
   lastStatusMessage: string | null;
 }
 
-function mapUserStrategiesPayload(
-  raw: Record<string, unknown>,
-): RealtimeUpdate {
-  const lastAnalysis = raw.last_analysis_details ?? raw.lastAnalysisDetails;
-  const nextAt = raw.next_expected_action_at ?? raw.nextExpectedActionAt;
-  const lastMsg = raw.last_status_message ?? raw.lastStatusMessage;
-  return {
-    lastAnalysisDetails:
-      lastAnalysis !== undefined && lastAnalysis !== null
-        ? (lastAnalysis as Record<string, unknown>)
-        : null,
-    nextExpectedActionAt:
-      typeof nextAt === "string"
-        ? nextAt
-        : nextAt != null
-          ? String(nextAt)
-          : null,
-    lastStatusMessage:
-      typeof lastMsg === "string"
-        ? lastMsg
-        : lastMsg != null
-          ? String(lastMsg)
-          : null,
-  };
-}
-
-// TESTPLAN KLA-100: Tab-fane for å bytte mellom narrativ, avansert og AI visning
 type DashboardView = "narrative" | "advanced" | "ai";
 
 export default function BotStatusDashboard({
@@ -175,48 +147,47 @@ export default function BotStatusDashboard({
     fetchBotStatus();
   }, []);
 
-  // KLA-100: Supabase Realtime subscription for live updates
+  // KLA-auth: anon realtime-klient faar aldri events pga RLS —
+  // polling av /api/dashboard/bot-status hvert 30. sek i stedet
+  // (skikkelig server-push er et eget redesign)
   useEffect(() => {
     if (!userId || !mainStrategy) return;
 
-    const supabase = createClient();
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/dashboard/bot-status", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) return;
+        const data = await res.json().catch(() => null);
+        const s = data?.activeStrategy;
+        if (!s) return;
 
-    // Subscribe to user_strategies changes for this user
-    const channel = supabase
-      .channel(`bot-status-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "user_strategies",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          const newData = mapUserStrategiesPayload(
-            payload.new as Record<string, unknown>,
+        setRealtimeData({
+          lastAnalysisDetails: s.lastAnalysisDetails ?? null,
+          nextExpectedActionAt: s.nextActionAt ?? null,
+          lastStatusMessage: s.nextActionDescription ?? null,
+        });
+
+        if (s.nextActionAt) {
+          const nextAction = new Date(s.nextActionAt);
+          setBotStatus((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  nextActionTime: nextAction,
+                }
+              : null,
           );
-          setRealtimeData(newData);
-
-          // Update next check time
-          if (newData.nextExpectedActionAt) {
-            const nextAction = new Date(newData.nextExpectedActionAt);
-            setBotStatus((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    nextActionTime: nextAction,
-                  }
-                : null,
-            );
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
+        }
+      } catch {
+        // Polling-feil ignoreres stille — neste runde proever igjen
+      }
     };
+
+    poll();
+    const interval = setInterval(poll, 30_000);
+    return () => clearInterval(interval);
   }, [userId, mainStrategy]);
 
   const pnlToday = useMemo(() => {

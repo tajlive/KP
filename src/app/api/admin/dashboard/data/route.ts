@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/admin/require-admin";
 
 function getSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -16,6 +17,26 @@ function getSupabaseClient() {
 
 export async function GET(request: NextRequest) {
   const supabase = getSupabaseClient();
+
+  if (!supabase) {
+    return NextResponse.json(
+      {
+        error: "Database connection failed",
+      },
+      { status: 503 },
+    );
+  }
+
+  // KLA-auth: service-role-data var tidligere eksponert UTEN auth —
+  // krever naa getUser + admin-allowlist
+  const auth = await requireAdmin();
+  if (!auth.ok) {
+    return NextResponse.json(
+      { error: auth.status === 401 ? "Ikke innlogget" : "Ingen tilgang" },
+      { status: auth.status },
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const period = searchParams.get("period") || "30d";
 

@@ -36,14 +36,22 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Sjekk om bruker har admin-rolle via profiles view
-      const { data: profile, error: profileError } = await supabase
-        .from("user_profiles")
-        .select("role")
-        .eq("id", data.user?.id)
-        .single();
+      // Sjekk om bruker har admin-tilgang via server-API.
+      // KLA-auth: browser-supabase .from() er alltid anon (RLS) — rolle-
+      // sjekken brød stille og logget admin ut igjen. Auth-operasjoner
+      // (signIn/signOut/getSession) fungerer fra browser; JWT sendes som
+      // Bearer til verify-endepunktet.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const verifyRes = await fetch("/api/admin/verify", {
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : {},
+      });
+      const verifyJson = await verifyRes.json().catch(() => null);
 
-      if (profileError || profile?.role !== "admin") {
+      if (!verifyRes.ok || !verifyJson?.isAdmin) {
         await supabase.auth.signOut();
         setError(t("noAdminAccess"));
         return;

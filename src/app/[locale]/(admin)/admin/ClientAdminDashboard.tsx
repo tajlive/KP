@@ -104,9 +104,12 @@ export default function ClientAdminDashboard() {
   useEffect(() => {
   const checkSupabase = async () => {
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from('user_profiles').select('id').limit(1);
-      setSupabaseStatus(error ? 'error' : 'ok');
+      // KLA-auth: anon .from()-probe ga alltid stille feil — bruk
+      // admin-API (getUser + allowlist) som helseprobe i stedet
+      const res = await fetch("/api/admin/recent-signups", {
+        credentials: "same-origin",
+      });
+      setSupabaseStatus(res.ok ? 'ok' : 'error');
     } catch {
       setSupabaseStatus('error');
     }
@@ -115,32 +118,48 @@ export default function ClientAdminDashboard() {
 }, []);
 
   useEffect(() => {
-    const supabase = createClient();
+    // KLA-auth: anon realtime-klient faar aldri events pga RLS —
+    // 60s-polling av /api/admin/recent-signups, diff paa id for
+    // aktivitetsfeed (skikkelig server-push = eget redesign)
+    let knownIds: Set<string> | null = null;
 
-    // Subscribe to new users
-    const userChannel = supabase
-      .channel("admin-profiles")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "user_profiles" },
-        (payload) => {
-          const newActivity = {
-            id: payload.new.id,
-            type: "user" as const,
-            message:
-              locale === "no"
-                ? `Ny bruker registrert: ${payload.new.email}`
-                : `New user registered: ${payload.new.email}`,
-            time: new Date(),
-          };
-          setActivities((prev) => [newActivity as Activity, ...prev].slice(0, 10));
-        },
-      )
-      .subscribe();
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/admin/recent-signups", {
+          credentials: "same-origin",
+        });
+        if (!res.ok) return;
+        const json = await res.json().catch(() => null);
+        const signups: { id: string; email: string | null; created_at: string }[] =
+          json?.signups ?? [];
 
-    return () => {
-      supabase.removeChannel(userChannel);
+        const currentIds = new Set(signups.map((s) => s.id));
+        if (knownIds !== null) {
+          const fresh = signups.filter((s) => !knownIds!.has(s.id));
+          if (fresh.length > 0) {
+            const newActivities = fresh.map((s) => ({
+              id: s.id,
+              type: "user" as const,
+              message:
+                locale === "no"
+                  ? `Ny bruker registrert: ${s.email ?? "ukjent"}`
+                  : `New user registered: ${s.email ?? "unknown"}`,
+              time: new Date(s.created_at),
+            }));
+            setActivities((prev) =>
+              [...newActivities, ...prev].slice(0, 10),
+            );
+          }
+        }
+        knownIds = currentIds;
+      } catch {
+        // Polling-feil ignoreres stille
+      }
     };
+
+    poll();
+    const interval = setInterval(poll, 60_000);
+    return () => clearInterval(interval);
   }, [locale]);
 
   const handleLogout = async () => {
