@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { createClient } from "@/lib/utils";
 
 export default function SuccessContent() {
   const searchParams = useSearchParams();
@@ -27,12 +26,14 @@ export default function SuccessContent() {
       }
 
       try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+        // etter Stripe-redirect (full page load) er getUser() garantert null.
+        // Profil + tier hentes via server-API.
+        const res = await fetch("/api/user/profile", {
+          credentials: "same-origin",
+        });
 
-        if (!user) {
+        if (res.status === 401) {
           setStatus("error");
           setMessage(t("loginRequired"));
           return;
@@ -41,26 +42,11 @@ export default function SuccessContent() {
         // Vent litt for å la webhooken behandle (den kjører asynkront)
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        // Sjekk at abonnementet ble oppdatert
-        const { data: profile, error } = await supabase
-          .from("user_profiles")
-          .select("subscription_tier, subscription_status")
-          .eq("id", user.id)
-          .single();
+        const json = await res.json().catch(() => null);
+        const tier = json?.profile?.tier as string | undefined;
+        const isPaidTier = tier && tier !== "free" && tier !== "student";
 
-        if (error) {
-          throw error;
-        }
-
-        const p = profile as {
-          subscription_status?: string;
-          subscription_tier?: string;
-        } | null;
-        const isPaidTier =
-          p?.subscription_tier &&
-          p.subscription_tier !== "free" &&
-          p.subscription_tier !== "student";
-        if (p?.subscription_status === "active" || isPaidTier) {
+        if (isPaidTier) {
           setStatus("success");
           setMessage(t("messageConfirmed"));
         } else {

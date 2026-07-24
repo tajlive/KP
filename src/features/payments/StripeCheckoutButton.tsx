@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/shared/ui/button";
-import { createClient } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -38,14 +37,13 @@ export function StripeCheckoutButton({
     setError(null);
 
     try {
-      const supabase = createClient();
+      // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+      // auth-sjekk via server-API. 401 betyr reelt utlogget.
+      const authRes = await fetch("/api/user/profile", {
+        credentials: "same-origin",
+      });
 
-      // Sjekk om bruker er logget inn
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
+      if (authRes.status === 401) {
         // Redirect til innlogging med returnUrl og riktig locale
         const currentLocale = window.location.pathname.split("/")[1] || "no";
         window.location.href = `/${currentLocale}/innlogging?redirect=${encodeURIComponent(window.location.pathname)}`;
@@ -56,6 +54,7 @@ export function StripeCheckoutButton({
 
       const response = await fetch("/api/stripe/checkout", {
         method: "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
@@ -63,8 +62,6 @@ export function StripeCheckoutButton({
           tier: tierSlug,
           currency,
           priceId: planId?.startsWith("price_") ? planId : undefined,
-          userId: user.id,
-          userEmail: user.email,
         }),
       });
 

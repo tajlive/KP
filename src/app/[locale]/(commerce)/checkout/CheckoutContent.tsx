@@ -1,7 +1,7 @@
 "use client";
 
 import { PaymentMethodSelector } from "@/features/payments/PaymentMethodSelector";
-import { cn, createClient } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, CreditCard, Loader2, Shield } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -74,17 +74,17 @@ export default function CheckoutContent() {
     ],
   );
 
-  const [_user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // KLA-auth: browser-klienten er alltid anon (httpOnly auth-cookie) —
+      // auth-sjekk via server-API. 401 betyr reelt utlogget.
+      const res = await fetch("/api/user/profile", {
+        credentials: "same-origin",
+      });
 
-      if (!user) {
+      if (res.status === 401) {
         const checkoutPath =
           billingCurrency !== "NOK"
             ? `/checkout?plan=${planId}&currency=${billingCurrency}`
@@ -95,7 +95,6 @@ export default function CheckoutContent() {
         return;
       }
 
-      setUser(user);
       setLoading(false);
     };
 
