@@ -1,27 +1,39 @@
 import "server-only";
 
 import { isEmailOnServerAdminAllowlist } from "@/lib/admin/admin-allowlist.server";
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
 
 /**
- * KLA-auth admin-guard: getUser fra httpOnly-cookie + e-post-allowlist.
- * Brukes av alle /api/admin/*-ruter slik at browser-supabase (alltid anon)
- * aldri trengs for admin-data.
+ * KLA-auth admin-guard: identitet verifiseres via getUser (httpOnly-cookie)
+ * + e-post-allowlist. Data-spoerringer skjer deretter med SERVICE-ROLE-
+ * klient — anon-klienten (bruker-JWT) ville laatt RLS filtrere bort
+ * andre brukeres rader, slik at admin-lister ble stille ufullstendige.
  */
 export async function requireAdmin(): Promise<
   | { ok: true; supabase: SupabaseClient; user: User }
-  | { ok: false; status: 401 | 403 }
+  | { ok: false; status: 401 | 403 | 503 }
 > {
+  // 1. Verifiser innlogget bruker via cookie-basert klient
   const { createServerClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerClient();
+  const authClient = await createServerClient();
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser();
+  } = await authClient.auth.getUser();
 
   if (error || !user) return { ok: false, status: 401 };
   if (!isEmailOnServerAdminAllowlist(user.email)) {
     return { ok: false, status: 403 };
   }
-  return { ok: true, supabase: supabase as unknown as SupabaseClient, user };
+
+  // 2. Service-role-klient for data (omgår RLS etter eksplisitt admin-sjekk)
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return { ok: false, status: 503 };
+
+  const supabase = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  return { ok: true, supabase, user };
 }
