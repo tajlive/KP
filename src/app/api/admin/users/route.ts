@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
       tables_created: [
         "user_profiles",
         "email_preferences",
-        "kltbalances",
+        "user_klt_balances",
         "onboarding_progress",
         "portfolios",
         "user_settings",
