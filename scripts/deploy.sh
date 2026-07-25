@@ -9,7 +9,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
 # Farger
-GREEN='\033[0;32m'; RED='\033[0;31m'; CYAN='\033[0;36m'; NC='\033[0m'
+GREEN='\033[0;32m'; RED='\033[0;31m'; CYAN='\033[0;36m'; YELLOW='\033[0;33m'; NC='\033[0m'
 
 # ─── Laster env ───
 if [ -f ".env.local" ]; then
@@ -76,11 +76,14 @@ done
 # med backoff for en reell feil erklaeres (falske negativer x12).
 PAGE_OK=0
 for ATTEMPT in 1 2 3 4 5; do
-  PAGE=$(curl -s --max-time 20 "https://www.klarpakke.no/no" 2>/dev/null)
-  if echo "$PAGE" | grep -q "Klarpakke"; then
+  PAGE=$(curl -s -w "\n__HTTP:%{http_code}" --max-time 20 "https://www.klarpakke.no/no" 2>/dev/null)
+  HTTP_CODE="${PAGE##*__HTTP:}"
+  BODY="${PAGE%__HTTP:*}"
+  if echo "$BODY" | grep -q "Klarpakke"; then
     PAGE_OK=1
     break
   fi
+  echo -e "  ${YELLOW}↻ forsok $ATTEMPT: HTTP $HTTP_CODE, ${#BODY} bytes, 'Klarpakke' ikke funnet${NC}"
   [ $ATTEMPT -lt 5 ] && sleep 15
 done
 if [ $PAGE_OK -eq 1 ]; then
