@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { normalizePair } from "@/lib/trading/pair";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -126,7 +127,7 @@ export async function POST(
         total_trades: 0,
         winning_trades: 0,
         total_pnl: 0,
-        trading_pair: tradingPair,
+        trading_pair: normalizePair(tradingPair),
         started_at: new Date().toISOString(),
         strategy_config: {
           ...strategyConfig,

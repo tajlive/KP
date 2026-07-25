@@ -19,10 +19,25 @@ export const meTradeRowSchema = z.object({
   order_type: z.string().nullable().optional(),
 });
 
+export const mePositionSchema = z.object({
+  pair: z.string(),
+  quantity: z.number(),
+  avg_entry_price: z.number(),
+  cost_basis_nok: z.number(),
+  oldest_entry_at: z.string(),
+  current_price_nok: z.number().nullable(),
+  market_value_nok: z.number().nullable(),
+  unrealized_pnl_nok: z.number().nullable(),
+  unrealized_pnl_pct: z.number().nullable(),
+});
+
+export type MePosition = z.infer<typeof mePositionSchema>;
+
 export const meTradesSuccessSchema = z.object({
   ok: z.literal(true),
   diagnostic_id: z.string().uuid(),
   trades: z.array(meTradeRowSchema),
+  positions: z.array(mePositionSchema).optional(),
   limit: z.number().int().positive(),
 });
 

@@ -1,0 +1,234 @@
+import { describe, expect, it, vi } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/supabase/database.types";
+import {
+  buildCloseOnStopExplanation,
+  closeSessionPositionOnStop,
+  isCloseOnStopEnabled,
+} from "../close-on-stop";
+
+/**
+ * Close-on-stop (produktkrav 2026-07-25):
+ * Stopper brukeren en bot med åpen posisjon, selges posisjonen automatisk
+ * (DEFAULT på — toggle for avanserte brukere) og brukeren får en
+ * læringsforklaring med resultatet. Uten dette forlates posisjonen
+ * (orphan) og selges ALDRI — prod-bevis: 8 orphans, realisert P&L = 0.
+ */
+
+const BASE_SESSION = {
+  id: "sess-1",
+  user_id: "user-1",
+  trading_pair: "BTCUSDT",
+  mode: "paper",
+  strategy_config: {},
+  open_position: {
+    side: "long" as const,
+    quantity: 0.01,
+    entry_price: 600000,
+    entry_time: "2026-07-18T10:00:00.000Z",
+    highest_price: 640000,
+  },
+};
+
+function makeDbMock() {
+  const insertCalls: { table: string; payload: Record<string, unknown> }[] = [];
+  const updateCalls: { table: string; payload: Record<string, unknown> }[] = [];
+  const rpcCalls: { fn: string; args: Record<string, unknown> }[] = [];
+
+  const fromMock = vi.fn((table: string) => ({
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn((payload: Record<string, unknown>) => {
+      insertCalls.push({ table, payload });
+      return {
+        select: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: { id: "trade-1" }, error: null }),
+        }),
+      };
+    }),
+    update: vi.fn((payload: Record<string, unknown>) => {
+      updateCalls.push({ table, payload });
+      return {
+        eq: vi.fn().mockResolvedValue({ error: null }),
+        in: vi.fn().mockResolvedValue({ error: null }),
+      };
+    }),
+    eq: vi.fn().mockReturnThis(),
+    in: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+  }));
+
+  const db = {
+    from: fromMock,
+    rpc: vi.fn((fn: string, args: Record<string, unknown>) => {
+      rpcCalls.push({ fn, args });
+      return Promise.resolve({ data: null, error: null });
+    }),
+  } as unknown as SupabaseClient<Database>;
+
+  return { db, insertCalls, updateCalls, rpcCalls };
+}
+
+describe("isCloseOnStopEnabled", () => {
+  it("er TRUE som default (mangler config)", () => {
+    expect(isCloseOnStopEnabled(null)).toBe(true);
+    expect(isCloseOnStopEnabled({})).toBe(true);
+  });
+
+  it("kan skrus AV for avanserte brukere", () => {
+    expect(isCloseOnStopEnabled({ close_on_stop: false })).toBe(false);
+  });
+
+  it("respekterer eksplisitt true", () => {
+    expect(isCloseOnStopEnabled({ close_on_stop: true })).toBe(true);
+  });
+});
+
+describe("buildCloseOnStopExplanation", () => {
+  it("gevinst: viser beløp, prosent og læringspoeng", () => {
+    const text = buildCloseOnStopExplanation({
+      pair: "BTCUSDT",
+      quantity: 0.01,
+      entryPrice: 600000,
+      exitPrice: 630000,
+      realizedPnl: 297,
+      pnlPct: 5.0,
+      daysHeld: 6.8,
+      locale: "no",
+    });
+    expect(text).toContain("solgt automatisk");
+    expect(text).toContain("+297");
+    expect(text).toContain("5,0");
+    expect(text).toContain("6,8");
+  });
+
+  it("tap: viser negativt resultat med læringspoeng om tapsbegrensning", () => {
+    const text = buildCloseOnStopExplanation({
+      pair: "BTCUSDT",
+      quantity: 0.01,
+      entryPrice: 600000,
+      exitPrice: 570000,
+      realizedPnl: -303,
+      pnlPct: -5.0,
+      daysHeld: 2.1,
+      locale: "no",
+    });
+    expect(text).toContain("−303");
+    expect(text).toContain("tap");
+  });
+
+  it("engelsk locale støttes", () => {
+    const text = buildCloseOnStopExplanation({
+      pair: "BTCUSDT",
+      quantity: 0.01,
+      entryPrice: 600000,
+      exitPrice: 630000,
+      realizedPnl: 297,
+      pnlPct: 5.0,
+      daysHeld: 1.0,
+      locale: "en",
+    });
+    expect(text).toContain("sold automatically");
+  });
+});
+
+describe("closeSessionPositionOnStop", () => {
+  const DEPS = { priceUsdt: 63000, rate: 10 }; // 630 000 NOK per BTC
+
+  it("gjør ingenting når sesjonen ikke har åpen posisjon", async () => {
+    const { db, insertCalls } = makeDbMock();
+    const result = await closeSessionPositionOnStop(
+      db,
+      { ...BASE_SESSION, open_position: null },
+      DEPS,
+    );
+    expect(result.closed).toBe(false);
+    expect(result.reason).toBe("no_position");
+    expect(insertCalls.find((c) => c.table === "trades")).toBeUndefined();
+  });
+
+  it("gjør ingenting når close_on_stop er skrudd AV (toggle)", async () => {
+    const { db, insertCalls } = makeDbMock();
+    const result = await closeSessionPositionOnStop(
+      db,
+      { ...BASE_SESSION, strategy_config: { close_on_stop: false } },
+      DEPS,
+    );
+    expect(result.closed).toBe(false);
+    expect(result.reason).toBe("disabled_by_config");
+    expect(insertCalls.find((c) => c.table === "trades")).toBeUndefined();
+  });
+
+  it("avviser live-modus (kun paper støttes — live krever ekte executor)", async () => {
+    const { db, insertCalls } = makeDbMock();
+    const result = await closeSessionPositionOnStop(
+      db,
+      { ...BASE_SESSION, mode: "live" },
+      DEPS,
+    );
+    expect(result.closed).toBe(false);
+    expect(result.reason).toBe("live_not_supported");
+    expect(insertCalls.find((c) => c.table === "trades")).toBeUndefined();
+  });
+
+  it("selger posisjonen: trade, nullstilt posisjon, kapital kreditert, forklaring", async () => {
+    const { db, insertCalls, updateCalls, rpcCalls } = makeDbMock();
+    const result = await closeSessionPositionOnStop(db, BASE_SESSION, DEPS);
+
+    expect(result.closed).toBe(true);
+
+    // 1. Sell-trade bokført
+    const trade = insertCalls.find((c) => c.table === "trades");
+    expect(trade).toBeDefined();
+    expect(trade!.payload.side).toBe("sell");
+    expect(trade!.payload.quantity).toBe(0.01);
+    expect(trade!.payload.status).toBe("filled");
+    expect(trade!.payload.mode).toBe("paper");
+    // Inngang 600 000, utgang ~630 000 (slippage trukket fra) → gevinst
+    expect(Number(trade!.payload.realized_pnl)).toBeGreaterThan(0);
+    // Læringsforklaring lagret på selve traden (vises i "Hvorfor"-kolonnen)
+    const signal = trade!.payload.strategy_signal as Record<string, unknown>;
+    expect(String(signal.explanation)).toContain("solgt automatisk");
+
+    // 2. Posisjon nullstilt
+    const sessionUpdate = updateCalls.find(
+      (c) => c.table === "trading_sessions",
+    );
+    expect(sessionUpdate).toBeDefined();
+    expect(sessionUpdate!.payload.open_position).toBeNull();
+
+    // 3. Kapital kreditert via samme RPC som tick-salg
+    const capitalRpc = rpcCalls.find((c) => c.fn === "increment_capital");
+    expect(capitalRpc).toBeDefined();
+    expect(capitalRpc!.args.p_session_id).toBe("sess-1");
+    expect(Number(capitalRpc!.args.p_amount)).toBeGreaterThan(6000);
+
+    // 4. Forklaring returneres til API-et (vises til brukeren)
+    expect(result.explanation).toContain("solgt automatisk");
+    expect(result.explanation).toContain("+");
+  });
+
+  it("FIFO: selges eldste lot først, P&L regnes fra kostgrunnlag", async () => {
+    const { db, insertCalls } = makeDbMock();
+    const sessionWithLots = {
+      ...BASE_SESSION,
+      open_position: {
+        side: "long" as const,
+        quantity: 0.01,
+        entry_price: 600000,
+        entry_time: "2026-07-18T10:00:00.000Z",
+        lots: [
+          { id: "l1", quantity: 0.006, entryPrice: 580000, timestamp: "2026-07-18T10:00:00Z", originalQuantity: 0.006 },
+          { id: "l2", quantity: 0.004, entryPrice: 630000, timestamp: "2026-07-20T10:00:00Z", originalQuantity: 0.004 },
+        ],
+      },
+    };
+    const result = await closeSessionPositionOnStop(db, sessionWithLots, DEPS);
+    expect(result.closed).toBe(true);
+    const trade = insertCalls.find((c) => c.table === "trades");
+    // FIFO-P&L: (630000*0.997 - 580000)*0.006 + (630000*0.997 - 630000)*0.004 > 0
+    expect(Number(trade!.payload.realized_pnl)).toBeGreaterThan(0);
+  });
+});
