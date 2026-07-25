@@ -135,31 +135,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Kall Supabase Edge Function for å kryptere og lagre nøkler
-    // (vi sender til binance-connect som håndterer kryptering)
-    const edgeFunctionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/binance-connector`;
+    // KLA-auth: nokler lagres i vault.secrets via security-definer RPC
+    // (service-role). Erstatter binance-connector edge-funksjon som aldri
+    // hadde 'connect'-action implementert.
+    const sb = supabase as unknown as {
+      rpc: (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: { ok: boolean; error?: string } | null; error: { message: string } | null }>;
+    };
 
-    const edgeResponse = await fetch(edgeFunctionUrl, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-        "Content-Type": "application/json",
+    const { data: storeResult, error: storeError } = await sb.rpc(
+      "store_binance_keys",
+      {
+        p_user_id: user.id,
+        p_api_key: apiKey,
+        p_api_secret: apiSecret,
+        p_is_testnet: isTestnet,
       },
-      body: JSON.stringify({
-        user_id: user.id,
-        api_key: apiKey,
-        api_secret: apiSecret,
-        is_testnet: isTestnet,
-      }),
-    });
+    );
 
-    if (!edgeResponse.ok) {
-      const errorData = await edgeResponse.json().catch(() => ({}));
+    if (storeError || !storeResult?.ok) {
+      console.error(
+        "store_binance_keys failed:",
+        storeError?.message ?? storeResult?.error,
+      );
       return NextResponse.json(
-        {
-          error: errorData.error || "Kunne ikke lagre nøkler",
-          code: "STORAGE_ERROR",
-        },
+        { error: "Kunne ikke lagre nøkler", code: "STORAGE_ERROR" },
         { status: 500 },
       );
     }
