@@ -50,6 +50,8 @@ export interface TradingSession {
   losing_trades: number;
   total_trades: number;
   created_at: string;
+  strategy_config?: Record<string, unknown> | null;
+  open_position?: unknown;
 }
 
 /** DB / API shape (quantity + realized_pnl); legacy UI used amount/profit_loss */
@@ -107,6 +109,11 @@ export function PaperTradingSessionDetail({
   const [loading, setLoading] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Close-on-stop: selg åpen posisjon ved stopp (default PÅ, toggle for
+  // avanserte brukere — persisteres i strategy_config)
+  const [closeOnStop, setCloseOnStop] = useState<boolean>(
+    initialSession.strategy_config?.close_on_stop !== false,
+  );
 
   const handleDeleteTrade = async (tradeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -203,7 +210,10 @@ export function PaperTradingSessionDetail({
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: newStatus }),
+          body: JSON.stringify({
+            status: newStatus,
+            ...(newStatus === "stopped" ? { close_on_stop: closeOnStop } : {}),
+          }),
         },
       );
 
@@ -213,6 +223,17 @@ export function PaperTradingSessionDetail({
       setSession(data.session);
 
       if (newStatus === "stopped") {
+        // Læringsforklaring ved auto-salg (close-on-stop) — Klarpakke
+        // lærer mens vi automatiserer
+        const cos = data?.close_on_stop;
+        if (cos?.closed && cos?.explanation) {
+          toast.success(cos.explanation, { duration: 20000 });
+        } else if (cos?.reason === "disabled_by_config") {
+          toast.info(td("closeOnStopDisabled"), { duration: 12000 });
+        } else if (cos?.reason === "capital_credit_failed") {
+          // Salg bokført, men kapital ikke kreditert — krever oppmerksomhet
+          toast.error(td("closeOnStopCreditFailed"), { duration: 20000 });
+        }
         router.push(hrefWithLocale(locale, "/handel?view=sessions"));
       }
     } catch (err) {
@@ -380,7 +401,23 @@ export function PaperTradingSessionDetail({
 
       {/* Actions */}
       {session.status !== "stopped" && (
-        <div className="flex gap-2">
+        <div className="space-y-3">
+          {/* Close-on-stop toggle (avansert) — default PÅ */}
+          <label className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={closeOnStop}
+              onChange={(e) => setCloseOnStop(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-emerald-600"
+            />
+            <span>
+              {td("closeOnStopLabel")}
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {td("closeOnStopHint")}
+              </span>
+            </span>
+          </label>
+          <div className="flex gap-2">
           {session.status === "active" ? (
             <Button
               variant="outline"
@@ -411,6 +448,7 @@ export function PaperTradingSessionDetail({
             <Square className="w-4 h-4" />
             {t("stopSession")}
           </Button>
+          </div>
         </div>
       )}
 

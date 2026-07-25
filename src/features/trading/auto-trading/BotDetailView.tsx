@@ -5,6 +5,7 @@ import { formatNOK } from "@/lib/format/currency";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -135,6 +136,10 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
   const router = useRouter();
   const [session, setSession] = useState<Session>(initialSession);
   const [loading, setLoading] = useState(false);
+  // Close-on-stop: selg åpen posisjon ved stopp (default PÅ, avansert toggle)
+  const [closeOnStop, setCloseOnStop] = useState<boolean>(
+    initialSession.strategy_config?.close_on_stop !== false,
+  );
 
   const handleStatusChange = useCallback(
     async (newStatus: "active" | "paused" | "stopped") => {
@@ -145,7 +150,12 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: newStatus }),
+            body: JSON.stringify({
+              status: newStatus,
+              ...(newStatus === "stopped"
+                ? { close_on_stop: closeOnStop }
+                : {}),
+            }),
           },
         );
         if (!response.ok) throw new Error("Failed to update status");
@@ -153,13 +163,33 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
         if (data.session) {
           setSession((prev) => ({ ...prev, ...data.session }));
         }
+        if (newStatus === "stopped") {
+          const cos = data?.close_on_stop;
+          if (cos?.closed && cos?.explanation) {
+            toast.success(cos.explanation, { duration: 20000 });
+          } else if (cos?.reason === "disabled_by_config") {
+            toast.info(
+              no
+                ? "Bot stoppet — posisjonen er fortsatt åpen og overvåkes ikke lenger."
+                : "Bot stopped — the position remains open and is no longer monitored.",
+              { duration: 12000 },
+            );
+          } else if (cos?.reason === "capital_credit_failed") {
+            toast.error(
+              no
+                ? "Salg bokført, men kapitalen ble ikke kreditert. Posisjonen er bevart — ta kontakt med support."
+                : "Sale recorded, but capital was not credited. The position is preserved — please contact support.",
+              { duration: 20000 },
+            );
+          }
+        }
       } catch (err) {
         console.error("Status change failed:", err);
       } finally {
         setLoading(false);
       }
     },
-    [session.id],
+    [session.id, closeOnStop, no],
   );
 
   const totalPnl = trades.reduce((sum: number, t: Trade) => {
@@ -209,7 +239,26 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
 
       {/* Bot Actions */}
       {session.status !== "stopped" && (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="space-y-3">
+          <label className="flex items-start gap-2 text-sm text-[#5E6478] dark:text-slate-300 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={closeOnStop}
+              onChange={(e) => setCloseOnStop(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-emerald-600"
+            />
+            <span>
+              {no
+                ? "Selg åpen posisjon når boten stoppes (anbefalt)"
+                : "Sell open position when the bot stops (recommended)"}
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {no
+                  ? "Posisjonen selges til markedspris og resultatet vises med en læringsforklaring."
+                  : "The position is sold at market price and the result is shown with a learning explanation."}
+              </span>
+            </span>
+          </label>
+          <div className="flex flex-wrap items-center gap-2">
           {session.status === "active" ? (
             <button
               type="button"
@@ -240,6 +289,7 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
             <Square className="w-4 h-4" />
             {no ? "Stopp bot" : "Stop bot"}
           </button>
+          </div>
         </div>
       )}
 

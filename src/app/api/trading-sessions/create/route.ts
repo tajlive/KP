@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
+import { normalizePair } from "@/lib/trading/pair";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
 import { z } from "zod";
 
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         mode,
         status: "active",
-        trading_pair: trading_pair.toUpperCase(),
+        trading_pair: normalizePair(trading_pair),
         strategy_id: strategy_id || "dca",
         strategy_config: {},
         current_capital_nok: capital,
@@ -173,7 +174,7 @@ export async function POST(request: NextRequest) {
       action: "paper_trading_session_created",
       details: {
         session_id: session.id,
-        trading_pair: trading_pair.toUpperCase(),
+        trading_pair: normalizePair(trading_pair),
         starting_capital_nok: capital,
       },
     } as never);
