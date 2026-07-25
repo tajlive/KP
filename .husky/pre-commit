@@ -109,6 +109,15 @@ echo "🔍 [5b/7] Browser-supabase guard (KLA-auth)..."
 node scripts/guard-browser-supabase.mjs || exit 1
 
 # ============================================================================
+# 4c. Service-role auth guard (alltid) — KLA-auth
+# ============================================================================
+# Blokkerer service-role createClient() + .auth.getUser() — mønsteret som
+# la /api/klt/balance og /api/email/send nede i prod (evig 401).
+
+echo "🔍 [5c/7] Service-role auth guard (KLA-auth)..."
+node scripts/guard-service-role-auth.mjs || exit 1
+
+# ============================================================================
 # 5. MemPalace Auto-Capture (valgfritt)
 # ============================================================================
 
