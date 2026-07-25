@@ -79,7 +79,11 @@ for ATTEMPT in 1 2 3 4 5; do
   PAGE=$(curl -s -w "\n__HTTP:%{http_code}" --max-time 20 "https://www.klarpakke.no/no" 2>/dev/null)
   HTTP_CODE="${PAGE##*__HTTP:}"
   BODY="${PAGE%__HTTP:*}"
-  if echo "$BODY" | grep -q "Klarpakke"; then
+  # Substring-test i bash - IKKE 'echo | grep -q': grep -q lukker pipen
+  # tidlig, echo doer med SIGPIPE, og pipefail (set -euo pipefail) gjor
+  # pipeline-status 141 = "ikke funnet" selv om teksten finnes.
+  # Dette var rotaarsaken til 12 falske deploy-negativer.
+  if [[ "$BODY" == *"Klarpakke"* ]]; then
     PAGE_OK=1
     break
   fi
