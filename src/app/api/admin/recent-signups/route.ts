@@ -31,5 +31,20 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, signups: data ?? [] });
+  // KLA-auth: user_profiles.email er kun befolket for 3/43 rader —
+  // epost hentes fra auth.users via service-role admin-API og merges
+  const { data: authUsers } = await auth.supabase.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+  const emailById = new Map(
+    (authUsers?.users ?? []).map((u) => [u.id, u.email ?? null]),
+  );
+
+  const signups = (data ?? []).map((p) => ({
+    ...p,
+    email: p.email ?? emailById.get(p.id) ?? null,
+  }));
+
+  return NextResponse.json({ ok: true, signups });
 }
