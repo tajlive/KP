@@ -5,10 +5,15 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Kun én deploy om gangen — nye merges venter (aldri avbryt en pågående deploy)
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
-    timeout-minutes: 15
-    runs-on: [self-hosted, ubuntu]
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,6 +26,9 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SKIP_LINT_IN_BUILD: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+          NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Deploy
         run: npx wrangler deploy --minify --var APP_VERSION:${{ github.sha }}
         env:
