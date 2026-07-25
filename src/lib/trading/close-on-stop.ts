@@ -47,7 +47,12 @@ export interface CloseOnStopDeps {
 
 export interface CloseOnStopResult {
   closed: boolean;
-  reason?: "no_position" | "disabled_by_config" | "live_not_supported" | "error";
+  reason?:
+    | "no_position"
+    | "disabled_by_config"
+    | "live_not_supported"
+    | "capital_credit_failed"
+    | "error";
   tradeId?: string;
   realizedPnl?: number;
   explanation?: string;
@@ -199,22 +204,48 @@ export async function closeSessionPositionOnStop(
       return { closed: false, reason: "error" };
     }
 
-    // 2. Kredittér kapital (samme RPC som tick-salg)
+    // 2. Kredittér kapital (samme RPC som tick-salg — p_user_id er
+    // PÅKREVD i SQL-signaturen; uten den feiler RPC-en alltid).
+    // Feiler krediteringen, ABORTER vi: posisjonen nullstilles IKKE og
+    // closed rapporteres IKKE som true — ellers ville traden ligge som
+    // solgt mens kapitalen aldri ble kreditert (stille pengefeil).
+    // NB: traden er allerede bokført (steg 1), så dette krever
+    // oppmerksomhet — derfor egen reason og høylytt logging.
     const { error: capitalError } = await db.rpc("increment_capital", {
       p_session_id: session.id,
       p_amount: totalValue - fee,
+      p_user_id: session.user_id,
     } as never);
     if (capitalError) {
-      console.error("[CloseOnStop] Kapital-kreditering feilet:", capitalError);
+      console.error(
+        "[CloseOnStop] KRITISK: Trade bokført, men kapital-kreditering " +
+          `feilet for sesjon ${session.id} (trade ${trade?.id}). ` +
+          "Posisjonen er bevart — manuell oppfølging kreves.",
+        capitalError,
+      );
+      return {
+        closed: false,
+        reason: "capital_credit_failed",
+        tradeId: trade?.id,
+      };
     }
 
-    // 3. Nullstill posisjonen
+    // 3. Nullstill posisjonen (først ETTER at kapitalen er kreditert —
+    // ellers kan salget aldri gjentas uten dobbeltkreditering)
     const { error: clearError } = await db
       .from("trading_sessions")
       .update({ open_position: null as never })
       .eq("id", session.id);
     if (clearError) {
-      console.error("[CloseOnStop] Posisjon-nullstilling feilet:", clearError);
+      // Kapital er kreditert — posisjonen MÅ ikke selges på nytt.
+      // Logg høylytt; neste stopp-forsøk vil treffe no_position kun
+      // hvis nullstillingen likevel gikk gjennom.
+      console.error(
+        "[CloseOnStop] KRITISK: Kapital kreditert, men posisjon-" +
+          `nullstilling feilet for sesjon ${session.id} — risiko for ` +
+          "dobbeltsalg ved neste forsøk.",
+        clearError,
+      );
     }
 
     // 4. Audit-logg

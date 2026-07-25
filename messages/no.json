@@ -3477,9 +3477,6 @@
     "tradeHistory": "Trade History",
     "sessionDetail": {
       "backToHub": "Back To Hub",
-      "closeOnStopLabel": "Selg åpen posisjon når boten stoppes (anbefalt)",
-      "closeOnStopHint": "Posisjonen selges til markedspris og resultatet vises med en læringsforklaring. Skrus av, forblir posisjonen åpen uten at noen overvåker den.",
-      "closeOnStopDisabled": "Bot stoppet — posisjonen er fortsatt åpen og overvåkes ikke lenger.",
       "eyebrowLive": "Eyebrow Live",
       "eyebrowPaper": "Eyebrow Paper",
       "active": "Active",
@@ -5084,6 +5081,10 @@
       "paused": "Pauset",
       "stopped": "Stoppet",
       "crashed": "Crashed",
+      "closeOnStopLabel": "Selg åpen posisjon når boten stoppes (anbefalt)",
+      "closeOnStopHint": "Posisjonen selges til markedspris og resultatet vises med en læringsforklaring. Skrus av, forblir posisjonen åpen uten at noen overvåker den.",
+      "closeOnStopDisabled": "Bot stoppet — posisjonen er fortsatt åpen og overvåkes ikke lenger.",
+      "closeOnStopCreditFailed": "Salg bokført, men kapitalen ble ikke kreditert. Posisjonen er bevart — ta kontakt med support.",
       "sessionDetail": {
         "backToHub": "Tilbake to hub",
         "eyebrowLive": "Eyebrow live",

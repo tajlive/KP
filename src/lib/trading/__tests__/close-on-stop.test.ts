@@ -30,7 +30,7 @@ const BASE_SESSION = {
   },
 };
 
-function makeDbMock() {
+function makeDbMock(options?: { failRpc?: boolean }) {
   const insertCalls: { table: string; payload: Record<string, unknown> }[] = [];
   const updateCalls: { table: string; payload: Record<string, unknown> }[] = [];
   const rpcCalls: { fn: string; args: Record<string, unknown> }[] = [];
@@ -60,10 +60,38 @@ function makeDbMock() {
     single: vi.fn().mockResolvedValue({ data: null, error: null }),
   }));
 
+  // Streng RPC-mock: speiler den faktiske SQL-signaturen
+  // increment_capital(p_session_id, p_amount, p_user_id) — alle tre er
+  // PÅKREVD (supabase/migrations/20260301111500_atomic_trading.sql).
+  // Uventede argumentformer avvises som PostgREST ville gjort, slik at
+  // en fremtidig signaturglipp ikke lenger kan passere testene.
   const db = {
     from: fromMock,
     rpc: vi.fn((fn: string, args: Record<string, unknown>) => {
       rpcCalls.push({ fn, args });
+      if (options?.failRpc) {
+        return Promise.resolve({
+          data: null,
+          error: { message: "simulert RPC-feil", code: "P0001" },
+        });
+      }
+      if (fn === "increment_capital" || fn === "decrement_capital") {
+        const keys = Object.keys(args).sort();
+        const expected = ["p_amount", "p_session_id", "p_user_id"];
+        const missing = expected.filter((k) => !(k in args));
+        const extra = keys.filter((k) => !expected.includes(k));
+        if (missing.length > 0 || extra.length > 0) {
+          return Promise.resolve({
+            data: null,
+            error: {
+              message:
+                `Could not find the function public.${fn} med argumenter ` +
+                `(${keys.join(", ")}) in the schema cache`,
+              code: "PGRST202",
+            },
+          });
+        }
+      }
       return Promise.resolve({ data: null, error: null });
     }),
   } as unknown as SupabaseClient<Database>;
@@ -199,15 +227,45 @@ describe("closeSessionPositionOnStop", () => {
     expect(sessionUpdate).toBeDefined();
     expect(sessionUpdate!.payload.open_position).toBeNull();
 
-    // 3. Kapital kreditert via samme RPC som tick-salg
+    // 3. Kapital kreditert via samme RPC som tick-salg — ALLE argumenter
+    // asserteres (SQL-signaturen krever p_session_id, p_amount OG p_user_id)
     const capitalRpc = rpcCalls.find((c) => c.fn === "increment_capital");
     expect(capitalRpc).toBeDefined();
     expect(capitalRpc!.args.p_session_id).toBe("sess-1");
+    expect(capitalRpc!.args.p_user_id).toBe("user-1");
     expect(Number(capitalRpc!.args.p_amount)).toBeGreaterThan(6000);
 
     // 4. Forklaring returneres til API-et (vises til brukeren)
     expect(result.explanation).toContain("solgt automatisk");
     expect(result.explanation).toContain("+");
+  });
+
+  it("RPC-feil: posisjonen BEVARES og closed=false (ingen stille pengefeil)", async () => {
+    const { db, insertCalls, updateCalls, rpcCalls } = makeDbMock({
+      failRpc: true,
+    });
+    const result = await closeSessionPositionOnStop(db, BASE_SESSION, DEPS);
+
+    // Salget rapporteres IKKE som gjennomført
+    expect(result.closed).toBe(false);
+    expect(result.reason).toBe("capital_credit_failed");
+
+    // RPC ble forsøkt med komplett signatur
+    const capitalRpc = rpcCalls.find((c) => c.fn === "increment_capital");
+    expect(capitalRpc).toBeDefined();
+    expect(capitalRpc!.args.p_user_id).toBe("user-1");
+
+    // Posisjonen nullstilles IKKE når krediteringen feiler — den kan
+    // dermed selges på nytt uten risiko for dobbeltkreditering
+    const sessionClear = updateCalls.find(
+      (c) => c.table === "trading_sessions" && "open_position" in c.payload,
+    );
+    expect(sessionClear).toBeUndefined();
+
+    // Traden ER bokført (skjedde før RPC-feilen) — tradeId eksponeres
+    // slik at hendelsen kan følges opp manuelt
+    expect(insertCalls.find((c) => c.table === "trades")).toBeDefined();
+    expect(result.tradeId).toBe("trade-1");
   });
 
   it("FIFO: selges eldste lot først, P&L regnes fra kostgrunnlag", async () => {

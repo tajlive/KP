@@ -174,6 +174,13 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
                 : "Bot stopped — the position remains open and is no longer monitored.",
               { duration: 12000 },
             );
+          } else if (cos?.reason === "capital_credit_failed") {
+            toast.error(
+              no
+                ? "Salg bokført, men kapitalen ble ikke kreditert. Posisjonen er bevart — ta kontakt med support."
+                : "Sale recorded, but capital was not credited. The position is preserved — please contact support.",
+              { duration: 20000 },
+            );
           }
         }
       } catch (err) {

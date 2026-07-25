@@ -230,6 +230,9 @@ export function PaperTradingSessionDetail({
           toast.success(cos.explanation, { duration: 20000 });
         } else if (cos?.reason === "disabled_by_config") {
           toast.info(td("closeOnStopDisabled"), { duration: 12000 });
+        } else if (cos?.reason === "capital_credit_failed") {
+          // Salg bokført, men kapital ikke kreditert — krever oppmerksomhet
+          toast.error(td("closeOnStopCreditFailed"), { duration: 20000 });
         }
         router.push(hrefWithLocale(locale, "/handel?view=sessions"));
       }

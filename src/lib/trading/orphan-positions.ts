@@ -79,7 +79,13 @@ export async function adoptOrphanPositions(
 ): Promise<number> {
   const pair = normalizePair(activeSession.trading_pair);
 
-  // Finn stoppede (ikke-arkiverte) sesjoner m/ åpen posisjon for samme bruker.
+  // Finn ALLE stoppede sesjoner m/ åpen posisjon for samme bruker —
+  // også arkiverte. Stopp-flyten (api/trading-sessions/[id]/status)
+  // setter archived=true ved stopp, så et archived=false-filter ville
+  // utelukket akkurat de orphanene som produseres av hovedflyten
+  // (bruker stopper bot med close_on_stop=av). Filteret på
+  // status="stopped" er tilstrekkelig: aktive/pausede sesjoner eier
+  // sine posisjoner selv, og adopsjon fra dem ville vært feil.
   // trading_pair kan forekomme i begge formater ("BTCUSDT"/"BTC/USDT") i
   // eldre data — derfor hentes begge varianter og filtreres normalisert.
   const { data: stopped, error } = await db
@@ -87,7 +93,6 @@ export async function adoptOrphanPositions(
     .select("id, trading_pair, open_position")
     .eq("user_id", activeSession.user_id)
     .eq("status", "stopped")
-    .eq("archived", false)
     .not("open_position", "is", null);
 
   if (error || !stopped || stopped.length === 0) return 0;
