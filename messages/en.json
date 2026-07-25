@@ -525,12 +525,12 @@
       },
       "step3": {
         "title": "AI Prediction",
-        "description": "Cloudflare Workers AI (10,000 req/dag gratis)",
+        "description": "Cloudflare Workers AI (10,000 req/day free)",
         "detail": "Combines technical analysis with sentiment"
       },
       "step4": {
         "title": "Auto-Execution",
-        "description": "Paper trading (gratis øving)",
+        "description": "Paper trading (free practice)",
         "detail": "Practice with virtual capital before live trading"
       },
       "warning": "Important: This is free AI for analysis. All trading starts in paper mode. No paid APIs used. Cloudflare Workers AI provides 10,000 free requests per day."
@@ -1755,9 +1755,9 @@
       "tryAgain": "Try again",
       "riskMetrics": "Risk Metrics",
       "maxLossStreak": "Max loss streak",
-      "riskMetricsTitle": "Risikonøkkeltall",
-      "maxLossStreakLabel": "Lengste tapsrekke",
-      "cash": "Kontanter"
+      "riskMetricsTitle": "Risk metrics",
+      "maxLossStreakLabel": "Longest losing streak",
+      "cash": "Cash"
     },
     "winLossHeatmap": {
       "noData": "Not enough data for heatmap",
@@ -1773,7 +1773,7 @@
         "Sat",
         "Sun"
       ],
-      "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
+      "subtitle": "{winningDays, plural, one {# green} other {# green}} · {losingDays, plural, one {# red} other {# red}} · {winRate}% win rate",
       "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
     },
     "demoChart": {
@@ -1784,11 +1784,11 @@
       "demoLabel": "DEMO — Your results will look like this"
     },
     "assetAllocation": {
-      "noData": "Ingen beholdning å vise ennå",
+      "noData": "No holdings to show yet",
       "title": "Asset Allocation",
       "other": "Other",
       "trades": "trades",
-      "infoTooltip": "Fordeling av kapitalen din: åpne posisjoner (til kostpris) og kontanter. Hjelper deg å se hvor mye som er investert vs. tilgjengelig."
+      "infoTooltip": "How your capital is split: open positions (at cost) and cash. Helps you see how much is invested vs. available."
     },
     "equityCurve": {
       "noData": "Not enough data for equity curve",
@@ -2064,10 +2064,10 @@
       "pricesEducational": "Prices Educational"
     },
     "coinbase": {
-      "marketTitle": "Marked",
-      "marketSubtitle": "Sanntidspriser på de mest handlede kryptovalutaene",
-      "topMovers": "Største bevegelser (24 t)",
-      "goToTrade": "Gå til handel",
+      "marketTitle": "Market",
+      "marketSubtitle": "Real-time prices for the most traded cryptocurrencies",
+      "topMovers": "Top movers (24h)",
+      "goToTrade": "Go to trade",
       "orderSubmittedPaper": "Order Submitted Paper",
       "tradeFailed": "Trade Failed",
       "networkError": "Network Error",
@@ -2606,7 +2606,7 @@
       "win": "Won",
       "loss": "Loss",
       "breakeven": "Break-even",
-      "unknown": "Uten resultat"
+      "unknown": "No outcome"
     },
     "mode": {
       "paper": "Paper",
@@ -2627,8 +2627,8 @@
       "pairPnl": "P/L",
       "modeTitle": "P/L by Mode",
       "modeHint": "Paper vs Live results",
-      "worstDayBadge": "Verste dag: {day} · {amount}",
-      "modeTrades": "{count, plural, one {# handel} other {# handler}}"
+      "worstDayBadge": "Worst day: {day} · {amount}",
+      "modeTrades": "{count, plural, one {# trade} other {# trades}}"
     },
     "empty": {
       "noTradesTitle": "No trades yet",
@@ -3985,12 +3985,12 @@
       "lightModeActive": "Light mode active"
     },
     "billing": {
-      "sectionTitle": "Abonnement og betaling",
-      "title": "Administrer abonnementet ditt",
-      "description": "Se fakturaer, bytt plan eller avslutt abonnementet i den sikre betalingsportalen (Stripe).",
-      "cta": "Åpne betalingsportal",
-      "loading": "Åpner…",
-      "error": "Kunne ikke åpne betalingsportalen. Prøv igjen."
+      "sectionTitle": "Subscription and billing",
+      "title": "Manage your subscription",
+      "description": "View invoices, change plan or cancel your subscription in the secure billing portal (Stripe).",
+      "cta": "Open billing portal",
+      "loading": "Opening…",
+      "error": "Could not open the billing portal. Please try again."
     }
   },
   "simulator": {
@@ -5587,7 +5587,7 @@
     "maxCoinsNotice": "Max {limit} coins for {tier} tier",
     "summary": "Summary",
     "waitingForSignal": "After start: the bot can be active without trades for a period while waiting for a signal. This is normal.",
-    "kellyNotice": "🛡️ Boten bruker Kelly-kriteriet til å tilpasse posisjonsstørrelsen etter hvordan det går. Det reduserer risikoen, men fjerner den ikke — du kan fortsatt tape penger.",
+    "kellyNotice": "🛡️ The bot uses the Kelly criterion to adapt position size based on performance. This reduces risk but does not eliminate it — you can still lose money.",
     "starting": "Starting...",
     "startBotAction": "Start bot",
     "startLiveBotAction": "Start live bot",
@@ -5819,7 +5819,7 @@
         "title": "Signal Decay",
         "shortDesc": "How quickly does the signal degrade?",
         "fullDesc": "A trading signal is most valuable right after it occurs. The longer you wait to trade, the less valuable it becomes. We measure your accuracy based on how quickly you act.",
-        "bucketFast": "Under 100ms",
+        "bucketFast": "Below 100ms",
         "bucketFastDesc": "Lightning fast — signal is still fresh.",
         "bucketMedium": "100ms - 2s",
         "bucketMediumDesc": "Good — signal still has high value.",
