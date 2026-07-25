@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 import { runAutopilotAnalysis } from "@/lib/ai/autopilot/decision-engine";
 import type { RiskAppetite } from "@/lib/ai/autopilot/decision-engine";
 import { calculateAutopilotMetrics } from "@/lib/ai/autopilot/metrics";
+import { normalizePair } from "@/lib/trading/pair";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -287,7 +288,7 @@ export async function POST(req: NextRequest) {
               strategy_config: strategyConfig as never,
               starting_capital_nok: pairAlloc.capital_nok,
               current_capital_nok: pairAlloc.capital_nok,
-              trading_pair: pairAlloc.symbol,
+              trading_pair: normalizePair(pairAlloc.symbol),
               initial_capital: pairAlloc.capital_nok,
               current_capital: pairAlloc.capital_nok,
               total_trades: 0,

@@ -21,6 +21,8 @@ import {
   getDarkFleetConfig,
 } from "@/lib/trading/strategy-id-aliases";
 import { clampDCAConfig } from "@/lib/trading/dca-validation";
+import { evaluateSignalGuard } from "@/lib/trading/signal-guard";
+import { adoptOrphanPositions } from "@/lib/trading/orphan-positions";
 import {
   buildTradeReason,
   buildIndicatorSnapshot,
@@ -768,6 +770,7 @@ async function processSession(
     let positionSize = signal.positionSize ?? 0.1;
     let positionSizeReason = "static fallback";
     let kellyFraction: number | undefined;
+    let dynamicExpectancy: number | undefined;
     const regime = (signal.indicators?.regime as string) ?? "unknown";
 
     if (signal.action === "buy" || signal.action === "sell") {
@@ -787,6 +790,7 @@ async function processSession(
         positionSize = dynamicSize.positionSize;
         positionSizeReason = dynamicSize.reason;
         kellyFraction = dynamicSize.kellyFraction;
+        dynamicExpectancy = dynamicSize.expectancy;
         logger.debug(
           `[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`,
         );
@@ -795,6 +799,38 @@ async function processSession(
           `[PositionSize] Failed for session ${session.id}, using fallback:`,
           (err as Error).message,
         );
+      }
+    }
+
+    // ── Engine-nivå signal-guard (produktkrav 2026-07-25) ──────────────────
+    // Avvis ALLE kjøp med expectancy < 0 ELLER confidence = 0.
+    // Salg blokkeres aldri — exits skal alltid gjennomføres.
+    {
+      const guard = evaluateSignalGuard({
+        action: signal.action,
+        confidence:
+          (signal.indicators?.confidence as number | null | undefined) ?? null,
+        expectancy: dynamicExpectancy ?? null,
+      });
+      if (!guard.allowed) {
+        try {
+          await db.from("trading_logs").insert({
+            session_id: session.id,
+            user_id: session.user_id,
+            action: "signal_guard_blocked",
+            details: {
+              signal_action: signal.action,
+              confidence: signal.indicators?.confidence ?? null,
+              expectancy: dynamicExpectancy ?? null,
+              reason: guard.reason,
+              strategy_id: session.strategy_id,
+            } as never,
+          } as never);
+        } catch {
+          // Ikke kritisk: logging skal ikke stoppe tick
+        }
+        console.info(`[Tick] ${guard.reason} (session ${session.id})`);
+        return { session_id: session.id, action: "hold", reason: guard.reason };
       }
     }
 
@@ -1618,6 +1654,24 @@ export async function GET(req: NextRequest) {
       db,
       sessions as unknown as TradingSession[],
     );
+
+    // Orphan-redning: stoppede sesjoner etterlater åpne posisjoner som ellers
+    // ALDRI selges (exit-logikken kjører kun på aktive sesjoner). Adopter dem
+    // til den aktive sesjonen for samme bruker+par. Idempotent.
+    for (const s of sessionsWithAuto) {
+      try {
+        await adoptOrphanPositions(db, {
+          id: s.id,
+          user_id: s.user_id,
+          trading_pair: s.trading_pair,
+        });
+      } catch (orphanErr) {
+        console.error(
+          `[Orphan] Adopsjon feilet for sesjon ${s.id} (ikke-kritisk):`,
+          (orphanErr as Error).message,
+        );
+      }
+    }
 
     // Portfolio-level circuit breaker: stop ALL trading if user's equity
     // (cash + market value of open positions) has dropped 15% or more from initial.

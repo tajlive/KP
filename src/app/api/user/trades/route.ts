@@ -101,7 +101,71 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const body = { ok: true as const, diagnostic_id, trades, limit };
+    // UI-A: åpne posisjoner (FIFO) m/ urealisert P&L. Pris-feil skal
+    // aldri knekke API-et — fall tilbake til current_price_nok: null.
+    let positions: import("@/lib/trading/me-trades-api").MePosition[] = [];
+    try {
+      const { computePositionsFromTrades } = await import(
+        "@/lib/trading/positions-from-trades"
+      );
+      const computed = computePositionsFromTrades(trades);
+      if (computed.length > 0) {
+        const { BinanceMarketDataProvider } = await import(
+          "@/lib/trading/canonical/market-data/binance-provider"
+        );
+        const { getUsdtToNokRateAsync } = await import(
+          "@/lib/trading/currency"
+        );
+        const provider = new BinanceMarketDataProvider();
+        const rate = await getUsdtToNokRateAsync(supabase);
+
+        positions = await Promise.all(
+          computed.map(async (p) => {
+            let priceNok: number | null = null;
+            try {
+              const klines = await provider.getKlines(p.pair, "1h", 1);
+              const closeUsdt = klines?.[klines.length - 1]?.close;
+              if (
+                typeof closeUsdt === "number" &&
+                Number.isFinite(closeUsdt)
+              ) {
+                priceNok = closeUsdt * rate;
+              }
+            } catch {
+              // pris utilgjengelig → null
+            }
+            const marketValue =
+              priceNok != null ? p.quantity * priceNok : null;
+            const unrealizedPnl =
+              marketValue != null ? marketValue - p.cost_basis_nok : null;
+            return {
+              pair: p.pair,
+              quantity: p.quantity,
+              avg_entry_price: p.avg_entry_price,
+              cost_basis_nok: p.cost_basis_nok,
+              oldest_entry_at: p.oldest_entry_at,
+              current_price_nok: priceNok,
+              market_value_nok: marketValue,
+              unrealized_pnl_nok: unrealizedPnl,
+              unrealized_pnl_pct:
+                unrealizedPnl != null && p.cost_basis_nok > 0
+                  ? (unrealizedPnl / p.cost_basis_nok) * 100
+                  : null,
+            };
+          }),
+        );
+      }
+    } catch (posErr) {
+      console.error("[user/trades] positions-aggregering feilet:", posErr);
+    }
+
+    const body = {
+      ok: true as const,
+      diagnostic_id,
+      trades,
+      positions,
+      limit,
+    };
     meTradesSuccessSchema.parse(body);
 
     return NextResponse.json(body, {

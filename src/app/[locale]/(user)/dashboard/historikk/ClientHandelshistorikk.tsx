@@ -28,6 +28,7 @@ import {
 import { tradesPollIntervalAfterFailures } from "@/lib/trading/trading-integrity-sync";
 import { trackOnboardingStep } from "@/lib/analytics/onboarding-events";
 import { meTradesSuccessSchema } from "@/lib/trading/me-trades-api";
+import type { MePosition } from "@/lib/trading/me-trades-api";
 import {
   matchesModeFilter,
   tradeModeBucket,
@@ -49,6 +50,7 @@ export default function ClientHandelshistorikk() {
   const t = useTranslations("tradeHistory");
   const locale = useLocale();
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [positions, setPositions] = useState<MePosition[]>([]);
   const [decisions, setDecisions] = useState<TradeDecisionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<TradeHistoryModeFilter>("all");
@@ -171,6 +173,7 @@ export default function ClientHandelshistorikk() {
               strategy_signal: row.strategy_signal as Json | null,
             }));
             setTrades(rows);
+            setPositions(parsed.data.positions ?? []);
             setIntegrityPollWarning(false);
             setPollCycleFailures(0);
             if (rows.length === 0) {
@@ -383,6 +386,103 @@ export default function ClientHandelshistorikk() {
             </div>
           )}
         </PremiumPanel>
+
+        {/* UI-A: Åpne posisjoner m/ urealisert P&L (eToro-mønster) */}
+        {positions.length > 0 && (
+          <PremiumPanel className="p-4" >
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+              {t("positionsTitle")}
+            </h2>
+            <div className="space-y-2">
+              {positions.map((p) => {
+                const pnl = p.unrealized_pnl_nok;
+                const pct = p.unrealized_pnl_pct;
+                const pnlPositive = pnl != null && pnl >= 0;
+                const baseAsset = p.pair.replace(/USDT$/i, "");
+                return (
+                  <div
+                    key={p.pair}
+                    className="rounded-xl border border-slate-200/80 bg-slate-50/60 px-3 py-2.5 dark:border-slate-700/60 dark:bg-slate-950/40"
+                    data-testid={`position-card-${p.pair}`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-slate-900 dark:text-white">
+                        {baseAsset}
+                      </span>
+                      {pnl != null ? (
+                        <span
+                          className={`text-sm font-semibold ${
+                            pnlPositive
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {pnlPositive ? "+" : "−"}
+                          {formatCurrencyValue(Math.abs(pnl), filter)}
+                          {pct != null && (
+                            <span className="ml-1 text-xs font-normal opacity-80">
+                              ({pnlPositive ? "+" : "−"}
+                              {Math.abs(pct).toFixed(1)} %)
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-slate-400">
+                          {t("positionsPriceUnavailable")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500 dark:text-slate-400">
+                      <span>
+                        {t("positionsQty")}: {p.quantity.toFixed(6)}{" "}
+                        {baseAsset}
+                      </span>
+                      <span>
+                        {t("positionsAvgEntry")}:{" "}
+                        {formatCurrencyValue(p.avg_entry_price, filter)}
+                      </span>
+                      {p.current_price_nok != null && (
+                        <span>
+                          {t("positionsNow")}:{" "}
+                          {formatCurrencyValue(p.current_price_nok, filter)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {/* Sum-rad */}
+              {(() => {
+                const withPnl = positions.filter(
+                  (p) => p.unrealized_pnl_nok != null,
+                );
+                if (withPnl.length === 0) return null;
+                const total = withPnl.reduce(
+                  (s, p) => s + (p.unrealized_pnl_nok ?? 0),
+                  0,
+                );
+                return (
+                  <div className="flex items-center justify-between px-3 pt-1 text-sm">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      {t("positionsTotal")}
+                    </span>
+                    <span
+                      className={`font-semibold ${
+                        total >= 0
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                      data-testid="positions-total-pnl"
+                    >
+                      {total >= 0 ? "+" : "−"}
+                      {formatCurrencyValue(Math.abs(total), filter)}
+                    </span>
+                  </div>
+                );
+              })()}
+            </div>
+          </PremiumPanel>
+        )}
 
         {filteredDecisions.length > 0 && (
           <div className="flex items-center justify-between flex-wrap gap-4">
