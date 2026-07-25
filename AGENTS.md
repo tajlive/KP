@@ -52,7 +52,7 @@ Viktig:
 - Alle nøkler i **konsoliderte** `messages/no.json` / `messages/en.json`.
 - Split-filer (profile.json) fungerer **ikke** i Cloudflare Worker.
 - Nye nøkler må legges i riktig namespace i hovedfilene.
-- **Norsk-først (Tom-godkjent):** nye nøkler skrives **norsk i BÅDE no.json og en.json** (validate krever kun nøkkel-paritet). en.json oversettes samlet rett før lansering — IKKE oversett enkeltnøkler til engelsk underveis.
+- **Norsk-først m/ løpende oversettelse (Tom-godkjent):** nye nøkler kan skrives norsk i både no.json og en.json for hastighet (validate krever kun nøkkel-paritet). Engelsk oversettelse i en.json er **alltid velkommen løpende** (bransjestandard: hver fil sitt språk) — ellers oversettes en.json samlet før lansering.
 
 ### Balance
 - **Source of truth:** `paper_accounts.current_balance`
