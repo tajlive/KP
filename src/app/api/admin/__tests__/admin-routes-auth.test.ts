@@ -10,7 +10,6 @@ vi.mock("@/lib/admin/verify-admin-access", () => ({
 import { POST as cronTriggerPOST } from "@/app/api/admin/cron-trigger/route";
 import { GET as dashboardDataGET } from "@/app/api/admin/dashboard/data/route";
 import { GET as githubHealthGET } from "@/app/api/admin/github-health/route";
-import { POST as kla130POST } from "@/app/api/admin/kla130/route";
 import { GET as resendHealthGET } from "@/app/api/admin/resend-health/route";
 import {
   GET as sessionsGET,
@@ -121,10 +120,6 @@ describe("admin API routes — avviser uten gyldig admin (verifyAdminAccess)", (
       "POST /api/admin/users/sync",
       () =>
         usersSyncPOST(new NextRequest("http://localhost", { method: "POST" })),
-    ],
-    [
-      "POST /api/admin/kla130",
-      () => kla130POST(new NextRequest("http://localhost", { method: "POST" })),
     ],
     [
       "POST /api/admin/support/cockpit-report",
