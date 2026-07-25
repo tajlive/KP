@@ -1,0 +1,4 @@
+# service-role-auth-allowlist.txt
+# Filer som MED VILJE bruker createClient (service-role) + .auth.getUser()
+# fra @/lib/supabase/server. Skal KRYMPE over tid — aldri vokse.
+# Dokumenter begrunnelsen per linje med #-kommentar over filstien.
