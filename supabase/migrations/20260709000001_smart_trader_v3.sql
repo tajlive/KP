@@ -26,7 +26,8 @@ CREATE INDEX IF NOT EXISTS idx_smart_trader_log_user
 
 ALTER TABLE public.smart_trader_log ENABLE ROW LEVEL SECURITY;
 
--- RLS: users see own logs  
+-- RLS: users see own logs (idempotent: drop foer create)
+DROP POLICY IF EXISTS "Users see own smart trader logs" ON public.smart_trader_log;
 CREATE POLICY "Users see own smart trader logs"
   ON public.smart_trader_log FOR ALL
   USING (auth.uid() = user_id);
