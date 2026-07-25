@@ -12,10 +12,12 @@ export async function GET() {
       return NextResponse.json({ success: false, error: "Ikke autentisert" }, { status: 401 });
     }
 
+    // KLA-auth: kltbalances er konsolidert inn i user_klt_balances
+    // (2026-07-25, legacy-tabell renamet til kltbalances_deprecated).
     const { data, error } = await supabase
-      .from("kltbalances")
+      .from("user_klt_balances")
       .select("balance, total_earned, total_spent")
-      .eq("userid", user.id)
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (error) {
