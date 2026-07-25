@@ -29,14 +29,16 @@ npm run deploy        # cf:build + wrangler deploy --env ""
 CI-runner er **fjernet**. Deploy gjøres manuelt:
 
 ```bash
-npm run deploy
+bash scripts/deploy.sh
 ```
 
 Viktig:
+- **`npm run deploy` er hard-blokkert for agenter** (Hermes `approvals.deny`) — bruk alltid `scripts/deploy.sh`
 - Kjør `pkill -9 node` før bygg (clearer zombie-prosesser)
+- Aldri kjør to deploys i parallell
 - `opennextjs-cloudflare build` feiler på pre-eksisterende TS-feil. Bruk 2-steg: `next build` → `opennextjs --skipNextBuild`
 - CDN purge: `curl -X POST "https://api.cloudflare.com/client/v4/zones/328d7de7e8e48308fd4f9d760da5b18f/purge_cache" ...`
-- Siste deploy: 2026-07-20
+- Siste deploy: 2026-07-26 (`v0d32bf7d4`)
 
 ## 🏗️ Arkitektur (viktig!)
 
@@ -50,6 +52,7 @@ Viktig:
 - Alle nøkler i **konsoliderte** `messages/no.json` / `messages/en.json`.
 - Split-filer (profile.json) fungerer **ikke** i Cloudflare Worker.
 - Nye nøkler må legges i riktig namespace i hovedfilene.
+- **Norsk-først (Tom-godkjent):** nye nøkler skrives **norsk i BÅDE no.json og en.json** (validate krever kun nøkkel-paritet). en.json oversettes samlet rett før lansering — IKKE oversett enkeltnøkler til engelsk underveis.
 
 ### Balance
 - **Source of truth:** `paper_accounts.current_balance`
@@ -73,6 +76,29 @@ Viktig:
 - Slippage: 0.2% (realistisk)
 - `smart-trader-v3` Edge Function for auto-trading
 - Auto-trade cron kjører daglig for testbrukere
+
+## 🔒 Data- og tilgangsregler (gjelder ALLE agenter)
+
+### Browser-Supabase (kritisk)
+- `.from()` / `.channel()` i `'use client'`-komponenter kjører **alltid som anon** (httpOnly sb-cookie) → stille 0 rader/events.
+- Bruker-data hentes KUN via `/api`-ruter (server-side). Realtime = polling 15–30s.
+- Pre-commit guard (`scripts/guard-browser-supabase.mjs`) blokkerer nye `.from()`/`.channel()` i client-filer (allowlist: `scripts/browser-supabase-allowlist.txt`).
+- Admin-APIer: `requireAdmin` (getUser + epost-allowlist) → deretter service-role for data (bruker-JWT gir RLS-filtrerte admin-lister).
+- GoTrue admin-API (`listUsers`) feiler i Cloudflare Workers → bruk security-definer RPC for auth.users-joins.
+
+### DB-migrasjoner (DB er hellig)
+- Vis SQL-diff FØR migrasjon kjøres — **aldri kjør uten Toms eksplisitte godkjenning**.
+- Aldri seed brukerdata (kun konfig).
+- Rename krever idempotent innhold.
+- Kun flate `.sql`-filer i `supabase/migrations/` (ingen undermapper) — valideres av `scripts/validate-migrations.mjs`.
+
+### Trading-sesjoner
+- `archived=true` = test-æra — ekskluderes fra visninger (portfolio/historikk filtrerer `archived=false`).
+- Auto-trading er opt-in via `user_auto_trading_configs.is_enabled`.
+
+## 📱 UX-regler
+- **~80% av trafikken er mobil** → mobil-først: 4 bunnfaner, 48px touch targets, safe-area, én CTA i første viewport.
+- **Fakta-regel for all copy** (også landing/marketing): ingen uverifiserbare tall — kun verifiserte fakta.
 
 ## 📁 Viktige stier
 
@@ -132,6 +158,8 @@ reasoning_effort: max
 - ⚠️ **Stopp og spør** hvis en endring berører flere enn 10 filer
 - ⚠️ **Stopp og spør** ved tvetydighet om scope — ikke gjett (jf. `48ebef74e` hvor et script manglet kode og måtte reverteres)
 - ✅ Etter hver økt: `npm run lint && npm run test:unit` skal være grønn før commit
+- ❌ **Dependabot:** major-PRs → ALDRI auto-merge; krever full test-suite før vurdering. Minor/patch avventer Toms go.
+- ℹ️ Pre-commit hooks: AST-verify + tsc + Supabase kolonne-guard + secrets-scan (~1 min per commit). Pre-push hook finnes også.
 
 ### Fallback
 Hvis K3-endepunktet er tregt/nede: bytt til K2.7 Highspeed i **ny økt** (aldri mid-session).
