@@ -71,12 +71,22 @@ for URL in "https://www.klarpakke.no/no" "https://www.klarpakke.no/api/health"; 
   fi
 done
 
-# Sjekk at ny versjon er i prod
-PAGE=$(curl -s "https://www.klarpakke.no/no" 2>/dev/null)
-if echo "$PAGE" | grep -q "Klarpakke"; then
+# Sjekk at ny versjon er i prod.
+# Cold-start etter deploy+purge gir transient feil-HTML — prov paa nytt
+# med backoff for en reell feil erklaeres (falske negativer x12).
+PAGE_OK=0
+for ATTEMPT in 1 2 3 4 5; do
+  PAGE=$(curl -s --max-time 20 "https://www.klarpakke.no/no" 2>/dev/null)
+  if echo "$PAGE" | grep -q "Klarpakke"; then
+    PAGE_OK=1
+    break
+  fi
+  [ $ATTEMPT -lt 5 ] && sleep 15
+done
+if [ $PAGE_OK -eq 1 ]; then
   echo -e "  ${GREEN}✅ Side lastet${NC}"
 else
-  echo -e "  ${RED}❌ Side tom/feil${NC}"
+  echo -e "  ${RED}❌ Side tom/feil (etter 5 forsok)${NC}"
   FAILED=1
 fi
 
