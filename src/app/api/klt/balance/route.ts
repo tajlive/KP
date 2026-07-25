@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
+    // KLA-auth: createClient() i denne modulen er service-role (ingen
+    // bruker-sesjon) — getUser() ga alltid null → evig 401. Bruk
+    // createServerClient (cookie-basert bruker-kontekst).
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ success: false, error: "Ikke autentisert" }, { status: 401 });
