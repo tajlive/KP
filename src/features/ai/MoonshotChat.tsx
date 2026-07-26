@@ -46,7 +46,7 @@ export function MoonshotChat({ context, initialMessage }: Props) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendMessage, isLoading, error, clearError } = useMoonshot({
-    model: "moonshot-v1-8k",
+    model: "k3",
     temperature: 0.7,
   });
 
@@ -113,7 +113,7 @@ export function MoonshotChat({ context, initialMessage }: Props) {
           <Sparkles className="w-5 h-5 text-blue-500" />
           <span>Spør Kimi AI</span>
           <span className="text-xs font-normal text-muted-foreground ml-auto">
-            Powered by Moonshot AI
+            Powered by Kimi K3
           </span>
         </CardTitle>
       </CardHeader>
