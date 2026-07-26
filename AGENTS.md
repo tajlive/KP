@@ -47,6 +47,7 @@ Viktig:
 - Auth via `AuthProvider` / `useAuth()` hook.
 - Supabase cookies håndteres av createBrowserClient.
 - OAuth token for Kimi K3 auto-refreshes via launchd hvert 15. min.
+- **Professor Kimi-chat (produkt):** K3 via `api.kimi.com/coding/v1`, auth = `KIMI_OAUTH_TOKEN` (worker-secret). Token synces til prod/lokalt via `scripts/kimi-oauth-sync.mjs` (+ cron `kimi-oauth-prod-sync`). Bedre alternativ: stabil nøkkel fra Kimi Code Console som samme secret — da trengs ikke sync. Regler (verifisert 2026-07): temperature sendes ALDRI (fiksert=1); `reasoning_effort` (low/high/max) kun for `k3`.
 
 ### i18n
 - Alle nøkler i **konsoliderte** `messages/no.json` / `messages/en.json`.
