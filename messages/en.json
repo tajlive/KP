@@ -5090,6 +5090,7 @@
       "closeOnStopHint": "The position is sold at market price and the result is shown with a learning explanation. If turned off, the position stays open with nothing monitoring it.",
       "closeOnStopDisabled": "Bot stopped — the position is still open and is no longer monitored.",
       "closeOnStopCreditFailed": "Sale recorded, but capital was not credited. The position is preserved — please contact support.",
+      "closeOnStopError": "The bot was stopped, but the position could not be sold automatically. It is still open — sell manually or contact support.",
       "sessionDetail": {
         "backToHub": "Back To Hub",
         "eyebrowLive": "Eyebrow Live",
@@ -5375,7 +5376,7 @@
       "sessionLimitTitle": "Session limit reached",
       "sessionLimitDesc": "You can only have {max} active sessions",
       "duplicateSessionTitle": "Duplicate session",
-      "duplicateSessionDesc": "You already have a bot running for this strategy",
+      "duplicateSessionDesc": "You already have an active bot for this pair — stop it first or choose another pair.",
       "startedTitle": "Bot started",
       "startedDesc": "Your trading bot is now running"
     }
@@ -5611,7 +5612,7 @@
     "sessionLimitTitle": "Session limit reached",
     "sessionLimitDesc": "You can only have {max} active sessions",
     "duplicateSessionTitle": "Duplicate session",
-    "duplicateSessionDesc": "You already have a bot running for this strategy",
+    "duplicateSessionDesc": "You already have an active bot for this pair — stop it first or choose another pair.",
     "liveNotAllowedTitle": "Live trading not enabled",
     "liveNotAllowedDesc": "Live trading requires Bachelor tier or higher and a connected Binance account.",
     "binanceNotConnectedTitle": "Binance not connected",

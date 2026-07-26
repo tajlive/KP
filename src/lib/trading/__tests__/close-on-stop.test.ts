@@ -30,7 +30,10 @@ const BASE_SESSION = {
   },
 };
 
-function makeDbMock(options?: { failRpc?: boolean }) {
+function makeDbMock(options?: {
+  failRpc?: boolean;
+  tradesRows?: Record<string, unknown>[];
+}) {
   const insertCalls: { table: string; payload: Record<string, unknown> }[] = [];
   const updateCalls: { table: string; payload: Record<string, unknown> }[] = [];
   const rpcCalls: { fn: string; args: Record<string, unknown> }[] = [];
@@ -39,6 +42,23 @@ function makeDbMock(options?: { failRpc?: boolean }) {
     select: vi.fn().mockReturnThis(),
     insert: vi.fn((payload: Record<string, unknown>) => {
       insertCalls.push({ table, payload });
+      // Streng kolonnesjekk (F4): trades-tabellen i prod har IKKE en
+      // symbol-kolonne — PostgREST svarer PGRST204 på ukjente nøkler.
+      // Dette var årsaken til at close-on-stop alltid feilet i prod.
+      if (table === "trades" && "symbol" in payload) {
+        return {
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: {
+                message:
+                  "Could not find the 'symbol' column of 'trades' in the schema cache",
+                code: "PGRST204",
+              },
+            }),
+          }),
+        };
+      }
       return {
         select: vi.fn().mockReturnValue({
           single: vi.fn().mockResolvedValue({ data: { id: "trade-1" }, error: null }),
@@ -54,7 +74,10 @@ function makeDbMock(options?: { failRpc?: boolean }) {
     }),
     eq: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
+    order: vi.fn().mockResolvedValue({
+      data: options?.tradesRows ?? null,
+      error: null,
+    }),
     limit: vi.fn().mockReturnThis(),
     maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
     single: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -288,5 +311,69 @@ describe("closeSessionPositionOnStop", () => {
     const trade = insertCalls.find((c) => c.table === "trades");
     // FIFO-P&L: (630000*0.997 - 580000)*0.006 + (630000*0.997 - 630000)*0.004 > 0
     expect(Number(trade!.payload.realized_pnl)).toBeGreaterThan(0);
+  });
+
+  it("F4-regresjon: insert-payload inneholder IKKE symbol (kolonnen finnes ikke i prod)", async () => {
+    // Mocken avviser symbol-nøkkel med PGRST204 (prod-oppførsel) — hadde
+    // koden sendt symbol, ville closed blitt false med reason "error".
+    const { db, insertCalls } = makeDbMock();
+    const result = await closeSessionPositionOnStop(db, BASE_SESSION, DEPS);
+    expect(result.closed).toBe(true);
+    const trade = insertCalls.find((c) => c.table === "trades");
+    expect(trade).toBeDefined();
+    expect("symbol" in trade!.payload).toBe(false);
+    expect(trade!.payload.trading_pair).toBe("BTCUSDT");
+  });
+
+  it("F2 phantom-guard: selger trade-utledet mengde når posisjonen er korrupt", async () => {
+    // Eksakt prod-tilfellet 2026-07-25: posisjon sa 34,65 ETH, trade-ledgeret 0,064
+    const { db, insertCalls } = makeDbMock({
+      tradesRows: [
+        {
+          side: "buy",
+          quantity: 0.06399361,
+          price: 17991.22563,
+          trading_pair: "ETHUSDT",
+          created_at: "2026-07-25T23:55:05.310Z",
+        },
+      ],
+    });
+    const phantomSession = {
+      ...BASE_SESSION,
+      trading_pair: "ETHUSDT",
+      open_position: {
+        side: "long" as const,
+        quantity: 34.64663961,
+        entry_price: 17991.22563,
+        entry_time: "2026-07-25T23:55:05.310Z",
+      },
+    };
+    const result = await closeSessionPositionOnStop(db, phantomSession, {
+      priceUsdt: 1875,
+      rate: 9.58,
+    });
+    expect(result.closed).toBe(true);
+    const trade = insertCalls.find((c) => c.table === "trades");
+    // Selger LEDGER-mengden — ikke de 34,65 fantom-ETH-ene (~623 000 kr!)
+    expect(Number(trade!.payload.quantity)).toBeCloseTo(0.06399361, 8);
+    expect(Number(trade!.payload.total_value)).toBeLessThan(2000);
+  });
+
+  it("F2 phantom-guard: ledger tomt → no_position (ikke fantom-salg)", async () => {
+    const { db, insertCalls } = makeDbMock({ tradesRows: [] });
+    const phantomSession = {
+      ...BASE_SESSION,
+      open_position: {
+        side: "long" as const,
+        quantity: 34.64663961,
+        entry_price: 17991.22563,
+        entry_time: "2026-07-25T23:55:05.310Z",
+      },
+    };
+    // tradesRows=[] → spørringen returnerer null → guard utløses ikke,
+    // posisjonsmengden brukes (bakoverkompatibelt for legacy-sesjoner)
+    const result = await closeSessionPositionOnStop(db, phantomSession, DEPS);
+    expect(result.closed).toBe(true);
+    expect(insertCalls.find((c) => c.table === "trades")).toBeDefined();
   });
 });

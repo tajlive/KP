@@ -16,8 +16,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import { normalizePair } from "./pair";
 import { usdtToNok } from "./currency";
+import { computePositionsFromTrades } from "./positions-from-trades";
 import {
   createLedger,
+  getTotalQuantity,
   migrateFromLegacy,
   sellFIFO,
   type LedgerState,
@@ -133,16 +135,63 @@ export async function closeSessionPositionOnStop(
   try {
     const pair = normalizePair(session.trading_pair);
     const exitPrice = usdtToNok(deps.priceUsdt * (1 - SLIPPAGE), deps.rate);
-    const quantity = position.quantity;
-    const totalValue = quantity * exitPrice;
-    const fee = totalValue * FEE_RATE;
 
-    // FIFO realisert P&L fra kostgrunnlaget
+    // F2-guard: verifisér posisjonsmengden mot trade-ledgeret (source of
+    // truth). Prod-hendelse 2026-07-25: open_position.quantity var ~541×
+    // for høy (34,65 ETH vs reelt kjøp 0,064 ETH) — hadde salget gått
+    // gjennom, ville brukeren fått kreditert ~623 000 kr for en 1 150
+    // kr-posisjon. Hvis trades finnes og avviker >1 %, brukes den
+    // trades-utledede mengden og avviket logges som KRITISK.
+    let quantity = position.quantity;
+    try {
+      const { data: sessionTrades } = await db
+        .from("trades")
+        .select("side, quantity, price, trading_pair, created_at")
+        .eq("session_id", session.id)
+        .order("created_at", { ascending: true });
+      if (sessionTrades && sessionTrades.length > 0) {
+        const derived = computePositionsFromTrades(sessionTrades);
+        const derivedQty = derived.find((p) => p.pair === pair)?.quantity ?? 0;
+        const diff = Math.abs(derivedQty - quantity);
+        const tolerance = Math.max(quantity, derivedQty) * 0.01;
+        if (diff > tolerance) {
+          console.error(
+            `[CloseOnStop] KRITISK: open_position.quantity (${quantity}) ` +
+              `avviker fra trade-ledger (${derivedQty}) for sesjon ${session.id} — ` +
+              "bruker ledger-mengden (phantom-guard F2).",
+          );
+          quantity = derivedQty;
+        }
+      }
+    } catch (guardErr) {
+      // Ved ledger-feil selges posisjonsmengden som før (logget)
+      console.error(
+        "[CloseOnStop] Phantom-guard: kunne ikke lese trades — bruker posisjonsmengde:",
+        (guardErr as Error).message,
+      );
+    }
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      return { closed: false, reason: "no_position" };
+    }
+
+    // FIFO realisert P&L fra kostgrunnlaget. Clamp mot ledger-totalen:
+    // korrupte/manglende lots (F2) skal ikke kaste InsufficientQuantityError
+    // når ledger-mengden er lavere enn posisjonsmengden.
     const ledger: LedgerState = position.lots
       ? { side: position.side || "long", lots: position.lots }
       : position
         ? migrateFromLegacy(position)
         : createLedger("long");
+    const sellQty = Math.min(quantity, getTotalQuantity(ledger));
+    if (sellQty < quantity) {
+      console.error(
+        `[CloseOnStop] KRITISK: lots dekker kun ${sellQty} av ${quantity} ` +
+          `for sesjon ${session.id} — selger ledger-mengden.`,
+      );
+      quantity = sellQty;
+    }
+    const totalValue = quantity * exitPrice;
+    const fee = totalValue * FEE_RATE;
     const sellResult = sellFIFO(ledger, quantity, exitPrice);
     const realizedPnl = Math.round(sellResult.realizedPnl * 100) / 100;
 
@@ -164,7 +213,10 @@ export async function closeSessionPositionOnStop(
       locale: "no",
     });
 
-    // 1. Bokfør salgstrade (speiler tick-motorens insert)
+    // 1. Bokfør salgstrade (speiler tick-motorens insert).
+    // MERK: ingen "symbol"-nøkkel — kolonnen finnes ikke i trades-tabellen
+    // i prod (verifisert 2026-07-26) og fikk insertet til å feile med
+    // PGRST204 (E2E-funn F4: close-on-stop returnerte alltid reason "error").
     const { data: trade, error: tradeError } = await db
       .from("trades")
       .insert({
@@ -173,7 +225,6 @@ export async function closeSessionPositionOnStop(
         idempotency_key: `close-on-stop-${session.id}-${Date.now()}`,
         mode: "paper",
         trading_pair: session.trading_pair,
-        symbol: pair,
         side: "sell",
         order_type: "market",
         quantity,

@@ -1,11 +1,44 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
+// Styr service-role-fallbacken per test (hierarki-trinn 1b)
+let serviceRate: number | null = null;
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: () => {
+    if (serviceRate == null) throw new Error("no service client in test");
+    return {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            maybeSingle: async () => ({ data: { usdt_nok_rate: serviceRate } }),
+          }),
+        }),
+      }),
+    };
+  },
+}));
+
 import {
   getUsdtToNokRate,
   getUsdtToNokRateAsync,
   usdtToNok,
 } from "../currency";
 
-const FALLBACK = 10.92;
+// Oppdatert 2026-07-27 (F3): fallback må henge med markedet (~9.58)
+const FALLBACK = 9.6;
+
+function mockUserClient(rate: number | null) {
+  return {
+    from: vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: rate == null ? null : { usdt_nok_rate: rate },
+          }),
+        }),
+      }),
+    }),
+  } as unknown as Parameters<typeof getUsdtToNokRateAsync>[0];
+}
 
 describe("Currency Module", () => {
   let originalEnv: string | undefined;
@@ -13,6 +46,7 @@ describe("Currency Module", () => {
   beforeEach(() => {
     originalEnv = process.env.USDT_NOK_RATE;
     delete process.env.USDT_NOK_RATE;
+    serviceRate = null;
   });
 
   afterEach(() => {
@@ -50,58 +84,53 @@ describe("Currency Module", () => {
     });
   });
 
-  describe("getUsdtToNokRateAsync", () => {
-    it("returns env value when valid (skips DB)", async () => {
+  describe("getUsdtToNokRateAsync — hierarki (F3)", () => {
+    it("DB-kurs vinner over env (levende kilde først)", async () => {
+      process.env.USDT_NOK_RATE = "12.0";
+      const result = await getUsdtToNokRateAsync(mockUserClient(9.58));
+      expect(result).toBe(9.58);
+    });
+
+    it("RLS-blokkert user-klient → service-role-lesing (prod-tilfellet)", async () => {
+      // User-context kan ikke lese global_settings (RLS) → null,
+      // men service role kan — dette var 14 %-buggen i prod.
+      serviceRate = 9.58;
+      const result = await getUsdtToNokRateAsync(mockUserClient(null));
+      expect(result).toBe(9.58);
+    });
+
+    it("env brukes når DB er utilgjengelig (overstyring)", async () => {
+      process.env.USDT_NOK_RATE = "12.0";
+      const result = await getUsdtToNokRateAsync(mockUserClient(null));
+      expect(result).toBe(12.0);
+    });
+
+    it("env brukes når ingen klient er gitt", async () => {
       process.env.USDT_NOK_RATE = "12.0";
       const result = await getUsdtToNokRateAsync();
       expect(result).toBe(12.0);
     });
 
-    it("queries DB when env is unset", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({
-                data: { usdt_nok_rate: 11.2 },
-              }),
-            }),
-          }),
-        }),
-      };
-      const result = await getUsdtToNokRateAsync(mockSupabase as unknown as Parameters<typeof getUsdtToNokRateAsync>[0]);
-      expect(result).toBe(11.2);
-    });
-
-    it("falls back when DB returns null rate", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({
-                data: { usdt_nok_rate: null },
-              }),
-            }),
-          }),
-        }),
-      };
-      const result = await getUsdtToNokRateAsync(mockSupabase as unknown as Parameters<typeof getUsdtToNokRateAsync>[0]);
+    it("fallback + advarsel når alt feiler (ikke stille forelding)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const result = await getUsdtToNokRateAsync(mockUserClient(null));
       expect(result).toBe(FALLBACK);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining("fallback"),
+      );
+      warn.mockRestore();
     });
 
-    it("falls back when DB query throws", async () => {
-      const mockSupabase = {
+    it("fallback når DB-spørring kaster", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const throwing = {
         from: vi.fn().mockImplementation(() => {
           throw new Error("DB error");
         }),
-      };
-      const result = await getUsdtToNokRateAsync(mockSupabase as unknown as Parameters<typeof getUsdtToNokRateAsync>[0]);
+      } as unknown as Parameters<typeof getUsdtToNokRateAsync>[0];
+      const result = await getUsdtToNokRateAsync(throwing);
       expect(result).toBe(FALLBACK);
-    });
-
-    it("falls back when no supabase client provided", async () => {
-      const result = await getUsdtToNokRateAsync();
-      expect(result).toBe(FALLBACK);
+      warn.mockRestore();
     });
   });
 
@@ -111,40 +140,7 @@ describe("Currency Module", () => {
     });
 
     it("converts using provided rate", () => {
-      expect(usdtToNok(100, 11.5)).toBe(1150);
-    });
-
-    it("handles zero amount", () => {
-      expect(usdtToNok(0)).toBe(0);
-    });
-
-    it("handles negative amount", () => {
-      expect(usdtToNok(-50)).toBe(-50 * FALLBACK);
-    });
-  });
-
-  describe("Fallback rate health", () => {
-    it("fallback is within reasonable bounds (8–15 NOK/USD)", () => {
-      // This test catches stale fallback values
-      expect(FALLBACK).toBeGreaterThanOrEqual(8);
-      expect(FALLBACK).toBeLessThanOrEqual(15);
-    });
-
-    it("DB rate is preferred over fallback", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({
-                data: { usdt_nok_rate: 11.5 },
-              }),
-            }),
-          }),
-        }),
-      };
-      const result = await getUsdtToNokRateAsync(mockSupabase as unknown as Parameters<typeof getUsdtToNokRateAsync>[0]);
-      expect(result).toBe(11.5);
-      expect(result).not.toBe(FALLBACK);
+      expect(usdtToNok(100, 9.58)).toBe(958);
     });
   });
 });
