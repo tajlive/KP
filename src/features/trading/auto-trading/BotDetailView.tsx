@@ -181,6 +181,15 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
                 : "Sale recorded, but capital was not credited. The position is preserved — please contact support.",
               { duration: 20000 },
             );
+          } else if (cos && !cos.closed) {
+            // Alle andre feil (reason "error" e.l.): aldri stillhet ved stopp
+            // (E2E-funn F5).
+            toast.error(
+              no
+                ? "Boten er stoppet, men posisjonen kunne ikke selges automatisk. Den er fortsatt åpen — selg manuelt eller ta kontakt med support."
+                : "The bot was stopped, but the position could not be sold automatically. It is still open — sell manually or contact support.",
+              { duration: 20000 },
+            );
           }
         }
       } catch (err) {

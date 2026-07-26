@@ -226,8 +226,11 @@ export async function startTrading(
       };
     }
 
-    // Check for existing active session for this pair — if found (e.g. default
-    // session created by trigger), UPDATE it instead of failing with 23505.
+    // Check for existing active session for this pair. TIDLIGERE ble en
+    // eksisterende AKTIV sesjon stille OVERSKREVET (kapital, tellere og
+    // started_at nullstilt) — det resettet en levende bot uten varsel
+    // (prod-hendelse 2026-07-25). Nå avvises det med en tydelig feil som
+    // wizarden viser til brukeren.
     const { data: existingSession } = await supabase
       .from("trading_sessions")
       .select("id")
@@ -240,37 +243,18 @@ export async function startTrading(
     let sessionId: string;
 
     if (existingSession) {
-      // Update existing default session with new strategy/config
-      const { data: updated, error: updateErr } = await supabase
-        .from("trading_sessions")
-        .update({
-          strategy_id: strategy,
-          strategy_config: strategyConfig as Record<string, unknown> as never,
-          starting_capital_nok: startingCapital,
-          current_capital_nok: startingCapital,
-          initial_capital: startingCapital,
-          current_capital: startingCapital,
-          total_trades: 0,
-          winning_trades: 0,
-          losing_trades: 0,
-          total_pnl: 0,
-          started_at: now,
-          last_heartbeat: now,
-          updated_at: now,
-        })
-        .eq("id", existingSession.id)
-        .select("id")
-        .single();
+      return {
+        ok: false,
+        code: mode === "live" ? "LIVE_BOT_DUPLICATE" : "PAPER_BOT_DUPLICATE",
+        message:
+          "Du har allerede en aktiv bot for dette paret — stopp den først eller velg et annet par.",
+        error:
+          "Du har allerede en aktiv bot for dette paret — stopp den først eller velg et annet par.",
+        next_step: "retry",
+      };
+    }
 
-      if (updateErr) {
-        console.error(
-          "[actions/trading] update existing session:",
-          updateErr.message
-        );
-        throw updateErr;
-      }
-      sessionId = updated.id;
-    } else {
+    {
       // No existing session — create new
       const { data: inserted, error } = await supabase
         .from("trading_sessions")

@@ -233,6 +233,10 @@ export function PaperTradingSessionDetail({
         } else if (cos?.reason === "capital_credit_failed") {
           // Salg bokført, men kapital ikke kreditert — krever oppmerksomhet
           toast.error(td("closeOnStopCreditFailed"), { duration: 20000 });
+        } else if (cos && !cos.closed) {
+          // Alle andre feil (reason "error" e.l.): brukeren skal ALDRI
+          // oppleve stillhet når en bot stoppes (E2E-funn F5).
+          toast.error(td("closeOnStopError"), { duration: 20000 });
         }
         router.push(hrefWithLocale(locale, "/handel?view=sessions"));
       }
