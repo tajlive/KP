@@ -143,7 +143,7 @@ export function PerformanceChart({
                 }}
                 itemStyle={{ color: "#f8fafc" }}
                 labelFormatter={(label) =>
-                  format(new Date(label), "d. MMM HH:mm", { locale: nb })
+                  format(new Date(label as string), "d. MMM HH:mm", { locale: nb })
                 }
                 formatter={
                   ((value: number) => [
