@@ -1,0 +1,15 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch();
+const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+p.on('response', r => { if (r.status() >= 300 && r.status() < 400) console.log('REDIR', r.status(), r.url(), '->', r.headers()['location']); });
+await p.goto('https://www.klarpakke.no/no/login');
+await p.fill('input[type="email"]', 'tomarnejensen@gmail.com');
+await p.fill('input[type="password"]', 'TestTest123!');
+await p.click('button[type="submit"]');
+await p.waitForTimeout(8000);
+console.log('ETTER LOGIN:', p.url());
+const resp = await p.goto('https://www.klarpakke.no/no/profile', { waitUntil: 'domcontentloaded' });
+console.log('GOTO /profile status:', resp?.status(), 'endret til:', p.url());
+await p.waitForTimeout(6000);
+console.log('SLUTT-URL:', p.url());
+await b.close();

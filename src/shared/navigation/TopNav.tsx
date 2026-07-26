@@ -28,7 +28,7 @@ function TopNavLink({
   return (
     <Link
       href={href}
-      className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+      className={`rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
         active
           ? "bg-kp-brand/10 text-kp-brand"
           : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
@@ -67,7 +67,7 @@ function MoreDropdown({ locale, pathname }: { locale: string; pathname: string }
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
           anyActive
             ? "bg-kp-brand/10 text-kp-brand"
             : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
@@ -214,7 +214,7 @@ export function TopNav() {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden min-w-0 items-center gap-1 overflow-x-auto md:flex [scrollbar-width:none]">
             {DASHBOARD_COINBASE_TOP_NAV.map((item) => (
               <TopNavLink
                 key={item.href}
