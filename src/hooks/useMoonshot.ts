@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 
 export interface UseMoonshotOptions {
-  model?: 'moonshot-v1-8k' | 'moonshot-v1-32k' | 'moonshot-v1-128k';
+  model?: 'k3' | 'kimi-for-coding' | 'kimi-for-coding-highspeed';
   temperature?: number;
 }
 
@@ -15,12 +15,11 @@ export interface UseMoonshotReturn {
 }
 
 /**
- * React hook for å bruke Moonshot AI (Kimi) i komponenter
+ * React hook for å bruke KIMI K3 i komponenter
  *
  * KLA-auth: Browser-klienten er alltid anon (httpOnly auth-cookie), så
- * kallet kan ikke gå direkte til edge-funksjonen moonshot-chat med
- * Bearer-token (den er heller ikke deployet). Går via server-ruten
- * /api/ai/chat som autentiserer med auth-cookie.
+ * kallet går via server-ruten /api/ai/chat (KIMI K3 via OAuth, reasoning=high).
+ * Edge-funksjonen moonshot-chat er ikke deployet.
  *
  * @example
  * ```tsx

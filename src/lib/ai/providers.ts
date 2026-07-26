@@ -2,7 +2,7 @@
  * Unified AI Providers Service
  * 
  * Støtter:
- * - KIMI (Moonshot AI) - https://platform.moonshot.cn/
+ * - KIMI K3 via Kimi Code OAuth - https://api.kimi.com/coding/v1
  * - NVIDIA NIM - https://build.nvidia.com/
  * 
  * Bruk:
@@ -53,44 +53,92 @@ export interface AIStreamChunk {
 export interface AIOptions {
   provider?: AIProvider;
   model?: string;
+  /** Ignoreres for KIMI — temperature er fiksert (1.0) og skal ikke sendes eksplisitt. */
   temperature?: number;
   maxTokens?: number;
   stream?: boolean;
   systemPrompt?: string;
-  reasoningEffort?: 'low' | 'medium' | 'high';
+  /** Kun K3: low/high/max (IKKE medium). Default: high. */
+  reasoningEffort?: KimiReasoningEffort;
 }
 
-// ==================== KIMI (MOONSHOT) CONFIG ====================
+// ==================== KIMI K3 (OAUTH VIA KIMI CODE) CONFIG ====================
+//
+// Bearer-token (KIMI_OAUTH_TOKEN) kan være:
+//   a) OAuth-token fra Kimi Code-abonnement (utløper ~50 min — synces til
+//      prod/lokalt via scripts/kimi-oauth-sync + cron), ELLER
+//   b) stabil API-nøkkel fra Kimi Code Console (samme membership-kvote, anbefalt)
+//
+// Verifisert mot api.kimi.com + offisiell Model Parameter Reference (2026-07):
+// - model="k3" + reasoning_effort low/high/max (IKKE "medium"; default hos Kimi: max)
+// - temperature/top_p/n/penalties er FIKSETE — skal IKKE sendes eksplisitt
+// - reasoning_effort støttes KUN av k3 (ikke kimi-for-coding*)
 
-const KIMI_API_URL = 'https://api.moonshot.cn/v1/chat/completions';
+const KIMI_API_URL = 'https://api.kimi.com/coding/v1/chat/completions';
 
-function resolveKimiModel(modelOrAlias?: string): {
-  model: string;
-  reasoningEffort?: 'low' | 'medium' | 'high';
-} {
-  const alias = modelOrAlias?.trim().toLowerCase();
+export type KimiReasoningEffort = 'low' | 'high' | 'max';
 
-  if (alias === 'kimi-for-coding' || alias === KIMI_MODELS.HIGH.toLowerCase()) {
-    return { model: KIMI_MODELS.HIGH, reasoningEffort: 'high' };
-  }
-
-  if (alias === KIMI_MODELS.REASONING.toLowerCase()) {
-    return { model: KIMI_MODELS.REASONING, reasoningEffort: 'high' };
-  }
-
-  // Default to highest-capability model
-  return { model: KIMI_MODELS.HIGH, reasoningEffort: 'high' };
-}
+const DEFAULT_KIMI_EFFORT: KimiReasoningEffort = 'high';
 
 export const KIMI_MODELS = {
-  SMALL: 'moonshot-v1-8k',
-  MEDIUM: 'moonshot-v1-32k',
-  LARGE: 'moonshot-v1-128k',
-  REASONING: 'kimi-k2-6',
-  HIGH: 'kimi-k2-7-code',
+  K3: 'k3',
+  K2_7_CODE: 'kimi-for-coding',
+  K2_7_CODE_HIGHSPEED: 'kimi-for-coding-highspeed',
 } as const;
 
 export type KimiModel = typeof KIMI_MODELS[keyof typeof KIMI_MODELS];
+
+/**
+ * Løs opp modell-alias. reasoningEffort returneres KUN for K3 (eneste modell
+ * som støtter det). Ukjente/legacy aliasser (moonshot-v1-*, kimi-k2-6) → K3.
+ */
+export function resolveKimiModel(modelOrAlias?: string): {
+  model: KimiModel;
+  reasoningEffort?: KimiReasoningEffort;
+} {
+  const alias = modelOrAlias?.trim().toLowerCase();
+
+  switch (alias) {
+    case 'kimi-for-coding':
+    case 'kimi-k2-7-code': // legacy alias
+      return { model: KIMI_MODELS.K2_7_CODE };
+    case 'kimi-for-coding-highspeed':
+      return { model: KIMI_MODELS.K2_7_CODE_HIGHSPEED };
+    default:
+      // 'k3' / 'kimi-k3' / undefined / legacy → K3 (default, maks kapasitet)
+      return { model: KIMI_MODELS.K3, reasoningEffort: DEFAULT_KIMI_EFFORT };
+  }
+}
+
+/**
+ * Bygger request-body for Kimi Code-endepunktet.
+ * temperature sendes ALDRI (fiksert=1.0 for K3/K2.7 — 400-feil hvis annet).
+ * Reasoning-tokens teller mot max_tokens — 8192 gir headroom ved effort=high.
+ */
+export function buildKimiPayload(
+  messages: AIMessage[],
+  options: AIOptions & { stream: boolean }
+): Record<string, unknown> {
+  const { model, reasoningEffort } = resolveKimiModel(options.model);
+  const maxTokens = options.maxTokens || 8192;
+
+  const body: Record<string, unknown> = {
+    model,
+    messages,
+    max_tokens: maxTokens,
+    stream: options.stream,
+  };
+
+  // reasoning_effort kun for K3
+  const effort = model === KIMI_MODELS.K3
+    ? (options.reasoningEffort ?? reasoningEffort)
+    : undefined;
+  if (effort) {
+    body.reasoning_effort = effort;
+  }
+
+  return body;
+}
 
 interface KimiResponse {
   id: string;
@@ -128,9 +176,10 @@ interface KimiStreamChunk {
 }
 
 async function getKimiAuthHeader(): Promise<Record<string, string>> {
-  const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY;
+  // OAuth-token (eller Kimi Code Console-nøkkel) — se KIMI-konfigkommentar over
+  const apiKey = process.env.KIMI_OAUTH_TOKEN?.trim();
   if (!apiKey) {
-    throw new Error('MOONSHOT_API_KEY eller KIMI_API_KEY må være satt i miljøvariabler');
+    throw new Error('KIMI_OAUTH_TOKEN må være satt i miljøvariabler (OAuth-token fra Kimi Code)');
   }
 
   return {
@@ -294,20 +343,7 @@ async function chatWithKimiInternal(
 ): Promise<AIResponse> {
   const startTime = Date.now();
   const headers = await getKimiAuthHeader();
-  const { model, reasoningEffort } = resolveKimiModel(options.model || KIMI_MODELS.HIGH);
-  const temperature = options.temperature ?? 0.3;
-  const maxTokens = options.maxTokens || 4096;
-
-  const body: Record<string, unknown> = {
-    model,
-    messages,
-    temperature,
-    max_tokens: maxTokens,
-    stream: false,
-  };
-  if (reasoningEffort) {
-    body.reasoning_effort = reasoningEffort;
-  }
+  const body = buildKimiPayload(messages, { ...options, stream: false });
 
   const response = await fetch(KIMI_API_URL, {
     method: 'POST',
@@ -352,20 +388,7 @@ async function* streamKimiResponse(
   options: AIOptions = {}
 ): AsyncGenerator<AIStreamChunk, void, unknown> {
   const headers = await getKimiAuthHeader();
-  const { model, reasoningEffort } = resolveKimiModel(options.model || KIMI_MODELS.HIGH);
-  const temperature = options.temperature ?? 0.3;
-  const maxTokens = options.maxTokens || 4096;
-
-  const body: Record<string, unknown> = {
-    model,
-    messages,
-    temperature,
-    max_tokens: maxTokens,
-    stream: true,
-  };
-  if (reasoningEffort) {
-    body.reasoning_effort = reasoningEffort;
-  }
+  const body = buildKimiPayload(messages, { ...options, stream: true });
 
   const response = await fetch(KIMI_API_URL, {
     method: 'POST',
@@ -568,7 +591,7 @@ async function* streamNvidiaResponse(
  * Velg beste tilgjengelige provider basert på API-nøkler eller OAuth
  */
 export function selectBestProvider(preferred?: AIProvider): AIProvider {
-  const hasKimi = !!process.env.MOONSHOT_API_KEY?.trim() || !!process.env.KIMI_API_KEY?.trim();
+  const hasKimi = !!process.env.KIMI_OAUTH_TOKEN?.trim();
   const hasNvidia = !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
 
   if (preferred && preferred !== 'auto') {
@@ -580,7 +603,7 @@ export function selectBestProvider(preferred?: AIProvider): AIProvider {
   if (hasKimi) return 'kimi';
   if (hasNvidia) return 'nvidia';
 
-  throw new Error('Ingen AI provider konfigurert. Sett MOONSHOT_API_KEY, KIMI_API_KEY eller NVIDIA_API_KEY.');
+  throw new Error('Ingen AI provider konfigurert. Sett KIMI_OAUTH_TOKEN eller NVIDIA_API_KEY.');
 }
 
 /**
@@ -642,7 +665,7 @@ export async function* streamAIResponse(
  * Sjekk hvilke providere som er tilgjengelige
  */
 export async function getAvailableProviders(): Promise<{ provider: AIProvider; available: boolean; models: string[] }[]> {
-  const hasKimi = !!process.env.MOONSHOT_API_KEY?.trim() || !!process.env.KIMI_API_KEY?.trim();
+  const hasKimi = !!process.env.KIMI_OAUTH_TOKEN?.trim();
   const hasNvidia = !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
 
   return [

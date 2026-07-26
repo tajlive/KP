@@ -1,8 +1,8 @@
 /**
- * Unified AI Chat API - KIMI K2.6 Primary Edition
+ * Unified AI Chat API - KIMI K3 Edition (OAuth)
  * 
  * Støtter:
- * 1. KIMI K2.6 (primær, maks intelligens)
+ * 1. KIMI K3 via Kimi Code OAuth (primær, reasoning_effort=high)
  * 2. Perplexity PRO (websearch / fallback)
  * 3. NVIDIA NIM (fallback)
  * 
@@ -11,7 +11,7 @@
  * GET /api/ai/chat?path=providers - List tilgjengelige providere
  * 
  * Miljøvariabler:
- * - MOONSHOT_API_KEY eller KIMI_API_KEY (påkrevd for KIMI K2.6)
+ * - KIMI_OAUTH_TOKEN (påkrevd for KIMI K3 — OAuth-token eller Kimi Code Console-nøkkel)
  * - PERPLEXITY_API_KEY (for websearch / fallback)
  * - NVIDIA_API_KEY eller NVIDIA_NIM_API_KEY (for NVIDIA)
  */
@@ -111,7 +111,7 @@ export async function POST(req: Request) {
     const {
       messages,
       temperature = 0.3,
-      maxTokens = 4096,
+      maxTokens = 8192,
       stream = false,
       systemPrompt,
       useCase = 'general',
@@ -145,7 +145,7 @@ export async function POST(req: Request) {
 
     // Sjekk hvilke providere som er tilgjengelige
     const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-    const hasKimi = !!(process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY);
+    const hasKimi = !!process.env.KIMI_OAUTH_TOKEN?.trim();
     const hasNvidia = !!(process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY);
 
     // Velg provider
@@ -165,7 +165,7 @@ export async function POST(req: Request) {
       useKimi = hasKimi;
       if (!useKimi) {
         return NextResponse.json(
-          { error: 'KIMI er ikke konfigurert. Sett MOONSHOT_API_KEY eller KIMI_API_KEY.' },
+          { error: 'KIMI er ikke konfigurert. Sett KIMI_OAUTH_TOKEN (OAuth-token fra Kimi Code).' },
           { status: 503 }
         );
       }
@@ -222,9 +222,9 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { 
           error: 'Ingen AI provider konfigurert',
-          message: 'Sett PERPLEXITY_API_KEY, MOONSHOT_API_KEY eller NVIDIA_API_KEY',
+          message: 'Sett PERPLEXITY_API_KEY, KIMI_OAUTH_TOKEN eller NVIDIA_API_KEY',
           setup: {
-            kimi: 'https://platform.moonshot.cn/',
+            kimi: 'https://www.kimi.com/code',
             perplexity: { url: 'https://perplexity.ai/', recommended: 'websearch' },
             nvidia: 'https://build.nvidia.com/',
           }
@@ -329,7 +329,7 @@ export async function GET(req: Request) {
           priority: 1,
           models: providers.find((p: { provider: AIProvider; available: boolean; models: string[] }) => p.provider === 'kimi')?.models || [],
           recommended: true,
-          defaultModel: 'kimi-k2-6',
+          defaultModel: 'k3',
         },
         perplexity: {
           available: hasPerplexity,
@@ -350,10 +350,10 @@ export async function GET(req: Request) {
 
   // Default: Returner API-info
   return NextResponse.json({
-    name: 'Klarpakke AI Chat API - KIMI K2.6 Primary Edition',
-    version: '2.0.0',
+    name: 'Klarpakke AI Chat API - KIMI K3 Edition (OAuth)',
+    version: '3.0.0',
     primaryProvider: 'kimi',
-    defaultModel: 'kimi-k2-6',
+    defaultModel: 'k3',
     perplexityStatus: hasPerplexity ? 'Konfigurert (websearch fallback)' : 'Ikke konfigurert',
     endpoints: {
       POST: '/api/ai/chat - Send melding til AI',

@@ -10,7 +10,7 @@ const CORS_HEADERS = {
 interface ChatRequest {
   message: string;
   conversationId?: string;
-  model?: 'moonshot-v1-8k' | 'moonshot-v1-32k' | 'moonshot-v1-128k';
+  model?: 'k3' | 'kimi-for-coding' | 'kimi-for-coding-highspeed';
   temperature?: number;
 }
 
@@ -49,15 +49,15 @@ serve(async (req) => {
   }
 
   try {
-    // Get API key from environment
-    const apiKey = Deno.env.get("MOONSHOT_API_KEY");
+    // OAuth-token (eller Kimi Code Console-nøkkel) fra environment
+    const apiKey = Deno.env.get("KIMI_OAUTH_TOKEN");
     if (!apiKey) {
-      throw new Error("MOONSHOT_API_KEY not configured");
+      throw new Error("KIMI_OAUTH_TOKEN not configured");
     }
 
     // Parse request body
     const body: ChatRequest = await req.json();
-    const { message, model = 'moonshot-v1-8k', temperature = 0.7 } = body;
+    const { message, model = 'k3' } = body;
 
     if (!message || message.trim() === '') {
       return new Response(
@@ -66,8 +66,9 @@ serve(async (req) => {
       );
     }
 
-    // Call Moonshot API
-    const response = await fetch("https://api.moonshot.cn/v1/chat/completions", {
+    // Call Kimi Code API (OAuth-endepunkt). temperature er fiksert (1.0)
+    // for K3/K2.7 og skal IKKE sendes eksplisitt (gir 400-feil).
+    const response = await fetch("https://api.kimi.com/coding/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
@@ -79,8 +80,9 @@ serve(async (req) => {
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: message },
         ],
-        temperature,
-        max_tokens: 2048,
+        // reasoning_effort støttes kun av k3
+        ...(model === 'k3' ? { reasoning_effort: "high" } : {}),
+        max_tokens: 4096,
       }),
     });
 
