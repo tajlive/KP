@@ -75,10 +75,10 @@ export function LivePricePreview({ symbol, className = "", showInNok = false }: 
         </span>
         <span
           className={`text-xs font-medium ${
-            priceDirection === "up" ? "text-green-600" : "text-red-600"
+            (priceChange24h || 0) >= 0 ? "text-green-600" : "text-red-600"
           }`}
         >
-          {priceDirection === "up" ? "+" : ""}
+          {(priceChange24h || 0) >= 0 ? "+" : ""}
           {(priceChange24h || 0).toFixed(2)}%
         </span>
       </div>

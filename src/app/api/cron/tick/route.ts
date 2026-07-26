@@ -615,7 +615,7 @@ async function processSession(
       if (dropFromPeak >= trailingDistance && currentPrice > entryPrice) {
         const dropPct = ((highest - currentPrice) / highest) * 100;
         signal.action = "sell";
-        signal.reason = `Trailing TP: dropped ${dropPct.toFixed(1)}% (${trailingReason}) from peak $${highest.toFixed(0)}`;
+        signal.reason = `Trailing-TP: falt ${dropPct.toFixed(1)} % (${trailingReason}) fra topp $${highest.toFixed(0)}`;
       }
 
       // Time-based exit: Sell after 7 days if position is not profitable
@@ -626,7 +626,7 @@ async function processSession(
           ?.time_exit_days as number) ?? 7;
       if (daysInPosition >= timeExitDays && currentPrice <= entryPrice) {
         signal.action = "sell";
-        signal.reason = `Time-based exit: position held ${daysInPosition.toFixed(1)} days without profit — cutting loss`;
+        signal.reason = `Tidsbasert exit: posisjon holdt i ${daysInPosition.toFixed(1)} dager uten gevinst — begrenser tapet`;
       }
 
       // Partial Take-Profit: Sell portions at predefined targets
@@ -657,7 +657,7 @@ async function processSession(
           signal.action = "sell";
           signal.positionSize =
             (sellFraction * currentQty) / session.current_capital;
-          signal.reason = `Partial TP: ${nextLevel.sell_pct}% at +${nextLevel.target_pct}% target`;
+          signal.reason = `Delvis TP: ${nextLevel.sell_pct} % ved +${nextLevel.target_pct} % mål`;
 
           // Mark this level as executed
           await db

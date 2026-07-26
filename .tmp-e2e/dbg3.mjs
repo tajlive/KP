@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+const responses = [];
+page.on('response', r => { const u = r.url(); if (u.includes('supabase') || u.includes('auth') || u.includes('api/')) responses.push(r.status() + ' ' + u.slice(0, 110)); });
+await page.goto('https://www.klarpakke.no/no/login', { waitUntil: 'networkidle', timeout: 90000 });
+await page.waitForTimeout(3000);
+await page.fill('input[type="email"]', 'tomarnejensen@gmail.com');
+await page.fill('input[type="password"]', 'TestTest123!');
+await page.click('button[type="submit"]');
+await page.waitForTimeout(25000);
+console.log('URL:', page.url());
+console.log('RESPONSES:', JSON.stringify(responses.slice(0, 12), null, 1));
+const body = await page.evaluate(() => document.body.innerText.slice(0, 300));
+console.log('BODY:', body.replace(/\n+/g, ' | '));
+await browser.close();

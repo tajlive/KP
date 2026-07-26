@@ -162,6 +162,7 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
         const data = await response.json();
         if (data.session) {
           setSession((prev) => ({ ...prev, ...data.session }));
+          window.dispatchEvent(new Event("klarpakke:trader-status-changed"));
         }
         if (newStatus === "stopped") {
           const cos = data?.close_on_stop;
@@ -236,8 +237,8 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
 
       <PremiumTradingHero
         eyebrow={t("botDetails")}
-        title={session.name ?? "Trading Bot"}
-        subtitle={`${session.mode === "paper" ? (t("paperTrading")) : "Live trading"} · ${t("started")} ${new Date(
+        title={session.name ?? t("defaultBotName")}
+        subtitle={`${session.mode === "paper" ? (t("paperTrading")) : t("liveTrading")} · ${t("started")} ${new Date(
           session.created_at,
         ).toLocaleDateString(locale === "no" ? "nb-NO" : "en-US", {
           day: "numeric",
@@ -376,7 +377,7 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4 text-[#0052FF]" />
             <span className="text-sm text-[#8E95A9] dark:text-slate-400">
-              Win rate
+              {t("winRate")}
             </span>
           </div>
           <p

@@ -102,7 +102,7 @@ export function ProfilePageClient({ initialTab }: ProfilePageClientProps) {
               <TabsTrigger
                 key={value}
                 value={value}
-                className="flex items-center gap-2 data-[state=active]:bg-kp-bg-tertiary data-[state=active]:text-kp-text-primary"
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-800 dark:data-[state=active]:text-white"
               >
                 {icon}
                 <span className="hidden sm:inline">{label}</span>
