@@ -17,14 +17,14 @@ has_staged_in_path() {
 # 1. Auth-redirect guard (alltid)
 # ============================================================================
 
-echo "🔍 [0/7] Sjekker auth-redirect pattern..."
+echo "🔍 [0/8] Sjekker auth-redirect pattern..."
 node scripts/verify-no-auth-redirects.mjs || exit 1
 
 # ============================================================================
 # 1. Secrets-sjekk (alltid)
 # ============================================================================
 
-echo "🔍 [1/7] Sjekker secrets i staged filer..."
+echo "🔍 [1/8] Sjekker secrets i staged filer..."
 bash scripts/check-secrets-staged.sh || exit 1
 
 # ============================================================================
@@ -32,10 +32,10 @@ bash scripts/check-secrets-staged.sh || exit 1
 # ============================================================================
 
 if has_staged_in_path "^supabase/migrations/"; then
-  echo "🔍 [2/7] Migrasjonsvalidering (staged filer)..."
+  echo "🔍 [2/8] Migrasjonsvalidering (staged filer)..."
   node scripts/validate-migrations.mjs --staged || exit 1
 else
-  echo "⏭️  [2/7] Ingen migrasjonsendringer — skipper validering"
+  echo "⏭️  [2/8] Ingen migrasjonsendringer — skipper validering"
 fi
 
 # ============================================================================
@@ -53,7 +53,7 @@ for path in $CRITICAL_PATHS; do
 done
 
 if [ "$NEEDS_AST_CHECK" = true ]; then
-  echo "🔍 [3/7] AST/type-verifisering (ts-morph)..."
+  echo "🔍 [3/8] AST/type-verifisering (ts-morph)..."
   npm run verify:ts-ast 2>&1
   AST_EXIT=$?
   if [ $AST_EXIT -ne 0 ]; then
@@ -64,14 +64,14 @@ if [ "$NEEDS_AST_CHECK" = true ]; then
     exit 1
   fi
 else
-  echo "⏭️  [3/7] Ingen kritiske paths endret — skipper AST-verifisering"
+  echo "⏭️  [3/8] Ingen kritiske paths endret — skipper AST-verifisering"
 fi
 
 # ============================================================================
 # 3. Full TypeScript-sjekk (alltid)
 # ============================================================================
 
-echo "🔍 [4/7] TypeScript-sjekk (tsc --noEmit)..."
+echo "🔍 [4/8] TypeScript-sjekk (tsc --noEmit)..."
 npx tsc --noEmit 2>&1
 TSC_EXIT=$?
 if [ $TSC_EXIT -ne 0 ]; then
@@ -91,7 +91,7 @@ fi
 # 4. Supabase kolonne-guard (alltid)
 # ============================================================================
 
-echo "🔍 [5/7] Supabase kolonne-guard..."
+echo "🔍 [5/8] Supabase kolonne-guard..."
 node scripts/guard-supabase-columns.mjs
 GUARD_EXIT=$?
 if [ $GUARD_EXIT -ne 0 ]; then
@@ -105,7 +105,7 @@ fi
 # 4b. Browser-supabase guard (alltid) — KLA-auth
 # ============================================================================
 
-echo "🔍 [5b/7] Browser-supabase guard (KLA-auth)..."
+echo "🔍 [5b/8] Browser-supabase guard (KLA-auth)..."
 node scripts/guard-browser-supabase.mjs || exit 1
 
 # ============================================================================
@@ -114,14 +114,25 @@ node scripts/guard-browser-supabase.mjs || exit 1
 # Blokkerer service-role createClient() + .auth.getUser() — mønsteret som
 # la /api/klt/balance og /api/email/send nede i prod (evig 401).
 
-echo "🔍 [5c/7] Service-role auth guard (KLA-auth)..."
+echo "🔍 [5c/8] Service-role auth guard (KLA-auth)..."
 node scripts/guard-service-role-auth.mjs || exit 1
 
 # ============================================================================
-# 5. MemPalace Auto-Capture (valgfritt)
+# 5d. i18n-validering (kun hvis messages/ endres)
 # ============================================================================
 
-echo "🏛️  [6/7] MemPalace auto-capture..."
+if has_staged_in_path "^messages/"; then
+  echo "🔍 [5d/8] i18n-validering..."
+  node scripts/validate-i18n.js || exit 1
+else
+  echo "⏭️  [5d/8] Ingen i18n-endringer — skipper validering"
+fi
+
+# ============================================================================
+# 6. MemPalace Auto-Capture (valgfritt)
+# ============================================================================
+
+echo "🏛️  [6/8] MemPalace auto-capture..."
 node scripts/mempalace-auto-capture.mjs
 
 echo "✅ Pre-commit: Alt OK. Committer..."
