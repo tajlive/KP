@@ -1202,7 +1202,8 @@ async function processSession(
         idempotency_key: idempotencyKey,
         mode: session.mode,
         trading_pair: session.trading_pair,
-        symbol: pair.replace("/", ""),
+        // Ingen "symbol"-nøkkel — kolonnen finnes ikke i trades i prod
+        // (PGRST204, E2E-funn F4). trading_pair er tilstrekkelig.
         side: signal.action as TradeSide,
         order_type: "market",
         quantity,

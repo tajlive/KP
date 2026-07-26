@@ -5085,6 +5085,7 @@
       "closeOnStopHint": "Posisjonen selges til markedspris og resultatet vises med en læringsforklaring. Skrus av, forblir posisjonen åpen uten at noen overvåker den.",
       "closeOnStopDisabled": "Bot stoppet — posisjonen er fortsatt åpen og overvåkes ikke lenger.",
       "closeOnStopCreditFailed": "Salg bokført, men kapitalen ble ikke kreditert. Posisjonen er bevart — ta kontakt med support.",
+      "closeOnStopError": "Boten er stoppet, men posisjonen kunne ikke selges automatisk. Den er fortsatt åpen — selg manuelt eller ta kontakt med support.",
       "sessionDetail": {
         "backToHub": "Tilbake to hub",
         "eyebrowLive": "Eyebrow live",
@@ -5370,7 +5371,7 @@
       "sessionLimitTitle": "Sesjonsgrense nådd",
       "sessionLimitDesc": "Du kan maksimalt ha {max} aktive sesjoner",
       "duplicateSessionTitle": "Duplikat sesjon",
-      "duplicateSessionDesc": "Du har allerede en bot som kjører for denne strategien",
+      "duplicateSessionDesc": "Du har allerede en aktiv bot for dette paret — stopp den først eller velg et annet par.",
       "startedTitle": "Bot startet",
       "startedDesc": "Din trading-bot kjører nå"
     }
@@ -5606,7 +5607,7 @@
     "sessionLimitTitle": "Sesjonsgrense nådd",
     "sessionLimitDesc": "Du kan maksimalt ha {max} aktive sesjoner",
     "duplicateSessionTitle": "Duplikat sesjon",
-    "duplicateSessionDesc": "Du har allerede en bot som kjører for denne strategien",
+    "duplicateSessionDesc": "Du har allerede en aktiv bot for dette paret — stopp den først eller velg et annet par.",
     "liveNotAllowedTitle": "Live-handel ikke aktivert",
     "liveNotAllowedDesc": "Live-handel krever Bachelor-nivå eller høyere og tilkoblet Binance-konto.",
     "binanceNotConnectedTitle": "Binance ikke tilkoblet",

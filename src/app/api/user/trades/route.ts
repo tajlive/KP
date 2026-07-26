@@ -54,13 +54,16 @@ export async function GET(request: NextRequest) {
     if (sessionIdValid) {
       sessionIds = [sessionIdParam];
     } else {
-      // Ekskluder arkivert test-era — arkivert betyr "ikke en del av den
-      // reelle historikken" (konsistent med portefølje-siden).
+      // Handelshistorikken er en LEDGER: den må ALDRI miste rader. Derfor
+      // hentes trades fra ALLE brukerens sesjoner — også arkiverte. Stopp
+      // av en bot arkiverer sesjonen, og et archived-filter her fikk
+      // brukerens egne handler til å forsvinne fra historikken (E2E-funn
+      // F6: ETH-kjøp 2026-07-25 usynlig etter stopp). Arkivering filtreres
+      // i VISNINGER (bot-lister), ikke i regnskapet.
       const { data: sessions } = await supabase
         .from("trading_sessions")
         .select("id")
-        .eq("user_id", user.id)
-        .is("archived", false);
+        .eq("user_id", user.id);
 
       sessionIds = (sessions ?? []).map((s) => s.id);
       if (sessionIds.length === 0) {
