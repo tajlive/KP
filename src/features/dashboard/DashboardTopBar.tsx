@@ -76,7 +76,7 @@ export function DashboardTopBar({
 
           {/* Balance + change */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="text-lg sm:text-xl font-bold text-kp-text-primary tabular-nums truncate">
+            <div className="text-base sm:text-lg font-bold text-kp-text-primary tabular-nums truncate">
               {balance == null ? (
                 <span>{t("noData")}</span>
               ) : (

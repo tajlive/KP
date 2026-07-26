@@ -40,11 +40,11 @@ export function PremiumTradingHero({
         className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border border-[#0052FF]/25"
       />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
             {eyebrow}
           </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
+          <h1 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white break-words min-w-0">
             {title}
           </h1>
           {subtitle ? (

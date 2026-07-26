@@ -306,7 +306,7 @@ export default function ClientHandelshistorikk() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="gap-1.5"
+                className="gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 onClick={() => void copyDiagnostics()}
                 disabled={signedIn !== true}
                 data-testid="trade-history-copy-diagnostics"

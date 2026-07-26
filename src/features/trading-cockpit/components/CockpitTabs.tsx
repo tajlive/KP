@@ -34,7 +34,7 @@ export function CockpitTabs({
             value={tab}
             data-testid={`cockpit-tab-${tab}`}
             className={cn(
-              "px-4 py-2 text-sm font-medium rounded-lg text-kp-text-secondary data-[state=active]:bg-kp-bg-tertiary data-[state=active]:text-kp-text-primary transition-colors",
+              "px-4 py-2 text-sm font-medium rounded-lg text-kp-text-secondary data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-800 dark:data-[state=active]:text-white transition-colors",
             )}
           >
             {t(`cockpit.tab.${tab}`)}

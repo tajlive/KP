@@ -137,7 +137,7 @@ export function DashboardContent({
       />
 
       <div className="max-w-7xl mx-auto px-0 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4">
-        <div className="flex justify-end mb-4 sm:mb-6">
+        <div className="flex justify-end px-3 sm:px-0 mb-4 sm:mb-6">
           {/* Mode-pillen vises i DashboardTopBar — badge fjernet (var 3. gjentakelse) */}
           <TradingModeToggle
             mode={mode}

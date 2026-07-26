@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch();
+const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+await p.goto('https://www.klarpakke.no/no/login', { waitUntil: 'domcontentloaded', timeout: 60000 });
+await p.waitForTimeout(4000);
+await p.fill('input[type="email"]', 'tomarnejensen@gmail.com');
+await p.fill('input[type="password"]', 'TestTest123!');
+await p.click('button[type="submit"]');
+await p.waitForTimeout(8000);
+await p.goto('https://www.klarpakke.no/no/dashboard/autopilot', { waitUntil: 'domcontentloaded', timeout: 60000 });
+await p.waitForTimeout(5000);
+console.log('URL ETTER NAV:', p.url());
+await p.screenshot({ path: '/tmp/s9-full.png', fullPage: true });
+await b.close();
