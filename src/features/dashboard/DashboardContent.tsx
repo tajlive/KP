@@ -130,7 +130,7 @@ export function DashboardContent({
     <div suppressHydrationWarning className="bg-kp-bg-primary min-h-screen"
     >
       <DashboardTopBar
-        balance={data?.totalCapital}
+        balance={data?.accountBalance ?? data?.totalCapital}
         changePct={totalReturn}
         mode={mode}
         ctaLink={cmsData?.heroCtaLink}

@@ -51,6 +51,13 @@ export interface DashboardMetrics {
   losingTrades: number;
   /** Number of sessions in the chosen scope. */
   sessionCount: number;
+  /**
+   * Kontobalanse fra paper_accounts.current_balance — source of truth
+   * (AGENTS.md). Skal brukes av alle flater som viser "balanse"
+   * (dashboard-hero, kort). totalCapital er sesjons-/bot-kapital og kan
+   * avvike. null for live-modus eller når kontoen ikke finnes.
+   */
+  accountBalance: number | null;
   /** The 5 most recent sessions for display in the dashboard. */
   recentSessions: TradingSessionRow[];
 }
@@ -85,10 +92,35 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
  * 1. PRIMARY: PostgreSQL RPC `get_dashboard_metrics` — single query, O(1) network.
  * 2. FALLBACK: TypeScript aggregation if RPC is unavailable (e.g. local dev without migration).
  */
+/** Kontobalanse: paper_accounts.current_balance — DOKUMENTERT source of truth (AGENTS.md). */
+async function getAccountBalance(
+  supabaseClient: SupabaseClient<Database>,
+  userId: string,
+): Promise<number | null> {
+  const { data, error } = await supabaseClient
+    .from("paper_accounts")
+    .select("current_balance")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("[getUserDashboardMetrics] account balance fetch failed:", error.message);
+    return null;
+  }
+  return typeof data?.current_balance === "number" ? data.current_balance : null;
+}
+
 export async function getUserDashboardMetrics(
   input: DashboardMetricsInput,
 ): Promise<DashboardMetrics> {
   const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
+
+  // Kontobalanse (source of truth) — hentes alltid for paper-modus slik at
+  // ALLE retur-veier (RPC + fallbacks) leverer samme balanse-tall.
+  const accountBalance =
+    mode === "paper"
+      ? await getAccountBalance(supabaseClient, userId)
+      : null;
 
   // ------------------------------------------------------------------
   // 1. Fetch recent sessions for display (always needed)
@@ -165,6 +197,7 @@ export async function getUserDashboardMetrics(
       winningTrades,
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),
+      accountBalance,
       recentSessions: recentSessions || [],
     };
   } catch (error) {
@@ -237,6 +270,7 @@ async function fallbackMetrics(
       winningTrades: 0,
       losingTrades: 0,
       sessionCount: 0,
+      accountBalance: fb.totalCapital, // getProfileFallback leser paper_accounts først
       recentSessions: [],
     };
   }
@@ -250,6 +284,7 @@ async function fallbackMetrics(
     winningTrades: 0,
     losingTrades: 0,
     sessionCount: 0,
+    accountBalance: null, // live-modus: ingen paper-kontobalanse
     recentSessions: [],
   };
 }
@@ -341,6 +376,9 @@ async function tsAggregationFallback(
       ? winningTrades / (winningTrades + losingTrades)
       : 0;
 
+  const accountBalance =
+    mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
+
   return {
     totalPnl: Math.round(totalPnl * 100) / 100,
     totalTrades,
@@ -350,6 +388,7 @@ async function tsAggregationFallback(
     winningTrades,
     losingTrades,
     sessionCount: sessions?.length ?? 0,
+    accountBalance,
     recentSessions: [], // Fallback doesn't fetch recent sessions details
   };
 }
