@@ -16,13 +16,15 @@
 
 | Oppgavetype | Modell | Begrunnelse |
 |---|---|---|
-| Arkitektur, multi-fil refaktorering, systemdesign | **Kimi K3** (kimi-coding) | 1M context, helhetlig forståelse |
 | Kodeimplementasjon, PR-arbeid, debugging | **DeepSeek V4 Pro** (deepseek-chat) | Presisjon, 128K context |
 | Rutinearbeid — i18n, lint-fikser, små patcher | **DeepSeek V4 Flash** (deepseek-v4-flash) | Rask, billig |
 | Kodegjennomgang, kvalitetskontroll | **DeepSeek V4 Pro** (deepseek-chat) | Nøyaktig diff-analyse |
 | Subagenter (delegate_task) | **DeepSeek V4 Flash** (deepseek-v4-flash) | Rask parallellisering |
+| Arkitektur, systemdesign (K3 1M) | **Kimi K3** via Pi CLI | Kun Pi — krever `thinking`-param |
 
-**Fallback-kjede:** deepseek → gemini → openrouter → nous
+**Fallback-kjede:** gemini → kimi-coding → openrouter → nous
+
+**Merk:** K3 kan IKKE brukes via Hermes fallback — krever `thinking`-parameter som custom provider ikke sender. Bruk Pi CLI direkte: `pi` → `/model kimi-coding/k3`.
 
 ---
 
