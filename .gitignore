@@ -329,3 +329,4 @@ tmp/
 # Superpowers skill-generated workspace/output
 .superpowers/
 .kimi/archive/
+.tmp-e2e/
