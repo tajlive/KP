@@ -89,8 +89,8 @@ export async function GET(req: NextRequest) {
 
   const db = (await createClient()) as SupabaseClient<Database>;
 
-  // AUTO-RECOVERY: Gjenopprett krasjede paper-sessions
-  try { await db.rpc("recover_crashed_paper_sessions"); } catch { /* best effort */ }
+  // AUTO-RECOVERY: Gjenopprett stalled sessions (paused + crashed)
+  try { await db.rpc("heal_stale_sessions" as never); } catch { /* best effort */ }
 
   const startTime = Date.now();
   const results: { symbol: string; status: string; confidence?: number; error?: string }[] = [];
