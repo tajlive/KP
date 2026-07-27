@@ -123,7 +123,7 @@ export function TrustBar({ locale = 'no' }: { locale?: string }) {
         </div>
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-emerald-400" />
-          <span>{isNorwegian ? '100+ fornøyde studenter' : '100+ happy students'}</span>
+          <span>{isNorwegian ? '37+ norske brukere' : '37+ Norwegian users'}</span>
         </div>
         <div className="flex items-center gap-2">
           <Award className="w-5 h-5 text-yellow-400" />

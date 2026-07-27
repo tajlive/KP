@@ -42,11 +42,16 @@ function sortInternal(
 }
 
 function botToInternal(row: BotRow, followed: Set<string>): InternalLeader {
+  // Anonymiser display_name — leaderboard_bots har AI-genererte navn.
+  // Vis ekte brukerdata med anonymisert navn (FACT-AUDIT 2.1/2.2).
+  const safeName = row.user_id
+    ? `Trader***${row.user_id.slice(0, 4)}`
+    : row.display_name;
   return {
     id: row.id,
     traderHrefId: row.id,
     leaderAuthUserId: row.user_id,
-    display_name: row.display_name,
+    display_name: safeName,
     avatar_url: row.avatar_url,
     strategy_type: row.strategy_type,
     pnl_30d: row.pnl_30d,
