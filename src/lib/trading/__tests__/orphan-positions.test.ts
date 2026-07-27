@@ -117,3 +117,161 @@ describe("mergeOrphanPositions", () => {
     expect(merged!.lots).toBeUndefined();
   });
 });
+
+/**
+ * Verifisert adopsjon (inflasjonsfiks 2026-07-27): korrupte orphans droppes,
+ * NOK-denominerte normaliseres til USDT før de flyttes til aktiv sesjon.
+ */
+describe("adoptOrphanPositions", () => {
+   
+  function makeDb(orphans: any[], currentPosition: unknown) {
+    const updates: Array<{ payload: Record<string, unknown>; ids?: string[] }> = [];
+    const logInserts: Array<Record<string, unknown>> = [];
+     
+    const chain: any = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      not: vi.fn().mockResolvedValue({ data: orphans, error: null }),
+      single: vi.fn().mockResolvedValue({ data: { open_position: currentPosition }, error: null }),
+      insert: vi.fn((payload: Record<string, unknown>) => {
+        logInserts.push(payload);
+        return Promise.resolve({ error: null });
+      }),
+      update: vi.fn((payload: Record<string, unknown>) => {
+        const entry: { payload: Record<string, unknown>; ids?: string[] } = { payload };
+        updates.push(entry);
+        return {
+          eq: vi.fn().mockResolvedValue({ error: null }),
+          in: vi.fn((col: string, ids: string[]) => {
+            entry.ids = ids;
+            return Promise.resolve({ error: null });
+          }),
+        };
+      }),
+    };
+    const db = { from: vi.fn(() => chain) };
+    return { db, chain, updates, logInserts };
+  }
+
+  const activeSession = { id: "active-1", user_id: "user-1", trading_pair: "BTCUSDT" };
+  const market = { currentPriceUsdt: 64429, usdtNokRate: 9.6 };
+
+  // Adopsjons-UPDATE har shape { open_position: finalPosition } — finn den.
+   
+  function findAdoptUpdate(updates: Array<{ payload: any }>) {
+    return updates.find(
+      (u) =>
+        u.payload?.open_position &&
+        typeof u.payload.open_position === "object" &&
+        "quantity" in u.payload.open_position,
+    );
+  }
+
+  it("NOK-denominert orphan normaliseres til USDT ved adopsjon", async () => {
+    const orphans = [
+      {
+        id: "orphan-1",
+        trading_pair: "BTCUSDT",
+        open_position: {
+          side: "long",
+          quantity: 0.0321,
+          entry_price: 618900, // NOK → ~64 469 USDT
+          entry_time: "2026-07-19T22:40:00Z",
+          highest_price: 624080,
+        },
+      },
+    ];
+    const { db, updates } = makeDb(orphans, null);
+    const { adoptOrphanPositions } = await import("../orphan-positions");
+
+    const result = await adoptOrphanPositions(db as never, activeSession, market);
+
+    expect(result.adopted).toBe(1);
+    expect(result.dropped).toBe(0);
+    const adoptUpdate = findAdoptUpdate(updates);
+    expect(adoptUpdate).toBeDefined();
+    const pos = adoptUpdate!.payload.open_position as { entry_price: number; highest_price: number };
+    expect(pos.entry_price).toBeCloseTo(618900 / 9.6, 1);
+    expect(pos.highest_price).toBeCloseTo(624080 / 9.6, 1);
+  });
+
+  it("KORRUPT orphan (entry 4,5k vs marked 64,5k) droppes og nullstilles", async () => {
+    const orphans = [
+      {
+        id: "orphan-corrupt",
+        trading_pair: "BTCUSDT",
+        open_position: {
+          side: "long",
+          quantity: 0.5,
+          entry_price: 4492,
+          entry_time: "2026-07-01T10:00:00Z",
+          highest_price: 196801,
+        },
+      },
+    ];
+    const { db, updates, logInserts } = makeDb(orphans, null);
+    const { adoptOrphanPositions } = await import("../orphan-positions");
+
+    const result = await adoptOrphanPositions(db as never, activeSession, market);
+
+    expect(result.adopted).toBe(0);
+    expect(result.dropped).toBe(1);
+    // Aktiv sesjon skal IKKE oppdateres med en posisjon
+    const adoptUpdate = findAdoptUpdate(updates);
+    expect(adoptUpdate).toBeUndefined();
+    // Orphan nullstilles
+    const nullUpdate = updates.find((u) => u.payload.open_position === null);
+    expect(nullUpdate).toBeDefined();
+    expect(nullUpdate!.ids).toContain("orphan-corrupt");
+    // Audit-logges
+    expect(logInserts.some((p) => p.action === "orphan_dropped_corrupt")).toBe(true);
+  });
+
+  it("USDT-denominert orphan adopteres uendret", async () => {
+    const orphans = [
+      {
+        id: "orphan-usdt",
+        trading_pair: "BTCUSDT",
+        open_position: {
+          side: "long",
+          quantity: 0.01,
+          entry_price: 62000,
+          entry_time: "2026-07-25T10:00:00Z",
+        },
+      },
+    ];
+    const { db, updates } = makeDb(orphans, null);
+    const { adoptOrphanPositions } = await import("../orphan-positions");
+
+    const result = await adoptOrphanPositions(db as never, activeSession, market);
+
+    expect(result.adopted).toBe(1);
+    const adoptUpdate = findAdoptUpdate(updates);
+    const pos = adoptUpdate!.payload.open_position as { entry_price: number };
+    expect(pos.entry_price).toBe(62000);
+  });
+
+  it("uten markedscontext beholdes legacy-oppførsel (ingen validering)", async () => {
+    const orphans = [
+      {
+        id: "orphan-legacy",
+        trading_pair: "BTCUSDT",
+        open_position: {
+          side: "long",
+          quantity: 0.5,
+          entry_price: 4492,
+          entry_time: "2026-07-01T10:00:00Z",
+        },
+      },
+    ];
+    const { db, updates } = makeDb(orphans, null);
+    const { adoptOrphanPositions } = await import("../orphan-positions");
+
+    const result = await adoptOrphanPositions(db as never, activeSession);
+
+    expect(result.adopted).toBe(1);
+    expect(result.dropped).toBe(0);
+    const adoptUpdate = findAdoptUpdate(updates);
+    expect(adoptUpdate).toBeDefined();
+  });
+});

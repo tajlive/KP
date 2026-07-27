@@ -11,6 +11,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { normalizePair } from "./pair";
 import type { StrategyPosition } from "./strategies/types";
+import {
+  getPositionBaseQuantity,
+  isPositionEntryPlausible,
+  normalizePositionPricesToUsdt,
+  type StoredPositionLike,
+} from "./position-currency";
 
 type Db = SupabaseClient<Database>;
 
@@ -67,16 +73,37 @@ interface OrphanSessionRow {
   open_position: unknown;
 }
 
+export interface OrphanAdoptionMarketContext {
+  currentPriceUsdt: number;
+  usdtNokRate: number;
+}
+
+export interface OrphanAdoptionResult {
+  adopted: number;
+  dropped: number;
+}
+
 /**
  * Finn og adopter orphan-posisjoner for en aktiv sesjon.
- * Returnerer antall adopterte orphan-sesjoner (0 = ingenting å gjøre).
  *
  * Idempotent: orphans nullstilles etter flytting, så re-kjøring er trygg.
+ *
+ * Inflasjonsfiks 2026-07-27: orphans kan inneholde NOK-denominerte eller
+ * rene korrupte priser (eks. entry 4,5k mot marked 64,5k fra ødelagt
+ * pris-historikk). Slike posisjoner ga falske trailing-salg som printet
+ * penger. Derfor:
+ *  - korrupte posisjoner (entry >90 % under marked, eller ugyldig qty/pris)
+ *    droppes: nullstilles + logges til trading_logs, adopteres ALDRI
+ *  - NOK-denominerte prisfelt normaliseres til USDT før sammenslåing
+ * Når `market` ikke oppgis, beholdes legacy-oppførsel (ingen validering) —
+ * men alle produksjonskallere bør sende markedscontext.
  */
 export async function adoptOrphanPositions(
   db: Db,
   activeSession: { id: string; user_id: string; trading_pair: string },
-): Promise<number> {
+  market?: OrphanAdoptionMarketContext,
+): Promise<OrphanAdoptionResult> {
+  const none: OrphanAdoptionResult = { adopted: 0, dropped: 0 };
   const pair = normalizePair(activeSession.trading_pair);
 
   // Finn ALLE stoppede sesjoner m/ åpen posisjon for samme bruker —
@@ -95,19 +122,87 @@ export async function adoptOrphanPositions(
     .eq("status", "stopped")
     .not("open_position", "is", null);
 
-  if (error || !stopped || stopped.length === 0) return 0;
+  if (error || !stopped || stopped.length === 0) return none;
 
   const orphans = (stopped as unknown as (OrphanSessionRow & {
     trading_pair: string;
   })[]).filter((s) => normalizePair(s.trading_pair) === pair);
 
-  if (orphans.length === 0) return 0;
+  if (orphans.length === 0) return none;
 
-  const positions = orphans.map(
-    (o) => o.open_position as StrategyPosition,
-  );
-  const merged = mergeOrphanPositions(positions);
-  if (!merged) return 0;
+  // ── Verifisering + normalisering per orphan (inflasjonsfiks) ──────────
+  const adoptablePositions: StrategyPosition[] = [];
+  const adoptedIds: string[] = [];
+  const droppedIds: string[] = [];
+
+  for (const orphan of orphans) {
+    const pos = orphan.open_position as StrategyPosition | null;
+    const qty = getPositionBaseQuantity(pos as StoredPositionLike | null);
+    const entryPrice = Number(pos?.entry_price);
+
+    if (!pos || qty <= 0 || !(entryPrice > 0)) {
+      // Ubrukelig posisjonsobjekt — datarus.
+      droppedIds.push(orphan.id);
+      continue;
+    }
+
+    if (
+      market &&
+      market.currentPriceUsdt > 0 &&
+      !isPositionEntryPlausible(entryPrice, market.currentPriceUsdt)
+    ) {
+      // Korrupt kostgrunnlag — adopter ALDRI. Nullstill + logg slik at
+      // datarus ikke sirkuleres videre til nye sesjoner.
+      droppedIds.push(orphan.id);
+      try {
+        await db.from("trading_logs").insert({
+          session_id: activeSession.id,
+          user_id: activeSession.user_id,
+          action: "orphan_dropped_corrupt",
+          details: {
+            orphan_session_id: orphan.id,
+            entry_price: entryPrice,
+            quantity: qty,
+            current_price_usdt: market.currentPriceUsdt,
+          } as never,
+        } as never);
+      } catch {
+        // Ikke kritisk: logging skal ikke stoppe adopsjon
+      }
+      continue;
+    }
+
+    // NOK-denominerte prisfelt → USDT (trades lagres NOK for paper,
+    // triggeren kopierer det rett inn i open_position).
+    const normalized = market
+      ? normalizePositionPricesToUsdt(
+          pos as StoredPositionLike,
+          market.currentPriceUsdt,
+          market.usdtNokRate,
+        )
+      : (pos as StoredPositionLike);
+
+    adoptablePositions.push(normalized as StrategyPosition);
+    adoptedIds.push(orphan.id);
+  }
+
+  // Droppede orphans nullstilles alltid — de er datarus uansett.
+  if (droppedIds.length > 0) {
+    const { error: dropError } = await db
+      .from("trading_sessions")
+      .update({ open_position: null as never })
+      .in("id", droppedIds);
+    if (dropError) {
+      console.error("[Orphan] Nullstilling av korrupte orphans feilet:", dropError);
+    } else if (droppedIds.length > 0) {
+      console.info(
+        `[Orphan] Droppet ${droppedIds.length} korrupt(e) orphan-posisjon(er) for bruker ${activeSession.user_id} (${pair})`,
+      );
+    }
+  }
+
+  const merged = mergeOrphanPositions(adoptablePositions);
+  if (!merged) return { adopted: 0, dropped: droppedIds.length };
 
   // Flytt sammenslått posisjon til den aktive sesjonen.
   // Bevar eksisterende highest_price hvis den er høyere (posisjonen kan
@@ -118,7 +213,15 @@ export async function adoptOrphanPositions(
     .eq("id", activeSession.id)
     .single();
 
-  const existing = current?.open_position as StrategyPosition | null;
+  const existingRaw = current?.open_position as StrategyPosition | null;
+  const existing =
+    existingRaw && market
+      ? (normalizePositionPricesToUsdt(
+          existingRaw as StoredPositionLike,
+          market.currentPriceUsdt,
+          market.usdtNokRate,
+        ) as StrategyPosition)
+      : existingRaw;
   const finalPosition = existing
     ? (mergeOrphanPositions([existing, merged]) ?? merged)
     : merged;
@@ -133,25 +236,26 @@ export async function adoptOrphanPositions(
       `[Orphan] Kunne ikke adoptere posisjon til sesjon ${activeSession.id}:`,
       updateError,
     );
-    return 0;
+    return { adopted: 0, dropped: droppedIds.length };
   }
 
-  // Nullstill orphans — posisjonen er nå eid av den aktive sesjonen.
-  const orphanIds = orphans.map((o) => o.id);
-  const { error: clearError } = await db
-    .from("trading_sessions")
-    .update({ open_position: null as never })
-    .in("id", orphanIds);
+  // Nullstill adopterte orphans — posisjonen er nå eid av den aktive sesjonen.
+  if (adoptedIds.length > 0) {
+    const { error: clearError } = await db
+      .from("trading_sessions")
+      .update({ open_position: null as never })
+      .in("id", adoptedIds);
 
-  if (clearError) {
-    console.error(
-      `[Orphan] Posisjon adoptert, men nullstilling av orphans feilet:`,
-      clearError,
-    );
+    if (clearError) {
+      console.error(
+        `[Orphan] Posisjon adoptert, men nullstilling av orphans feilet:`,
+        clearError,
+      );
+    }
   }
 
   console.info(
-    `[Orphan] Adopterte ${orphans.length} orphan-posisjon(er) til sesjon ${activeSession.id} (${pair})`,
+    `[Orphan] Adopterte ${adoptedIds.length} orphan-posisjon(er) til sesjon ${activeSession.id} (${pair})`,
   );
-  return orphans.length;
+  return { adopted: adoptedIds.length, dropped: droppedIds.length };
 }

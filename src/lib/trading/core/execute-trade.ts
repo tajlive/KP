@@ -31,6 +31,10 @@ import { acquireTradeLock } from "./distributed-lock";
 import { makeIdempotencyKey, withIdempotency } from "@/lib/trading/idempotency";
 import { createClient as createServiceClient } from "@/lib/supabase/server";
 import type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext } from "./types";
+import {
+  getPositionBaseQuantity,
+  type StoredPositionLike,
+} from "@/lib/trading/position-currency";
 
 export type { ExecuteTradeRequest, ExecuteTradeResult, TradeSignalContext };
 
@@ -208,6 +212,55 @@ async function executeTradeWithLock(
         success: false,
         error: `Session is ${session.status}, cannot execute trades`,
       };
+    }
+
+    // ========================================================================
+    // 2.5 Paper sell-side position guard (inflasjonsfiks 2026-07-27)
+    // Et paper-salg må ALDRI overstige faktisk beholdning: DB-triggeren
+    // krediterer total_value ubetinget, så salg av ikke-eksisterende qty
+    // printer penger (prod-bevis: +1,3 mill. NOK på 7,5 t i én sesjon).
+    // Kjøp er dekket av balanse-sjekken lenger ned og påvirkes ikke.
+    // ========================================================================
+    if (request.mode === "paper" && request.side === "sell") {
+      const heldQty = getPositionBaseQuantity(
+        session.open_position as StoredPositionLike | null,
+      );
+      if (heldQty <= 0) {
+        const sellGuardRequest: TradeRequest = {
+          userId: request.userId,
+          sessionId: session.id,
+          symbol: request.symbol,
+          side: request.side,
+          quantity: request.quantity,
+          price: request.price,
+          orderType: request.orderType,
+          tradingMode: "paper",
+          botId: request.botId,
+        };
+        const rejectionResult: RiskValidationResult = {
+          allowed: false,
+          rejectionReason: "NO_POSITION",
+          rejectionDetails: {
+            requested: request.quantity,
+            held: 0,
+            message: "Kan ikke selge uten åpen posisjon",
+          },
+        };
+        await recordTradeRejection(supabase, sellGuardRequest, rejectionResult);
+        await recordTradeDecision(supabase, sellGuardRequest, rejectionResult);
+        return {
+          success: false,
+          rejectionReason: "NO_POSITION",
+          error:
+            "Kan ikke selge: sesjonen har ingen åpen posisjon i dette paret",
+        };
+      }
+      if (request.quantity > heldQty) {
+        console.info(
+          `[executeTrade] Paper-salg clampet til beholdning: ${request.quantity} → ${heldQty} (session ${session.id})`,
+        );
+        request = { ...request, quantity: heldQty };
+      }
     }
 
     // ========================================================================
