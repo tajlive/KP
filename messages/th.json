@@ -1069,162 +1069,37 @@
     "advanced": "ขั้นสูง"
   },
   "landing": {
-    "badge": "มหาวิทยาลัย Klarpakke",
-    "heroTitle": "เริ่มต้นวันนี้ <span>เป็นมือโปรใน 4 สัปดาห์</span>",
-    "heroDescription": "เริ่มต้นใน 2 นาที ฝึกซ้อมการเทรดความเสี่ยงต่ำ ในขณะที่คุณเรียนรู้พื้นฐานตั้งแต่เริ่มต้น",
-    "heroButton": "เริ่มตอนนี้",
-    "heroButtonSubtext": "ใช้เวลาเพียง 2 นาทีในการเริ่มต้น",
-    "marketsTitle": "เทรดสินทรัพย์โปรดของคุณโดยตรงผ่าน Binance บนระบบของเรา",
-    "realityCheck": {
-      "title": "คุณทำอะไรกับเงิน 100 บาท?",
-      "subtitle": "การพนัน บัญชีธนาคาร หรือการลงทุน? ดูความแตกต่าง",
-      "betting": {
-        "title": "การพนัน / ลอตเตอรี่",
-        "desc": "หากคุณเดิมพัน 100 บาทในการแข่งขัน จะหายไปหากคุณแพ้ 'เจ้ามือ' ชนะเสมอในระยะยาว นี่คือความบันเทิง ไม่ใช่การออม"
-      },
-      "bank": {
-        "title": "ธนาคาร",
-        "desc": "ในธนาคารคุณได้รับดอกเบี้ย แต่เงินเฟ้อมักกินกำไร มันปลอดภัย แต่เงินของคุณเติบโตน้อยมากในด้านกำลังซื้อ"
-      },
-      "crypto": {
-        "title": "Klarpakke (Binance)",
-        "gain": "ความเป็นไปได้",
-        "desc": "ลงทุน 100 บาทในอนาคต ด้วยความรู้ของเรา คุณจะเรียนรู้ที่จะสร้างมูลค่าเมื่อเวลาผ่านไป เริ่มเล็กๆ ฝันใหญ่"
-      }
-    },
-    "whyUs": {
-      "title": "ทำไมเลือกเรา?",
-      "safe": {
-        "title": "สร้างขึ้นเพื่อความไว้วางใจ",
-        "desc": "ภาษาที่เข้าใจง่าย การสนับสนุนจากมนุษย์ที่แท้จริง และไม่มีศัพท์เทคนิคที่สับสน"
-      },
-      "simple": {
-        "title": "ง่ายเหมือนแอปธนาคารของคุณ",
-        "desc": "เครื่องมือที่คุ้นเคยและภาษาที่ชัดเจน — ไม่มีเส้นโค้งการเรียนรู้"
-      },
-      "tech": {
-        "title": "เทคโนโลยีอัจฉริยะ",
-        "desc": "เราใช้การเรียนรู้ของเครื่องและข้อมูลแบบเรียลไทม์เพื่อให้คุณมีข้อมูลเชิงลึกที่ดีขึ้นเกี่ยวกับแนวโน้มตลาด"
-      }
-    },
-    "isForYou": {
-      "title": "นี่เหมาะกับคุณหรือไม่?",
-      "desc": "คุณไม่จำเป็นต้องเป็นอัจฉริยะด้านไอที นี่ถูกสร้างขึ้นสำหรับคุณที่ต้องการควบคุมเงินของคุณ แต่ถูกขัดขวางโดยกราฟที่ซับซ้อนและศัพท์เทคนิค",
-      "points": [
-        "คุณต้องการเรียนรู้ แต่ไม่รู้ว่าจะเริ่มจากที่ไหน",
-        "คุณต้องการหลีกเลี่ยงการหลอกลวงและข้อผิดพลาดของผู้เริ่มต้นที่มีราคาแพง",
-        "คุณให้คุณค่ากับความปลอดภัยและความโปร่งใส"
-      ]
-    },
-    "journey": {
-      "title": "การเดินทางของคุณ – ทีละขั้นตอน",
-      "week1": {
-        "title": "สัปดาห์ที่ 1: ความเข้าใจ",
-        "desc": "เรียนรู้พื้นฐานของคริปโตและการเทรด ตั้งค่าบัญชี paper trading ของคุณ"
-      },
-      "week2": {
-        "title": "สัปดาห์ที่ 2: กลยุทธ์",
-        "desc": "ค้นพบกลยุทธ์การเทรดที่แตกต่างกัน ฝึกซ้อมด้วยเงินเสมือน"
-      },
-      "week3": {
-        "title": "สัปดาห์ที่ 3: การวิเคราะห์",
-        "desc": "การวิเคราะห์ทางเทคนิคและพื้นฐาน เรียนรู้ที่จะอ่านกราฟและตัวบ่งชี้"
-      },
-      "week4": {
-        "title": "สัปดาห์ที่ 4: เทรดสด",
-        "desc": "เชื่อมต่อบัญชี Binance ของคุณและเริ่มเทรดด้วยเงินจริงอย่างปลอดภัย"
-      }
-    },
-    "support": {
-      "title": "ต้องการความช่วยเหลือ? เราอยู่ที่นี่!",
-      "desc": "รับคำตอบสำหรับคำถามของคุณจากทีมหรือชุมชนของเรา",
-      "button": "แชทกับเรา"
-    },
-    "features": {
-      "title": "ทุกสิ่งที่คุณต้องการเพื่อเชี่ยวชาญการเทรด",
-      "subtitle": "เราได้รวบรวมเครื่องมือที่ดีที่สุดเพื่อเรียนรู้การเทรดอย่างปลอดภัย มีโครงสร้าง และน่าสนใจ",
-      "paperTrading": {
-        "title": "Paper Trading",
-        "desc": "เริ่มต้นด้วย $100,000 ในเงินเล่น ฝึกซ้อมโดยไม่เสี่ยงเงินออมจริง"
-      },
-      "aiTeacher": {
-        "title": "ครู AI",
-        "desc": "รับคำแนะนำและคำอธิบายส่วนบุคคล ปรับให้เข้ากับระดับและเป้าหมายของคุณ"
-      },
-      "structured": {
-        "title": "การเรียนรู้ที่มีโครงสร้าง",
-        "desc": "ผสมผสานทฤษฎี การฝึกปฏิบัติ และแบบทดสอบ จากมือใหม่ไปสู่ขั้นสูงตามจังหวะของคุณเอง"
-      },
-      "safe": {
-        "title": "สภาพแวดล้อมที่ปลอดภัย",
-        "desc": "ไม่มีค่าธรรมเนียมที่ซ่อนอยู่ ไม่มีความกดดัน เรียนรู้ตามจังหวะของคุณเองโดยไม่มีความเครียด"
-      },
-      "anywhere": {
-        "title": "ฝึกซ้อมได้ทุกที่",
-        "desc": "ฝึกซ้อมได้ตลอดเวลา ทุกที่ บนมือถือ แท็บเล็ต หรือ PC"
-      },
-      "ctaTitle": "ลอง Paper Trading ตอนนี้",
-      "ctaSubtitle": "ไม่จำเป็นต้องลงทะเบียน"
-    },
-    "foundersOffer": {
-      "badge": "จำกัดเวลา",
-      "title": "เป็นหนึ่งใน 100 นักเรียนผู้ก่อตั้งคนแรก",
-      "subtitle": "รับประกันตำแหน่งของคุณในหมู่นักเรียนกลุ่มแรก",
-      "benefits": {
-        "tokens": "10,000 KLT Tokens",
-        "tokensDesc": "โทเค็นฟรีเมื่อเข้าสู่ระบบครั้งแรก",
-        "badge": "Founder Badge",
-        "badgeDesc": "ป้ายถาวรบนโปรไฟล์ของคุณ",
-        "price": "ราคาตลอดชีวิต",
-        "priceDesc": "รักษาราคาของคุณตลอดไป"
-      },
-      "cta": "รับตำแหน่งของฉันตอนนี้ →",
-      "spotsLeft": "ที่นั่งที่เหลืออยู่ ใครก่อนได้ก่อน!"
-    },
     "hero": {
-      "beta_badge": "เบต้า – เหลือเพียง 23/50 ที่นั่ง",
-      "title_emotional": "เรียนรู้การเทรดอย่างมืออาชีพ",
-      "hook_emotional": "ในอีกหนึ่งปี คุณจะดีใจที่เริ่มต้นวันนี้ –\nหรือเสียใจที่ไม่ได้เริ่ม",
-      "question_emotional": "คุณต้องการพบตัวเองแบบไหน?",
-      "description_emotional": "คอร์สที่มีโครงสร้าง การเทรดจำลองด้วยทุนเสมือน 1 ล้านบาท และ AI coach ที่พร้อมช่วยเหลือ ทุกอย่างในแพลตฟอร์มเดียว",
-      "cta_start": "เริ่มฟรี",
-      "cta_demo": "ดูตัวอย่าง",
-      "social_proof_rating": "4.9/5 จาก 127 นักเรียน",
-      "social_proof_active": "active traders"
+      "title": "Your personal AI trader.",
+      "subtitle": "Delivered up to +343% for our best users.",
+      "disclaimer": "Based on real paper trading results. Past performance does not guarantee future results.",
+      "cta-primary": "Start free",
+      "cta-secondary": "See JokerTrade"
     },
-    "modernHero": {
-      "badge": "Beta — Become one of the first traders",
-      "titlePart1": "Learn Trading",
-      "titlePart2": "Step by Step",
-      "subtitle": "From beginner to independent trader with structured learning and risk-free practice",
-      "bullets": "คุณพักผ่อน บอทของเราทำงาน 24/7 · คุณกำหนดความเสี่ยง · เงินจำลอง 100,000 NOK",
-      "ctaPrimary": "Try Paper Trading Free",
-      "ctaSecondary": "View Courses",
-      "trust1": "100% transparent",
-      "trust2": "No lock-in",
-      "trust3": "Risk-free practice"
+    "modes": {
+      "title": "One account — three ways to trade",
+      "subtitle": "You don't move money. You just switch who's driving.",
+      "manual": {
+        "name": "Manual",
+        "tagline": "You decide everything",
+        "description": "Buy and sell yourself. Full control."
+      },
+      "auto": {
+        "name": "Auto",
+        "tagline": "You + AI together",
+        "description": "Set rules. AI executes."
+      },
+      "joker": {
+        "name": "JokerTrade",
+        "tagline": "AI does everything",
+        "description": "Press start. AI handles the rest."
+      }
     },
-    "emailCapture": {
-      "badge": "Free course",
-      "title": "Get a free crypto course",
-      "subtitle": "Learn the basics of cryptocurrency and trading — delivered to your inbox.",
-      "placeholder": "Your email address",
-      "cta": "Sign up",
-      "loading": "Sending...",
-      "errorMsg": "Please enter a valid email address",
-      "successTitle": "You're signed up!",
-      "successDesc": "Check your inbox — the first lesson is on its way.",
-      "privacy": "We never share your email with third parties. Unsubscribe anytime."
-    },
-    "demoWidget": {
-      "title": "Try paper trading — completely free",
-      "subtitle": "Click buy and sell to see how trading works. No signup required.",
-      "portfolio": "Portfolio",
-      "positionLabel": "Position",
-      "buy": "Buy BTC",
-      "sell": "Sell BTC",
-      "overlay": "Sign up to trade with real data",
-      "overlayCta": "Start for free"
+    "socialProof": {
+      "title": "Top traders right now",
+      "verifiedBadge": "Verified",
+      "tradeCount": "trades",
+      "returnLabel": "return"
     }
   },
   "leagues": {
@@ -2360,5 +2235,52 @@
       "amount": "Antall",
       "value": "Verdi"
     }
+  },
+  "jokertrade": {
+    "hero": {
+      "title": "Your personal AI trader",
+      "stats": {
+        "balance": "100,000 kr",
+        "balanceLabel": "play money",
+        "agents": "12 agents",
+        "agentsLabel": "voting 24/7",
+        "setup": "30 seconds",
+        "setupLabel": "to set up"
+      },
+      "cta": "Start free — 30 seconds"
+    },
+    "welcome": {
+      "title": "Welcome to JokerTrade!",
+      "description": "Your AI trader is ready. Press the JOKER button and the AI will find the best trade opportunity right now."
+    },
+    "dashboard": {
+      "title": "JokerTrade",
+      "active": "Active",
+      "lastUpdated": "Last updated",
+      "totalPnl": "Total P&L",
+      "sinceStart": "Since start",
+      "openPositions": "Open positions",
+      "aiInsight": "Latest AI insight",
+      "runAnalysis": "Run new CryptoPilot analysis",
+      "recentTrades": "Recent trades",
+      "seeAll": "See all trades"
+    },
+    "position": {
+      "average": "Avg",
+      "current": "Now",
+      "agentVotes": "Agent votes",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "why": "Why?"
+    },
+    "button": {
+      "start": "Start AI",
+      "analyzing": "Analyzing..."
+    }
+  },
+  "joker": {
+    "button": "JOKER",
+    "loading": "Analyzing...",
+    "analysing": "🎭 Analyzing market..."
   }
 }

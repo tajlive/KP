@@ -21,6 +21,7 @@ import { isAppShellPath } from "@/lib/navigation/config";
 import { RootProviders } from "@/app/providers/RootProviders";
 import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
 import { Geist } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import { outfit } from "@/lib/perf/hero-font";
 import { getCriticalHeroCss } from "@/lib/perf/critical-hero-css";
 import { getThemeInitScript } from "@/shared/theme/theme-script";
@@ -80,6 +81,22 @@ const geist = Geist({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-geist",
+  preload: true,
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  preload: true,
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-instrument-serif",
   preload: true,
 });
 
@@ -178,7 +195,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     prefetchDNS(supabaseHost);
   }
   return (
-    <html lang={locale} className={`${outfit.variable} ${geist.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${outfit.variable} ${geist.variable} ${inter.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
       <head suppressHydrationWarning>
         {metaDescription != null ? (
           <meta name="description" content={metaDescription} />

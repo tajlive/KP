@@ -2184,7 +2184,7 @@
     "title": "Klarpakke",
     "headline": "Lær å handle crypto",
     "headlineHighlight": "trygt fra dag én.",
-    "titleLine1": "Jeg tapte 64\u00a0000\u00a0kr på krypto.",
+    "titleLine1": "Jeg tapte 64 000 kr på krypto.",
     "titleLine2": "Du trenger ikke gjøre det samme.",
     "subtitle": "Øv med 100 000 kr i lekepenger på sanntidskurser. Null risiko.",
     "stat1": "100 000 kr",
@@ -2228,265 +2228,37 @@
     "advanced": "Avansert"
   },
   "landing": {
-    "metadata": {
-      "title": "Klarpakke - Bygg din økonomiske fremtid"
-    },
-    "badge": "Klarpakke Universitet",
     "hero": {
-      "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
-      "title_emotional": "Lær Trading På Norsk",
-      "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
-      "question_emotional": "Hvilken versjon av deg selv vil du møte?",
-      "description_emotional": "Strukturerte kurs, lekepenger med 100 000 kr, og AI-coach som svarer på norsk. Alt på én plattform.",
-      "cta_start": "START GRATIS",
-      "cta_demo": "SE DEMO",
-      "social_proof_rating": "4.9/5 fra 127 studenter",
-      "social_proof_active": "aktive traders"
+      "title": "Din personlige AI-trader.",
+      "subtitle": "Skaffet opptil +343% for våre beste brukere.",
+      "disclaimer": "Basert på ekte papirhandel-resultater. Historisk avkastning garanterer ikke fremtidig avkastning.",
+      "cta-primary": "Start gratis",
+      "cta-secondary": "Se JokerTrade"
     },
-    "trustStrip": {
-      "stats": {
-        "paperCapital": "Virtuell startkapital",
-        "paperDesc": "Øv med ekte markedsdata",
-        "zero": "0 kr",
-        "riskFree": "Risikofritt",
-        "riskDesc": "Lær uten å tape penger",
-        "signals": "AI-signaler",
-        "signalsDesc": "Handel rundt klokken",
-        "growing": "Voksende",
-        "community": "Norsk fellesskap",
-        "communityDesc": "Norske tradere hjelper hverandre"
+    "modes": {
+      "title": "En konto — tre måter å trade på",
+      "subtitle": "Du flytter ikke penger. Du bytter bare hvem som styrer.",
+      "manual": {
+        "name": "Manuell",
+        "tagline": "Du bestemmer alt",
+        "description": "Kjøp og selg selv. Full kontroll."
       },
-      "payment": {
-        "secure": "Trygg betaling via"
+      "auto": {
+        "name": "Auto",
+        "tagline": "Du + AI sammen",
+        "description": "Sett regler. AI-en utfører."
+      },
+      "joker": {
+        "name": "JokerTrade",
+        "tagline": "AI gjør alt",
+        "description": "Trykk start. AI-en ordner resten."
       }
     },
-    "heroTitle": "Start i dag. <span>Bli ekspert på 4 uker.</span>",
-    "heroDescription": "Kom i gang på 2 minutter. Øv lavrisiko trading mens du lærer faget fra grunnen av.",
-    "heroButton": "Start nå",
-    "heroButtonSubtext": "Tar kun 2 minutter å komme i gang",
-    "marketsTitle": "Handl med dine favoritter direkte via Binance på våre systemer",
-    "realityCheck": {
-      "title": "Hva gjør du med 100-lappen?",
-      "subtitle": "Odds, bankkonto eller investering? Se forskjellen.",
-      "betting": {
-        "title": "Oddsen / Lotto",
-        "desc": "Hvis du better 100 kr på en kamp, er de borte hvis du taper. 'Huset' vinner alltid på lang sikt. Dette er underholdning, ikke sparing."
-      },
-      "bank": {
-        "title": "Banken",
-        "desc": "I banken får du renter, men inflasjonen spiser ofte opp gevinsten. Det er trygt, men pengene dine vokser knapt i kjøpekraft."
-      },
-      "crypto": {
-        "title": "Klarpakke (Binance)",
-        "gain": "Muligheter",
-        "desc": "Invester 100 kr i fremtiden. Med vår kunnskap lærer du å bygge verdi over tid. Start smått, drøm stort."
-      }
-    },
-    "whyUs": {
-      "title": "Hvorfor velge oss?",
-      "safe": {
-        "title": "Bygget for tillit",
-        "desc": "Klart språk, ekte menneskelig støtte, og ingen forvirrende fagspråk."
-      },
-      "simple": {
-        "title": "Enkelt som bankappen din",
-        "desc": "Kjente verktøy og klart språk — ingen læringskurve."
-      },
-      "tech": {
-        "title": "Smart teknologi",
-        "desc": "Vi bruker maskinlæring og sanntidsdata for å gi deg bedre innsikt i markedstrender."
-      }
-    },
-    "isForYou": {
-      "title": "Er dette for deg?",
-      "desc": "Du trenger ikke å være IT-geni. Dette er laget for deg som vil ha kontroll over pengene dine, men blir skremt av kompliserte grafer og faguttrykk.",
-      "points": [
-        "Du vil lære, men vet ikke hvor du skal starte",
-        "Du vil unngå svindel og dyre nybegynnerfeil",
-        "Du verdsetter sikkerhet og åpenhet"
-      ]
-    },
-    "journey": {
-      "title": "Din reise – steg for steg",
-      "week1": {
-        "title": "Uke 1: Forståelse",
-        "desc": "Lær det grunnleggende om krypto og trading. Sett opp din lekepenger-konto."
-      },
-      "week2": {
-        "title": "Uke 2: Strategi",
-        "desc": "Oppdag ulike trading-strategier. Øv med lekepenger."
-      },
-      "week3": {
-        "title": "Uke 3: Analyse",
-        "desc": "Teknisk og fundamental analyse. Lær å lese grafer og indikatorer."
-      },
-      "week4": {
-        "title": "Uke 4: Live Trading",
-        "desc": "Koble til din Binance-konto og start trading med ekte penger trygt."
-      }
-    },
-    "support": {
-      "title": "Trenger du hjelp? Vi er her!",
-      "desc": "Få svar på spørsmålene dine fra vårt team eller fellesskap.",
-      "button": "Chat med oss"
-    },
-    "features": {
-      "title": "Alt du trenger for å mestre trading",
-      "subtitle": "Vi har samlet de beste verktøyene for å lære trading på en trygg, strukturert og engasjerende måte.",
-      "paperTrading": {
-        "title": "Lekepenger",
-        "desc": "Start med kr 100 000 i lekepenger. Øv deg uten å risikere ekte sparepenger."
-      },
-      "aiTeacher": {
-        "title": "AI-lærer",
-        "desc": "Få personlige tips og forklaringer, tilpasset ditt nivå og dine mål."
-      },
-      "structured": {
-        "title": "Strukturert læring",
-        "desc": "Kombiner teori, praksis og quiz. Fra nybegynner til avansert på din egen takt."
-      },
-      "safe": {
-        "title": "Trygt miljø",
-        "desc": "Ingen skjulte gebyrer, ingen press. Lær i ditt eget tempo uten stress."
-      },
-      "anywhere": {
-        "title": "Øv deg hvor som helst",
-        "desc": "Øv deg når som helst, hvor som helst. På mobil, nettbrett eller PC."
-      },
-      "ctaTitle": "Prøv lekepenger nå",
-      "ctaSubtitle": "Ingen registrering nødvendig"
-    },
-    "foundersOffer": {
-      "badge": "TIDSAVGRENSET",
-      "title": "Bli en av de første 100 grunnlegger-studentene",
-      "subtitle": "Sikre din plass blant de første studentene",
-      "benefits": {
-        "tokens": "10 000 KLT Tokens",
-        "tokensDesc": "Gratis tokens ved første innlogging",
-        "badge": "Grunnlegger Badge",
-        "badgeDesc": "Permanent badge på profilen din",
-        "price": "Livstidspris",
-        "priceDesc": "Beholde prisen din for alltid"
-      },
-      "cta": "Sikre min plass nå →",
-      "spotsLeft": "plasser igjen. Først til mølle!"
-    },
-    "modernHero": {
-      "badge": "For småsparere som vil lære – uten å være tech-nerd",
-      "titlePart1": "Vi bruker de riktige verktøyene",
-      "titlePart2MutedPrefix": "for at ",
-      "titlePart2Emphasis": "du skal tjene ",
-      "titlePart2MutedSuffix": "penger.",
-      "subtitle": "Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.",
-      "bullets": "Du sover, våre Roboter jobber 24/7 • Du bestemmer risiko • 100 000 kr lekepenger",
-      "ctaPrimary": "Kom i gang gratis",
-      "ctaSecondary": "Se hvordan det fungerer",
-      "trust1": "Roboter 24/7",
-      "trust2": "Du bestemmer risiko",
-      "trust3": "100 000 kr lekepenger"
-    },
-    "emailCapture": {
-      "badge": "Gratis kurs",
-      "title": "Få gratis krypto-kurs",
-      "subtitle": "Lær det grunnleggende om kryptovaluta og trading — rett i innboksen din.",
-      "placeholder": "Din e-postadresse",
-      "cta": "Registrer deg",
-      "loading": "Sender...",
-      "errorMsg": "Vennligst oppgi en gyldig e-postadresse",
-      "successTitle": "Du er registrert!",
-      "successDesc": "Sjekk innboksen din — første leksjon er på vei.",
-      "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
-    },
-    "demoWidget": {
-      "title": "Prøv lekepenger — helt gratis",
-      "subtitle": "Klikk kjøp og selg for å se hvordan trading fungerer. Ingen registrering nødvendig.",
-      "portfolio": "Portefølje",
-      "positionLabel": "Posisjon",
-      "buy": "Kjøp BTC",
-      "sell": "Selg BTC",
-      "overlay": "Registrer deg for å handle med ekte data",
-      "overlayCta": "Start gratis nå",
-      "liveBadge": "Live",
-      "offlineNotice": "Offline notice",
-      "staleNotice": "Stale notice",
-      "livePrice": "Live pris",
-      "overlayLoggedIn": "Overlay logged in",
-      "overlayLoggedInCta": "Overlay logged in cta"
-    },
-    "bentoGrid": {
-      "liveSignalCard": {
-        "buy": "Kjøp",
-        "sell": "Selg",
-        "hold": "Hold",
-        "title": "Tittel",
-        "description": "Beskrivelse",
-        "latestSignal": "Latest signal",
-        "updatedEveryMinute": "Oppdatert every minute",
-        "feature1Title": "Feature 1 Title",
-        "feature1Desc": "Feature 1 Desc",
-        "feature2Title": "Feature 2 Title",
-        "feature2Desc": "Feature 2 Desc",
-        "feature3Title": "Feature 3 Title",
-        "feature3Desc": "Feature 3 Desc",
-        "feature4Title": "Feature 4 Title",
-        "feature4Desc": "Feature 4 Desc",
-        "feature5Title": "Feature 5 Title",
-        "feature5Desc": "Feature 5 Desc",
-        "feature6Title": "Feature 6 Title",
-        "feature6Desc": "Feature 6 Desc",
-        "feature7Title": "Feature 7 Title",
-        "feature7Desc": "Feature 7 Desc"
-      }
-    },
-    "common": {
-      "feature1Title": "Feature tittel",
-      "feature1Desc": "Feature desc",
-      "feature2Title": "Feature tittel",
-      "feature2Desc": "Feature desc",
-      "feature3Title": "Feature tittel",
-      "feature3Desc": "Feature desc",
-      "feature4Title": "Feature tittel",
-      "feature4Desc": "Feature desc",
-      "feature5Title": "Feature tittel",
-      "feature5Desc": "Feature desc",
-      "feature6Title": "Feature tittel",
-      "feature6Desc": "Feature desc",
-      "feature7Title": "Feature tittel",
-      "feature7Desc": "Feature desc"
-    },
-    "leaderboard": {
-      "returnLabel": "Return etikett",
-      "kltLabel": "Klt etikett",
-      "badge": "Utmerkelse",
-      "title": "Tittel",
-      "subtitle": "Undertittel",
-      "emptyTitle": "Ingen data tittel",
-      "emptyBody": "Ingen data body",
-      "ctaPrimary": "Cta primary",
-      "empty": "Ingen data",
-      "ctaSecondary": "Cta secondary",
-      "trustNote": "Trust note",
-      "gold": "Gold",
-      "silver": "Silver",
-      "bronze": "Bronze"
-    },
-    "liveMarketStrip": {
-      "title": "Tittel",
-      "offlineNotice": "Offline notice",
-      "staleNotice": "Stale notice",
-      "error": "Feil",
-      "empty": "Ingen data",
-      "volume": "Volume"
-    },
-    "paperHero": {
-      "badge": "Lekepenger",
-      "title": "Tittel",
-      "titleAccent": "Tittel accent",
-      "subtitle": "Undertittel",
-      "ctaPrimary": "Cta primary",
-      "ctaSecondary": "Cta secondary",
-      "trust1": "Trust",
-      "trust3": "Trust"
+    "socialProof": {
+      "title": "Topp tradere akkurat nå",
+      "verifiedBadge": "Verifisert",
+      "tradeCount": "handler",
+      "returnLabel": "avkastning"
     }
   },
   "tradingGuide": {
@@ -5927,6 +5699,53 @@
     "namePlaceholder": "Ola Nordmann",
     "avatarUrlPlaceholder": "https://eksempel.no/bilde.jpg",
     "deleteProfile": "Slett profil"
+  },
+  "joker": {
+    "button": "JOKER",
+    "loading": "Analyserer...",
+    "analysing": "🎭 Analyserer markedet..."
+  },
+  "jokertrade": {
+    "hero": {
+      "title": "Din personlige AI-trader",
+      "stats": {
+        "balance": "100 000 kr",
+        "balanceLabel": "lekepenger",
+        "agents": "12 agenter",
+        "agentsLabel": "stemmer 24/7",
+        "setup": "30 sekunder",
+        "setupLabel": "å sette opp"
+      },
+      "cta": "Start gratis — 30 sekunder"
+    },
+    "welcome": {
+      "title": "Velkommen til JokerTrade!",
+      "description": "Din AI-trader er klar. Trykk på JOKER-knappen så finner AI-en den beste trade-opportuniteten akkurat nå."
+    },
+    "dashboard": {
+      "title": "JokerTrade",
+      "active": "Aktiv",
+      "lastUpdated": "Sist oppdatert",
+      "totalPnl": "Total P&L",
+      "sinceStart": "Siden start",
+      "openPositions": "Åpne posisjoner",
+      "aiInsight": "Siste AI-innsikt",
+      "runAnalysis": "Kjør ny CryptoPilot-analyse",
+      "recentTrades": "Siste handler",
+      "seeAll": "Se alle handler"
+    },
+    "position": {
+      "average": "Snitt",
+      "current": "Nå",
+      "agentVotes": "Agent-stemmer",
+      "showMore": "Vis mer",
+      "showLess": "Vis mindre",
+      "why": "Hvorfor?"
+    },
+    "button": {
+      "start": "Start AI",
+      "analyzing": "Analyserer..."
+    }
   },
   "AdminSessions": {
     "unknownError": "Ukjent feil",
