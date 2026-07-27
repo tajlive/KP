@@ -37,11 +37,14 @@ function isTestAccount(name: string): boolean {
     lower.includes("+sim") ||
     lower.includes("+verify") ||
     lower.includes("direct test") ||
-    lower.includes("test") && lower.length < 20 ||
-    lower === "tom" ||
-    lower === "viking trader"
+    lower.includes("viking trader") ||
+    (lower.includes("test") && lower.length < 20) ||
+    lower === "tom"
   );
 }
+
+// Emoji / spesialtegn — skal ikke i display_name
+const HAS_EMOJI_OR_SYMBOL = /[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B06}]/u;
 
 // ---------------------------------------------------------------------------
 // Valider display_name — ingen HTML, quotes, eller kontrolltegn
@@ -57,6 +60,8 @@ function sanitizeDisplayName(name: string | null | undefined): string | null {
     const code = c.charCodeAt(0);
     return code > 31 && code !== 127;
   }).join("");
+  // Avvis emoji og spesialtegn
+  if (HAS_EMOJI_OR_SYMBOL.test(cleaned)) return null;
   // Avvis etter rens hvis fortsatt mistenkelig
   if (!cleaned || cleaned.length < 2 || cleaned.length > 50) return null;
   if (cleaned.includes("<") || cleaned.includes(">") || cleaned.includes("{") || cleaned.includes("}")) return null;
@@ -135,11 +140,14 @@ export async function GET(req: Request) {
       const safeName = sanitizeDisplayName(rawName);
       if (!safeName) continue;
 
+      // 4. Må ha minst 1 ekte trade for å vises på leaderboard
+      const stat = statsMap.get(uid);
+      const totalTrades = stat?.total_trades ?? 0;
+      if (totalTrades < 1) continue;
+
       const balance = Number(acc.current_balance ?? 0);
       const returnPct = ((balance - startBalance) / startBalance) * 100;
 
-      const stat = statsMap.get(uid);
-      const totalTrades = stat?.total_trades ?? 0;
       const winningTrades = stat?.winning_trades ?? 0;
       const winRate = totalTrades > 0
         ? Math.round((winningTrades / totalTrades) * 1000) / 10
