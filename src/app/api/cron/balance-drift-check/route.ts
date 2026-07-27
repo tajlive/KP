@@ -70,9 +70,31 @@ export async function GET(req: Request) {
       console.error("[balance-drift-check] Positions query failed:", posError);
     }
 
+    // Testbrukere (seedede @klarpakke.test-tradere + Toms testkonto) har
+    // fabrikkerte trade-historikker med >100× vekst by design — frita dem
+    // fra vekst-alarmen slik at den kun fyrer på ekte brukere.
+    const TEST_EMAIL_ALLOWLIST = new Set(["tom@klarpakke.no"]);
+    const growthExemptUserIds = new Set<string>();
+    try {
+      const { data: authData, error: authError } =
+        await supabase.auth.admin.listUsers({ perPage: 1000 });
+      if (authError) {
+        console.error("[balance-drift-check] listUsers failed:", authError);
+      }
+      for (const u of authData?.users ?? []) {
+        const email = u.email ?? "";
+        if (email.endsWith("@klarpakke.test") || TEST_EMAIL_ALLOWLIST.has(email)) {
+          growthExemptUserIds.add(u.id);
+        }
+      }
+    } catch (e) {
+      console.error("[balance-drift-check] Test user lookup failed:", e);
+    }
+
     const invariantViolations: InvariantViolation[] = checkAllInvariants(
       sessions,
-      negativePositions ?? []
+      negativePositions ?? [],
+      growthExemptUserIds
     );
 
     if (invariantViolations.length > 0) {
