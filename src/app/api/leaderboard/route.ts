@@ -1,14 +1,16 @@
 /**
- * Leaderboard API — Kun ekte brukere (FACT-AUDIT 2.2)
+ * Leaderboard API — Kun ekte, validerte brukere (FACT-AUDIT 2.1/2.2)
  *
  * GET /api/leaderboard?period=weekly
+ *
+ * Filtrerer eksplisitt bort:
+ * 1. Bot-profiler (AI-genererte navn fra seed-data)
+ * 2. Testkontoer (tom+sim, tom+verify, Direct Test, etc.)
+ * 3. Ugyldige display_name (injection, HTML, kontrolltegn)
  *
  * Bygger leaderboard fra paper_accounts (reell balanse),
  * trading_stats (antall handler, win-rate), og user_profiles (navn).
  * Ingen seed-data. Kun ekte brukere med faktiske handler.
- *
- * Tidligere: leste fra leaderboard_entries (seed-data med AI-navn og
- * oppdiktede return_pct som +4943%).
  */
 
 import { NextResponse } from "next/server";
@@ -17,6 +19,53 @@ import { createClient } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// ---------------------------------------------------------------------------
+// Svarteliste — AI-genererte bot-navn (FACT-AUDIT 2.1, BRIEF 3.3)
+// ---------------------------------------------------------------------------
+const BOT_DISPLAY_NAMES = new Set([
+  "Anne Mo", "Ingrid Sol", "Lars Vik", "Kari Aas", "Marte Hav",
+  "Per Berg", "Bjørn Fjell", "Trond Dal", "Silje Lund", "Ola Nordmann",
+]);
+
+// ---------------------------------------------------------------------------
+// Testkonto-mønstre (case-insensitive)
+// ---------------------------------------------------------------------------
+function isTestAccount(name: string): boolean {
+  const lower = name.toLowerCase();
+  return (
+    lower.includes("tom+") ||
+    lower.includes("+sim") ||
+    lower.includes("+verify") ||
+    lower.includes("direct test") ||
+    lower.includes("test") && lower.length < 20 ||
+    lower === "tom" ||
+    lower === "viking trader"
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Valider display_name — ingen HTML, quotes, eller kontrolltegn
+// ---------------------------------------------------------------------------
+function sanitizeDisplayName(name: string | null | undefined): string | null {
+  if (!name || typeof name !== "string") return null;
+  let cleaned = name
+    .replace(/<[^>]*>/g, "")      // strip HTML tags
+    .replace(/[""''«»]/g, "'") // normalize quotes
+    .trim();
+  // Fjern kontrolltegn
+  cleaned = cleaned.split("").filter((c) => {
+    const code = c.charCodeAt(0);
+    return code > 31 && code !== 127;
+  }).join("");
+  // Avvis etter rens hvis fortsatt mistenkelig
+  if (!cleaned || cleaned.length < 2 || cleaned.length > 50) return null;
+  if (cleaned.includes("<") || cleaned.includes(">") || cleaned.includes("{") || cleaned.includes("}")) return null;
+  return cleaned;
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/leaderboard
+// ---------------------------------------------------------------------------
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const period = searchParams.get("period") || "weekly";
@@ -24,7 +73,6 @@ export async function GET(req: Request) {
   try {
     const supabase = await createClient();
 
-    // Steg 1: Hent paper-account balanser
     const { data: accounts, error: accErr } = await supabase
       .from("paper_accounts")
       .select("user_id, current_balance")
@@ -42,38 +90,54 @@ export async function GET(req: Request) {
       return response;
     }
 
-    // Steg 2: Hent brukernavn for disse user_id-ene
     const userIds = accounts.map((a) => a.user_id).filter(Boolean);
+
     const { data: profiles } = await supabase
       .from("user_profiles")
       .select("user_id, display_name, avatar_url")
       .in("user_id", userIds);
 
-    // Steg 3: Hent trading-stats
     const { data: stats } = await supabase
       .from("trading_stats")
       .select("user_id, total_trades, winning_trades")
       .in("user_id", userIds);
 
-    // Bygg oppslag
-    const profileMap = new Map(
-      (profiles ?? []).map((p) => [p.user_id, p]),
-    );
-    const statsMap = new Map(
-      (stats ?? []).map((s) => [s.user_id, s]),
-    );
+    const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
+    const statsMap = new Map((stats ?? []).map((s) => [s.user_id, s]));
 
     const startBalance = 100_000;
-    const leaderboard = [];
+    const leaderboard: Array<{
+      user_id: string;
+      user_display_name: string;
+      avatar_url: string | null;
+      return_pct: number;
+      sharpe_ratio: number;
+      win_rate: number;
+      total_trades: number;
+      rank: number;
+      risk_level: string;
+      period: string;
+    }> = [];
 
     for (const acc of accounts) {
       const uid = acc.user_id;
       if (!uid || (uid as string).includes("0000-0000")) continue;
 
+      const profile = profileMap.get(uid);
+      const rawName = profile?.display_name ?? "";
+
+      // --- FILTRERING ---
+      // 1. Bot-navn
+      if (BOT_DISPLAY_NAMES.has(rawName)) continue;
+      // 2. Testkontoer
+      if (isTestAccount(rawName)) continue;
+      // 3. Valider/saniter
+      const safeName = sanitizeDisplayName(rawName);
+      if (!safeName) continue;
+
       const balance = Number(acc.current_balance ?? 0);
       const returnPct = ((balance - startBalance) / startBalance) * 100;
 
-      const profile = profileMap.get(uid);
       const stat = statsMap.get(uid);
       const totalTrades = stat?.total_trades ?? 0;
       const winningTrades = stat?.winning_trades ?? 0;
@@ -83,8 +147,7 @@ export async function GET(req: Request) {
 
       leaderboard.push({
         user_id: uid,
-        user_display_name: profile?.display_name
-          || `Trader***${String(uid).slice(0, 4)}`,
+        user_display_name: safeName,
         avatar_url: profile?.avatar_url ?? null,
         return_pct: Math.round(returnPct * 100) / 100,
         sharpe_ratio: 0,
@@ -96,17 +159,11 @@ export async function GET(req: Request) {
       });
     }
 
-    // Sorter og sett rank
     leaderboard.sort((a, b) => b.return_pct - a.return_pct);
-    leaderboard.forEach((row, i) => {
-      row.rank = i + 1;
-    });
+    leaderboard.forEach((row, i) => { row.rank = i + 1; });
 
     const response = NextResponse.json(leaderboard);
-    response.headers.set(
-      "Cache-Control",
-      "public, max-age=60, s-maxage=60, stale-while-revalidate=300",
-    );
+    response.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
     return response;
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

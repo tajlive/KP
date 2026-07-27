@@ -13,8 +13,9 @@ import { useTranslations } from "next-intl";
  *   SELECT pct_return FROM leaderboard ORDER BY pct_return DESC LIMIT 1
  */
 
-export default function HeroSection() {
+export default function HeroSection({ topReturn }: { topReturn?: number }) {
   const t = useTranslations("landing");
+  const pct = topReturn ?? 316;
 
   return (
     <section className="relative min-h-screen flex items-center bg-kp-bg-primary overflow-hidden">
@@ -32,7 +33,7 @@ export default function HeroSection() {
               {t("hero.title")}
             </h1>
             <p className="text-body sm:text-body text-kp-text-secondary max-w-lg mx-auto lg:mx-0 animate-fade-in">
-              {t("hero.subtitle")}
+              {t("hero.subtitle", { pct })}
             </p>
 
             {/* CTA-knapper */}
