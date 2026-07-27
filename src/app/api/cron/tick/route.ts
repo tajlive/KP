@@ -1599,10 +1599,10 @@ export async function GET(req: NextRequest) {
   }
 
   // ============================================================
-  // AUTO-RECOVERY: Gjenopprett krasjede paper-sessions
+  // AUTO-RECOVERY: Gjenopprett stalled sessions (paused + crashed)
   // ============================================================
   try {
-    await db.rpc("recover_crashed_paper_sessions");
+    await db.rpc("heal_stale_sessions" as never);
   } catch { /* ignore — best effort */ }
 
   const darkFleetBaseConfig: DarkFleetConfig | undefined =
