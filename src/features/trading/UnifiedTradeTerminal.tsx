@@ -514,6 +514,8 @@ export function UnifiedTradeTerminal() {
       return () => clearTimeout(id);
     }
     prevHasTraded.current = hasTraded;
+    return undefined;
+
   }, [hasTraded]);
 
   const handleModeChange = (m: TradeMode) => {

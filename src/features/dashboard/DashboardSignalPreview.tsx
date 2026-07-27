@@ -124,6 +124,8 @@ export function DashboardSignalPreview({
       return () => clearTimeout(timer);
     }
     prevTopIdRef.current = top;
+    return undefined;
+
   }, [signals]);
 
   if (loading) {

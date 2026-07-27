@@ -31,7 +31,7 @@
     // Relaxed for development ergonomics:
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitReturns": false,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,

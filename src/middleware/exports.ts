@@ -4,3 +4,4 @@ export { authMiddleware } from "./auth";
 export { rateLimitMiddleware } from "./rateLimit";
 export { cspMiddleware, generateCSPMetaContent, generateNonce } from "./csp";
 export { cacheControlMiddleware } from "./cache-control";
+export { correlationIdMiddleware } from "./correlation-id";

@@ -24,6 +24,7 @@ export function useProgress() {
         unsubscribe();
       };
     }
+    return;
   }, [user?.id]);
 
   // Hent fremgang for spesifikt kurs

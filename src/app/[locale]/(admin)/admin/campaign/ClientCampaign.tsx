@@ -82,6 +82,7 @@ export default function ClientCampaign() {
         .subscribe();
       return () => { supabase.removeChannel(channel); };
     }
+    return undefined;
   }, [isAdmin]);
 
   if (checking) {

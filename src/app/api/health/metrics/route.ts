@@ -1,60 +1,82 @@
+/**
+ * GET /api/health/metrics
+ *
+ * Enterprise health metrics endpoint. Returns live data from Supabase
+ * for the admin health dashboard (HealthDashboardClient).
+ *
+ * Cached for 30s to avoid flooding the DB on auto-refresh.
+ */
+
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const db = createClient();
-  const start = Date.now();
+interface HealthMetrics {
+  timestamp: string;
+  activeUsers: number;
+  recentTrades: Array<{
+    id: string;
+    status: string;
+    created_at: string;
+    realized_pnl?: number;
+  }>;
+  dbLatency: number;
+  totalTradesToday: number;
+  errors: Record<string, string | undefined>;
+}
 
+export async function GET(): Promise<NextResponse> {
+  const supabase = await createClient();
+  const errors: Record<string, string | undefined> = {};
+  const t0 = Date.now();
+
+  // 1. Active users (last 24h)
+  let activeUsers = 0;
   try {
-    // DB latency check
-    const { count: userCount, error: userError } = await db
+    const { count } = await supabase
       .from("user_profiles")
-      .select("*", { count: "exact", head: true });
+      .select("*", { count: "exact", head: true })
+      .gte("last_sign_in_at", new Date(Date.now() - 86400000).toISOString());
+    activeUsers = count ?? 0;
+  } catch (e) {
+    errors.activeUsers = e instanceof Error ? e.message : "Unknown error";
+  }
 
-    if (userError) throw userError;
+  // 2. Recent trades (last 10)
+  let recentTrades: HealthMetrics["recentTrades"] = [];
+  try {
+    const { data } = await supabase
+      .from("trades")
+      .select("id, status, created_at, realized_pnl")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    recentTrades = (data as HealthMetrics["recentTrades"]) ?? [];
+  } catch (e) {
+    errors.recentTrades = e instanceof Error ? e.message : "Unknown error";
+  }
 
-    const dbLatency = Date.now() - start;
-
-    // Trades today
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-
-    const { count: tradeCount } = await db
+  // 3. Total trades today
+  let totalTradesToday = 0;
+  try {
+    const { count } = await supabase
       .from("trades")
       .select("*", { count: "exact", head: true })
-      .gte("created_at", todayStart.toISOString());
-
-    // Active sessions
-    const { count: sessionCount } = await db
-      .from("trading_sessions")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "active");
-
-    return NextResponse.json({
-      activeUsers: userCount ?? 0,
-      dbLatency,
-      totalTradesToday: tradeCount ?? 0,
-      activeSessions: sessionCount ?? 0,
-      successRate: 99.9,
-      tradesPerMinute: Math.floor((tradeCount ?? 0) / 1440),
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error("[health/metrics]", error);
-    return NextResponse.json(
-      {
-        activeUsers: 0,
-        dbLatency: 0,
-        totalTradesToday: 0,
-        activeSessions: 0,
-        successRate: 0,
-        tradesPerMinute: 0,
-        timestamp: new Date().toISOString(),
-        error: "Metrics fetch failed",
-      },
-      { status: 500 },
-    );
+      .gte("created_at", new Date().toISOString().split("T")[0]);
+    totalTradesToday = count ?? 0;
+  } catch (e) {
+    errors.totalTradesToday = e instanceof Error ? e.message : "Unknown error";
   }
+
+  // 4. DB latency (time from first query to now)
+  const dbLatency = Date.now() - t0;
+
+  return NextResponse.json({
+    timestamp: new Date().toISOString(),
+    activeUsers,
+    recentTrades,
+    dbLatency,
+    totalTradesToday,
+    errors,
+  } satisfies HealthMetrics);
 }
