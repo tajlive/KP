@@ -60,6 +60,7 @@ function formatJson(level: LogEntry["level"], msg: string, ctx?: unknown): strin
 export const logger = {
   debug: (msg: string, ctx?: unknown) => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.debug(formatJson("debug", msg, ctx));
     }
   },
