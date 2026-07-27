@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import HeroSection from "@/components/landing/HeroSection";
+import { TradingModesExplainer } from "@/components/landing/TradingModesExplainer";
 import { generateMarketingMetadata } from "@/shared/ui/marketing";
 
 export const runtime = "nodejs";
@@ -29,5 +30,10 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return (<main><HeroSection /></main>);
+  return (
+    <main>
+      <HeroSection />
+      <TradingModesExplainer />
+    </main>
+  );
 }
