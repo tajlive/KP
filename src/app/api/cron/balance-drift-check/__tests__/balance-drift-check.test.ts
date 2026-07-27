@@ -84,6 +84,13 @@ describe("Balance Drift Check", () => {
             })),
           };
         }
+        if (table === "positions") {
+          return {
+            select: vi.fn(() => ({
+              lt: vi.fn().mockResolvedValue({ data: [], error: null }),
+            })),
+          };
+        }
         return { select: vi.fn(() => ({ in: vi.fn().mockResolvedValue({ data: [], error: null }) })) };
       }),
     };
@@ -101,5 +108,69 @@ describe("Balance Drift Check", () => {
     expect(json.driftCount).toBe(1);
     expect(json.drifts).toHaveLength(1);
     expect(json.drifts[0].maxDriftPct).toBeCloseTo(0.05, 2);
+    expect(json.invariantViolationCount).toBe(0);
+  });
+
+  it("detects invariant violations (negative capital + negative position)", async () => {
+    mockSupabase = {
+      from: vi.fn((table: string) => {
+        if (table === "trading_sessions") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                eq: vi.fn().mockResolvedValue({
+                  data: [
+                    {
+                      id: "s1",
+                      user_id: "u1",
+                      current_capital_nok: -500,
+                      current_capital: -500,
+                      initial_capital: 100000,
+                      starting_capital_nok: 100000,
+                    },
+                  ],
+                  error: null,
+                }),
+              })),
+            })),
+          };
+        }
+        if (table === "positions") {
+          return {
+            select: vi.fn(() => ({
+              lt: vi.fn().mockResolvedValue({
+                data: [
+                  { id: "p1", session_id: "s1", user_id: "u1", symbol: "BTCUSDT", quantity: -0.5 },
+                ],
+                error: null,
+              }),
+            })),
+          };
+        }
+        if (table === "user_profiles") {
+          return {
+            select: vi.fn(() => ({
+              in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            })),
+          };
+        }
+        return { select: vi.fn(() => ({ in: vi.fn().mockResolvedValue({ data: [], error: null }) })) };
+      }),
+    };
+
+    const { GET } = await import("../route");
+    const req = new Request("http://localhost/api/cron/balance-drift-check", {
+      headers: { authorization: "Bearer test-secret" },
+    });
+
+    const res = await GET(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.invariantViolationCount).toBe(2);
+    expect(json.invariantViolations.map((v: any) => v.kind).sort()).toEqual([
+      "negative_capital",
+      "negative_position",
+    ]);
   });
 });
