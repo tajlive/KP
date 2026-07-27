@@ -1,0 +1,196 @@
+{
+  "$schema": "https://klarpakke.no/schemas/design-tokens.json",
+  "version": "2.0.0",
+  "description": "Klarpakke design tokens — CSS-first for Tailwind v4 @theme. Generert av K3 MAX 2026-07-27.",
+  "theme": {
+    "colors": {
+      "bg-primary": "#0A0B0D",
+      "bg-secondary": "#0F1116",
+      "bg-tertiary": "#111318",
+      "bg-elevated": "#16181D",
+      "bg-card": "#111318",
+      "bg-hover": "#1A1D24",
+      "bg-active": "#1F222A",
+      "text-primary": "#F9FAFB",
+      "text-secondary": "#9CA3AF",
+      "text-tertiary": "#7B8290",
+      "text-muted": "#6B7280",
+      "border": "#2A2D35",
+      "border-light": "#353840",
+      "border-dark": "#1F2228",
+      "border-brand": "rgba(245, 158, 11, 0.2)",
+      "brand": "#F59E0B",
+      "brand-light": "#FCD34D",
+      "brand-dark": "#B45309",
+      "brand-hover": "#F59E0B",
+      "brand-glow": "rgba(245, 158, 11, 0.3)",
+      "brand-subtle": "rgba(245, 158, 11, 0.1)",
+      "surface": "#111318",
+      "surface-elevated": "#16181D",
+      "surface-highlight": "#1F222A",
+      "input-bg": "#1A1D24",
+      "input-border": "#2A2D35",
+      "input-border-focus": "#F59E0B",
+      "input-text": "#F9FAFB",
+      "input-placeholder": "#6B7280",
+      "success": "#22C55E",
+      "success-bg": "rgba(34, 197, 94, 0.1)",
+      "warning": "#F59E0B",
+      "warning-bg": "rgba(245, 158, 11, 0.1)",
+      "danger": "#EF4444",
+      "danger-bg": "rgba(239, 68, 68, 0.1)",
+      "nav-bg": "#0A0B0D",
+      "nav-text": "#F9FAFB",
+      "nav-text-muted": "#9CA3AF"
+    },
+    "modePalettes": {
+      "manual": {
+        "primary": "#10B981",
+        "gradient-from": "rgba(16, 185, 129, 0.15)",
+        "gradient-to": "rgba(16, 185, 129, 0.05)",
+        "accent": "rgba(16, 185, 129, 0.2)"
+      },
+      "auto": {
+        "primary": "#F59E0B",
+        "gradient-from": "rgba(245, 158, 11, 0.15)",
+        "gradient-to": "rgba(245, 158, 11, 0.05)",
+        "accent": "rgba(245, 158, 11, 0.2)"
+      },
+      "joker": {
+        "primary": "#8B5CF6",
+        "gradient-from": "rgba(139, 92, 246, 0.15)",
+        "gradient-to": "rgba(139, 92, 246, 0.05)",
+        "accent": "rgba(139, 92, 246, 0.2)"
+      }
+    },
+    "brandScale": {
+      "50": "#EFF6FF",
+      "100": "#DBEAFE",
+      "200": "#BFDBFE",
+      "300": "#93C5FD",
+      "400": "#60A5FA",
+      "500": "#0052FF",
+      "600": "#0047E0",
+      "700": "#0039C7",
+      "800": "#002FA3",
+      "900": "#002680"
+    },
+    "spacing": {
+      "section": "py-20",
+      "section-sm": "py-12",
+      "card": "p-6",
+      "card-sm": "p-4",
+      "card-lg": "p-8",
+      "button": "px-6 py-3",
+      "button-lg": "px-8 py-4",
+      "gap": "gap-4",
+      "gap-lg": "gap-6"
+    },
+    "borderRadius": {
+      "button": "12px",
+      "card": "16px",
+      "card-lg": "20px",
+      "card-xl": "24px",
+      "badge": "9999px",
+      "input": "10px"
+    },
+    "shadows": {
+      "glass": "0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+      "glass-hover": "0 8px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+      "glow-brand": "0 0 40px rgba(245, 158, 11, 0.3)",
+      "glow-success": "0 0 30px rgba(34, 197, 94, 0.25)",
+      "glow-danger": "0 0 30px rgba(239, 68, 68, 0.25)",
+      "floating": "0 20px 50px rgba(0, 0, 0, 0.3)"
+    },
+    "typography": {
+      "fontFamily": {
+        "sans": "var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "serif": "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif",
+        "display": "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif"
+      },
+      "fontSize": {
+        "display": ["4rem", { "lineHeight": "1.1", "letterSpacing": "-0.02em" }],
+        "display-sm": ["3rem", { "lineHeight": "1.1", "letterSpacing": "-0.02em" }],
+        "heading": ["2.5rem", { "lineHeight": "1.2", "letterSpacing": "-0.01em" }],
+        "heading-sm": ["2rem", { "lineHeight": "1.2", "letterSpacing": "-0.01em" }],
+        "title": ["1.5rem", { "lineHeight": "1.3" }],
+        "title-sm": ["1.25rem", { "lineHeight": "1.4" }],
+        "body": ["1.125rem", { "lineHeight": "1.6" }],
+        "body-sm": ["1rem", { "lineHeight": "1.6" }],
+        "caption": ["0.875rem", { "lineHeight": "1.5" }],
+        "badge": ["0.75rem", { "lineHeight": "1.4" }]
+      }
+    },
+    "animations": {
+      "fade-up": "fadeUp 0.5s ease-out forwards",
+      "fade-in": "fadeIn 0.3s ease-out forwards",
+      "slide-up": "slideUp 0.4s ease-out forwards",
+      "pulse-soft": "pulseSoft 2s ease-in-out infinite",
+      "shimmer": "shimmer 2s linear infinite",
+      "float": "float 6s ease-in-out infinite",
+      "glow-pulse": "glowPulse 2s ease-in-out infinite"
+    }
+  },
+  "componentTokens": {
+    "card": {
+      "padding": "p-6",
+      "borderRadius": "rounded-2xl",
+      "border": "border border-kp-border",
+      "background": "bg-kp-bg-card",
+      "hover": "hover:border-kp-border-light hover:bg-kp-bg-hover"
+    },
+    "button-primary": {
+      "padding": "px-6 py-3",
+      "borderRadius": "rounded-button",
+      "background": "bg-kp-brand hover:bg-kp-brand-dark",
+      "text": "text-kp-bg-primary font-bold",
+      "shadow": "shadow-lg shadow-kp-brand/20",
+      "transition": "transition-all duration-200"
+    },
+    "button-secondary": {
+      "padding": "px-6 py-3",
+      "borderRadius": "rounded-button",
+      "border": "border border-kp-border",
+      "background": "bg-transparent hover:bg-kp-bg-hover",
+      "text": "text-kp-text-primary font-bold",
+      "transition": "transition-all duration-200"
+    },
+    "button-ghost": {
+      "padding": "px-4 py-2",
+      "borderRadius": "rounded-button",
+      "background": "bg-transparent hover:bg-kp-bg-hover/50",
+      "text": "text-kp-text-secondary",
+      "transition": "transition-all duration-150"
+    },
+    "badge": {
+      "padding": "px-2 py-0.5",
+      "borderRadius": "rounded-badge",
+      "fontSize": "text-badge",
+      "fontWeight": "font-bold"
+    },
+    "input": {
+      "padding": "px-4 py-2.5",
+      "borderRadius": "rounded-input",
+      "border": "border border-kp-input-border",
+      "background": "bg-kp-input-bg",
+      "text": "text-kp-input-text",
+      "placeholder": "placeholder:text-kp-input-placeholder",
+      "focus": "focus:border-kp-input-border-focus focus:ring-2 focus:ring-kp-brand/20",
+      "transition": "transition-all duration-150"
+    }
+  },
+  "migrationMap": {
+    "globals.css hex replacements": {
+      "border-[#2A2D35]": "border-kp-border",
+      "bg-[#F59E0B]": "bg-kp-brand",
+      "text-[#F59E0B]": "text-kp-brand",
+      "bg-[#111318]": "bg-kp-bg-card",
+      "text-[#F9FAFB]": "text-kp-text-primary",
+      "text-[#9CA3AF]": "text-kp-text-secondary",
+      "text-[#6B7280]": "text-kp-text-muted",
+      "border-[#F59E0B]/20": "border-kp-border-brand",
+      "bg-[#0A0B0D]": "bg-kp-bg-primary",
+      "bg-[#1A1D24]": "bg-kp-bg-hover"
+    }
+  }
+}

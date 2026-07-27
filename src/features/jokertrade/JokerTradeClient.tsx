@@ -1,17 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "@/lib/auth/new/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { JokerIcon } from "./JokerIcons";
+import { useTranslations } from "next-intl";
 import { JokerButton } from "./JokerButton";
-import { TradeStatus } from "./TradeStatus";
-import { ActivePositions } from "./ActivePositions";
+import { AgentVotes, type AgentVote } from "./AgentVotes";
+import { PositionCard, type PositionData } from "./PositionCard";
 import { TradeHistory } from "./TradeHistory";
-import { LiveFeed } from "@/features/live/LiveFeed";
-import { JokerPush } from "@/features/live/JokerPush";
-import { LeaderboardChanges } from "@/features/live/LeaderboardChanges";
-import { Sparkles, LogIn, ArrowDown } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -57,6 +53,10 @@ interface JokerTradeData {
   mode: "paper" | "live";
   positions: Position[];
   history: TradeRecord[];
+  agent_votes?: AgentVote[];
+  total_buy?: number;
+  total_sell?: number;
+  total_hold?: number;
 }
 
 interface JokerTradeClientProps {
@@ -64,75 +64,127 @@ interface JokerTradeClientProps {
 }
 
 // ---------------------------------------------------------------------------
-// Login prompt for unauthenticated users
+// Helpers
 // ---------------------------------------------------------------------------
 
-function LoginPrompt() {
-  const router = useRouter();
+function formatNOK(value: number): string {
+  const abs = Math.abs(value);
+  const formatted = abs.toLocaleString("no-NO", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${value >= 0 ? "+" : "-"}${formatted} kr`;
+}
+
+function timeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s siden`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}min siden`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}t siden`;
+}
+
+// ---------------------------------------------------------------------------
+// State A: Not logged in — Hero with stats
+// ---------------------------------------------------------------------------
+
+function HeroPrompt() {
+  const t = useTranslations("jokertrade");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 text-center">
-      <JokerIcon className="mx-auto h-16 w-16 sm:h-20 sm:w-20 text-[#F59E0B]" />
-      <h2 className="mt-6 font-sans text-2xl font-extrabold text-[#F9FAFB] sm:text-3xl">
-        Klar for å la AI-en handle for deg?
-      </h2>
-      <p className="mx-auto mt-3 max-w-md text-sm text-[#9CA3AF] sm:text-base">
-        JokerTrade er din personlige AI-trader. Den analyserer markedet 24/7 og
-        finner de beste handlene — mens du gjør andre ting.
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-20 text-center">
+      {/* Joker emoji */}
+      <div className="mb-6">
+        <span className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-kp-brand/10 text-4xl shadow-[0_0_40px_rgba(245,158,11,0.2)]">
+          🃏
+        </span>
+      </div>
+
+      <h1 className="font-sans text-3xl font-extrabold tracking-tight text-kp-text-primary sm:text-4xl">
+        {t("heroTitle")}
+      </h1>
+      <p className="mx-auto mt-3 max-w-lg text-sm text-kp-text-secondary sm:text-base">
+        {t("heroDesc")}
       </p>
 
-      <div className="mt-8 rounded-xl border border-[#2A2D35] bg-[#15171B] p-6 text-left">
-        <h3 className="font-sans text-sm font-bold text-[#F9FAFB]">
-          🎭 Slik fungerer det:
+      {/* Stats row */}
+      <div className="mt-10 flex items-center justify-center gap-8 text-center">
+        <div>
+          <p className="font-mono text-2xl font-bold text-kp-text-primary sm:text-3xl">
+            100K
+          </p>
+          <p className="text-xs text-kp-text-muted">{t("statsTraders")}</p>
+        </div>
+        <div className="h-10 w-px bg-kp-border" />
+        <div>
+          <p className="font-mono text-2xl font-bold text-kp-text-primary sm:text-3xl">
+            12
+          </p>
+          <p className="text-xs text-kp-text-muted">{t("statsTrades")}</p>
+        </div>
+        <div className="h-10 w-px bg-kp-border" />
+        <div>
+          <p className="font-mono text-2xl font-bold text-kp-text-primary sm:text-3xl">
+            30
+          </p>
+          <p className="text-xs text-kp-text-muted">{t("statsResponse")}</p>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="mt-10">
+        <a
+          href="/no/register"
+          className="inline-flex items-center gap-2 rounded-2xl bg-kp-brand px-10 py-5 font-extrabold text-kp-bg-primary transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_rgba(245,158,11,0.6)] active:scale-[0.98]"
+        >
+          {t("startFree")}
+        </a>
+      </div>
+
+      {/* How it works */}
+      <div className="mx-auto mt-12 max-w-md rounded-2xl border border-kp-border bg-kp-bg-card/80 p-6 text-left backdrop-blur-xl">
+        <h3 className="font-sans text-sm font-bold text-kp-text-primary">
+          {t("howItWorks")}
         </h3>
-        <ol className="mt-4 space-y-3 text-sm text-[#9CA3AF]">
+        <ol className="mt-4 space-y-4 text-sm text-kp-text-secondary">
           <li className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F59E0B]/15 text-xs font-bold text-[#F59E0B]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-kp-brand/15 text-xs font-bold text-kp-brand">
               1
             </span>
             <span>
-              <strong className="text-[#F9FAFB]">Logg inn</strong> — opprett en
-              gratis konto på 30 sekunder
+              <strong className="text-kp-text-primary">{t("step1Title")}</strong>{" "}
+              — {t("step1Desc")}
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F59E0B]/15 text-xs font-bold text-[#F59E0B]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-kp-brand/15 text-xs font-bold text-kp-brand">
               2
             </span>
             <span>
-              <strong className="text-[#F9FAFB]">Trykk JOKER</strong> — AI-en
-              analyserer markedet og finner beste trade
+              <strong className="text-kp-text-primary">{t("step2Title")}</strong>{" "}
+              — {t("step2Desc")}
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F59E0B]/15 text-xs font-bold text-[#F59E0B]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-kp-brand/15 text-xs font-bold text-kp-brand">
               3
             </span>
             <span>
-              <strong className="text-[#F9FAFB]">Se pengene vokse</strong> —
-              du får 100 000 kr i lekepenger. Null risiko.
+              <strong className="text-kp-text-primary">{t("step3Title")}</strong>{" "}
+              — {t("step3Desc")}
             </span>
           </li>
         </ol>
       </div>
 
-      <button
-        onClick={() => router.push("/no/login?next=%2Fno%2Fjokertrade")}
-        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#F59E0B] px-8 py-4 font-bold text-[#0A0B0D] shadow-[0_0_30px_rgba(245,158,11,0.4)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_rgba(245,158,11,0.6)] active:scale-[0.98]"
-      >
-        <LogIn className="h-5 w-5" />
-        Logg inn og start JokerTrade
-      </button>
-
-      <p className="mt-4 text-xs text-[#6B7280]">
-        Gratis — 100 000 kr i lekepenger — ingen binding
-      </p>
+      <p className="mt-8 text-xs text-kp-text-muted">{t("ctaSubtext")}</p>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Welcome for first-time users
+// State B: Logged in, no trades — WelcomeBanner with JokerButton
 // ---------------------------------------------------------------------------
 
 function WelcomeBanner({
@@ -142,46 +194,41 @@ function WelcomeBanner({
   onStart: () => Promise<void>;
   loading: boolean;
 }) {
+  const t = useTranslations("jokertrade");
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 text-center">
-      <div className="mx-auto max-w-lg rounded-2xl border border-[#F59E0B]/20 bg-gradient-to-b from-[#F59E0B]/5 to-transparent p-6 sm:p-8">
-        <JokerIcon className="mx-auto h-14 w-14 text-[#F59E0B]" />
-        <h2 className="mt-4 font-sans text-xl font-extrabold text-[#F9FAFB] sm:text-2xl">
-          🎭 Velkommen til JokerTrade!
+      <div className="mx-auto max-w-lg rounded-2xl border border-kp-border-brand/20 bg-gradient-to-b from-kp-brand-subtle to-transparent p-6 sm:p-8">
+        <span className="inline-flex h-14 w-14 items-center justify-center text-3xl">
+          🃏
+        </span>
+        <h2 className="mt-4 font-sans text-xl font-extrabold text-kp-text-primary sm:text-2xl">
+          {t("welcomeTitle")}
         </h2>
-        <p className="mt-2 text-sm text-[#9CA3AF] sm:text-base">
-          Din AI-trader er klar. Trykk på JOKER-knappen så finner AI-en den
-          beste trade-opportuniteten akkurat nå — helt automatisk.
+        <p className="mt-2 text-sm text-kp-text-secondary sm:text-base">
+          {t("welcomeDesc")}
         </p>
-        <ul className="mt-4 space-y-2 text-left text-xs text-[#9CA3AF] sm:text-sm">
+        <ul className="mt-4 space-y-2 text-left text-xs text-kp-text-secondary sm:text-sm">
           <li className="flex items-start gap-2">
-            <span className="mt-0.5 shrink-0 text-[#F59E0B]">🎯</span>
-            <span>
-              AI-en scanner 50+ kryptopar og velger det med høyest sannsynlighet
-              for gevinst
-            </span>
+            <span className="mt-0.5 shrink-0 text-kp-brand">🎯</span>
+            <span>{t("welcomeBullet1")}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="mt-0.5 shrink-0 text-[#F59E0B]">🛡️</span>
-            <span>
-              Du handler med <strong>lekepenger</strong> — 100 000 kr, null
-              risiko
-            </span>
+            <span className="mt-0.5 shrink-0 text-kp-brand">🛡️</span>
+            <span>{t("welcomeBullet2")}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="mt-0.5 shrink-0 text-[#F59E0B]">📊</span>
-            <span>
-              Alle handler logges så du kan følge med på resultatene
-            </span>
+            <span className="mt-0.5 shrink-0 text-kp-brand">📊</span>
+            <span>{t("welcomeBullet3")}</span>
           </li>
         </ul>
 
-        <div className="flex justify-center">
+        <div className="mt-6 flex justify-center">
           <JokerButton onClick={onStart} loading={loading} />
         </div>
 
-        <p className="mt-3 text-[10px] text-[#6B7280]">
-          AI-drevne analyser — ikke finansiell rådgivning
+        <p className="mt-3 text-[10px] text-kp-text-muted">
+          {t("disclaimer")}
         </p>
       </div>
     </div>
@@ -189,23 +236,63 @@ function WelcomeBanner({
 }
 
 // ---------------------------------------------------------------------------
-// Component
+// StatCard (internal)
+// ---------------------------------------------------------------------------
+
+function StatCard({
+  label,
+  value,
+  mono,
+  color,
+}: {
+  label: string;
+  value: string;
+  mono: boolean;
+  color: string;
+}) {
+  return (
+    <div className="rounded-lg border border-kp-border bg-kp-bg-secondary px-4 py-3">
+      <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-kp-text-muted">
+        {label}
+      </p>
+      <p
+        className={`mt-1 text-lg font-bold tabular-nums ${
+          mono ? "font-mono" : "font-sans"
+        } ${color}`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main component
 // ---------------------------------------------------------------------------
 
 export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations("jokertrade");
+  const router = useRouter();
+
   const dataInit: JokerTradeData = initialData ?? {
     status: "active",
     insight: null,
     mode: "paper",
     positions: [],
     history: [],
+    agent_votes: [],
+    total_buy: 0,
+    total_sell: 0,
+    total_hold: 0,
   };
+
   const [data, setData] = useState<JokerTradeData>(dataInit);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [triggeringJoker, setTriggeringJoker] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const hasTrades = data.history.length > 0 || data.positions.length > 0;
 
   // -----------------------------------------------------------------------
@@ -224,6 +311,10 @@ export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
           mode: json.mode,
           positions: json.positions,
           history: json.history,
+          agent_votes: json.agent_votes ?? [],
+          total_buy: json.total_buy ?? 0,
+          total_sell: json.total_sell ?? 0,
+          total_hold: json.total_hold ?? 0,
         });
         setLastUpdated(new Date());
       }
@@ -279,169 +370,129 @@ export function JokerTradeClient({ initialData }: JokerTradeClientProps) {
   const totalPnl = openPnl + closedPnl;
 
   // -----------------------------------------------------------------------
-  // Format helpers
-  // -----------------------------------------------------------------------
-
-  function formatNOK(value: number): string {
-    const abs = Math.abs(value);
-    const formatted = abs.toLocaleString("no-NO", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    return `${value >= 0 ? "+" : "-"}${formatted} kr`;
-  }
-
-  function timeAgo(date: Date): string {
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (seconds < 60) return `${seconds}s siden`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}min siden`;
-    const hours = Math.floor(minutes / 60);
-    return `${hours}t siden`;
-  }
-
-  // -----------------------------------------------------------------------
   // Auth states
   // -----------------------------------------------------------------------
 
-  // Loading — show spinner
+  // Loading — auth spinner
   if (authLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#F59E0B] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-kp-brand border-t-transparent" />
       </div>
     );
   }
 
-  // Not logged in — show login prompt
+  // STATE A: Not logged in — hero with stats + CTA
   if (!user) {
-    return <LoginPrompt />;
+    return <HeroPrompt />;
   }
 
-  // Logged in, first time — show welcome
+  // STATE B: Logged in, no trades — WelcomeBanner
   if (!hasTrades) {
     return <WelcomeBanner onStart={triggerJoker} loading={triggeringJoker} />;
   }
 
-  // Logged in with trades — full dashboard
+  // STATE C: Logged in with trades — full dashboard
   return (
-    <div id="jokertrade-dashboard" className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+    <div
+      id="jokertrade-dashboard"
+      className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8"
+    >
       {/* Page header */}
       <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-sans text-3xl font-extrabold tracking-tight text-[#F9FAFB] sm:text-4xl">
-            🎭 JokerTrade
+          <h1 className="font-sans text-3xl font-extrabold tracking-tight text-kp-text-primary sm:text-4xl">
+            {t("dashboardTitle")}
           </h1>
-          <p className="mt-1 font-sans text-sm text-[#6B7280]">
-            AI-drevet trading — {data.mode === "paper" ? "Lekepenger" : "Live"}
+          <p className="mt-1 font-sans text-sm text-kp-text-muted">
+            {t("dashboardSubtitle", {
+              mode: data.mode === "paper" ? "Lekepenger" : "Live",
+            })}
           </p>
         </div>
 
-        <span className="font-sans text-xs text-[#6B7280]">
-          Sist oppdatert: {timeAgo(lastUpdated)}
+        <span className="font-sans text-xs text-kp-text-muted">
+          {t("updatedAgo", { time: timeAgo(lastUpdated) })}
         </span>
       </div>
 
       {/* Stats cards */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         <StatCard
-          label="Åpne posisjoner"
+          label={t("openPositions")}
           value={String(data.positions.length)}
           mono={false}
-          color="text-[#F9FAFB]"
+          color="text-kp-text-primary"
         />
         <StatCard
-          label="Lukkede trades"
+          label={t("closedTrades")}
           value={String(data.history.length)}
           mono={false}
-          color="text-[#F9FAFB]"
+          color="text-kp-text-primary"
         />
         <StatCard
-          label="Open P&L"
+          label={t("openPnl")}
           value={formatNOK(openPnl)}
           mono
-          color={openPnl >= 0 ? "text-[#10B981]" : "text-[#EF4444]"}
+          color={openPnl >= 0 ? "text-kp-success" : "text-kp-danger"}
         />
         <StatCard
-          label="Total P&L"
+          label={t("totalPnl")}
           value={formatNOK(totalPnl)}
           mono
-          color={totalPnl >= 0 ? "text-[#10B981]" : "text-[#EF4444]"}
+          color={totalPnl >= 0 ? "text-kp-success" : "text-kp-danger"}
         />
-      </div>
-
-      {/* Joker Button */}
-      <div className="mb-6 sm:mb-8">
-        <JokerButton onClick={triggerJoker} loading={triggeringJoker} />
       </div>
 
       {/* Main content grid */}
-      <div className="grid gap-4 sm:gap-6">
-        <TradeStatus
-          status={data.status}
-          insight={data.insight}
-          mode={data.mode}
-        />
-        <ActivePositions positions={data.positions} />
+      <div className="grid gap-6">
+        {/* Joker Button */}
+        <div className="flex justify-center">
+          <JokerButton onClick={triggerJoker} loading={triggeringJoker} />
+        </div>
+
+        {/* Open positions */}
+        {data.positions.length > 0 && (
+          <div>
+            <h2 className="mb-3 font-sans text-sm font-semibold uppercase tracking-widest text-kp-text-secondary">
+              {t("openPositionsTitle")}
+            </h2>
+            <div className="grid gap-4">
+              {data.positions.map((pos) => {
+                const positionData: PositionData = {
+                  id: pos.id,
+                  trading_pair: pos.symbol,
+                  side: pos.side,
+                  quantity: pos.quantity,
+                  entry_price: pos.price,
+                  current_price: pos.price,
+                  pnl: Number(pos.pnl ?? 0),
+                  pnl_pct: 0,
+                };
+                return (
+                  <PositionCard key={pos.id} position={positionData} />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Agent votes */}
+        {data.agent_votes && data.agent_votes.length > 0 && (
+          <AgentVotes
+            votes={data.agent_votes}
+            totalBuy={data.total_buy ?? 0}
+            totalSell={data.total_sell ?? 0}
+            totalHold={data.total_hold ?? 0}
+            action={data.insight?.action}
+            confidence={data.insight?.confidence}
+            reasoning={data.insight?.content ?? null}
+          />
+        )}
+
+        {/* Trade history */}
         <TradeHistory trades={data.history} />
       </div>
-
-      {/* Live Feed */}
-      <div className="mt-8 sm:mt-10">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#2A2D35]" />
-          <h2 className="font-sans text-lg font-bold text-[#F9FAFB]">
-            ⚡ Live Feed
-          </h2>
-          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#2A2D35]" />
-        </div>
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <LiveFeed />
-          </div>
-          <div className="space-y-4">
-            <JokerPush />
-            <LeaderboardChanges />
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="mt-8 flex items-center justify-center gap-2 font-sans text-xs text-[#6B7280]">
-        <JokerIcon className="h-4 w-4 text-[#F59E0B]" />
-        JokerTrade v1.0 — AI-drevet av Hermes Agent
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// StatCard (internal)
-// ---------------------------------------------------------------------------
-
-function StatCard({
-  label,
-  value,
-  mono,
-  color,
-}: {
-  label: string;
-  value: string;
-  mono: boolean;
-  color: string;
-}) {
-  return (
-    <div className="rounded-lg border border-[#2A2D35] bg-[#15171B] px-4 py-3">
-      <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-[#6B7280]">
-        {label}
-      </p>
-      <p
-        className={`mt-1 text-lg font-bold tabular-nums ${
-          mono ? "font-mono" : "font-sans"
-        } ${color}`}
-      >
-        {value}
-      </p>
     </div>
   );
 }

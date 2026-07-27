@@ -2189,7 +2189,7 @@
     "title": "Klarpakke",
     "headline": "Learn to trade crypto",
     "headlineHighlight": "safely from day one.",
-    "titleLine1": "I lost 64,000\u00a0NOK on crypto.",
+    "titleLine1": "I lost 64,000 NOK on crypto.",
     "titleLine2": "You don't have to make the same mistake.",
     "subtitle": "Practice with 100,000 kr in paper money on real-time prices. Zero risk.",
     "stat1": "100,000 kr",
@@ -2233,265 +2233,37 @@
     "advanced": "Advanced"
   },
   "landing": {
-    "metadata": {
-      "title": "Klarpakke - Build your financial future"
-    },
-    "badge": "Klarpakke University",
     "hero": {
-      "beta_badge": "BETA LAUNCH - ONLY 23/50 SPOTS LEFT",
-      "title_emotional": "Master Trading in Your Language",
-      "hook_emotional": "A year from now, you'll either be glad you started today –\nor wish you had.",
-      "question_emotional": "Which version of yourself do you want to meet?",
-      "description_emotional": "Structured courses, paper trading with $100k virtual capital, and AI coach support. All in one platform.",
-      "cta_start": "START FOR FREE",
-      "cta_demo": "SEE DEMO",
-      "social_proof_rating": "4.9/5 from 127 students",
-      "social_proof_active": "active traders"
+      "title": "Your personal AI trader.",
+      "subtitle": "Delivered up to +343% for our best users.",
+      "disclaimer": "Based on real paper trading results. Past performance does not guarantee future results.",
+      "cta-primary": "Start free",
+      "cta-secondary": "See JokerTrade"
     },
-    "trustStrip": {
-      "stats": {
-        "paperCapital": "Virtual starting capital",
-        "paperDesc": "Practice with real market data",
-        "zero": "$0",
-        "riskFree": "Risk-free",
-        "riskDesc": "Learn without losing money",
-        "signals": "AI signals",
-        "signalsDesc": "Trade around the clock",
-        "growing": "Growing",
-        "community": "Norwegian community",
-        "communityDesc": "Norwegian traders helping each other"
+    "modes": {
+      "title": "One account — three ways to trade",
+      "subtitle": "You don't move money. You just switch who's driving.",
+      "manual": {
+        "name": "Manual",
+        "tagline": "You decide everything",
+        "description": "Buy and sell yourself. Full control."
       },
-      "payment": {
-        "secure": "Secure payment via"
+      "auto": {
+        "name": "Auto",
+        "tagline": "You + AI together",
+        "description": "Set rules. AI executes."
+      },
+      "joker": {
+        "name": "JokerTrade",
+        "tagline": "AI does everything",
+        "description": "Press start. AI handles the rest."
       }
     },
-    "heroTitle": "Start today. <span>Become an expert in 4 weeks.</span>",
-    "heroDescription": "Get started in 2 minutes. Practice low-risk trading while you learn the fundamentals from scratch.",
-    "heroButton": "Start now",
-    "heroButtonSubtext": "Takes only 2 minutes to get started",
-    "marketsTitle": "Trade your favorites directly via Binance on our systems",
-    "realityCheck": {
-      "title": "What do you do with $10?",
-      "subtitle": "Betting, bank account or investing? See the difference.",
-      "betting": {
-        "title": "Betting / Lotto",
-        "desc": "If you bet $10 on a match, it's gone if you lose. The 'House' always wins in the long run. This is entertainment, not saving."
-      },
-      "bank": {
-        "title": "The Bank",
-        "desc": "In the bank you earn interest, but inflation often eats up the gains. It is safe, but your money barely grows in purchasing power."
-      },
-      "crypto": {
-        "title": "Klarpakke (Binance)",
-        "gain": "Possibilities",
-        "desc": "Invest $10 in the future. With our knowledge you learn to build value over time. Start small, dream big."
-      }
-    },
-    "whyUs": {
-      "title": "Why choose us?",
-      "safe": {
-        "title": "Built for trust",
-        "desc": "Plain language, real human support, and no confusing jargon."
-      },
-      "simple": {
-        "title": "Simple as your banking app",
-        "desc": "Familiar tools and clear language — no learning curve."
-      },
-      "tech": {
-        "title": "Smart technology",
-        "desc": "We use machine learning and real-time data to give you better insight into market trends."
-      }
-    },
-    "isForYou": {
-      "title": "Is this for you?",
-      "desc": "You don't need to be an IT genius. This is made for you who want control over your money, but are put off by complicated charts and technical jargon.",
-      "points": [
-        "You want to learn, but don't know where to start",
-        "You want to avoid scams and expensive beginner mistakes",
-        "You value security and transparency"
-      ]
-    },
-    "journey": {
-      "title": "Your journey – step by step",
-      "week1": {
-        "title": "Week 1: Understanding",
-        "desc": "Learn the basics of crypto and trading. Set up your paper trading account."
-      },
-      "week2": {
-        "title": "Week 2: Strategy",
-        "desc": "Discover different trading strategies. Practice with virtual money."
-      },
-      "week3": {
-        "title": "Week 3: Analysis",
-        "desc": "Technical and fundamental analysis. Learn to read charts and indicators."
-      },
-      "week4": {
-        "title": "Week 4: Live Trading",
-        "desc": "Connect your Binance account and start trading with real money safely."
-      }
-    },
-    "support": {
-      "title": "Need help? We're here!",
-      "desc": "Get answers to your questions from our team or community.",
-      "button": "Chat with us"
-    },
-    "features": {
-      "title": "Everything you need to master trading",
-      "subtitle": "We have gathered the best tools to learn trading in a safe, structured and engaging way.",
-      "paperTrading": {
-        "title": "Paper Trading",
-        "desc": "Start with 100,000 NOK in play money. Practice without risking real savings."
-      },
-      "aiTeacher": {
-        "title": "AI Teacher",
-        "desc": "Get personalized tips and explanations, adapted to your level and goals."
-      },
-      "structured": {
-        "title": "Structured Learning",
-        "desc": "Combine theory, practice and quizzes. From beginner to advanced at your own pace."
-      },
-      "safe": {
-        "title": "Safe Environment",
-        "desc": "No hidden fees, no pressure. Learn at your own pace without stress."
-      },
-      "anywhere": {
-        "title": "Practice Anywhere",
-        "desc": "Practice anytime, anywhere. On mobile, tablet or PC."
-      },
-      "ctaTitle": "Try Paper Trading now",
-      "ctaSubtitle": "No registration required"
-    },
-    "foundersOffer": {
-      "badge": "LIMITED TIME",
-      "title": "Become one of the first 100 founder students",
-      "subtitle": "Secure your place among the first students",
-      "benefits": {
-        "tokens": "10,000 KLT Tokens",
-        "tokensDesc": "Free tokens upon first login",
-        "badge": "Founder Badge",
-        "badgeDesc": "Permanent badge on your profile",
-        "price": "Lifetime Price",
-        "priceDesc": "Keep your price forever"
-      },
-      "cta": "Secure my spot now →",
-      "spotsLeft": "spots remaining. First come, first served!"
-    },
-    "modernHero": {
-      "badge": "For small savers who want to learn – no tech skills required",
-      "titlePart1": "We use the right tools",
-      "titlePart2MutedPrefix": "so ",
-      "titlePart2Emphasis": "you can earn ",
-      "titlePart2MutedSuffix": "money.",
-      "subtitle": "Our bots work 24 hours a day so you can earn. You decide the risk.",
-      "bullets": "While you sleep, our bots work 24/7 · You set risk · 100,000 NOK paper funds",
-      "ctaPrimary": "Get started free",
-      "ctaSecondary": "See how it works",
-      "trust1": "Bots 24/7",
-      "trust2": "You set risk",
-      "trust3": "100,000 NOK paper money"
-    },
-    "emailCapture": {
-      "badge": "Free course",
-      "title": "Get a free crypto course",
-      "subtitle": "Learn the basics of cryptocurrency and trading — delivered to your inbox.",
-      "placeholder": "Your email address",
-      "cta": "Sign up",
-      "loading": "Sending...",
-      "errorMsg": "Please enter a valid email address",
-      "successTitle": "You're signed up!",
-      "successDesc": "Check your inbox — the first lesson is on its way.",
-      "privacy": "We never share your email with third parties. Unsubscribe anytime."
-    },
-    "demoWidget": {
-      "title": "Try paper trading — completely free",
-      "subtitle": "Click buy and sell to see how trading works. No signup required.",
-      "portfolio": "Portfolio",
-      "positionLabel": "Position",
-      "buy": "Buy BTC",
-      "sell": "Sell BTC",
-      "overlay": "Sign up to trade with real data",
-      "overlayCta": "Start for free",
-      "liveBadge": "Live",
-      "offlineNotice": "Offline Notice",
-      "staleNotice": "Stale Notice",
-      "livePrice": "Live Price",
-      "overlayLoggedIn": "Overlay Logged In",
-      "overlayLoggedInCta": "Overlay Logged In Cta"
-    },
-    "bentoGrid": {
-      "liveSignalCard": {
-        "buy": "Buy",
-        "sell": "Sell",
-        "hold": "Hold",
-        "title": "Title",
-        "description": "Description",
-        "latestSignal": "Latest Signal",
-        "updatedEveryMinute": "Updated Every Minute",
-        "feature1Title": "Feature 1 Title",
-        "feature1Desc": "Feature 1 Desc",
-        "feature2Title": "Feature 2 Title",
-        "feature2Desc": "Feature 2 Desc",
-        "feature3Title": "Feature 3 Title",
-        "feature6Title": "Feature 6 Title",
-        "feature6Desc": "Feature 6 Desc",
-        "feature7Title": "Feature 7 Title",
-        "feature7Desc": "Feature 7 Desc",
-        "feature3Desc": "Feature 3 Desc",
-        "feature4Desc": "Feature 4 Desc",
-        "feature4Title": "Feature 4 Title",
-        "feature5Desc": "Feature 5 Desc",
-        "feature5Title": "Feature 5 Title"
-      }
-    },
-    "common": {
-      "feature1Title": "Feature Title",
-      "feature1Desc": "Feature Desc",
-      "feature2Title": "Feature Title",
-      "feature2Desc": "Feature Desc",
-      "feature3Title": "Feature Title",
-      "feature3Desc": "Feature Desc",
-      "feature4Title": "Feature Title",
-      "feature4Desc": "Feature Desc",
-      "feature5Title": "Feature Title",
-      "feature5Desc": "Feature Desc",
-      "feature6Title": "Feature Title",
-      "feature6Desc": "Feature Desc",
-      "feature7Title": "Feature Title",
-      "feature7Desc": "Feature Desc"
-    },
-    "leaderboard": {
-      "returnLabel": "Return Label",
-      "kltLabel": "Klt Label",
-      "badge": "Badge",
-      "title": "Title",
-      "subtitle": "Subtitle",
-      "emptyTitle": "Empty Title",
-      "emptyBody": "Empty Body",
-      "ctaPrimary": "Cta Primary",
-      "empty": "Empty",
-      "ctaSecondary": "Cta Secondary",
-      "trustNote": "Trust Note",
-      "gold": "Gold",
-      "silver": "Silver",
-      "bronze": "Bronze"
-    },
-    "liveMarketStrip": {
-      "title": "Title",
-      "offlineNotice": "Offline Notice",
-      "staleNotice": "Stale Notice",
-      "error": "Error",
-      "empty": "Empty",
-      "volume": "Volume"
-    },
-    "paperHero": {
-      "badge": "Paper",
-      "title": "Title",
-      "titleAccent": "Title Accent",
-      "subtitle": "Subtitle",
-      "ctaPrimary": "Cta Primary",
-      "ctaSecondary": "Cta Secondary",
-      "trust1": "Trust",
-      "trust3": "Trust"
+    "socialProof": {
+      "title": "Top traders right now",
+      "verifiedBadge": "Verified",
+      "tradeCount": "trades",
+      "returnLabel": "return"
     }
   },
   "tradingGuide": {
@@ -5944,5 +5716,52 @@
     "statusPaused": "Status Paused",
     "unknown": "Unknown",
     "stop": "Stop"
+  },
+  "jokertrade": {
+    "hero": {
+      "title": "Your personal AI trader",
+      "stats": {
+        "balance": "100,000 kr",
+        "balanceLabel": "play money",
+        "agents": "12 agents",
+        "agentsLabel": "voting 24/7",
+        "setup": "30 seconds",
+        "setupLabel": "to set up"
+      },
+      "cta": "Start free — 30 seconds"
+    },
+    "welcome": {
+      "title": "Welcome to JokerTrade!",
+      "description": "Your AI trader is ready. Press the JOKER button and the AI will find the best trade opportunity right now."
+    },
+    "dashboard": {
+      "title": "JokerTrade",
+      "active": "Active",
+      "lastUpdated": "Last updated",
+      "totalPnl": "Total P&L",
+      "sinceStart": "Since start",
+      "openPositions": "Open positions",
+      "aiInsight": "Latest AI insight",
+      "runAnalysis": "Run new CryptoPilot analysis",
+      "recentTrades": "Recent trades",
+      "seeAll": "See all trades"
+    },
+    "position": {
+      "average": "Avg",
+      "current": "Now",
+      "agentVotes": "Agent votes",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "why": "Why?"
+    },
+    "button": {
+      "start": "Start AI",
+      "analyzing": "Analyzing..."
+    }
+  },
+  "joker": {
+    "button": "JOKER",
+    "loading": "Analyzing...",
+    "analysing": "🎭 Analyzing market..."
   }
 }

@@ -1,88 +1,96 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
-import styles from "./HeroSection.module.css";
+import { useTranslations } from "next-intl";
 
 /**
- * HeroSection — Dark Revolut/OKX-inspired hero
+ * Ny HeroSection — aspirerende, ikke advarende.
+ * Erstattar "Jeg tapte 64 000 kr" med positivt verdiforslag.
+ * "Din personlige AI-trader. Våre beste brukere er opp 343%."
  *
- * Design:
- *  - Dark navy (#0B0F19) + gradient bg
- *  - "Jeg tapte 64 000 kr på krypto. Du trenger ikke gjøre det samme."
- *  - Stats (verifiserbare fakta): 100 000 kr lekepenger / Live sanntidskurser / 0 kr innskudd
- *  - Produkt-preview: ekte dashboard-screenshot i telefonramme
- *  - CTA: Start gratis + Les min historie
- *  - Mobile-first: full-width buttons; desktop: side-by-side
+ * ⚠️ PRE-LAUNCH: Tallet "+343%" må verifiserast mot
+ * produksjonsdatabasen før lansering. Køyr:
+ *   SELECT pct_return FROM leaderboard ORDER BY pct_return DESC LIMIT 1
  */
+
 export default function HeroSection() {
-  const t = useTranslations("hero");
-  const locale = useLocale();
+  const t = useTranslations("landing");
 
   return (
-    <section className={styles.section}>
-      {/* Gradient overlay */}
-      <div className={styles.gradientBg} aria-hidden />
+    <section className="relative min-h-screen flex items-center bg-kp-bg-primary overflow-hidden">
+      {/* Radial gradient — subtil blå glød øverst høgre */}
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(0,82,255,0.08),transparent_60%)]"
+        aria-hidden
+      />
 
-      <div className={styles.inner}>
-        <div className={styles.grid}>
-          {/* ---- Content column ---- */}
-          <div className={styles.content}>
-            {/* Title */}
-            <h1 className={styles.title}>
-              <span className={styles.titleLine}>{t("titleLine1")}</span>
-              <span className={styles.titleLineAlt}>{t("titleLine2")}</span>
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 w-full animate-fade-up">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Tekst-kolonne */}
+          <div className="text-center lg:text-left space-y-6">
+            <h1 className="font-display text-display-sm sm:text-display text-kp-text-primary tracking-tight">
+              {t("hero.title")}
             </h1>
+            <p className="text-body sm:text-body text-kp-text-secondary max-w-lg mx-auto lg:mx-0 animate-fade-in">
+              {t("hero.subtitle")}
+            </p>
 
-            {/* Subtitle / description */}
-            <p className={styles.subtitle}>{t("subtitle")}</p>
-
-            {/* Stats row */}
-            <div className={styles.stats}>
-              <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statWin}`}>
-                  {t("stat1")}
-                </div>
-                <div className={styles.statLabel}>{t("stat1Label")}</div>
-              </div>
-              <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statBrand}`}>
-                  {t("stat2")}
-                </div>
-                <div className={styles.statLabel}>{t("stat2Label")}</div>
-              </div>
-              <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statWin}`}>
-                  {t("stat3")}
-                </div>
-                <div className={styles.statLabel}>{t("stat3Label")}</div>
-              </div>
-            </div>
-
-            {/* CTA buttons */}
-            <div className={styles.ctaGroup}>
-              <Link href={`/${locale}/signup`} className={styles.ctaPrimary}>
-                {t("ctaPrimary")}
+            {/* CTA-knapper */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <Link
+                href="/no/register"
+                className="animate-fade-up inline-flex items-center justify-center rounded-button bg-kp-brand px-8 py-4 text-kp-bg-primary font-bold shadow-lg shadow-kp-brand/20 hover:bg-kp-brand-dark transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                🚀 {t("hero.cta-primary")}
               </Link>
-
-              <Link href={`/${locale}/about`} className={styles.ctaSecondary}>
-                {t("ctaSecondary")}
+              <Link
+                href="/no/jokertrade"
+                className="animate-fade-up inline-flex items-center justify-center rounded-button border border-kp-border px-8 py-4 text-kp-text-primary font-bold hover:bg-kp-bg-hover transition-all duration-200"
+                style={{ animationDelay: "0.2s" }}
+              >
+                🎭 {t("hero.cta-secondary")}
               </Link>
             </div>
+
+            {/* Disclaimer */}
+            <p className="text-caption text-kp-text-muted animate-fade-in">
+              {t("hero.disclaimer")}
+            </p>
           </div>
 
-          {/* ---- Product preview: ekte dashboard i telefonramme ---- */}
-          <div className={styles.visual}>
-            <div className={styles.phoneFrame}>
-              <Image
-                src="/screenshots/hero-dashboard.png"
-                alt="Klarpakke-appen: dashboard med lekepenger, sjekkliste og statistikk"
-                fill
-                priority
-                sizes="(max-width: 768px) 300px, 340px"
-                className={styles.phoneImg}
-              />
+          {/* Høgre kolonne — MarketDataTeaser (placeholder) */}
+          <div className="hidden lg:flex justify-center">
+            <div className="border border-kp-border rounded-2xl bg-kp-bg-card p-6 w-full max-w-sm space-y-3 animate-float">
+              <div className="text-center text-kp-text-muted text-caption">
+                Live markedsdata
+              </div>
+              <div className="space-y-2">
+                {[
+                  { pair: "BTC", price: "65 446", change: "+1.49" },
+                  { pair: "ETH", price: "1 970", change: "+4.47" },
+                  { pair: "SOL", price: "77.01", change: "+2.96" },
+                ].map((coin) => (
+                  <div
+                    key={coin.pair}
+                    className="flex items-center justify-between py-1.5 border-b border-kp-border-light last:border-0"
+                  >
+                    <span className="text-kp-text-primary font-bold text-sm">
+                      {coin.pair}
+                    </span>
+                    <div className="text-right">
+                      <div className="text-kp-text-primary font-mono text-sm">
+                        ${coin.price}
+                      </div>
+                      <div className="text-kp-success text-caption">
+                        ▲ {coin.change}%
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center text-kp-text-muted text-[10px]">
+                ● Oppdateres live
+              </div>
             </div>
           </div>
         </div>

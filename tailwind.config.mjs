@@ -138,6 +138,7 @@ const config = {
         'fade-in': 'fadeIn 0.3s ease-out forwards',
         'slide-up': 'slideUp 0.4s ease-out forwards',
         'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
+        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
         'shimmer': 'shimmer 2s linear infinite',
         'float': 'float 6s ease-in-out infinite',
       },
@@ -158,6 +159,10 @@ const config = {
         pulseSoft: {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.7' },
+        },
+        glowPulse: {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(245, 158, 11, 0.4)' },
+          '50%': { boxShadow: '0 0 40px rgba(245, 158, 11, 0.7)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
