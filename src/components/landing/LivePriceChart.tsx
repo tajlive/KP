@@ -129,7 +129,6 @@ export default function LivePriceChart() {
     // fade in after mount
     requestAnimationFrame(() => setFadedIn(true));
     mountRef.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── fetch price ──
