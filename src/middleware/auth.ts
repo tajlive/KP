@@ -33,6 +33,7 @@ const PROTECTED_PATHS = [
   "/marketplace",
   "/profile",
   "/trade",
+  "/jokertrade", // CryptoPilot trading dashboard — krever auth for JokerTradeClient
 ];
 
 const AUTH_PATHS = [
