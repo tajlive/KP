@@ -666,6 +666,33 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          event_type: string
+          id: number
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name?: string
+          event_type?: string
+          id?: never
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          event_type?: string
+          id?: never
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       api_logs: {
         Row: {
           created_at: string | null
@@ -3738,6 +3765,83 @@ export type Database = {
         }
         Relationships: []
       }
+      klt_spending_options: {
+        Row: {
+          cost_klt: number
+          created_at: string | null
+          description_en: string | null
+          description_no: string | null
+          duration_hours: number | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          name_en: string
+          name_no: string
+          sort_order: number | null
+        }
+        Insert: {
+          cost_klt: number
+          created_at?: string | null
+          description_en?: string | null
+          description_no?: string | null
+          duration_hours?: number | null
+          id: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          name_en: string
+          name_no: string
+          sort_order?: number | null
+        }
+        Update: {
+          cost_klt?: number
+          created_at?: string | null
+          description_en?: string | null
+          description_no?: string | null
+          duration_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          name_en?: string
+          name_no?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      klt_spends: {
+        Row: {
+          amount: number
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          option_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          option_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          option_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klt_spends_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "klt_spending_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       klt_transactions: {
         Row: {
           amount: number
@@ -3774,7 +3878,7 @@ export type Database = {
         }
         Relationships: []
       }
-      kltbalances: {
+      kltbalances_deprecated: {
         Row: {
           balance: number
           created_at: string | null
@@ -8793,8 +8897,10 @@ export type Database = {
           email_daily_digest: boolean
           email_on_crash: boolean
           email_on_trade: boolean
+          font_size_preference: string
           full_name: string | null
           google_id: string | null
+          high_contrast_mode: boolean
           id: string
           is_priority: boolean | null
           learning_progress: Json
@@ -8824,6 +8930,7 @@ export type Database = {
           ui_theme: string
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -8841,8 +8948,10 @@ export type Database = {
           email_daily_digest?: boolean
           email_on_crash?: boolean
           email_on_trade?: boolean
+          font_size_preference?: string
           full_name?: string | null
           google_id?: string | null
+          high_contrast_mode?: boolean
           id: string
           is_priority?: boolean | null
           learning_progress?: Json
@@ -8872,6 +8981,7 @@ export type Database = {
           ui_theme?: string
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -8889,8 +8999,10 @@ export type Database = {
           email_daily_digest?: boolean
           email_on_crash?: boolean
           email_on_trade?: boolean
+          font_size_preference?: string
           full_name?: string | null
           google_id?: string | null
+          high_contrast_mode?: boolean
           id?: string
           is_priority?: boolean | null
           learning_progress?: Json
@@ -8920,6 +9032,7 @@ export type Database = {
           ui_theme?: string
           updated_at?: string
           user_id?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -9302,6 +9415,48 @@ export type Database = {
           role: string | null
           subscription_tier: string | null
           total_trades: number | null
+        }
+        Relationships: []
+      }
+      api_keys: {
+        Row: {
+          api_key_encrypted: string | null
+          api_secret_encrypted: string | null
+          created_at: string | null
+          exchange: string | null
+          id: string | null
+          is_active: boolean | null
+          is_testnet: boolean | null
+          last_used_at: string | null
+          permissions: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key_encrypted?: string | null
+          api_secret_encrypted?: string | null
+          created_at?: string | null
+          exchange?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_testnet?: boolean | null
+          last_used_at?: string | null
+          permissions?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key_encrypted?: string | null
+          api_secret_encrypted?: string | null
+          created_at?: string | null
+          exchange?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_testnet?: boolean | null
+          last_used_at?: string | null
+          permissions?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -9780,6 +9935,14 @@ export type Database = {
       admin_change_role: {
         Args: { p_admin_id: string; p_new_role: string; p_user_id: string }
         Returns: Json
+      }
+      admin_recent_signups: {
+        Args: { max_rows?: number }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+        }[]
       }
       admin_upgrade_user: {
         Args: { p_admin_id: string; p_new_tier: string; p_user_id: string }
@@ -10468,6 +10631,15 @@ export type Database = {
         Returns: boolean
       }
       snapshot_leaderboard: { Args: { p_period?: string }; Returns: number }
+      store_binance_keys: {
+        Args: {
+          p_api_key: string
+          p_api_secret: string
+          p_is_testnet?: boolean
+          p_user_id: string
+        }
+        Returns: Json
+      }
       store_exchange_connection: {
         Args: {
           p_api_key: string

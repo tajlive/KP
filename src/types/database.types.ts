@@ -666,6 +666,33 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          event_type: string
+          id: number
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name?: string
+          event_type?: string
+          id?: never
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          event_type?: string
+          id?: never
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       api_logs: {
         Row: {
           created_at: string | null
@@ -3851,7 +3878,7 @@ export type Database = {
         }
         Relationships: []
       }
-      kltbalances: {
+      kltbalances_deprecated: {
         Row: {
           balance: number
           created_at: string | null
@@ -9909,6 +9936,14 @@ export type Database = {
         Args: { p_admin_id: string; p_new_role: string; p_user_id: string }
         Returns: Json
       }
+      admin_recent_signups: {
+        Args: { max_rows?: number }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+        }[]
+      }
       admin_upgrade_user: {
         Args: { p_admin_id: string; p_new_tier: string; p_user_id: string }
         Returns: Json
@@ -10596,6 +10631,15 @@ export type Database = {
         Returns: boolean
       }
       snapshot_leaderboard: { Args: { p_period?: string }; Returns: number }
+      store_binance_keys: {
+        Args: {
+          p_api_key: string
+          p_api_secret: string
+          p_is_testnet?: boolean
+          p_user_id: string
+        }
+        Returns: Json
+      }
       store_exchange_connection: {
         Args: {
           p_api_key: string
