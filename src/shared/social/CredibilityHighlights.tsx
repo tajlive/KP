@@ -16,7 +16,7 @@ const highlights: Highlight[] = [
   },
   {
     icon: Users,
-    title: '100+ Grunnleggere',
+    title: 'Voksende community',
     description: 'Voksende community av seriøse tradere',
     color: 'text-blue-400',
   },
@@ -72,7 +72,7 @@ export function VerificationBadge({
       icon: Star,
       label: locale === 'no' ? 'Grunnlegger' : 'Founder',
       color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-      description: locale === 'no' ? 'En av de første 100' : 'One of the first 100',
+      description: locale === 'no' ? 'Tidlig bruker' : 'Early user',
     },
     verified: {
       icon: CheckCircle,

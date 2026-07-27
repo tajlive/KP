@@ -2233,7 +2233,9 @@
       "subtitle": "Skaffet opptil +321% for våre beste brukere.",
       "disclaimer": "Basert på ekte papirhandel-resultater. Historisk avkastning garanterer ikke fremtidig avkastning.",
       "cta-primary": "Start gratis",
-      "cta-secondary": "Se JokerTrade"
+      "cta-secondary": "Se JokerTrade",
+      "livePrices": "Live markedsdata",
+      "liveUpdates": "Oppdateres live"
     },
     "modes": {
       "title": "En konto — tre måter å trade på",
@@ -2259,6 +2261,10 @@
       "verifiedBadge": "Verifisert",
       "tradeCount": "handler",
       "returnLabel": "avkastning"
+    },
+    "metadata": {
+      "title": "Klarpakke — Norges krypto-plattform",
+      "description": "Norges krypto-plattform. AI-drevet trading med lekepenger. Manuell, Auto og JokerTrade — én konto, tre måter å trade på."
     }
   },
   "tradingGuide": {
