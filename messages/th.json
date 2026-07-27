@@ -1071,7 +1071,7 @@
   "landing": {
     "hero": {
       "title": "Your personal AI trader.",
-      "subtitle": "Delivered up to +321% for our best users.",
+      "subtitle": "Delivered up to +{pct}% for our best users.",
       "disclaimer": "Based on real paper trading results. Past performance does not guarantee future results.",
       "cta-primary": "Start free",
       "cta-secondary": "See JokerTrade",
