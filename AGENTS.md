@@ -126,6 +126,22 @@ src/lib/
 messages/            no.json, en.json (konsolidert)
 ```
 
+## 📚 Dokumentasjonssøk
+
+Bruk `web_search` med domain-prefiks for oppdatert dokumentasjon — unngå utdaterte svar fra treningsdata:
+
+| Teknologi | Foretrukket domene |
+|---|---|
+| Next.js / React | `site:nextjs.org` eller `site:react.dev` |
+| Supabase | `site:supabase.com/docs` |
+| Cloudflare Workers | `site:developers.cloudflare.com/workers` |
+| TypeScript | `site:typescriptlang.org` |
+| Stripe | `site:docs.stripe.com` |
+| Vitest | `site:vitest.dev` |
+| Tailwind CSS | `site:tailwindcss.com` |
+
+Eksempel: `web_search("site:nextjs.org app router middleware i18n")`
+
 ## 🤖 Hermes 2026 — agent-beste praksis
 
 ### Før hver oppgave
@@ -137,7 +153,7 @@ messages/            no.json, en.json (konsolidert)
 4. **Skill-basert:** last `klarpakke-dev` for dev-flow, `klarpakke-build` for bygg, `klarpakke-deploy` for deploy
 5. **Verifiser hver endring:** `npm run lint` + `npm run test:unit` etter hver commit
 6. **Bruk delegate_task** for parallelle oppgaver — 4 subagenter samtidig
-7. **Pre-commit er obligatorisk** — 7-stegs pipeline må passere
+7. **Pre-commit er obligatorisk** — 8-stegs pipeline må passere
 
 ### Etter arbeid
 8. **Lagre lærdom som skill** ved komplekse oppgaver (5+ verktøykall)
