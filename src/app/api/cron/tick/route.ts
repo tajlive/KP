@@ -15,6 +15,11 @@ import {
   type TradeSignalContext,
 } from "@/lib/trading/core/execute-trade";
 import {
+  getPositionBaseQuantity,
+  normalizePositionPricesToUsdt,
+  type StoredPositionLike,
+} from "@/lib/trading/position-currency";
+import {
   resolveTickStrategyEngineKey,
   getStrategyConfig,
   shouldUseDarkFleet,
@@ -294,6 +299,19 @@ async function processSession(
     // OPTIMIZATION: Use pre-fetched candles if available, else fetch individually
     const candles = preFetchedCandles ?? (await fetchCandles(pair, "1h", 100));
     const currentPrice = candles[candles.length - 1].close;
+
+    // Valuta-guard (inflasjonsfiks 2026-07-27): paper-posisjoner kan ha
+    // NOK-denominerte prisfelt (DB-triggeren kopierer trades.price=NOK rett
+    // inn i open_position) mens candles er USDT. Uten normalisering ser
+    // trailing-TP en evig "krasj fra topp" og fyrer salg hver eneste tick.
+    // Normaliseres lokalt for denne ticken — lagret verdi røres ikke.
+    if (session.mode === "paper" && session.open_position) {
+      session.open_position = normalizePositionPricesToUsdt(
+        session.open_position as unknown as StoredPositionLike,
+        currentPrice,
+        getUsdtToNokRate(),
+      ) as unknown as TradingSession["open_position"];
+    }
 
     // ── V2: Load per-strategy config (UUID-aware) ───────────────────────────
     const strategyConfig = getStrategyConfig(session.strategy_id);
@@ -848,10 +866,47 @@ async function processSession(
         ? mul(currentPrice, 1 + slippage)
         : mul(currentPrice, 1 - slippage);
 
-    const quantity = div(tradeAmount, executedPrice);
+    let quantity = div(tradeAmount, executedPrice);
 
     if (quantity <= 0) {
       return { session_id: session.id, action: "hold" };
+    }
+
+    // ── Paper sell-side guard (inflasjonsfiks 2026-07-27) ───────────────
+    // Selg aldri mer enn faktisk beholdning. DB-triggeren krediterer
+    // total_value UBETINGET — uten denne clampen printer falske
+    // salgssignaler (f.eks. fra valuta-forvirrede posisjoner) penger.
+    if (session.mode === "paper" && signal.action === "sell") {
+      const heldQty = getPositionBaseQuantity(
+        session.open_position as unknown as StoredPositionLike | null,
+      );
+      if (heldQty <= 0) {
+        try {
+          await db.from("trading_logs").insert({
+            session_id: session.id,
+            user_id: session.user_id,
+            action: "sell_blocked_no_position",
+            details: {
+              signal: "sell",
+              signal_reason: signal.reason ?? null,
+              strategy_id: session.strategy_id,
+            } as never,
+          } as never);
+        } catch {
+          // Ikke kritisk: logging skal ikke stoppe tick
+        }
+        return {
+          session_id: session.id,
+          action: "hold",
+          reason: "Salg blokkert: ingen beholdning å selge",
+        };
+      }
+      if (quantity > heldQty) {
+        console.info(
+          `[Tick] Paper-salg clampet til beholdning: ${quantity} → ${heldQty} (session ${session.id})`,
+        );
+        quantity = heldQty;
+      }
     }
 
     // Tick-route risk gate is kept for live path only. Paper trades are routed
@@ -1656,24 +1711,6 @@ export async function GET(req: NextRequest) {
       sessions as unknown as TradingSession[],
     );
 
-    // Orphan-redning: stoppede sesjoner etterlater åpne posisjoner som ellers
-    // ALDRI selges (exit-logikken kjører kun på aktive sesjoner). Adopter dem
-    // til den aktive sesjonen for samme bruker+par. Idempotent.
-    for (const s of sessionsWithAuto) {
-      try {
-        await adoptOrphanPositions(db, {
-          id: s.id,
-          user_id: s.user_id,
-          trading_pair: s.trading_pair,
-        });
-      } catch (orphanErr) {
-        console.error(
-          `[Orphan] Adopsjon feilet for sesjon ${s.id} (ikke-kritisk):`,
-          (orphanErr as Error).message,
-        );
-      }
-    }
-
     // Portfolio-level circuit breaker: stop ALL trading if user's equity
     // (cash + market value of open positions) has dropped 15% or more from initial.
     // Fetches the latest 1h close per pair (1 candle) to value open positions.
@@ -1695,6 +1732,36 @@ export async function GET(req: NextRequest) {
         }
       }),
     );
+
+    // Orphan-redning: stoppede sesjoner etterlater åpne posisjoner som ellers
+    // ALDRI selges (exit-logikken kjører kun på aktive sesjoner). Adopter dem
+    // til den aktive sesjonen for samme bruker+par. Idempotent.
+    // Inflasjonsfiks 2026-07-27: kjøres ETTER pairPriceMap slik at adopsjonen
+    // kan verifisere/normalisere orphan-priser mot faktisk marked — korrupte
+    // posisjoner (f.eks. entry 4,5k mot marked 64,5k) droppes i stedet for å
+    // sirkuleres videre og utløse falske trailing-salg.
+    for (const s of sessionsWithAuto) {
+      try {
+        const symbol = s.trading_pair?.replace("/", "") || "BTCUSDT";
+        await adoptOrphanPositions(
+          db,
+          {
+            id: s.id,
+            user_id: s.user_id,
+            trading_pair: s.trading_pair,
+          },
+          {
+            currentPriceUsdt: pairPriceMap.get(symbol) ?? 0,
+            usdtNokRate: getUsdtToNokRate(),
+          },
+        );
+      } catch (orphanErr) {
+        console.error(
+          `[Orphan] Adopsjon feilet for sesjon ${s.id} (ikke-kritisk):`,
+          (orphanErr as Error).message,
+        );
+      }
+    }
 
     for (const s of sessionsWithAuto) {
       const symbol = s.trading_pair?.replace("/", "") || "BTCUSDT";
