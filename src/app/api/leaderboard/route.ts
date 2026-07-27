@@ -80,7 +80,7 @@ export async function GET(req: Request) {
 
     const { data: accounts, error: accErr } = await supabase
       .from("paper_accounts")
-      .select("user_id, current_balance")
+      .select("user_id, current_balance, initial_balance")
       .gt("current_balance", 0)
       .order("current_balance", { ascending: false })
       .limit(50);
@@ -110,7 +110,7 @@ export async function GET(req: Request) {
     const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
     const statsMap = new Map((stats ?? []).map((s) => [s.user_id, s]));
 
-    const startBalance = 100_000;
+    const DEFAULT_START_BALANCE = 100_000;
     const leaderboard: Array<{
       user_id: string;
       user_display_name: string;
@@ -146,6 +146,10 @@ export async function GET(req: Request) {
       if (totalTrades < 1) continue;
 
       const balance = Number(acc.current_balance ?? 0);
+      // Avkastning må måles mot brukerens FAKTISKE startkapital —
+      // hardkodet 100k ga falsk +900% for kontoer med 1M initial (FACT-bug).
+      const initial = Number(acc.initial_balance ?? 0);
+      const startBalance = initial > 0 ? initial : DEFAULT_START_BALANCE;
       const returnPct = ((balance - startBalance) / startBalance) * 100;
 
       const winningTrades = stat?.winning_trades ?? 0;
