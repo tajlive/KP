@@ -3,7 +3,8 @@
 import { HeroSection } from "./HeroSection";
 import { HowItWorks } from "./HowItWorks";
 import { LeaderboardWidget } from "./LeaderboardWidget";
-import { Testimonials } from "./Testimonials";
+// Testimonials fjernet — AI-generert innhold, ikke fakta (FACT-AUDIT 3.x)
+// import { Testimonials } from "./Testimonials";
 import { FAQ } from "./FAQ";
 import { JokerTradeCTA } from "./JokerTradeCTA";
 
@@ -23,10 +24,7 @@ export function JokerTradeLanding() {
       {/* 3. Live leaderboard widget (top 3) */}
       <LeaderboardWidget />
 
-      {/* 4. Testimonials */}
-      <Testimonials />
-
-      {/* 5. FAQ */}
+      {/* 4. FAQ */}
       <FAQ />
 
       {/* Footer CTA */}
