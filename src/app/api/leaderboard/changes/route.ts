@@ -103,7 +103,9 @@ export async function GET(request: Request) {
       if (oldRank !== newRank) {
         changes.push({
           user_id: entry.user_id,
-          user_display_name: entry.user_display_name || "Trader",
+          user_display_name: entry.user_id
+            ? `Trader***${String(entry.user_id).slice(0, 4)}`
+            : "Trader",
           period,
           old_rank: oldRank,
           new_rank: newRank,
