@@ -33,7 +33,7 @@ const PROTECTED_PATHS = [
   "/marketplace",
   "/profile",
   "/trade",
-  "/jokertrade", // CryptoPilot trading dashboard — krever auth for JokerTradeClient
+  // /jokertrade er offentlig landing-side (FACT-AUDIT). API-kall krever auth.
 ];
 
 const AUTH_PATHS = [

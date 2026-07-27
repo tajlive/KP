@@ -16,7 +16,7 @@ const PROTECTED_PATHS = [
   "/marketplace",
   "/profile",
   "/trade",
-  "/jokertrade",
+  // /jokertrade er offentlig — onboarding kun relevant for autentiserte brukere
 ];
 
 export async function handleOnboarding(

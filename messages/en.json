@@ -2238,7 +2238,9 @@
       "subtitle": "Delivered up to +321% for our best users.",
       "disclaimer": "Based on real paper trading results. Past performance does not guarantee future results.",
       "cta-primary": "Start free",
-      "cta-secondary": "See JokerTrade"
+      "cta-secondary": "See JokerTrade",
+      "livePrices": "Live market data",
+      "liveUpdates": "Updated live"
     },
     "modes": {
       "title": "One account — three ways to trade",
@@ -2264,6 +2266,10 @@
       "verifiedBadge": "Verified",
       "tradeCount": "trades",
       "returnLabel": "return"
+    },
+    "metadata": {
+      "title": "Klarpakke — Norway's crypto platform",
+      "description": "Norway's crypto platform. AI-powered trading with play money. Manual, Auto and JokerTrade — one account, three trading modes."
     }
   },
   "tradingGuide": {

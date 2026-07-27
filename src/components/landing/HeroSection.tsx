@@ -62,7 +62,7 @@ export default function HeroSection() {
           <div className="hidden lg:flex justify-center">
             <div className="border border-kp-border rounded-2xl bg-kp-bg-card p-6 w-full max-w-sm space-y-3 animate-float">
               <div className="text-center text-kp-text-muted text-caption">
-                Live markedsdata
+                {t("hero.livePrices")}
               </div>
               <div className="space-y-2">
                 {[
@@ -89,7 +89,7 @@ export default function HeroSection() {
                 ))}
               </div>
               <div className="text-center text-kp-text-muted text-[10px]">
-                ● Oppdateres live
+                ● {t("hero.liveUpdates")}
               </div>
             </div>
           </div>
