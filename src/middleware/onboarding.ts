@@ -16,6 +16,7 @@ const PROTECTED_PATHS = [
   "/marketplace",
   "/profile",
   "/trade",
+  "/jokertrade",
 ];
 
 export async function handleOnboarding(
