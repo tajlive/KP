@@ -84,13 +84,19 @@ export function detectNegativeCapital(
  * Kapital > multiplier × startkapital. Bruker starting_capital_nok når den
  * finnes, ellers initial_capital. Sesjoner uten positiv startkapital
  * hoppes over (kan ikke vurdere forholdstall).
+ *
+ * exemptUserIds: testbrukere (seedede @klarpakke.test-tradere m.m.) har
+ * fabrikkerte trade-historikker med >100× vekst by design — de skal ikke
+ * utløse vekst-alarm. Negative-invariantene gjelder fortsatt alle.
  */
 export function detectExtremeGrowth(
   sessions: SessionCapitalRow[],
-  multiplier: number = EXTREME_GROWTH_MULTIPLIER
+  multiplier: number = EXTREME_GROWTH_MULTIPLIER,
+  exemptUserIds?: ReadonlySet<string>
 ): InvariantViolation[] {
   const violations: InvariantViolation[] = [];
   for (const s of sessions) {
+    if (exemptUserIds?.has(s.user_id)) continue;
     const initial = s.starting_capital_nok != null
       ? toNum(s.starting_capital_nok)
       : toNum(s.initial_capital);
@@ -129,14 +135,19 @@ export function detectNegativePositions(
   return violations;
 }
 
-/** Kjør alle invariant-sjekker og returnér samlet liste. */
+/**
+ * Kjør alle invariant-sjekker og returnér samlet liste.
+ * growthExemptUserIds fritar kun fra extreme_growth (testdata med >100×
+ * vekst by design); negative_capital og negative_position gjelder alle.
+ */
 export function checkAllInvariants(
   sessions: SessionCapitalRow[],
-  positions: PositionQuantityRow[]
+  positions: PositionQuantityRow[],
+  growthExemptUserIds?: ReadonlySet<string>
 ): InvariantViolation[] {
   return [
     ...detectNegativeCapital(sessions),
-    ...detectExtremeGrowth(sessions),
+    ...detectExtremeGrowth(sessions, EXTREME_GROWTH_MULTIPLIER, growthExemptUserIds),
     ...detectNegativePositions(positions),
   ];
 }

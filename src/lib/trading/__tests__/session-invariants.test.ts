@@ -111,6 +111,28 @@ describe("detectExtremeGrowth", () => {
     expect(v).toHaveLength(1);
   });
 
+  it("fritar testbrukere fra vekst-alarm", () => {
+    const sessions = [
+      {
+        id: "s1",
+        user_id: "testtrader",
+        current_capital: 0,
+        current_capital_nok: 12431622,
+        starting_capital_nok: 100000,
+      },
+      {
+        id: "s2",
+        user_id: "ekte-bruker",
+        current_capital: 0,
+        current_capital_nok: 500000,
+        starting_capital_nok: 10000,
+      },
+    ];
+    const v = detectExtremeGrowth(sessions, 10, new Set(["testtrader"]));
+    expect(v).toHaveLength(1);
+    expect(v[0].userId).toBe("ekte-bruker");
+  });
+
   it("eksporterer standard-multiplier på 10", () => {
     expect(EXTREME_GROWTH_MULTIPLIER).toBe(10);
   });

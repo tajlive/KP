@@ -12,6 +12,11 @@ describe("Balance Drift Check", () => {
     process.env.CRON_SECRET = "test-secret";
 
     mockSupabase = {
+      auth: {
+        admin: {
+          listUsers: vi.fn().mockResolvedValue({ data: { users: [] }, error: null }),
+        },
+      },
       from: vi.fn(() => ({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
@@ -45,6 +50,11 @@ describe("Balance Drift Check", () => {
 
   it("detects drift when balances diverge", async () => {
     mockSupabase = {
+      auth: {
+        admin: {
+          listUsers: vi.fn().mockResolvedValue({ data: { users: [] }, error: null }),
+        },
+      },
       from: vi.fn((table: string) => {
         if (table === "trading_sessions") {
           return {
@@ -113,6 +123,11 @@ describe("Balance Drift Check", () => {
 
   it("detects invariant violations (negative capital + negative position)", async () => {
     mockSupabase = {
+      auth: {
+        admin: {
+          listUsers: vi.fn().mockResolvedValue({ data: { users: [] }, error: null }),
+        },
+      },
       from: vi.fn((table: string) => {
         if (table === "trading_sessions") {
           return {
@@ -172,5 +187,76 @@ describe("Balance Drift Check", () => {
       "negative_capital",
       "negative_position",
     ]);
+  });
+
+  it("exempts @klarpakke.test users from extreme growth alerts", async () => {
+    mockSupabase = {
+      auth: {
+        admin: {
+          listUsers: vi.fn().mockResolvedValue({
+            data: {
+              users: [
+                { id: "u-test", email: "ola.nordmann@klarpakke.test" },
+                { id: "u-real", email: "pal@gmail.com" },
+              ],
+            },
+            error: null,
+          }),
+        },
+      },
+      from: vi.fn((table: string) => {
+        if (table === "trading_sessions") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                eq: vi.fn().mockResolvedValue({
+                  data: [
+                    {
+                      id: "s-test",
+                      user_id: "u-test",
+                      current_capital_nok: 12431622,
+                      current_capital: 12431622,
+                      initial_capital: 100000,
+                      starting_capital_nok: 100000,
+                    },
+                    {
+                      id: "s-real",
+                      user_id: "u-real",
+                      current_capital_nok: 500000,
+                      current_capital: 500000,
+                      initial_capital: 10000,
+                      starting_capital_nok: 10000,
+                    },
+                  ],
+                  error: null,
+                }),
+              })),
+            })),
+          };
+        }
+        if (table === "positions") {
+          return {
+            select: vi.fn(() => ({
+              lt: vi.fn().mockResolvedValue({ data: [], error: null }),
+            })),
+          };
+        }
+        return { select: vi.fn(() => ({ in: vi.fn().mockResolvedValue({ data: [], error: null }) })) };
+      }),
+    };
+
+    const { GET } = await import("../route");
+    const req = new Request("http://localhost/api/cron/balance-drift-check", {
+      headers: { authorization: "Bearer test-secret" },
+    });
+
+    const res = await GET(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    // Kun den ekte brukeren (50×) skal alarmere — testtraderen (124×) er fritatt
+    expect(json.invariantViolationCount).toBe(1);
+    expect(json.invariantViolations[0].userId).toBe("u-real");
+    expect(json.invariantViolations[0].kind).toBe("extreme_growth");
   });
 });
