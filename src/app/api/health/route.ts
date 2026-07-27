@@ -693,7 +693,20 @@ export async function POST(request: NextRequest) {
     }
   } catch (e: unknown) { results.leaderboard = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
 
-  const failed = Object.values(results).some(r => r.status !== "ok");
+  // Session health — sjekk at ingen sessions er stalled
+  try {
+    const { data: sh } = await supabase
+      .from("session_health")
+      .select("status, count, stalled")
+      .in("status", ["paused", "crashed"]);
+    const stalled = (sh ?? []).reduce((sum, r) => sum + (r.stalled ?? 0), 0);
+    const totalAffected = (sh ?? []).reduce((sum, r) => sum + (r.count ?? 0), 0);
+    results.session_health = stalled === 0
+      ? { status: "ok", message: `0 stalled (${totalAffected} total paused/crashed)` }
+      : { status: "warning", message: `${stalled} stalled, ${totalAffected} paused/crashed` };
+  } catch (e: unknown) { results.session_health = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
+
+  const failed = Object.values(results).some(r => r.status !== "ok" && r.status !== "warning");
   return NextResponse.json({
     status: failed ? "degraded" : "healthy",
     timestamp: new Date().toISOString(),
