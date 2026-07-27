@@ -1,7 +1,6 @@
-# Dependabot Configuration — DISABLED 2026-07-01
-# GitHub Actions is disabled in the tajlive-KP org due to budget limits, so
-# Dependabot PRs cannot run CI. open-pull-requests-limit is set to 0 to stop
-# new PR noise. Re-enable by raising the Actions budget and setting limits back.
+# Dependabot Configuration — ACTIVE 2026-07-27
+# Kjører ukentlig med inntil 5 åpne PR-er.
+# Groups håndterer patch/minor separat fra major.
 
 version: 2
 updates:
@@ -16,7 +15,7 @@ updates:
       timezone: "Europe/Oslo"
 
     # Maks antall åpne PR-er
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
 
     # Separer patch/minor og major for bedre kontroll
     groups:
@@ -69,7 +68,7 @@ updates:
       day: "monday"
       time: "08:00"
       timezone: "Europe/Oslo"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     groups:
       github-actions:
         patterns:

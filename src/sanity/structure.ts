@@ -11,7 +11,7 @@ import {
 } from '@sanity/icons'
 
 // Singleton-typer (kun ett dokument per type)
-const SINGLETONS = ['landingContent', 'designTokens', 'dashboardContent']
+const _SINGLETONS = ['landingContent', 'designTokens', 'dashboardContent']
 
 export const structure: StructureResolver = (S) =>
   S.list()

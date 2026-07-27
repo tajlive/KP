@@ -51,7 +51,7 @@ const nextConfig = {
   typescript: {
     // TypeScript 6 strict mode - build fails on errors
     // Fixed ~70 type errors with proper typing (as any for Supabase compatibility where needed)
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // Include Cloudflare workerd-specific files for OpenNext build

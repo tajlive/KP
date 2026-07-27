@@ -27,6 +27,8 @@ export function FirstTradeReward({ totalTrades }: FirstTradeRewardProps) {
       const timer = setTimeout(() => setVisible(true), 600);
       return () => clearTimeout(timer);
     }
+    return undefined;
+
   }, [totalTrades]);
 
   const handleDismiss = () => {

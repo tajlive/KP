@@ -4,7 +4,7 @@
  */
 
 import { locales } from "@/i18n/config";
-import { routing } from "@/i18n/routing.config";
+// import { _routing } from "@/i18n/routing.config";
 import { sanitizePostAuthRedirect } from "@/lib/auth/sanitize-redirect";
 
 export const LOCALE_RE = new RegExp(`^(${locales.join("|")})$`);

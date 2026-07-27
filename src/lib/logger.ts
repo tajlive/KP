@@ -1,76 +1,86 @@
 /**
- * Logger for Klarpakke
- * Håndholder logging med environment-support
+ * Enterprise JSON-structured logger with correlation ID support.
+ *
+ * Outputs JSON to stdout for Cloudflare Workers log aggregation.
+ * Correlation IDs link logs across requests for distributed tracing.
+ *
+ * Usage:
+ *   logger.info("Trade executed", { tradeId: "abc", amount: 100 });
+ *   → {"ts":"2026-07-27T...","level":"info","msg":"Trade executed","tradeId":"abc","amount":100,"correlationId":"req_abc123"}
  */
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV === "development";
+
+// In-memory correlation ID store (per-request in middleware)
+let _correlationId: string | null = null;
+
+/** Get the current request's correlation ID */
+export function getCorrelationId(): string {
+  return _correlationId ?? "unknown";
+}
+
+/** Set correlation ID for the current request (called by middleware) */
+export function setCorrelationId(id: string): void {
+  _correlationId = id;
+}
+
+/** Generate a compact correlation ID */
+export function generateCorrelationId(): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let id = "";
+  for (let i = 0; i < 12; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return `req_${id}`;
+}
+
+interface LogEntry {
+  ts: string;
+  level: "debug" | "info" | "warn" | "error";
+  msg: string;
+  correlationId: string;
+  [key: string]: unknown;
+}
+
+function formatJson(level: LogEntry["level"], msg: string, ctx?: unknown): string {
+  const entry: LogEntry = {
+    ts: new Date().toISOString(),
+    level,
+    msg,
+    correlationId: _correlationId ?? "unknown",
+  };
+  if (ctx && typeof ctx === "object" && !Array.isArray(ctx)) {
+    Object.assign(entry, ctx as Record<string, unknown>);
+  } else if (ctx !== undefined) {
+    entry["value"] = ctx;
+  }
+  return JSON.stringify(entry);
+}
 
 export const logger = {
-  debug: (...args: unknown[]) => {
+  debug: (msg: string, ctx?: unknown) => {
     if (isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.debug('[Klarpakke DEBUG]', ...args);
+      console.debug(formatJson("debug", msg, ctx));
     }
   },
 
-  info: (...args: unknown[]) => {
+  info: (msg: string, ctx?: unknown) => {
+    console.log(formatJson("info", msg, ctx));
   },
 
-  warn: (...args: unknown[]) => {
-    console.warn('[Klarpakke WARN]', ...args);
+  warn: (msg: string, ctx?: unknown) => {
+    console.warn(formatJson("warn", msg, ctx));
   },
 
-  error: (...args: unknown[]) => {
-    console.error('[Klarpakke ERROR]', ...args);
-
-    // Send to error tracking service if configured
-    if (process.env.NEXT_PUBLIC_GLITCHTIP_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      // Can integrate GlitchTip/Sentry SDK here
-    }
+  error: (msg: string, ctx?: unknown) => {
+    console.error(formatJson("error", msg, ctx));
   },
 
-  group: (label: string) => {
-    if (isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.group(label);
-    }
+  auth: (event: string, ctx?: unknown) => {
+    logger.info(`auth:${event}`, ctx);
   },
 
-  groupEnd: () => {
-    if (isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.groupEnd();
-    }
-  },
-
-  time: (label: string) => {
-    if (isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.time(label);
-    }
-  },
-
-  timeEnd: (label: string) => {
-    if (isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.timeEnd(label);
-    }
-  },
-
-  // Log auth events
-  auth: (event: string, details?: unknown) => {
-    logger.info(`[Auth] ${event}`, details || '');
-  },
-
-  // Log API calls
-  api: (method: string, endpoint: string, status?: number) => {
-    logger.debug(
-      `[API] ${method} ${endpoint}${status ? ` (${status})` : ''}`
-    );
-  },
-
-  // Log Webflow events
-  webflow: (event: string, details?: unknown) => {
-    logger.info(`[Webflow] ${event}`, details || '');
+  api: (method: string, endpoint: string, status?: number, ctx?: unknown) => {
+    logger.info(`api:${method} ${endpoint}`, { status, ...(ctx && typeof ctx === "object" ? ctx as Record<string, unknown> : {}) });
   },
 };

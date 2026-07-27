@@ -15,6 +15,7 @@ import { authMiddleware } from "@/middleware/exports";
 import { rateLimitMiddleware } from "@/middleware/exports";
 import { cspMiddleware } from "@/middleware/exports";
 import { cacheControlMiddleware } from "@/middleware/exports";
+import { correlationIdMiddleware } from "@/middleware/exports";
 
 export const config = {
   matcher: [
@@ -24,6 +25,7 @@ export const config = {
 };
 
 const composed = chain(
+  correlationIdMiddleware,
   i18nMiddleware,
   authMiddleware,
   rateLimitMiddleware,

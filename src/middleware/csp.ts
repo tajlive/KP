@@ -43,8 +43,8 @@ function generateNonce(): string | null {
 /**
  * Build CSP header string from directives object
  */
-function buildCSPHeader(directives: CSPDirectives, nonce: string): string {
-  const isDev = process.env.NODE_ENV === "development";
+function _buildCSPHeader(directives: CSPDirectives, nonce: string): string {
+  const _isDev = process.env.NODE_ENV === "development";
 
   const directiveEntries = Object.entries(directives).map(([key, values]) => {
     // Replace NONCE_PLACEHOLDER with actual nonce
@@ -165,7 +165,7 @@ export const cspMiddleware: MiddlewareFn = (
  * Generate CSP meta tag content for use in HTML
  * Use this for pages that need CSP in meta tags
  */
-export function generateCSPMetaContent(nonce: string): string {
+export function generateCSPMetaContent(_nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
   
   const directives: CSPDirectives = {
