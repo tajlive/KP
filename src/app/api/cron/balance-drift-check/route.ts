@@ -10,6 +10,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { validateCronSecret } from "@/lib/auth/cron";
+import {
+  checkAllInvariants,
+  EXTREME_GROWTH_MULTIPLIER,
+  type InvariantViolation,
+} from "@/lib/trading/session-invariants";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -39,7 +44,9 @@ export async function GET(req: Request) {
     // Fetch all active paper sessions with their associated balances
     const { data: sessions, error: sessionError } = await supabase
       .from("trading_sessions")
-      .select("id, user_id, current_capital_nok, current_capital")
+      .select(
+        "id, user_id, current_capital_nok, current_capital, initial_capital, starting_capital_nok"
+      )
       .eq("mode", "paper")
       .eq("status", "active");
 
@@ -50,6 +57,29 @@ export async function GET(req: Request) {
 
     if (!sessions || sessions.length === 0) {
       return NextResponse.json({ ok: true, checked: 0, drifts: [] });
+    }
+
+    // Fase 4: negative beholdninger = salg forbi trigger-clampen.
+    // Filtreres i databasen (forventet 0 rader etter Fase 0–2).
+    const { data: negativePositions, error: posError } = await supabase
+      .from("positions")
+      .select("id, session_id, user_id, symbol, quantity")
+      .lt("quantity", 0);
+
+    if (posError) {
+      console.error("[balance-drift-check] Positions query failed:", posError);
+    }
+
+    const invariantViolations: InvariantViolation[] = checkAllInvariants(
+      sessions,
+      negativePositions ?? []
+    );
+
+    if (invariantViolations.length > 0) {
+      console.warn(
+        `[balance-drift-check] INVARIANT violations: ${invariantViolations.length}`,
+        invariantViolations
+      );
     }
 
     const userIds = sessions.map((s) => s.user_id);
@@ -141,21 +171,40 @@ export async function GET(req: Request) {
       }
     }
 
-    // Send Slack alert if any drifts detected
-    if (alerts.length > 0 && process.env.SLACK_WEBHOOK) {
-      try {
-        await fetch(process.env.SLACK_WEBHOOK, {
-          method: "POST",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify({
-            text: `🚨 *Balance Drift Alert* — ${alerts.length} user(s) out of sync\n\n${alerts
+    // Send Slack alert if any drifts or invariant violations detected
+    if ((alerts.length > 0 || invariantViolations.length > 0) && process.env.SLACK_WEBHOOK) {
+      const driftSection =
+        alerts.length > 0
+          ? `🚨 *Balance Drift Alert* — ${alerts.length} user(s) out of sync\n\n${alerts
               .map(
                 (a) =>
                   `• ${a.userId.slice(0, 8)}…: drift ${(a.maxDriftPct * 100).toFixed(2)}% ` +
                   `(session: ${a.sessionCapital.toFixed(0)}, profile: ${a.profileBalance?.toFixed(0) ?? "N/A"}, ` +
                   `wallet: ${a.walletBalance?.toFixed(0) ?? "N/A"}, portfolio: ${a.portfolioBalance?.toFixed(0) ?? "N/A"})`
               )
-              .join("\n")}`,
+              .join("\n")}`
+          : "";
+      const invariantSection =
+        invariantViolations.length > 0
+          ? `⛔ *Invariant Violations* — ${invariantViolations.length} brudd\n\n${invariantViolations
+              .slice(0, 20)
+              .map(
+                (v) =>
+                  `• [${v.kind}] session=${v.sessionId?.slice(0, 8) ?? "?"}… ` +
+                  `user=${v.userId?.slice(0, 8) ?? "?"}… ${v.detail}`
+              )
+              .join("\n")}${
+              invariantViolations.length > 20
+                ? `\n… og ${invariantViolations.length - 20} til`
+                : ""
+            }`
+          : "";
+      try {
+        await fetch(process.env.SLACK_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({
+            text: [driftSection, invariantSection].filter(Boolean).join("\n\n"),
           }),
         });
       } catch (e) {
@@ -170,6 +219,10 @@ export async function GET(req: Request) {
       thresholdPct: DRIFT_THRESHOLD_PCT * 100,
       thresholdAbsolute: ABSOLUTE_THRESHOLD_NOK,
       drifts: alerts.length > 0 ? alerts : undefined,
+      invariantViolationCount: invariantViolations.length,
+      extremeGrowthMultiplier: EXTREME_GROWTH_MULTIPLIER,
+      invariantViolations:
+        invariantViolations.length > 0 ? invariantViolations : undefined,
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
