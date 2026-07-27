@@ -13,7 +13,7 @@
  * bevisst utelatt (returnerer "live_not_supported").
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/types/database.types";
 import { normalizePair } from "./pair";
 import { usdtToNok } from "./currency";
 import { computePositionsFromTrades } from "./positions-from-trades";

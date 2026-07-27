@@ -8,7 +8,7 @@
  * flyttes til den aktive sesjonen. Exit-logikken overtar derfra.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/types/database.types";
 import { normalizePair } from "./pair";
 import type { StrategyPosition } from "./strategies/types";
 
