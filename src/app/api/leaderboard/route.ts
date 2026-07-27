@@ -27,7 +27,16 @@ export async function GET(req: Request) {
       );
     }
 
-    const response = NextResponse.json(data);
+    // Anonymiser user_display_name — FACT-AUDIT 2.1/2.2:
+    // leaderboard_entries har AI-genererte navn. Vis kun anonymisert ID.
+    const safe = (data ?? []).map((entry) => ({
+      ...entry,
+      user_display_name: entry.user_id
+        ? `Trader***${String(entry.user_id).slice(0, 4)}`
+        : "Trader",
+    }));
+
+    const response = NextResponse.json(safe);
     response.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
     return response;
   } catch (err) {
