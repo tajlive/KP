@@ -80,9 +80,9 @@ export function AutoStrategyPanel() {
 
       <div className="space-y-3 bg-[#0A0D12] border border-[#1E2530] rounded-xl p-4">
         <div>
-          <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
+          <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
             Risikonivå
-          </label>
+          </span>
           <div className="flex rounded-lg bg-[#0B0F19] border border-[#1E2530] p-0.5">
             {[
               { key: "low", label: "Lav", desc: "1% per trade", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" },

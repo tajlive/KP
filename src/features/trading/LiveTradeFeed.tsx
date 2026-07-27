@@ -103,7 +103,6 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
     fetchTrades();
     const interval = setInterval(fetchTrades, 30000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
   const timeAgo = (date: Date) => {

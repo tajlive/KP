@@ -40,8 +40,6 @@ export function useThemePreference() {
     };
 
     loadThemeFromProfile();
-    // theme er med vilje utelatt — vi skal bare laste én gang ved mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTheme]);
 
   // Lagre tema til profilen

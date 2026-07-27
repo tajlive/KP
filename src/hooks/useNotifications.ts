@@ -76,7 +76,6 @@ export function useNotifications() {
 
     checkSubscription();
     fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Request permission and subscribe
