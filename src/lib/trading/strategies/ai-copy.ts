@@ -61,6 +61,8 @@ export class AICopyStrategy implements StrategyEngine {
         return {
           action: "sell",
           positionSize,
+          confidence: 0.3, // Lav confidence — vi selger for å kutte tap, ikke fordi det er et godt tidspunkt
+          exitReason: "time_exit",
           indicators: {
             time_exit: true,
             hours_held: Math.round(hoursInPosition * 10) / 10,
@@ -75,6 +77,8 @@ export class AICopyStrategy implements StrategyEngine {
         return {
           action: "sell",
           positionSize,
+          confidence: 0.7,
+          exitReason: "take_profit",
           indicators: {
             bb_middle_cross: true,
             pnl_pct: Math.round(pnlPct * 100) / 100,
@@ -88,6 +92,8 @@ export class AICopyStrategy implements StrategyEngine {
         return {
           action: "sell",
           positionSize,
+          confidence: 0.5,
+          exitReason: "stop_loss",
           indicators: {
             bb_breakdown: true,
             pnl_pct: Math.round(pnlPct * 100) / 100,
@@ -106,6 +112,8 @@ export class AICopyStrategy implements StrategyEngine {
           return {
             action: "sell",
             positionSize,
+            confidence: 0.5,
+            exitReason: "stop_loss",
             indicators: {
               atr_stop: true,
               atr_stop_price: Math.round(atrStopPrice * 100) / 100,

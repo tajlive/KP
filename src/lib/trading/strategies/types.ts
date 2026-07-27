@@ -40,6 +40,10 @@ export interface StrategySignal {
   positionSize?: number;
   /** Absolute quantity to trade (used for partial sells). Takes precedence over positionSize for sells. */
   quantity?: number;
+  /** 0-1 confidence. 0 = modellen har null tillit. Brukes av signal-guard. */
+  confidence?: number;
+  /** Exit reason for sell signals. "manual", "stop_loss", "take_profit", "time_exit", "auto" */
+  exitReason?: string;
   indicators?: Record<string, unknown>;
   reason?: string;
 }
