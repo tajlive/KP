@@ -92,10 +92,27 @@ export async function POST(request: NextRequest) {
         fetchedPrice = await provider.getPrice(symbol);
       } catch (priceErr) {
         console.error(`[paper-trading/execute] Failed to fetch price for ${symbol}:`, priceErr);
-        return NextResponse.json(
-          { error: "Kunne ikke hente pris for " + symbol },
-          { status: 502 },
-        );
+        // Fallback: DB-priser (cachet av cron-jobb)
+        try {
+          const { data: dbPrice } = await supabase
+            .from("coin_prices")
+            .select("price")
+            .eq("symbol", symbol)
+            .single();
+          if (dbPrice?.price && Number(dbPrice.price) > 0) {
+            fetchedPrice = Number(dbPrice.price);
+          } else {
+            return NextResponse.json(
+              { error: "Kunne ikke hente pris for " + symbol + " — prøv igjen om litt" },
+              { status: 502 },
+            );
+          }
+        } catch {
+          return NextResponse.json(
+            { error: "Kunne ikke hente pris for " + symbol + " — prøv igjen om litt" },
+            { status: 502 },
+          );
+        }
       }
 
       const rate = await getUsdtToNokRateAsync(supabase);

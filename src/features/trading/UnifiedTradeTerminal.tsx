@@ -333,10 +333,13 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
           }),
         }).catch(() => {});
       } else {
-        setFeedback({ ok: false, msg: data.error || "Feil" });
+        setFeedback({ ok: false, msg: data.error || data.message || "Feil" });
       }
-    } catch {
-      setFeedback({ ok: false, msg: "Nettverksfeil" });
+    } catch (err) {
+      const msg = err instanceof TypeError && err.message === "Failed to fetch"
+        ? "Ingen tilkobling — sjekk nettverket"
+        : "Nettverksfeil";
+      setFeedback({ ok: false, msg });
     } finally {
       setLoading(false);
     }
