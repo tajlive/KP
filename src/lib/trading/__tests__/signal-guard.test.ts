@@ -77,14 +77,61 @@ describe("evaluateSignalGuard", () => {
       ).toBe(true);
     });
 
-    it("blokkerer ALDRI salg — exits skal alltid gjennomføres", () => {
+    it("tillater KUN salg med gyldig exit-reason (stop_loss, take_profit, manual)", () => {
+      // Manuelle exits alltid tillatt
       expect(
         evaluateSignalGuard({
           action: "sell",
           confidence: 0,
-          expectancy: -9.0,
+          exitReason: "stop_loss",
         }).allowed,
       ).toBe(true);
+      expect(
+        evaluateSignalGuard({
+          action: "sell",
+          confidence: 0,
+          exitReason: "take_profit",
+        }).allowed,
+      ).toBe(true);
+      expect(
+        evaluateSignalGuard({
+          action: "sell",
+          confidence: 0,
+          exitReason: "manual",
+        }).allowed,
+      ).toBe(true);
+    });
+
+    it("blokkerer auto-salg med confidence=0 (forhindrer exit-cascade)", () => {
+      expect(
+        evaluateSignalGuard({
+          action: "sell",
+          confidence: 0,
+          exitReason: "time_exit",
+        }).allowed,
+      ).toBe(false);
+    });
+
+    it("tillater auto-salg med confidence > 0 og uten rate-limit", () => {
+      expect(
+        evaluateSignalGuard({
+          action: "sell",
+          confidence: 0.5,
+          exitReason: "auto",
+          msSinceLastAutoSell: 20 * 60 * 1000, // 20 min — over grensen
+        }).allowed,
+      ).toBe(true);
+    });
+
+    it("blokkerer auto-salg innenfor rate-limit (15 min)", () => {
+      expect(
+        evaluateSignalGuard({
+          action: "sell",
+          confidence: 0.5,
+          exitReason: "auto",
+          msSinceLastAutoSell: 5 * 60 * 1000, // kun 5 min siden forrige
+        }).allowed,
+      ).toBe(false);
     });
 
     it("påvirker ikke hold", () => {
