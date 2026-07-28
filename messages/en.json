@@ -1386,7 +1386,10 @@
       "noData": "No data",
       "noDataHint": "Start a trading session to see the portfolio chart",
       "sessionTitle": "Session",
-      "sessionLabel": "Chart shows this session only"
+      "sessionLabel": "Chart shows this session only",
+      "errorTitle": "Chart could not be displayed",
+      "errorMessage": "We could not load the portfolio chart right now. Please try again.",
+      "retry": "Refresh"
     },
     "trading": "Trading",
     "activity": "Activity",
@@ -1798,7 +1801,7 @@
     "equityCurve": {
       "noData": "Not enough data for equity curve",
       "title": "Equity Curve",
-      "sessionScope": "Session",
+      "sessionScope": "Σ all sessions",
       "ariaLabel": "What is equity curve?",
       "max": "Max",
       "min": "Min",

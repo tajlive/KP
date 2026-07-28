@@ -1388,7 +1388,10 @@
       "noData": "Ingen data",
       "noDataHint": "Start en trading-sesjon for å se porteføljegrafen",
       "sessionTitle": "Sesjon",
-      "sessionLabel": "Grafen viser kun denne sesjonen"
+      "sessionLabel": "Grafen viser kun denne sesjonen",
+      "errorTitle": "Grafen kunne ikke vises",
+      "errorMessage": "Vi kunne ikke laste porteføljegrafen akkurat nå. Prøv på nytt.",
+      "retry": "Oppdater"
     },
     "trading": "Handel",
     "activity": "Aktivitet",
@@ -1793,7 +1796,7 @@
     "equityCurve": {
       "noData": "Ikke nok data for equity curve",
       "title": "Egenkapitalkurve",
-      "sessionScope": "Sesjon",
+      "sessionScope": "Σ alle sesjoner",
       "ariaLabel": "Hva er equity curve?",
       "max": "Max",
       "min": "Min",
