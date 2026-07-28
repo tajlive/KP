@@ -50,10 +50,14 @@ vi.mock("@/lib/trading/executor-factory", () => ({
   },
 }));
 
-vi.mock("@/lib/trading/currency", () => ({
-  getUsdtToNokRateAsync: vi.fn().mockResolvedValue(10.92),
-  usdtToNok: vi.fn((amount: number, rate?: number) => amount * (rate ?? 10.92)),
-}));
+vi.mock("@/lib/trading/currency", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/trading/currency")>();
+  return {
+    ...actual,
+    getUsdtToNokRateAsync: vi.fn().mockResolvedValue(10.92),
+    usdtToNok: vi.fn((amount: number, rate?: number) => amount * (rate ?? 10.92)),
+  };
+});
 
 vi.mock("@/lib/trading/core/distributed-lock", () => ({
   acquireTradeLock: vi.fn().mockResolvedValue({
