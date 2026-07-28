@@ -59,7 +59,7 @@ export default function PortfolioChart({
   sessionId,
   mode = "paper",
 }: PortfolioChartProps) {
-  const t = useTranslations("portfolio");
+  const t = useTranslations("dashboard.portfolio");
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasData, setHasData] = useState(false);

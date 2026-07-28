@@ -538,7 +538,7 @@ const templates = {
           <span style="font-weight: 600;">${sessionsStopped}</span>
         </div>
         <div class="stat-row">
-          <span>Portfolio verdi:</span>
+          <span>Sesjonsverdi (lekepenger):</span>
           <span style="font-weight: 600;">${portfolioValue}</span>
         </div>
       </div>
