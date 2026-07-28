@@ -240,7 +240,7 @@ export function DashboardPro({
             totalPnl={effectiveStats.accountBalance != null
               ? effectiveStats.accountBalance - (effectiveStats.startingCapital ?? 0)
               : effectiveStats.totalPnl}
-            winRate={effectiveStats.winRate}
+            winRate={effectiveStats.winRate != null ? effectiveStats.winRate * 100 : undefined}
             isPriority={isPriority}
           />
 

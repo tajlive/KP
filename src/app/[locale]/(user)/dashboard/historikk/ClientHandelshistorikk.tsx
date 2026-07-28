@@ -62,12 +62,26 @@ export default function ClientHandelshistorikk() {
     [pollCycleFailures],
   );
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  // FIKS 1 (Bølge 1): Konto-P/L fra paper_accounts — erstatter misvisende session-sum
+  const [accountPnl, setAccountPnl] = useState<number | null>(null);
 
   // OnboardingChecklist-punkt 3: marker at brukeren har sett historikken.
   // Flagg leses av useOnboardingState på dashboard.
   useEffect(() => {
     window.localStorage.setItem("kp_history_viewed", "1");
     trackOnboardingStep("history_viewed");
+  }, []);
+
+  // FIKS 1 (Bølge 1): Hent konto-P/L fra paper_accounts
+  useEffect(() => {
+    fetch("/api/portfolio/summary")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.balance != null && d.initialBalance != null) {
+          setAccountPnl(d.balance - d.initialBalance);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const formatRejectionReason = useCallback(
@@ -302,18 +316,21 @@ export default function ClientHandelshistorikk() {
           subtitle={t("subtitle")}
           actions={
             <div className="flex flex-wrap items-center gap-2 justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                onClick={() => void copyDiagnostics()}
-                disabled={signedIn !== true}
-                data-testid="trade-history-copy-diagnostics"
-              >
-                <ClipboardCopy className="h-4 w-4" />
-                {t("copyDiagnostics")}
-              </Button>
+              {/* FIKS 6 (Bølge 1): Diagnostikk-knapp kun for admin — localStorage-flagg */}
+              {typeof window !== "undefined" && window.localStorage.getItem("kp_admin_mode") === "1" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  onClick={() => void copyDiagnostics()}
+                  disabled={signedIn !== true}
+                  data-testid="trade-history-copy-diagnostics"
+                >
+                  <ClipboardCopy className="h-4 w-4" />
+                  {t("copyDiagnostics")}
+                </Button>
+              )}
               <Button className={BRAND.primary} disabled size="sm">
                 {t("exportCsv")}
               </Button>
@@ -379,9 +396,9 @@ export default function ClientHandelshistorikk() {
                 tone="negative"
               />
               <TradeHistoryStatCard
-                label={t("totalRealizedPnl")}
-                value={`${stats.totalRealizedPnl >= 0 ? "+" : ""}${formatCurrencyValue(stats.totalRealizedPnl, filter)}`}
-                tone={stats.totalRealizedPnl >= 0 ? "positive" : "negative"}
+                label={t("accountPnl")}
+                value={`${(accountPnl ?? 0) >= 0 ? "+" : ""}${formatCurrencyValue(accountPnl ?? 0, filter)}`}
+                tone={(accountPnl ?? 0) >= 0 ? "positive" : "negative"}
               />
             </div>
           )}

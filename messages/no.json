@@ -4043,6 +4043,7 @@
     "filterLive": "Kun live",
     "totalPnl": "Total P&L",
     "totalRealizedPnl": "Realisert P&L (sum)",
+    "accountPnl": "Konto P&L",
     "winRate": "Vinnrate",
     "winRateRealizedHint": "Kun handler med realisert P&L i databasen",
     "totalTrades": "Antall handler",
