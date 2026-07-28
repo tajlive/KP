@@ -34,6 +34,7 @@ export function useRealtimePrices(
   symbols: string[] = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"],
 ) {
   const [coins, setCoins] = useState<CoinPrice[]>([]);
+  const [source, setSource] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,8 +51,10 @@ export function useRealtimePrices(
       }
       const body = (await res.json()) as {
         prices?: Array<{ symbol: string; price: number; change24h: number }>;
+        source?: string;
       };
       const prices = body.prices ?? [];
+      const apiSource = body.source ?? "binance";
 
       const formattedCoins: CoinPrice[] = symbolsKey
         .split(",")
@@ -69,6 +72,7 @@ export function useRealtimePrices(
         });
 
       setCoins(formattedCoins);
+      setSource(apiSource);
       setError(null);
     } catch (err) {
       console.error("Error fetching prices:", err);
@@ -77,6 +81,7 @@ export function useRealtimePrices(
           symbolsKey.split(","),
         );
         setCoins(binanceData);
+        setSource("binance-direct");
         setError(null);
       } catch {
         setError("Kunne ikke hente priser");
@@ -92,7 +97,7 @@ export function useRealtimePrices(
     return () => clearInterval(interval);
   }, [fetchPrices]);
 
-  return { coins, loading, error, refresh: fetchPrices };
+  return { coins, source, loading, error, refresh: fetchPrices };
 }
 
 /** Nødfallback fra klienten hvis API-ruten feiler (f.eks. midlertidig 502) */
