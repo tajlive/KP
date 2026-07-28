@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -59,10 +60,31 @@ export default function HeroSection({ topReturn }: { topReturn?: number }) {
             <p className="text-caption text-kp-text-muted animate-fade-in">
               {t("hero.disclaimer")}
             </p>
+
+            {/* MOBIL: mockup under CTA-folden — lazy, påvirker ikke LCP */}
+            <div className="lg:hidden flex justify-center pt-2">
+              <Image
+                src="/images/hero-trade-mockup.png"
+                alt={t("hero.mockupAlt")}
+                width={539}
+                height={976}
+                loading="lazy"
+                className="w-[220px] h-auto"
+              />
+            </div>
           </div>
 
-          {/* Høgre kolonne — fjerner hardkodede priser (FIKS 2) */}
-          <div className="hidden lg:flex justify-center" />
+          {/* DESKTOP: høgre kolonne — ekte produktbilde, over folden (LCP-kandidat) */}
+          <div className="hidden lg:flex justify-center">
+            <Image
+              src="/images/hero-trade-mockup.png"
+              alt={t("hero.mockupAlt")}
+              width={539}
+              height={976}
+              priority
+              className="w-[320px] xl:w-[360px] h-auto animate-float"
+            />
+          </div>
         </div>
       </div>
     </section>

@@ -1077,7 +1077,8 @@
       "cta-primary": "Start free",
       "cta-secondary": "See JokerTrade",
       "livePrices": "Live market data",
-      "liveUpdates": "Updated live"
+      "liveUpdates": "Updated live",
+      "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money"
     },
     "modes": {
       "title": "One account — three ways to trade",
