@@ -15,7 +15,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/types/database.types";
-import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
+import { ensureNokDenominated, getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
   validateTradeAgainstRiskProfile,
   recordTradeRejection,
@@ -560,6 +560,47 @@ async function executeTradeWithLock(
         // ========================================================================
         const nowIso = new Date().toISOString();
 
+        // ========================================================================
+        // 7.5 Valuta-guard (2026-07-28): paper-rader skal ALDRI lagres USDT.
+        // Prod-bevis: tick-pipelinen skrev SOL-rader i USDT mens BTC var NOK.
+        // Sammenlign mot request.price (USDT-referanse) og korriger entydige
+        // avvik (ukonvertert / dobbeltkonvertert) før insert.
+        // ========================================================================
+        let storedPrice =
+          request.mode === "paper"
+            ? usdtToNok(execResult.executedPrice, rate ?? undefined)
+            : execResult.executedPrice;
+        let storedTotalValue =
+          request.mode === "paper"
+            ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
+            : execResult.executedQuantity * execResult.executedPrice;
+        let storedFee =
+          request.mode === "live"
+            ? execResult.fee
+            : usdtToNok(execResult.fee || 0, rate ?? undefined);
+
+        if (request.mode === "paper" && rate != null) {
+          const guarded = ensureNokDenominated(
+            { price: storedPrice, totalValue: storedTotalValue, fee: storedFee ?? 0 },
+            request.price,
+            rate,
+          );
+          if (guarded.corrected) {
+            console.warn(
+              `[executeTrade] Valuta-guard korrigerte ${request.symbol} ` +
+                `(${guarded.reason}): pris ${storedPrice} -> ${guarded.price}`,
+            );
+            storedPrice = guarded.price;
+            storedTotalValue = guarded.totalValue;
+            storedFee = guarded.fee;
+          } else if (guarded.reason === "unresolved") {
+            console.warn(
+              `[executeTrade] Valuta-guard: ${request.symbol} pris ${storedPrice} ` +
+                `matcher verken USDT- eller NOK-bånd (ref ${request.price}, rate ${rate})`,
+            );
+          }
+        }
+
         const tradeInsert: Database["public"]["Tables"]["trades"]["Insert"] & {
           usdt_nok_rate?: number;
           idempotency_scope?: string;
@@ -570,18 +611,9 @@ async function executeTradeWithLock(
           side: request.side,
           quantity: execResult.executedQuantity,
           filled_quantity: execResult.executedQuantity,
-          price:
-            request.mode === "paper"
-              ? usdtToNok(execResult.executedPrice, rate ?? undefined)
-              : execResult.executedPrice,
-          total_value:
-            request.mode === "paper"
-              ? usdtToNok(execResult.executedQuantity * execResult.executedPrice, rate ?? undefined)
-              : execResult.executedQuantity * execResult.executedPrice,
-          fee:
-            request.mode === "live"
-              ? execResult.fee
-              : usdtToNok(execResult.fee || 0, rate ?? undefined),
+          price: storedPrice,
+          total_value: storedTotalValue,
+          fee: storedFee,
           status: "filled",
           mode: request.mode,
           order_type: request.orderType,

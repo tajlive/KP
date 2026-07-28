@@ -108,3 +108,75 @@ export async function getUsdtToNokRateAsync(
 export function usdtToNok(usdtAmount: number, rate?: number): number {
   return usdtAmount * (rate ?? getUsdtToNokRate());
 }
+
+/**
+ * Skrivetids-guard (2026-07-28): paper-trades skal ALDRI lagres
+ * USDT-denominert. Prod-bevis: tick-pipelinen skrev SOL-rader med
+ * pris/total/fee i USDT (qty × pris = total, 100 % USDT-konsistent)
+ * mens BTC-rader var NOK — pris-kildene er valuta-blandede per symbol.
+ *
+ * Sammenligner lagrede verdier mot USDT-referanseprisen (request.price)
+ * og korrigerer entydige avvik:
+ *   1. Innen NOK-båndet (ref × rate)      -> allerede korrekt, uendret.
+ *   2. Innen USDT-båndet (ref)            -> ukonvertert, multipliser alt.
+ *   3. > 2.5× over NOK-båndet             -> dobbeltkonvertert, divider.
+ *   4. Ellers (ukjent opphav)             -> uendret, corrected=false.
+ *
+ * Båndene overlapper ikke så lenge rate > 1.6/0.45 ≈ 3.56 (rate er ~9.7).
+ * RENE funksjoner — ingen I/O, kan testes isolert.
+ */
+export const CURRENCY_BAND_LO = 0.45;
+export const CURRENCY_BAND_HI = 1.6;
+export const DOUBLE_CONVERSION_FACTOR = 2.5;
+
+export interface NokDenominationResult {
+  price: number;
+  totalValue: number;
+  fee: number;
+  corrected: boolean;
+  reason: "already_nok" | "converted_usdt" | "fixed_double" | "unresolved";
+}
+
+export function ensureNokDenominated(
+  values: { price: number; totalValue: number; fee: number },
+  referencePriceUsdt: number,
+  rate: number,
+): NokDenominationResult {
+  const { price, totalValue, fee } = values;
+  const base: NokDenominationResult = {
+    price,
+    totalValue,
+    fee,
+    corrected: false,
+    reason: "unresolved",
+  };
+  if (!(referencePriceUsdt > 0) || !(rate > 1) || !(price > 0)) return base;
+
+  const expectedNok = referencePriceUsdt * rate;
+
+  // 1. Allerede NOK
+  if (price >= expectedNok * CURRENCY_BAND_LO && price <= expectedNok * CURRENCY_BAND_HI) {
+    return { ...base, reason: "already_nok" };
+  }
+  // 2. Ukonvertert USDT
+  if (price >= referencePriceUsdt * CURRENCY_BAND_LO && price <= referencePriceUsdt * CURRENCY_BAND_HI) {
+    return {
+      price: price * rate,
+      totalValue: totalValue * rate,
+      fee: fee * rate,
+      corrected: true,
+      reason: "converted_usdt",
+    };
+  }
+  // 3. Dobbeltkonvertert
+  if (price > expectedNok * DOUBLE_CONVERSION_FACTOR) {
+    return {
+      price: price / rate,
+      totalValue: totalValue / rate,
+      fee: fee / rate,
+      corrected: true,
+      reason: "fixed_double",
+    };
+  }
+  return base;
+}

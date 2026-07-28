@@ -28,11 +28,15 @@ vi.mock("@/lib/trading/safety/risk-validator", () => ({
   recordTradeDecision: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("@/lib/trading/currency", () => ({
-  getUsdtToNokRate: vi.fn().mockReturnValue(RATE),
-  getUsdtToNokRateAsync: vi.fn().mockResolvedValue(RATE),
-  usdtToNok: vi.fn((amount: number, rate?: number) => amount * (rate ?? RATE)),
-}));
+vi.mock("@/lib/trading/currency", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/trading/currency")>();
+  return {
+    ...actual,
+    getUsdtToNokRate: vi.fn().mockReturnValue(RATE),
+    getUsdtToNokRateAsync: vi.fn().mockResolvedValue(RATE),
+    usdtToNok: vi.fn((amount: number, rate?: number) => amount * (rate ?? RATE)),
+  };
+});
 
 vi.mock("@/lib/trading/core/distributed-lock", () => ({
   acquireTradeLock: vi.fn().mockResolvedValue({
