@@ -67,7 +67,8 @@
       "sectionSystem": "Section system",
       "adminV2": "Admin",
       "sectionSupport": "Section support",
-      "impersonate": "Impersonate"
+      "impersonate": "Impersonate",
+      "tradeHealth": "Trade-helse"
     },
     "traderVerifications": {
       "title": "Trader verifikasjoner",
@@ -332,7 +333,42 @@
     "login": "Login",
     "id": "Id",
     "role": "Role",
-    "count": "Count"
+    "count": "Count",
+    "tradeHealth": {
+      "title": "Trade-helse",
+      "loading": "Laster...",
+      "updated": "Oppdatert",
+      "refresh": "Oppdater",
+      "runFix": "Kjør auto-fiks",
+      "fixing": "Fikser...",
+      "statusClean": "Alt ser sunt ut ✓",
+      "statusIssues": "Avvik funnet — kjør auto-fiks",
+      "lastFix": "Siste auto-fiks",
+      "nothingToFix": "Ingenting å fikse — alt var rent",
+      "fixSuccess": "Auto-fiks fullført",
+      "fixPartial": "Auto-fiks delvis fullført — se advarsler",
+      "fixError": "Auto-fiks feilet",
+      "loadError": "Kunne ikke laste helsedata",
+      "footerNote": "Samme sjekker kjøres automatisk hver mandag 07:17 med auto-fiks (backup først). Denne knappen kjører samme fiks umiddelbart.",
+      "cards": {
+        "mockRows": "Mock-rader",
+        "usdtRows": "USDT-rader",
+        "mixedRows": "Blandede rader",
+        "sessionProliferation": "Brukere m/ >12 sesjoner",
+        "balanceDrift": "Balanse-drift",
+        "ambiguous": "Tvetydige rader",
+        "tradesTotal": "Trades totalt",
+        "activeSessions": "Aktive / alle sesjoner"
+      },
+      "pairTable": {
+        "title": "Win-rate per par (30 dager)",
+        "pair": "Par",
+        "closed": "Lukkede",
+        "winRate": "Win-rate",
+        "pnl": "PnL",
+        "empty": "Ingen lukkede handler siste 30 dager"
+      }
+    }
   },
   "auth": {
     "verify": {
