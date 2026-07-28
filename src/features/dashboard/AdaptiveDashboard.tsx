@@ -3,6 +3,7 @@
 import { m, AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { TrendingUp, BarChart3, Wallet } from "lucide-react";
+import Link from "next/link";
 import type { UserState } from "@/hooks/useUserState";
 import { SimplifiedHero } from "./SimplifiedHero";
 import { StatsGrid } from "@/features/portfolio/StatsGrid";
@@ -230,11 +231,10 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
       <ActiveTraderView {...props} />
 
       {/* Extra power-user CTA */}
-      <m.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="glass-card p-4 border-amber-500/20 hover:border-amber-500/30 transition-all duration-200"
+      <Link
+        href={`/${locale}/leaderboard`}
+        prefetch={false}
+        className="block glass-card p-4 border-amber-500/20 hover:border-amber-500/30 transition-all duration-200"
       >
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -245,21 +245,19 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
               {t("leaderboardDesc")}
             </p>
           </div>
-          <a
-            href={`/${locale}/leaderboard`}
+          <span
             className="shrink-0 rounded-lg bg-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/30 transition-colors"
           >
             {t("leaderboardCta")}
-          </a>
+          </span>
         </div>
-      </m.div>
+      </Link>
 
       {/* JokerTrade CTA — sekundær, under folden (progressive disclosure) */}
-      <m.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
-        className="glass-card p-4 border-amber-500/30 hover:border-amber-500/40 transition-all duration-200"
+      <Link
+        href={`/${locale}/jokertrade`}
+        prefetch={false}
+        className="block glass-card p-4 border-amber-500/30 hover:border-amber-500/40 transition-all duration-200"
       >
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -270,14 +268,13 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
               {t("jokerTradeDesc")}
             </p>
           </div>
-          <a
-            href={`/${locale}/jokertrade`}
+          <span
             className="btn-gold text-xs px-3 py-1.5"
           >
             {t("jokerTradeCta")}
-          </a>
+          </span>
         </div>
-      </m.div>
+      </Link>
     </div>
   );
 }
