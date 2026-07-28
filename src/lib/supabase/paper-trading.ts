@@ -155,6 +155,10 @@ export async function executePaperTrade(
   const totalValueUsdt = trade.quantity * trade.price;
   const totalValueNok = usdtToNok(totalValueUsdt, rate);
   const feeNok = usdtToNok(totalValueUsdt * 0.001, rate);
+  // FIKS (2026-07-28): price må også lagres i NOK — tidligere ble USDT-pris
+  // lagret sammen med NOK total_value/fee, som ga blandede enheter i samme
+  // rad og blåste opp PnL-beregninger (13 prod-rader, backfiller samme dato).
+  const priceNok = usdtToNok(trade.price, rate);
 
   // Validate balance for buy orders (NOK vs NOK)
   if (trade.side === "buy" && session.current_capital_nok < totalValueNok + feeNok) {
@@ -177,7 +181,7 @@ export async function executePaperTrade(
       trading_pair: trade.symbol,
       side: trade.side,
       quantity: trade.quantity,
-      price: trade.price,
+      price: priceNok,
       total_value: totalValueNok,
       fee: feeNok,
       order_type: 'market',

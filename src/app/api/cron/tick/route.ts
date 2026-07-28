@@ -1563,6 +1563,59 @@ async function ensureAutoTradingSessions(
   const usersToCreate = usersNeedingSession.filter(
     (userId) => !existingUserIds.has(userId),
   );
+
+  // FIKS (2026-07-28): Gjenbruk nyeste ikke-aktive paper-sesjon i stedet for
+  // å opprette en ny hver gang. Tidligere ble det opprettet én sesjon per
+  // tick etter at forrige ble stoppet — prod-bevis: 178 sesjoner på 24 dager
+  // for én bruker, alle med 100 000 NOK "kapital" hver.
+  const usersToReactivate = usersToCreate;
+  if (usersToReactivate.length > 0) {
+    const { data: reusable } = await db
+      .from("trading_sessions")
+      .select("id, user_id")
+      .in("user_id", usersToReactivate)
+      .eq("mode", "paper")
+      .eq("trading_pair", "BTCUSDT")
+      // 'paused' er bevisst bruker-valg — kun stopped/crashed reaktiveres.
+      .in("status", ["stopped", "crashed"])
+      .order("updated_at", { ascending: false });
+
+    const latestByUser = new Map<string, string>();
+    for (const row of reusable ?? []) {
+      const uid = row.user_id as string;
+      if (!latestByUser.has(uid)) latestByUser.set(uid, row.id as string);
+    }
+
+    const now = new Date().toISOString();
+    const reactivated: TradingSession[] = [];
+    for (const [uid, sessionRowId] of latestByUser) {
+      const { data: reactivatedRow, error: reactivateError } = await db
+        .from("trading_sessions")
+        .update({
+          status: "active",
+          last_heartbeat: now,
+          last_tick_at: now,
+          updated_at: now,
+        } as never)
+        .eq("id", sessionRowId)
+        .in("status", ["stopped", "crashed"]) // race-guard: kun hvis fortsatt inaktiv
+        .select("*")
+        .maybeSingle();
+      if (reactivateError) {
+        console.warn("[Tick] Reaktivering feilet for", uid, reactivateError.message);
+        continue;
+      }
+      if (reactivatedRow) {
+        reactivated.push(reactivatedRow as unknown as TradingSession);
+        usersToCreate.splice(usersToCreate.indexOf(uid), 1);
+      }
+    }
+    if (reactivated.length > 0) {
+      console.info(`[Tick] Reaktiverte ${reactivated.length} sesjoner i stedet for å opprette nye`);
+      sessions.push(...reactivated);
+    }
+  }
+
   if (usersToCreate.length === 0) return sessions;
 
   const now = new Date().toISOString();
