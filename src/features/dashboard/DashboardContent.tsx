@@ -107,6 +107,8 @@ export function DashboardContent({
         startingCapital: data.startingCapital,
         winningTrades: data.winningTrades,
         sessionCount: data.sessionCount,
+        // FIKS 6: KONTO-balanse (paper_accounts) — source of truth for hero
+        accountBalance: data.accountBalance,
         // DB-rader → PaperTradingList sin TradingSession-type (narrowing + null-guards)
         recentSessions: (data.recentSessions ?? []).map((s) => ({
           id: s.id,

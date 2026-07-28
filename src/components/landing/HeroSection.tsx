@@ -4,18 +4,18 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 /**
- * Ny HeroSection — aspirerende, ikke advarende.
- * Erstattar "Jeg tapte 64 000 kr" med positivt verdiforslag.
- * "Din personlige AI-trader. Våre beste brukere er opp 343%."
+ * HeroSection — aspirerende landing-hero.
  *
- * ⚠️ PRE-LAUNCH: Tallet "+343%" må verifiserast mot
- * produksjonsdatabasen før lansering. Køyr:
- *   SELECT pct_return FROM leaderboard ORDER BY pct_return DESC LIMIT 1
+ * topReturn: topp-avkastning fra paper_accounts (samme kilde + eksklusjoner
+ * som /api/leaderboard). undefined/null → ingen prosent-påstand vises.
+ *
+ * FIKS 2 (FACT-AUDIT): Hardkodede priser fjernet — «live»-label var falsk.
+ * Prisdata hentes client-side av PriceTicker-komponenten på dashboard.
  */
 
 export default function HeroSection({ topReturn }: { topReturn?: number }) {
   const t = useTranslations("landing");
-  const pct = topReturn ?? 316;
+  const hasReliableReturn = topReturn !== undefined && topReturn !== null;
 
   return (
     <section className="relative min-h-screen flex items-center bg-kp-bg-primary overflow-hidden">
@@ -33,7 +33,9 @@ export default function HeroSection({ topReturn }: { topReturn?: number }) {
               {t("hero.title")}
             </h1>
             <p className="text-body sm:text-body text-kp-text-secondary max-w-lg mx-auto lg:mx-0 animate-fade-in">
-              {t("hero.subtitle", { pct })}
+              {hasReliableReturn
+                ? t("hero.subtitle", { pct: topReturn })
+                : t("hero.subtitleGeneric")}
             </p>
 
             {/* CTA-knapper */}
@@ -59,41 +61,8 @@ export default function HeroSection({ topReturn }: { topReturn?: number }) {
             </p>
           </div>
 
-          {/* Høgre kolonne — MarketDataTeaser (placeholder) */}
-          <div className="hidden lg:flex justify-center">
-            <div className="border border-kp-border rounded-2xl bg-kp-bg-card p-6 w-full max-w-sm space-y-3 animate-float">
-              <div className="text-center text-kp-text-muted text-caption">
-                {t("hero.livePrices")}
-              </div>
-              <div className="space-y-2">
-                {[
-                  { pair: "BTC", price: "65 446", change: "+1.49" },
-                  { pair: "ETH", price: "1 970", change: "+4.47" },
-                  { pair: "SOL", price: "77.01", change: "+2.96" },
-                ].map((coin) => (
-                  <div
-                    key={coin.pair}
-                    className="flex items-center justify-between py-1.5 border-b border-kp-border-light last:border-0"
-                  >
-                    <span className="text-kp-text-primary font-bold text-sm">
-                      {coin.pair}
-                    </span>
-                    <div className="text-right">
-                      <div className="text-kp-text-primary font-mono text-sm">
-                        ${coin.price}
-                      </div>
-                      <div className="text-kp-success text-caption">
-                        ▲ {coin.change}%
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="text-center text-kp-text-muted text-[10px]">
-                ● {t("hero.liveUpdates")}
-              </div>
-            </div>
-          </div>
+          {/* Høgre kolonne — fjerner hardkodede priser (FIKS 2) */}
+          <div className="hidden lg:flex justify-center" />
         </div>
       </div>
     </section>

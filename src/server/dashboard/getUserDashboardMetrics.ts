@@ -99,7 +99,7 @@ async function getAccountBalance(
 ): Promise<number | null> {
   const { data, error } = await supabaseClient
     .from("paper_accounts")
-    .select("current_balance")
+    .select("current_balance, initial_balance")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -108,6 +108,20 @@ async function getAccountBalance(
     return null;
   }
   return typeof data?.current_balance === "number" ? data.current_balance : null;
+}
+
+/** Komplement til getAccountBalance — FIKS 6. */
+async function getAccountInitial(
+  supabaseClient: SupabaseClient<Database>,
+  userId: string,
+): Promise<number | null> {
+  const { data, error } = await supabaseClient
+    .from("paper_accounts")
+    .select("initial_balance")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) return null;
+  return typeof data?.initial_balance === "number" ? data.initial_balance : null;
 }
 
 export async function getUserDashboardMetrics(

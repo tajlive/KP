@@ -1907,6 +1907,11 @@
         "errorMessage": "Vi kunne ikke laste porteføljegrafen akkurat nå. Prøv på nytt.",
         "retry": "Oppdater"
       },
+      "sessionTitle": "Sesjon",
+      "sessionLabel": "Grafen viser kun denne sesjonen",
+      "noData": "Ingen data",
+      "noDataHint": "Start en trading-sesjon for å se porteføljegrafen",
+      "noChartData": "Last graf på nytt",
       "sessionsTitle": "Dine sesjoner",
       "lastUpdated": "Sist oppdatert",
       "seeAll": "Se alle",
@@ -2231,6 +2236,7 @@
     "hero": {
       "title": "Din personlige AI-trader.",
       "subtitle": "Skaffet opptil +{pct}% for våre beste brukere.",
+      "subtitleGeneric": "Bli en bedre trader med AI — øv risikofritt med 100 000 kr i lekepenger.",
       "disclaimer": "Basert på ekte papirhandel-resultater. Historisk avkastning garanterer ikke fremtidig avkastning.",
       "cta-primary": "Start gratis",
       "cta-secondary": "Se JokerTrade",
