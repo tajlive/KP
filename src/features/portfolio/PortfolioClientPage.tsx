@@ -110,8 +110,9 @@ export default function PortfolioClientPage() {
     () => (summary?.positions ?? []).map((p) => normalizePair(p.tradingPair)),
     [summary],
   );
-  const { coins } = useRealtimePrices(positionSymbols.length > 0 ? positionSymbols : undefined);
+  const { coins, source } = useRealtimePrices(positionSymbols.length > 0 ? positionSymbols : undefined);
   // binance-24hr returnerer USDT-priser — konverter til NOK (trades.price er NOK).
+  // UNNTAK: db-cache fallback returnerer ALLEREDE NOK-priser (coin_prices.price er NOK).
   const [usdtNok, setUsdtNok] = React.useState<number | null>(null);
   React.useEffect(() => {
     fetch("/api/fx/usdt-nok")
@@ -124,9 +125,13 @@ export default function PortfolioClientPage() {
   const priceBySymbol = React.useMemo(() => {
     const map = new Map<string, number>();
     if (usdtNok == null) return map;
-    for (const c of coins) map.set(c.symbol.toUpperCase(), c.price * usdtNok);
+    for (const c of coins) {
+      // db-cache = allerede NOK, IKKE konverter på nytt (P1 bug: dobbelkonvertering)
+      const usdtPrice = source === "db-cache" ? c.price / usdtNok : c.price;
+      map.set(c.symbol.toUpperCase(), usdtPrice * usdtNok);
+    }
     return map;
-  }, [coins, usdtNok]);
+  }, [coins, usdtNok, source]);
 
   if (loading) {
     return (

@@ -199,6 +199,7 @@ export default function PortfolioDashboard({
     loading: pricesLoading,
     error: pricesError,
     refresh: refreshPrices,
+    source: priceSource,
   } = useRealtimePrices(DASHBOARD_SYMBOLS);
 
   const [usdtNokRate, setUsdtNokRate] = useState(10.8);
@@ -344,7 +345,10 @@ export default function PortfolioDashboard({
 
   const priceForSymbol = (sym: string) => {
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
-    return (liveCoins.find((c) => c.symbol === key)?.price ?? 0) * usdtNokRate;
+    const rawPrice = liveCoins.find((c) => c.symbol === key)?.price ?? 0;
+    // P1: db-cache er allerede NOK — ikke konverter på nytt
+    if (priceSource === "db-cache") return rawPrice;
+    return rawPrice * usdtNokRate;
   };
   const usdtPriceForSymbol = (sym: string) => {
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
@@ -622,7 +626,7 @@ export default function PortfolioDashboard({
                     className="text-base font-semibold text-[#1A1D26]"
                     style={{ fontVariantNumeric: "tabular-nums" }}
                   >
-                    {formatNOK(coin.price * usdtNokRate)}
+                    {formatNOK(priceSource === "db-cache" ? coin.price : coin.price * usdtNokRate)}
                   </p>
                   <span
                     className={`text-sm font-medium tabular-nums ${coin.change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}
