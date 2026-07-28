@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""KLARPAKKE Trade-helse -> Widget-artifact.
+"""KLARPAKKE Trade-helse -> Widget-artifact (selvhelbredende).
 
-Kjører scripts/trade-quality-monitor.mjs i dry-run (enkeltstaaende
-sannhetskilde for drift-tall), beregner win-rate per par siste 30 dager
-via Supabase REST, og emitter ett artifact som matcher Widget slots.main.
+1. Kjører scripts/trade-quality-monitor.mjs --apply (auto-fiks m/ backup).
+2. Kjører deretter dry-run for post-fiks-status.
+3. Beregner win-rate per par siste 30 dager via Supabase REST og emitter
+   ett artifact som matcher Widget slots.main.
 """
 import json
 import os
@@ -33,9 +34,12 @@ def load_env():
     return env
 
 
-def run_monitor():
+def run_monitor(apply=False):
+    args = ["node", "scripts/trade-quality-monitor.mjs"]
+    if apply:
+        args.append("--apply")
     proc = subprocess.run(
-        ["node", "scripts/trade-quality-monitor.mjs"],
+        args,
         cwd=REPO, capture_output=True, text=True, timeout=300,
     )
     out = proc.stdout or ""
@@ -108,13 +112,27 @@ def empty_artifact(warning):
 
 
 def build_artifact():
+    # 1. Selvhelbredende: kjoer monitor MED auto-fiks foerst (tar backup av
+    #    alt som slettes/konverteres til backups/trade-monitor/).
+    auto_fixes = []
     try:
-        report = run_monitor()
+        applied = run_monitor(apply=True)
+        fixes = applied.get("fixes", {})
+        if fixes:
+            auto_fixes.append(
+                "AUTO-FIKS: " + ", ".join("%s=%s" % (k, v) for k, v in fixes.items())
+            )
+    except Exception as exc:
+        auto_fixes.append("auto-fiks feilet: %s" % exc)
+
+    # 2. Deretter dry-run for aerlig post-fiks-status til widgeten.
+    try:
+        report = run_monitor(apply=False)
     except Exception as exc:
         return empty_artifact("monitor feilet: %s" % exc)
 
     stats = report.get("stats", {})
-    warnings = list(report.get("warnings", []))
+    warnings = auto_fixes + list(report.get("warnings", []))
 
     win_rates = []
     try:

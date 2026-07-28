@@ -207,3 +207,16 @@ Tom etterspurte et komplett adminpanel. Adminpanelet **fantes allerede** (`/no/a
 ### Gjenstående kjent avvik (28.07)
 - **2 USDT-prisede rader dukket opp igjen** — den eksterne mock-cron-jobben kjører fortsatt et sted (blokkert for mock av `trades_no_mock_rows`, men valuta-drift slipper gjennom). **Må skrus av hos scheduleren** ellers fikser monitor/admin knappen det ukentlig/manuelt.
 - Win-rate 30d: BTCUSDT 66,7 % (57), ETHUSDT 47,1 % (17), SOLUSDT 40,0 % (15), DOTUSDT 33,3 % (3).
+
+---
+
+## 10. Selvhelbredende drift (levert 28.07.2026 kveld)
+
+**Funn:** Nye USDT-prisede rader (SOL ~73,8 USDT, 100 % USDT-konsistente: qty × pris = total) skrevet 11:07 UTC av den kanoniske tick-pipelinen (`/api/cron/tick` via pg_cron `klarpakke-tick` */5 min, DCA-sesjoner, `idempotency_scope='trade'`). BTC-rader i samme vindu var NOK — pris-kildene i pipelinen er valuta-blandet per symbol. pg_cron kaller `www.klarpakke.no` (vault APP_URL verifisert). Lokale crontab-/launchd-/GitHub Actions-kilder utelukket (den énne `curl -X POST`-linjen i lokal crontab er trunkert/virkeløs).
+
+**Tiltak:**
+1. Widget-automation `automation_0e3801d7` er nå **selvhelbredende**: kjører monitor `--apply` (auto-fiks m/ backup til `backups/trade-monitor/`) + dry-run, **2× daglig (06:23 og 18:23 Europe/Oslo)**. Verifisert: 9 rader auto-konvertert til NOK, helse = clean.
+2. Ukentlig cron-monitor (mandag 07:17) består som ekstra sikkerhetsnett.
+3. Admin "Kjør auto-fiks"-knapp på `/no/admin/trade-health` for manuell umiddelbar fiks.
+
+**Gjenstår (rotårsak):** skrivetids-normalisering i tick/execute-trade slik at rader aldri lagres USDT — krever dypere gjennomgang av pris-kildekjeden (ensemble/Dark Fleet signal-priser vs executor-fill). Inntil det er på plass fanger auto-fiksen drift innen maks ~12 timer.
