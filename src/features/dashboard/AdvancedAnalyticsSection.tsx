@@ -149,6 +149,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
               <EquityCurveChart
                 data={analytics?.cumulativePnl}
                 loading={loading}
+                headerValue={summary?.balance ?? undefined}
               />
               <WinLossHeatmap
                 data={analytics?.dailyPnl}
