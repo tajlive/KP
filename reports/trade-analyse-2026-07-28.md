@@ -45,6 +45,26 @@
 
 ---
 
+## 8. Runde 3: Full pakke — resets, optimalisering og deploy (2026-07-28, kl. 13:30)
+
+Godkjent av Tom: "Alt må fikses og optimaliseres."
+
+| Tiltak | Detalj | Status |
+|---|---|---|
+| **Tier-sjekk** | tomarnejensen@gmail.com er ALLEREDE `professor` (uten utløpsdato) — ingen endring nødvendig | ✅ Verifisert |
+| **Reset: 10 testbrukere** (@klarpakke.test) | 2 565 trades + 749 sesjoner slettet; alle saldoer → 100 000 NOK; profiler synket via trigger | ✅ Verifisert per bruker |
+| **Reset: Viking_NO (outlier 814b8c67)** | 973 trades + 179 sesjoner slettet; konto med −3,72 MRD NOK falsk PnL nullstilt → 100 000 NOK | ✅ Verifisert |
+| **Optimalisert Toms auto_trade_settings** | `daily_trade_limit` 50→**10** · `daily_loss_limit_percent` 5→**3** · `allowed_symbols` +**SOLUSDT** (plattform win-rate: ETH 62 %, SOL 60 %, BTC 25 %) · `risk_profile` aggressive→**moderate** | ✅ Live i DB |
+| **Deploy til prod** | Commit `a641cf3bb` (pre-commit 8/8 grønn) → `next build` → opennext → wrangler deploy (Version `e86f9704-85c6-40ef-8d4d-d24e83f5a6ee`) → CDN purge → verifisert 200 på /no og /api/health | ✅ Live |
+
+**Sluttilstand verifisert:** Tom har nøyaktig **1 aktiv sesjon** (ikke 7/dag), 2 legitime trades siden reset, saldo 100 000 NOK. Plattformen har 935 trades totalt (fra 5 588), **0 is_mock-rader**.
+
+**Backups runde 3:** `scratch/test-accounts-reset-backup-2026-07-28T09-32-56-963Z.json` (8 MB, alle 11 kontoer).
+
+**Gjenstår frivillig:** 78 tvetydige valuta-rader (uberørt, lav risiko); mock-cron-scriptene bør skrus av hos ekstern scheduler (feiler nå høyt pga. constraint); kode for strategibytte (DCA-klump + swing) er produktbeslutning — se §5B.
+
+---
+
 ## TL;DR
 
 1. **Datagrunnlaget er delvis korrupt** — trades er blandet i USDT og NOK, én bruker har −120 MNOK i falske tap, og Tom har 178 trading-sesjoner som hver tror de har 100 000 kr. Fiks dette før strategioptimalisering.
