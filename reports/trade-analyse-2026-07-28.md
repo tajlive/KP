@@ -188,3 +188,22 @@ BTC (14 338 kr), DOGE (23 161 kr), BNB (18 364 kr), ETH (stor posisjon, se dataf
 - Analysescript: `scratch/analyze-trades.mjs`, `scratch/trade-analysis.py`, `scratch/deep-analysis.py`, `scratch/normalized-analysis.py`
 - Metode: FIFO-matching per par på tvers av sesjoner; valuta detektert per trade (pris vs USD-referanse × `usdt_nok_rate`, snitt 9,75) og normalisert til NOK.
 - Kilder marked: CoinGecko (priser, 28.07.2026), Mosu Crypto juli-2026-rapport, AlphaNode ETF-rapport 02.07.2026, Bitcoin Foundation juli-2026-analyse, TokenMetrics/BingX/Bravos strategiguider 2026.
+
+---
+
+## 9. Adminpanel + Trade-helse (levert 28.07.2026, commit cec91633f)
+
+Tom etterspurte et komplett adminpanel. Adminpanelet **fantes allerede** (`/no/admin`: brukere, tier-oppgradering via `/api/admin/user-tier`, paper-reset, monitor m.m.; `tomarnejensen@gmail.com` i `ADMIN_EMAIL_FALLBACK` + professor-tier). Det som manglet var en helse-side for trade-data. Levert:
+
+- **`GET /api/admin/trade-health`** — mock/USDT-drift, sesjonsproliferasjon, balanse-drift, win-rate per par (30d, FIFO). Auth: `verifyAdminAccess` (verifisert 401 for uinnloggede i prod).
+- **`POST /api/admin/trade-health/fix`** — samme 4 auto-fikser som `trade-quality-monitor.mjs --apply` (slett mock, konverter valuta, slett overflødige sesjoner, resync balanse) + `admin_audit_log`.
+- **`/no/admin/trade-health`** — statusbanner, 8 statistikk-kort, par-tabell, "Kjør auto-fiks"-knapp. Nav-lenke i admin-layout, i18n (no/en).
+- **Deploy:** Worker Version 92d3f361, verifisert 200 på `/no`, `/api/health`, og 401-guard på admin-API.
+
+### Kimi Work Dashboard-widget
+- **Widget** `widget_c8dffdc5` "KLARPAKKE · Trade-helse" på Canvas "Klarpakke Drift": helseverdi, 5 avvikstellere, aktivitet 7d, win-rate 30d. Tetthetsfelt i bakgrunnen er bundet til avvikstall (rent = rolig, avvik = urolig felt).
+- **Automation** `automation_0e3801d7` "Trade-helse · widget-data": daglig `23 6 * * *` Europe/Oslo, kjører `scripts/blueprint/trade_health_widget.py` (dry-run monitor + win-rate via Supabase REST). Binding `binding_9871f105` validert, første leveranse OK.
+
+### Gjenstående kjent avvik (28.07)
+- **2 USDT-prisede rader dukket opp igjen** — den eksterne mock-cron-jobben kjører fortsatt et sted (blokkert for mock av `trades_no_mock_rows`, men valuta-drift slipper gjennom). **Må skrus av hos scheduleren** ellers fikser monitor/admin knappen det ukentlig/manuelt.
+- Win-rate 30d: BTCUSDT 66,7 % (57), ETHUSDT 47,1 % (17), SOLUSDT 40,0 % (15), DOTUSDT 33,3 % (3).
