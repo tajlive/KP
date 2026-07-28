@@ -969,6 +969,7 @@
     "hero": {
       "title": "Your personal AI trader.",
       "subtitle": "Delivered up to +{pct}% for our best users.",
+      "subtitleGeneric": "Become a better trader with AI — practice risk-free with 100,000 kr in paper money.",
       "disclaimer": "Based on real paper trading results. Past performance does not guarantee future results.",
       "cta-primary": "Start free",
       "cta-secondary": "See JokerTrade",

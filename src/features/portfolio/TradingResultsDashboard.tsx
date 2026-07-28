@@ -97,6 +97,9 @@ export default function TradingResultsDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
+  // FIKS 4: Konto-P/L fra paper_accounts (source of truth)
+  const [accountPnl, setAccountPnl] = useState<number | null>(null);
+  const [accountBalance, setAccountBalance] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -122,9 +125,22 @@ export default function TradingResultsDashboard() {
       setLastFetch(new Date());
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errorLoad"));
-    } finally {
-      setLoading(false);
     }
+    // FIKS 4: Parallell fetch for konto-P/L
+    try {
+      const accountRes = await fetch("/api/portfolio/chart?mode=paper&days=1", {
+        credentials: "include",
+        cache: "no-store",
+      });
+      if (accountRes.ok) {
+        const accountJson = await accountRes.json();
+        if (accountJson.accountBalance != null && accountJson.accountStart != null) {
+          setAccountBalance(Number(accountJson.accountBalance));
+          setAccountPnl(Number(accountJson.accountBalance) - Number(accountJson.accountStart));
+        }
+      }
+    } catch { /* non-critical */ }
+    setLoading(false);
   }, [t]);
 
   useEffect(() => {
@@ -161,9 +177,9 @@ export default function TradingResultsDashboard() {
 
 
 
-  // KPI "Total P/L" = realisert P&L (konsistent med portefølje/historikk).
+  // FIKS 4: KPI "Total P/L" = KONTO-P/L (paper_accounts), IKKE sesjons-sum
   // totalEffectivePnl inkluderer kontantstrøm fra åpne kjøp — misvisende som overskrift.
-  const totalPnl = data?.aggregates.totalRealizedPnl ?? 0;
+  const totalPnl = accountPnl ?? data?.aggregates.totalRealizedPnl ?? 0;
   const pnlPositive = totalPnl >= 0;
   const sampleTrades = data?.tradeCount ?? 0;
   const knownPnlCount =

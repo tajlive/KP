@@ -52,6 +52,8 @@ interface UserStats {
   startingCapital?: number;
   winningTrades?: number;
   sessionCount?: number;
+  /** FIKS 6: KONTO-balanse (paper_accounts) — source of truth, ikke sesjons-sum */
+  accountBalance?: number | null;
   recentSessions?: TradingSession[];
 }
 
@@ -167,13 +169,12 @@ export function DashboardPro({
   const formatWinRateOrDash = (value: number | null | undefined) =>
     value == null ? "—" : `${Math.round(value * 100)}%`;
 
-  const totalReturn =
-    effectiveStats.startingCapital != null &&
-    effectiveStats.currentCapital != null &&
-    effectiveStats.startingCapital > 0
-      ? ((effectiveStats.currentCapital - effectiveStats.startingCapital) /
-          effectiveStats.startingCapital) *
-        100
+  // FIKS 6: Beregn avkastning fra KONTO (paper_accounts), ikke sesjons-sum
+  const heroBalance = effectiveStats.accountBalance ?? effectiveStats.currentCapital;
+  const totalReturn = effectiveStats.accountBalance != null && effectiveStats.startingCapital != null && effectiveStats.startingCapital > 0
+    ? ((effectiveStats.accountBalance - effectiveStats.startingCapital) / effectiveStats.startingCapital) * 100
+    : effectiveStats.startingCapital != null && effectiveStats.currentCapital != null && effectiveStats.startingCapital > 0
+      ? ((effectiveStats.currentCapital - effectiveStats.startingCapital) / effectiveStats.startingCapital) * 100
       : undefined;
 
   // Adaptive user state — konsolidert til én maskin (NyBruker / Onboarded / AktivTrader / PowerUser)
@@ -221,7 +222,7 @@ export function DashboardPro({
     },
     {
       label: t("stats.balance"),
-      value: formatByModeOrDash(effectiveStats.currentCapital, preferredTradingMode),
+      value: formatByModeOrDash(heroBalance, preferredTradingMode),
       subtext: t("stats.balanceSub"),
       trend: "neutral" as const,
       icon: Wallet,
@@ -236,7 +237,9 @@ export function DashboardPro({
           {/* Personalized Greeting — Enterprise 2026 */}
           <PersonalizedGreeting
             userName={userName}
-            totalPnl={effectiveStats.totalPnl}
+            totalPnl={effectiveStats.accountBalance != null
+              ? effectiveStats.accountBalance - (effectiveStats.startingCapital ?? 0)
+              : effectiveStats.totalPnl}
             winRate={effectiveStats.winRate}
             isPriority={isPriority}
           />
@@ -250,7 +253,7 @@ export function DashboardPro({
           animate={{ opacity: 1, y: 0 }}
         >
           <SimplifiedHero
-            balance={effectiveStats.currentCapital}
+            balance={heroBalance}
             changePct={totalReturn}
             ctaText={cmsData?.heroCtaText}
             ctaLink={cmsData?.heroCtaLink}

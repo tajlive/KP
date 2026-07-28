@@ -16,10 +16,14 @@ import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { SkeletonBlock } from "@/features/dashboard/loading-skeleton";
 import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
 
-// TODO(data-source-audit): This chart computes its own capital/PnL from trades for
-// visualization purposes, which may diverge from getUserDashboardMetrics (the dashboard
-// single source of truth). Consider accepting pre-aggregated start/current capital from
-// the parent or metrics endpoint to guarantee consistency.
+/**
+ * PortfolioChart — én penge-modell. FIKS 3 (FACT-AUDIT).
+ *
+ * Overskrift = paper_accounts.current_balance (KONTO).
+ * Endring = (current_balance − initial_balance) / initial_balance.
+ * Kurve = per-sesjon (med "Sesjon"-label) eller ærlig empty-state.
+ * ALDRI summert på tvers av sesjoner som om det var én konto.
+ */
 
 interface ChartDataPoint {
   date: string;
@@ -38,45 +42,36 @@ const TIME_PERIODS = [
   { key: "1W", label: "1U", days: 7 },
   { key: "1M", label: "1M", days: 30 },
   { key: "3M", label: "3M", days: 90 },
-  { key: "1Y", label: "1Å", days: 365 },
-  { key: "ALL", label: "Alt", days: 0 },
-] as const;
+  { key: "ALL", label: "ALT", days: 365 },
+];
 
-function SkeletonChart() {
-  return (
-    <div className="h-[300px] sm:h-[380px] w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-md p-6 overflow-hidden">
-      <div className="flex justify-between items-start mb-6">
-        <div className="space-y-3">
-          <SkeletonBlock className="h-4 w-24" delay={0.1} />
-          <SkeletonBlock className="h-8 w-40" delay={0.2} />
-          <SkeletonBlock className="h-3 w-32" delay={0.3} />
-        </div>
-        <div className="flex gap-2">
-          <SkeletonBlock className="h-9 w-9 rounded-xl" delay={0.4} />
-          <SkeletonBlock className="h-9 w-48 rounded-xl" delay={0.5} />
-        </div>
-      </div>
-      <div className="relative h-[200px] mt-8">
-        <SkeletonBlock className="absolute inset-0 w-full h-full rounded-xl opacity-30" delay={0.6} />
-      </div>
+const SkeletonChart: React.FC = () => (
+  <div className="h-full w-full rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.04] p-5 md:p-6">
+    <div className="mb-8">
+      <SkeletonBlock />
     </div>
-  );
-}
+    <SkeletonBlock />
+  </div>
+);
 
-export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioChartProps) {
-  const t = useTranslations("dashboard.dashboardPro.chart");
+export default function PortfolioChart({
+  userId,
+  sessionId,
+  mode = "paper",
+}: PortfolioChartProps) {
+  const t = useTranslations("portfolio");
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasData, setHasData] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState("1M");
+  const [startingValue, setStartingValue] = useState(0);
+
+  // FIKS 3: Overskrift-verdier — kun KONTO (paper_accounts)
+  const [headerBalance, setHeaderBalance] = useState<number | null>(null);
+  const [headerPct, setHeaderPct] = useState<number | null>(null);
+
   const [currentValue, setCurrentValue] = useState(0);
   const [changePercent, setChangePercent] = useState(0);
-  const [startingValue, setStartingValue] = useState(100000);
-  const [hasData, setHasData] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const fetchPortfolioData = async () => {
     setLoading(true);
@@ -84,8 +79,6 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       const period = TIME_PERIODS.find((p) => p.key === selectedPeriod);
       const daysBack = period?.days || 30;
 
-      // Data hentes via server-API: auth-cookien er httpOnly, saa browser-
-      // klienten kjorer som anon og RLS gir 0 rader. Se api/portfolio/chart.
       const params = new URLSearchParams({
         mode,
         days: String(daysBack),
@@ -99,16 +92,30 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         return;
       }
 
-      const { sessions, trades: allTrades, accountStart } = (await res.json()) as {
-        sessions: Array<{ id: string; starting_capital_nok: number | null }>;
-        trades: Array<{
-          created_at: string;
-          realized_pnl: number | null;
-          side: string;
-          total_value: number;
-        }>;
-        accountStart: number | null;
-      };
+      const { sessions, trades: allTrades, accountStart, accountBalance } =
+        (await res.json()) as {
+          sessions: Array<{ id: string; starting_capital_nok: number | null }>;
+          trades: Array<{
+            created_at: string;
+            realized_pnl: number | null;
+            side: string;
+            total_value: number;
+          }>;
+          accountStart: number | null;
+          accountBalance: number | null;
+        };
+
+      // FIKS 3: Overskrift = paper_accounts (KONTO)
+      if (accountStart != null && accountBalance != null) {
+        setHeaderBalance(accountBalance);
+        const pct = accountStart > 0
+          ? ((accountBalance - accountStart) / accountStart) * 100
+          : null;
+        setHeaderPct(pct);
+      } else {
+        setHeaderBalance(null);
+        setHeaderPct(null);
+      }
 
       if (!sessions || sessions.length === 0) {
         setHasData(false);
@@ -116,12 +123,17 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         return;
       }
 
-      const fallbackStarting = sessions.reduce(
-        (sum, s) => sum + (Number(s.starting_capital_nok) || 0),
-        0
-      );
-      const totalStarting = accountStart ?? (fallbackStarting || 100000);
-      setStartingValue(totalStarting);
+      // KURVEN: Ankres til sesjonens egen startkapital, IKKE konto.
+      // Konto-kurve kan ikke rekonstrueres fra sesjons-PnL.
+      let curveAnchor = 0;
+      if (sessionId) {
+        curveAnchor = Number(sessions[0]?.starting_capital_nok) || 0;
+      } else {
+        setHasData(false);
+        setLoading(false);
+        return;
+      }
+      setStartingValue(curveAnchor);
 
       if (!allTrades || allTrades.length === 0) {
         setHasData(false);
@@ -129,22 +141,20 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         return;
       }
 
-      setHasData(true);
-
+      // Bruk LOKAL variabel — state er stale i samme tick
       const chartData = buildPortfolioData(
         allTrades,
-        totalStarting || 100000,
-        daysBack
+        curveAnchor,
+        daysBack,
+        selectedPeriod,
       );
-
       setData(chartData);
 
       if (chartData.length > 0) {
         const first = chartData[0].value;
         const last = chartData[chartData.length - 1].value;
-        // Header-verdi = siste punkt på kurven (selvkonsistent graf)
         setCurrentValue(last);
-        const change = ((last - first) / first) * 100;
+        const change = first > 0 ? ((last - first) / first) * 100 : 0;
         setChangePercent(change);
       }
     } catch (error) {
@@ -163,37 +173,46 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       total_value: number;
     }>,
     startCapital: number,
-    daysBack: number
+    days: number,
+    period: string,
   ): ChartDataPoint[] => {
-    const data: ChartDataPoint[] = [];
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - daysBack);
+    const intervalMs =
+      period === "1D"
+        ? 4 * 60 * 60 * 1000
+        : period === "1W"
+          ? 24 * 60 * 60 * 1000
+          : 2 * 24 * 60 * 60 * 1000;
 
-    for (let i = 0; i <= daysBack; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
+    const referenceDate = new Date();
+    referenceDate.setDate(referenceDate.getDate() - days);
+    referenceDate.setHours(0, 0, 0, 0);
 
+    const timeSlots: Date[] = [];
+    let cursor = new Date(referenceDate);
+    const now = new Date();
+    while (cursor <= now) {
+      timeSlots.push(new Date(cursor));
+      cursor = new Date(cursor.getTime() + intervalMs);
+    }
+
+    return timeSlots.map((date) => {
       const tradesUpToDate = trades.filter(
-        (t) => new Date(t.created_at) <= date
+        (t) => new Date(t.created_at) <= date,
       );
-
       const totalPnl = tradesUpToDate.reduce((sum, t) => {
         return sum + (t.realized_pnl || 0);
       }, 0);
-
       const currentCapital = startCapital + totalPnl;
 
-      data.push({
+      return {
         date: date.toISOString().split("T")[0],
         value: currentCapital,
         formattedDate: date.toLocaleDateString("nb-NO", {
           month: "short",
           day: "numeric",
         }),
-      });
-    }
-
-    return data;
+      };
+    });
   };
 
   useEffect(() => {
@@ -234,19 +253,19 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
     return <SkeletonChart />;
   }
 
-  if (!hasData) {
+  // FIKS 3: Vis header med konto-tall selv om kurven er tom
+  const showHeader = headerBalance != null;
+
+  if (!hasData && !showHeader) {
     return (
       <m.div
-        className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center justify-center gap-3 h-[300px] sm:h-[380px] rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.04] p-6"
       >
-        <p className="text-lg font-medium text-gray-700 dark:text-slate-300">
-          {t("emptyTitle")}
-        </p>
-        <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">
-          {t("emptyDesc")}
+        <p className="text-gray-500 dark:text-slate-400 text-sm">{t("noData")}</p>
+        <p className="text-gray-400 dark:text-slate-500 text-xs">
+          {t("noDataHint")}
         </p>
       </m.div>
     );
@@ -268,103 +287,111 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       >
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <div>
-            <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">{t("title")}</p>
+            <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">
+              {sessionId ? t("sessionTitle") : t("title")}
+            </p>
             <div className="flex items-center gap-3">
               <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(currentValue)}
+                {headerBalance != null
+                  ? formatCurrency(headerBalance)
+                  : formatCurrency(currentValue)}
               </p>
-              <div
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-medium ${
-                  changePercent >= 0
-                    ? "bg-emerald-500/20 text-emerald-400"
-                    : "bg-red-500/20 text-red-400"
-                }`}
-              >
-                {changePercent >= 0 ? (
-                  <TrendingUp className="w-4 h-4" />
-                ) : (
-                  <TrendingDown className="w-4 h-4" />
-                )}
-                {changePercent >= 0 ? "+" : ""}
-                {changePercent.toFixed(1)}%
-              </div>
-            </div>
-            <p className="text-gray-400 dark:text-slate-500 text-xs mt-1">
-              Startet med {formatCurrency(startingValue)}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button
-              onClick={fetchPortfolioData}
-              className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0"
-              title="Oppdater"
-            >
-              <RefreshCw className="w-4 h-4 text-gray-400 dark:text-slate-400" />
-            </button>
-            <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
-              {TIME_PERIODS.map((period) => (
-                <button
-                  key={period.key}
-                  onClick={() => setSelectedPeriod(period.key)}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                    selectedPeriod === period.key
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600"
+              {headerPct != null && (
+                <div
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-medium ${
+                    headerPct >= 0
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : "bg-red-500/20 text-red-400"
                   }`}
                 >
-                  {period.label}
-                </button>
-              ))}
+                  {headerPct >= 0 ? (
+                    <TrendingUp className="w-4 h-4" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4" />
+                  )}
+                  {headerPct >= 0 ? "+" : ""}
+                  {headerPct.toFixed(1)}%
+                </div>
+              )}
             </div>
+            {sessionId && (
+              <p className="text-gray-400 dark:text-slate-500 text-xs mt-1">
+                {t("sessionLabel")}
+              </p>
+            )}
+          </div>
+
+          {/* Period selector */}
+          <div className="flex gap-1 bg-gray-100 dark:bg-white/[0.06] rounded-lg p-1">
+            {TIME_PERIODS.map((p) => (
+              <button
+                key={p.key}
+                onClick={() => setSelectedPeriod(p.key)}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                  selectedPeriod === p.key
+                    ? "bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="h-[250px]">
-          {mounted ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
+        {hasData ? (
+          <ResponsiveContainer width="100%" height="75%">
+            <AreaChart data={data}>
               <defs>
-                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0052FF" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#0052FF" stopOpacity={0} />
+                <linearGradient id="portfolioGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="#1e293b"
-                vertical={false}
+                stroke="currentColor"
+                className="stroke-gray-200 dark:stroke-white/[0.06]"
               />
               <XAxis
                 dataKey="formattedDate"
-                axisLine={false}
+                tick={{ fontSize: 12 }}
                 tickLine={false}
-                tick={{ fill: "#64748b", fontSize: 11 }}
-                minTickGap={30}
+                axisLine={false}
+                className="text-gray-400 dark:text-slate-500"
               />
-              <YAxis hide domain={["auto", "auto"]} />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
+                className="text-gray-400 dark:text-slate-500"
+                width={60}
+              />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke="#0052FF"
+                stroke="#3b82f6"
                 strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorValue)"
-                animationDuration={1000}
+                fill="url(#portfolioGradient)"
               />
             </AreaChart>
           </ResponsiveContainer>
-          ) : (
-            <div className="h-full w-full bg-gray-100/5 dark:bg-white/[0.03] animate-pulse rounded-xl" />
-          )}
-        </div>
+        ) : (
+          <div className="flex items-center justify-center h-[75%]">
+            <button
+              onClick={fetchPortfolioData}
+              className="flex items-center gap-2 text-sm text-gray-400 dark:text-slate-500 hover:text-kp-brand transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              {t("noChartData")}
+            </button>
+          </div>
+        )}
       </m.div>
     </WidgetErrorBoundary>
   );
 }
 
-export default PortfolioChart;
+export { PortfolioChart };

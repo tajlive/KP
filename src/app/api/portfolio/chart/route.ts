@@ -73,15 +73,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Anker startkapital til paper_accounts (source of truth for saldo).
+    // FIKS 3: Inkluderer current_balance for overskrifts-KPI.
     let accountStart: number | null = null;
+    let accountBalance: number | null = null;
     if (mode === "paper" && !sessionId) {
       const { data: account } = await supabase
         .from("paper_accounts")
-        .select("initial_balance")
+        .select("initial_balance, current_balance")
         .eq("user_id", user.id)
         .maybeSingle();
       accountStart =
         account?.initial_balance != null ? Number(account.initial_balance) : null;
+      accountBalance =
+        account?.current_balance != null ? Number(account.current_balance) : null;
     }
 
     const startDate = new Date();
@@ -118,7 +122,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ sessions, trades: allTrades, accountStart });
+    return NextResponse.json({ sessions, trades: allTrades, accountStart, accountBalance });
   } catch (err) {
     console.error("[GET /api/portfolio/chart] Unhandled error:", err);
     return NextResponse.json(
