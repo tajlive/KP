@@ -253,18 +253,18 @@ export default function PortfolioClientPage() {
               <p className="text-xs text-slate-400">{t("statsWinRate")}</p>
             </div>
             <div className={CARD + " !p-4 text-center"}>
-              {summary!.totalPnl >= 0 ? (
+              {changeAbs !== null && changeAbs >= 0 ? (
                 <TrendingUp className="w-5 h-5 text-emerald-400 mx-auto mb-2" />
               ) : (
                 <TrendingDown className="w-5 h-5 text-rose-400 mx-auto mb-2" />
               )}
               <p
                 className={`text-lg font-bold tabular-nums ${
-                  summary!.totalPnl >= 0 ? "text-emerald-400" : "text-rose-400"
+                  changeAbs !== null && changeAbs >= 0 ? "text-emerald-400" : "text-rose-400"
                 }`}
               >
-                {summary!.totalPnl >= 0 ? "+" : ""}
-                {formatNOK(summary!.totalPnl)}
+                {changeAbs !== null && changeAbs >= 0 ? "+" : ""}
+                {formatNOK(changeAbs ?? 0)}
               </p>
               <p className="text-xs text-slate-400">{t("statsPnl")}</p>
             </div>

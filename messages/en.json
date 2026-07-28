@@ -1381,7 +1381,12 @@
       "overview": "Overview",
       "performance": "Performance",
       "analytics": "Analytics",
-      "history": "History"
+      "history": "History",
+      "noChartData": "Reload chart",
+      "noData": "No data",
+      "noDataHint": "Start a trading session to see the portfolio chart",
+      "sessionTitle": "Session",
+      "sessionLabel": "Chart shows this session only"
     },
     "trading": "Trading",
     "activity": "Activity",
@@ -1793,6 +1798,7 @@
     "equityCurve": {
       "noData": "Not enough data for equity curve",
       "title": "Equity Curve",
+      "sessionScope": "Session",
       "ariaLabel": "What is equity curve?",
       "max": "Max",
       "min": "Min",

@@ -27,6 +27,7 @@ interface TradingAnalytics {
 
 interface PortfolioSummary {
   balance: number | null;
+  initialBalance?: number | null;
   positions: Array<{
     symbol: string;
     qty: number;
@@ -99,6 +100,11 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
 
   // Reell kontobalanse til kalkulatoren (fallback: prop/default).
   const effectiveBalance = summary?.balance ?? accountBalance;
+  // FIKS C: Beregn konto-endringsprosent for EquityCurveChart-chip
+  const effectiveInitial = summary?.initialBalance ?? accountBalance;
+  const headerPct = effectiveBalance != null && effectiveInitial != null && effectiveInitial > 0
+    ? ((effectiveBalance - effectiveInitial) / effectiveInitial) * 100
+    : undefined;
 
   return (
     <div className="mt-6">
@@ -150,6 +156,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
                 data={analytics?.cumulativePnl}
                 loading={loading}
                 headerValue={summary?.balance ?? undefined}
+                headerPct={headerPct}
               />
               <WinLossHeatmap
                 data={analytics?.dailyPnl}

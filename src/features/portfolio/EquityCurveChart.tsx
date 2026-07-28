@@ -138,6 +138,9 @@ export function EquityCurveChart({ data, loading, headerValue, headerPct, header
           </div>
         </div>
         <div className="text-right">
+          {headerValue != null && (
+            <p className="text-[10px] text-slate-500 mb-1">{t("sessionScope")}</p>
+          )}
           <p className="text-xs text-slate-400 dark:text-slate-500">
             {t("max")}:{" "}
             <span className="text-emerald-400">{formatCurrency(maxPnl)}</span>
