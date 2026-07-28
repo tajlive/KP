@@ -24,6 +24,10 @@ interface CumulativePnlPoint {
 interface EquityCurveChartProps {
   data?: CumulativePnlPoint[];
   loading?: boolean;
+  /** FIKS 5: KONTO-header — overskriver kurvens siste PnL-verdi med reell kontobalanse */
+  headerValue?: number;
+  headerPct?: number;
+  headerLabel?: string;
 }
 
 function Skeleton() {
@@ -42,7 +46,7 @@ function EmptyState({ noDataText }: { noDataText: string }) {
   );
 }
 
-export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
+export function EquityCurveChart({ data, loading, headerValue, headerPct, headerLabel }: EquityCurveChartProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.equityCurve");
   const [showInfo, setShowInfo] = useState(false);
@@ -52,7 +56,10 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
 
   const firstValue = data[0]?.cumulative ?? 0;
   const lastValue = data[data.length - 1]?.cumulative ?? 0;
+  // FIKS 5: Bruk KONTO-header hvis tilgjengelig, ellers kurvens siste punkt
   const totalReturn = firstValue !== 0 ? ((lastValue - firstValue) / Math.abs(firstValue)) * 100 : 0;
+  const displayValue = headerValue ?? lastValue;
+  const displayPct = headerPct ?? totalReturn;
   const maxPnl = Math.max(...data.map((d) => d.cumulative));
   const minPnl = Math.min(...data.map((d) => d.cumulative));
 
@@ -111,22 +118,22 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
           </div>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-2xl font-bold text-slate-900 dark:text-white">
-              {formatCurrency(lastValue)}
+              {formatCurrency(displayValue)}
             </span>
             <span
               className={`flex items-center gap-0.5 text-xs font-medium px-2 py-0.5 rounded-full ${
-                totalReturn >= 0
+                displayPct >= 0
                   ? "bg-emerald-500/20 text-emerald-400"
                   : "bg-red-500/20 text-red-400"
               }`}
             >
-              {totalReturn >= 0 ? (
+              {displayPct >= 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
                 <TrendingDown className="w-3 h-3" />
               )}
-              {totalReturn >= 0 ? "+" : ""}
-              {totalReturn.toFixed(1)}%
+              {displayPct >= 0 ? "+" : ""}
+              {displayPct.toFixed(1)}%
             </span>
           </div>
         </div>
