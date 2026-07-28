@@ -135,6 +135,10 @@ export async function getUserDashboardMetrics(
     mode === "paper"
       ? await getAccountBalance(supabaseClient, userId)
       : null;
+  const accountInitial =
+    mode === "paper"
+      ? await getAccountInitial(supabaseClient, userId)
+      : null;
 
   // ------------------------------------------------------------------
   // 1. Fetch recent sessions for display (always needed)
@@ -207,7 +211,7 @@ export async function getUserDashboardMetrics(
       totalTrades,
       winRate: Math.round(winRate * 100) / 100,
       totalCapital: Math.round(totalCapital * 100) / 100,
-      startingCapital: Math.round(startingCapital * 100) / 100,
+      startingCapital: accountInitial != null ? accountInitial : Math.round(startingCapital * 100) / 100,
       winningTrades,
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),

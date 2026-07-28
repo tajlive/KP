@@ -1383,7 +1383,12 @@
       "overview": "Oversikt",
       "performance": "Ytelse",
       "analytics": "Analyse",
-      "history": "Historikk"
+      "history": "Historikk",
+      "noChartData": "Last graf på nytt",
+      "noData": "Ingen data",
+      "noDataHint": "Start en trading-sesjon for å se porteføljegrafen",
+      "sessionTitle": "Sesjon",
+      "sessionLabel": "Grafen viser kun denne sesjonen"
     },
     "trading": "Handel",
     "activity": "Aktivitet",
@@ -1788,6 +1793,7 @@
     "equityCurve": {
       "noData": "Ikke nok data for equity curve",
       "title": "Egenkapitalkurve",
+      "sessionScope": "Sesjon",
       "ariaLabel": "Hva er equity curve?",
       "max": "Max",
       "min": "Min",
