@@ -20,23 +20,21 @@ interface TickerCoin {
   symbol: string;
   name: string;
   emoji: string;
+  binanceSymbol: string;
 }
 
 const TICKER_COINS: TickerCoin[] = [
-  { id: "bitcoin", symbol: "BTC", name: "Bitcoin", emoji: "₿" },
-  { id: "ethereum", symbol: "ETH", name: "Ethereum", emoji: "⟠" },
-  { id: "solana", symbol: "SOL", name: "Solana", emoji: "◎" },
+  { id: "bitcoin", symbol: "BTC", name: "Bitcoin", emoji: "₿", binanceSymbol: "BTCUSDT" },
+  { id: "ethereum", symbol: "ETH", name: "Ethereum", emoji: "⟠", binanceSymbol: "ETHUSDT" },
+  { id: "solana", symbol: "SOL", name: "Solana", emoji: "◎", binanceSymbol: "SOLUSDT" },
 ];
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatPrice(price: number): string {
-  if (price >= 1000) {
-    return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  }
-  return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function formatPriceNOK(price: number): string {
+  return price.toLocaleString("no-NO", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + " kr";
 }
 
 function formatChange(pct: number): string {
@@ -52,7 +50,18 @@ export function PriceTicker() {
   const [prices, setPrices] = useState<CoinPrice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [usdtNok, setUsdtNok] = useState<number>(10.8);
   const mountedRef = useRef(true);
+
+  // Hent USDT→NOK-rate
+  useEffect(() => {
+    fetch("/api/fx/usdt-nok")
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d.rate === "number" && d.rate > 0) setUsdtNok(d.rate);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -65,22 +74,27 @@ export function PriceTicker() {
 
     async function fetchPrices() {
       try {
-        const ids = TICKER_COINS.map((c) => c.id).join(",");
+        const symbols = TICKER_COINS.map((c) => c.binanceSymbol).join(",");
         const res = await fetch(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
+          `/api/market/binance-24hr?symbols=${encodeURIComponent(symbols)}`,
           { signal: AbortSignal.timeout(10_000) }
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
+        const body = await res.json();
+        const apiPrices: Array<{ symbol: string; price: number; change24h: number }> = body.prices ?? [];
 
-        const result: CoinPrice[] = TICKER_COINS.map((coin) => ({
-          id: coin.id,
-          symbol: coin.symbol,
-          name: coin.name,
-          current_price: json[coin.id]?.usd ?? 0,
-          price_change_percentage_24h: json[coin.id]?.usd_24h_change ?? 0,
-          image: "",
-        }));
+        const result: CoinPrice[] = TICKER_COINS.map((coin) => {
+          const match = apiPrices.find((p) => p.symbol === coin.binanceSymbol);
+          const usdtPrice = match?.price ?? 0;
+          return {
+            id: coin.id,
+            symbol: coin.symbol,
+            name: coin.name,
+            current_price: usdtPrice * usdtNok,
+            price_change_percentage_24h: match?.change24h ?? 0,
+            image: "",
+          };
+        });
 
         if (mountedRef.current) {
           setPrices(result);
@@ -94,7 +108,7 @@ export function PriceTicker() {
         }
       }
     }
-  }, []);
+  }, [usdtNok]);
 
   if (loading) {
     return (
@@ -128,7 +142,7 @@ export function PriceTicker() {
                 {coin.symbol}
               </p>
               <p className="text-xs sm:text-sm font-mono font-bold text-[#F9FAFB] tabular-nums">
-                {formatPrice(coin.current_price)}
+                {formatPriceNOK(coin.current_price)}
               </p>
               <p
                 className={`text-[10px] sm:text-xs font-semibold tabular-nums ${
