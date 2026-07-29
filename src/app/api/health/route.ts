@@ -21,6 +21,8 @@ interface HealthCheck {
     binanceProxy: CheckResult;
     errorRate: CheckResult;
     tradesPerMinute: CheckResult;
+    stripeApi: CheckResult;
+    resendApi: CheckResult;
   };
   uptime: number;
   cached?: boolean;
@@ -418,6 +420,51 @@ async function checkPaperTrading(): Promise<CheckResult> {
   }
 }
 
+/**
+ * Check the /api/paper-trading/execute endpoint availability.
+ * Probes with a minimal POST — expects 400 (validation) if alive, 502/503 if backend is broken.
+ */
+async function checkExecuteEndpoint(): Promise<CheckResult> {
+  const start = Date.now();
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL?.replace("/functions/v1", "") || "http://localhost:3000";
+
+  try {
+    const res = await fetch(`${baseUrl}/api/paper-trading/execute`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    const statusCode = res.status;
+    const latency = Date.now() - start;
+
+    if (statusCode === 502 || statusCode === 503) {
+      let body: { error?: string } = {};
+      try { body = await res.json(); } catch { /* ignore */ }
+      return {
+        status: "error",
+        latency,
+        message: body.error || `HTTP ${statusCode} — Backend utilgjengelig`,
+      };
+    }
+
+    // 400 = alive (validation error with empty body is expected)
+    // 200/201/401 = also alive
+    return {
+      status: "ok",
+      latency,
+      message: statusCode < 500 ? `HTTP ${statusCode} (endepunktet er tilgjengelig)` : `HTTP ${statusCode}`,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Kunne ikke nå execute-endepunktet",
+    };
+  }
+}
+
 async function checkErrorRate(): Promise<CheckResult> {
   const start = Date.now();
   try {
@@ -477,6 +524,40 @@ async function checkTradesPerMinute(): Promise<CheckResult> {
   }
 }
 
+async function checkStripeApi(): Promise<CheckResult> {
+  const start = Date.now();
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return { status: "error", latency: Date.now() - start, message: "STRIPE_SECRET_KEY mangler" };
+  try {
+    const res = await fetch("https://api.stripe.com/v1/prices?limit=1", {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) return { status: "ok", latency: Date.now() - start };
+    const body = await res.json().catch(() => ({}));
+    return { status: "error", latency: Date.now() - start, message: `Stripe API ${res.status}: ${(body as { error?: { message?: string } }).error?.message || "ukjent"}` };
+  } catch (err) {
+    return { status: "error", latency: Date.now() - start, message: err instanceof Error ? err.message : "Stripe utilgjengelig" };
+  }
+}
+
+async function checkResendApi(): Promise<CheckResult> {
+  const start = Date.now();
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { status: "error", latency: Date.now() - start, message: "RESEND_API_KEY mangler" };
+  try {
+    const res = await fetch("https://api.resend.com/domains", {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) return { status: "ok", latency: Date.now() - start };
+    const body = await res.json().catch(() => ({}));
+    return { status: "error", latency: Date.now() - start, message: `Resend API nøkkel ugyldig: ${(body as { message?: string }).message || res.status}` };
+  } catch (err) {
+    return { status: "error", latency: Date.now() - start, message: err instanceof Error ? err.message : "Resend utilgjengelig" };
+  }
+}
+
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,
@@ -517,7 +598,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading, errorRate, tradesPerMinute] =
+  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading, executeEndpoint, errorRate, tradesPerMinute, stripeApi, resendApi] =
     await Promise.all([
       withTimeout(checkDatabase(), 3000, {
         status: "error" as const,
@@ -558,6 +639,10 @@ export async function GET(request: NextRequest) {
         status: "error" as const,
         message: "Check timed out after 3000ms",
       }),
+      withTimeout(checkExecuteEndpoint(), 5000, {
+        status: "error" as const,
+        message: "Check timed out after 5000ms",
+      }),
       withTimeout(checkErrorRate(), 3000, {
         status: "error" as const,
         message: "Check timed out after 3000ms",
@@ -567,6 +652,14 @@ export async function GET(request: NextRequest) {
         status: "warning" as const,
         message: "Check timed out after 3000ms",
         count: 0,
+      }),
+      withTimeout(checkStripeApi(), 5000, {
+        status: "error" as const,
+        message: "Check timed out after 5000ms",
+      }),
+      withTimeout(checkResendApi(), 5000, {
+        status: "error" as const,
+        message: "Check timed out after 5000ms",
       }),
     ]);
 
@@ -581,8 +674,11 @@ export async function GET(request: NextRequest) {
     binanceProxy,
     sanity,
     paperTrading,
+    executeEndpoint,
     errorRate,
     tradesPerMinute,
+    stripeApi,
+    resendApi,
   };
 
   const { binanceConnectivity: _, ...statusChecks } = checks;

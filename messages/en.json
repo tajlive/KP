@@ -1,4 +1,91 @@
 {
+  "about": {
+    "metadata": {
+      "title": "About Klarpakke",
+      "description": "Klarpakke is a Norwegian platform for AI trading with play money — learn crypto risk-free with autonomous AI agents on real market data."
+    },
+    "hero": {
+      "badge": "About Klarpakke",
+      "title": "From Hard Lessons to Financial Freedom",
+      "subtitle": "My journey from losing everything to cracking the code – and how you can do the same."
+    },
+    "story": {
+      "title": "The Klarpakke Story",
+      "p1": "Six years ago, I lost 65,000 NOK on crypto. It was a brutal wake-up call. I blindly trusted \"experts\" who promised the moon but delivered nothing but fees and empty promises. Money drained away, and I was left with a costly but valuable lesson: Trust no one but yourself.",
+      "p2": "Two years ago, I took control. I immersed myself in advanced programming and AI, developing my own auto-trader. I started small, tested, failed, and adjusted. As the algorithms began delivering consistent results, I gained the confidence to scale up.",
+      "p3": "I quit betting, the lottery, and traditional savings accounts. All my focus went into the system. When the results exceeded my expectations, I started sharing the tool with friends and family. The response was overwhelming. It became clear that there was a need for an honest, transparent gateway to crypto for everyday people.",
+      "quote": "In 2021, I lost money because I traded on emotions. I built Klarpakke to remove emotions from the equation. By using software to follow rules, and paper trading to prove skills first, we have removed the biggest traps for new traders.",
+      "quoteAuthor": "Tom Jensen"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "text": "To make advanced crypto trading accessible to everyone through education, transparency, and paper trading – so you can learn and earn without risking your hard-earned money.",
+      "values": "We believe that knowledge, transparency, and a long-term perspective are the keys to success. No pyramid schemes, no secrets – just honest and transparent technology."
+    },
+    "values": {
+      "title": "Our Values",
+      "education": {
+        "title": "Knowledge First",
+        "desc": "We give you the tools, but you're in the driver's seat. Our auto-trader does the heavy lifting, but your understanding ensures success."
+      },
+      "transparency": {
+        "title": "Full Transparency",
+        "desc": "No pyramid schemes, no recruiting, no secrets. We believe honesty is the only sustainable policy."
+      },
+      "norwegian": {
+        "title": "Norwegian & Trusted",
+        "desc": "We are a Norwegian service that follows Norwegian laws and regulations. Customer service in Norwegian with real personal follow-up."
+      },
+      "risk": {
+        "title": "Risk-Aware",
+        "desc": "We always remind you that crypto trading involves risk. Start with paper money and never trade with money you can't afford to lose."
+      }
+    },
+    "different": {
+      "title": "What Makes Us Different?",
+      "subtitle": "We stand out from the crowd in several ways:",
+      "paperTrading": "Trade with paper money first – prove your skills without risk",
+      "norwegian": "Norwegian platform with Norwegian customer service and user experience",
+      "education": "Focus on education and understanding, not just trading",
+      "transparency": "Full transparency on fees, algorithms, and results",
+      "community": "Active community of experienced traders sharing knowledge"
+    },
+    "risk": {
+      "warning": "Warning: Crypto trading involves high risk. You can lose your entire deposit. Only trade with money you can afford to lose. Past results do not guarantee future returns."
+    },
+    "team": {
+      "title": "Meet the Team",
+      "tom": {
+        "initials": "TJ",
+        "name": "Tom Jensen",
+        "role": "Founder & Developer",
+        "bio": "Tom is an experienced developer and trader with a background in AI and algorithmic trading. He started Klarpakke after seeing the need for an honest and transparent crypto trading platform in Norway."
+      },
+      "partners": {
+        "title": "Our Partners",
+        "supabase": "Supabase - Database and authentication",
+        "cloudflare": "Cloudflare - Infrastructure and security",
+        "binance": "Binance - Liquidity and market access"
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subtitle": "Have questions? We're here to help.",
+      "email": "Email",
+      "emailValue": "contact@klarpakke.no",
+      "org": "Organization Number",
+      "orgNumber": "932 985 312 MVA",
+      "orgName": "Klarpakke AS",
+      "location": "Location",
+      "locationValue": "Oslo, Norway"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Join over 100 Norwegian traders already using Klarpakke.",
+      "button": "Get Started",
+      "noCard": "No credit card required to start"
+    }
+  },
   "aboutUs": {
     "metadata": {
       "title": "About Us",
@@ -2059,7 +2146,7 @@
       "ctaLive": "Start live trading"
     },
     "signalPreview": {
-      "title": "Title",
+      "title": "Trading Signals",
       "liveBadge": "Live",
       "staleBadge": "Stale",
       "errorBadge": "Error",
@@ -2068,38 +2155,38 @@
       "curated": "Curated",
       "seeAll": "See All",
       "empty": "Empty",
-      "directionBuy": "Direction Buy",
-      "directionSell": "Direction Sell"
+      "directionBuy": "Buy",
+      "directionSell": "Sell"
     },
     "homeOverview": {
-      "title": "Title",
-      "subtitle": "Subtitle"
+      "title": "Portfolio Overview",
+      "subtitle": "Your complete portfolio"
     },
     "riskNote": {
-      "title": "Title",
-      "body": "Body",
-      "settingsCta": "Settings Cta"
+      "title": "Risk Assessment",
+      "body": "Here you can adjust risk parameters for your trading sessions. We recommend starting conservatively.",
+      "settingsCta": "Go to settings"
     },
     "modeBar": {
       "live": "Live",
       "paper": "Paper",
-      "noSessionDesc": "No Session Desc",
-      "liveDesc": "Live Desc",
-      "paperDesc": "Paper Desc"
+      "noSessionDesc": "No active session",
+      "liveDesc": "Trade with real money",
+      "paperDesc": "Trade with play money"
     },
     "portfolioHero": {
-      "balanceLabel": "Balance Label",
-      "periodLabel": "Period Label",
-      "pnlHint": "Pnl Hint",
-      "footerHint": "Footer Hint"
+      "balanceLabel": "Portfolio Balance",
+      "periodLabel": "Period",
+      "pnlHint": "Result",
+      "footerHint": "Below: positions and trades"
     },
     "marketDesk": {
-      "livePricesHeading": "Live Prices Heading",
-      "title": "Title",
-      "subtitle": "Subtitle",
+      "livePricesHeading": "Live Prices",
+      "title": "Market Desk",
+      "subtitle": "Real-time market data and your positions",
       "myPositions": "My Positions",
       "seeAll": "See All",
-      "integrityPollWarning": "Integrity Poll Warning",
+      "integrityPollWarning": "Sync Error",
       "recentTrades": "Recent Trades",
       "integritySyncAria": "Integrity Sync Aria",
       "noTrades": "No Trades",
@@ -2320,8 +2407,8 @@
       "returnLabel": "return"
     },
     "metadata": {
-      "title": "Klarpakke — Norway's crypto platform",
-      "description": "Norway's crypto platform. AI-powered trading with play money. Manual, Auto and JokerTrade — one account, three trading modes."
+      "title": "Klarpakke — AI trading with play money",
+      "description": "Free beta: You get 100,000 kr in play money. Train with autonomous AI agents on real market data — Manual, Auto and JokerTrade. No risk."
     }
   },
   "tradingGuide": {
@@ -2818,6 +2905,7 @@
     "openMenu": "Open menu",
     "logout": "Logout",
     "selectExchange": "Select Exchange",
+    "jokerTrade": "JokerTrade",
     "security": {
       "title": "Title",
       "warning": "Warning"
