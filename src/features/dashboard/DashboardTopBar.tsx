@@ -105,8 +105,8 @@ export function DashboardTopBar({
             </div>
           </div>
 
-          {/* CTA */}
-          <Link href={href} className="shrink-0">
+          {/* CTA — skjult på smale skjermer (duplikat av hero-CTA under) */}
+          <Link href={href} className="shrink-0 hidden min-[420px]:block">
             <Button
               size="sm"
               className="bg-kp-brand hover:bg-kp-brand-hover text-white text-xs sm:text-sm font-semibold rounded-lg px-3 sm:px-4 h-9"
