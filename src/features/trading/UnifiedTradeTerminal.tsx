@@ -188,52 +188,107 @@ function PriceSparkline({ className }: { className?: string }) {
   }, []);
 
   const W = 100;
-  const H = 36;
-  const PAD = 1.5;
+  const H = 40;
+  const PAD = 2.5;
 
   let linePath = "";
   let areaPath = "";
   let up = true;
+  let lastX = 0;
+  let lastY = 0;
+  let min = 0;
+  let max = 0;
   if (points.length >= 2) {
-    const min = Math.min(...points);
-    const max = Math.max(...points);
+    min = Math.min(...points);
+    max = Math.max(...points);
     const range = max - min || 1;
     const stepX = (W - PAD * 2) / (points.length - 1);
+    const toX = (i: number) => PAD + i * stepX;
     const toY = (v: number) => H - PAD - ((v - min) / range) * (H - PAD * 2);
-    const pts = points.map((v, i) => `${(PAD + i * stepX).toFixed(2)},${toY(v).toFixed(2)}`);
-    linePath = `M${pts[0]} L${pts.slice(1).join(" ")}`;
-    areaPath = `${linePath} L${(W - PAD).toFixed(2)},${H - PAD} L${PAD},${H - PAD} Z`;
+
+    // Catmull-Rom → kubisk bezier (glatt kurve i stedet for rette segmenter)
+    const P = points.map((v, i) => [toX(i), toY(v)] as const);
+    let d = `M${P[0][0].toFixed(2)},${P[0][1].toFixed(2)}`;
+    for (let i = 0; i < P.length - 1; i++) {
+      const p0 = P[Math.max(0, i - 1)];
+      const p1 = P[i];
+      const p2 = P[i + 1];
+      const p3 = P[Math.min(P.length - 1, i + 2)];
+      const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+      const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+      const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += ` C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${p2[0].toFixed(2)},${p2[1].toFixed(2)}`;
+    }
+    linePath = d;
+    areaPath = `${d} L${P[P.length - 1][0].toFixed(2)},${H - PAD} L${P[0][0].toFixed(2)},${H - PAD} Z`;
+    [lastX, lastY] = P[P.length - 1] as unknown as [number, number];
     up = points[points.length - 1] >= points[0];
   }
 
   const stroke = up ? "#34d399" : "#f87171";
+  const fmtK = (v: number) =>
+    v >= 10000 ? `${Math.round(v / 1000)}k` : v.toFixed(0);
 
   return (
     <div className={cn("relative min-h-0", className)}>
       {linePath ? (
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          preserveAspectRatio="none"
-          className="w-full h-full"
-          aria-hidden="true"
-        >
-          <defs>
-            <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={stroke} stopOpacity="0.25" />
-              <stop offset="100%" stopColor={stroke} stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={areaPath} fill="url(#sparkFill)" stroke="none" />
-          <path
-            d={linePath}
-            fill="none"
-            stroke={stroke}
-            strokeWidth="1.2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+        <>
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            preserveAspectRatio="none"
+            className="w-full h-full"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={stroke} stopOpacity="0.28" />
+                <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+              </linearGradient>
+              <filter id="sparkGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.6" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            {/* Diskret rutenett: 3 horisontale linjer */}
+            {[0.25, 0.5, 0.75].map((f) => (
+              <line
+                key={f}
+                x1={PAD}
+                x2={W - PAD}
+                y1={H * f}
+                y2={H * f}
+                stroke="#ffffff"
+                strokeOpacity="0.05"
+                strokeWidth="0.3"
+              />
+            ))}
+            <path d={areaPath} fill="url(#sparkFill)" stroke="none" />
+            <path
+              d={linePath}
+              fill="none"
+              stroke={stroke}
+              strokeWidth="1.6"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+              filter="url(#sparkGlow)"
+            />
+            {/* Siste punkt: glødende markør */}
+            <circle cx={lastX} cy={lastY} r="1.8" fill={stroke} opacity="0.35" />
+            <circle cx={lastX} cy={lastY} r="0.9" fill={stroke} />
+          </svg>
+          {/* Min/mer-verdier */}
+          <span className="absolute top-0 right-0 text-[9px] font-mono text-slate-500 select-none">
+            {fmtK(max)}
+          </span>
+          <span className="absolute bottom-0 right-0 text-[9px] font-mono text-slate-500 select-none">
+            {fmtK(min)}
+          </span>
+        </>
       ) : (
         <div className="w-full h-full rounded-lg bg-slate-800/30 animate-pulse" />
       )}
