@@ -156,6 +156,7 @@ export default function PortfolioChart({
         selectedPeriod,
       );
       setData(chartData);
+      setHasData(chartData.length > 0);
 
       if (chartData.length > 0) {
         const first = chartData[0].value;
