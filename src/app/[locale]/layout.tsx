@@ -123,8 +123,8 @@ export async function generateMetadata({
     title: {
       template: "%s | Klarpakke",
       default: isNo
-        ? "Klarpakke — Krypto trading bot"
-        : "Klarpakke — Crypto Trading Bot",
+        ? "Klarpakke — AI-trading med lekepenger"
+        : "Klarpakke — AI trading with play money",
     },
     keywords: [
       "crypto trading",

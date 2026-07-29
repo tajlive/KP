@@ -304,8 +304,15 @@ const nextConfig = {
       { source: "/live-trading", destination: "/handel?mode=live", permanent: true },
       { source: "/:locale(no|en)/live-trading", destination: "/:locale(no|en)/handel?mode=live", permanent: true },
 
+      // Legacy English slugs med locale-prefiks → norske sider (dekket ellers
+      // av [...slug] catch-all som rendrer not-found med HTTP 200)
+      { source: "/:locale(no|en)/pricing", destination: "/:locale(no|en)/priser", permanent: true },
+      { source: "/:locale(no|en)/learn", destination: "/:locale(no|en)/kurs", permanent: true },
+      { source: "/:locale(no|en)/about", destination: "/:locale(no|en)/om-oss", permanent: true },
+
       // Legacy English root URLs → actual Norwegian pages (localePrefix: "always")
       { source: "/pricing", destination: "/no/priser", permanent: true },
+      { source: "/learn", destination: "/no/kurs", permanent: true },
       { source: "/courses", destination: "/no/kurs", permanent: true },
       { source: "/courses/:path*", destination: "/no/kurs/:path*", permanent: true },
       { source: "/course/:path*", destination: "/no/kurs/:path*", permanent: true },
