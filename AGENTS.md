@@ -37,7 +37,17 @@
 ### Deploy-notater (viktig for neste agent)
 - `scripts/deploy.sh` kan overgå 5 min på treg maskin → kjør stegene manuelt: `npx next build` → `opennextjs-cloudflare build --skipNextBuild` → `wrangler deploy --env "" --var "APP_VERSION:$(git rev-parse --short HEAD)"` → CDN-purge (zone 328d7de7). Alle med `source .env.local`.
 - **ALDRI `pkill node`** på denne maskinen — det dreper Kimi-runtime (node-prosessen under /Applications/Kimi.app). Ingen zombie-node er observert.
-- Nettleser-cache kan vise gammel side etter deploy — tving `Page.reload {ignoreCache:true}` (CDP) ved verifisering.
+- Nettleser-cache kan vise gammel side etter deploy — tving `Page.reload {ignoreCache:true}` (CDP) ved verifisering. JS-chunks ches også — bruk `Network.setCacheDisabled` ved testing av nylig deployet kode.
+
+### 🚨 Hendelse 2026-07-29 kveld: Trading brutt for alle (løst)
+**Symptom:** JokerTrade/Auto «står starter, også skjer det ingenting» — for alle brukere.
+**Rotårsaker:** (1) `smart-trader-v3` svarer uten `Access-Control-Allow-Origin` på vanlige responser (kun preflight har CORS) → nettleseren blokkerer alle direkte kall. (2) Funksjonen krever `CRON_SECRET`, ikke user-JWT — den er cron-only, start-kall fra klient var umulig uansett. (3) Falske fallbacks viste «aktiv» selv når alt feilet. (4) `.from()` i browser leste stille 0 rader (anon).
+**Fiks:** Start går via `/api/jokertrade` (server-side: sikrer sesjon + kjører 12-agent ensemble umiddelbart). Status via `/api/trading/sessions`. Verifisert med ekte BUY-trade i prod.
+
+### ⛔ Nye harde regler (arkitekt-beslutning 2026-07-29)
+1. **ALDRI kall Supabase Edge Functions direkte fra nettleseren.** Alltid via `/api/*`-rute (server-side auth). Gjelder også «bare denne ene» — ingen unntak.
+2. **ALDRI falsk suksess-UI.** Ingen fallback som viser «aktiv»/«ferdig»/«ok» når operasjonen faktisk feilet. Feil vises ærlig, med konkret melding.
+3. **Edge functions for brukerflyt MÅ ha CORS-headere på alle responser** (ikke bare preflight) — men regel 1 gjelder uansett.
 
 ### Sosiale flater (live)
 - **LinkedIn-bedriftsside:** `/company/111340815/` (slug `klarpakke`) — logo, banner v2, tagline, fakta-overview, lanseringspost. 50 følge-invitasjoner sendt. **Mangler:** location (trenger Toms adressevalg) + services.
