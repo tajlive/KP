@@ -63,6 +63,8 @@ export default function PortfolioChart({
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasData, setHasData] = useState(false);
+  // Skiller faktisk hentefeil (vis retry) fra ærlig tom tilstand (vis hint)
+  const [fetchFailed, setFetchFailed] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState("1M");
   const [startingValue, setStartingValue] = useState(0);
 
@@ -88,6 +90,7 @@ export default function PortfolioChart({
       const res = await fetch(`/api/portfolio/chart?${params.toString()}`);
       if (!res.ok) {
         setHasData(false);
+        setFetchFailed(true);
         setLoading(false);
         return;
       }
@@ -104,6 +107,7 @@ export default function PortfolioChart({
           accountStart: number | null;
           accountBalance: number | null;
         };
+      setFetchFailed(false);
 
       // FIKS 3: Overskrift = paper_accounts (KONTO)
       if (accountStart != null && accountBalance != null) {
@@ -123,11 +127,14 @@ export default function PortfolioChart({
         return;
       }
 
-      // KURVEN: Ankres til sesjonens egen startkapital, IKKE konto.
-      // Konto-kurve kan ikke rekonstrueres fra sesjons-PnL.
+      // KURVEN: Sesjonsvisning ankres til sesjonens startkapital.
+      // Kontovisning (uten sessionId) ankres til kontoens startkapital
+      // (accountStart) — kurven er kumulativ realisert PnL på tvers av sesjoner.
       let curveAnchor = 0;
       if (sessionId) {
         curveAnchor = Number(sessions[0]?.starting_capital_nok) || 0;
+      } else if (accountStart != null) {
+        curveAnchor = accountStart;
       } else {
         setHasData(false);
         setLoading(false);
@@ -160,6 +167,7 @@ export default function PortfolioChart({
     } catch (error) {
       console.error("PortfolioChart error:", error);
       setHasData(false);
+      setFetchFailed(true);
     } finally {
       setLoading(false);
     }
@@ -379,14 +387,23 @@ export default function PortfolioChart({
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-[75%]">
-            <button
-              onClick={fetchPortfolioData}
-              className="flex items-center gap-2 text-sm text-gray-400 dark:text-slate-500 hover:text-kp-brand transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              {t("noChartData")}
-            </button>
+          <div className="flex flex-col items-center justify-center gap-2 h-[75%]">
+            {fetchFailed ? (
+              <button
+                onClick={fetchPortfolioData}
+                className="flex items-center gap-2 text-sm text-gray-400 dark:text-slate-500 hover:text-kp-brand transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {t("noChartData")}
+              </button>
+            ) : (
+              <>
+                <p className="text-gray-500 dark:text-slate-400 text-sm">{t("noData")}</p>
+                <p className="text-gray-400 dark:text-slate-500 text-xs">
+                  {t("noDataHint")}
+                </p>
+              </>
+            )}
           </div>
         )}
       </m.div>

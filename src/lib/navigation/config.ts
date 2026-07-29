@@ -175,10 +175,18 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
     mobileOnly: true,
   },
   {
-    key: "account",
-    href: "/profile",
-    labelKey: "navigation.account",
-    icon: "User",
+    key: "history",
+    href: "/dashboard/historikk",
+    labelKey: "dashboard.sidebar.history",
+    icon: "History",
+    roles: ["auth"],
+    mobileOnly: true,
+  },
+  {
+    key: "help",
+    href: "/kurs",
+    labelKey: "navigation.help",
+    icon: "HelpCircle",
     roles: ["auth"],
     mobileOnly: true,
   },
@@ -351,16 +359,16 @@ export interface NavigationData {
 /** Fallback-data når Sanity ikke er tilgjengelig. */
 export const FALLBACK_NAVIGATION: NavigationData = {
   loggedOutLinks: [
-    { label: "Learn", path: "/kurs", order: 0 },
-    { label: "Pricing", path: "/priser", order: 1 },
-    { label: "About", path: "/om-oss", order: 2 },
+    { label: "Lær", path: "/kurs", order: 0 },
+    { label: "Priser", path: "/priser", order: 1 },
+    { label: "Om oss", path: "/om-oss", order: 2 },
   ],
   loggedInLinks: [
-    { label: "Home", path: "/dashboard", order: 0 },
-    { label: "Portfolio", path: "/dashboard/portfolio", order: 1 },
-    { label: "Trade", path: "/trade", order: 2 },
+    { label: "Hjem", path: "/dashboard", order: 0 },
+    { label: "Portefølje", path: "/dashboard/portfolio", order: 1 },
+    { label: "Handel", path: "/trade", order: 2 },
     { label: "Auto", path: "/dashboard/auto-trade", order: 3 },
-    { label: "Account", path: "/profile", order: 4 },
+    { label: "Konto", path: "/profile", order: 4 },
   ],
 };
 

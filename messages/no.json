@@ -1,4 +1,91 @@
 {
+  "about": {
+    "metadata": {
+      "title": "Om Klarpakke",
+      "description": "Klarpakke er en norsk plattform for AI-trading med lekepenger — lær deg krypto uten risiko med autonome AI-agenter på ekte markedsdata."
+    },
+    "hero": {
+      "badge": "Om Klarpakke",
+      "title": "Fra dyrekjøpt lærdom til Klarpakke Universitet",
+      "subtitle": "Min reise fra å tape alt til å knekke koden – og hvordan du kan gjøre det samme."
+    },
+    "story": {
+      "title": "Historien bak Klarpakke",
+      "p1": "For seks år siden tapte jeg 65 000 kroner på krypto. Det var en brutal start. Jeg stolte blindt på \"eksperter\" som lovet gull og grønne skoger, men som endte opp med å ta både honorarer og prosenter av et overskudd som aldri kom. Pengene rant ut, og jeg satt igjen med en verdifull, men dyr lekse.",
+      "p2": "For to år siden tok jeg kontrollen selv. Jeg fordypet meg i avansert programmering og kunstig intelligens, og utviklet min egen auto-trader. Jeg startet i det små, testet, feilet og justerte. Etter hvert som algoritmene begynte å levere stabile resultater, fikk jeg selvtilliten til å investere mer.",
+      "p3": "Jeg kuttet ut tipping, lotto og tradisjonell banksparing. Alt fokus ble rettet mot systemet. Da resultatene overgikk forventningene, begynte jeg å dele verktøyet med venner og familie. Responsen var overveldende. Det ble tydelig at det fantes et behov for en ærlig og transparent vei inn i kryptomarkedet for folk flest.",
+      "quote": "I 2021 tapte jeg penger fordi jeg handlet på følelser. Jeg bygget Klarpakke for å fjerne følelsene fra ligningen. Ved å bruke programvare til å følge regler, og trading med lekepenger for å bevise ferdigheter først, har vi fjernet de største fellene for nye tradere.",
+      "quoteAuthor": "Tom Jensen"
+    },
+    "mission": {
+      "title": "Vår misjon",
+      "text": "Å gjøre avansert kryptohandel tilgjengelig for alle gjennom utdanning, åpenhet og lekepenger – slik at du kan lære og tjene uten å risikere dine hardt opptjente penger.",
+      "values": "Vi tror på at kunnskap, transparens og langsiktighet er veien til suksess. Ingen pyramidespill, ingen hemmeligheter – bare ærlig og transparent teknologi."
+    },
+    "values": {
+      "title": "Våre verdier",
+      "education": {
+        "title": "Kunnskap først",
+        "desc": "Vi gir deg verktøyene, men du sitter i førersetet. Vår auto-trader gjør grovjobben, men din forståelse sikrer suksessen."
+      },
+      "transparency": {
+        "title": "Full åpenhet",
+        "desc": "Ingen pyramidespill, ingen verving, ingen hemmeligheter. Vi tror på at ærlighet varer lengst."
+      },
+      "norwegian": {
+        "title": "Norsk og trygg",
+        "desc": "Vi er en norsk tjeneste som følger norske lover og regler. Kundeservice på norsk og ekte personlig oppfølging."
+      },
+      "risk": {
+        "title": "Risikobevist",
+        "desc": "Vi minner alltid om at kryptohandel innebærer risiko. Start med lekepenger og handel aldri med penger du ikke har råd til å tape."
+      }
+    },
+    "different": {
+      "title": "Hva gjør oss annerledes?",
+      "subtitle": "Vi skiller oss fra mengden på flere måter:",
+      "paperTrading": "Handel med lekepenger først – bevis ferdighetene dine uten risiko",
+      "norwegian": "Norsk plattform med norsk kundeservice og brukeropplevelse",
+      "education": "Fokus på utdanning og forståelse, ikke bare trading",
+      "transparency": "Full åpenhet om avgifter, algoritmer og resultater",
+      "community": "Aktivt fellesskap med erfarne tradere som deler kunnskap"
+    },
+    "risk": {
+      "warning": "Advarsel: Kryptohandel innebærer høy risiko. Du kan tape hele innskuddet. Handlet kun med penger du har råd til å tape. Resultater fra fortiden garanterer ikke fremtidig avkastning."
+    },
+    "team": {
+      "title": "Møt teamet",
+      "tom": {
+        "initials": "TJ",
+        "name": "Tom Jensen",
+        "role": "Grunnlegger & Utvikler",
+        "bio": "Tom er en erfaren utvikler og trader med bakgrunn i AI og algoritmisk trading. Han startet Klarpakke etter å ha sett behovet for en ærlig og transparent plattform for kryptohandel i Norge."
+      },
+      "partners": {
+        "title": "Våre partnere",
+        "supabase": "Supabase - Database og autentisering",
+        "cloudflare": "Cloudflare - Infrastruktur og sikkerhet",
+        "binance": "Binance - Likviditet og markedstilgang"
+      }
+    },
+    "contact": {
+      "title": "Kontakt oss",
+      "subtitle": "Har du spørsmål? Vi er her for å hjelpe deg.",
+      "email": "E-post",
+      "emailValue": "kontakt@klarpakke.no",
+      "org": "Organisasjonsnummer",
+      "orgNumber": "932 985 312 MVA",
+      "orgName": "Klarpakke AS",
+      "location": "Lokasjon",
+      "locationValue": "Oslo, Norge"
+    },
+    "cta": {
+      "title": "Klar for å komme i gang?",
+      "subtitle": "Bli med over 100 norske tradere som allerede bruker Klarpakke.",
+      "button": "Kom i gang",
+      "noCard": "Ingen betalingskort nødvendig for å starte"
+    }
+  },
   "aboutUs": {
     "metadata": {
       "title": "Om Oss",
@@ -2054,48 +2141,48 @@
       "ctaLive": "Start live-handel"
     },
     "signalPreview": {
-      "title": "Tittel",
+      "title": "Trading-signaler",
       "liveBadge": "Live",
       "staleBadge": "Utdatert",
       "errorBadge": "Feil",
       "emptyBadge": "Ingen data",
       "demoBadge": "Demo",
-      "curated": "Curated",
+      "curated": "Kuratert",
       "seeAll": "Se alle",
       "empty": "Ingen data",
-      "directionBuy": "Direction kjøp",
-      "directionSell": "Direction selg"
+      "directionBuy": "Kjøp",
+      "directionSell": "Salg"
     },
     "homeOverview": {
-      "title": "Tittel",
-      "subtitle": "Undertittel"
+      "title": "Porteføljeoversikt",
+      "subtitle": "Din samlede portefølje"
     },
     "riskNote": {
-      "title": "Tittel",
-      "body": "Body",
-      "settingsCta": "Innstillinger cta"
+      "title": "Risikovurdering",
+      "body": "Her kan du justere risikoparametrene for dine trading-sesjoner. Vi anbefaler å starte konservativt.",
+      "settingsCta": "Gå til innstillinger"
     },
     "modeBar": {
       "live": "Live",
       "paper": "Papir",
-      "noSessionDesc": "No økt desc",
-      "liveDesc": "Live desc",
-      "paperDesc": "Papir desc"
+      "noSessionDesc": "Ingen aktiv sesjon",
+      "liveDesc": "Handel med ekte penger",
+      "paperDesc": "Handel med lekepenger"
     },
     "portfolioHero": {
-      "balanceLabel": "Balanse etikett",
-      "periodLabel": "Period etikett",
-      "pnlHint": "P/l tips",
-      "footerHint": "Footer tips"
+      "balanceLabel": "Porteføljesaldo",
+      "periodLabel": "Periode",
+      "pnlHint": "Resultat",
+      "footerHint": "Under: posisjoner og handler"
     },
     "marketDesk": {
-      "livePricesHeading": "Live prices heading",
-      "title": "Tittel",
-      "subtitle": "Undertittel",
-      "myPositions": "My positions",
+      "livePricesHeading": "Live priser",
+      "title": "Markedsdesk",
+      "subtitle": "Sanntids markedsdata og dine posisjoner",
+      "myPositions": "Mine posisjoner",
       "seeAll": "Se alle",
-      "integrityPollWarning": "Integrity poll warning",
-      "recentTrades": "Recent handler",
+      "integrityPollWarning": "Synkroniseringsfeil",
+      "recentTrades": "Siste handler",
       "integritySyncAria": "Integrity sync aria",
       "noTrades": "Ingen handler",
       "noPositions": "No positions",
@@ -2235,7 +2322,7 @@
     "headline": "Lær å handle crypto",
     "headlineHighlight": "trygt fra dag én.",
     "titleLine1": "Jeg tapte 64 000 kr på krypto.",
-    "titleLine2": "Du trenger ikke gjøre det samme.",
+    "titleLine2": " Du trenger ikke gjøre det samme.",
     "subtitle": "Øv med 100 000 kr i lekepenger på sanntidskurser. Null risiko.",
     "stat1": "100 000 kr",
     "stat1Label": "Lekepenger",
@@ -2315,8 +2402,8 @@
       "returnLabel": "avkastning"
     },
     "metadata": {
-      "title": "Klarpakke — Norges krypto-plattform",
-      "description": "Norges krypto-plattform. AI-drevet trading med lekepenger. Manuell, Auto og JokerTrade — én konto, tre måter å trade på."
+      "title": "Klarpakke — AI-trading med lekepenger",
+      "description": "Gratis beta: Du får 100 000 kr i lekepenger. Tren med autonome AI-agenter på ekte markedsdata — Manuell, Auto og JokerTrade. Ingen risiko."
     }
   },
   "tradingGuide": {
@@ -2811,8 +2898,9 @@
     "loading": "Laster...",
     "closeMenu": "Lukk meny",
     "openMenu": "Åpne meny",
-    "logout": "Logout",
+    "logout": "Logg ut",
     "selectExchange": "Select exchange",
+    "jokerTrade": "JokerTrade",
     "security": {
       "title": "Tittel",
       "warning": "Warning"

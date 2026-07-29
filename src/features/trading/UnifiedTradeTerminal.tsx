@@ -10,6 +10,7 @@ import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
 import { JokerDashboard } from "@/features/trading/JokerDashboard";
 import { FirstTradeFlow } from "@/features/trading/FirstTradeFlow";
+import { WalletBalance } from "@/features/trading/WalletBalance";
 import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
 import { formatNOK } from "@/lib/format/currency";
 import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/market/nok";
@@ -338,7 +339,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
     } catch (err) {
       const msg = err instanceof TypeError && err.message === "Failed to fetch"
         ? "Ingen tilkobling — sjekk nettverket"
-        : "Nettverksfeil";
+        : "Handelen kunne ikke gjennomføres — prøv igjen";
       setFeedback({ ok: false, msg });
     } finally {
       setLoading(false);
@@ -449,17 +450,27 @@ function MiniPositionList() {
     entry_price: number;
     current_price?: number;
     profit_loss?: number;
+    is_bot?: boolean;
+    exit_reason?: string;
   }>>([]);
 
   React.useEffect(() => {
     fetch("/api/paper-trading/balance")
       .then(r => r.json())
-      .then(d => setPositions(d.positions || []))
+      .then(d => setPositions(d.positions || d.recentTrades || []))
       .catch(() => {});
   }, []);
 
   const sideLabel = (type: string) => type.includes("long") ? "LONG" : "SHORT";
   const sideColor = (type: string) => type.includes("long") ? "text-emerald-400" : "text-red-400";
+
+  // Ikon basert på handelstype
+  const tradeIcon = (p: { is_bot?: boolean; exit_reason?: string; side?: string }) => {
+    if (p.exit_reason?.includes("stoploss")) return "🛑";
+    if (p.exit_reason?.includes("take_profit")) return "🎯";
+    if (p.is_bot) return "🤖";
+    return "✋";
+  };
 
   if (positions.length === 0) {
     return (
@@ -477,12 +488,15 @@ function MiniPositionList() {
       {positions.map((p, i) => (
         <div
           key={i}
-          className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0A0D12] border border-[#1E2530] text-xs"
+          className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0A0D12] border border-[#1E2530] text-xs hover:border-[#2A3040] transition-colors"
         >
           <div className="flex items-center gap-2">
+            <span className="text-sm" title={p.is_bot ? "Bot-handel" : p.exit_reason?.includes("stoploss") ? "Stoploss" : p.exit_reason?.includes("take_profit") ? "Take profit" : "Manuell"}>
+              {tradeIcon(p)}
+            </span>
             <span className="text-white font-mono">{p.symbol?.replace("USDT", "/USDT")}</span>
-            <span className={cn("text-[10px] font-bold uppercase", sideColor(p.position_type))}>
-              {sideLabel(p.position_type)}
+            <span className={cn("text-[10px] font-bold uppercase", sideColor(p.position_type || "long"))}>
+              {sideLabel(p.position_type || "long")}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -506,7 +520,9 @@ export function UnifiedTradeTerminal() {
   const [showUnlock, setShowUnlock] = React.useState(false);
   const prevHasTraded = React.useRef<boolean | null>(null);
 
-  const lockedModes: TradeMode[] = hasTraded === false ? ["auto", "joker"] : [];
+  // JokerTrade er åpen for alle uten forhåndskrav (beslutning Tom 2026-07-29).
+  // Auto-modus forblir låst til brukeren har gjort minst én manuell trade.
+  const lockedModes: TradeMode[] = hasTraded === false ? ["auto"] : [];
 
   React.useEffect(() => {
     if (hasTraded === true && prevHasTraded.current === false) {
@@ -583,6 +599,7 @@ export function UnifiedTradeTerminal() {
             </span>
           </div>
           <ModeTabs active={mode} onChange={handleModeChange} locked={lockedModes} />
+          <WalletBalance />
         </div>
 
         {/* Main grid: chart + panels */}
