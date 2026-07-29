@@ -1486,7 +1486,7 @@
       "yourBalance": "Your Balance",
       "founderBenefits": {
         "title": "Founder Benefits",
-        "desc": "Guaranteed 10,000 KLT for the first 100 students (0.1% of total supply)."
+        "desc": "5,000 free KLT for the first 100 who sign up."
       },
       "learnEarn": {
         "title": "Learn & Earn",
@@ -2889,7 +2889,6 @@
     "login": "Log in",
     "register": "Register",
     "signup": "Start free",
-    "welcomeOffer": "🎁 First 100 students get 10,000 KLT tokens free!",
     "help": "Help",
     "tools": "Tools",
     "myPage": "Dashboard",
