@@ -12,6 +12,64 @@
 
 ---
 
+## 📌 STATUS 2026-07-29 (fra Kimi — redaktør, kode, sosiale medier)
+
+**Mandat:** Tom har utnevnt Kimi til ansvarlig redaktør (innhold/copy overallt + LinkedIn + Facebook/Meta). Kimi kan også deploye kode etter Toms «fiks alt»-mandat 29.07. Hermes eier daglig kode/produkt. Koordiner via denne filen.
+
+### Deployet 2026-07-29 kveld (Kimi — 7 deploys, alle verifisert i prod)
+1. **Full prodsjekk** (WebBridge, 13 sider): fant graf-bug, i18n-lekkasje, tittel-feil.
+2. **Porteføljegraf FIKSET:** dyp rotårsak var at `setHasData(true)` aldri ble kalt — grafen kunne aldri rendres. + kontovisning ankres nå til `accountStart` (kumulativ PnL på tvers av sesjoner). «Last graf på nytt» vises kun ved faktisk feil; ellers ærlig tomtilstand.
+3. **Hero-prosent FIKS 6:** `DashboardTopBar` viste saldo fra konto men % fra sesjons-sum → −65,86 % ble −4,25 % (korrekt).
+4. **JokerTrade åpen for alle:** `lockedModes` i `UnifiedTradeTerminal.tsx` er nå kun `["auto"]` for nye brukere (Toms beslutning).
+5. **Norsk nav-fallback** («Lær/Priser/Om oss»), `about.metadata`-nøkler (rå i18n-nøkkel var side-tittel), rene titler («Handel | Klarpakke»), 301-redirects `/no/pricing|learn|about` → norske sider.
+6. **Landing-redesign:** ny hero «100 000 kr i lekepenger. Ekte markeder. Null risiko.», KLT-badge, én primær CTA, mørk 64px header, «+889 %»-gevinstløfte fjernet (`getTopReturn` slettet fra forsiden).
+7. **Gevinstløfte-jakt:** 17 brudd rettet (FAQ «15–40 % månedlig», «+142,5 % verifiserte data», superlativer, uverifiserte tall). **24 døde filer slettet:** hele `features/jokertrade/`, `shared/social/`, `landing/LandingHero`, `AboutKlarpakkeSection` m.fl.
+
+### Redaktørbeslutninger (gjeldende)
+- **KLT = 5000** til de 100 første — det eneste godkjente tallet. «10 000 KLT» fjernet fra alle flater og språkfiler (no/en/th/zh).
+- Historiske paper-trading-tall med disclaimer er tillatt; fremadrettede avkastningspåstander er forbudt.
+- Toms personlige historie (/om-oss) er tillatt som førstepersons fortelling.
+
+### Åpent (krever Tom)
+- **Sanity CMS:** gjennomgå publiserte sider mot fakta-reglene (prosent-påstander, superlativer, «10 000 KLT», tall uten kilde). Koden er ren — CMS kan fortsatt inneholde brudd.
+- **30-dagers pengene-tilbake-garanti** på /priser: verifiser at Stripe/Vipps faktisk håndhever dette.
+
+### Deploy-notater (viktig for neste agent)
+- `scripts/deploy.sh` kan overgå 5 min på treg maskin → kjør stegene manuelt: `npx next build` → `opennextjs-cloudflare build --skipNextBuild` → `wrangler deploy --env "" --var "APP_VERSION:$(git rev-parse --short HEAD)"` → CDN-purge (zone 328d7de7). Alle med `source .env.local`.
+- **ALDRI `pkill node`** på denne maskinen — det dreper Kimi-runtime (node-prosessen under /Applications/Kimi.app). Ingen zombie-node er observert.
+- Nettleser-cache kan vise gammel side etter deploy — tving `Page.reload {ignoreCache:true}` (CDP) ved verifisering.
+
+### Sosiale flater (live)
+- **LinkedIn-bedriftsside:** `/company/111340815/` (slug `klarpakke`) — logo, banner v2, tagline, fakta-overview, lanseringspost. 50 følge-invitasjoner sendt. **Mangler:** location (trenger Toms adressevalg) + services.
+- **Facebook-side:** `facebook.com/profile.php?id=61592276566006` — Datafirma, bio, logo, nytt banner (fb-cover.png), lanseringspost med beta-budskap. 1000 venninvitasjoner sendt.
+- **Toms LinkedIn-profil:** AI-ingeniør-headline, Om-seksjon live, 5 nye skills, beta-repost.
+
+### Deployet 2026-07-29 (kode/metadata)
+- `messages/no.json` + `messages/en.json` → `home.metadata`: ny tittel «Klarpakke — AI-trading med lekepenger» + beskrivelse «Gratis beta: Du får 100 000 kr i lekepenger…» (styrer og:/twitter:-tags på forsiden).
+- `public/og-image.png`: nytt branded 1200×630-bilde (MD5 `306e16225a1752385c88722b930d8d38`). Facebook Sharing Debugger re-scrapet ✅.
+- `/api/og`-ruten (dynamiske varianter result/rank) er urørt og har fallback til `/og-image.png`.
+
+### Klar til neste deploy (IKKE deployet ennå)
+- `og-image-v2.png` (rot) — fikser tekstkollisjon «Paper tradingklarpakke.no» i bunnlinjen. Ved neste deploy: `cp og-image-v2.png public/og-image.png`.
+
+### Branding-assets (rot i repoet)
+`klarpakke-logo-ny.png` (600×600), `klarpakke-cover.png` (1128×191, LinkedIn v1 — erstattet), `linkedin-cover-v2.png` (live), `fb-cover.png` (820×312, live). Badge-grønn i OG er `#22c55e`, ellers brand: `#0a0b0d`/`#0052ff`/`#3d7aff`/`#34d399`, font Inter.
+
+### Markedsføringsdokumenter
+- `REDAKTORPLAN-V2.md` — **gjeldende plan**: tone-of-voice, 4-ukers kalender m/ 16 ferdige postutkast, maler, KPI-er.
+- `KONKURRENTANALYSE-OG-REDAKTORPLAN.md` — v1, kun historikk.
+- `DESIGN-GJENNOMGANG.md` — visuell gjennomgang + mal for post-bilder (1200×627 LI / 1200×630 FB).
+
+### Fakta-godkjent copy (bruk KUN dette)
+Gratis beta · 100 000 kr i lekepenger (JokerTrade) · autonome AI-agenter · paper trading på ekte markedsdata · 5000 gratis KLT til de 100 første · norsk plattform.
+**Forbudt:** «Norges første/beste», gevinstløfter, og «ingen i Norge lar deg teste med lekepenger» (Skilling har demokonto — verifisert feil). Korrekt: «Ingen norske kryptobørser lar deg trene med lekepenger».
+
+### WebBridge-notater (browser-automasjon)
+- FB-post-editor (Lexical): `fill`/`insertText` komprimerer linjeskift — bruk trusted CDP per linje + Enter keyDown.
+- Filopplasting FB/LinkedIn: `DOM.setFileInputFiles` nektes — bruk DataTransfer-injeksjon (base64 via `window.__b64` i 90k-chunks). LinkedIn banner: Edit Page → pencil → Edit cover image → injiser i `#org-image-editor__change-photo-input` → scroll til Apply → trusted CDP-klikk.
+
+---
+
 ## 🧠 Modellruting (2026)
 
 | Oppgavetype | Modell | Begrunnelse |
