@@ -6,7 +6,7 @@ import { ProfilePageClient } from "./ProfilePageClient";
 export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
-  title: "Profil - Klarpakke",
+  title: "Profil",
   description: "Din profil, lommebok og innstillinger",
 };
 

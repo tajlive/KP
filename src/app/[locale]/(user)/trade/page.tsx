@@ -5,8 +5,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Trade | Klarpakke",
-  description: "Kjøp og selg krypto — manuelt, automatisk eller med AI.",
+  title: "Handel",
+  description: "Kjøp og selg krypto — manuelt, med AI-strategi, eller la JokerTrade styre. 100 000 kr i lekepenger, null risiko.",
 };
 
 export default function TradePage() {
