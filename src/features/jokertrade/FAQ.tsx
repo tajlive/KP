@@ -24,9 +24,9 @@ const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: "earn",
-    question: "Hvor mye kan jeg tjene?",
+    question: "Kan jeg tjene penger på JokerTrade?",
     answer:
-      "Resultater varierer. Topp-tradere på plattformen har 15-40% månedlig avkastning, men dette er ikke garantert. Start i paper-modus for å se hvordan AI-en presterer før du eventuelt går live. Historisk data viser 8-15% gjennomsnittlig månedlig avkastning for AI-valgte strategier.",
+      "Vi lover ingen gevinst — det gjør ingen seriøs aktør. JokerTrade er et treningsverktøy: du handler med 100 000 kr i lekepenger på ekte markedsdata og ser hvordan AI-strategiene faktisk presterer, før du eventuelt risikerer egne penger. Historiske resultater sier ingenting om fremtidig avkastning.",
     icon: <TrendingUp className="w-5 h-5 text-[#F59E0B]" />,
   },
   {

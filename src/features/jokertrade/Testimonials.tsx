@@ -23,9 +23,9 @@ const TESTIMONIALS: Testimonial[] = [
     handle: "@mariusl",
     avatar: "👨‍💼",
     quote:
-      "Jeg skjønte aldri trading før JokerTrade. AI-en gjør alt — jeg bare sjekker resultatene på morningen. Simulert resultat fra papirhandel — ikke garantert fremtidig avkastning.",
+      "Jeg skjønte aldri trading før JokerTrade. AI-en gjør analysene — jeg sjekker hva den har gjort på morgenen og lærer av det.",
     rating: 5,
-    highlight: "Simulert papirhandel-resultat",
+    highlight: "Simulert papirhandel",
   },
   {
     id: "2",
@@ -33,9 +33,9 @@ const TESTIMONIALS: Testimonial[] = [
     handle: "@sigridh",
     avatar: "👩‍💻",
     quote:
-      "Har prøvd å trade selv før — tapte mest. Med JokerTrade setter jeg opp og AI-en fikser resten. Utrolig hvor enkelt det er.",
+      "Har prøvd å trade selv før — tapte mest. Med JokerTrade ser jeg hva AI-en gjør, og lærer av hver handel.",
     rating: 5,
-    highlight: "AI-en fikser resten",
+    highlight: "Lærer av AI-en",
   },
   {
     id: "3",
@@ -77,7 +77,7 @@ export function Testimonials() {
             Hva brukerne sier
           </h2>
           <p className="mt-2 text-sm sm:text-base text-[#9CA3AF]">
-            Ekte tradere, ekte resultater — ingen bullshit
+            Slik kan treningsreisen se ut — demo-eksempler, ikke ekte brukerhistorier
           </p>
         </div>
 

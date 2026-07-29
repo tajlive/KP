@@ -16,8 +16,8 @@ export function AboutKlarpakkeSection({ locale }: { locale: string }) {
 
         <p className="text-lg text-kp-text-secondary leading-relaxed mb-8">
           {isEn
-            ? "Klarpakke is Norway's leading crypto education platform. We help beginners and experienced traders learn how to trade safely on crypto exchanges through step-by-step courses, simulated paper trading, AI-powered market analysis, and automated trading tools — all in one place."
-            : "Klarpakke er Norges ledende krypto-utdanningsplattform. Vi hjelper nybegynnere og erfarne tradere med å lære trygg handel på kryptobørser gjennom steg-for-steg kurs, simulert papirhandel, AI-drevet markedsanalyse og automatiske tradingverktøy — alt på ett sted."}
+            ? "Klarpakke is a Norwegian platform for AI trading with play money. We help beginners and experienced traders learn how to trade safely on crypto exchanges through step-by-step courses, simulated paper trading, AI-powered market analysis, and automated trading tools — all in one place."
+            : "Klarpakke er en norsk plattform for AI-trading med lekepenger. Vi hjelper nybegynnere og erfarne tradere med å lære trygg handel på kryptobørser gjennom steg-for-steg kurs, simulert papirhandel, AI-drevet markedsanalyse og automatiske tradingverktøy — alt på ett sted."}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">

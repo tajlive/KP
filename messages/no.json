@@ -7,7 +7,7 @@
     "hero": {
       "badge": "Om Klarpakke",
       "title": "Fra dyrekjøpt lærdom til Klarpakke Universitet",
-      "subtitle": "Min reise fra å tape alt til å knekke koden – og hvordan du kan gjøre det samme."
+      "subtitle": "Min reise fra å tape 65 000 kr til å bygge en tryggere vei inn i krypto."
     },
     "story": {
       "title": "Historien bak Klarpakke",
@@ -19,7 +19,7 @@
     },
     "mission": {
       "title": "Vår misjon",
-      "text": "Å gjøre avansert kryptohandel tilgjengelig for alle gjennom utdanning, åpenhet og lekepenger – slik at du kan lære og tjene uten å risikere dine hardt opptjente penger.",
+      "text": "Å gjøre avansert kryptohandel tilgjengelig for alle gjennom utdanning, åpenhet og lekepenger – slik at du kan lære og trene uten å risikere dine hardt opptjente penger.",
       "values": "Vi tror på at kunnskap, transparens og langsiktighet er veien til suksess. Ingen pyramidespill, ingen hemmeligheter – bare ærlig og transparent teknologi."
     },
     "values": {
@@ -126,7 +126,7 @@
       "educationFirst": "Kunnskap først",
       "educationFirstDesc": "Vi gir deg verktøyene, men du sitter i førersetet. Vår auto-trader gjør grojobben, men din forståelse sikrer suksessen.",
       "patience": "Langsiktighet",
-      "patienceDesc": "Krypto er ikke et get-rich-quick skjema. Vi sikter mot jevn, bærekraftig vekst – 0,2% daglig profitt er bedre enn 100% risiko. Det er kraften i rentes rente.",
+      "patienceDesc": "Krypto er ikke et get-rich-quick skjema. Vi tror på jevn, bærekraftig læring – små, kontrollerte steg slår store risikoer. Det er kraften i rentes rente.",
       "cta": "Bli med på reisen!"
     }
   },
@@ -796,9 +796,9 @@
       "ctaPrimary": "Start lekepenger",
       "ctaSecondary": "Se resultater",
       "stats": {
-        "profitLabel": "Total Gevinst (3 år)",
-        "profitSub": "Verifiserte data",
-        "profitValue": "+142.5%"
+        "profitLabel": "Startkapital i lekepenger",
+        "profitSub": "Gratis beta",
+        "profitValue": "100 000 kr"
       }
     },
     "facts": {
@@ -814,7 +814,7 @@
       },
       "fact3": {
         "title": "Optimalisert for mobil",
-        "desc": "75% av våre brukere handler på mobilen. Vi har bygget hele opplevelsen for å være lynrask og oversiktlig på telefonen din."
+        "desc": "Vi har bygget hele opplevelsen for å være rask og oversiktlig på telefonen din."
       }
     },
     "howItWorks": {
@@ -987,15 +987,15 @@
   "calculator": {
     "metadata": {
       "title": "Kalkulator | Klarpakke",
-      "description": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning. Bruk Klarpakkets tradingkalkulator."
+      "description": "Se hvordan et teoretisk beløp kan vokse med daglig sammensatt avkastning. Klarpakkets kalkulator er et hypotetisk regnestykke — ingen garanti."
     },
     "title": "Kalkulator",
     "description": "Trading kalkulator",
-    "subtitle": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning",
+    "subtitle": "Se hvordan et teoretisk beløp kan vokse med daglig sammensatt avkastning",
     "intro": {
       "title": "Hva er sammensatt avkastning?",
       "p1": "Sammensatt avkastning betyr at du tjener renter på renter. Når du trader med en daglig avkastning, vil profitten fra hver dag legges til kapitalen din og generere ny profitt neste dag.",
-      "p2": "Denne kalkulatoren viser hvor mye du kan tjene på ett år med konsekvent trading, basert på din startkapital og forventet daglig avkastning."
+      "p2": "Denne kalkulatoren viser hvordan et teoretisk beløp kan utvikle seg over ett år, basert på startkapital og valgt daglig avkastning."
     },
     "inputs": {
       "startAmount": "Startbeløp",
@@ -3479,7 +3479,7 @@
     },
     "cta": {
       "title": "Klar til å starte?",
-      "subtitle": "Bli med tusenvis av studenter som lærer å trade på en trygg måte.",
+      "subtitle": "Bli med andre nordmenn som lærer å trade trygt — med lekepenger.",
       "button": "Kom i gang nå",
       "guarantee": "30-dagers pengene-tilbake-garanti"
     },
