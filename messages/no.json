@@ -1288,7 +1288,17 @@
     "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem.",
     "emptyCta": "Start trading"
   },
+  "help": {
+    "metadata": {
+      "title": "Hjelp og support",
+      "description": "Svar på vanlige spørsmål om Klarpakke — AI-trading med 100 000 kr i lekepenger, JokerTrade og trygg trening uten risiko."
+    }
+  },
   "contact": {
+    "metadata": {
+      "title": "Kontakt oss",
+      "description": "Ta kontakt med Klarpakke — norsk plattform for AI-trading med lekepenger. Vi svarer så fort vi kan."
+    },
     "title": "Kontakt oss",
     "description": "Kontakt oss",
     "subtitle": "Har du spørsmål? Vi er her for å hjelpe deg.",
@@ -1476,7 +1486,7 @@
     "welcome": "Velkommen til Klarpakke",
     "tradingMode": {
       "paper": "Lekepenger",
-      "live": "Live-handel",
+      "live": "Live",
       "switchedToPaper": "Byttet til lekepenger",
       "switchedToLive": "Byttet til live-handel"
     },

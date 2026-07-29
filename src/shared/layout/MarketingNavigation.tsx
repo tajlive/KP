@@ -27,7 +27,7 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
           <Link
             href={l("/")}
             prefetch={false}
-            className="flex items-center gap-2 min-w-0 shrink-0 overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand-light"
+            className="flex items-center gap-2 min-w-0 shrink overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand-light"
           >
             <Image
               src="/logo.svg"

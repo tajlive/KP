@@ -1288,7 +1288,17 @@
     "whatIsCopyingDesc": "When you copy a trader, you start a bot with the same risk profile and strategy as them.",
     "emptyCta": "Start trading"
   },
+  "help": {
+    "metadata": {
+      "title": "Help & support",
+      "description": "Answers to common questions about Klarpakke — AI trading with 100,000 kr in play money, JokerTrade, and safe practice without risk."
+    }
+  },
   "contact": {
+    "metadata": {
+      "title": "Contact us",
+      "description": "Get in touch with Klarpakke — the Norwegian platform for AI trading with play money. We reply as soon as we can."
+    },
     "title": "Contact us",
     "description": "Contact us",
     "subtitle": "Have a question? We are here to help you.",
@@ -1654,8 +1664,8 @@
     },
     "welcome": "Welcome to Klarpakke",
     "tradingMode": {
-      "paper": "Paper Trading",
-      "live": "Live Trading",
+      "paper": "Paper",
+      "live": "Live",
       "switchedToPaper": "Switched to Paper Trading",
       "switchedToLive": "Switched to Live Trading"
     },

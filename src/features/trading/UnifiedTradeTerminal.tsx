@@ -252,8 +252,8 @@ function PriceCard({ className }: { className?: string }) {
 
   return (
     <div className={cn("relative w-full rounded-xl bg-[#0A0D12] border border-[#1E2530] p-4 sm:p-6 flex flex-col", className)}>
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <div className="min-w-0">
           <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">
             BTC / NOK
           </div>
@@ -590,15 +590,17 @@ export function UnifiedTradeTerminal() {
       <LiveTicker />
 
       <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-3">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-3">
+        {/* Header row — wrapper på mobil: faner får egen rad under tittel */}
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-3">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold text-white sm:text-xl">Trade</h1>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">
               ● BETA
             </span>
           </div>
-          <ModeTabs active={mode} onChange={handleModeChange} locked={lockedModes} />
+          <div className="order-3 w-full overflow-x-auto sm:order-none sm:w-auto">
+            <ModeTabs active={mode} onChange={handleModeChange} locked={lockedModes} />
+          </div>
           <WalletBalance />
         </div>
 
