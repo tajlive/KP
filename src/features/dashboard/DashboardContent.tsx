@@ -87,7 +87,10 @@ export function DashboardContent({
 
   const totalReturn = useMemo(() => {
     if (!data || data.startingCapital <= 0) return undefined;
-    return ((data.totalCapital - data.startingCapital) / data.startingCapital) * 100;
+    // FIKS 6: Avkastning fra KONTO (paper_accounts), ikke sesjons-sum.
+    // totalCapital er sum på tvers av sesjoner og forvrenges av krasjede sesjoner.
+    const current = data.accountBalance ?? data.totalCapital;
+    return ((current - data.startingCapital) / data.startingCapital) * 100;
   }, [data]);
 
   const userState = computeUserState({
