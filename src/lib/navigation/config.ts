@@ -177,7 +177,7 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
   {
     key: "history",
     href: "/dashboard/historikk",
-    labelKey: "dashboard.sidebar.history",
+    labelKey: "navigation.history",
     icon: "History",
     roles: ["auth"],
     mobileOnly: true,
