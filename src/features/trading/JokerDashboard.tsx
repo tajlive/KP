@@ -2,39 +2,62 @@
 
 import * as React from "react";
 
-const SUPABASE_URL = "https://pskhryjzkobytnfwucrb.supabase.co";
-const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBza2hyeWp6a29ieXRuZnd1Y3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzI4NTcsImV4cCI6MjA5NzQ0ODg1N30.SAcjagaGKL_m8wk-wmu12PplGMCKVhdeMFHMkAdwUgI";
-
 export function JokerDashboard() {
   const [status, setStatus] = React.useState<"idle" | "starting" | "active" | "error">("idle");
   const [message, setMessage] = React.useState("");
+  const [checked, setChecked] = React.useState(false);
+  const [symbols, setSymbols] = React.useState<string[]>(["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "MATICUSDT"]);
+  const [capitalNok, setCapitalNok] = React.useState(10000);
+
+  // Hent kapital fra paper-API (server-side auth — browser-supabase er anon)
+  React.useEffect(() => {
+    async function loadConfig() {
+      try {
+        const res = await fetch("/api/paper-trading/balance");
+        if (!res.ok) return;
+        const data = await res.json();
+        const balance = Number(data?.balance ?? data?.current_balance ?? 0);
+        if (balance > 0) setCapitalNok(Math.round(balance));
+      } catch { /* stille */ }
+    }
+    loadConfig();
+  }, []);
+
+  // Sjekk om det allerede finnes aktive sesjoner ved mount (via /api — server-side auth)
+  React.useEffect(() => {
+    let cancelled = false;
+    async function checkActive() {
+      try {
+        const res = await fetch("/api/trading/sessions?status=active");
+        if (!res.ok) return;
+        const data = await res.json();
+        const sessions = Array.isArray(data) ? data : (data?.sessions ?? []);
+        if (cancelled) return;
+        if (sessions.length > 0) {
+          setStatus("active");
+          setMessage(`${sessions.length} aktiv sesjon — AI overvåker og handler`);
+        }
+      } catch {
+        // Stille — ikke forstyrr brukeren hvis API er utilgjengelig
+      } finally {
+        if (!cancelled) setChecked(true);
+      }
+    }
+    checkActive();
+    return () => { cancelled = true; };
+  }, []);
 
   const startJokerTrade = async () => {
     setStatus("starting");
     setMessage("Starter JokerTrade...");
     try {
-      // Hent session token fra Supabase
-      const sb = (window as unknown as Record<string, unknown>).__SUPABASE_CLIENT__ as { auth?: { getSession: () => Promise<{ data: { session: { access_token: string } } }> } } | undefined;
-      let token = "";
-      if (sb?.auth) {
-        const { data } = await sb.auth.getSession();
-        token = data.session?.access_token || "";
-      }
-
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-trader-v3`, {
+      // Server-side engine-rute: sikrer aktiv sesjon + kjører ensemble nå.
+      // (Direkte kall til smart-trader-v3 er umulig — den er cron-only og
+      // svarer dessuten uten CORS-headere, så nettleseren blokkerer den.)
+      const res = await fetch("/api/jokertrade", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "apikey": SUPABASE_ANON,
-        },
-        body: JSON.stringify({
-          action: "start",
-          mode: "joker",
-          symbols: ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"],
-          risk_level: "medium",
-          capital_nok: 10000,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "joker" }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -42,30 +65,26 @@ export function JokerDashboard() {
         setMessage("JokerTrade er aktiv! AI-en handler for deg.");
       } else {
         setStatus("error");
-        setMessage(data.error || "Kunne ikke starte JokerTrade");
+        setMessage(data.error || "Kunne ikke starte JokerTrade — prøv igjen om litt");
       }
     } catch {
-      // Fallback: start via paper trading API
-      try {
-        const res = await fetch("/api/paper-trading/init", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode: "joker", capital: 10000 }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setStatus("active");
-          setMessage("JokerTrade er aktiv! AI-en handler med lekepenger.");
-        } else {
-          setStatus("error");
-          setMessage(data.error || "Kunne ikke starte");
-        }
-      } catch {
-        setStatus("active");
-        setMessage("JokerTrade aktivert! Handler starter ved neste markedsanalyse.");
-      }
+      setStatus("error");
+      setMessage("Nettverksfeil — sjekk tilkoblingen og prøv igjen");
     }
   };
+
+  if (!checked) {
+    return (
+      <div className="space-y-3">
+        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider px-1">
+          JokerTrade — AI styrer
+        </div>
+        <div className="bg-gradient-to-br from-violet-950/40 to-violet-900/20 border border-violet-500/20 rounded-xl p-5 text-center">
+          <div className="text-slate-500 text-sm">Sjekker status...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -74,7 +93,9 @@ export function JokerDashboard() {
       </div>
 
       <div className="bg-gradient-to-br from-violet-950/40 to-violet-900/20 border border-violet-500/20 rounded-xl p-5 text-center space-y-4">
-        <div className="text-4xl">{status === "active" ? "🃏" : status === "starting" ? "⏳" : "🃏"}</div>
+        <div className="text-4xl">
+          {status === "active" ? "🃏" : status === "starting" ? "⏳" : "🃏"}
+        </div>
         <div>
           <h3 className="text-white font-bold text-lg">
             {status === "active" ? "AI Trader aktiv" : status === "starting" ? "Starter..." : "AI Trader"}
@@ -94,7 +115,7 @@ export function JokerDashboard() {
             <div className="text-[10px] text-slate-500">Overvåkning</div>
           </div>
           <div className="bg-[#0A0D12] rounded-lg p-3">
-            <div className="text-violet-400 text-lg font-bold font-mono">5</div>
+            <div className="text-violet-400 text-lg font-bold font-mono">{symbols.length}</div>
             <div className="text-[10px] text-slate-500">Markeder</div>
           </div>
         </div>
@@ -122,10 +143,62 @@ export function JokerDashboard() {
         </p>
       </div>
 
-      {status === "active" && (
-        <div className="bg-[#0A0D12] border border-[#1E2530] rounded-xl p-4 space-y-2">
-          <p className="text-xs text-slate-400">🎯 Handler snart tilgjengelig her</p>
+      {/* Slik fungerer det — alltid synlig */}
+      <details className="group bg-[#0A0D12] border border-[#1E2530] rounded-xl overflow-hidden">
+        <summary className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-[#111620] transition-colors">
+          <span className="text-xs font-medium text-slate-400">🧠 Slik fungerer JokerTrade</span>
+          <span className="text-slate-500 text-xs group-open:rotate-90 transition-transform">▶</span>
+        </summary>
+        <div className="px-4 pb-4 space-y-3 text-xs text-slate-400 leading-relaxed border-t border-[#1E2530] pt-3">
+          <div>
+            <div className="text-violet-400 font-medium mb-1">📊 {symbols.length} markeder overvåkes</div>
+            <p>{symbols.map(s => s.replace("USDT","")).join(" · ")}</p>
+            <p className="text-slate-500 mt-0.5">Flere markeder = flere muligheter. AI-en velger de beste signalene, uansett hvilket marked de kommer fra.</p>
+          </div>
+          <div>
+            <div className="text-amber-400 font-medium mb-1">🔍 Hva AI-en ser etter</div>
+            <p>RSI (overkjøpt/underkjøpt) · SMA-crossover (trendskifter) · Volum (bekreftelse) · Markedssentiment · Volatilitet</p>
+          </div>
+          <div>
+            <div className="text-emerald-400 font-medium mb-1">🛡️ Risikostyring</div>
+            <p>Maks {capitalNok.toLocaleString("nb-NO")} kr eksponering · 5% stoploss per trade · Sprer risiko på tvers av markeder</p>
+          </div>
+          <div>
+            <div className="text-blue-400 font-medium mb-1">⏱️ Når handles det?</div>
+            <p>AI-en sjekker signaler fortløpende. Når et signal er sterkt nok (høy konfidens), plasseres en handel automatisk. Du ser alle handler i historikken.</p>
+          </div>
         </div>
+      </details>
+
+      {status === "active" && (
+        <>
+          {/* Hva skjer nå? */}
+          <div className="bg-[#0A0D12] border border-violet-500/20 rounded-xl p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+              </span>
+              <span className="text-[11px] font-medium text-violet-400 uppercase tracking-wider">Hva skjer nå?</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              AI-en overvåker {symbols.length} markeder: {symbols.map(s => s.replace("USDT","")).join(", ")}.{' '}
+              Den analyserer RSI, SMA-crossover, volum og markedssentiment for å finne de beste kjøps- og salgsmulighetene. Du trenger ikke gjøre noe — AI-en handler automatisk.
+            </p>
+          </div>
+
+          {/* Aktiv status */}
+          <div className="bg-[#0A0D12] border border-[#1E2530] rounded-xl p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs text-emerald-400 font-medium">Aktiv</span>
+            </div>
+            <p className="text-xs text-slate-400">🎯 Handler vises i historikken fortløpende</p>
+          </div>
+        </>
       )}
     </div>
   );
