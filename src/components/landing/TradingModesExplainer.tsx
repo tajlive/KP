@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const MODES = [
   {
@@ -24,15 +24,6 @@ const MODES = [
   },
 ] as const;
 
-function modeBorder(color: string) {
-  const map: Record<string, string> = {
-    emerald: "border-emerald-500/40 hover:border-emerald-400/60",
-    amber: "border-amber-500/40 hover:border-amber-400/60",
-    violet: "border-violet-500/40 hover:border-violet-400/60",
-  };
-  return map[color] ?? "border-kp-border hover:border-kp-border-light";
-}
-
 function modeBg(color: string) {
   const map: Record<string, string> = {
     emerald: "from-emerald-950/30 to-transparent",
@@ -53,9 +44,13 @@ function modeAccent(color: string) {
 
 export function TradingModesExplainer() {
   const t = useTranslations("landing");
+  const locale = useLocale();
 
   return (
-    <section className="py-20 bg-kp-bg-primary">
+    <section
+      id="hvordan-det-fungerer"
+      className="py-20 bg-kp-bg-primary scroll-mt-20"
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Konto-boks */}
         <div className="mb-12">
@@ -77,17 +72,17 @@ export function TradingModesExplainer() {
           </h2>
         </div>
 
-        {/* Tre mode-kort */}
+        {/* Tre mode-kort — farge identifiserer modus, fill bærer hierarkiet */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {MODES.map((mode, i) => (
             <Link
               key={mode.id}
-              href={`/no${mode.href}`}
-              className="group relative animate-fade-up"
-              style={{ animationDelay: `${i * 0.1}s` }}
+              href={`/${locale}${mode.href}`}
+              className="group relative animate-fade-up rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand-light"
+              style={{ animationDelay: `${i * 0.08}s` }}
             >
               <div
-                className={`relative overflow-hidden rounded-2xl border-2 ${modeBorder(mode.color)} bg-gradient-to-br ${modeBg(mode.color)} p-6 transition-all duration-200 hover:scale-[1.02] group-active:scale-[0.98]`}
+                className={`relative h-full overflow-hidden rounded-2xl border border-kp-border bg-gradient-to-br ${modeBg(mode.color)} p-6 transition-[transform,background-color,border-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.02] hover:border-kp-border-dark group-active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:group-active:scale-100`}
               >
                 {/* Ikon */}
                 <div className="text-4xl mb-3">{mode.emoji}</div>
@@ -99,12 +94,12 @@ export function TradingModesExplainer() {
                 <p className={`text-sm font-medium mt-1 ${modeAccent(mode.color)}`}>
                   {t(`modes.${mode.id}.tagline`)}
                 </p>
-                <p className="text-xs text-kp-text-secondary mt-2">
+                <p className="text-sm text-kp-text-secondary mt-2">
                   {t(`modes.${mode.id}.description`)}
                 </p>
 
                 {/* Pil ved hover */}
-                <span className={`absolute bottom-3 right-3 ${modeAccent(mode.color)} opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0 translate-x-1`}>
+                <span className={`absolute bottom-3 right-3 ${modeAccent(mode.color)} opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-150 group-hover:translate-x-0 translate-x-1 motion-reduce:transition-none`}>
                   →
                 </span>
               </div>

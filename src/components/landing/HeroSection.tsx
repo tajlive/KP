@@ -2,21 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 /**
- * HeroSection — aspirerende landing-hero.
+ * HeroSection — landing-hero (redaktørstyrt copy, REDAKTORPLAN-V2).
  *
- * topReturn: topp-avkastning fra paper_accounts (samme kilde + eksklusjoner
- * som /api/leaderboard). undefined/null → ingen prosent-påstand vises.
- *
- * FIKS 2 (FACT-AUDIT): Hardkodede priser fjernet — «live»-label var falsk.
- * Prisdata hentes client-side av PriceTicker-komponenten på dashboard.
+ * FIKS 2026-07-29:
+ * - topReturn-mekanikk fjernet (gevinstløfte i hero er forbudt).
+ * - Ett primær-CTA-hierarki: «Start gratis» + stille ankerlenke.
+ * - Knapp etter kontrakt: hover lift 1.02 / press 0.97, 100–160ms,
+ *   ease-out cubic-bezier(0.23,1,0.32,1), respekterer reduced-motion.
+ * - Hvit CTA-tekst (WCAG AA mot #0052ff — tidligere mørk tekst på blå).
  */
 
-export default function HeroSection({ topReturn }: { topReturn?: number }) {
+const CTA_EASE = "ease-[cubic-bezier(0.23,1,0.32,1)]";
+
+export default function HeroSection() {
   const t = useTranslations("landing");
-  const hasReliableReturn = topReturn !== undefined && topReturn !== null;
+  const locale = useLocale();
 
   return (
     <section className="relative min-h-screen flex items-center bg-kp-bg-primary overflow-hidden">
@@ -30,35 +33,38 @@ export default function HeroSection({ topReturn }: { topReturn?: number }) {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Tekst-kolonne */}
           <div className="text-center lg:text-left space-y-6">
-            <h1 className="font-display text-display-sm sm:text-display text-kp-text-primary tracking-tight">
-              {t("hero.title")}
-            </h1>
-            <p className="text-body sm:text-body text-kp-text-secondary max-w-lg mx-auto lg:mx-0 animate-fade-in">
-              {hasReliableReturn
-                ? t("hero.subtitle", { pct: topReturn })
-                : t("hero.subtitleGeneric")}
+            {/* Badge/pille — beta + KLT-insentiv */}
+            <p className="inline-flex items-center rounded-badge border border-emerald-500/25 bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-400">
+              {t("hero.badge")}
             </p>
 
-            {/* CTA-knapper */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+            <h1 className="font-sans text-display-sm sm:text-display font-extrabold text-kp-text-primary tracking-tight text-balance">
+              {t("hero.title")}
+            </h1>
+            <p className="text-body text-kp-text-secondary max-w-lg mx-auto lg:mx-0 animate-fade-in">
+              {t("hero.subtitle")}
+            </p>
+
+            {/* CTA-hierarki: én primær handling + stille sekundær lenke */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-center lg:justify-start">
               <Link
-                href="/no/register"
-                className="animate-fade-up inline-flex items-center justify-center rounded-button bg-kp-brand px-8 py-4 text-kp-bg-primary font-bold shadow-lg shadow-kp-brand/20 hover:bg-kp-brand-dark transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                href={`/${locale}/register`}
+                className={`animate-fade-up inline-flex min-h-[48px] items-center justify-center rounded-button bg-kp-brand px-8 py-3.5 text-white font-bold shadow-lg shadow-kp-brand/20 transition-[transform,background-color] duration-150 ${CTA_EASE} hover:bg-kp-brand-dark hover:scale-[1.02] active:scale-[0.97] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand-light focus-visible:ring-offset-2 focus-visible:ring-offset-kp-bg-primary`}
               >
-                🚀 {t("hero.cta-primary")}
+                {t("hero.cta-primary")}
               </Link>
-              <Link
-                href="/no/jokertrade"
-                className="animate-fade-up inline-flex items-center justify-center rounded-button border border-kp-border px-8 py-4 text-kp-text-primary font-bold hover:bg-kp-bg-hover transition-all duration-200"
-                style={{ animationDelay: "0.2s" }}
+              <a
+                href="#hvordan-det-fungerer"
+                className={`animate-fade-up inline-flex min-h-[48px] items-center justify-center px-2 text-kp-text-secondary font-medium underline-offset-4 transition-colors duration-150 ${CTA_EASE} hover:text-kp-text-primary hover:underline motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand-light rounded-button`}
+                style={{ animationDelay: "0.08s" }}
               >
-                🎭 {t("hero.cta-secondary")}
-              </Link>
+                {t("hero.cta-secondary")}
+              </a>
             </div>
 
-            {/* Disclaimer */}
-            <p className="text-caption text-kp-text-muted animate-fade-in">
-              {t("hero.disclaimer")}
+            {/* Stille tillitslinje under CTA */}
+            <p className="text-sm text-kp-text-muted animate-fade-in">
+              {t("hero.trustNote")}
             </p>
 
             {/* MOBIL: mockup under CTA-folden — lazy, påvirker ikke LCP */}
@@ -82,7 +88,7 @@ export default function HeroSection({ topReturn }: { topReturn?: number }) {
               width={539}
               height={976}
               priority
-              className="w-[320px] xl:w-[360px] h-auto animate-float"
+              className="w-[320px] xl:w-[360px] h-auto"
             />
           </div>
         </div>

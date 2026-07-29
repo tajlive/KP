@@ -20,14 +20,14 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
     <nav
       data-testid="site-navigation"
       aria-label={t("siteNavAria")}
-      className="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50"
+      className="bg-kp-nav-bg backdrop-blur-xl border-b border-kp-border sticky top-0 z-50"
     >
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center h-14 gap-2 min-w-0">
+        <div className="flex justify-between items-center h-16 gap-2 min-w-0">
           <Link
             href={l("/")}
             prefetch={false}
-            className="flex items-center gap-2 min-w-0 shrink-0 overflow-hidden"
+            className="flex items-center gap-2 min-w-0 shrink-0 overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kp-brand-light"
           >
             <Image
               src="/logo.svg"
@@ -38,13 +38,13 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
               className="h-8 w-8 object-contain shrink-0"
               priority
             />
-            <span className="text-xl font-bold text-[#1A1D26] truncate hidden sm:inline">
+            <span className="text-xl font-bold text-kp-text-primary truncate hidden sm:inline">
               Klarpakke
             </span>
-            <span className="text-xl font-bold text-[#1A1D26] sm:hidden truncate">
+            <span className="text-xl font-bold text-kp-text-primary sm:hidden truncate">
               Klarpakke
             </span>
-            <span className="ml-1.5 text-sm font-medium text-[#505766] truncate hidden xl:inline shrink-0">
+            <span className="ml-1.5 text-sm font-medium text-kp-text-muted truncate hidden xl:inline shrink-0">
               — {t("tagline")}
             </span>
           </Link>
@@ -52,7 +52,7 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
           <div className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0">
             <NavAuthState navData={navData} />
 
-            <div className="h-5 w-px bg-[#E2E5EC]" />
+            <div className="h-5 w-px bg-kp-border" />
 
             <ThemeToggleIcon />
           </div>

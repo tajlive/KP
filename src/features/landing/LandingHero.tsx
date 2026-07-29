@@ -148,19 +148,19 @@ const EXPERIMENT_NAME = "landing_hero_2026";
 const VARIANT_A = {
   heading: (
     <>
-      Lær krypto trading
+      100 000 kr i lekepenger
       <br />
-      <span className="text-[#F59E0B]">— uten å risikere en krone</span>
+      <span className="text-[#F59E0B]">— ekte markeder, null risiko</span>
     </>
   ),
   description:
-    "Norges første krypto-skole. Start med 100 000 kr i lekepenger og lær trading i ditt eget tempo.",
+    "Tren på kryptohandel med autonome AI-agenter på ekte markedsdata — helt gratis.",
 };
 
 const VARIANT_B = {
   heading: (
     <>
-      Norges første krypto-skole
+      Lær kryptohandel med lekepenger
       <br />
       <span className="text-[#F59E0B]">
         — start med 100 000 kr i dag
@@ -168,7 +168,7 @@ const VARIANT_B = {
     </>
   ),
   description:
-    "Ingen ekte penger på spill. Lær krypto trading uten å risikere en krone — helt gratis.",
+    "Gratis beta. Autonome AI-agenter på ekte markedsdata. Ingen norske kryptobørser lar deg trene med lekepenger — det gjør vi.",
 };
 
 export function LandingHero() {
@@ -237,7 +237,7 @@ export function LandingHero() {
             {/* CTA — gold, prominent */}
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
-                href="/no/signup"
+                href="/no/register"
                 onClick={handleCTAClick}
                 className="btn-gold inline-flex items-center justify-center gap-2 px-10 py-4
                   text-lg sm:text-xl font-black rounded-xl no-underline shadow-lg shadow-[#F59E0B]/30
