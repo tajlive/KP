@@ -157,8 +157,8 @@ export async function BinanceGuideContent({ locale }: { locale: string }) {
                     </h3>
                     <p className="text-slate-400 text-sm">
                       {isNo
-                        ? "Ved å bruke vår lenke støtter du vårt arbeid med å bygge Norges beste trading-utdanning."
-                        : "By using our link, you support our work to build Norway's best trading education."}
+                        ? "Ved å bruke vår lenke støtter du vårt arbeid med å gjøre kryptolæring tryggere for nordmenn."
+                        : "By using our link, you support our work to make crypto learning safer for Norwegians."}
                     </p>
                   </div>
                 </div>
@@ -399,8 +399,8 @@ export async function BinanceGuideContent({ locale }: { locale: string }) {
           </h2>
           <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
             {isNo
-              ? "Opprett Binance-konto via vår lenke i dag. Du får lavere gebyrer, og du støtter vårt arbeid med å bygge Norges beste trading-utdanning."
-              : "Create a Binance account via our link today. You get lower fees and support our work to build Norway's best trading education."}
+              ? "Opprett Binance-konto via vår lenke i dag. Du får lavere gebyrer, og du støtter vårt arbeid med å gjøre kryptolæring tryggere for nordmenn."
+              : "Create a Binance account via our link today. You get lower fees and support our work to make crypto learning safer for Norwegians."}
           </p>
           <Button 
             size="lg"

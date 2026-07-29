@@ -25,13 +25,13 @@ export default function BotsPage() {
             Trading Bots som jobber for deg
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-            Våre AI-drevne bots overvåker markedet 24/7, finner de beste mulighetene og handler automatisk — med innebygd risikostyring.
+            Våre AI-drevne bots overvåker markedet 24/7 og handler automatisk etter strategiene du velger — med innebygd risikostyring.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-16">
           {[
-            { icon: Zap, title: "Auto-trading", desc: "Boten kjøper og selger automatisk basert på avanserte AI-signaler og teknisk analyse." },
+            { icon: Zap, title: "Auto-trading", desc: "Boten kjøper og selger automatisk basert på AI-signaler og teknisk analyse." },
             { icon: Shield, title: "Innebygd stop-loss", desc: "Hver trade har automatisk stop-loss. Du kan maks tape det du har satt opp." },
             { icon: Clock, title: "Handler 24/7", desc: "Mens du sover, jobber, eller er på ferie — boten er alltid våken og følger markedet." },
             { icon: TrendingUp, title: "Adaptiv strategi", desc: "Boten tilpasser seg markedsforhold: bull, bear, eller sideways." },

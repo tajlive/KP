@@ -7,7 +7,7 @@
     "hero": {
       "badge": "About Klarpakke",
       "title": "From Hard Lessons to Financial Freedom",
-      "subtitle": "My journey from losing everything to cracking the code – and how you can do the same."
+      "subtitle": "My journey from losing NOK 65,000 to building a safer way into crypto."
     },
     "story": {
       "title": "The Klarpakke Story",
@@ -19,7 +19,7 @@
     },
     "mission": {
       "title": "Our Mission",
-      "text": "To make advanced crypto trading accessible to everyone through education, transparency, and paper trading – so you can learn and earn without risking your hard-earned money.",
+      "text": "To make advanced crypto trading accessible to everyone through education, transparency, and paper trading – so you can learn and practise without risking your hard-earned money.",
       "values": "We believe that knowledge, transparency, and a long-term perspective are the keys to success. No pyramid schemes, no secrets – just honest and transparent technology."
     },
     "values": {
@@ -126,7 +126,7 @@
       "educationFirst": "Knowledge First",
       "educationFirstDesc": "We give you the tools, but you're in the driver's seat. Our auto-trader does the heavy lifting, but your understanding ensures success.",
       "patience": "Long-term Vision",
-      "patienceDesc": "Crypto isn't a get-rich-quick scheme. We aim for steady, sustainable growth – 0.2% daily profit beats 100% risk. That's the power of compound interest.",
+      "patienceDesc": "Crypto isn't a get-rich-quick scheme. We believe in steady, sustainable learning – small, controlled steps beat big risks. That's the power of compound interest.",
       "cta": "Join the journey!"
     }
   },
@@ -796,9 +796,9 @@
       "ctaPrimary": "Start Paper Trading",
       "ctaSecondary": "See results",
       "stats": {
-        "profitLabel": "Total Profit (3 years)",
-        "profitSub": "Verified data",
-        "profitValue": "+142.5%"
+        "profitLabel": "Paper money starting capital",
+        "profitSub": "Free beta",
+        "profitValue": "100,000 kr"
       }
     },
     "facts": {
@@ -814,7 +814,7 @@
       },
       "fact3": {
         "title": "Optimized for Mobile",
-        "desc": "75% of our users trade on mobile. We built the entire experience to be lightning fast and clear on your phone."
+        "desc": "We built the entire experience to be fast and clear on your phone."
       }
     },
     "howItWorks": {
@@ -987,15 +987,15 @@
   "calculator": {
     "metadata": {
       "title": "Calculator | Klarpakke",
-      "description": "See how your investments can grow with daily compound returns. Use Klarpakke's trading calculator."
+      "description": "See how a theoretical amount can grow with daily compound returns. Klarpakke's calculator is a hypothetical exercise — no guarantees."
     },
     "title": "Calculator",
     "description": "Trading calculator",
-    "subtitle": "See how your investments can grow with daily compound returns",
+    "subtitle": "See how a theoretical amount can grow with daily compound returns",
     "intro": {
       "title": "What is compound interest?",
       "p1": "Compound interest means you earn interest on interest. When you trade with a daily return, the profit from each day is added to your capital and generates new profit the next day.",
-      "p2": "This calculator shows how much you can earn in one year of consistent trading, based on your starting capital and expected daily return."
+      "p2": "This calculator shows how a theoretical amount can develop over one year, based on your starting capital and chosen daily return."
     },
     "inputs": {
       "startAmount": "Starting amount",
@@ -3484,7 +3484,7 @@
     },
     "cta": {
       "title": "Ready to start?",
-      "subtitle": "Join thousands of students learning to trade in a safe way.",
+      "subtitle": "Join other Norwegians learning to trade safely — with play money.",
       "button": "Get started now",
       "guarantee": "30-day money-back guarantee"
     },
