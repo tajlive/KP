@@ -50,13 +50,13 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
             key={link.path}
             href={l(link.path)}
             prefetch={false}
-            className="text-sm font-medium text-[#505766] hover:text-[#1A1D26] transition-colors"
+            className="rounded-md px-2 py-1 text-sm font-medium text-kp-text-secondary transition-colors duration-150 hover:bg-kp-bg-hover hover:text-kp-text-primary"
           >
             {link.label}
           </Link>
         ))}
 
-        <div className="h-5 w-px bg-[#E2E5EC]" />
+        <div className="h-5 w-px bg-kp-border" />
 
         {/* Logged in: Min side + Logg ut. Ikke innlogget: Logg inn + Start gratis — CTA alltid synlig */}
         {user ? (
@@ -112,33 +112,33 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
       <div className="md:hidden flex items-center gap-2">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 bg-white hover:bg-[#F7F8FA] rounded-lg border border-[#E2E5EC] shadow-sm"
+          className="flex h-12 w-12 items-center justify-center rounded-lg border border-kp-border bg-kp-bg-card text-kp-text-primary transition-colors duration-150 hover:bg-kp-bg-hover"
           aria-label={isOpen ? "Lukk meny" : "Åpne meny"}
         >
           {isOpen ? (
-            <X className="w-5 h-5 text-[#1A1D26]" />
+            <X className="w-5 h-5" />
           ) : (
-            <Menu className="w-5 h-5 text-[#1A1D26]" />
+            <Menu className="w-5 h-5" />
           )}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-[#E2E5EC] py-4 space-y-2">
+        <div className="md:hidden border-t border-kp-border py-4 space-y-2">
           {mainLinks.map((link) => (
             <Link
               key={link.path}
               href={l(link.path)}
               prefetch={false}
-              className="block px-4 py-2 text-sm font-medium text-[#505766] hover:bg-[#F7F8FA] rounded-lg"
+              className="block rounded-lg px-4 py-3.5 text-sm font-medium text-kp-text-secondary transition-colors duration-150 hover:bg-kp-bg-hover hover:text-kp-text-primary"
               onClick={() => setIsOpen(false)}
             >
               {link.label}
             </Link>
           ))}
 
-          <div className="my-4 border-t border-[#E2E5EC]" />
+          <div className="my-4 border-t border-kp-border" />
 
           <div className="px-4 space-y-2">
             {user ? (
@@ -149,7 +149,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                   onClick={() => setIsOpen(false)}
                 >
                   <Button
-                    size="sm"
+                    size="lg"
                     className={`w-full gap-2 ${BRAND.primary} shadow-md shadow-blue-500/20`}
                   >
                     <LayoutDashboard className="w-4 h-4" />
@@ -157,7 +157,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                   </Button>
                 </Link>
                 <Button
-                  size="sm"
+                  size="lg"
                   variant="outline"
                   className={`w-full gap-2 ${BRAND.primaryOutline}`}
                   onClick={async () => {
@@ -179,9 +179,9 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                   onClick={() => setIsOpen(false)}
                 >
                   <Button
-                    size="sm"
+                    size="lg"
                     variant="outline"
-                    className="w-full gap-2 border-[#E2E5EC]"
+                    className={`w-full gap-2 ${BRAND.primaryOutline}`}
                   >
                     <LogIn className="w-4 h-4" />
                     {t("login")}
@@ -193,7 +193,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
                   onClick={() => setIsOpen(false)}
                 >
                   <Button
-                    size="sm"
+                    size="lg"
                     className={`w-full ${BRAND.primary} shadow-md shadow-blue-500/20`}
                   >
                     {t("signup")}

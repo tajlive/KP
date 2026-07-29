@@ -5,11 +5,11 @@ export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: {
-    default: "Klarpakke — Norges krypto-skole",
-    template: "%s | Norges krypto-skole",
+    default: "Klarpakke — AI-trading med lekepenger",
+    template: "%s | Klarpakke",
   },
   description:
-    "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring — fra nybegynner til trader på 4 uker.",
+    "Lær kryptohandel med 100 000 kr i lekepenger — gratis beta, null risiko. Autonome AI-agenter på ekte markedsdata.",
   keywords: [
     "krypto",
     "trading",
@@ -54,25 +54,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "no_NO",
     url: "https://klarpakke.no",
-    siteName: "Klarpakke — Norges krypto-skole",
-    title: "Klarpakke — Norges krypto-skole",
+    siteName: "Klarpakke",
+    title: "Klarpakke — AI-drevet trading for norske småsparere",
     description:
-      "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring fra nybegynner til trader.",
+      "Gratis beta: Du får 100 000 kr i lekepenger (JokerTrade). Lær og test tradingstrategier med autonome AI-agenter — uten å risikere egne penger.",
     images: [
       {
-        url: "/logo.svg",
+        url: "/og-image.png",
         width: 1200,
-        height: 682,
-        alt: "Klarpakke Universitet Logo",
+        height: 630,
+        alt: "Klarpakke — AI-drevet trading for norske småsparere",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Klarpakke — Norges krypto-skole",
+    title: "Klarpakke — AI-drevet trading for norske småsparere",
     description:
-      "Norges første krypto-skole. Lær kryptovaluta og trading med lekepenger. AI-drevne verktøy, trygg læring fra nybegynner til trader.",
-    images: ["/logo.svg"],
+      "Gratis beta: Du får 100 000 kr i lekepenger (JokerTrade). Lær og test tradingstrategier med autonome AI-agenter — uten å risikere egne penger.",
+    images: ["/og-image.png"],
     creator: "@klarpakke",
   },
   robots: {

@@ -6,7 +6,7 @@ export function OrganizationJsonLd() {
     url: "https://www.klarpakke.no",
     logo: "https://www.klarpakke.no/logo.svg",
     description:
-      "Norges første krypto-utdanningsplattform med simulert trading.",
+      "Norsk plattform for AI-trading med lekepenger — tren på kryptohandel med autonome AI-agenter på ekte markedsdata, helt gratis.",
     address: {
       "@type": "PostalAddress",
       addressCountry: "NO",
