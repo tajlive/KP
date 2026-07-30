@@ -22,15 +22,19 @@ RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER AS $$
 DECLARE
   crashed_count int; healed_count int; stopped_count int;
 BEGIN
-  -- 1. Crash: 60 min uten heartbeat = garantert død session
-  UPDATE trading_sessions SET status='crashed', updated_at=NOW()
-  WHERE status IN ('active','paused') AND mode='paper'
-    AND last_heartbeat < NOW() - INTERVAL '60 minutes'
-    AND created_at < NOW() - INTERVAL '60 minutes'
-    AND archived = FALSE;
+  -- 1. Crash: kun sessions UTEN auto-trading (de er system-eide, ikke bruker-eide)
+  UPDATE trading_sessions ts SET status='crashed', updated_at=NOW()
+  WHERE ts.status IN ('active','paused') AND ts.mode='paper'
+    AND ts.last_heartbeat < NOW() - INTERVAL '60 minutes'
+    AND ts.created_at < NOW() - INTERVAL '60 minutes'
+    AND ts.archived = FALSE
+    AND NOT EXISTS (
+      SELECT 1 FROM auto_trading_configs atc
+      WHERE atc.user_id = ts.user_id AND atc.is_enabled = true
+    );
   GET DIAGNOSTICS crashed_count = ROW_COUNT;
 
-  -- 2. Heal: crashed med nylig heartbeat → gjenopprett
+  -- 2. Heal: crashed med nylig heartbeat → gjenopprett (alle brukere)
   UPDATE trading_sessions
   SET status='active', last_heartbeat=NOW(), updated_at=NOW(), stopped_at=NULL
   WHERE status='crashed' AND mode='paper'
@@ -38,12 +42,15 @@ BEGIN
     AND archived = FALSE;
   GET DIAGNOSTICS healed_count = ROW_COUNT;
 
-  -- 3. Stop: >24t uten heartbeat → arkiver
-  UPDATE trading_sessions
-  SET status='stopped', stopped_at=NOW(), updated_at=NOW()
-  WHERE status='active' AND mode='paper'
-    AND last_heartbeat < NOW() - INTERVAL '24 hours'
-    AND archived = FALSE;
+  -- 3. Stop: >24t uten heartbeat (kun ikke-auto-brukere)
+  UPDATE trading_sessions ts SET status='stopped', stopped_at=NOW(), updated_at=NOW()
+  WHERE ts.status='active' AND ts.mode='paper'
+    AND ts.last_heartbeat < NOW() - INTERVAL '24 hours'
+    AND ts.archived = FALSE
+    AND NOT EXISTS (
+      SELECT 1 FROM auto_trading_configs atc
+      WHERE atc.user_id = ts.user_id AND atc.is_enabled = true
+    );
   GET DIAGNOSTICS stopped_count = ROW_COUNT;
 
   RETURN jsonb_build_object(
