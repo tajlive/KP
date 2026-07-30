@@ -292,7 +292,32 @@ export async function POST(request: NextRequest) {
       if (!users?.length) {
         return NextResponse.json({ success: true, message: "Ingen auto-brukere" });
       }
-      userId = users[Math.floor(Math.random() * users.length)].user_id;
+
+      // Round-robin: finn brukeren med eldste siste trade
+      const { data: recentTrades } = await db
+        .from("trades")
+        .select("user_id, created_at")
+        .eq("joker_trade", true)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      const lastTradeMap = new Map<string, string>();
+      for (const t of recentTrades ?? []) {
+        if (!lastTradeMap.has(t.user_id)) {
+          lastTradeMap.set(t.user_id, t.created_at);
+        }
+      }
+
+      users.sort((a, b) => {
+        const aTime = lastTradeMap.get(a.user_id);
+        const bTime = lastTradeMap.get(b.user_id);
+        if (!aTime && !bTime) return 0;
+        if (!aTime) return -1;
+        if (!bTime) return 1;
+        return aTime.localeCompare(bTime);
+      });
+
+      userId = users[0].user_id;
     } else {
       const { data } = await db.auth.getUser();
       if (!data.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
