@@ -1,0 +1,53 @@
+{
+  "week": 1,
+  "theme": "Gratis å teste. Umulig å tape.",
+  "stats": {
+    "totalUsers": 43,
+    "activePaperSessions": 49,
+    "enabledSmartTrader": 49,
+    "tradesLast7Days": 560,
+    "avgTradeValueNok": 11588700.955410711,
+    "totalPnlNok": 48693.09000000001,
+    "registrationsRemaining": 57,
+    "kltSlotsRemaining": 57,
+    "weekNumber": 1,
+    "generatedAt": "2026-07-30T22:17:55.555Z"
+  },
+  "linkedin": [
+    {
+      "platform": "linkedin",
+      "title": "100 000 kroner på kontoen din. Helt gratis. Eneste regel: Du kan ikke tape noe.",
+      "body": "100 000 kroner på kontoen din. Helt gratis. Eneste regel: Du kan ikke tape noe.\n\nSlik fungerer Klarpakke:\n\n1. Du registrerer deg — tar under tre minutter.\n2. Du får 100 000 kr i lekepenger. Ikke ekte penger. Nettopp derfor er det genialt.\n3. Du trader på ekte markedsdata. Ekte kurser. Ekte bevegelser. Null risiko.\n\nMens du tester, jobber autonome AI-agenter i bakgrunnen. JokerTrade analyserer markedet og plasserer paper trades — så du ser hva en AI faktisk gjør, ikke bare hva markedsføringen lover.\n\nBetaen er gratis. Og de 100 første som registrerer seg får 5000 gratis KLT.\n\nNår de 100 plassene er borte, er de borte.\n\nTest gratis på klarpakke.no",
+      "hashtags": "#klarpakke #krypto #trading #norsk #lekepenger",
+      "scheduledFor": "2026-07-27T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Gratis å teste. Umulig å tape.\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    },
+    {
+      "platform": "linkedin",
+      "title": "Visste du at krypto-kjøp i Norge ofte koster mer enn prisen du ser?",
+      "body": "Visste du at krypto-kjøp i Norge ofte koster mer enn prisen du ser?\n\nNår du kjøper krypto på en børs, betaler du gjerne to priser:\n\n1. **Handelsgebyret** — synlig, f.eks. 0,7 %.\n2. **Spreaden** — differansen mellom kjøps- og salgskurs. Den er usynlig, men like reell.\n\nSammen kan det utgjøre mer enn du tror, særlig på små, hyppige kjøp.\n\nPoenget er ikke at du ikke skal kjøpe krypto. Poenget er at du bør forstå hva ting koster før du bruker egne penger.\n\nDerfor bygget vi Klarpakke: 100 000 kr i lekepenger, ekte markedsdata, full oversikt over hva hver handel faktisk koster — helt gratis.\n\nLær mekanikken med lekepenger. Bruk egne penger når du er klar.\n\nklarpakke.no",
+      "hashtags": "#klarpakke #krypto #trading #norsk #lekepenger",
+      "scheduledFor": "2026-07-30T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Gratis å teste. Umulig å tape.\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    }
+  ],
+  "facebook": [
+    {
+      "platform": "facebook",
+      "title": "🎮 100 000 kr i lekepenger. Helt gratis. Du kan ikke tape en krone.",
+      "body": "🎮 100 000 kr i lekepenger. Helt gratis. Du kan ikke tape en krone.\n\nKlarpakke er en norsk tradingplattform der du trener på ekte markedsdata — med virtuelle penger. AI-agenten JokerTrade trader også for deg, så du kan se hvordan det fungerer i praksis.\n\n💰 5000 gratis KLT til de 100 første som registrerer seg.\n\nTest gratis: klarpakke.no\n\n#klarpakke #krypto #trading #norsk #lekepenger",
+      "hashtags": "#klarpakke #krypto #trading #norsk",
+      "scheduledFor": "2026-07-27T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Gratis å teste. Umulig å tape.\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    },
+    {
+      "platform": "facebook",
+      "title": "💸 Hva koster egentlig et kryptokjøp?",
+      "body": "💸 Hva koster egentlig et kryptokjøp?\n\nTo priser: Handelsgebyret du ser — og spreaden du ikke ser.\n\nPå Klarpakke lærer du å kjenne begge, med 100 000 kr i lekepenger på ekte markedsdata. Gratis.\n\nLær først. Bruk egne penger når du er klar: klarpakke.no\n\n#klarpakke #krypto #småsparing #norsk",
+      "hashtags": "#klarpakke #krypto #trading #norsk",
+      "scheduledFor": "2026-07-30T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Gratis å teste. Umulig å tape.\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    }
+  ],
+  "generatedAt": "2026-07-30T22:17:55.584Z"
+}
