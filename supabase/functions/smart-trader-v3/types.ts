@@ -51,6 +51,17 @@ export interface RiskCheck {
   takeProfitPrice?: number;
 }
 
+export interface StoredPosition {
+  symbol: string;        // FIKS 2026-07-30: alltid lagre hvilket par posisjonen tilhører
+  side: 'buy' | 'sell';
+  entry_price: number;
+  quantity: number;
+  total_value?: number;
+  stop_loss?: number;
+  take_profit?: number;
+  entered_at?: string;
+}
+
 export const DEFAULT_CONFIG: SmartTraderConfig = {
   enabled: true,
   mode: 'paper',
