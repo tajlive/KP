@@ -41,7 +41,7 @@ export function generateJokerSignal(market: MarketData, winMultiplier = 1): Sign
 
   // === Kombinert scoring ===
   let score = 50; // nøytral
-  let reasons: string[] = [];
+  const reasons: string[] = [];
 
   // RSI (0-30 poeng)
   if (rsiOversold) { score += 25; reasons.push(`RSI ${rsi.toFixed(0)} — oversolgt`); }
