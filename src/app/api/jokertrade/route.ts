@@ -308,6 +308,9 @@ export async function POST(request: NextRequest) {
       // 🛡️ Permanent: sikre at ALLE auto-brukere har aktive sessions
       try { await db.rpc("ensure_active_sessions_for_all" as never); } catch { /* best effort */ }
 
+      // 🫀 Bulk heartbeat på ALLE aktive sessions — hindrer crash mellom cykler
+      try { await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("status", "active").eq("mode", "paper"); } catch { /* best effort */ }
+
       const { data: users } = await db
         .from("auto_trading_configs")
         .select("user_id")
