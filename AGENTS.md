@@ -38,6 +38,7 @@
 ### Besluttet 2026-07-30
 - **Ingen refusjon.** Klarpakke tar betalt for tilgang til verktøy. Paper trading er gratis og ubegrenset. 30-dagers pengene-tilbake-garanti fjernet fra `messages/no.json`, `messages/en.json`, `PrimaryCtaSection.tsx` og `scripts/pricing_patch.py`.
 - **DB-rydding utført** (migrasjon `20260730220000_cleanup_inflated_sessions_and_invalid_trades.sql`): 3 arkiverte+aktive sesjoner stoppet, 4 negativ-kvantitet-trades slettet, maks én aktiv paper-sesjon per bruker, CHECK `quantity > 0`, partial unique index + trigger mot `archived+active`.
+- **JokerTrade guard + kill switch** (migrasjon `20260731000000_jokertrade_guard_and_killswitch.sql`): `jokertrade_health_guard()` kjører hvert 15. min (4,19,34,49) og auto-deaktiverer sesjoner med inflert kapital (>200k/<0), symbol-mismatch eller drawdown >20 %; ≥3 ugyldige handler/time utløser global kill switch. Nødstopp: `SELECT public.jokertrade_emergency_stop('årsak')` — gjenoppta: `SELECT public.jokertrade_resume('årsak')` (sesjoner re-aktiveres eksplisitt). Status: view `public.jokertrade_monitor`, hendelser: `public.jokertrade_guard_log`. Edge Function sjekker kill switch før hver kjøring.
 
 ### Deploy-notater (viktig for neste agent)
 - `scripts/deploy.sh` kan overgå 5 min på treg maskin → kjør stegene manuelt: `npx next build` → `opennextjs-cloudflare build --skipNextBuild` → `wrangler deploy --env "" --var "APP_VERSION:$(git rev-parse --short HEAD)"` → CDN-purge (zone 328d7de7). Alle med `source .env.local`.
