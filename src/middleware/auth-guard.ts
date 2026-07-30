@@ -41,6 +41,9 @@ export function createSupabaseClient(
   response: NextResponse,
 ) {
   const cookieDomain = getCookieDomain(request);
+  const host = request.headers.get("host") || "";
+  const isLocalhost = host.startsWith("localhost") || host.startsWith("127.0.0.1");
+  const useSecure = !isLocalhost;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -61,8 +64,9 @@ export function createSupabaseClient(
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, {
               ...options,
-              sameSite: "none" as const,
-              secure: true,
+              path: "/",
+              sameSite: "lax",
+              secure: useSecure,
               domain: cookieDomain,
             });
           });
@@ -88,14 +92,18 @@ export function redirectWithCookies(
   redirectResponse.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
   redirectResponse.headers.set("CDN-Cache-Control", "no-store, max-age=0");
   const cookieDomain = getCookieDomain(request);
+  const host = request.headers.get("host") || "";
+  const isLocalhost = host.startsWith("localhost") || host.startsWith("127.0.0.1");
+  const useSecure = !isLocalhost;
 
   // Copy cookies from the next() response to the redirect response
   response.cookies.getAll().forEach((cookie) => {
     redirectResponse.cookies.set(cookie.name, cookie.value, {
-      ...cookie,
+      path: "/",
       domain: cookieDomain,
-      sameSite: "none" as const,
-      secure: true,
+      sameSite: "lax",
+      secure: useSecure,
+      httpOnly: true,
     });
   });
   
@@ -108,10 +116,10 @@ export function redirectWithCookies(
       const existing = redirectResponse.cookies.get(cookie.name);
       if (!existing) {
         redirectResponse.cookies.set(cookie.name, cookie.value, {
-          domain: cookieDomain,
           path: "/",
-          sameSite: "none" as const,
-          secure: true,
+          domain: cookieDomain,
+          sameSite: "lax",
+          secure: useSecure,
           httpOnly: true,
         });
       }

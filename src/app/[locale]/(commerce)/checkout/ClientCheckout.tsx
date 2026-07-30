@@ -256,19 +256,28 @@ function CheckoutContent() {
           </button>
 
           {/* Sikkerhetsbadges */}
-          <div className="mt-6 flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-1">
+          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" />
               <span>256-bit SSL</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <Shield className="w-3.5 h-3.5" />
               <span>PCI-DSS</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <CreditCard className="w-3.5 h-3.5" />
               <span>Stripe</span>
             </div>
+          </div>
+
+          {/* Betalingsmetoder */}
+          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+            <span>💳 Kort</span>
+            <span className="text-gray-300 dark:text-gray-600">·</span>
+            <span>📱 Vipps</span>
+            <span className="text-gray-300 dark:text-gray-600">·</span>
+            <span>🔒 Trygg betaling</span>
           </div>
         </div>
       </div>

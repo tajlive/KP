@@ -106,7 +106,7 @@ describe("MOBILE_BOTTOM_TABS", () => {
     const keys: string[] = MOBILE_BOTTOM_TABS.map(
       (l: NavItem) => l.key,
     );
-    expect(keys).toEqual(["home", "portfolio", "trade", "account"]);
+    expect(keys).toEqual(["home", "portfolio", "trade", "history", "help"]);
   });
 
   it("alle tabs skal være mobileOnly", () => {

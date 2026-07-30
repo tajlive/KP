@@ -198,15 +198,17 @@ describe("currency handling parity", () => {
     }
   });
 
-  it("PaperExecutor getBalance uses usdtToNok for locked position value", async () => {
+  it("PaperExecutor getBalance treats locked position value as NOK-native (fix 2026-07-30)", async () => {
     const supabase = createPaperSessionSupabase();
     const executor = new PaperExecutor(supabase, "user-1");
     const balance = await executor.getBalance();
 
-    // Session open_position: 0.01 BTC @ $50k = $500 USDT locked.
-    const lockedUsdt = 0.01 * 50_000;
-    expect(balance.locked).toBe(usdtToNok(lockedUsdt));
-    expect(balance.locked).toBeCloseTo(lockedUsdt * RATE, 10);
+    // Paper open_position.entry_price lagres i NOK (DB-trigger kopierer
+    // trades.price=NOK). 0.01 BTC à 50 000 NOK = 500 NOK låst — ingen
+    // ekstra usdtToNok-konvertering (det ga ~9,6× dobbelkonvertering).
+    const lockedNok = 0.01 * 50_000;
+    expect(balance.locked).toBe(lockedNok);
+    expect(balance.total).toBe(1_000_000 + lockedNok);
   });
 
   it("backtest result NOK conversion matches usdtToNok formula", () => {

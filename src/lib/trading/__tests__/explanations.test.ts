@@ -3,6 +3,7 @@ import {
   buildTradeExplanation,
   getLearnMoreTitle,
   getPaperModeNotice,
+  getTradeInlineExplanation,
   type TradeForExplanation,
   type AiDecision,
 } from "../explanations";
@@ -307,5 +308,139 @@ describe("getPaperModeNotice", () => {
 
   it("returnerer engelsk tekst for paper mode", () => {
     expect(getPaperModeNotice("en")).toBe("This is a simulated trade (paper trading). No real money was used.");
+  });
+});
+
+describe("getTradeInlineExplanation", () => {
+  describe("for kjøp", () => {
+    it("viser RSI og konfidens når data finnes", () => {
+      const trade: TradeForExplanation = {
+        side: "buy",
+        mode: "paper",
+        realized_pnl: null,
+        strategy_signal: { rsi: 28, confidence: 82 },
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("RSI: 28");
+      expect(result).toContain("underkjøpt");
+      expect(result).toContain("Konfidens: 82%");
+    });
+
+    it("viser RSI overkjøpt når rsi > 70", () => {
+      const trade: TradeForExplanation = {
+        side: "buy",
+        mode: "paper",
+        realized_pnl: null,
+        strategy_signal: { rsi: 78, confidence: 95 },
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("RSI: 78");
+      expect(result).toContain("overkjøpt");
+      expect(result).toContain("Konfidens: 95%");
+    });
+
+    it("viser tom streng når strategy_signal mangler", () => {
+      const trade: TradeForExplanation = {
+        side: "buy",
+        mode: "paper",
+        realized_pnl: null,
+        strategy_signal: null,
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toBe("");
+    });
+
+    it("viser SMA-kontekst når sma20 og sma50 finnes", () => {
+      const trade: TradeForExplanation = {
+        side: "buy",
+        mode: "paper",
+        realized_pnl: null,
+        strategy_signal: { rsi: 45, sma20: 52000, sma50: 50000, confidence: 70 },
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("RSI: 45");
+      expect(result).toContain("SMA20");
+      expect(result).toContain("over SMA50");
+      expect(result).toContain("Konfidens: 70%");
+    });
+  });
+
+  describe("for salg", () => {
+    it("viser Stoploss med negativ PnL", () => {
+      const trade: TradeForExplanation = {
+        side: "sell",
+        mode: "live",
+        realized_pnl: -274,
+        exit_reason: "stoploss",
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("Stoploss");
+      expect(result).toContain("274");
+      expect(result).toContain("kr");
+    });
+
+    it("viser Tok gevinst med positiv PnL", () => {
+      const trade: TradeForExplanation = {
+        side: "sell",
+        mode: "live",
+        realized_pnl: 1500,
+        exit_reason: "take_profit",
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("Tok gevinst");
+      expect(result).toContain("500");
+    });
+
+    it("viser Manuell for manuelle salg", () => {
+      const trade: TradeForExplanation = {
+        side: "sell",
+        mode: "live",
+        realized_pnl: 500,
+        exit_reason: "manual",
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("Manuell");
+    });
+
+    it("viser Stoploss når PnL er negativ uten exit_reason (inferens)", () => {
+      const trade: TradeForExplanation = {
+        side: "sell",
+        mode: "live",
+        realized_pnl: -500,
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("Stoploss");
+      expect(result).toContain("500");
+      expect(result).toContain("kr");
+    });
+
+    it("viser Signal snudd for signal_reverse", () => {
+      const trade: TradeForExplanation = {
+        side: "sell",
+        mode: "live",
+        realized_pnl: 300,
+        exit_reason: "signal_reverse",
+      };
+
+      const result = getTradeInlineExplanation(trade, "no");
+
+      expect(result).toContain("Signal snudd");
+    });
   });
 });

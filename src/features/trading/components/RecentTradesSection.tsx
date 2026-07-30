@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Trade } from "@/lib/trading-api";
+import { getTradeInlineExplanation } from "@/lib/trading/explanations";
 
 export function RecentTradesSection({
   trades,
@@ -81,6 +82,9 @@ export function RecentTradesSection({
                     {formatNOK(trade.total_value)}
                   </p>
                 </div>
+                <p className="text-slate-400 text-xs leading-tight sm:w-full sm:text-left">
+                  {getTradeInlineExplanation(trade)}
+                </p>
               </motion.div>
             );
           })}

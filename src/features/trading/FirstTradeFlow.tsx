@@ -73,7 +73,7 @@ export function FirstTradeFlow({ onComplete }: FirstTradeFlowProps) {
         setError(data.error ?? "Ukjent feil");
       }
     } catch {
-      setError("Nettverksfeil — prøv igjen");
+      setError("Kunne ikke koble til — sjekk nettverket og prøv igjen");
     } finally {
       setLoading(false);
     }

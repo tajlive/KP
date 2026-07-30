@@ -70,6 +70,9 @@ export function createServerClient(
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
     const cookieDomain = getCookieDomain(request);
+    const host = request.headers.get("host") || "";
+    const isLocalhost = host.startsWith("localhost") || host.startsWith("127.0.0.1");
+    const useSecure = !isLocalhost;
     return createSSRServerClient<Database>(url, key, {
       cookieEncoding: "raw",
       cookies: {
@@ -99,9 +102,10 @@ export function createServerClient(
             const { name, value, options } = cookie;
             response.cookies.set(name, value, {
               ...options,
+              path: "/",
               domain: cookieDomain,
-              sameSite: "none" as const,
-              secure: true,
+              sameSite: "lax",
+              secure: useSecure,
             });
           });
         },

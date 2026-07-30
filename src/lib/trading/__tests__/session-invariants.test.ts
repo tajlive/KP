@@ -5,6 +5,7 @@ import {
   detectNegativePositions,
   checkAllInvariants,
   EXTREME_GROWTH_MULTIPLIER,
+  predictSessionHealth,
 } from "../session-invariants";
 
 describe("detectNegativeCapital", () => {
@@ -188,5 +189,136 @@ describe("checkAllInvariants", () => {
       [{ id: "p1", session_id: "s1", user_id: "u1", symbol: "BTCUSDT", quantity: 0.1 }]
     );
     expect(v).toHaveLength(0);
+  });
+});
+
+describe("predictSessionHealth (NY 2026-07-28)", () => {
+  it("returnerer healthy (100) for perfekt sesjon", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 0,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 5,
+      recentPnLs: [100, 200, 150],
+    });
+    expect(result.status).toBe("healthy");
+    expect(result.score).toBeGreaterThanOrEqual(80);
+  });
+
+  it("returnerer warning ved 3 consecutive losses", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 3,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 10,
+      recentPnLs: [-100, -200, -150],
+    });
+    expect(result.status).toBe("warning");
+    expect(result.details.lossStreakPenalty).toBeGreaterThan(0);
+  });
+
+  it("returnerer critical ved 5+ consecutive losses og stor drawdown", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 6,
+      currentCapital: 50000, // 50% drawdown
+      startingCapital: 100000,
+      tradesLast24h: 30, // overtrading
+      recentPnLs: [-1000, -2000, -1500, -500, -300],
+    });
+    expect(result.status).toBe("critical");
+    expect(result.score).toBeLessThan(50);
+    expect(result.details.lossStreakPenalty).toBeGreaterThan(0);
+    expect(result.details.drawdownPenalty).toBeGreaterThan(0);
+    expect(result.details.frequencyPenalty).toBeGreaterThan(0);
+    expect(result.details.recentPnLPenalty).toBeGreaterThan(0);
+  });
+
+  it("straffer overtrading (30 trades på 24t)", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 0,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 30,
+      recentPnLs: [10, 20],
+    });
+    expect(result.details.frequencyPenalty).toBeGreaterThan(0);
+    // Skal fortsatt være healthy (ingen loss streak, drawdown, eller PnL-tap)
+    expect(result.status).toBe("healthy");
+  });
+
+  it("straffer heartbeat-staleness", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 0,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 5,
+      recentPnLs: [10],
+      secondsSinceLastHeartbeat: 600, // 10 min — over 5 min default
+    });
+    expect(result.details.heartbeatPenalty).toBeGreaterThan(0);
+  });
+
+  it("ingen heartbeat straff ved fersk heartbeat", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 0,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 5,
+      recentPnLs: [10],
+      secondsSinceLastHeartbeat: 120, // 2 min — under 5 min
+    });
+    expect(result.details.heartbeatPenalty).toBe(0);
+  });
+
+  it("returnerer score i range 0-100", () => {
+    // Ekstremt dårlig
+    const bad = predictSessionHealth({
+      consecutiveLosses: 100,
+      currentCapital: 0,
+      startingCapital: 100000,
+      tradesLast24h: 1000,
+      recentPnLs: [-10000],
+    });
+    expect(bad.score).toBe(0);
+    expect(bad.status).toBe("critical");
+
+    // Perfekt
+    const good = predictSessionHealth({
+      consecutiveLosses: 0,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 1,
+      recentPnLs: [100],
+    });
+    expect(good.score).toBe(100);
+    expect(good.status).toBe("healthy");
+  });
+
+  it("håndterer tom recentPnLs liste", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 0,
+      currentCapital: 100000,
+      startingCapital: 100000,
+      tradesLast24h: 5,
+      recentPnLs: [],
+    });
+    expect(result.status).toBe("healthy");
+    expect(result.details.recentPnLPenalty).toBe(0);
+  });
+
+  it("eksponerer detaljer per faktor", () => {
+    const result = predictSessionHealth({
+      consecutiveLosses: 3,
+      currentCapital: 80000,
+      startingCapital: 100000,
+      tradesLast24h: 25,
+      recentPnLs: [-500, -300, -200],
+      secondsSinceLastHeartbeat: 400,
+    });
+    expect(result.details).toHaveProperty("lossStreakPenalty");
+    expect(result.details).toHaveProperty("drawdownPenalty");
+    expect(result.details).toHaveProperty("frequencyPenalty");
+    expect(result.details).toHaveProperty("recentPnLPenalty");
+    expect(result.details).toHaveProperty("heartbeatPenalty");
   });
 });

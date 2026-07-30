@@ -36,12 +36,15 @@ function getClientIp(request: NextRequest): string {
     ?? "unknown";
 }
 
-export const rateLimitMiddleware: MiddlewareFn = (request: NextRequest) => {
+export const rateLimitMiddleware: MiddlewareFn = (
+  request: NextRequest,
+  _response?: NextResponse,
+) => {
   const pathname = request.nextUrl.pathname;
   
   // Find matching rate limit
   const matchedPath = Object.keys(RATE_LIMITS).find((p) => pathname.startsWith(p));
-  if (!matchedPath) return NextResponse.next();
+  if (!matchedPath) return _response ?? NextResponse.next();
 
   const limit = RATE_LIMITS[matchedPath];
   const ip = getClientIp(request);

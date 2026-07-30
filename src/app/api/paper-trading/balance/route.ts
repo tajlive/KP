@@ -48,6 +48,53 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Hent åpen posisjon direkte fra session
+    const raw = session as unknown as Record<string, unknown>;
+    const openPos = (raw.open_position ?? null) as {
+      side?: "long" | "short";
+      quantity?: number;
+      entry_price?: number;
+      highest_price?: number;
+    } | null;
+
+    const positions: Array<{
+      symbol: string;
+      position_type: string;
+      quantity: number;
+      entry_price: number;
+      current_price?: number;
+      profit_loss?: number;
+      is_bot?: boolean;
+    }> = [];
+
+    if (openPos && (openPos.quantity ?? 0) > 0) {
+      // Hent nåværende pris fra coin_prices
+      // Bruk fullt symbol (BTCUSDT) — ikon strip USDT, da coin_prices har USDT-suffiks.
+      const lookupSymbol = session.trading_pair?.includes("USDT")
+        ? session.trading_pair
+        : `${session.trading_pair ?? "BTC"}USDT`;
+      const { data: priceData } = await supabase
+        .from("coin_prices")
+        .select("symbol, price")
+        .eq("symbol", lookupSymbol)
+        .maybeSingle();
+
+      const currentPrice = priceData?.price ? Number(priceData.price) : Number(openPos.entry_price ?? 0);
+      const entryPrice = Number(openPos.entry_price ?? 0);
+      const qty = Number(openPos.quantity ?? 0);
+      const pnl = qty > 0 && entryPrice > 0 ? (currentPrice - entryPrice) * qty : undefined;
+
+      positions.push({
+        symbol: session.trading_pair ?? "BTC",
+        position_type: openPos.side === "short" ? "short" : "long",
+        quantity: qty,
+        entry_price: entryPrice,
+        current_price: currentPrice,
+        profit_loss: pnl,
+        is_bot: true,
+      });
+    }
+
     const { data: recentTrades, error: tradesError } = await supabase
       .from("trades")
       .select("id, trading_pair, side, quantity, price, total_value, fee, status, created_at, strategy_signal")
@@ -69,6 +116,7 @@ export async function GET(request: NextRequest) {
         current: session.current_capital_nok ?? 0,
         starting: session.starting_capital_nok ?? 100000,
       },
+      positions,
       recentTrades: (recentTrades ?? []).map((t) => ({
         id: t.id,
         symbol: t.trading_pair,

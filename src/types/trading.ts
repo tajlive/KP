@@ -214,6 +214,10 @@ export interface Trade {
   closed_at?: string;
   executed_at: string;
   created_at: string;
+
+  // 🎭 JokerTrade
+  joker_trade?: boolean;
+  joker_explanation?: string | null;
 }
 
 /**

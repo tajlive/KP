@@ -24,7 +24,7 @@ import type {
 import { createBinanceMarketDataProvider } from "./canonical/market-data";
 import { computeFill } from "./canonical/execution/fill-model";
 import { FILL_CONSTANTS } from "./canonical/execution/fill-constants";
-import { getUsdtToNokRateAsync, usdtToNok } from "./currency";
+import { getUsdtToNokRateAsync, getUsdtToNokRate, usdtToNok } from "./currency";
 
 const marketDataProvider = createBinanceMarketDataProvider();
 
@@ -144,9 +144,11 @@ export class PaperExecutor implements OrderExecutor {
     }
 
     // Calculate locked capital (position value in NOK)
+    // FIKS (2026-07-30): paper open_position.entry_price er lagret i NOK
+    // (DB-trigger kopierer trades.price=NOK). usdtToNok() her ga ~9,6×
+    // dobbelkonvertering av låst kapital.
     const position = session.open_position as OpenPosition | null;
-    const lockedUsdt = position ? position.quantity * position.entry_price : 0;
-    const lockedNok = usdtToNok(lockedUsdt);
+    const lockedNok = position ? position.quantity * position.entry_price : 0;
 
     const cap = session.current_capital_nok ?? 0;
     return {
@@ -195,9 +197,13 @@ export class PaperExecutor implements OrderExecutor {
     const position = session.open_position as unknown as OpenPosition;
 
     // Calculate unrealized P&L
-    const currentPrice = await this.getMarketPrice(symbol);
+    // FIKS (2026-07-30): entry_price er NOK (paper), getMarketPrice er USDT —
+    // konverter markedspris til NOK før sammenligning, ellers vises alle
+    // posisjoner som ~90 % tap.
+    const currentPriceUsdt = await this.getMarketPrice(symbol);
+    const currentPriceNok = currentPriceUsdt * getUsdtToNokRate();
     const entryValue = position.quantity * position.entry_price;
-    const currentValue = position.quantity * currentPrice;
+    const currentValue = position.quantity * currentPriceNok;
     const unrealizedPnL = currentValue - entryValue;
     const unrealizedPnLPct = entryValue > 0 ? (unrealizedPnL / entryValue) * 100 : 0;
 
