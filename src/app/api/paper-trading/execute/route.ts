@@ -2,6 +2,8 @@
  * Paper trading execute.
  * Accepts either { pair, side, amount_nok } or { symbol, side, quantity, price }.
  * Used by paper-trading UI (hub, session detail), FirstTradeCard, and PaperTradeButton.
+ *
+ * Rate-limited: max 10 requests per second per user (in-memory sliding window).
  */
 
 import { executeTrade } from "@/lib/trading/safety";
@@ -9,9 +11,65 @@ import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-ex
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 import { rejectIfImpersonating } from "@/lib/admin/impersonation-guard";
 import { createServerClient } from "@/lib/supabase/server";
-import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
+import { fetchPriceViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
+import { syncPaperAccountBalance } from "@/lib/trading/core/paper-account-sync";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
+// ── In-memory sliding-window rate limiter ──────────────────────
+// Max 10 requests per second per user ID.
+// Shared across all requests hitting this process (per-instance).
+// På serverless (Vercel/Cloudflare) gjelder limiteren per isolat — ikke per global bruker.
+const WINDOW_MS = 1000;
+const MAX_RPS = 10;
+
+interface RateBucket {
+  timestamps: number[];
+}
+
+const rateBuckets = new Map<string, RateBucket>();
+
+// Periodisk cleanup for å unngå minnelekkasje (kjører hvert 60. sekund)
+let cleanupTimer: ReturnType<typeof setInterval> | null = null;
+function ensureCleanup() {
+  if (cleanupTimer) return;
+  cleanupTimer = setInterval(() => {
+    const cutoff = Date.now() - WINDOW_MS * 2; // behold 2 vinduer
+    for (const [key, bucket] of rateBuckets) {
+      bucket.timestamps = bucket.timestamps.filter((t) => t > cutoff);
+      if (bucket.timestamps.length === 0) {
+        rateBuckets.delete(key);
+      }
+    }
+    // Stopp timeren hvis helt tomt
+    if (rateBuckets.size === 0 && cleanupTimer) {
+      clearInterval(cleanupTimer);
+      cleanupTimer = null;
+    }
+  }, 60_000);
+}
+
+function checkRateLimit(userId: string): { allowed: boolean; retryAfterMs: number } {
+  const now = Date.now();
+  let bucket = rateBuckets.get(userId);
+  if (!bucket) {
+    bucket = { timestamps: [] };
+    rateBuckets.set(userId, bucket);
+    ensureCleanup();
+  }
+
+  // Fjern foreldede timestamps
+  bucket.timestamps = bucket.timestamps.filter((t) => now - t < WINDOW_MS);
+
+  if (bucket.timestamps.length >= MAX_RPS) {
+    const oldest = bucket.timestamps[0];
+    const retryAfterMs = WINDOW_MS - (now - oldest);
+    return { allowed: false, retryAfterMs: Math.max(1, retryAfterMs) };
+  }
+
+  bucket.timestamps.push(now);
+  return { allowed: true, retryAfterMs: 0 };
+}
 
 const optionalPaperSession = z.object({
   session_id: z.string().uuid().optional(),
@@ -46,6 +104,25 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // ── Rate-limit: maks 10 req/s per bruker ─────────────────
+    const { allowed, retryAfterMs } = checkRateLimit(user.id);
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error: "For mange forespørsler. Vent før du prøver igjen.",
+          retryAfterMs,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil(retryAfterMs / 1000)),
+            "X-RateLimit-Limit": String(MAX_RPS),
+            "X-RateLimit-Remaining": "0",
+          },
+        },
+      );
     }
 
     const impersonation = await rejectIfImpersonating(request);
@@ -88,10 +165,10 @@ export async function POST(request: NextRequest) {
 
       let fetchedPrice: number;
       try {
-        const provider = createBinanceMarketDataProvider();
-        fetchedPrice = await provider.getPrice(symbol);
-      } catch (priceErr) {
-        console.error(`[paper-trading/execute] Failed to fetch price for ${symbol}:`, priceErr);
+        // Proxy via Supabase Edge Function — avoids Binance geo-block on Workers IPs
+        fetchedPrice = await fetchPriceViaProxy(symbol);
+      } catch (proxyErr) {
+        console.warn(`[paper-trading/execute] Binance proxy failed for ${symbol}:`, proxyErr);
         // Fallback: DB-priser (cachet av cron-jobb)
         try {
           const { data: dbPrice } = await supabase
@@ -103,13 +180,13 @@ export async function POST(request: NextRequest) {
             fetchedPrice = Number(dbPrice.price);
           } else {
             return NextResponse.json(
-              { error: "Kunne ikke hente pris for " + symbol + " — prøv igjen om litt" },
+              { error: `Kunne ikke hente pris for ${symbol} — prøv igjen om litt` },
               { status: 502 },
             );
           }
         } catch {
           return NextResponse.json(
-            { error: "Kunne ikke hente pris for " + symbol + " — prøv igjen om litt" },
+            { error: `Kunne ikke hente pris for ${symbol} — prøv igjen om litt` },
             { status: 502 },
           );
         }
@@ -171,6 +248,11 @@ export async function POST(request: NextRequest) {
         { status: 200 },
       );
     }
+
+    // Synkroniser paper_accounts etter vellykket trade
+    syncPaperAccountBalance(supabase, user.id).catch(() => {
+      // Fire-and-forget — ikke la sync-feil blokkere trade-responsen
+    });
 
     const successPayload = {
       success: true as const,

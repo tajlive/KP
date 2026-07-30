@@ -15,6 +15,11 @@ import type { ExecuteTradeRequest } from "@/types/trading";
 import { getNokUsdtRate } from "@/lib/trading/canonical/exchange-rate";
 import { calculateRSI as calcRSI, calculateMACD, calculateSMA, calculateBollingerBands } from "@/lib/trading/indicators";
 import { generateJokerSignal, type MarketData } from "./signal";
+import {
+  fetchPriceViaProxy,
+  fetchKlinesViaProxy,
+  fetch24hChangeViaProxy,
+} from "@/lib/trading/canonical/market-data/binance-proxy-provider";
 
 // ---------------------------------------------------------------------------
 // Konstanter
@@ -56,20 +61,17 @@ async function fetchMarketData(symbol: string): Promise<{
   trend: "up" | "down" | "flat";
 }> {
   try {
-    // Hent sanntidspris fra Binance proxy
-    const res = await fetch(
-      `https://pskhryjzkobytnfwucrb.supabase.co/functions/v1/binance-proxy?symbol=${symbol}`,
-      { signal: AbortSignal.timeout(8000) },
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json() as {
-      price?: string;
-      klines?: Array<{ close: string }>;
-      changePercent?: string;
-    };
-
-    const currentPrice = parseFloat(data.price ?? "0");
-    const prices = (data.klines ?? []).map((k: { close: string }) => parseFloat(k.close)).filter((p: number) => p > 0);
+    // Hent sanntidsdata via kanonisk proxy-provider (korrekt auth-headers).
+    // Tidligere gikk dette mot GET ?symbol= uten secret → alltid 401 →
+    // fallback (RSI 50 / flat) → evig WAIT og null handler.
+    const [currentPrice, klines, change24h] = await Promise.all([
+      fetchPriceViaProxy(symbol),
+      fetchKlinesViaProxy(symbol, "1h", 60) as Promise<unknown[][]>,
+      fetch24hChangeViaProxy(symbol),
+    ]);
+    const prices = (klines ?? [])
+      .map((k) => parseFloat(String((k as unknown[])[4]))) // close-pris
+      .filter((p) => Number.isFinite(p) && p > 0);
     const rsiArr = prices.length > 14 ? calcRSI(prices, 14) : null; const rsi = rsiArr ? (rsiArr[rsiArr.length-1] ?? 50) : 50;
 
     // MACD
@@ -99,7 +101,6 @@ async function fetchMarketData(symbol: string): Promise<{
     const variance = recentPrices.reduce((s: number, p: number) => s + (p - mean) ** 2, 0) / recentPrices.length;
     const volatility = Math.min((Math.sqrt(variance) / mean) * 100 * Math.sqrt(365), 200); // annualisert, maks 200%
 
-    const change24h = parseFloat(data.changePercent ?? "0");
     const trend: "up" | "down" | "flat" = change24h > 2 ? "up" : change24h < -2 ? "down" : "flat";
 
     return { currentPrice, rsi, macd, bollinger, sma10, sma30, volatility, trend };
@@ -255,39 +256,66 @@ async function checkExits(
 
   if (!positions) return 0;
 
-  for (const pos of positions) {
-    const currentPrice = priceCache.get(pos.trading_pair);
-    if (!currentPrice || currentPrice <= 0) continue;
+  // FIKS (2026-07-30): trades.price er i NOK for paper, priceCache var USDT
+  // → pnlPct viste alltid ~±89 % (NOK/USDT-ratio) → gale exits. Konverter
+  // nåddpris til NOK. Hent også priser for ALLE åpne symboler, ikke bare
+  // den tilfeldige symbolet denne kjøringen valgte.
+  const nokPerUsdt = await getNokUsdtRate();
+  const missingSymbols = [...new Set(positions.map((p) => p.trading_pair))]
+    .filter((s) => !priceCache.has(s));
+  await Promise.all(
+    missingSymbols.map(async (s) => {
+      try {
+        priceCache.set(s, await fetchPriceViaProxy(s));
+      } catch { /* prøver igjen neste kjøring */ }
+    }),
+  );
 
+  for (const pos of positions) {
+    const currentPriceUsdt = priceCache.get(pos.trading_pair);
+    if (!currentPriceUsdt || currentPriceUsdt <= 0) continue;
+
+    const currentPrice = currentPriceUsdt * nokPerUsdt; // NOK, samme enhet som entry
     const entry = Number(pos.price);
     const pnlPct = pos.side === "buy"
       ? ((currentPrice - entry) / entry) * 100
       : ((entry - currentPrice) / entry) * 100;
 
-    if (pnlPct >= takeProfitPct) {
-      try {
-        const result = await executeTrade(db, {
-          userId,
-          sessionId,
-          symbol: pos.trading_pair,
-          side: "sell",
-          quantity: Number(pos.quantity),
-          price: currentPrice,
-          orderType: "market",
-          mode: "paper",
-          signalContext: { action: "sell", confidence: 100, strategy: "cryptopilot", reason: `Take profit: +${pnlPct.toFixed(1)}%` },
-          reasonCode: "TAKE_PROFIT_SELL",
-          reasonParams: { pnlPct: Math.round(pnlPct * 100) / 100 },
-        });
-        if (result.success && result.tradeId) {
-          exits++;
-          await db.from("trades").update({
-            joker_trade: true,
-            joker_explanation: `🎭 Auto-exit: +${pnlPct.toFixed(1)}% profit`,
-          }).eq("id", result.tradeId);
-        }
-      } catch { /* neste */ }
-    }
+    const isTakeProfit = pnlPct >= takeProfitPct;
+    const isStopLoss = pnlPct <= -stopLossPct;
+    if (!isTakeProfit && !isStopLoss) continue;
+
+    try {
+      const result = await executeTrade(db, {
+        userId,
+        sessionId,
+        symbol: pos.trading_pair,
+        side: "sell",
+        quantity: Number(pos.quantity),
+        price: currentPriceUsdt, // executeTrade forventer USDT — konverterer selv til NOK
+        orderType: "market",
+        mode: "paper",
+        signalContext: {
+          action: "sell",
+          confidence: 100,
+          strategy: "cryptopilot",
+          reason: isTakeProfit
+            ? `Take profit: +${pnlPct.toFixed(1)}%`
+            : `Stop-loss: ${pnlPct.toFixed(1)}%`,
+        },
+        reasonCode: isTakeProfit ? "TAKE_PROFIT_SELL" : "STOP_LOSS_SELL",
+        reasonParams: { pnlPct: Math.round(pnlPct * 100) / 100 },
+      });
+      if (result.success && result.tradeId) {
+        exits++;
+        await db.from("trades").update({
+          joker_trade: true,
+          joker_explanation: isTakeProfit
+            ? `🎭 Auto-exit: +${pnlPct.toFixed(1)}% profitt`
+            : `🎭 Stop-loss: ${pnlPct.toFixed(1)}% — begrenser tapet`,
+        }).eq("id", result.tradeId);
+      }
+    } catch { /* neste */ }
   }
   return exits;
 }

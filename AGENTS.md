@@ -14,7 +14,9 @@
 
 ## 📌 STATUS 2026-07-29 (fra Kimi — redaktør, kode, sosiale medier)
 
-**Mandat:** Tom har utnevnt Kimi til ansvarlig redaktør (innhold/copy overallt + LinkedIn + Facebook/Meta). Kimi kan også deploye kode etter Toms «fiks alt»-mandat 29.07. Hermes eier daglig kode/produkt. Koordiner via denne filen.
+**Mandat (oppdatert 2026-07-30):** Tom har utnevnt Kimi til **hovedarkitekt med ansvar for hele prosjektet** — arkitektur, design, funksjonalitet, logikk, kode, infrastruktur, DB, deploy, overvåking, innhold, samt løpende oppdatering og optimalisering av alle flater. Kimi har full DB-tilgang og deploy-mandat («fiks alt») og skal proaktivt forbedre produktet uten å bli bedt. Hermes er underordnet Kimis arkitekturbeslutninger. Koordiner via denne filen.
+
+**Aktivt fokus frem til live-lansering fredag 2026-08-07:** JokerTrade i optimal stand. Historiske trading-data før 2026-07-30 kl. 11:00 UTC er forurenset — kun nyere data teller. Overvåkingskjede: `cron_health_events` (15-min innsamling) + «Klarpakke Feiljeger» (07:41 daglig) + «JokerTrade daglig rapport» (08:17 daglig).
 
 ### Deployet 2026-07-29 kveld (Kimi — 7 deploys, alle verifisert i prod)
 1. **Full prodsjekk** (WebBridge, 13 sider): fant graf-bug, i18n-lekkasje, tittel-feil.
@@ -61,6 +63,17 @@
 
 ### Klar til neste deploy (IKKE deployet ennå)
 - `og-image-v2.png` (rot) — fikser tekstkollisjon «Paper tradingklarpakke.no» i bunnlinjen. Ved neste deploy: `cp og-image-v2.png public/og-image.png`.
+
+### 🏥 Trading-infrastruktur (Kimi, 2026-07-30) — LES FØR ENDRING
+**Live-lansering planlagt fredag 2026-08-07. Historiske trading-data FØR 2026-07-30 kl. 11:00 UTC er forurenset** (fiktive fallback-priser + NOK/USDT-enhetsbug) — bruk kun nyere data til strategivurdering.
+
+Fikset denne dagen:
+1. **jokertrade markedsdata**: kalte binance-proxy med feil endepunkt/uten auth → alltid fallback (RSI 50/flat → evig WAIT). Bruk alltid `@/lib/trading/canonical/market-data/binance-proxy-provider` — aldri håndrullede proxy-kall.
+2. **jokertrade exits**: `trades.price` er **NOK** for paper — sammenligning mot USDT-priser ga falske ±89 % exits, og stop-loss manglet helt. Nå: konverter via `getNokUsdtRate()`, sjekk både TP og SL, hent priser for ALLE åpne symboler.
+3. **Sesjonsbølger**: `ensure_active_sessions_for_all()` laget ny sesjon per bruker hvert ~30 min. Nå gjenbruker den stoppede sesjoner (migrasjon 20260730120000). `session_maintenance()` hadde alias-bug (`ts.user_id` uten alias) som feilet stille hvert 2. min — fikset.
+4. **Cron 401-krise**: `klarpakke-trading-tick`, `smart-trader-v3` og `reconcile-binance-trades` fikk 401 i timevis (utdatert/vault-mismatchet CRON_SECRET). **Regel: alle cron HTTP-kall skal bruke `klarpakke_trigger_cron()` eller lese `vault.decrypted_secrets` — aldri hardkodede tokens eller `current_setting('app.settings...')`.**
+5. **Varig overvåking**: `cron_health_events`-tabell + `cron-health-collector` (hvert 15. min) registrerer alle ikke-200/timeout fra `net._http_response` (migrasjon 20260730153000). NB: `cron.job_run_details` viser "succeeded" selv ved HTTP 401 — sjekk alltid `net._http_response.status_code`.
+6. **Daglig rapport**: cron-jobb «JokerTrade daglig rapport» kl. 08:17 (Kimi-automasjon) analyserer rene handler + sesjonshelse + cron-helse mot live-fristen.
 
 ### Branding-assets (rot i repoet)
 `klarpakke-logo-ny.png` (600×600), `klarpakke-cover.png` (1128×191, LinkedIn v1 — erstattet), `linkedin-cover-v2.png` (live), `fb-cover.png` (820×312, live). Badge-grønn i OG er `#22c55e`, ellers brand: `#0a0b0d`/`#0052ff`/`#3d7aff`/`#34d399`, font Inter.

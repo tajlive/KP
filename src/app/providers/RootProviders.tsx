@@ -12,6 +12,7 @@ import { FeatureFlagProvider } from "@/lib/feature-flags";
 import type { FeatureFlags } from "@/lib/flags";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { LazyMotion } from "framer-motion";
+import AccessibilityProvider from "@/features/accessibility/AccessibilityProvider";
 
 const loadFeatures = () =>
   import("framer-motion").then((res) => res.domAnimation);
@@ -67,7 +68,9 @@ export function RootProviders({
                   <CdsProvider>
                     <AuthProvider>
                       <AuthHashHandler />
-                      {marketingShell}
+                      <AccessibilityProvider>
+                        {marketingShell}
+                      </AccessibilityProvider>
                     </AuthProvider>
                   </CdsProvider>
                 )}

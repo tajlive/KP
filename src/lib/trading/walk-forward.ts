@@ -166,36 +166,9 @@ export function runWalkForward(
       continue;
     }
 
-    // Run backtest on both segments
-    const isResult = runBacktest(isCandles, strategyConfig, initialCapitalUSD);
-    const oosResult = runBacktest(oosCandles, strategyConfig, initialCapitalUSD);
-
-    const isMetrics = extractMetrics(isResult.metrics);
-    const oosMetrics = extractMetrics(oosResult.metrics);
-
-    // Calculate window efficiency
-    const efficiency = isMetrics.totalReturnPct !== 0
-      ? oosMetrics.totalReturnPct / isMetrics.totalReturnPct
-      : 0;
-
-    windows.push({
-      index: w,
-      inSample: {
-        startDate: new Date(isCandles[0].timestamp).toISOString(),
-        endDate: new Date(isCandles[isCandles.length - 1].timestamp).toISOString(),
-        candles: isCandles.length,
-        metrics: isMetrics,
-        trades: isResult.trades.length,
-      },
-      outOfSample: {
-        startDate: new Date(oosCandles[0].timestamp).toISOString(),
-        endDate: new Date(oosCandles[oosCandles.length - 1].timestamp).toISOString(),
-        candles: oosCandles.length,
-        metrics: oosMetrics,
-        trades: oosResult.trades.length,
-      },
-      efficiency,
-    });
+    // Run backtest on both segments and build window
+    const wfWindow = buildWindow(w, isCandles, oosCandles, strategyConfig, initialCapitalUSD);
+    windows.push(wfWindow);
   }
 
   if (windows.length === 0) {
@@ -253,34 +226,9 @@ export function runAnchoredWalkForward(
 
     if (oosCandles.length < 5) continue;
 
-    const isResult = runBacktest(isCandles, strategyConfig, initialCapitalUSD);
-    const oosResult = runBacktest(oosCandles, strategyConfig, initialCapitalUSD);
-
-    const isMetrics = extractMetrics(isResult.metrics);
-    const oosMetrics = extractMetrics(oosResult.metrics);
-
-    const efficiency = isMetrics.totalReturnPct !== 0
-      ? oosMetrics.totalReturnPct / isMetrics.totalReturnPct
-      : 0;
-
-    windows.push({
-      index: w,
-      inSample: {
-        startDate: new Date(isCandles[0].timestamp).toISOString(),
-        endDate: new Date(isCandles[isCandles.length - 1].timestamp).toISOString(),
-        candles: isCandles.length,
-        metrics: isMetrics,
-        trades: isResult.trades.length,
-      },
-      outOfSample: {
-        startDate: new Date(oosCandles[0].timestamp).toISOString(),
-        endDate: new Date(oosCandles[oosCandles.length - 1].timestamp).toISOString(),
-        candles: oosCandles.length,
-        metrics: oosMetrics,
-        trades: oosResult.trades.length,
-      },
-      efficiency,
-    });
+    // Run backtest on both segments and build window
+    const wfWindow = buildWindow(w, isCandles, oosCandles, strategyConfig, initialCapitalUSD);
+    windows.push(wfWindow);
   }
 
   if (windows.length === 0) {
@@ -302,6 +250,45 @@ function extractMetrics(m: BacktestMetrics): WalkForwardMetrics {
     winRate: m.winRate,
     profitFactor: m.profitFactor === Infinity ? 999 : m.profitFactor,
     totalTrades: m.totalTrades,
+  };
+}
+
+/** Shared helper to run backtest on IS/OOS segments and build a WalkForwardWindow.
+ * Eliminates 33-line duplication between runWalkForward and runAnchoredWalkForward. */
+function buildWindow(
+  w: number,
+  isCandles: OHLCV[],
+  oosCandles: OHLCV[],
+  strategyConfig: StrategyConfig,
+  initialCapitalUSD: number,
+): WalkForwardWindow {
+  const isResult = runBacktest(isCandles, strategyConfig, initialCapitalUSD);
+  const oosResult = runBacktest(oosCandles, strategyConfig, initialCapitalUSD);
+
+  const isMetrics = extractMetrics(isResult.metrics);
+  const oosMetrics = extractMetrics(oosResult.metrics);
+
+  const efficiency = isMetrics.totalReturnPct !== 0
+    ? oosMetrics.totalReturnPct / isMetrics.totalReturnPct
+    : 0;
+
+  return {
+    index: w,
+    inSample: {
+      startDate: new Date(isCandles[0].timestamp).toISOString(),
+      endDate: new Date(isCandles[isCandles.length - 1].timestamp).toISOString(),
+      candles: isCandles.length,
+      metrics: isMetrics,
+      trades: isResult.trades.length,
+    },
+    outOfSample: {
+      startDate: new Date(oosCandles[0].timestamp).toISOString(),
+      endDate: new Date(oosCandles[oosCandles.length - 1].timestamp).toISOString(),
+      candles: oosCandles.length,
+      metrics: oosMetrics,
+      trades: oosResult.trades.length,
+    },
+    efficiency,
   };
 }
 

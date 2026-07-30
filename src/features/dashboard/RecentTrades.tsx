@@ -29,11 +29,16 @@ export function RecentTrades({ trades }: RecentTradesProps) {
           const pnl = typeof s.realized_pnl === "number" ? s.realized_pnl : null;
           return (
             <div key={s.id} className="flex items-center justify-between py-1.5 border-b border-[#1E2530]/50 last:border-0">
-              <div className="flex items-center gap-2">
-                <span className={`text-xs font-bold ${s.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className={`text-xs font-bold shrink-0 ${s.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>
                   {s.side?.toUpperCase() ?? "—"}
                 </span>
-                <span className="text-sm text-white">{s.trading_pair}</span>
+                <div className="min-w-0">
+                  <span className="text-sm text-white">{s.trading_pair}</span>
+                  {s.joker_explanation && (
+                    <p className="text-[10px] text-slate-400 truncate mt-0.5 leading-tight">{s.joker_explanation}</p>
+                  )}
+                </div>
               </div>
               <div className="text-right">
                 <span className={`text-sm font-mono ${pnl !== null && pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>

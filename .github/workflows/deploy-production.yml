@@ -11,7 +11,70 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  build-and-test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - name: Build
+        run: npm run cf:build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SKIP_LINT_IN_BUILD: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Lint gate
+        run: npm run lint:gate
+        continue-on-error: true
+
+  deploy-staging:
+    needs: build-and-test
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    environment: staging
+    concurrency:
+      group: staging-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - name: Deploy to staging
+        run: npx wrangler deploy --minify --env staging --var APP_VERSION:staging-${{ github.sha }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+  smoke-test-staging:
+    needs: deploy-staging
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Smoke test staging
+        run: |
+          echo "🔍 Starter smoke test mot staging..."
+          for i in 1 2 3; do
+            STATUS=$(curl -s -m 10 "https://staging.klarpakke.no/api/health" | jq -r '.status')
+            if [ "$STATUS" = "healthy" ]; then
+              echo "✅ Staging healthy — smoke test PASS"
+              exit 0
+            fi
+            echo "⏳ Venter på staging... (forsøk $i/3)"
+            sleep 10
+          done
+          echo "❌ Staging ikke healthy etter 3 forsøk — avbryter production deploy"
+          exit 1
+
   deploy:
+    needs: smoke-test-staging
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:

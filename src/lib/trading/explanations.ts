@@ -49,6 +49,8 @@ export interface TradeForExplanation {
   quantity?: number;
   total_value?: number;
   fee?: number;
+  /** 🎭 JokerTrade: forklaring på hvorfor handelen skjedde */
+  joker_explanation?: string | null;
 }
 
 // Mapping fra strategi-nøkkel til kursleksjon
@@ -373,4 +375,49 @@ export function getPaperModeNotice(locale: Locale = "no"): string {
   return locale === "en" 
     ? "This is a simulated trade (paper trading). No real money was used."
     : "Dette er en simulert handel (lekepenger). Ingen ekte penger er brukt.";
+}
+
+/**
+ * Returnerer en kompakt inline-forklaring for en trade-rad.
+ * For kjøp: viser RSI/SMA/konfidens fra strategy_signal.
+ * For salg: viser exit-årsak (Stoploss/Tok gevinst/Manuell) + PnL.
+ *
+ * Eksempler:
+ *   Kjøp:  "RSI: 28 (underkjøpt), Konfidens: 82%"
+ *   Salg:  "Stoploss · -274 kr"
+ *          "Tok gevinst · +1 500 kr"
+ */
+export function getTradeInlineExplanation(
+  trade: Pick<TradeForExplanation, 'side' | 'strategy_signal' | 'realized_pnl' | 'exit_reason' | 'price' | 'quantity' | 'total_value' | 'fee' | 'joker_explanation'>,
+  locale: Locale = "no"
+): string {
+  // 🎭 JokerTrade: vis selve forklaringen fra AI-ensemblet
+  if (trade.joker_explanation) {
+    return trade.joker_explanation;
+  }
+
+  if (trade.side === "buy") {
+    // Kjøp: bruk indikator-kontekst (RSI, SMA, konfidens)
+    const ctx = getIndicatorContext(trade.strategy_signal, locale);
+    if (ctx) {
+      // Fjern wrapper-parentes " (...)" → "RSI: 28 (underkjøpt), Konfidens: 82%"
+      return ctx.replace(/^\s*\(/, "").replace(/\)$/, "");
+    }
+    return "";
+  }
+
+  // Salg: exit-årsak + PnL i kompakt format
+  const exitReason = getExitReason(trade as TradeForExplanation);
+  const pnl = trade.realized_pnl;
+  const pnlStr = pnl !== null && pnl !== undefined ? ` \u00b7 ${formatNOK(pnl, locale)}` : "";
+
+  const reasonLabels: Record<string, string> = {
+    stoploss: "Stoploss",
+    take_profit: "Tok gevinst",
+    manual: "Manuell",
+    signal_reverse: "Signal snudd",
+  };
+
+  const label = reasonLabels[exitReason] || "Salg";
+  return `${label}${pnlStr}`;
 }

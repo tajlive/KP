@@ -122,6 +122,24 @@ async function executeTradeWithLock(
           };
         }
 
+        // Sjekk om det allerede finnes en paper-sesjon — unngå duplikater
+        const { data: existingCheck } = await supabase
+          .from("trading_sessions")
+          .select("id")
+          .eq("user_id", request.userId)
+          .eq("mode", "paper")
+          .in("status", ["active", "paused"])
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (existingCheck?.id) {
+          return executeTradeWithLock(supabase, {
+            ...request,
+            sessionId: existingCheck.id,
+          });
+        }
+
         // Auto-create default paper session.
         // status='paused': cron-ticken henter kun 'active', så boten handler
         // IKKE før brukeren selv skrur på auto-handel. Manuelle handler
@@ -637,6 +655,8 @@ async function executeTradeWithLock(
           reason_code: request.reasonCode ?? null,
           reason_params: (request.reasonParams ?? null) as Json,
           indicator_snapshot: (request.indicatorSnapshot ?? null) as Json,
+          is_copy: false,
+          is_mock: false, // CHECK constraint: is_mock IS NOT TRUE
         };
 
         const { data: trade, error: tradeError } = await supabase
@@ -661,7 +681,7 @@ async function executeTradeWithLock(
           }
           return {
             success: false,
-            error: "Failed to record trade",
+            error: `Failed to record trade: ${tradeError.message || tradeError.code || JSON.stringify(tradeError)}`,
           };
         }
 

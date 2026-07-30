@@ -92,14 +92,28 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
  * 1. PRIMARY: PostgreSQL RPC `get_dashboard_metrics` — single query, O(1) network.
  * 2. FALLBACK: TypeScript aggregation if RPC is unavailable (e.g. local dev without migration).
  */
-/** Kontobalanse: paper_accounts.current_balance — DOKUMENTERT source of truth (AGENTS.md). */
+/** Kontobalanse: sessions.current_capital_nok (mer pålitelig enn paper_accounts som kan være stale). */
 async function getAccountBalance(
   supabaseClient: SupabaseClient<Database>,
   userId: string,
 ): Promise<number | null> {
+  // Primær: summer aktiv kapital fra alle aktive/pausede paper-sesjoner
+  const { data: sessions, error: sessionError } = await supabaseClient
+    .from("trading_sessions")
+    .select("current_capital_nok, status")
+    .eq("user_id", userId)
+    .eq("mode", "paper")
+    .in("status", ["active"]);
+
+  if (!sessionError && sessions && sessions.length > 0) {
+    const total = sessions.reduce((sum, s) => sum + Number(s.current_capital_nok ?? 0), 0);
+    if (Number.isFinite(total) && total > 0) return total;
+  }
+
+  // Fallback: paper_accounts (kan være stale hvis sync ikke har kjørt)
   const { data, error } = await supabaseClient
     .from("paper_accounts")
-    .select("current_balance, initial_balance")
+    .select("current_balance")
     .eq("user_id", userId)
     .maybeSingle();
 

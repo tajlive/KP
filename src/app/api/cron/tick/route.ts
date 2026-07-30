@@ -852,10 +852,16 @@ async function processSession(
       }
     }
 
+    // FIKS (2026-07-30): tradeAmount er NOK for paper (current_capital er
+    // NOK-denominert), men executedPrice er USDT fra candles. Uten
+    // rate-konvertering ble kvantum ~9,6× for stort → balanse-debet ×rate
+    // → milliard-inflasjon på paper-kontoer (prod-bevis: 5,7 mrd NOK).
+    // Live-sesjoner har USDT-kapital og skal IKKE konverteres.
     const tradeAmount = session.current_capital * positionSize;
 
-    // Minimum order value ($10) — same for paper and live
-    if (tradeAmount < 10) {
+    // Minimum order value — 10 USD ≈ 100 NOK (var kommentert $10 men
+    // sammenlignet NOK → reell terskel ~1 USD)
+    if (tradeAmount < 100) {
       return { session_id: session.id, action: "hold" };
     }
 
@@ -866,7 +872,11 @@ async function processSession(
         ? mul(currentPrice, 1 + slippage)
         : mul(currentPrice, 1 - slippage);
 
-    let quantity = div(tradeAmount, executedPrice);
+    const tradeAmountUsdt =
+      session.mode === "paper"
+        ? div(tradeAmount, getUsdtToNokRate())
+        : tradeAmount;
+    let quantity = div(tradeAmountUsdt, executedPrice);
 
     if (quantity <= 0) {
       return { session_id: session.id, action: "hold" };

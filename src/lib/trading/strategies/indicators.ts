@@ -119,9 +119,19 @@ export function macd(
   };
 }
 
+/** Compute True Range for a single bar (used by ATR and ADX).
+ *  Eliminates 7-line tr1/tr2/tr3 duplication across indicator functions. */
+function computeTrueRange(high: number, low: number, prevClose: number): number {
+  const tr1 = high - low;
+  const tr2 = Math.abs(high - prevClose);
+  const tr3 = Math.abs(low - prevClose);
+  return Math.max(tr1, tr2, tr3);
+}
+
 /**
  * Average True Range — volatility measure
  */
+
 export function atr(
   highs: number[],
   lows: number[],
@@ -130,10 +140,7 @@ export function atr(
 ): number {
   const trs: number[] = [];
   for (let i = 1; i < closes.length; i++) {
-    const tr1 = highs[i] - lows[i];
-    const tr2 = Math.abs(highs[i] - closes[i - 1]);
-    const tr3 = Math.abs(lows[i] - closes[i - 1]);
-    trs.push(Math.max(tr1, tr2, tr3));
+    trs.push(computeTrueRange(highs[i], lows[i], closes[i - 1]));
   }
 
   if (trs.length < period) {
@@ -170,10 +177,7 @@ export function adx(
     plusDM.push(upMove > downMove && upMove > 0 ? upMove : 0);
     minusDM.push(downMove > upMove && downMove > 0 ? downMove : 0);
 
-    const tr1 = highs[i] - lows[i];
-    const tr2 = Math.abs(highs[i] - closes[i - 1]);
-    const tr3 = Math.abs(lows[i] - closes[i - 1]);
-    trs.push(Math.max(tr1, tr2, tr3));
+    trs.push(computeTrueRange(highs[i], lows[i], closes[i - 1]));
   }
 
   // Smoothed averages

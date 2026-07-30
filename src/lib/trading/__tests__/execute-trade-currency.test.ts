@@ -168,6 +168,7 @@ describe("Trade Currency Audit Trail", () => {
     const { executeTrade } = await import("../core/execute-trade");
 
     // Første oppslag (uten sessionId) finner ingen sesjon → auto-create.
+    // Så sjekker endringen en gang til (existingCheck) → fortsatt ingen.
     // Deretter slår pipeline opp den nyopprettede sesjonen på id.
     let maybeSingleCalls = 0;
     const sessionRow = {
@@ -205,7 +206,7 @@ describe("Trade Currency Audit Trail", () => {
         limit: vi.fn().mockReturnThis(),
         maybeSingle: vi.fn(() =>
           Promise.resolve(
-            maybeSingleCalls++ === 0
+            maybeSingleCalls++ < 2
               ? { data: null, error: null }
               : { data: sessionRow, error: null },
           ),

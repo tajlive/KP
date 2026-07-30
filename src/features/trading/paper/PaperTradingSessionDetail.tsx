@@ -253,10 +253,14 @@ export function PaperTradingSessionDetail({
       100
     : 0;
   const isProfitable = pnlPercent >= 0;
-  const completedTrades = session.winning_trades + session.losing_trades;
+  // API kan levere undefined for nye sesjoner — unngå NaN i UI
+  const winningTrades = Number(session.winning_trades) || 0;
+  const losingTrades = Number(session.losing_trades) || 0;
+  const totalTrades = Number(session.total_trades) || 0;
+  const completedTrades = winningTrades + losingTrades;
   const winRate =
     completedTrades > 0
-      ? Math.round((session.winning_trades / completedTrades) * 100)
+      ? Math.round((winningTrades / completedTrades) * 100)
       : 0;
 
   const getStatusBadge = (status: string) => {
@@ -373,7 +377,7 @@ export function PaperTradingSessionDetail({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {session.winning_trades}/{completedTrades}{" "}
+              {winningTrades}/{completedTrades}{" "}
               {t("trades").toLowerCase()}
             </p>
           </CardContent>
@@ -397,7 +401,7 @@ export function PaperTradingSessionDetail({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {t("total")} {t("trades").toLowerCase()}: {session.total_trades}
+              {t("total")} {t("trades").toLowerCase()}: {totalTrades}
             </p>
           </CardContent>
         </Card>

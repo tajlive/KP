@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
 import { useHaptic } from "@/hooks/use-haptic";
 
-type TabId = "home" | "portfolio" | "trade" | "account";
+type TabId = "home" | "portfolio" | "trade" | "account" | "history" | "help";
 
 interface Tab {
   id: TabId;
@@ -122,6 +122,35 @@ const CopyFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const HistoryIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const HistoryFilled = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" stroke="white" strokeWidth="2" fill="none" />
+  </svg>
+);
+
+const HelpCircleIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <path d="M12 17h.01" />
+  </svg>
+);
+
+const HelpCircleFilled = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="10" />
+    <text x="12" y="16" textAnchor="middle" fontSize="13" fontWeight="bold" fill="black">?</text>
+  </svg>
+);
+
 // Map icon names from nav config to icon components
 const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledIcon: React.FC<{ className?: string }> }> = {
   Home: { icon: HomeIcon, filledIcon: HomeFilled },
@@ -129,6 +158,8 @@ const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledI
   PieChart: { icon: PieChartIcon, filledIcon: PieChartFilled },
   Globe: { icon: GlobeIcon, filledIcon: GlobeFilled },
   User: { icon: UserIcon, filledIcon: UserFilled },
+  History: { icon: HistoryIcon, filledIcon: HistoryFilled },
+  HelpCircle: { icon: HelpCircleIcon, filledIcon: HelpCircleFilled },
 };
 
 // Build tabs from nav config

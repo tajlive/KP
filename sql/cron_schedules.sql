@@ -14,6 +14,9 @@ SELECT cron.unschedule('daily-ops-report') WHERE EXISTS (
 SELECT cron.unschedule('health-keepalive') WHERE EXISTS (
     SELECT 1 FROM cron.job WHERE jobname = 'health-keepalive'
 );
+SELECT cron.unschedule('monitoring-alert') WHERE EXISTS (
+    SELECT 1 FROM cron.job WHERE jobname = 'monitoring-alert'
+);
 
 -- ═══════════════════════════════════════════════════════════════
 -- 1. Daily Ops Report — kl 07:00 CET (06:00 UTC)
@@ -63,6 +66,37 @@ SELECT cron.schedule(
             from vault.decrypted_secrets 
             where name = 'project_url'
         ) || '/api/health'
+    ) as request_id;
+    $$
+);
+
+-- ═══════════════════════════════════════════════════════════════
+-- 3. Monitoring Alert — hvert 5. minutt
+-- Sjekker /api/paper-trading/execute for 502/503 og varsler via Resend
+-- ═══════════════════════════════════════════════════════════════
+
+SELECT cron.schedule(
+    'monitoring-alert',
+    '*/5 * * * *',  -- Hvert 5. minutt (samme som health-keepalive)
+    $$
+    SELECT net.http_post(
+        url := (
+            select decrypted_secret 
+            from vault.decrypted_secrets 
+            where name = 'project_url'
+        ) || '/api/cron/monitoring-alert',
+        headers := jsonb_build_object(
+            'Content-Type', 'application/json',
+            'Authorization', 'Bearer ' || (
+                select decrypted_secret 
+                from vault.decrypted_secrets 
+                where name = 'cron_secret'
+            )
+        ),
+        body := jsonb_build_object(
+            'triggered_at', now(),
+            'source', 'pg_cron'
+        )
     ) as request_id;
     $$
 );
@@ -143,6 +177,7 @@ SELECT
     CASE 
         WHEN jobname = 'daily-ops-report' THEN 'Daglig rapport kl 07:00 CET'
         WHEN jobname = 'health-keepalive' THEN 'Health ping hvert 5. min'
+        WHEN jobname = 'monitoring-alert' THEN 'Execute 502/503 monitor + Resend varsling'
         WHEN jobname = 'webhook-cleanup' THEN 'Slett gamle webhooks'
         WHEN jobname = 'health-metrics-aggregate' THEN 'Aggreger health data'
         WHEN jobname = 'stale-alerts-cleanup' THEN 'Rydd gamle alerts'
@@ -151,6 +186,7 @@ FROM cron.job
 WHERE jobname IN (
     'daily-ops-report',
     'health-keepalive', 
+    'monitoring-alert',
     'webhook-cleanup',
     'health-metrics-aggregate',
     'stale-alerts-cleanup'
@@ -165,6 +201,7 @@ ORDER BY jobname;
 --
 -- supabase secrets set PROJECT_URL="https://www.klarpakke.no"
 -- supabase secrets set ANON_KEY="eyJ..."
+-- supabase secrets set CRON_SECRET="<din_hemmelige_cron_key>"
 --
 -- Eller insert i vault.decrypted_secrets:
 --
@@ -174,6 +211,10 @@ ORDER BY jobname;
 --
 -- INSERT INTO vault.secrets (name, secret)
 -- VALUES ('anon_key', 'eyJ...')
+-- ON CONFLICT (name) DO UPDATE SET secret = EXCLUDED.secret;
+--
+-- INSERT INTO vault.secrets (name, secret)
+-- VALUES ('cron_secret', 'din_hemmelige_cron_key')
 -- ON CONFLICT (name) DO UPDATE SET secret = EXCLUDED.secret;
 
 -- Kommentar om setup

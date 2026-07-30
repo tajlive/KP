@@ -854,3 +854,39 @@ textarea,
 .animate-scroll-x:hover {
   animation-play-state: paused;
 }
+
+/* ═══════════════════════════════════════════
+   Accessibility: Large Text Mode
+   ═══════════════════════════════════════════ */
+html.text-lg {
+  font-size: 112.5%; /* ~18px base */
+}
+
+html.text-lg body {
+  font-size: 1rem;
+}
+
+html.text-lg .kp-text-sm {
+  font-size: 0.875rem;
+}
+
+html.text-lg .kp-text-base {
+  font-size: 1.0625rem;
+}
+
+/* ═══════════════════════════════════════════
+   Accessibility: High Contrast Mode
+   ═══════════════════════════════════════════ */
+html.high-contrast {
+  --kp-text-primary: #ffffff;
+  --kp-text-secondary: #e2e8f0;
+  --kp-text-tertiary: #cbd5e1;
+  --kp-text-muted: #94a3b8;
+  --kp-border: rgba(255, 255, 255, 0.3);
+  --kp-border-light: rgba(255, 255, 255, 0.15);
+  --kp-border-dark: rgba(255, 255, 255, 0.4);
+}
+
+html.high-contrast .text-kp-muted {
+  color: #cbd5e1;
+}
