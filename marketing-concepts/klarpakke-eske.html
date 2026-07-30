@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klarpakke — Eske-konsept</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e8e4df;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 40px;
+    }
+    .scene {
+      width: 700px;
+      position: relative;
+    }
+    .floor {
+      position: absolute;
+      bottom: -30px;
+      left: -50px;
+      right: -50px;
+      height: 120px;
+      background: linear-gradient(to bottom, #c4b8aa 0%, #b0a393 100%);
+      border-radius: 50%;
+      filter: blur(20px);
+      opacity: 0.5;
+    }
+    .box {
+      background: #c8a882;
+      background: linear-gradient(135deg, #d4b896 0%, #b8956a 100%);
+      padding: 50px 45px;
+      border-radius: 4px;
+      box-shadow:
+        inset 0 0 80px rgba(0,0,0,0.15),
+        0 25px 60px rgba(0,0,0,0.25),
+        0 8px 20px rgba(0,0,0,0.15);
+      position: relative;
+      transform: rotate(-1deg);
+    }
+    .box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 35%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent);
+      pointer-events: none;
+    }
+    .tape {
+      position: absolute;
+      top: -18px;
+      left: 30%;
+      right: 30%;
+      height: 36px;
+      background: rgba(220, 210, 180, 0.85);
+      transform: rotate(0.5deg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .handwriting {
+      color: #1a1a1a;
+      font-size: 26px;
+      line-height: 1.5;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .handwriting h1 {
+      font-size: 38px;
+      margin-bottom: 24px;
+      line-height: 1.2;
+      color: #0a0b0d;
+    }
+    .handwriting .highlight {
+      background: #fef08a;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .handwriting .big {
+      font-size: 32px;
+    }
+    .footer {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 3px solid rgba(0,0,0,0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 30px;
+      font-weight: 800;
+      color: #0052ff;
+    }
+    .cta {
+      font-size: 20px;
+      color: #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="floor"></div>
+    <div class="box">
+      <div class="tape"></div>
+      <div class="handwriting">
+        <h1>HER ER TINGEN:</h1>
+        <p>Du vil lære deg trading.</p>
+        <p>Men du vil <span class="highlight">ikke tape penger</span> mens du lærer.</p>
+        <p>Derfor får du <span class="big highlight">100 000 kr</span> i lekepenger.</p>
+        <p>Ekte markedsdata. Null risiko.</p>
+        <p>AI-en handler. Du ser på. Du lærer.</p>
+        <p style="margin-top: 20px;">Når du er klar — bytter du til ekte penger.</p>
+        <div class="footer">
+          <div class="logo">klarpakke.no</div>
+          <div class="cta">Norsk. Enkelt. Ærlig.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

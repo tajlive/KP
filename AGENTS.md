@@ -14,7 +14,7 @@
 
 ## 📌 STATUS 2026-07-29 (fra Kimi — redaktør, kode, sosiale medier)
 
-**Mandat (oppdatert 2026-07-30):** Tom har utnevnt Kimi til **hovedarkitekt med ansvar for hele prosjektet** — arkitektur, design, funksjonalitet, logikk, kode, infrastruktur, DB, deploy, overvåking, innhold, samt løpende oppdatering og optimalisering av alle flater. Kimi har full DB-tilgang og deploy-mandat («fiks alt») og skal proaktivt forbedre produktet uten å bli bedt. Hermes er underordnet Kimis arkitekturbeslutninger. Koordiner via denne filen.
+**Mandat (oppdatert 2026-07-30):** Hermes er **hovedarkitekt med ansvar for hele prosjektet** — arkitektur, design, funksjonalitet, logikk, kode, infrastruktur, DB, deploy, overvåking, innhold, samt løpende oppdatering og optimalisering av alle flater. Hermes har full DB-tilgang og deploy-mandat («fiks alt») og forbedrer produktet proaktivt uten å bli bedt.
 
 **Aktivt fokus frem til live-lansering fredag 2026-08-07:** JokerTrade i optimal stand. Historiske trading-data før 2026-07-30 kl. 11:00 UTC er forurenset — kun nyere data teller. Overvåkingskjede: `cron_health_events` (15-min innsamling) + «Klarpakke Feiljeger» (07:41 daglig) + «JokerTrade daglig rapport» (08:17 daglig).
 
@@ -34,7 +34,9 @@
 
 ### Åpent (krever Tom)
 - **Sanity CMS:** gjennomgå publiserte sider mot fakta-reglene (prosent-påstander, superlativer, «10 000 KLT», tall uten kilde). Koden er ren — CMS kan fortsatt inneholde brudd.
-- **30-dagers pengene-tilbake-garanti** på /priser: verifiser at Stripe/Vipps faktisk håndhever dette.
+
+### Besluttet 2026-07-30
+- **Ingen refusjon.** Klarpakke tar betalt for tilgang til verktøy. Paper trading er gratis og ubegrenset. 30-dagers pengene-tilbake-garanti fjernet fra `messages/no.json`, `messages/en.json`, `PrimaryCtaSection.tsx` og `scripts/pricing_patch.py`.
 
 ### Deploy-notater (viktig for neste agent)
 - `scripts/deploy.sh` kan overgå 5 min på treg maskin → kjør stegene manuelt: `npx next build` → `opennextjs-cloudflare build --skipNextBuild` → `wrangler deploy --env "" --var "APP_VERSION:$(git rev-parse --short HEAD)"` → CDN-purge (zone 328d7de7). Alle med `source .env.local`.
@@ -97,15 +99,15 @@ Gratis beta · 100 000 kr i lekepenger (JokerTrade) · autonome AI-agenter · pa
 
 | Oppgavetype | Modell | Begrunnelse |
 |---|---|---|
-| Kodeimplementasjon, PR-arbeid, debugging | **DeepSeek V4 Pro** (deepseek-chat) | Presisjon, 128K context |
-| Rutinearbeid — i18n, lint-fikser, små patcher | **DeepSeek V4 Flash** (deepseek-v4-flash) | Rask, billig |
-| Kodegjennomgang, kvalitetskontroll | **DeepSeek V4 Pro** (deepseek-chat) | Nøyaktig diff-analyse |
+| Kodeimplementasjon, PR-arbeid, debugging | **Kimi K2.7 Code** (kimi-coding / kimi-k2.7-code) | Hovedmodell i Hermes |
+| Rutinearbeid — i18n, lint-fikser, små patcher | **Kimi K2.7 Code** eller **DeepSeek V4 Flash** | Raske, billige |
+| Kodegjennomgang, kvalitetskontroll | **Kimi K2.7 Code** | Nøyaktig diff-analyse |
 | Subagenter (delegate_task) | **DeepSeek V4 Flash** (deepseek-v4-flash) | Rask parallellisering |
-| Arkitektur, systemdesign (K3 1M) | **Kimi K3** via Pi CLI | Kun Pi — krever `thinking`-param |
+| Arkitektur, systemdesign (K3 1M) | **Kimi K3** via Global API (`k3`-alias) | Kun ved tung analyse |
 
-**Fallback-kjede:** gemini → kimi-coding → openrouter → nous
+**Fallback-kjede:** deepseek → kimi-coding → custom:kimi-k3-global → gemini
 
-**Merk:** K3 kan IKKE brukes via Hermes fallback — krever `thinking`-parameter som custom provider ikke sender. Bruk Pi CLI direkte: `pi` → `/model kimi-coding/k3`.
+**Merk:** K3 er ofte overbelastet på Moonshot. K2.7 Code er primær for daglig arbeid; K3 brukes ved behov for 1M-kontekst.
 
 ---
 

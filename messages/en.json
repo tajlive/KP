@@ -3496,7 +3496,7 @@
       "title": "Ready to start?",
       "subtitle": "Join other Norwegians learning to trade safely — with play money.",
       "button": "Get started now",
-      "guarantee": "30-day money-back guarantee"
+      "guarantee": "Paper trading is free. Paid plans unlock tools \u2014 no refunds."
     },
     "success": {
       "loadingTitle": "Processing payment...",
@@ -5460,7 +5460,7 @@
       },
       "f3": {
         "q": "Can I get a refund if I'm not satisfied?",
-        "a": "Yes, we offer a 14-day full refund. If you're not satisfied for any reason, we'll send your money back, no questions asked. That's our personal guarantee to you."
+        "a": "No. You pay for access to our tools, not for results or promises of returns. Paper trading with 100 000 NOK in play money is free and unlimited. When you upgrade, you get immediate access to features like live trading, more strategies and advanced tools \u2014 like a software subscription."
       },
       "f4": {
         "q": "How long does it take to learn?",

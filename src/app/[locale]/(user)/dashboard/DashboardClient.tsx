@@ -114,7 +114,7 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
         <p className="text-slate-400">{state.error ?? "Kunne ikke laste dashboard"}</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-[#0066FF] text-white rounded-lg font-bold"
+          className="px-6 py-2 bg-[#0052FF] text-white rounded-lg font-bold"
         >
           Prøv igjen
         </button>

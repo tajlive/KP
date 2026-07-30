@@ -31,7 +31,7 @@ patch('messages/no/pricing.json', {
     'q3': 'Hva er forskjellen p\u00e5 paper og live trading?',
     'a3': 'Lekepenger er risikofri \u00f8ving med 100\u202f000 kr. Live trading bruker ekte penger p\u00e5 Binance.',
     'q4': 'Kan jeg f\u00e5 refusjon?',
-    'a4': 'Ja, vi tilbyr 30-dagers pengene-tilbake-garanti. Ikke forn\u00f8yd? F\u00e5 full refusjon.',
+    'a4': 'Nei. Du betaler for tilgang til verkt\u00f8yene v\u00e5re. Paper trading er gratis og ubegrenset. Betalte planer gir umiddelbar tilgang til live trading, flere strategier og avanserte verkt\u00f8y \u2014 p\u00e5 samme m\u00e5te som et programvare-abonnement.',
     'q5': 'Er det bindingstid?',
     'a5': 'Nei, ingen bindingstid. Du kan si opp n\u00e5r som helst.'
   },
@@ -57,7 +57,7 @@ patch('messages/en/pricing.json', {
     'q3': 'What is the difference between paper and live trading?',
     'a3': 'Paper trading is risk-free practice with virtual funds. Live trading uses real money on Binance.',
     'q4': 'Can I get a refund?',
-    'a4': 'Yes, we offer a 30-day money-back guarantee. Not satisfied? Get a full refund.',
+    'a4': 'No. You pay for access to our tools. Paper trading is free and unlimited. Paid plans unlock live trading, more strategies and advanced tools \u2014 like a software subscription.',
     'q5': 'Is there a commitment?',
     'a5': 'No commitment. You can cancel at any time.'
   },

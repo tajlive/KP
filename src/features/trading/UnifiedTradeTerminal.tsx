@@ -440,7 +440,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full bg-[#0A0D12] border border-[#1E2530] rounded-lg px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-[#0066FF] transition-colors"
+            className="w-full bg-[#0A0D12] border border-[#1E2530] rounded-lg px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-[#0052FF] transition-colors"
             placeholder="0.00"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-500 font-mono">

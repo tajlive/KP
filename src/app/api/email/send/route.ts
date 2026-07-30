@@ -64,16 +64,16 @@ function welcomeEmail(name: string): string {
 <head><meta charset="utf-8"></head>
 <body style="background:#0B0F19;color:#F9FAFB;font-family:system-ui,sans-serif;padding:40px 20px">
   <div style="max-width:480px;margin:0 auto">
-    <h1 style="color:#0066FF;font-size:28px;margin-bottom:8px">🎉 Velkommen til Klarpakke, ${name}!</h1>
+    <h1 style="color:#0052FF;font-size:28px;margin-bottom:8px">🎉 Velkommen til Klarpakke, ${name}!</h1>
     <p style="font-size:16px;line-height:1.6;color:#9CA3AF">
       Du har fått <strong style="color:#10B981">10 000 KLT poeng</strong> — vår velkomstbonus til betatestere.
     </p>
     <div style="background:#111827;border:1px solid #1F2937;border-radius:12px;padding:24px;margin:24px 0">
       <p style="margin:0 0 12px;font-size:15px;color:#D1D5DB">🚀 <strong>Slik kommer du i gang:</strong></p>
       <ol style="color:#9CA3AF;font-size:14px;line-height:2;padding-left:20px">
-        <li>Gå til <a href="https://www.klarpakke.no/no/trade" style="color:#0066FF">Trade</a> — prøv en paper trade</li>
-        <li>Utforsk <a href="https://www.klarpakke.no/no/jokertrade" style="color:#0066FF">JokerTrade™</a> — la AI-en handle</li>
-        <li>Se <a href="https://www.klarpakke.no/no/dashboard" style="color:#0066FF">dashboardet</a> — følg P&L og win rate</li>
+        <li>Gå til <a href="https://www.klarpakke.no/no/trade" style="color:#0052FF">Trade</a> — prøv en paper trade</li>
+        <li>Utforsk <a href="https://www.klarpakke.no/no/jokertrade" style="color:#0052FF">JokerTrade™</a> — la AI-en handle</li>
+        <li>Se <a href="https://www.klarpakke.no/no/dashboard" style="color:#0052FF">dashboardet</a> — følg P&L og win rate</li>
       </ol>
     </div>
     <p style="font-size:14px;color:#6B7280">
@@ -85,7 +85,7 @@ function welcomeEmail(name: string): string {
         I testperioden er kun <strong>lekepenger</strong> tilgjengelig. Du handler med ekte markedstall og vår ekte trademotor — men uten risiko. Live-handel med ekte penger åpnes etter beta.
       </p>
     </div>
-    <a href="https://www.klarpakke.no/no/trade" style="display:inline-block;background:#0066FF;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:bold;margin-top:16px">
+    <a href="https://www.klarpakke.no/no/trade" style="display:inline-block;background:#0052FF;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:bold;margin-top:16px">
       Start trading →
     </a>
     <hr style="border-color:#1F2937;margin:32px 0 16px">
@@ -107,7 +107,7 @@ function tradeConfirmedEmail(name: string, symbol: string, side: string, amount:
 <head><meta charset="utf-8"></head>
 <body style="background:#0B0F19;color:#F9FAFB;font-family:system-ui,sans-serif;padding:40px 20px">
   <div style="max-width:480px;margin:0 auto">
-    <h1 style="color:#0066FF;font-size:24px;margin-bottom:16px">Trade utført ✅</h1>
+    <h1 style="color:#0052FF;font-size:24px;margin-bottom:16px">Trade utført ✅</h1>
     <div style="background:#111827;border:1px solid #1F2937;border-radius:12px;padding:24px;margin-bottom:24px">
       <p style="margin:0 0 8px;font-size:18px;color:#D1D5DB">
         <span style="color:${color}">${sideLabel}</span> ${(amount / price).toFixed(6)} ${symbol.replace("USDT", "")}
@@ -116,7 +116,7 @@ function tradeConfirmedEmail(name: string, symbol: string, side: string, amount:
         ${amount.toLocaleString("no")} kr · 1 ${symbol.replace("USDT", "")} = ${price.toLocaleString("no")} kr
       </p>
     </div>
-    <a href="https://www.klarpakke.no/no/dashboard" style="display:inline-block;background:#0066FF;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold">
+    <a href="https://www.klarpakke.no/no/dashboard" style="display:inline-block;background:#0052FF;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold">
       Se dashboard →
     </a>
     <hr style="border-color:#1F2937;margin:32px 0 16px">

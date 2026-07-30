@@ -150,7 +150,7 @@ export default function PortfolioClientPage() {
           </h2>
           <Link
             href={`/${locale}/login`}
-            className="text-[#0066FF] hover:underline"
+            className="text-[#0052FF] hover:underline"
           >
             Gå til innlogging
           </Link>
@@ -167,7 +167,7 @@ export default function PortfolioClientPage() {
         <p className="text-slate-400">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-[#0066FF] text-white rounded-lg font-bold"
+          className="px-6 py-2 bg-[#0052FF] text-white rounded-lg font-bold"
         >
           Prøv igjen
         </button>
@@ -201,7 +201,7 @@ export default function PortfolioClientPage() {
             <h2 className="text-sm font-medium text-slate-400">
               {t("balance")}
             </h2>
-            <Wallet className="w-5 h-5 text-[#0066FF]" />
+            <Wallet className="w-5 h-5 text-[#0052FF]" />
           </div>
           <p className="text-4xl font-bold text-white tabular-nums">
             {balance != null ? formatNOK(balance) : "—"}
@@ -229,7 +229,7 @@ export default function PortfolioClientPage() {
           )}
           <Link
             href={`/${locale}/trade`}
-            className="inline-flex items-center gap-2 mt-4 text-sm text-[#0066FF] hover:underline"
+            className="inline-flex items-center gap-2 mt-4 text-sm text-[#0052FF] hover:underline"
           >
             {t("goToTrade")} <ArrowRight className="w-4 h-4" />
           </Link>
@@ -242,14 +242,14 @@ export default function PortfolioClientPage() {
         {hasTrades && (
           <div className="grid grid-cols-3 gap-3">
             <div className={CARD + " !p-4 text-center"}>
-              <Activity className="w-5 h-5 text-[#0066FF] mx-auto mb-2" />
+              <Activity className="w-5 h-5 text-[#0052FF] mx-auto mb-2" />
               <p className="text-lg font-bold text-white tabular-nums">
                 {summary!.totalTrades}
               </p>
               <p className="text-xs text-slate-400">{t("statsTrades")}</p>
             </div>
             <div className={CARD + " !p-4 text-center"}>
-              <Target className="w-5 h-5 text-[#0066FF] mx-auto mb-2" />
+              <Target className="w-5 h-5 text-[#0052FF] mx-auto mb-2" />
               <p className="text-lg font-bold text-white tabular-nums">
                 {summary!.winRate != null
                   ? `${Math.round(summary!.winRate * 100)}%`
@@ -282,7 +282,7 @@ export default function PortfolioClientPage() {
             <h2 className="text-lg font-semibold text-white">
               {t("positionsTitle")}
             </h2>
-            <Coins className="w-5 h-5 text-[#0066FF]" />
+            <Coins className="w-5 h-5 text-[#0052FF]" />
           </div>
           {positions.length === 0 ? (
             <div className="text-center py-6">
@@ -292,7 +292,7 @@ export default function PortfolioClientPage() {
               </p>
               <Link
                 href={`/${locale}/trade`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0066FF] text-white rounded-xl font-semibold text-sm"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0052FF] text-white rounded-xl font-semibold text-sm"
               >
                 {t("noAssets.button")} <ArrowRight className="w-4 h-4" />
               </Link>

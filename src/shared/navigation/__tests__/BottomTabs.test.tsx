@@ -41,13 +41,12 @@ describe("BottomTabs", () => {
     );
   });
 
-  it("renderer alle fem faner: home, portfolio, trade, history, help", () => {
+  it("renderer alle fire faner: home, portfolio, trade, history", () => {
     render(<BottomTabs />);
     expect(screen.getByTestId("bottom-tab-home")).toBeInTheDocument();
     expect(screen.getByTestId("bottom-tab-portfolio")).toBeInTheDocument();
     expect(screen.getByTestId("bottom-tab-trade")).toBeInTheDocument();
     expect(screen.getByTestId("bottom-tab-history")).toBeInTheDocument();
-    expect(screen.getByTestId("bottom-tab-help")).toBeInTheDocument();
   });
 
   it("navigates on tab press", () => {

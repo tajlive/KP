@@ -102,11 +102,11 @@ describe("ADMIN_NAV_CONFIG", () => {
 });
 
 describe("MOBILE_BOTTOM_TABS", () => {
-  it("skal ha home, portfolio, trade og account — i den rekkefølgen", () => {
+  it("skal ha home, portfolio, trade og history — i den rekkefølgen", () => {
     const keys: string[] = MOBILE_BOTTOM_TABS.map(
       (l: NavItem) => l.key,
     );
-    expect(keys).toEqual(["home", "portfolio", "trade", "history", "help"]);
+    expect(keys).toEqual(["home", "portfolio", "trade", "history"]);
   });
 
   it("alle tabs skal være mobileOnly", () => {
@@ -227,7 +227,7 @@ describe("DASHBOARD_COINBASE_BOTTOM_NAV", () => {
       "/dashboard",
       "/dashboard/portfolio",
       "/trade",
-      "/profile",
+      "/dashboard/historikk",
     ]);
   });
 });
