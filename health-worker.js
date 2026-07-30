@@ -14,7 +14,7 @@ export default {
           signal: AbortSignal.timeout(5000),
         });
         const executeStatus = executeProbe.status;
-        let executeHealthy = executeStatus !== 502 && executeStatus !== 503;
+        const executeHealthy = executeStatus !== 502 && executeStatus !== 503;
         let executeMessage = executeHealthy ? `HTTP ${executeStatus}` : null;
         if (!executeHealthy) {
           try { const body = await executeProbe.json(); executeMessage = body.error || `HTTP ${executeStatus}`; } catch { executeMessage = `HTTP ${executeStatus}`; }
