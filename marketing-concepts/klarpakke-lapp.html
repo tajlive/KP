@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klarpakke — Lapp-konsept</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #7a5c42;
+      background: linear-gradient(135deg, #8b6b4a 0%, #6b4e35 100%);
+      font-family: 'Courier New', Courier, monospace;
+      padding: 40px;
+    }
+    .paper {
+      width: 650px;
+      background: #f5f0e8;
+      padding: 55px 50px;
+      box-shadow:
+        0 4px 20px rgba(0,0,0,0.25),
+        inset 0 0 60px rgba(139, 107, 74, 0.08);
+      transform: rotate(1.5deg);
+      position: relative;
+    }
+    .tape-top, .tape-bottom {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 42px;
+      background: rgba(210, 195, 155, 0.85);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .tape-top { top: -21px; }
+    .tape-bottom { bottom: -21px; }
+    h1 {
+      font-size: 34px;
+      color: #0a0b0d;
+      margin-bottom: 30px;
+      line-height: 1.2;
+    }
+    .list {
+      list-style: none;
+      font-size: 22px;
+      line-height: 1.7;
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+    .list li {
+      margin-bottom: 14px;
+      padding-left: 36px;
+      position: relative;
+    }
+    .list li::before {
+      content: attr(data-num) ".";
+      position: absolute;
+      left: 0;
+      color: #0052ff;
+      font-weight: 800;
+    }
+    .highlight {
+      background: #fef08a;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .footer {
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 2px dashed rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .brand {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0052ff;
+    }
+    .sub {
+      font-size: 18px;
+      color: #4a4a4a;
+    }
+  </style>
+</head>
+<body>
+  <div class="paper">
+    <div class="tape-top"></div>
+    <div class="tape-bottom"></div>
+    <h1>SLIK LÆRER DU TRADING UTEN Å TAPE EN KRON:</h1>
+    <ul class="list">
+      <li data-num="1">Start med <span class="highlight">100 000 kr i lekepenger</span>.</li>
+      <li data-num="2">La AI-en trade på <span class="highlight">ekte markedsdata</span>.</li>
+      <li data-num="3">Se hva den gjør. Lær hvorfor.</li>
+      <li data-num="4">Prøv selv når du føler deg klar.</li>
+      <li data-num="5">Bytt til ekte penger først når du vil.</li>
+      <li data-num="6">Og ja — det er helt gratis å prøve.</li>
+    </ul>
+    <div class="footer">
+      <div class="brand">klarpakke.no</div>
+      <div class="sub">Første 100 brukere får 5000 KLT.</div>
+    </div>
+  </div>
+</body>
+</html>

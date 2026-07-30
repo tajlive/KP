@@ -182,14 +182,6 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
     roles: ["auth"],
     mobileOnly: true,
   },
-  {
-    key: "help",
-    href: "/kurs",
-    labelKey: "navigation.help",
-    icon: "HelpCircle",
-    roles: ["auth"],
-    mobileOnly: true,
-  },
 ];
 
 /** Enhetlig navigasjonsobjekt. */
@@ -282,11 +274,12 @@ export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
 ];
 
+/** Speiler MOBILE_BOTTOM_TABS (4 faner: hjem, portefølje, handel, historikk). */
 export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
   { href: "/trade", labelKey: "trade" },
-  { href: "/profile", labelKey: "profile" },
+  { href: "/dashboard/historikk", labelKey: "history" },
 ];
 
 /** Ekstra sider tilgjengelig via "Mer" dropdown i TopNav */

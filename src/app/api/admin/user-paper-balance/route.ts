@@ -1,6 +1,7 @@
 import { logAdminAudit } from "@/lib/admin/log-admin-audit";
 import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient as createServiceClient } from "@/lib/supabase/server";
+import { syncPaperAccountBalance } from "@/lib/trading/core/paper-account-sync";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -112,6 +113,9 @@ export async function POST(request: NextRequest) {
       }
       sessionsUpdated = updated?.length ?? 0;
     }
+
+    // Sync paper_accounts.current_balance (source of truth)
+    await syncPaperAccountBalance(db, user_id);
 
     await logAdminAudit(db, {
       admin_user_id: auth.userId,

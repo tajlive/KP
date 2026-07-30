@@ -432,11 +432,11 @@ export function DashboardPro({
         {(userState === "AktivTrader" || userState === "PowerUser") && (
           <Link
             href={`/${locale}/dashboard/analysis`}
-            className="block rounded-2xl border border-[#1E2530] bg-[#0A0D12] p-5 text-center hover:border-[#0066FF]/30 transition-all"
+            className="block rounded-2xl border border-[#1E2530] bg-[#0A0D12] p-5 text-center hover:border-[#0052FF]/30 transition-all"
           >
             <p className="text-sm font-bold text-white mb-1">{t("advancedAnalyticsTitle")}</p>
             <p className="text-xs text-slate-400">{t("advancedAnalyticsDesc")}</p>
-            <p className="text-xs text-[#0066FF] mt-2">{t("advancedAnalyticsLink")}</p>
+            <p className="text-xs text-[#0052FF] mt-2">{t("advancedAnalyticsLink")}</p>
           </Link>
         )}
 

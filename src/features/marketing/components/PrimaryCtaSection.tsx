@@ -135,8 +135,8 @@ export function PrimaryCtaSection({
 
         <p className={`text-sm mt-6 ${styles.guarantee}`}>
           {variant === "pricing"
-            ? "30-dagers pengene-tilbake-garanti. Ingen spørsmål."
-            : "Ingen kredittkort nødvendig. Avslutt når som helst."}
+            ? "Paper trading er gratis. Betalte planer gir tilgang til verktøy — ikke refusjon."
+            : "Ingen kredittkort nødvendig for å starte."}
         </p>
       </div>
     </section>

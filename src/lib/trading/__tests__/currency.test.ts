@@ -17,6 +17,12 @@ vi.mock("@/lib/supabase/server", () => ({
   },
 }));
 
+// Kanonisk live-kurs må mockes for deterministiske fallback-tester
+vi.mock("@/lib/trading/canonical/exchange-rate", () => ({
+  getNokUsdtRate: vi.fn().mockRejectedValue(new Error("network unavailable")),
+  clearRateCache: vi.fn(),
+}));
+
 import {
   getUsdtToNokRate,
   getUsdtToNokRateAsync,
@@ -131,6 +137,13 @@ describe("Currency Module", () => {
       const result = await getUsdtToNokRateAsync(throwing);
       expect(result).toBe(FALLBACK);
       warn.mockRestore();
+    });
+
+    it("kanonisk live-kurs brukes når DB og env mangler", async () => {
+      const { getNokUsdtRate } = await import("@/lib/trading/canonical/exchange-rate");
+      vi.mocked(getNokUsdtRate).mockResolvedValueOnce(10.48);
+      const result = await getUsdtToNokRateAsync(mockUserClient(null));
+      expect(result).toBe(10.48);
     });
   });
 

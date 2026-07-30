@@ -17,6 +17,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import { createServerClient } from "@/lib/supabase/server";
 import {
   chatWithAI,
   streamAIResponse,
@@ -107,6 +108,16 @@ interface ChatRequest {
 
 export async function POST(req: Request) {
   try {
+    // Auth — krever innlogget Supabase-bruker
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Du må være logget inn for å bruke AI-chat' },
+        { status: 401 }
+      );
+    }
+
     const body: ChatRequest = await req.json();
     const {
       messages,
@@ -145,7 +156,7 @@ export async function POST(req: Request) {
 
     // Sjekk hvilke providere som er tilgjengelige
     const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-    const hasKimi = !!process.env.KIMI_OAUTH_TOKEN?.trim();
+    const hasKimi = !!(process.env.KIMI_API_KEY?.trim() || process.env.KIMI_OAUTH_TOKEN?.trim());
     const hasNvidia = !!(process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY);
 
     // Velg provider
@@ -165,7 +176,7 @@ export async function POST(req: Request) {
       useKimi = hasKimi;
       if (!useKimi) {
         return NextResponse.json(
-          { error: 'KIMI er ikke konfigurert. Sett KIMI_OAUTH_TOKEN (OAuth-token fra Kimi Code).' },
+          { error: 'KIMI er ikke konfigurert. Sett KIMI_API_KEY (anbefalt) eller KIMI_OAUTH_TOKEN.' },
           { status: 503 }
         );
       }
