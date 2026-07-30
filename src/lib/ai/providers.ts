@@ -4,6 +4,7 @@
  * Støtter:
  * - KIMI K3 via Kimi Code OAuth - https://api.kimi.com/coding/v1
  * - NVIDIA NIM - https://build.nvidia.com/
+ * - DeepSeek V4 - https://platform.deepseek.com/
  * 
  * Bruk:
  * ```typescript
@@ -26,7 +27,9 @@ const traceLLMCall = <T>(
 
 // ==================== TYPES ====================
 
-export type AIProvider = 'kimi' | 'nvidia' | 'auto';
+export type AIProvider = 'kimi' | 'nvidia' | 'deepseek' | 'auto';
+
+export type ChatProvider = AIProvider | 'perplexity';
 
 export interface AIMessage {
   role: 'system' | 'user' | 'assistant';
@@ -275,6 +278,52 @@ interface NvidiaStreamChunk {
   }[];
 }
 
+// ==================== DEEPSEEK CONFIG ====================
+
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
+
+export const DEEPSEEK_MODELS = {
+  V4_PRO: 'deepseek-chat',
+  V4_FLASH: 'deepseek-v4-flash',
+} as const;
+
+export type DeepSeekModel = typeof DEEPSEEK_MODELS[keyof typeof DEEPSEEK_MODELS];
+
+interface DeepSeekResponse {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: {
+    index: number;
+    message: {
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+  }[];
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+interface DeepSeekStreamChunk {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: {
+    index: number;
+    delta: {
+      role?: string;
+      content?: string;
+    };
+    finish_reason: string | null;
+  }[];
+}
+
 // ==================== SYSTEM PROMPTS ====================
 
 export const SYSTEM_PROMPTS = {
@@ -406,7 +455,7 @@ async function chatWithKimiInternal(
   };
 }
 
-async function chatWithKimi(
+export async function chatWithKimi(
   messages: AIMessage[],
   options: AIOptions = {}
 ): Promise<AIResponse> {
@@ -421,7 +470,7 @@ async function chatWithKimi(
   );
 }
 
-async function* streamKimiResponse(
+export async function* streamKimiResponse(
   messages: AIMessage[],
   options: AIOptions = {}
 ): AsyncGenerator<AIStreamChunk, void, unknown> {
@@ -623,11 +672,159 @@ async function* streamNvidiaResponse(
   }
 }
 
+// ==================== DEEPSEEK IMPLEMENTATION ====================
+
+async function chatWithDeepSeekInternal(
+  messages: AIMessage[],
+  options: AIOptions = {}
+): Promise<AIResponse> {
+  const startTime = Date.now();
+  const apiKey = process.env.DEEPSEEK_API_KEY?.trim();
+
+  if (!apiKey) {
+    throw new Error('DEEPSEEK_API_KEY er ikke satt i miljøvariabler');
+  }
+
+  const model = options.model || DEEPSEEK_MODELS.V4_PRO;
+  const temperature = options.temperature ?? 0.7;
+  const maxTokens = options.maxTokens || 2048;
+
+  const response = await fetch(DEEPSEEK_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature,
+      max_tokens: maxTokens,
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`DeepSeek API error: ${response.status} - ${error}`);
+  }
+
+  const data: DeepSeekResponse = await response.json();
+  const latency_ms = Date.now() - startTime;
+
+  return {
+    content: data.choices[0]?.message?.content || '',
+    provider: 'deepseek',
+    model: data.model,
+    usage: data.usage,
+    latency_ms,
+  };
+}
+
+export async function chatWithDeepSeek(
+  messages: AIMessage[],
+  options: AIOptions = {}
+): Promise<AIResponse> {
+  const lastMessage = messages[messages.length - 1]?.content || '';
+
+  return traceLLMCall(
+    {
+      functionName: 'chatWithDeepSeek',
+      prompt: lastMessage,
+    },
+    () => chatWithDeepSeekInternal(messages, options)
+  );
+}
+
+export async function* streamDeepSeekResponse(
+  messages: AIMessage[],
+  options: AIOptions = {}
+): AsyncGenerator<AIStreamChunk, void, unknown> {
+  const apiKey = process.env.DEEPSEEK_API_KEY?.trim();
+
+  if (!apiKey) {
+    throw new Error('DEEPSEEK_API_KEY er ikke satt i miljøvariabler');
+  }
+
+  const model = options.model || DEEPSEEK_MODELS.V4_PRO;
+  const temperature = options.temperature ?? 0.7;
+  const maxTokens = options.maxTokens || 2048;
+
+  const response = await fetch(DEEPSEEK_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature,
+      max_tokens: maxTokens,
+      stream: true,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`DeepSeek API error: ${response.status} - ${error}`);
+  }
+
+  const reader = response.body?.getReader();
+  const decoder = new TextDecoder();
+
+  if (!reader) {
+    throw new Error('No response body');
+  }
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        yield { content: '', done: true };
+        break;
+      }
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n').filter(line => line.trim() !== '');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') {
+            yield { content: '', done: true };
+            return;
+          }
+
+          try {
+            const parsed: DeepSeekStreamChunk = JSON.parse(data);
+            const content = parsed.choices[0]?.delta?.content;
+            if (content) {
+              yield { content, done: false };
+            }
+          } catch {
+            // Skip invalid JSON
+          }
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 // ==================== UNIFIED INTERFACE ====================
 
-// Sjekk om Kimi API er tilgjengelig (Global API-key eller OAuth-token)
 function hasKimiApi(): boolean {
   return !!process.env.KIMI_API_KEY?.trim() || !!process.env.KIMI_OAUTH_TOKEN?.trim();
+}
+
+function hasDeepSeekApi(): boolean {
+  return !!process.env.DEEPSEEK_API_KEY?.trim();
+}
+
+function hasNvidiaApi(): boolean {
+  return !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
 }
 
 /**
@@ -635,22 +832,140 @@ function hasKimiApi(): boolean {
  */
 export function selectBestProvider(preferred?: AIProvider): AIProvider {
   const hasKimi = hasKimiApi();
-  const hasNvidia = !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
+  const hasDeepSeek = hasDeepSeekApi();
+  const hasNvidia = hasNvidiaApi();
 
   if (preferred && preferred !== 'auto') {
     if (preferred === 'kimi' && hasKimi) return 'kimi';
+    if (preferred === 'deepseek' && hasDeepSeek) return 'deepseek';
     if (preferred === 'nvidia' && hasNvidia) return 'nvidia';
   }
 
-  // Auto-select: KIMI -> NVIDIA (fallback)
+  // Auto-select: KIMI -> DeepSeek -> NVIDIA (fallback)
   if (hasKimi) return 'kimi';
+  if (hasDeepSeek) return 'deepseek';
   if (hasNvidia) return 'nvidia';
 
-  throw new Error('Ingen AI provider konfigurert. Sett KIMI_API_KEY (anbefalt) eller KIMI_OAUTH_TOKEN i miljøvariabler.');
+  throw new Error('Ingen AI provider konfigurert. Sett KIMI_API_KEY, KIMI_OAUTH_TOKEN, DEEPSEEK_API_KEY eller NVIDIA_API_KEY i miljøvariabler.');
+}
+
+// ==================== SMART TASK ROUTING ====================
+
+export type TaskTier = 'simple' | 'complex' | 'architecture' | 'websearch';
+
+export interface ProviderPlan {
+  provider: ChatProvider;
+  model?: string;
+  reasoningEffort?: KimiReasoningEffort;
+  tier: TaskTier;
+}
+
+const ARCHITECTURE_KEYWORDS = [
+  'arkitektur', 'architecture', 'design system', 'refactor', 'refaktor',
+  'migrasjon', 'migration', 'strategi', 'strategy', 'system design',
+  'teknisk design', 'data model', 'datamodell', 'arkitekturbeslutning',
+];
+
+const COMPLEX_KEYWORDS = [
+  'debug', 'feilsøk', 'analyser', 'analyze', 'optimize', 'optimaliser',
+  'performance', 'sikkerhet', 'security', 'root cause', 'rotårsak',
+  'race condition', 'memory leak', 'deadlock',
+];
+
+const WEBSEARCH_KEYWORDS = [
+  'websearch', 'søk nettet', 'søk på nettet', 'latest news', 'siste nytt',
+  'hva skjer i', 'what is the current', 'live price', 'current price',
+];
+
+/**
+ * Klassifiser en samtale basert på innhold og lengde.
+ * Brukes til å velge riktig modell (kostnad vs kvalitet).
+ */
+export function classifyTask(messages: AIMessage[]): TaskTier {
+  const text = messages.map(m => m.content).join('\n').toLowerCase();
+  const combinedLength = messages.reduce((sum, m) => sum + m.content.length, 0);
+
+  if (WEBSEARCH_KEYWORDS.some(k => text.includes(k))) {
+    return 'websearch';
+  }
+
+  if (ARCHITECTURE_KEYWORDS.some(k => text.includes(k)) || combinedLength > 6000) {
+    return 'architecture';
+  }
+
+  if (COMPLEX_KEYWORDS.some(k => text.includes(k)) || combinedLength > 1500) {
+    return 'complex';
+  }
+
+  return 'simple';
 }
 
 /**
- * Hovedfunksjon for AI-chat
+ * Bygg en prioritert liste over provider-planer for en gitt oppgave.
+ * Første plan = billigst/adekvat, siste plan = dyrest/best.
+ * Hvis en plan feiler, prøves neste (fallback).
+ */
+export function selectProviderPlan(
+  messages: AIMessage[],
+  forceProvider?: ChatProvider,
+  websearch = false,
+): ProviderPlan[] {
+  const hasKimi = hasKimiApi();
+  const hasDeepSeek = hasDeepSeekApi();
+  const hasNvidia = hasNvidiaApi();
+  const hasPerplexity = !!process.env.PERPLEXITY_API_KEY?.trim();
+
+  // Eksplisitt tvang
+  if (forceProvider && forceProvider !== 'auto') {
+    if (forceProvider === 'perplexity' && hasPerplexity) {
+      return [{ provider: 'perplexity', model: 'sonar-pro', tier: 'websearch' }];
+    }
+    if (forceProvider === 'kimi' && hasKimi) {
+      return [{ provider: 'kimi', model: KIMI_MODELS.K2_7_CODE, tier: 'complex' }];
+    }
+    if (forceProvider === 'deepseek' && hasDeepSeek) {
+      return [{ provider: 'deepseek', model: DEEPSEEK_MODELS.V4_PRO, tier: 'simple' }];
+    }
+    if (forceProvider === 'nvidia' && hasNvidia) {
+      return [{ provider: 'nvidia', model: NVIDIA_MODELS.LLAMA_3_1_70B, tier: 'simple' }];
+    }
+  }
+
+  const tier = websearch ? 'websearch' : classifyTask(messages);
+
+  switch (tier) {
+    case 'websearch':
+      return [
+        ...(hasPerplexity ? [{ provider: 'perplexity' as const, model: 'sonar-pro', tier }] : []),
+        ...(hasKimi ? [{ provider: 'kimi' as const, model: KIMI_MODELS.K3, reasoningEffort: 'high' as const, tier: 'architecture' as const }] : []),
+      ];
+
+    case 'architecture':
+      return [
+        ...(hasKimi ? [{ provider: 'kimi' as const, model: KIMI_MODELS.K3, reasoningEffort: 'max' as const, tier }] : []),
+        ...(hasDeepSeek ? [{ provider: 'deepseek' as const, model: DEEPSEEK_MODELS.V4_PRO, tier: 'complex' as const }] : []),
+        ...(hasNvidia ? [{ provider: 'nvidia' as const, model: NVIDIA_MODELS.LLAMA_3_1_405B, tier: 'complex' as const }] : []),
+      ];
+
+    case 'complex':
+      return [
+        ...(hasKimi ? [{ provider: 'kimi' as const, model: KIMI_MODELS.K2_7_CODE, tier }] : []),
+        ...(hasDeepSeek ? [{ provider: 'deepseek' as const, model: DEEPSEEK_MODELS.V4_PRO, tier: 'simple' as const }] : []),
+        ...(hasNvidia ? [{ provider: 'nvidia' as const, model: NVIDIA_MODELS.LLAMA_3_1_70B, tier: 'simple' as const }] : []),
+      ];
+
+    case 'simple':
+    default:
+      return [
+        ...(hasDeepSeek ? [{ provider: 'deepseek' as const, model: DEEPSEEK_MODELS.V4_FLASH, tier }] : []),
+        ...(hasKimi ? [{ provider: 'kimi' as const, model: KIMI_MODELS.K2_7_CODE, tier: 'complex' as const }] : []),
+        ...(hasNvidia ? [{ provider: 'nvidia' as const, model: NVIDIA_MODELS.LLAMA_3_1_8B, tier: 'simple' as const }] : []),
+      ];
+  }
+}
+
+/**
+ * Hovedfunksjon for AI-chat (legacy, bruker selectBestProvider)
  */
 export async function chatWithAI(
   options: AIOptions & { messages: AIMessage[] }
@@ -669,6 +984,8 @@ export async function chatWithAI(
   switch (provider) {
     case 'kimi':
       return chatWithKimi(messages, options);
+    case 'deepseek':
+      return chatWithDeepSeek(messages, options);
     case 'nvidia':
       return chatWithNvidia(messages, options);
     default:
@@ -677,7 +994,7 @@ export async function chatWithAI(
 }
 
 /**
- * Stream AI-respons
+ * Stream AI-respons (legacy, bruker selectBestProvider)
  */
 export async function* streamAIResponse(
   options: AIOptions & { messages: AIMessage[] }
@@ -696,6 +1013,9 @@ export async function* streamAIResponse(
     case 'kimi':
       yield* streamKimiResponse(messages, options);
       break;
+    case 'deepseek':
+      yield* streamDeepSeekResponse(messages, options);
+      break;
     case 'nvidia':
       yield* streamNvidiaResponse(messages, options);
       break;
@@ -709,13 +1029,19 @@ export async function* streamAIResponse(
  */
 export async function getAvailableProviders(): Promise<{ provider: AIProvider; available: boolean; models: string[] }[]> {
   const hasKimi = hasKimiApi();
-  const hasNvidia = !!process.env.NVIDIA_API_KEY?.trim() || !!process.env.NVIDIA_NIM_API_KEY?.trim();
+  const hasDeepSeek = hasDeepSeekApi();
+  const hasNvidia = hasNvidiaApi();
 
   return [
     {
       provider: 'kimi',
       available: hasKimi,
       models: Object.values(KIMI_MODELS),
+    },
+    {
+      provider: 'deepseek',
+      available: hasDeepSeek,
+      models: Object.values(DEEPSEEK_MODELS),
     },
     {
       provider: 'nvidia',

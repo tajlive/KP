@@ -1,17 +1,25 @@
 /**
- * Unified AI Chat API - KIMI K3 Edition (OAuth)
+ * Unified AI Chat API - Smart Provider Routing
  * 
  * Støtter:
- * 1. KIMI K3 via Kimi Code OAuth (primær, reasoning_effort=high)
- * 2. Perplexity PRO (websearch / fallback)
- * 3. NVIDIA NIM (fallback)
+ * 1. KIMI K3 via Global API / OAuth (primær for komplekse oppgaver)
+ * 2. DeepSeek V4 (billig fallback for enkle oppgaver)
+ * 3. Perplexity PRO (websearch / fallback)
+ * 4. NVIDIA NIM (fallback)
+ * 
+ * Smart ruting:
+ * - 'simple'     → DeepSeek V4 Flash (billigst)
+ * - 'complex'    → Kimi K2.7 Code
+ * - 'architecture' → Kimi K3 (reasoning max)
+ * - 'websearch'  → Perplexity PRO
  * 
  * Endepunkter:
  * POST /api/ai/chat - Send melding til AI
  * GET /api/ai/chat?path=providers - List tilgjengelige providere
  * 
  * Miljøvariabler:
- * - KIMI_OAUTH_TOKEN (påkrevd for KIMI K3 — OAuth-token eller Kimi Code Console-nøkkel)
+ * - KIMI_API_KEY eller KIMI_OAUTH_TOKEN (for KIMI)
+ * - DEEPSEEK_API_KEY (for DeepSeek)
  * - PERPLEXITY_API_KEY (for websearch / fallback)
  * - NVIDIA_API_KEY eller NVIDIA_NIM_API_KEY (for NVIDIA)
  */
@@ -19,12 +27,17 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from "@/lib/supabase/server";
 import {
-  chatWithAI,
-  streamAIResponse,
+  chatWithKimi,
+  chatWithDeepSeek,
+  streamKimiResponse,
+  streamDeepSeekResponse,
   getAvailableProviders,
   SYSTEM_PROMPTS,
+  selectProviderPlan,
   type AIProvider,
+  type ChatProvider,
   type AIMessage,
+  type ProviderPlan,
 } from '@/lib/ai/providers';
 
 export const runtime = 'nodejs';
@@ -91,6 +104,109 @@ async function chatWithPerplexity(
   return response;
 }
 
+// ==================== PROVIDER EXECUTORS ====================
+
+async function executePlan(
+  plan: ProviderPlan,
+  messages: AIMessage[],
+  systemPrompt: string | undefined,
+  temperature: number,
+  maxTokens: number,
+): Promise<{ content: string; provider: ChatProvider; model: string; usage?: unknown; latency_ms?: number }> {
+  const msgs = systemPrompt
+    ? [{ role: 'system' as const, content: systemPrompt }, ...messages.filter(m => m.role !== 'system')]
+    : messages;
+
+  switch (plan.provider) {
+    case 'kimi':
+      const kimiResp = await chatWithKimi(msgs, {
+        model: plan.model,
+        reasoningEffort: plan.reasoningEffort,
+        temperature,
+        maxTokens,
+      });
+      return {
+        content: kimiResp.content,
+        provider: 'kimi',
+        model: kimiResp.model,
+        usage: kimiResp.usage,
+        latency_ms: kimiResp.latency_ms,
+      };
+
+    case 'deepseek':
+      const dsResp = await chatWithDeepSeek(msgs, {
+        model: plan.model,
+        temperature,
+        maxTokens,
+      });
+      return {
+        content: dsResp.content,
+        provider: 'deepseek',
+        model: dsResp.model,
+        usage: dsResp.usage,
+        latency_ms: dsResp.latency_ms,
+      };
+
+    case 'perplexity': {
+      const resp = await chatWithPerplexity(msgs, {
+        model: plan.model,
+        temperature,
+        maxTokens,
+        stream: false,
+        systemPrompt,
+      });
+      const data = await resp.json();
+      return {
+        content: data.choices[0]?.message?.content || '',
+        provider: 'perplexity',
+        model: data.model,
+        usage: data.usage,
+      };
+    }
+
+    default:
+      throw new Error(`Provider ${plan.provider} støttes ikke av smart-ruting ennå`);
+  }
+}
+
+async function* executePlanStream(
+  plan: ProviderPlan,
+  messages: AIMessage[],
+  systemPrompt: string | undefined,
+  temperature: number,
+  maxTokens: number,
+): AsyncGenerator<{ content?: string; done: boolean; error?: string }, void, unknown> {
+  const msgs = systemPrompt
+    ? [{ role: 'system' as const, content: systemPrompt }, ...messages.filter(m => m.role !== 'system')]
+    : messages;
+
+  try {
+    switch (plan.provider) {
+      case 'kimi':
+        yield* streamKimiResponse(msgs, {
+          model: plan.model,
+          reasoningEffort: plan.reasoningEffort,
+          temperature,
+          maxTokens,
+        });
+        return;
+
+      case 'deepseek':
+        yield* streamDeepSeekResponse(msgs, {
+          model: plan.model,
+          temperature,
+          maxTokens,
+        });
+        return;
+
+      default:
+        throw new Error(`Streaming støttes ikke for ${plan.provider} ennå`);
+    }
+  } catch (err) {
+    yield { error: err instanceof Error ? err.message : String(err), done: true };
+  }
+}
+
 // ==================== POST /api/ai/chat ====================
 
 interface ChatRequest {
@@ -102,7 +218,7 @@ interface ChatRequest {
   stream?: boolean;
   systemPrompt?: string;
   useCase?: 'crypto' | 'trading' | 'market' | 'general';
-  forceProvider?: 'perplexity' | 'kimi' | 'nvidia' | 'auto';
+  forceProvider?: AIProvider | 'perplexity' | 'auto';
   websearch?: boolean;
 }
 
@@ -154,129 +270,62 @@ export async function POST(req: Request) {
       }
     }
 
-    // Sjekk hvilke providere som er tilgjengelige
-    const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
-    const hasKimi = !!(process.env.KIMI_API_KEY?.trim() || process.env.KIMI_OAUTH_TOKEN?.trim());
-    const hasNvidia = !!(process.env.NVIDIA_API_KEY || process.env.NVIDIA_NIM_API_KEY);
+    // Bygg plan basert på oppgave + tilgjengelige providere
+    const plans = selectProviderPlan(messages, forceProvider, websearch);
 
-    // Velg provider
-    let usePerplexity = false;
-    let useKimi = false;
-    let useNvidia = false;
-
-    if (forceProvider === 'perplexity' || websearch) {
-      usePerplexity = hasPerplexity;
-      if (!hasPerplexity) {
-        return NextResponse.json(
-          { error: 'Perplexity er ikke konfigurert. Sett PERPLEXITY_API_KEY.' },
-          { status: 503 }
-        );
-      }
-    } else if (forceProvider === 'kimi') {
-      useKimi = hasKimi;
-      if (!useKimi) {
-        return NextResponse.json(
-          { error: 'KIMI er ikke konfigurert. Sett KIMI_API_KEY (anbefalt) eller KIMI_OAUTH_TOKEN.' },
-          { status: 503 }
-        );
-      }
-    } else if (forceProvider === 'nvidia') {
-      useNvidia = hasNvidia;
-      if (!hasNvidia) {
-        return NextResponse.json(
-          { error: 'NVIDIA er ikke konfigurert. Sett NVIDIA_API_KEY.' },
-          { status: 503 }
-        );
-      }
-    } else {
-      // Auto-select: KIMI -> Perplexity (websearch) -> NVIDIA
-      useKimi = hasKimi;
-      usePerplexity = !useKimi && hasPerplexity;
-      useNvidia = !useKimi && !usePerplexity && hasNvidia;
-    }
-
-    // ==================== PERPLEXITY PRO ====================
-    if (usePerplexity) {
-      const response = await chatWithPerplexity(messages, {
-        model: body.model || PERPLEXITY_MODELS.PRO,
-        temperature,
-        maxTokens,
-        stream,
-        systemPrompt: finalSystemPrompt,
-      });
-
-      if (stream) {
-        return new Response(response.body, {
-          headers: {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            Connection: 'keep-alive',
-          },
-        });
-      }
-
-      const data = await response.json();
-      
-      return NextResponse.json({
-        content: data.choices[0]?.message?.content || '',
-        provider: 'perplexity',
-        model: data.model,
-        usage: data.usage,
-        citations: data.citations || [],
-      });
-    }
-
-    // ==================== KIMI / NVIDIA ====================
-    const provider = useKimi ? 'kimi' : useNvidia ? 'nvidia' : null;
-    
-    if (!provider) {
+    if (plans.length === 0) {
       return NextResponse.json(
-        { 
-          error: 'Ingen AI provider konfigurert',
-          message: 'Sett PERPLEXITY_API_KEY, KIMI_OAUTH_TOKEN eller NVIDIA_API_KEY',
-          setup: {
-            kimi: 'https://www.kimi.com/code',
-            perplexity: { url: 'https://perplexity.ai/', recommended: 'websearch' },
-            nvidia: 'https://build.nvidia.com/',
-          }
-        },
+        { error: 'Ingen AI provider konfigurert for denne oppgaven' },
         { status: 503 }
       );
     }
 
-    // STREAMING for KIMI/NVIDIA
+    // ==================== STREAMING ====================
     if (stream) {
       const encoder = new TextEncoder();
       
       const streamGenerator = new ReadableStream({
         async start(controller) {
-          try {
-            for await (const chunk of streamAIResponse({
-              provider,
-              temperature,
-              maxTokens,
-              systemPrompt: finalSystemPrompt,
-              messages,
-            })) {
-              const data = JSON.stringify({
-                content: chunk.content,
-                done: chunk.done,
-              });
-              controller.enqueue(encoder.encode(`data: ${data}\n\n`));
-              
-              if (chunk.done) {
+          for (const plan of plans) {
+            try {
+              let hasError = false;
+              for await (const chunk of executePlanStream(plan, messages, finalSystemPrompt, temperature, maxTokens)) {
+                if (chunk.error) {
+                  hasError = true;
+                  // Prøv neste plan ved initieringsfeil
+                  break;
+                }
+                const data = JSON.stringify({
+                  content: chunk.content ?? '',
+                  done: chunk.done,
+                  provider: plan.provider,
+                  model: plan.model,
+                });
+                controller.enqueue(encoder.encode(`data: ${data}\n\n`));
+                if (chunk.done) {
+                  controller.close();
+                  return;
+                }
+              }
+              if (!hasError) {
                 controller.close();
+                return;
+              }
+            } catch (error) {
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              // Hvis det er siste plan, returner feil; ellers prøv neste
+              if (plan === plans[plans.length - 1]) {
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ error: errorMessage, done: true })}\n\n`
+                  )
+                );
+                controller.close();
+                return;
               }
             }
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            controller.enqueue(
-              encoder.encode(
-                `data: ${JSON.stringify({ error: errorMessage, done: true })}\n\n`
-              )
-            );
-            controller.close();
           }
+          controller.close();
         },
       });
 
@@ -289,22 +338,38 @@ export async function POST(req: Request) {
       });
     }
 
-    // NON-STREAMING for KIMI/NVIDIA
-    const response = await chatWithAI({
-      provider,
-      temperature,
-      maxTokens,
-      systemPrompt: finalSystemPrompt,
-      messages,
-    });
+    // ==================== NON-STREAMING med fallback ====================
+    const errors: { provider: ChatProvider; error: string }[] = [];
 
-    return NextResponse.json({
-      content: response.content,
-      provider: response.provider,
-      model: response.model,
-      usage: response.usage,
-      latency_ms: response.latency_ms,
-    });
+    for (const plan of plans) {
+      try {
+        const result = await executePlan(plan, messages, finalSystemPrompt, temperature, maxTokens);
+        return NextResponse.json({
+          content: result.content,
+          provider: result.provider,
+          model: result.model,
+          usage: result.usage,
+          latency_ms: result.latency_ms,
+          routing: {
+            tier: plan.tier,
+            tried: errors.map(e => e.provider),
+          },
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        errors.push({ provider: plan.provider, error: errorMessage });
+        console.warn(`AI routing fallback: ${plan.provider} feilet (${errorMessage})`);
+      }
+    }
+
+    // Alle planer feilet
+    return NextResponse.json(
+      {
+        error: 'Alle tilgjengelige AI-providere feilet',
+        failures: errors,
+      },
+      { status: 502 }
+    );
 
   } catch (error) {
     console.error('AI Chat API Error:', error);
@@ -334,22 +399,29 @@ export async function GET(req: Request) {
     return NextResponse.json({
       primary: 'kimi',
       websearchFallback: 'perplexity',
+      cheapFallback: 'deepseek',
       providers: {
         kimi: {
-          available: providers.some((p: { provider: AIProvider; available: boolean }) => p.provider === 'kimi' && p.available),
+          available: providers.some((p) => p.provider === 'kimi' && p.available),
           priority: 1,
-          models: providers.find((p: { provider: AIProvider; available: boolean; models: string[] }) => p.provider === 'kimi')?.models || [],
-          recommended: true,
-          defaultModel: 'k3',
+          models: providers.find((p) => p.provider === 'kimi')?.models || [],
+          recommended: 'complex / architecture',
+          defaultModel: 'kimi-for-coding',
+        },
+        deepseek: {
+          available: providers.some((p) => p.provider === 'deepseek' && p.available),
+          priority: 2,
+          models: providers.find((p) => p.provider === 'deepseek')?.models || [],
+          recommended: 'simple / cheap fallback',
         },
         perplexity: {
           available: hasPerplexity,
-          priority: 2,
+          priority: 3,
           models: Object.values(PERPLEXITY_MODELS),
           recommended: 'websearch',
         },
         ...providers
-          .filter((p: { provider: AIProvider }) => p.provider !== 'kimi')
+          .filter((p) => p.provider !== 'kimi' && p.provider !== 'deepseek')
           .reduce<Record<string, { provider: AIProvider; available: boolean; models: string[] }>>(
             (acc, p) => ({ ...acc, [p.provider]: p }),
             {}
@@ -361,19 +433,29 @@ export async function GET(req: Request) {
 
   // Default: Returner API-info
   return NextResponse.json({
-    name: 'Klarpakke AI Chat API - KIMI K3 Edition (OAuth)',
-    version: '3.0.0',
+    name: 'Klarpakke AI Chat API - Smart Provider Routing',
+    version: '3.1.0',
     primaryProvider: 'kimi',
-    defaultModel: 'k3',
+    cheapProvider: 'deepseek',
+    defaultModel: 'kimi-for-coding',
     perplexityStatus: hasPerplexity ? 'Konfigurert (websearch fallback)' : 'Ikke konfigurert',
     endpoints: {
       POST: '/api/ai/chat - Send melding til AI',
       'GET /api/ai/chat?path=providers': 'List tilgjengelige providere og modeller',
     },
-    supportedProviders: ['kimi', 'perplexity', 'nvidia'],
-    kimiModels: providers.find((p: { provider: AIProvider; models: string[] }) => p.provider === 'kimi')?.models || [],
+    supportedProviders: ['kimi', 'deepseek', 'perplexity', 'nvidia'],
+    kimiModels: providers.find((p) => p.provider === 'kimi')?.models || [],
+    deepseekModels: providers.find((p) => p.provider === 'deepseek')?.models || [],
     perplexityModels: Object.values(PERPLEXITY_MODELS),
     useCases: ['crypto', 'trading', 'market', 'general'],
-    features: ['streaming', 'non-streaming', 'citations', 'auto-provider-selection', 'websearch-fallback'],
+    features: [
+      'streaming',
+      'non-streaming',
+      'citations',
+      'auto-provider-selection',
+      'websearch-fallback',
+      'smart-task-routing',
+      'provider-fallback-on-error',
+    ],
   });
 }
