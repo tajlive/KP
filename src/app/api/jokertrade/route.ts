@@ -13,44 +13,30 @@ import type { Database } from "@/types/database.types";
 import { executeTrade } from "@/lib/trading/core/execute-trade";
 import type { ExecuteTradeRequest } from "@/types/trading";
 import { getNokUsdtRate } from "@/lib/trading/canonical/exchange-rate";
+import { calculateRSI as calcRSI, calculateMACD, calculateSMA, calculateBollingerBands } from "@/lib/trading/indicators";
+import { generateJokerSignal, type MarketData } from "./signal";
 
 // ---------------------------------------------------------------------------
 // Konstanter
 // ---------------------------------------------------------------------------
 
-const TOP_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT"];
 const DEFAULT_CAPITAL = 100_000;
 const MIN_POSITION_PCT = 2;
 const MAX_POSITION_PCT = 10;
 const BASE_POSITION_PCT = 5;
-const TAKE_PROFIT_PCT = 3;
-const STOP_LOSS_PCT = 5;
+const TOP_SYMBOLS = [
+  "BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT",
+  "LINKUSDT", "ADAUSDT", "DOTUSDT", "UNIUSDT", "MATICUSDT",
+];
+
 const FALLBACK_PRICES: Record<string, number> = {
-  BTCUSDT: 60000,
-  ETHUSDT: 2500,
-  SOLUSDT: 25,
-  AVAXUSDT: 18,
-  DOGEUSDT: 0.12,
+  BTCUSDT: 60000, ETHUSDT: 2500, SOLUSDT: 140, AVAXUSDT: 18, DOGEUSDT: 0.12,
+  LINKUSDT: 12, ADAUSDT: 0.45, DOTUSDT: 5.5, UNIUSDT: 7.5, MATICUSDT: 0.55,
 };
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function calculateRSI(prices: number[], period: number): number {
-  if (prices.length < period + 1) return 50;
-  let gains = 0, losses = 0;
-  for (let i = prices.length - period; i < prices.length; i++) {
-    const diff = prices[i] - prices[i - 1];
-    if (diff >= 0) gains += diff;
-    else losses -= diff;
-  }
-  const avgGain = gains / period;
-  const avgLoss = losses / period;
-  if (avgLoss === 0) return 100;
-  const rs = avgGain / avgLoss;
-  return 100 - (100 / (1 + rs));
-}
 
 function dynamicPositionPct(confidence: number, volatility: number): number {
   const volFactor = Math.max(0.3, 1 - (volatility / 200));
@@ -62,6 +48,10 @@ function dynamicPositionPct(confidence: number, volatility: number): number {
 async function fetchMarketData(symbol: string): Promise<{
   currentPrice: number;
   rsi: number;
+  macd: { histogram: number; signal: number; macd: number };
+  bollinger: { upper: number; middle: number; lower: number };
+  sma10: number;
+  sma30: number;
   volatility: number;
   trend: "up" | "down" | "flat";
 }> {
@@ -80,7 +70,28 @@ async function fetchMarketData(symbol: string): Promise<{
 
     const currentPrice = parseFloat(data.price ?? "0");
     const prices = (data.klines ?? []).map((k: { close: string }) => parseFloat(k.close)).filter((p: number) => p > 0);
-    const rsi = prices.length > 14 ? calculateRSI(prices, 14) : 50;
+    const rsiArr = prices.length > 14 ? calcRSI(prices, 14) : null; const rsi = rsiArr ? (rsiArr[rsiArr.length-1] ?? 50) : 50;
+
+    // MACD
+    const macdData = prices.length > 26 ? calculateMACD(prices) : null;
+    const macd = macdData ? {
+      histogram: macdData.histogram[macdData.histogram.length - 1],
+      signal: macdData.signal[macdData.signal.length - 1],
+      macd: macdData.macd[macdData.macd.length - 1],
+    } : { histogram: 0, signal: 0, macd: 0 };
+
+    // Bollinger Bands
+    const bb = prices.length > 20 ? calculateBollingerBands(prices) : null;
+    const lastBB = bb ? bb[bb.length - 1] : null;
+    const bollinger = lastBB && lastBB.upper ? {
+      upper: lastBB.upper, middle: lastBB.middle!, lower: lastBB.lower,
+    } : { upper: 0, middle: 0, lower: 0 };
+
+    // SMA crossover
+    const sma10Arr = prices.length > 10 ? calculateSMA(prices, 10) : null;
+    const sma30Arr = prices.length > 30 ? calculateSMA(prices, 30) : null;
+    const sma10 = sma10Arr ? (sma10Arr[sma10Arr.length - 1] ?? currentPrice) : currentPrice;
+    const sma30 = sma30Arr ? (sma30Arr[sma30Arr.length - 1] ?? currentPrice) : currentPrice;
 
     // Volatilitet: standardavvik av siste 14 kandler
     const recentPrices = prices.slice(-14);
@@ -91,9 +102,9 @@ async function fetchMarketData(symbol: string): Promise<{
     const change24h = parseFloat(data.changePercent ?? "0");
     const trend: "up" | "down" | "flat" = change24h > 2 ? "up" : change24h < -2 ? "down" : "flat";
 
-    return { currentPrice, rsi, volatility, trend };
+    return { currentPrice, rsi, macd, bollinger, sma10, sma30, volatility, trend };
   } catch {
-    return { currentPrice: 0, rsi: 50, volatility: 50, trend: "flat" };
+    return { currentPrice: 0, rsi: 50, macd: { histogram: 0, signal: 0, macd: 0 }, bollinger: { upper: 0, middle: 0, lower: 0 }, sma10: 0, sma30: 0, volatility: 50, trend: "flat" };
   }
 }
 
@@ -200,7 +211,7 @@ async function ensureActiveSession(
       initial_capital: capital,
       last_heartbeat: new Date().toISOString(),
       last_tick_at: new Date().toISOString(),
-      strategy_config: { stop_loss_pct: STOP_LOSS_PCT, close_on_stop: true },
+      strategy_config: { stop_loss_pct: 5, close_on_stop: true },
     })
     .select("id")
     .single();
@@ -213,11 +224,25 @@ async function ensureActiveSession(
 // Exits
 // ---------------------------------------------------------------------------
 
+/** Beregn SL/TP dynamisk basert på volatilitet + confidence */
+function dynamicExits(volatility: number, rsi: number, confidence: number): { takeProfitPct: number; stopLossPct: number } {
+  const volTP = Math.max(2, Math.min(8, 3 + (volatility / 100) * 3));
+  const volSL = Math.max(3, Math.min(10, 5 + (volatility / 100) * 4));
+  const confidenceFactor = 1 - ((confidence - 50) / 100) * 0.3;
+  const slAdjust = Math.max(0.5, Math.min(1.5, confidenceFactor));
+  return {
+    takeProfitPct: Math.round(volTP * 10) / 10,
+    stopLossPct: Math.round(volSL * slAdjust * 10) / 10,
+  };
+}
+
 async function checkExits(
   db: ReturnType<typeof createClient>,
   userId: string,
   sessionId: string,
   priceCache: Map<string, number>,
+  takeProfitPct: number,
+  stopLossPct: number,
 ): Promise<number> {
   let exits = 0;
   const { data: positions } = await db
@@ -239,7 +264,7 @@ async function checkExits(
       ? ((currentPrice - entry) / entry) * 100
       : ((entry - currentPrice) / entry) * 100;
 
-    if (pnlPct >= TAKE_PROFIT_PCT) {
+    if (pnlPct >= takeProfitPct) {
       try {
         const result = await executeTrade(db, {
           userId,
@@ -333,11 +358,8 @@ export async function POST(request: NextRequest) {
     if (market.currentPrice <= 0) market.currentPrice = price;
 
     // 3. Generer signal
-    const signal = generateSignal(symbol, price, market.rsi, market.volatility, market.trend);
-
-    // 🧠 Lær av historikk — juster confidence basert på coin win-rate
     const winMultiplier = await getCoinWinRate(db, userId, symbol);
-    signal.confidence = Math.round(signal.confidence * winMultiplier);
+    const signal = generateJokerSignal(market, winMultiplier);
 
     // 4. Session
     const session = await ensureActiveSession(db, userId);
@@ -349,8 +371,9 @@ export async function POST(request: NextRequest) {
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", session.id);
 
     // 5. Sjekk exits
+    const { takeProfitPct, stopLossPct } = dynamicExits(market.volatility, market.rsi, signal.confidence);
     const priceMap = new Map([[symbol, price]]);
-    const exitsExecuted = await checkExits(db, userId, session.id, priceMap);
+    const exitsExecuted = await checkExits(db, userId, session.id, priceMap, takeProfitPct, stopLossPct);
 
     // 6. Utfør trade
     let tradeData: { success?: boolean; tradeId?: string; error?: string } = {};
