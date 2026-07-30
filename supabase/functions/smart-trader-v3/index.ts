@@ -45,6 +45,21 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    // === KILL SWITCH: sjekk globalt flagg FØR noe annet ===
+    const { data: flag } = await supabase
+      .from("system_flags")
+      .select("value")
+      .eq("key", "jokertrade")
+      .maybeSingle();
+    const killSwitch = flag?.value as { enabled?: boolean; reason?: string } | null;
+    if (killSwitch && killSwitch.enabled === false) {
+      return new Response(JSON.stringify({
+        ok: false,
+        disabled: true,
+        reason: killSwitch.reason ?? "JokerTrade er globalt deaktivert (kill switch)",
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+
     // === FIX 3: Valider Binance før sessions startes ===
     const binanceOk = await validateBinance();
     if (!binanceOk) {
