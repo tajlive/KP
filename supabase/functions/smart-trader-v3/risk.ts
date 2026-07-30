@@ -53,7 +53,10 @@ export function checkPositionExit(
   return 'hold';
 }
 
-/** Beregn posisjonsstørrelse basert på kapital og risiko */
+/** Beregn posisjonsstørrelse basert på kapital og risiko
+ * 
+ * 2026-07-30: currentPrice forventes nå å være i NOK for paper-sesjoner.
+ */
 export function calculatePositionSize(
   capital: number,
   currentPrice: number,

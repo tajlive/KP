@@ -1,54 +1,31 @@
 /**
  * SmartTrader v3 — Supabase Edge Function
  *
- * V3.2 KALD-START-OPTIMALISERING:
- * - Dynamisk import av evaluateSignal (tyngste modul: indicators.ts RSI/SMA/momentum)
- * - Binance-status cache (30s TTL) — unngår unødvendig ping på hver kjøring
- * - Supabase-klient opprettes lazy inne i handler (allerede optimalt)
- *
- * V3.1 FORBEDRINGER (intakt):
+ * Teknisk analyse-bot som kjører hvert 15. minutt via pg_cron.
+ * 
+ * V3.1 FORBEDRINGER:
  * - Maks 50 trades per session (hindrer overbelastning)
- * - Valider Binance for session starter
+ * - Valider Binance før session starter
  * - Spre kjøringer jevnt over 15 min
  * - Logg error_message ved feil
+ * 
+ * V3.2 FORBEDRINGER (2026-07-30):
+ * - Valuta-konvertering USDT → NOK i executor (paper-kapital er NOK).
+ * - Posisjon lagrer symbol; selg/SL/TP validerer at posisjonen tilhører
+ *   samme par som session.trading_pair.
+ * - Harde tak på trade-verdi for å hindre inflasjon.
  */
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-import { executeTrade } from "./executor.ts";
+import { evaluateSignal } from "./signals.ts";
+import { executeTrade, checkAndClosePosition } from "./executor.ts";
 import { DEFAULT_CONFIG } from "./types.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const CRON_SECRET = Deno.env.get("CRON_SECRET") ?? "";
-const MAX_TRADES_PER_SESSION = 50;
-const BINANCE_TIMEOUT_MS = 8000;
-
-// === V3.2: Binance-status cache (30s TTL) ===
-let binanceOkCache: { ok: boolean; expiresAt: number } | null = null;
-
-async function isBinanceAvailable(): Promise<boolean> {
-  const now = Date.now();
-  if (binanceOkCache && binanceOkCache.expiresAt > now) {
-    return binanceOkCache.ok;
-  }
-  const ok = await validateBinanceRaw();
-  binanceOkCache = { ok, expiresAt: now + 30_000 };
-  return ok;
-}
-
-async function validateBinanceRaw(): Promise<boolean> {
-  const endpoints = [
-    "https://api.binance.com/api/v3/ping",
-    "https://data-api.binance.vision/api/v3/ping",
-  ];
-  for (const url of endpoints) {
-    try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(BINANCE_TIMEOUT_MS) });
-      if (res.ok) return true;
-    } catch { continue; }
-  }
-  return false;
-}
+const MAX_TRADES_PER_SESSION = 50; // Hindrer overbelastning
+const BINANCE_TIMEOUT_MS = 8000;   // Timeout for Binance-validering
 
 serve(async (req) => {
   const startTime = Date.now();
@@ -68,8 +45,8 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // === V3.2: Cachet Binance-sjekk ===
-    const binanceOk = await isBinanceAvailable();
+    // === FIX 3: Valider Binance før sessions startes ===
+    const binanceOk = await validateBinance();
     if (!binanceOk) {
       return new Response(JSON.stringify({
         ok: false,
@@ -95,13 +72,44 @@ serve(async (req) => {
       });
     }
 
+    // === FIX 2+4: Sjekk trades count + spre jevnt ===
     const results: Record<string, unknown>[] = [];
-    const delayBetween = Math.min(3000, Math.floor(60000 / sessions.length));
+
+    // Hent klines én gang per unikt symbol (99 % av sessions bruker samme par)
+    const klinesCache = new Map<string, { close: number; high: number; low: number }[]>();
+    const priceCache = new Map<string, number>();
+
+    for (const session of sessions) {
+      const symbol = session.trading_pair || DEFAULT_CONFIG.symbol;
+      if (!klinesCache.has(symbol)) {
+        try {
+          const klines = await fetchKlines(symbol, DEFAULT_CONFIG.interval);
+          klinesCache.set(symbol, klines);
+          priceCache.set(symbol, klines[klines.length - 1].close);
+        } catch (err) {
+          klinesCache.set(symbol, []);
+        }
+      }
+    }
 
     for (let i = 0; i < sessions.length; i++) {
       const session = sessions[i];
 
       try {
+        const config = {
+          ...DEFAULT_CONFIG,
+          ...(session.smart_trader_config || {}),
+          symbol: session.trading_pair || DEFAULT_CONFIG.symbol,
+        };
+
+        const klines = klinesCache.get(config.symbol) || [];
+        if (klines.length < config.rsiPeriod + 5) {
+          results.push({ session: session.id, status: "skipped", reason: "For få klines-data" });
+          continue;
+        }
+        const currentPrice = priceCache.get(config.symbol)!;
+
+        // === FIX 2: Sjekk antall trades — maks 50 ===
         const { count: tradeCount, error: countError } = await supabase
           .from("trades")
           .select("*", { count: "exact", head: true })
@@ -116,23 +124,7 @@ serve(async (req) => {
           continue;
         }
 
-        const config = {
-          ...DEFAULT_CONFIG,
-          ...(session.smart_trader_config || {}),
-          symbol: session.trading_pair || DEFAULT_CONFIG.symbol,
-        };
-
-        const klines = await fetchKlines(config.symbol, config.interval);
-        if (!klines || klines.length < config.rsiPeriod + 5) {
-          results.push({ session: session.id, status: "skipped", reason: "For få klines-data" });
-          continue;
-        }
-
-        const currentPrice = klines[klines.length - 1].close;
-
-        // === V3.2: Dynamic import for open_position-sjekk (kun ved behov) ===
         if (session.open_position) {
-          const { checkAndClosePosition } = await import("./executor.ts");
           const exitResult = await checkAndClosePosition(supabase, session, currentPrice, config);
           if (exitResult.closed) {
             results.push({ session: session.id, status: exitResult.reason, price: currentPrice });
@@ -140,8 +132,6 @@ serve(async (req) => {
           }
         }
 
-        // === V3.2: Dynamic import for signal-evaluering (tyngste modul) ===
-        const { evaluateSignal } = await import("./signals.ts");
         const signal = evaluateSignal(klines, config);
         const tradeResult = await executeTrade(supabase, session, signal, config, currentPrice);
 
@@ -158,6 +148,7 @@ serve(async (req) => {
         const errMsg = err instanceof Error ? err.message : String(err);
         console.error(`[SmartTrader] Session ${session.id} error:`, errMsg);
 
+        // === FIX 1: Logg error_message til DB ===
         await supabase
           .from("trading_sessions")
           .update({
@@ -169,8 +160,9 @@ serve(async (req) => {
         results.push({ session: session.id, status: "error", error: errMsg });
       }
 
+      // === FIX 4: Minimal delay for å ikke overbelaste DB/Rate limits ===
       if (i < sessions.length - 1) {
-        await new Promise(r => setTimeout(r, delayBetween));
+        await new Promise(r => setTimeout(r, 50));
       }
     }
 
@@ -187,6 +179,23 @@ serve(async (req) => {
     });
   }
 });
+
+/**
+ * FIX 3: Valider at Binance API er tilgjengelig før trading startes
+ */
+async function validateBinance(): Promise<boolean> {
+  const endpoints = [
+    "https://api.binance.com/api/v3/ping",
+    "https://data-api.binance.vision/api/v3/ping",
+  ];
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(BINANCE_TIMEOUT_MS) });
+      if (res.ok) return true;
+    } catch { continue; }
+  }
+  return false;
+}
 
 async function fetchKlines(symbol: string, interval: string): Promise<{ close: number; high: number; low: number }[]> {
   const endpoints = [
