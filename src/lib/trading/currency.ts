@@ -94,7 +94,16 @@ export async function getUsdtToNokRateAsync(
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
   }
 
-  // 3. Statisk fallback — logges slik at forelding ikke er stille
+  // 3. Levende markedsrate via kanonisk tjeneste (Binance proxy)
+  try {
+    const { getNokUsdtRate } = await import("@/lib/trading/canonical/exchange-rate");
+    const liveRate = await getNokUsdtRate();
+    if (liveRate > 0) return liveRate;
+  } catch {
+    // fallthrough
+  }
+
+  // 4. Statisk fallback — logges slik at forelding ikke er stille
   console.warn(
     `[currency] USDT→NOK bruker statisk fallback ${FALLBACK_USDT_NOK} — ` +
       "verken DB (global_settings) eller env ga en kurs. Sjekk cron update-usdt-nok.",
