@@ -39,9 +39,11 @@ await check("login-html", async () => {
 await check("js-bundle-inlining", async () => {
   const r = await fetch(`${BASE}/no/login`);
   const html = await r.text();
-  const chunks = [...html.matchAll(/src="(\/_next\/static\/chunks\/[^"]+\.js)"/g)]
-    .map((m) => m[1])
-    .slice(0, 12);
+  // Sjekk ALLE unike chunks (2026-07-31: .slice(0,12) ga falsk alarm —
+  // Supabase-URL lå i chunk nr. ~20 av 28 på login-siden)
+  const chunks = [...new Set(
+    [...html.matchAll(/src="(\/_next\/static\/chunks\/[^"]+\.js)"/g)].map((m) => m[1])
+  )];
   assert(chunks.length > 0, "Fant ingen JS-chunks på login-siden");
   let found = false;
   for (const c of chunks) {
@@ -67,7 +69,10 @@ await check("kurs-page", async () => {
   const r = await fetch(`${BASE}/no/kurs`);
   const html = await r.text();
   assert(r.status === 200, `HTTP ${r.status}`);
-  assert(!html.includes("Noe gikk galt"), "Kurs-siden viser error boundary");
+  // Fjern script-tags først — i18n-meldinger ("Noe gikk galt", "Prøv igjen")
+  // ligger i JSON-payload og skal ikke tolkes som synlig error boundary.
+  const visible = html.replace(/<script[^>]*>.*?<\/script>/gis, "");
+  assert(!visible.includes("Noe gikk galt"), "Kurs-siden viser error boundary");
 });
 
 if (failures.length > 0) {
