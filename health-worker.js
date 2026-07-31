@@ -14,7 +14,10 @@ export default {
           signal: AbortSignal.timeout(5000),
         });
         const executeStatus = executeProbe.status;
-        const executeHealthy = executeStatus !== 502 && executeStatus !== 503;
+        // 4xx er OK for en probe med ugyldig/blankt payload — det betyr at
+        // endepunktet lever og validerer input. 5xx og 522 (origin timeout)
+        // er feil og skal IKKE maskeres som "ok".
+        const executeHealthy = executeStatus >= 200 && executeStatus < 500;
         let executeMessage = executeHealthy ? `HTTP ${executeStatus}` : null;
         if (!executeHealthy) {
           try { const body = await executeProbe.json(); executeMessage = body.error || `HTTP ${executeStatus}`; } catch { executeMessage = `HTTP ${executeStatus}`; }
