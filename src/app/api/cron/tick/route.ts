@@ -73,6 +73,13 @@ import {
   pauseUserSessions,
   DEFAULT_GUARDRAIL_CONFIG,
 } from "@/lib/trading/beta/tick-guardrails";
+import {
+  GUARD_ERROR_OR_FILTER,
+  isGuardError,
+  isSessionTradeable,
+  sessionSkipReason,
+  type TradeableSessionLike,
+} from "@/lib/trading/session-guard";
 import { queueEmail } from "@/lib/email";
 import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
 import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
@@ -1580,19 +1587,31 @@ async function ensureAutoTradingSessions(
   // for én bruker, alle med 100 000 NOK "kapital" hver.
   const usersToReactivate = usersToCreate;
   if (usersToReactivate.length > 0) {
+    // 🛡️ Task 0.3: GUARD-deaktiverte sesjoner reaktiveres ALDRI. Guarden
+    // setter error_message='GUARD:…' — en auto-reaktivering her ville
+    // omgjort guard-enforcement (prod-bevis: sesjoner fortsatte å kjøpe
+    // etter "auto-deaktivering").
     const { data: reusable } = await db
       .from("trading_sessions")
-      .select("id, user_id")
+      .select("id, user_id, error_message")
       .in("user_id", usersToReactivate)
       .eq("mode", "paper")
       .eq("trading_pair", "BTCUSDT")
       // 'paused' er bevisst bruker-valg — kun stopped/crashed reaktiveres.
       .in("status", ["stopped", "crashed"])
+      .or(GUARD_ERROR_OR_FILTER)
       .order("updated_at", { ascending: false });
 
     const latestByUser = new Map<string, string>();
     for (const row of reusable ?? []) {
       const uid = row.user_id as string;
+      // JS-forsvar i tillegg til or()-filteret: aldri reaktiver guard-stoppet.
+      if (isGuardError(row.error_message as string | null)) {
+        console.warn(
+          `[Tick] Reaktivering hoppet over for ${uid}: sesjon ${row.id} er GUARD-deaktivert`,
+        );
+        continue;
+      }
       if (!latestByUser.has(uid)) latestByUser.set(uid, row.id as string);
     }
 
@@ -1748,10 +1767,19 @@ export async function GET(req: NextRequest) {
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)
     // Increased from 50 → 500 to avoid starving sessions when many users are active
+    //
+    // 🛡️ Forsvar i dybden (Task 0.3): kun TRADEBARE sesjoner. Guarden
+    // (jokertrade_health_guard) setter status='stopped' + stopped_at, men
+    // eldre guard-utløsninger satte kun smart_trader_enabled=false +
+    // error_message='GUARD:…' mens status forble 'active' → tick fortsatte
+    // å kjøpe (prod-bevis: kjøp 06:08 og 07:45 etter guard 05:04). Derfor
+    // filtreres alle tre kriteriene her — på query-nivå OG i JS under.
     const { data: sessions, error } = await db
       .from("trading_sessions")
       .select("*")
       .eq("status", "active")
+      .eq("smart_trader_enabled", true)
+      .or(GUARD_ERROR_OR_FILTER)
       .order("last_tick_at", { ascending: true, nullsFirst: true })
       .limit(500);
 
@@ -1766,6 +1794,22 @@ export async function GET(req: NextRequest) {
     if (!sessions || sessions.length === 0) {
       return NextResponse.json({ processed: 0, message: "No active sessions" });
     }
+
+    // JS-side forsvar: ekskluder alt som glapp gjennom query-filtrene
+    // (f.eks. racer mellom guard og tick) og logg hvorfor de ble hoppet over.
+    const nonTradeable = (sessions as unknown[]).filter(
+      (s) => !isSessionTradeable(s as TradeableSessionLike),
+    );
+    for (const s of nonTradeable) {
+      const reason = sessionSkipReason(s as TradeableSessionLike);
+      console.warn(
+        `[Tick] Hoppet over ikke-tradebar sesjon ${(s as { id?: string }).id} (${reason})`,
+      );
+    }
+    const tradeableSessions = (sessions as unknown[]).filter((s) =>
+      isSessionTradeable(s as TradeableSessionLike),
+    ) as unknown as typeof sessions;
+    sessions.splice(0, sessions.length, ...tradeableSessions);
 
     // Route auto-trading users through the canonical tick pipeline even if they
     // do not currently have an active session.

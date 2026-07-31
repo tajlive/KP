@@ -1,0 +1,93 @@
+/**
+ * session-guard.ts
+ *
+ * Forsvar i dybden mot trading på deaktiverte sesjoner (Task 0.3).
+ *
+ * Guarden (jokertrade_health_guard) setter status='stopped' + stopped_at
+ * + smart_trader_enabled=false + error_message='GUARD: …'. Eldre
+ * guard-utløsninger (2026-07-31 05:04 og tidligere) satte KUN
+ * smart_trader_enabled=false + error_message mens status forble 'active'
+ * — tick fortsatte å kjøpe (prod-bevis: kjøp 06:08 og 07:45).
+ *
+ * Denne modulen er den KODE-side garantien: en sesjon regnes som
+ * tradeable kun hvis ALLE tre kriteriene er oppfylt:
+ *   1. status = 'active'
+ *   2. smart_trader_enabled != false
+ *   3. error_message NOT LIKE 'GUARD:%'
+ *
+ * Brukes av /api/cron/tick og /api/jokertrade (query-filtre + JS-filter).
+ */
+
+export interface TradeableSessionLike {
+  status?: string | null;
+  smart_trader_enabled?: boolean | null;
+  error_message?: string | null;
+}
+
+/** GUARD-prefiksen guard-funksjonen setter i error_message. */
+export const GUARD_ERROR_PREFIX = "GUARD:";
+
+export function isGuardError(message: string | null | undefined): boolean {
+  return typeof message === "string" && message.startsWith(GUARD_ERROR_PREFIX);
+}
+
+/**
+ * Kan denne sesjonen handle? false = skal ekskluderes fra ALL trading
+ * (tick, JokerTrade, auto-trader).
+ */
+export function isSessionTradeable(
+  session: TradeableSessionLike | null | undefined,
+): boolean {
+  if (!session) return false;
+  if (session.status !== "active") return false;
+  if (session.smart_trader_enabled === false) return false;
+  if (isGuardError(session.error_message)) return false;
+  return true;
+}
+
+/**
+ * Menneskes-lesbar årsak til at sesjonen ble hoppet over — for logging.
+ * Returnerer null når sesjonen ER tradeable.
+ */
+export function sessionSkipReason(
+  session: TradeableSessionLike | null | undefined,
+): string | null {
+  if (!session) return "manglende sesjon";
+  if (session.status !== "active") {
+    return `status=${session.status} (krever 'active')`;
+  }
+  if (session.smart_trader_enabled === false) {
+    return "smart_trader_enabled=false";
+  }
+  if (isGuardError(session.error_message)) {
+    return `error_message='${session.error_message}'`;
+  }
+  return null;
+}
+
+/**
+ * PostgREST-or-filter for å ekskludere guard-deaktiverte sesjoner PÅ
+ * QUERY-NIVÅ. error_message kan være NULL — `not.like` alene ville
+ * filtrert bort NULL-rader, derfor or() med is.null.
+ */
+export const GUARD_ERROR_OR_FILTER =
+  "error_message.is.null,error_message.not.like.GUARD:%";
+
+/**
+ * Filtrer en liste med sesjoner ned til kun tradebare. Returnerer også
+ * de hoppede-over med årsak, for logging. Brukes som JS-forsvar i tick
+ * og jokertrade i tillegg til query-filtrene.
+ */
+export function filterTradeableSessions<T extends TradeableSessionLike>(
+  sessions: T[] | null | undefined,
+): { tradeable: T[]; skipped: Array<{ session: T; reason: string }> } {
+  if (!sessions) return { tradeable: [], skipped: [] };
+  const tradeable: T[] = [];
+  const skipped: Array<{ session: T; reason: string }> = [];
+  for (const s of sessions) {
+    const reason = sessionSkipReason(s);
+    if (reason) skipped.push({ session: s, reason });
+    else tradeable.push(s);
+  }
+  return { tradeable, skipped };
+}
