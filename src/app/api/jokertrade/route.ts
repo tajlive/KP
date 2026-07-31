@@ -16,6 +16,10 @@ import { getNokUsdtRate } from "@/lib/trading/canonical/exchange-rate";
 import { calculateRSI as calcRSI, calculateMACD, calculateSMA, calculateBollingerBands } from "@/lib/trading/indicators";
 import { generateJokerSignal, type MarketData } from "./signal";
 import {
+  GUARD_ERROR_OR_FILTER,
+  sessionSkipReason,
+} from "@/lib/trading/session-guard";
+import {
   fetchPriceViaProxy,
   fetchKlinesViaProxy,
   fetch24hChangeViaProxy,
@@ -173,13 +177,20 @@ function generateSignal(
 async function ensureActiveSession(
   db: ReturnType<typeof createClient>,
   userId: string,
-): Promise<{ id: string; capital: number } | null> {
+): Promise<{ id: string; capital: number; blocked?: string } | null> {
+  // 🛡️ Forsvar i dybden (Task 0.3): en guard-deaktivert sesjon skal ALDRI
+  // kunne handle — verken via tick, JokerTrade eller auto-trader. Guarden
+  // setter status='stopped' + smart_trader_enabled=false + error_message
+  // LIKE 'GUARD:%'. Eldre guard-utløsninger satte kun de to siste mens
+  // status forble 'active' — derfor filtreres ALLE tre her, på query-nivå.
   const { data: existing } = await db
     .from("trading_sessions")
-    .select("id, current_capital_nok")
+    .select("id, current_capital_nok, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("status", "active")
     .eq("mode", "paper")
+    .eq("smart_trader_enabled", true)
+    .or(GUARD_ERROR_OR_FILTER)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -187,6 +198,28 @@ async function ensureActiveSession(
   if (existing) {
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", existing.id);
     return { id: existing.id, capital: Number(existing.current_capital_nok ?? DEFAULT_CAPITAL) };
+  }
+
+  // Ingen tradebar aktiv sesjon. Hvis brukeren HAR en sesjon som er
+  // deaktivert (guard/status), skal vi IKKE opprette en ny — det ville
+  // vært en omgåelse av guard-enforcement. Logg årsaken og blokker.
+  const { data: disabled } = await db
+    .from("trading_sessions")
+    .select("id, status, smart_trader_enabled, error_message")
+    .eq("user_id", userId)
+    .eq("mode", "paper")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (disabled) {
+    const reason = sessionSkipReason(disabled);
+    if (reason) {
+      console.warn(
+        `[JokerTrade] Hoppet over handel for ${userId}: sesjon ${disabled.id} er ikke tradebar (${reason})`,
+      );
+      return { id: disabled.id, capital: 0, blocked: `Sesjonen er deaktivert (${reason})` };
+    }
   }
 
   const { data: account } = await db
@@ -409,6 +442,13 @@ export async function POST(request: NextRequest) {
     const session = await ensureActiveSession(db, userId);
     if (!session) {
       return NextResponse.json({ error: "Ingen kapital" }, { status: 400 });
+    }
+    if (session.blocked) {
+      // Guard-deaktivert sesjon: aldri opprett ny, aldri handel.
+      return NextResponse.json(
+        { error: session.blocked, blocked: true },
+        { status: 403 },
+      );
     }
 
     // Touch heartbeat — sessions overlever detect_crashed_sessions
