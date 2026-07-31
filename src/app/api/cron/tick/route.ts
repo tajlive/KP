@@ -91,6 +91,7 @@ import { syncPaperAccountBalance } from "@/lib/trading/core/paper-account-sync";
 import {
   evaluateRegimeGate,
   evaluateAntiWhipsaw,
+  evaluateTrailingExit,
   jitteredSizeMultiplier,
   symbolEdgeWeight,
   type SymbolEdgeStats,
@@ -871,7 +872,65 @@ async function processSession(
       }
     }
 
-    // ── Fase 2 buy-side gates (2026-07-31) ──────────────────────────────
+    // ── Fase 2: Trailing exit + buy-side gates (2026-07-31) ──────────────
+
+    // 2.2 Trailing exit: overstyr signal hvis posisjon har nådd aktivering
+    // og deretter falt trailPct fra topp. Kjører FØR buy-gates fordi
+    // en lønnsom posisjon skal selges, ikke forsterkes med nye kjøp.
+    if (session.open_position?.quantity && session.open_position.quantity > 0) {
+      const pos = session.open_position;
+      const entryPrice =
+        typeof pos.entry_price === "number" && pos.entry_price > 0
+          ? pos.entry_price
+          : null;
+      const peakPrice =
+        typeof pos.highest_price === "number" && pos.highest_price > 0
+          ? pos.highest_price
+          : entryPrice ?? currentPrice;
+
+      if (entryPrice !== null) {
+        const trail = evaluateTrailingExit({
+          entryPrice,
+          peakPrice,
+          currentPrice,
+        });
+
+        // Oppdater peak i DB hvis ny topp (uansett action)
+        if (trail.newPeak > peakPrice) {
+          try {
+            await db
+              .from("trading_sessions")
+              .update({
+                open_position: { ...(pos as unknown as Record<string, unknown>), highest_price: trail.newPeak } as never,
+              })
+              .eq("id", session.id);
+          } catch {
+            /* non-critical */
+          }
+        }
+
+        if (trail.action === "trailing_exit") {
+          console.info(
+            `[Tick] Fase2 trailing-exit: ${trail.reason} (session ${session.id})`,
+          );
+          // Overstyr signalet — tvunget sell med positionSize=1 (full exit)
+          signal = {
+            action: "sell",
+            reason: `Trailing exit: ${trail.reason}`,
+            positionSize: 1.0,
+            indicators: {
+              exit_reason: "trailing_take_profit",
+              entry_price: entryPrice,
+              peak_price: trail.newPeak,
+              current_price: currentPrice,
+              regime: regime,
+            },
+          };
+        }
+      }
+    }
+
+    // 2.1 + 2.3–2.5: Buy-side gates (kun når signal fortsatt er buy)
     if (signal.action === "buy") {
       // 2.1 Regime-gate: blokker kjøp i crash/sterk trend_down
       const closes = candles.map((c) => c.close);
