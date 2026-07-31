@@ -59,12 +59,12 @@ describe("GUEST_NAV_CONFIG", () => {
 });
 
 describe("AUTH_NAV_CONFIG", () => {
-  it("skal inneholde JokerTrade for innloggede brukere", () => {
+  it("skal inneholde Pilot for innloggede brukere", () => {
     const jt: NavItem | undefined = AUTH_NAV_CONFIG.find(
-      (l: NavItem) => l.href === "/jokertrade",
+      (l: NavItem) => l.href === "/pilot",
     );
     expect(jt).toBeDefined();
-    expect(jt!.key).toBe("jokerTrade");
+    expect(jt!.key).toBe("pilot");
     expect(jt!.roles).toContain("auth");
   });
 
@@ -164,7 +164,7 @@ describe("isAppShellPath", () => {
     expect(isAppShellPath("/dashboard")).toBe(true);
     expect(isAppShellPath("/trade")).toBe(true);
     expect(isAppShellPath("/marked")).toBe(true);
-    expect(isAppShellPath("/jokertrade")).toBe(true);
+    expect(isAppShellPath("/pilot")).toBe(true);
     expect(isAppShellPath("/admin")).toBe(true);
   });
 
@@ -179,8 +179,8 @@ describe("isAppShellPath", () => {
     expect(isAppShellPath("/personvern")).toBe(false);
   });
 
-  it("/jokertrade skal være i APP_SHELL_PATHS", () => {
-    expect(APP_SHELL_PATHS).toContain("/jokertrade");
+  it("/pilot skal være i APP_SHELL_PATHS", () => {
+    expect(APP_SHELL_PATHS).toContain("/pilot");
   });
 });
 
@@ -243,7 +243,7 @@ describe("DASHBOARD_MORE_NAV", () => {
       "analysis",
       "market",
       "learn",
-      "jokerTrade",
+      "pilot",
       "referral",
       "settings",
     ]);

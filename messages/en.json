@@ -1291,7 +1291,7 @@
   "help": {
     "metadata": {
       "title": "Help & support",
-      "description": "Answers to common questions about Klarpakke — AI trading with 100,000 kr in play money, JokerTrade, and safe practice without risk."
+      "description": "Answers to common questions about Klarpakke — AI trading with 100,000 kr in play money, Pilot, and safe practice without risk."
     }
   },
   "contact": {
@@ -1800,7 +1800,7 @@
       "mode": "Mode",
       "breadcrumbYouAreHere": "You are here",
       "profile": "Profile",
-      "jokerTrade": "JokerTrade",
+      "pilot": "Pilot",
       "analysis": "Analysis",
       "market": "Market"
     },
@@ -2143,9 +2143,9 @@
       "leaderboardTitle": "🏆 Leaderboard",
       "leaderboardDesc": "Compare yourself with other traders and climb the ranks.",
       "leaderboardCta": "View ranking →",
-      "jokerTradeTitle": "🎭 JokerTrade — the AI trades for you",
-      "jokerTradeDesc": "Let the AI find trade ideas. You choose the amount and approve each trade.",
-      "jokerTradeCta": "Explore JokerTrade →"
+      "pilotTitle": "🎭 Pilot — the AI trades for you",
+      "pilotDesc": "Let the AI find trade ideas. You choose the amount and approve each trade.",
+      "pilotCta": "Explore Pilot →"
     },
     "hero": {
       "paperMode": "Paper Mode",
@@ -2381,12 +2381,12 @@
   },
   "landing": {
     "hero": {
-      "badge": "Free beta — the first 100 get 5,000 KLT",
+      "badge": "🔬 Beta — Norway only. 5,000 KLT for the first 100",
       "title": "100,000 kr in play money. Real markets. Zero risk.",
-      "subtitle": "Klarpakke lets you practise crypto trading with autonomous AI agents on real market data — completely free. No Norwegian crypto exchange lets you train with play money. We do.",
+      "subtitle": "Klarpakke is in beta and only available in Norway. Train on crypto trading with AI agents on real market data — completely free. Live trading opens after beta. It pays to practise before going live.",
       "cta-primary": "Start free",
       "cta-secondary": "See how it works",
-      "trustNote": "No credit card. No prerequisites — JokerTrade is open to everyone.",
+      "trustNote": "Beta • Norway only • Live trading coming • No credit card",
       "livePrices": "Live market data",
       "liveUpdates": "Updated live",
       "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money"
@@ -2404,10 +2404,10 @@
         "tagline": "You + AI together",
         "description": "Set rules. AI executes."
       },
-      "joker": {
-        "name": "JokerTrade",
-        "tagline": "AI does everything",
-        "description": "Open to everyone — no prerequisites. Press start, AI handles the rest."
+      "pilot": {
+        "name": "Pilot",
+        "tagline": "AI takes the wheel",
+        "description": "AI does everything. Press start and it handles the rest."
       }
     },
     "socialProof": {
@@ -2416,9 +2416,50 @@
       "tradeCount": "trades",
       "returnLabel": "return"
     },
+    "stats": {
+      "title": "Klarpakke by the numbers",
+      "users": "active traders",
+      "trades": "trades executed",
+      "markets": "markets",
+      "uptime": "uptime"
+    },
+    "features": {
+      "title": "Why Klarpakke?",
+      "subtitle": "Norway's only AI-powered paper trading platform on real market data",
+      "realData": {
+        "title": "Real market data",
+        "desc": "Direct from Binance — real-time prices on BTC, ETH, SOL and more"
+      },
+      "aiAgents": {
+        "title": "AI agents",
+        "desc": "Choose Manual, Auto or Pilot — AI handles the heavy lifting"
+      },
+      "playMoney": {
+        "title": "100,000 kr free",
+        "desc": "Get play money to train. Zero risk. No commitment."
+      },
+      "norwegian": {
+        "title": "Norwegian platform",
+        "desc": "Full Norwegian UI. Norwegian support. Norwegian built."
+      },
+      "riskFree": {
+        "title": "No risk",
+        "desc": "The most you can lose is play money. Zero real losses."
+      },
+      "noKYC": {
+        "title": "No KYC",
+        "desc": "No ID, no waiting. Just sign up and start."
+      }
+    },
+    "cta": {
+      "title": "Ready to try?",
+      "subtitle": "100,000 kr in play money awaits. Zero risk. Zero commitment.",
+      "button": "Start free",
+      "footer": "No credit card • No KYC • No commitment"
+    },
     "metadata": {
       "title": "Klarpakke — AI trading with play money",
-      "description": "Free beta: You get 100,000 kr in play money. Train with autonomous AI agents on real market data — Manual, Auto and JokerTrade. No risk."
+      "description": "Free beta: You get 100,000 kr in play money. Train with autonomous AI agents on real market data — Manual, Auto and Pilot. No risk."
     }
   },
   "tradingGuide": {
@@ -2914,11 +2955,11 @@
     "openMenu": "Open menu",
     "logout": "Logout",
     "selectExchange": "Select Exchange",
-    "jokerTrade": "JokerTrade",
     "security": {
       "title": "Title",
       "warning": "Warning"
-    }
+    },
+    "pilot": "Pilot"
   },
   "components": {
     "themeToggle": {
@@ -3496,7 +3537,7 @@
       "title": "Ready to start?",
       "subtitle": "Join other Norwegians learning to trade safely — with play money.",
       "button": "Get started now",
-      "guarantee": "Paper trading is free. Paid plans unlock tools \u2014 no refunds."
+      "guarantee": "Paper trading is free. Paid plans unlock tools — no refunds."
     },
     "success": {
       "loadingTitle": "Processing payment...",
@@ -5460,7 +5501,7 @@
       },
       "f3": {
         "q": "Can I get a refund if I'm not satisfied?",
-        "a": "No. You pay for access to our tools, not for results or promises of returns. Paper trading with 100 000 NOK in play money is free and unlimited. When you upgrade, you get immediate access to features like live trading, more strategies and advanced tools \u2014 like a software subscription."
+        "a": "No. You pay for access to our tools, not for results or promises of returns. Paper trading with 100 000 NOK in play money is free and unlimited. When you upgrade, you get immediate access to features like live trading, more strategies and advanced tools — like a software subscription."
       },
       "f4": {
         "q": "How long does it take to learn?",
@@ -5910,11 +5951,11 @@
       "cta": "Start free — 30 seconds"
     },
     "welcome": {
-      "title": "Welcome to JokerTrade!",
+      "title": "Welcome to Pilot!",
       "description": "Your AI trader is ready. Press the JOKER button and the AI will find the best trade opportunity right now."
     },
     "dashboard": {
-      "title": "JokerTrade",
+      "title": "Pilot",
       "active": "Active",
       "lastUpdated": "Last updated",
       "totalPnl": "Total P&L",

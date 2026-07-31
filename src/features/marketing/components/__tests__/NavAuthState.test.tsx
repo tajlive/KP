@@ -40,13 +40,13 @@ const mockNavData: NavigationData = {
     { label: "Lær", path: "/kurs", order: 0 },
     { label: "Trade", path: "/trade", order: 1 },
     { label: "Bots", path: "/dashboard/auto-trade", order: 2 },
-    { label: "JokerTrade", path: "/jokertrade", order: 3 },
+    { label: "Pilot", path: "/pilot", order: 3 },
     { label: "Priser", path: "/priser", order: 4 },
     { label: "Om oss", path: "/om-oss", order: 5 },
   ],
   loggedInLinks: [
     { label: "Dashboard", path: "/dashboard", order: 0 },
-    { label: "JokerTrade", path: "/jokertrade", order: 1 },
+    { label: "Pilot", path: "/pilot", order: 1 },
   ],
 };
 
@@ -68,7 +68,7 @@ describe("NavAuthState", () => {
     expect(screen.getByText("Om oss")).toBeInTheDocument();
     expect(screen.queryByText("Trade")).not.toBeInTheDocument();
     expect(screen.queryByText("Bots")).not.toBeInTheDocument();
-    expect(screen.queryByText("JokerTrade")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pilot")).not.toBeInTheDocument();
   });
 
   it("renders dashboard and logout for logged-in users", () => {
@@ -82,6 +82,6 @@ describe("NavAuthState", () => {
     // Gjesteknapper skal ikke vises
     expect(screen.queryByText("Logg inn")).not.toBeInTheDocument();
     // Sekundære produktlenker skal ikke vises i innlogget markedsnav
-    expect(screen.queryByText("JokerTrade")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pilot")).not.toBeInTheDocument();
   });
 });

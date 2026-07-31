@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
-import { JokerDashboard } from "@/features/trading/JokerDashboard";
+import { PilotDashboard } from "@/features/trading/JokerDashboard";
 import { FirstTradeFlow } from "@/features/trading/FirstTradeFlow";
 import { WalletBalance } from "@/features/trading/WalletBalance";
 import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
@@ -683,7 +683,7 @@ export function UnifiedTradeTerminal() {
               {!showUnlock && lockHint && "🔒 Låses opp etter din første handel — gjør ett kjøp i Manuell modus, så åpnes Auto og Joker."}
               {!showUnlock && !lockHint && mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
               {!showUnlock && !lockHint && mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
-              {!showUnlock && !lockHint && mode === "joker" && "🃏 JokerTrade — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
+              {!showUnlock && !lockHint && mode === "joker" && "🃏 Pilot — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
             </motion.div>
           </div>
 
@@ -696,7 +696,7 @@ export function UnifiedTradeTerminal() {
               </>
             )}
             {mode === "auto" && <AutoStrategyPanel />}
-            {mode === "joker" && <JokerDashboard />}
+            {mode === "joker" && <PilotDashboard />}
           </div>
         </div>
       </div>

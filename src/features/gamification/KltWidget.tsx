@@ -141,7 +141,7 @@ export function KltWidget() {
           </span>
         </div>
         <p className="mt-1 text-xs text-[#9CA3AF]">
-          Ubegrenset JokerTrade, live trading, og alle premium-kurs.
+          Ubegrenset Pilot, live trading, og alle premium-kurs.
         </p>
         <button
           onClick={() => router.push("/no/priser")}

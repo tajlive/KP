@@ -1291,7 +1291,7 @@
   "help": {
     "metadata": {
       "title": "Hjelp og support",
-      "description": "Svar på vanlige spørsmål om Klarpakke — AI-trading med 100 000 kr i lekepenger, JokerTrade og trygg trening uten risiko."
+      "description": "Svar på vanlige spørsmål om Klarpakke — AI-trading med 100 000 kr i lekepenger, Pilot og trygg trening uten risiko."
     }
   },
   "contact": {
@@ -1703,7 +1703,7 @@
       "mode": "Modus",
       "breadcrumbYouAreHere": "Du er her",
       "profile": "Profil",
-      "jokerTrade": "JokerTrade",
+      "pilot": "Pilot",
       "analysis": "Analyse",
       "market": "Marked"
     },
@@ -2138,9 +2138,9 @@
       "leaderboardTitle": "🏆 Leaderboard",
       "leaderboardDesc": "Sammenlign deg med andre tradere og klatre på rangeringen.",
       "leaderboardCta": "Se rangering →",
-      "jokerTradeTitle": "🎭 JokerTrade — AI-en trader for deg",
-      "jokerTradeDesc": "La AI finne trade-idéer. Du velger beløp og godkjenner hver trade.",
-      "jokerTradeCta": "Utforsk JokerTrade →"
+      "pilotTitle": "🎭 Pilot — AI-en trader for deg",
+      "pilotDesc": "La AI finne trade-idéer. Du velger beløp og godkjenner hver trade.",
+      "pilotCta": "Utforsk Pilot →"
     },
     "hero": {
       "paperMode": "Lekepenger-modus",
@@ -2376,12 +2376,12 @@
   },
   "landing": {
     "hero": {
-      "badge": "Gratis beta — de 100 første får 5000 KLT",
+      "badge": "🔬 Beta — kun Norge. 5000 KLT til de 100 første",
       "title": "100 000 kr i lekepenger. Ekte markeder. Null risiko.",
-      "subtitle": "Klarpakke lar deg trene på kryptohandel med autonome AI-agenter på ekte markedsdata — helt gratis. Ingen norske kryptobørser lar deg trene med lekepenger. Det gjør vi.",
+      "subtitle": "Klarpakke er i beta og kun tilgjengelig i Norge. Tren på kryptohandel med AI-agenter på ekte markedsdata — helt gratis. Live trading åpner etter beta. Det lønner seg å øve før live åpner.",
       "cta-primary": "Start gratis",
       "cta-secondary": "Se hvordan det fungerer",
-      "trustNote": "Ingen kredittkort. Ingen forhåndskrav — JokerTrade er åpent for alle.",
+      "trustNote": "Beta • Kun Norge • Live trading kommer • Ingen kredittkort",
       "livePrices": "Live markedsdata",
       "liveUpdates": "Oppdateres live",
       "mockupAlt": "Klarpakkes trade-side: kjøp Bitcoin med lekepenger — ekte produktbilde"
@@ -2399,10 +2399,10 @@
         "tagline": "Du + AI sammen",
         "description": "Sett regler. AI-en utfører."
       },
-      "joker": {
-        "name": "JokerTrade",
-        "tagline": "AI gjør alt",
-        "description": "Åpent for alle — ingen forhåndskrav. Trykk start, AI-en ordner resten."
+      "pilot": {
+        "name": "Pilot",
+        "tagline": "AI styrer alt",
+        "description": "AI-en gjør alt. Trykk start, så ordner den resten."
       }
     },
     "socialProof": {
@@ -2411,9 +2411,50 @@
       "tradeCount": "handler",
       "returnLabel": "avkastning"
     },
+    "stats": {
+      "title": "Klarpakke i tall",
+      "users": "aktive tradere",
+      "trades": "trades utført",
+      "markets": "markeder",
+      "uptime": "oppetid"
+    },
+    "features": {
+      "title": "Hvorfor Klarpakke?",
+      "subtitle": "Norges eneste plattform for AI-drevet papirhandel på ekte markedsdata",
+      "realData": {
+        "title": "Ekte markedsdata",
+        "desc": "Direkte fra Binance — sanntidspriser på BTC, ETH, SOL og flere"
+      },
+      "aiAgents": {
+        "title": "AI-agenter",
+        "desc": "Velg mellom Manuell, Auto eller Pilot — AI-en gjør det tunge arbeidet"
+      },
+      "playMoney": {
+        "title": "100 000 kr gratis",
+        "desc": "Få lekepenger for å trene. Null risiko. Ingen binding."
+      },
+      "norwegian": {
+        "title": "Norsk plattform",
+        "desc": "Hele grensesnittet på norsk. Norsk support. Norsk utviklet."
+      },
+      "riskFree": {
+        "title": "Ingen risiko",
+        "desc": "Maksimalt du kan tape er lekepenger. Null reelle tap."
+      },
+      "noKYC": {
+        "title": "Ingen KYC",
+        "desc": "Ingen legitimasjon, ingen ventetid. Bare registrer og start."
+      }
+    },
+    "cta": {
+      "title": "Klar for å prøve?",
+      "subtitle": "100 000 kr i lekepenger venter. Null risiko. Null bindingstid.",
+      "button": "Start gratis",
+      "footer": "Ingen kredittkort • Ingen KYC • Ingen binding"
+    },
     "metadata": {
       "title": "Klarpakke — AI-trading med lekepenger",
-      "description": "Gratis beta: Du får 100 000 kr i lekepenger. Tren med autonome AI-agenter på ekte markedsdata — Manuell, Auto og JokerTrade. Ingen risiko."
+      "description": "Gratis beta: Du får 100 000 kr i lekepenger. Tren med autonome AI-agenter på ekte markedsdata — Manuell, Auto og Pilot. Ingen risiko."
     }
   },
   "tradingGuide": {
@@ -2909,11 +2950,11 @@
     "openMenu": "Åpne meny",
     "logout": "Logg ut",
     "selectExchange": "Select exchange",
-    "jokerTrade": "JokerTrade",
     "security": {
       "title": "Tittel",
       "warning": "Warning"
-    }
+    },
+    "pilot": "Pilot"
   },
   "components": {
     "themeToggle": {
@@ -5897,11 +5938,11 @@
       "cta": "Start gratis — 30 sekunder"
     },
     "welcome": {
-      "title": "Velkommen til JokerTrade!",
+      "title": "Velkommen til Pilot!",
       "description": "Din AI-trader er klar. Trykk på JOKER-knappen så finner AI-en den beste trade-opportuniteten akkurat nå."
     },
     "dashboard": {
-      "title": "JokerTrade",
+      "title": "Pilot",
       "active": "Aktiv",
       "lastUpdated": "Sist oppdatert",
       "totalPnl": "Total P&L",

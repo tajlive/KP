@@ -1075,7 +1075,7 @@
       "subtitleGeneric": "Become a better trader with AI — practice risk-free with 100,000 kr in paper money.",
       "disclaimer": "Based on real paper trading results. Past performance does not guarantee future results.",
       "cta-primary": "Start free",
-      "cta-secondary": "See JokerTrade",
+      "cta-secondary": "See Pilot",
       "livePrices": "Live market data",
       "liveUpdates": "Updated live",
       "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money"
@@ -1094,7 +1094,7 @@
         "description": "Set rules. AI executes."
       },
       "joker": {
-        "name": "JokerTrade",
+        "name": "Pilot",
         "tagline": "AI does everything",
         "description": "Press start. AI handles the rest."
       }
@@ -2257,11 +2257,11 @@
       "cta": "Start free — 30 seconds"
     },
     "welcome": {
-      "title": "Welcome to JokerTrade!",
+      "title": "Welcome to Pilot!",
       "description": "Your AI trader is ready. Press the JOKER button and the AI will find the best trade opportunity right now."
     },
     "dashboard": {
-      "title": "JokerTrade",
+      "title": "Pilot",
       "active": "Active",
       "lastUpdated": "Last updated",
       "totalPnl": "Total P&L",

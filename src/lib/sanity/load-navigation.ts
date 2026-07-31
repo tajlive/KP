@@ -17,11 +17,11 @@ async function loadNavigationImpl(): Promise<NavigationData> {
       return {
         loggedOutLinks: [
           ...(result.loggedOutLinks || FALLBACK_NAVIGATION.loggedOutLinks),
-          { label: "JokerTrade", path: "/jokertrade", order: 99 },
+          { label: "Pilot", path: "/pilot", order: 99 },
         ],
         loggedInLinks: [
           ...(result.loggedInLinks || FALLBACK_NAVIGATION.loggedInLinks),
-          { label: "JokerTrade", path: "/jokertrade", order: 99 },
+          { label: "Pilot", path: "/pilot", order: 99 },
         ],
       };
     }

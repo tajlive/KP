@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-export function JokerDashboard() {
+export function PilotDashboard() {
   const [status, setStatus] = React.useState<"idle" | "starting" | "active" | "error">("idle");
   const [message, setMessage] = React.useState("");
   const [checked, setChecked] = React.useState(false);
@@ -47,14 +47,14 @@ export function JokerDashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  const startJokerTrade = async () => {
+  const startPilotTrade = async () => {
     setStatus("starting");
-    setMessage("Starter JokerTrade...");
+    setMessage("Starter PilotTrade...");
     try {
       // Server-side engine-rute: sikrer aktiv sesjon + kjører ensemble nå.
       // (Direkte kall til smart-trader-v3 er umulig — den er cron-only og
       // svarer dessuten uten CORS-headere, så nettleseren blokkerer den.)
-      const res = await fetch("/api/jokertrade", {
+      const res = await fetch("/api/pilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "joker" }),
@@ -62,10 +62,10 @@ export function JokerDashboard() {
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus("active");
-        setMessage("JokerTrade er aktiv! AI-en handler for deg.");
+        setMessage("PilotTrade er aktiv! AI-en handler for deg.");
       } else {
         setStatus("error");
-        setMessage(data.error || "Kunne ikke starte JokerTrade — prøv igjen om litt");
+        setMessage(data.error || "Kunne ikke starte PilotTrade — prøv igjen om litt");
       }
     } catch {
       setStatus("error");
@@ -77,7 +77,7 @@ export function JokerDashboard() {
     return (
       <div className="space-y-3">
         <div className="text-xs font-medium text-slate-500 uppercase tracking-wider px-1">
-          JokerTrade — AI styrer
+          PilotTrade — AI styrer
         </div>
         <div className="bg-gradient-to-br from-violet-950/40 to-violet-900/20 border border-violet-500/20 rounded-xl p-5 text-center">
           <div className="text-slate-500 text-sm">Sjekker status...</div>
@@ -89,7 +89,7 @@ export function JokerDashboard() {
   return (
     <div className="space-y-3">
       <div className="text-xs font-medium text-slate-500 uppercase tracking-wider px-1">
-        JokerTrade — AI styrer
+        PilotTrade — AI styrer
       </div>
 
       <div className="bg-gradient-to-br from-violet-950/40 to-violet-900/20 border border-violet-500/20 rounded-xl p-5 text-center space-y-4">
@@ -121,14 +121,14 @@ export function JokerDashboard() {
         </div>
 
         {status === "active" ? (
-          <div className="text-emerald-400 text-xs font-medium">● JokerTrade kjører — AI handler for deg</div>
+          <div className="text-emerald-400 text-xs font-medium">● PilotTrade kjører — AI handler for deg</div>
         ) : (
           <button
-            onClick={startJokerTrade}
+            onClick={startPilotTrade}
             disabled={status === "starting"}
             className="w-full py-3 rounded-xl text-sm font-bold bg-violet-500 text-white hover:bg-violet-400 transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50"
           >
-            {status === "starting" ? "⏳ Starter..." : "🎭 Start JokerTrade"}
+            {status === "starting" ? "⏳ Starter..." : "🎭 Start PilotTrade"}
           </button>
         )}
 
@@ -146,7 +146,7 @@ export function JokerDashboard() {
       {/* Slik fungerer det — alltid synlig */}
       <details className="group bg-[#0A0D12] border border-[#1E2530] rounded-xl overflow-hidden">
         <summary className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-[#111620] transition-colors">
-          <span className="text-xs font-medium text-slate-400">🧠 Slik fungerer JokerTrade</span>
+          <span className="text-xs font-medium text-slate-400">🧠 Slik fungerer PilotTrade</span>
           <span className="text-slate-500 text-xs group-open:rotate-90 transition-transform">▶</span>
         </summary>
         <div className="px-4 pb-4 space-y-3 text-xs text-slate-400 leading-relaxed border-t border-[#1E2530] pt-3">

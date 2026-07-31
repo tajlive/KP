@@ -31,7 +31,7 @@ export default function JokerTradeDashboard() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/jokertrade", { credentials: "include" })
+    fetch("/api/pilot", { credentials: "include" })
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
@@ -56,7 +56,7 @@ export default function JokerTradeDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">🎭 JokerTrade</h1>
+      <h1 className="text-2xl font-bold text-white">🎭 Pilot</h1>
       <p className="text-[#8B9DC3] text-sm">AI-drevet papirhandel — automatisk hvert 15. minutt</p>
 
       {/* Stats-kort */}
@@ -117,7 +117,7 @@ export default function JokerTradeDashboard() {
           ))}
         </div>
         {data.trades.length === 0 && (
-          <p className="text-[#8B9DC3] text-sm p-4">Ingen handler ennå. JokerTrade kjører automatisk hvert 15. minutt.</p>
+          <p className="text-[#8B9DC3] text-sm p-4">Ingen handler ennå. Pilot kjører automatisk hvert 15. minutt.</p>
         )}
       </div>
     </div>

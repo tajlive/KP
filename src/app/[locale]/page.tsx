@@ -1,5 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import HeroSection from "@/components/landing/HeroSection";
+import FeaturesSection from "@/components/landing/FeaturesSection";
+import CTASection from "@/components/landing/CTASection";
+import LiveMarketTicker from "@/components/landing/LiveMarketTicker";
 import { TradingModesExplainer } from "@/components/landing/TradingModesExplainer";
 import { generateMarketingMetadata } from "@/shared/ui/marketing";
 
@@ -31,8 +34,11 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <main>
-      <HeroSection />
+      <HeroSection rightColumn={<LiveMarketTicker />}>
+      </HeroSection>
+      <FeaturesSection />
       <TradingModesExplainer />
+      <CTASection />
     </main>
   );
 }

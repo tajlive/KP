@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 /**
  * HeroSection — landing-hero (redaktørstyrt copy, REDAKTORPLAN-V2).
@@ -17,7 +17,12 @@ import { useLocale, useTranslations } from "next-intl";
 
 const CTA_EASE = "ease-[cubic-bezier(0.23,1,0.32,1)]";
 
-export default function HeroSection() {
+interface Props {
+  /** Rendered in the right column on desktop, below CTA on mobile */
+  rightColumn?: ReactNode;
+}
+
+export default function HeroSection({ rightColumn }: Props) {
   const t = useTranslations("landing");
   const locale = useLocale();
 
@@ -67,30 +72,20 @@ export default function HeroSection() {
               {t("hero.trustNote")}
             </p>
 
-            {/* MOBIL: mockup under CTA-folden — lazy, påvirker ikke LCP */}
-            <div className="lg:hidden flex justify-center pt-2">
-              <Image
-                src="/images/hero-trade-mockup.png"
-                alt={t("hero.mockupAlt")}
-                width={539}
-                height={976}
-                loading="lazy"
-                className="w-[220px] h-auto"
-              />
-            </div>
+            {/* MOBIL: ticker under CTA-folden */}
+            {rightColumn && (
+              <div className="lg:hidden pt-4">
+                {rightColumn}
+              </div>
+            )}
           </div>
 
-          {/* DESKTOP: høgre kolonne — ekte produktbilde, over folden (LCP-kandidat) */}
-          <div className="hidden lg:flex justify-center">
-            <Image
-              src="/images/hero-trade-mockup.png"
-              alt={t("hero.mockupAlt")}
-              width={539}
-              height={976}
-              priority
-              className="w-[320px] xl:w-[360px] h-auto"
-            />
-          </div>
+          {/* DESKTOP: høgre kolonne — Live Market Ticker */}
+          {rightColumn && (
+            <div className="hidden lg:flex justify-center">
+              {rightColumn}
+            </div>
+          )}
         </div>
       </div>
     </section>

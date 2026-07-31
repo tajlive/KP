@@ -72,7 +72,7 @@ function welcomeEmail(name: string): string {
       <p style="margin:0 0 12px;font-size:15px;color:#D1D5DB">🚀 <strong>Slik kommer du i gang:</strong></p>
       <ol style="color:#9CA3AF;font-size:14px;line-height:2;padding-left:20px">
         <li>Gå til <a href="https://www.klarpakke.no/no/trade" style="color:#0052FF">Trade</a> — prøv en paper trade</li>
-        <li>Utforsk <a href="https://www.klarpakke.no/no/jokertrade" style="color:#0052FF">JokerTrade™</a> — la AI-en handle</li>
+        <li>Utforsk <a href="https://www.klarpakke.no/no/pilot" style="color:#0052FF">Pilot™</a> — la AI-en handle</li>
         <li>Se <a href="https://www.klarpakke.no/no/dashboard" style="color:#0052FF">dashboardet</a> — følg P&L og win rate</li>
       </ol>
     </div>

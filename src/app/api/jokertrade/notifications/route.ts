@@ -1,8 +1,8 @@
 /**
- * JokerPush API
+ * PilotPush API
  *
- * GET /api/jokertrade/notifications
- * Returnerer siste Joker-handler med forklaring (offentlig data)
+ * GET /api/pilot/notifications
+ * Returnerer siste Pilot-handler med forklaring (offentlig data)
  */
 
 import { NextResponse } from "next/server";
@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-interface JokerNotification {
+interface PilotNotification {
   id: string;
   user_display_name: string;
   title: string;
@@ -23,7 +23,7 @@ interface JokerNotification {
   executed_at: string;
 }
 
-/** GET /api/jokertrade/notifications?limit=20 */
+/** GET /api/pilot/notifications?limit=20 */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   try {
     const supabase = createClient();
 
-    // Hent Joker-trades med forklaring
+    // Hent Pilot-trades med forklaring
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
       .select("id, trading_pair, side, quantity, price, executed_at, joker_explanation, user_id")
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     }
 
     // Hent display_name for hver unique user_id
-    interface JokerTradeNotifRow {
+    interface PilotTradeNotifRow {
       id: string;
       trading_pair: string;
       side: string;
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
       joker_explanation: string | null;
       user_id: string;
     }
-    const tradeRows = (trades ?? []) as unknown as JokerTradeNotifRow[];
+    const tradeRows = (trades ?? []) as unknown as PilotTradeNotifRow[];
     const userIds = [...new Set(tradeRows.map((t) => t.user_id))];
     const displayNames: Record<string, string> = {};
 
@@ -75,11 +75,11 @@ export async function GET(request: Request) {
       }
     }
 
-    const notifications: JokerNotification[] = tradeRows.map((t) => ({
+    const notifications: PilotNotification[] = tradeRows.map((t) => ({
       id: t.id,
       user_display_name: displayNames[t.user_id] || "Trader",
       title: `🎭 ${displayNames[t.user_id] || "Trader"} — ${t.side === "buy" ? "🟦 Kjøp" : "🔴 Salg"} ${t.trading_pair}`,
-      description: t.joker_explanation || "🎭 JokerTrade",
+      description: t.joker_explanation || "🎭 PilotTrade",
       trading_pair: t.trading_pair,
       side: t.side,
       quantity: t.quantity,
