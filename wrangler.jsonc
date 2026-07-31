@@ -11,9 +11,21 @@
     "NEXT_PUBLIC_STRIPE_PRICE_BACHELOR": "price_1T4QVJCGsVawsLofgt9uuOcU",
     "NEXT_PUBLIC_STRIPE_PRICE_MASTER": "price_1T4QVKCGsVawsLofr8NPcL6g",
     "NEXT_PUBLIC_STRIPE_PRICE_PHD": "price_1T4QVKCGsVawsLofz1US0uVZ",
-    "NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR": "price_1T4QVLCGsVawsLofgMEbOBJA",
-    "CRON_SECRET": "smart-trader-v3-cron-2026-1785191554"
+    "NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR": "price_1T4QVLCGsVawsLofgMEbOBJA"
   },
+  "d1_databases": [
+    {
+      "binding": "NEXT_TAG_CACHE_D1",
+      "database_name": "klarpakke-tag-cache",
+      "database_id": "f6ec4afc-03fc-4e5f-a87f-ee52fc0320c3"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "klarpakke"
+    }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -56,6 +68,7 @@
           "zone_id": "328d7de7e8e48308fd4f9d760da5b18f"
         }
       ],
+      "compatibility_date": "2026-07-16",
       "compatibility_flags": [
         "nodejs_compat"
       ],
@@ -72,7 +85,7 @@
       "kv_namespaces": [
         {
           "binding": "KV_KLARPAKKE",
-          "id": "707c647acb86464f8df2f949564734fc"
+          "id": "36369d6957c14ef1a25e22dff65fdc79"
         },
         {
           "binding": "KV_KLARPAKKE_STAGING",
