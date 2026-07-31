@@ -279,7 +279,10 @@ async function processSession(
   darkFleetBaseConfig?: DarkFleetConfig,
   preFetchedCandles4h?: Candle[],
   preFetchedCandles15m?: Candle[],
-  tradingHalted = false,
+  tradingHalted?: boolean,
+  // Fase 2 caches (2026-07-31): pre-fetched per batch for anti-whipsaw + edge
+  lastSellCache?: Map<string, { at: string; price: number }>,
+  edgeCache?: Map<string, SymbolEdgeStats>,
 ): Promise<TickResult> {
   if (tradingHalted) {
     return {
@@ -881,12 +884,38 @@ async function processSession(
       }
       signal.indicators = { ...signal.indicators, regime: regimeGate.regime };
 
-      // 2.4 Per-bruker jitter: bryt identiske entries på tvers av 40 brukere
+      // 2.3 Anti-whipsaw: ikke kjøp rett etter salg av samme symbol
+      // (kun hvis vi IKKE allerede har en posisjon — exits går alltid)
+      if (!session.open_position && lastSellCache) {
+        const sellKey = `${session.id}:${pair}`;
+        const lastSell = lastSellCache.get(sellKey);
+        if (lastSell) {
+          const whipsaw = evaluateAntiWhipsaw({
+            lastSellAt: lastSell.at,
+            lastSellPrice: lastSell.price,
+            currentPrice,
+          });
+          if (!whipsaw.allowed) {
+            console.info(
+              `[Tick] Fase2 anti-whipsaw: ${whipsaw.reason} (session ${session.id})`,
+            );
+            return { session_id: session.id, action: "hold", reason: whipsaw.reason };
+          }
+        }
+      }
+
+      // 2.4 + 2.5: Per-bruker jitter + symbol-edge-vekting
       const jitterFactor = jitteredSizeMultiplier(
         session.user_id,
         pair.replace("/", ""),
       );
-      positionSize = Math.round(positionSize * jitterFactor * 10000) / 10000;
+      const edgeStats: SymbolEdgeStats = edgeCache?.get(pair) ?? {
+        trades: 0,
+        expectancyPct: null,
+        profitFactor: null,
+      };
+      const edgeFactor = symbolEdgeWeight(edgeStats);
+      positionSize = Math.round(positionSize * jitterFactor * edgeFactor * 10000) / 10000;
     }
 
     // FIKS (2026-07-30): tradeAmount er NOK for paper (current_capital er
@@ -1851,6 +1880,72 @@ export async function GET(req: NextRequest) {
       sessions as unknown as TradingSession[],
     );
 
+    // ── Fase 2 pre-fetch: anti-whipsaw + symbol edge (2026-07-31) ─────────
+    // Batch-hent siste salg per sesjon+symbol for anti-whipsaw.
+    const lastSellCache = new Map<string, { at: string; price: number }>();
+    try {
+      const sessionIds = sessionsWithAuto.map((s) => s.id);
+      const { data: recentSells } = await db
+        .from("trades")
+        .select("session_id, trading_pair, price, executed_at")
+        .eq("side", "sell")
+        .in("session_id", sessionIds.length > 0 ? sessionIds : ["__none__"])
+        .gt("executed_at", new Date(Date.now() - 24 * 3600 * 1000).toISOString())
+        .order("executed_at", { ascending: false });
+
+      for (const sell of recentSells ?? []) {
+        const key = `${sell.session_id}:${sell.trading_pair}`;
+        if (!lastSellCache.has(key)) {
+          lastSellCache.set(key, {
+            at: sell.executed_at as string,
+            price: sell.price as number,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("[Tick] Fase2 last-sell pre-fetch failed (non-critical):", (err as Error).message);
+    }
+
+    // Hent per-symbol edge-statistikk (global, siste 30 dager)
+    const edgeCache = new Map<string, SymbolEdgeStats>();
+    try {
+      const { data: edgeRows } = await db
+        .from("trades")
+        .select("trading_pair, realized_pnl, price, quantity")
+        .eq("side", "sell")
+        .not("realized_pnl", "is", null)
+        .gt("executed_at", new Date(Date.now() - 30 * 86400 * 1000).toISOString());
+
+      const perSymbol = new Map<string, { pnlPcts: number[] }>();
+      for (const row of edgeRows ?? []) {
+        const sym = row.trading_pair as string;
+        const entry = perSymbol.get(sym) ?? { pnlPcts: [] };
+        // Omtrentlig P&L %: realized_pnl / (price * quantity) * 100
+        const costBasis = (row.price as number) * (row.quantity as number);
+        if (costBasis > 0 && row.realized_pnl != null) {
+          entry.pnlPcts.push(((row.realized_pnl as number) / costBasis) * 100);
+        }
+        perSymbol.set(sym, entry);
+      }
+
+      for (const [sym, data] of perSymbol) {
+        const avgPnl = data.pnlPcts.length > 0
+          ? data.pnlPcts.reduce((a, b) => a + b, 0) / data.pnlPcts.length
+          : null;
+        // Profit factor: positive sum / |negative sum|
+        const wins = data.pnlPcts.filter((p) => p > 0).reduce((a, b) => a + b, 0);
+        const losses = Math.abs(data.pnlPcts.filter((p) => p < 0).reduce((a, b) => a + b, 0));
+        const pf = losses > 0 ? wins / losses : (wins > 0 ? 99 : null);
+        edgeCache.set(sym, {
+          trades: data.pnlPcts.length,
+          expectancyPct: avgPnl,
+          profitFactor: pf,
+        });
+      }
+    } catch (err) {
+      console.warn("[Tick] Fase2 edge pre-fetch failed (non-critical):", (err as Error).message);
+    }
+
     // Portfolio-level circuit breaker: stop ALL trading if user's equity
     // (cash + market value of open positions) has dropped 15% or more from initial.
     // Fetches the latest 1h close per pair (1 candle) to value open positions.
@@ -2085,6 +2180,8 @@ export async function GET(req: NextRequest) {
           uniqueSymbols4h.get(symbolKey),
           uniqueSymbols15m.get(symbolKey),
           tradingHalted,
+          lastSellCache,
+          edgeCache,
         );
         results.push(result);
 
