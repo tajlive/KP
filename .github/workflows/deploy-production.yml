@@ -1,8 +1,10 @@
 name: Deploy to Production
 
+# ⚠️ 2026-07-31: DEAKTIVERT auto-trigger — Workers Builds er nå PRIMÆR deploy-vei
+# (push → main → Cloudflare Workers Builds: npm run cf:build + wrangler deploy,
+#  verifisert: 528 builds). Denne workflowen trigges KUN manuelt som nød-fallback.
+# Konkurrerende push-trigger ga risiko for dobbelt-deploy.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 # Kun én deploy om gangen — nye merges venter (aldri avbryt en pågående deploy)
