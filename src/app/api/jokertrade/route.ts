@@ -180,16 +180,17 @@ async function ensureActiveSession(
 ): Promise<{ id: string; capital: number; blocked?: string } | null> {
   // 🛡️ Forsvar i dybden (Task 0.3): en guard-deaktivert sesjon skal ALDRI
   // kunne handle — verken via tick, JokerTrade eller auto-trader. Guarden
-  // setter status='stopped' + smart_trader_enabled=false + error_message
-  // LIKE 'GUARD:%'. Eldre guard-utløsninger satte kun de to siste mens
-  // status forble 'active' — derfor filtreres ALLE tre her, på query-nivå.
+  // setter status='stopped' + error_message LIKE 'GUARD:%' (eldre
+  // utløsninger satte kun feilmeldingen mens status forble 'active').
+  // ⚠️ IKKE filtrer på smart_trader_enabled (regresjonsfiks 2026-07-31):
+  // kolonnen har DB-default false — jokertrade sine egne sesjoner fikk
+  // enabled=false og ble blokkert av eget filter.
   const { data: existing } = await db
     .from("trading_sessions")
     .select("id, current_capital_nok, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("status", "active")
     .eq("mode", "paper")
-    .eq("smart_trader_enabled", true)
     .or(GUARD_ERROR_OR_FILTER)
     .order("created_at", { ascending: false })
     .limit(1)

@@ -1770,16 +1770,19 @@ export async function GET(req: NextRequest) {
     // Increased from 50 → 500 to avoid starving sessions when many users are active
     //
     // 🛡️ Forsvar i dybden (Task 0.3): kun TRADEBARE sesjoner. Guarden
-    // (jokertrade_health_guard) setter status='stopped' + stopped_at, men
-    // eldre guard-utløsninger satte kun smart_trader_enabled=false +
-    // error_message='GUARD:…' mens status forble 'active' → tick fortsatte
-    // å kjøpe (prod-bevis: kjøp 06:08 og 07:45 etter guard 05:04). Derfor
-    // filtreres alle tre kriteriene her — på query-nivå OG i JS under.
+    // (jokertrade_health_guard) setter status='stopped' + stopped_at, og
+    // eldre guard-utløsninger satte error_message='GUARD:…' mens status
+    // forble 'active' → tick fortsatte å kjøpe (prod-bevis: kjøp 06:08 og
+    // 07:45 etter guard 05:04). GUARD-feilfilteret fanger begge.
+    //
+    // ⚠️ IKKE filtrer på smart_trader_enabled her (regresjonsfiks
+    // 2026-07-31 kveld): kolonnen har DB-default false og DCA-/
+    // CryptoPilot-sesjoner skal trades av tick-motoren. 24 sesjoner
+    // frøs da filteret feilaktig krevde enabled=true.
     const { data: sessions, error } = await db
       .from("trading_sessions")
       .select("*")
       .eq("status", "active")
-      .eq("smart_trader_enabled", true)
       .or(GUARD_ERROR_OR_FILTER)
       .order("last_tick_at", { ascending: true, nullsFirst: true })
       .limit(500);

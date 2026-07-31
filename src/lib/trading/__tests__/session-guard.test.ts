@@ -1,9 +1,15 @@
 /**
  * Test: isSessionTradeable / sessionSkipReason — sesjons-forsvar (Task 0.3).
  *
- * En sesjon som er deaktivert av guard (status != 'active', eller
- * smart_trader_enabled=false, eller error_message LIKE 'GUARD:%') skal
- * ALDRI kunne handle — verken via tick, JokerTrade eller auto-traderen.
+ * En sesjon som er deaktivert av guard (status != 'active' eller
+ * error_message LIKE 'GUARD:%') skal ALDRI kunne handle — verken via
+ * tick, JokerTrade eller auto-traderen.
+ *
+ * Regresjonsfiks 2026-07-31 kveld: smart_trader_enabled=false er IKKE et
+ * deaktiveringssignal (DB-default false — DCA-/CryptoPilot-sesjoner har
+ * enabled=false og SKAL trades av tick-motoren). Tidligere versjon av
+ * denne testen krevde enabled=false → ikke tradeable; det frøs 24
+ * legitime sesjoner i prod.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -38,10 +44,21 @@ describe("isSessionTradeable", () => {
     expect(isSessionTradeable(session({ status: "paused" }))).toBe(false);
   });
 
-  it("smart_trader_enabled=false → IKKE tradeable selv om status='active'", () => {
+  it("smart_trader_enabled=false UTEN guard-feil → TRADEABLE (DCA/CryptoPilot)", () => {
+    // Regresjonstest: 24 sesjoner frøs i prod fordi enabled=false ble
+    // tolket som deaktivering. Kolonnen har DB-default false.
     const s = session({ smart_trader_enabled: false });
+    expect(isSessionTradeable(s)).toBe(true);
+    expect(sessionSkipReason(s)).toBeNull();
+  });
+
+  it("smart_trader_enabled=false + GUARD-feil → IKKE tradeable (gammel guard)", () => {
+    const s = session({
+      smart_trader_enabled: false,
+      error_message: "GUARD: Drawdown > 20 % — auto-deaktivert",
+    });
     expect(isSessionTradeable(s)).toBe(false);
-    expect(sessionSkipReason(s)).toMatch(/smart_trader_enabled/i);
+    expect(sessionSkipReason(s)).toMatch(/GUARD/);
   });
 
   it("error_message LIKE 'GUARD:%' → IKKE tradeable selv om status='active'", () => {
