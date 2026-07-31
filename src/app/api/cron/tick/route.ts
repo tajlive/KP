@@ -87,6 +87,14 @@ import { usdtToNok, getUsdtToNokRate } from "@/lib/trading/currency";
 import { runEnsembleForSymbol } from "@/lib/ai/ensemble-v2";
 import { validateCronSecret } from "@/lib/auth/cron";
 import { syncPaperAccountBalance } from "@/lib/trading/core/paper-account-sync";
+// Fase 2 strategi-gates (2026-07-31)
+import {
+  evaluateRegimeGate,
+  evaluateAntiWhipsaw,
+  jitteredSizeMultiplier,
+  symbolEdgeWeight,
+  type SymbolEdgeStats,
+} from "@/lib/trading/strategy-gates";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -858,6 +866,27 @@ async function processSession(
         console.info(`[Tick] ${guard.reason} (session ${session.id})`);
         return { session_id: session.id, action: "hold", reason: guard.reason };
       }
+    }
+
+    // ── Fase 2 buy-side gates (2026-07-31) ──────────────────────────────
+    if (signal.action === "buy") {
+      // 2.1 Regime-gate: blokker kjøp i crash/sterk trend_down
+      const closes = candles.map((c) => c.close);
+      const regimeGate = evaluateRegimeGate(closes);
+      if (!regimeGate.allowed) {
+        console.info(
+          `[Tick] Fase2 regime-gate: ${regimeGate.reason} (session ${session.id})`,
+        );
+        return { session_id: session.id, action: "hold", reason: regimeGate.reason };
+      }
+      signal.indicators = { ...signal.indicators, regime: regimeGate.regime };
+
+      // 2.4 Per-bruker jitter: bryt identiske entries på tvers av 40 brukere
+      const jitterFactor = jitteredSizeMultiplier(
+        session.user_id,
+        pair.replace("/", ""),
+      );
+      positionSize = Math.round(positionSize * jitterFactor * 10000) / 10000;
     }
 
     // FIKS (2026-07-30): tradeAmount er NOK for paper (current_capital er
