@@ -115,9 +115,9 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ["auth"],
   },
   {
-    key: "jokerTrade",
-    href: "/jokertrade",
-    labelKey: "navigation.jokerTrade",
+    key: "pilot",
+    href: "/pilot",
+    labelKey: "navigation.pilot",
     icon: "Zap",
     roles: ["auth"],
   },
@@ -233,7 +233,7 @@ export type DashboardSidebarLabelKey =
   | "admin"
   | "referral"
   | "taxReport"
-  | "jokerTrade"
+  | "pilot"
   | "analysis"
   | "market";
 
@@ -289,7 +289,7 @@ export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/analysis", labelKey: "analysis" },
   { href: "/marked", labelKey: "market" },
   { href: "/kurs", labelKey: "learn" },
-  { href: "/jokertrade", labelKey: "jokerTrade" },
+  { href: "/pilot", labelKey: "pilot" },
   { href: "/dashboard/referral", labelKey: "referral" },
   { href: "/dashboard/settings", labelKey: "settings" },
 ];
@@ -383,7 +383,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/akademi",
   "/konto",
   "/trade",
-  "/jokertrade",
+  "/pilot",
   "/marked",
   "/leagues",
   "/profile",

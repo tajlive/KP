@@ -3,7 +3,7 @@ import { Metadata } from "next";
 /**
  * Priser page — static HTML. Zero SSR, zero Worker crashes.
  * Cloudflare Workers compatible by design.
- * Premium dark glassmorphism with gold CTA — JokerTrade theme.
+ * Premium dark glassmorphism with gold CTA — Pilot theme.
  */
 
 export const metadata: Metadata = {

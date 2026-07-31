@@ -48,7 +48,7 @@ const MODES: ModeCard[] = [
   },
   {
     id: "joker",
-    label: "JokerTrade",
+    label: "Pilot",
     tagline: "AI bestemmer alt",
     description: "Vår AI analyserer markedet, velger handler og utfører. Du lener deg tilbake.",
     who: "For deg med lite tid",

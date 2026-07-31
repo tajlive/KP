@@ -1,6 +1,6 @@
 /**
  * JokerTrade Leaderboard API
- * GET /api/jokertrade/leaderboard?period=weekly&limit=3
+ * GET /api/pilot/leaderboard?period=weekly&limit=3
  * Returnerer topp tradere for LeaderboardWidget
  */
 

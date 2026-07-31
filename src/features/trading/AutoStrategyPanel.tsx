@@ -44,7 +44,7 @@ export function AutoStrategyPanel() {
     setStatus("starting");
     setMessage("Starter auto-handel...");
     try {
-      const res = await fetch("/api/jokertrade", {
+      const res = await fetch("/api/pilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "auto" }),
@@ -182,7 +182,7 @@ export function AutoStrategyPanel() {
           <div className="bg-[#0A0D12] border border-[#1E2530] rounded-xl p-3">
             <p className="text-[11px] text-slate-400 leading-relaxed">
               <span className="text-amber-400 font-medium">Auto</span> = du velger strategi og risikonivå, AI-en følger reglene.{' '}
-              <span className="text-violet-400 font-medium">JokerTrade</span> = AI-en gjør alt — analyserer, velger markeder og handler. Perfekt hvis du vil ha full autopilot.
+              <span className="text-violet-400 font-medium">Pilot</span> = AI-en gjør alt — analyserer, velger markeder og handler. Perfekt hvis du vil ha full autopilot.
             </p>
           </div>
 

@@ -61,7 +61,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/live/feed",
     auth: "Ingen",
-    description: "Siste hendelser fra hele plattformen i sanntid. Inkluderer handler, leaderboard-endringer, nye brukere og AI-signaler. Brukes av LiveFeed-widget på JokerTrade-siden.",
+    description: "Siste hendelser fra hele plattformen i sanntid. Inkluderer handler, leaderboard-endringer, nye brukere og AI-signaler. Brukes av LiveFeed-widget på Pilot-siden.",
     params: "`limit` (query, valgfri) — antall hendelser (default: 20, maks: 50)",
     response: `{
   "success": true,
@@ -108,9 +108,9 @@ const ENDPOINTS = [
   },
   {
     method: "GET",
-    path: "/api/jokertrade/notifications",
+    path: "/api/pilot/notifications",
     auth: "Ingen",
-    description: "Returnerer siste Joker-handler med AI-forklaring. Brukes av JokerPush-widget for å vise «🎭 JokerTrade»-varsler på tvers av plattformen.",
+    description: "Returnerer siste Pilot-handler med AI-forklaring. Brukes av PilotPush-widget for å vise «🎭 PilotTrade»-varsler på tvers av plattformen.",
     params: "`limit` (query, valgfri) — antall varsler (default: 20, maks: 50)",
     response: `{
   "success": true,
@@ -119,7 +119,7 @@ const ENDPOINTS = [
       "id": "trd_xyz",
       "user_display_name": "KryptoKaptein",
       "title": "🎭 KryptoKaptein — 🟦 Kjøp BTC/USDT",
-      "description": "🎭 JokerTrade: BTC viste bullish flagg med RSI over 60",
+      "description": "🎭 Pilot: BTC viste bullish flagg med RSI over 60",
       "trading_pair": "BTC/USDT",
       "side": "buy",
       "quantity": 0.05,
@@ -132,17 +132,17 @@ const ENDPOINTS = [
   },
   {
     method: "POST",
-    path: "/api/jokertrade",
+    path: "/api/pilot",
     auth: "**Påkrevd** — Supabase JWT-session",
-    description: "Utløs Joker-analyse. Hermes AI analyserer markedet og lagrer resultatet i `market_intelligence`. Simulerer AI-generert signal for angitt kryptovaluta.",
+    description: "Utløs Pilot-analyse. Hermes AI analyserer markedet og lagrer resultatet i `market_intelligence`. Simulerer AI-generert signal for angitt kryptovaluta.",
     params: "Ingen body-parametere (krever) — genererer tilfeldig signal",
     response: `{
   "success": true,
-  "message": "🎭 Joker-analyse fullført!",
+  "message": "🎭 Pilot-analyse fullført!",
   "signal": {
-    "source": "joker-ai",
-    "title": "🎭 Joker-signal: LONG SOL (78%)",
-    "content": "## 🎭 Joker-analyse\\n\\n**Coin:** SOL\\n**Signal:** LONG\\n**Confidence:** 78%\\n...",
+    "source": "pilot-ai",
+    "title": "🎭 Pilot-signal: LONG SOL (78%)",
+    "content": "## 🎭 Pilot-analyse\\n\\n**Coin:** SOL\\n**Signal:** LONG\\n**Confidence:** 78%\\n...",
     "sentiment": "bullish",
     "sentiment_score": 0.45,
     "coins": ["SOL"],
@@ -238,7 +238,7 @@ export default function ApiDokumentasjonPage() {
           <div className="rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/80 backdrop-blur-xl p-5">
             <div className="text-[#F59E0B] text-2xl mb-2">⚡</div>
             <h3 className="text-[#F9FAFB] font-semibold text-sm mb-1">Sanntidsdata</h3>
-            <p className="text-xs text-[#6B7280]">Live-feed, leaderboard-endringer og JokerPush — oppdateres løpende.</p>
+            <p className="text-xs text-[#6B7280]">Live-feed, leaderboard-endringer og PilotPush — oppdateres løpende.</p>
           </div>
           <div className="rounded-2xl border border-[#2A2D35] bg-[#1A1D26]/80 backdrop-blur-xl p-5">
             <div className="text-[#10B981] text-2xl mb-2">📦</div>

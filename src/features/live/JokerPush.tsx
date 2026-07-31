@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // Types
 // ---------------------------------------------------------------------------
 
-interface JokerNotification {
+interface PilotNotification {
   id: string;
   user_display_name: string;
   title: string;
@@ -22,8 +22,8 @@ interface JokerNotification {
 // Component
 // ---------------------------------------------------------------------------
 
-export function JokerPush() {
-  const [notifications, setNotifications] = useState<JokerNotification[]>([]);
+export function PilotPush() {
+  const [notifications, setNotifications] = useState<PilotNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -34,7 +34,7 @@ export function JokerPush() {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch("/api/jokertrade/notifications?limit=10");
+      const res = await fetch("/api/pilot/notifications?limit=10");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       if (json.success) {
@@ -84,7 +84,7 @@ export function JokerPush() {
         <div className="flex items-center gap-2">
           <span className="text-lg">🃏</span>
           <h3 className="font-sans text-base font-bold text-[#F9FAFB]">
-            JokerPush
+            PilotPush
           </h3>
         </div>
         <span className="rounded-full bg-[#F59E0B]/10 px-2 py-0.5 font-sans text-[10px] font-semibold text-[#F59E0B]">
@@ -105,10 +105,10 @@ export function JokerPush() {
         <div className="flex flex-col items-center py-8 text-center">
           <span className="mb-2 text-3xl">🎭</span>
           <p className="font-sans text-sm text-[#6B7280]">
-            Ingen Joker-handler ennå
+            Ingen Pilot-handler ennå
           </p>
           <p className="font-sans text-xs text-[#6B7280]">
-            Aktiver JokerTrade for å få sanntidsvarsler
+            Aktiver PilotTrade for å få sanntidsvarsler
           </p>
         </div>
       ) : (

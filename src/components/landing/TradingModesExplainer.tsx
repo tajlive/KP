@@ -2,25 +2,30 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import {
+  ManualIllustration,
+  AutoIllustration,
+  PilotIllustration,
+} from "./Illustrations";
 
 const MODES = [
   {
     id: "manual" as const,
-    emoji: "🖐️",
+    Illustration: ManualIllustration,
     color: "emerald",
     href: "/trade",
   },
   {
     id: "auto" as const,
-    emoji: "🤖",
+    Illustration: AutoIllustration,
     color: "amber",
     href: "/dashboard/auto-trade",
   },
   {
-    id: "joker" as const,
-    emoji: "🎭",
+    id: "pilot" as const,
+    Illustration: PilotIllustration,
     color: "violet",
-    href: "/jokertrade",
+    href: "/dashboard/jokertrade",
   },
 ] as const;
 
@@ -49,7 +54,7 @@ export function TradingModesExplainer() {
   return (
     <section
       id="hvordan-det-fungerer"
-      className="py-20 bg-kp-bg-primary scroll-mt-20"
+      className="py-12 sm:py-20 bg-kp-bg-primary scroll-mt-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Konto-boks */}
@@ -85,7 +90,9 @@ export function TradingModesExplainer() {
                 className={`relative h-full overflow-hidden rounded-2xl border border-kp-border bg-gradient-to-br ${modeBg(mode.color)} p-6 transition-[transform,background-color,border-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.02] hover:border-kp-border-dark group-active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:group-active:scale-100`}
               >
                 {/* Ikon */}
-                <div className="text-4xl mb-3">{mode.emoji}</div>
+                <div className={`mb-3 flex justify-center ${modeAccent(mode.color)}`}>
+                  <mode.Illustration />
+                </div>
 
                 {/* Namn og tagline */}
                 <h3 className="font-bold text-kp-text-primary text-lg">

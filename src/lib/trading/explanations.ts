@@ -49,7 +49,7 @@ export interface TradeForExplanation {
   quantity?: number;
   total_value?: number;
   fee?: number;
-  /** 🎭 JokerTrade: forklaring på hvorfor handelen skjedde */
+  /** 🎭 Pilot: forklaring på hvorfor handelen skjedde */
   joker_explanation?: string | null;
 }
 
@@ -391,7 +391,7 @@ export function getTradeInlineExplanation(
   trade: Pick<TradeForExplanation, 'side' | 'strategy_signal' | 'realized_pnl' | 'exit_reason' | 'price' | 'quantity' | 'total_value' | 'fee' | 'joker_explanation'>,
   locale: Locale = "no"
 ): string {
-  // 🎭 JokerTrade: vis selve forklaringen fra AI-ensemblet
+  // 🎭 Pilot: vis selve forklaringen fra AI-ensemblet
   if (trade.joker_explanation) {
     return trade.joker_explanation;
   }

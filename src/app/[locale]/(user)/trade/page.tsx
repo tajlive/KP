@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Handel",
-  description: "Kjøp og selg krypto — manuelt, med AI-strategi, eller la JokerTrade styre. 100 000 kr i lekepenger, null risiko.",
+  description: "Kjøp og selg krypto — manuelt, med AI-strategi, eller la Pilot styre. 100 000 kr i lekepenger, null risiko.",
 };
 
 export default function TradePage() {

@@ -89,7 +89,7 @@ function routeLabel(route: string): string {
     "/no/register": "Registrer",
     "/no/reset-password": "Tilbakestill passord",
     "/no/update-password": "Oppdater passord",
-    "/no/jokertrade": "JokerTrade",
+    "/no/pilot": "Pilot",
     "/no/leaderboard": "Ledertavle",
     "/no/copy-trading": "Copy Trading",
     "/no/copy-trading/discover": "Copy Trading – Oppdag",
