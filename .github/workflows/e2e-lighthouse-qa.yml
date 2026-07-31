@@ -1,10 +1,9 @@
 name: E2E + Lighthouse QA
 
+# ⚠️ 2026-07-31: DEAKTIVERT auto-trigger — self-hosted runner offline
+# (startup_failure på hver push/PR). Workers Builds deployer uten QA-gate;
+# kjøres manuelt ved behov.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:

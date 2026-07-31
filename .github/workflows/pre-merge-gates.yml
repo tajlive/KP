@@ -1,11 +1,10 @@
 name: Pre-Merge Gates
 
+# ⚠️ 2026-07-31: DEAKTIVERT auto-trigger — alle jobs kjører på self-hosted
+# runner som er OFFLINE (startup_failure), noe som blokkerte PR-merges.
+# Kvalitetsgater dekkes av lokal pre-commit-pipeline (8 steg).
+# KUN manuell trigger.
 on:
-  pull_request:
-    branches: [main]
-  pull_request_target:
-    branches: [main]
-    types: [labeled, unlabeled]
   workflow_dispatch:
 
 # ============================================================

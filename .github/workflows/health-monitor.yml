@@ -1,8 +1,9 @@
 name: Health Monitor
 
+# ⚠️ 2026-07-31: DEAKTIVERT — self-hosted runner offline (startup_failure).
+# Helseovervåking dekkes av klarpakke-health Worker + cron-jobber.
+# KUN manuell trigger.
 on:
-  schedule:
-    - cron: '*/15 * * * *'  # Hvert 15. min
   workflow_dispatch:
 
 jobs:

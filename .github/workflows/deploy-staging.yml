@@ -1,8 +1,9 @@
 name: Deploy to Staging
 
+# ⚠️ 2026-07-31: DEAKTIVERT — staging-branch finnes ikke, self-hosted runner er
+# offline (startup_failure), og staging.klarpakke.no er nede. Workers Builds
+# deployer prod direkte. KUN manuell trigger.
 on:
-  push:
-    branches: [staging]
   workflow_dispatch:
 
 jobs:
