@@ -20,7 +20,7 @@ import d1NextTagCache from "@opennextjs/cloudflare/overrides/tag-cache/d1-next-t
 //
 // See: https://opennext.js.org/cloudflare/caching
 
-const enableR2Cache = process.env.OPENNEXT_ENABLE_R2_CACHE === "true";
+const enableR2Cache = process.env.OPENNEXT_ENABLE_R2_CACHE !== "false";
 
 export default defineCloudflareConfig(
   enableR2Cache

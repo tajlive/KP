@@ -34,8 +34,8 @@ const nextConfig = {
   compress: true,
 
   poweredByHeader: false,
-  productionBrowserSourceMaps: true,
 
+  productionBrowserSourceMaps: false, // Sentry får source maps via withSentryConfig
   // Cloudflare Workers/OpenNext routing compatibility
   // Note: API routes should not be affected by trailingSlash
   trailingSlash: undefined,  // Let Next.js handle it automatically
