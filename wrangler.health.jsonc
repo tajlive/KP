@@ -4,6 +4,6 @@
   "compatibility_date": "2024-12-01",
   "vars": {
     "STRIPE_SECRET_KEY": "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",
-    "RESEND_API_KEY": "re_GWaFt2VN_MJN3uwRDKHHTbwVBFo1gpANE"
+    "RESEND_API_KEY": "re_gWaFt2VN_MJN3uwRDKHHTbwVBFo1gpANE"
   }
 }
