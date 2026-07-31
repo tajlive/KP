@@ -14,7 +14,7 @@ REST_ENDPOINT="${SUPABASE_URL}/rest/v1/coin_prices"
 
 USDT_NOK_RATE="9.61"
 
-SYMBOLS=("BTCUSDT" "ETHUSDT" "SOLUSDT" "BNBUSDT" "XRPUSDT" "ADAUSDT" "DOGEUSDT" "AVAXUSDT" "DOTUSDT" "MATICUSDT")
+SYMBOLS=("BTCUSDT" "ETHUSDT" "SOLUSDT" "BNBUSDT" "XRPUSDT" "ADAUSDT" "DOGEUSDT" "AVAXUSDT" "DOTUSDT" "MATICUSDT" "LINKUSDT")
 
 # === Hent secrets fra .env.local ===
 BINANCE_PROXY_SECRET=$(grep '^BINANCE_PROXY_SECRET=' .env.local | sed 's/^BINANCE_PROXY_SECRET=//' | tr -d '\n')
@@ -37,7 +37,7 @@ echo "=== Coin Price Update $(date -u +'%Y-%m-%dT%H:%M:%SZ') ==="
 # Binance /api/v3/ticker/24hr tar symbols som JSON-encoded array
 SYMBOLS_JSON=$(printf '%s\n' "${SYMBOLS[@]}" | python3 -c "import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()], separators=(',',':')))" 2>/dev/null)
 if [ -z "$SYMBOLS_JSON" ]; then
-  SYMBOLS_JSON='["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","XRPUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","DOTUSDT","MATICUSDT"]'
+  SYMBOLS_JSON='["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","XRPUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","DOTUSDT","MATICUSDT","LINKUSDT"]'
 fi
 ENCODED_SYMBOLS=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$SYMBOLS_JSON'))")
 
