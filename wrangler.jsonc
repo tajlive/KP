@@ -20,6 +20,12 @@
       "database_id": "f6ec4afc-03fc-4e5f-a87f-ee52fc0320c3"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "next-inc-cache"
+    }
+  ],
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
