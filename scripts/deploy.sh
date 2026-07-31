@@ -12,8 +12,11 @@ cd "$PROJECT_DIR"
 GREEN='\033[0;32m'; RED='\033[0;31m'; CYAN='\033[0;36m'; YELLOW='\033[0;33m'; NC='\033[0m'
 
 # ─── Laster env ───
+# Robust loader: .env.local kan inneholde '&' i URL-er (POSTGRES_URL m.fl.) som
+# knekker `source`. Se scripts/lib/load-env.sh.
 if [ -f ".env.local" ]; then
-  set -a; source .env.local; set +a
+  # shellcheck source=lib/load-env.sh
+  . "$SCRIPT_DIR/lib/load-env.sh"
 fi
 
 CF_API_TOKEN="${CLOUDFLARE_API_TOKEN:-}"
