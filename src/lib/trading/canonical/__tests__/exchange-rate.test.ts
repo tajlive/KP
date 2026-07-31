@@ -76,10 +76,12 @@ describe("getNokUsdtRate", () => {
     expect(rate2).toBeCloseTo(10.25, 2);
   });
 
-  it("should return default fallback (10.5) when cache is empty and fetch fails", async () => {
+  it("should return default fallback (9.6) when cache is empty and fetch fails", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("Network error"));
 
     const rate = await getNokUsdtRate();
-    expect(rate).toBe(10.5);
+    // 2026-07-31: fallback endret 10.5 → 9.6 (markedsrate). 10.5 var ~8.5 %
+    // for høy og forårsaket falske take-profit-exits i JokerTrade.
+    expect(rate).toBe(9.6);
   });
 });

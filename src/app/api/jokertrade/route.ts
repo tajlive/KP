@@ -248,7 +248,7 @@ async function checkExits(
   let exits = 0;
   const { data: positions } = await db
     .from("trades")
-    .select("id, trading_pair, quantity, price, side")
+    .select("id, trading_pair, quantity, price, side, usdt_nok_rate")
     .eq("user_id", userId)
     .eq("status", "filled")
     .is("realized_pnl", null)
@@ -260,7 +260,15 @@ async function checkExits(
   // → pnlPct viste alltid ~±89 % (NOK/USDT-ratio) → gale exits. Konverter
   // nåddpris til NOK. Hent også priser for ALLE åpne symboler, ikke bare
   // den tilfeldige symbolet denne kjøringen valgte.
-  const nokPerUsdt = await getNokUsdtRate();
+  //
+  // FIKS (2026-07-31, SYSTEM): getNokUsdtRate() kan returnere DEFAULT_FALLBACK
+  // (10.5) når proxy feiler, mens executeTrade lagrer priser med levende rate
+  // (~9.68) → pnlPct ble blåst opp ~+8.5 % → FALSKE take-profit-exits som
+  // solgte med reelt tap. Løsning: bruk hver posisjons LAGREDE usdt_nok_rate
+  // (autoritativ — den som faktisk ble brukt ved kjøp) for konvertering.
+  // Da er entry og exit alltid i samme "rate-rom" uansett hvilken
+  // rate-kilde som feiler.
+  const fallbackRate = await getNokUsdtRate();
   const missingSymbols = [...new Set(positions.map((p) => p.trading_pair))]
     .filter((s) => !priceCache.has(s));
   await Promise.all(
@@ -275,7 +283,12 @@ async function checkExits(
     const currentPriceUsdt = priceCache.get(pos.trading_pair);
     if (!currentPriceUsdt || currentPriceUsdt <= 0) continue;
 
-    const currentPrice = currentPriceUsdt * nokPerUsdt; // NOK, samme enhet som entry
+    // Posisjonens egen rate er autoritativ. Mangler den (legacy-rader),
+    // faller vi tilbake til levende rate.
+    const storedRate = Number(pos.usdt_nok_rate);
+    const rate = Number.isFinite(storedRate) && storedRate > 0 ? storedRate : fallbackRate;
+
+    const currentPrice = currentPriceUsdt * rate; // NOK, samme enhet som entry
     const entry = Number(pos.price);
     const pnlPct = pos.side === "buy"
       ? ((currentPrice - entry) / entry) * 100
