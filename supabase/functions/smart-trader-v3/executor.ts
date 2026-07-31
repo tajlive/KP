@@ -144,7 +144,8 @@ export async function executeTrade(
       };
     }
 
-    // Opprett trade
+    // Opprett trade — DB-triggeren håndterer
+    // current_capital_nok + open_position-akkumulering
     await supabase.from("trades").insert({
       session_id: session.id,
       user_id: session.user_id,
@@ -164,24 +165,39 @@ export async function executeTrade(
       executed_at: new Date().toISOString(),
     });
 
-    // Oppdater session
-    const newCapital = capital - totalValueNok - feeNok;
+    // Re-les open_position — triggeren har allerede akkumulert
+    // Ny kjøpte lot inn i mengde/entry_price/highest_price
+    const { data: updatedSession } = await supabase
+      .from("trading_sessions")
+      .select("open_position")
+      .eq("id", session.id)
+      .maybeSingle();
+
+    const accumulated = (updatedSession?.open_position ?? {}) as Record<string, unknown>;
+
+    // Merge: behold trigger-verdier for quantity/entry_price/highest_price,
+    // oppdater kun metadata (symbol, stop_loss, take_profit, entered_at)
+    const merged = {
+      symbol: session.trading_pair,
+      side: accumulated.side ?? "buy",
+      quantity: Number(accumulated.quantity ?? quantity),
+      entry_price: Number(accumulated.entry_price ?? currentPriceNok),
+      highest_price: Math.max(
+        Number(accumulated.highest_price ?? currentPriceNok),
+        currentPriceNok,
+      ),
+      total_value:
+        Number(accumulated.quantity ?? quantity) *
+        Number(accumulated.entry_price ?? currentPriceNok),
+      stop_loss: risk.stopLossPrice,
+      take_profit: risk.takeProfitPrice,
+      entered_at: (accumulated.entered_at as string) ?? new Date().toISOString(),
+    };
+
+    // Skriv KUN posisjonsmetadata — triggeren eier cash og counters
     await supabase
       .from("trading_sessions")
-      .update({
-        current_capital_nok: newCapital,
-        open_position: {
-          symbol: session.trading_pair,
-          side: "buy",
-          entry_price: currentPriceNok,
-          quantity,
-          total_value: totalValueNok,
-          stop_loss: risk.stopLossPrice,
-          take_profit: risk.takeProfitPrice,
-          entered_at: new Date().toISOString(),
-        },
-        total_trades: (session.total_trades || 0) + 1,
-      })
+      .update({ open_position: merged })
       .eq("id", session.id);
 
     await logEvent(supabase, session, "trade_executed", {
