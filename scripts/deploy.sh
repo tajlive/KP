@@ -29,6 +29,15 @@ echo -e "${CYAN}╚════════════════════�
 echo "Version: ${VERSION}"
 echo ""
 
+# ─── Pre-flight: CRON_SECRET ───
+CRON_SECRET="${CRON_SECRET:-}"
+if [ -z "$CRON_SECRET" ]; then
+  echo -e "${RED}❌ CRON_SECRET mangler i .env.local — kan ikke deploye uten${NC}"
+  exit 1
+fi
+echo -e "${GREEN}✅ CRON_SECRET satt (${#CRON_SECRET} tegn)${NC}"
+echo ""
+
 # ─── 1. Bygg (next build → opennextjs pakking) ───
 echo -e "${CYAN}🏗️  Bygger Next.js...${NC}"
 SKIP_LINT_IN_BUILD=true NODE_OPTIONS="--max-old-space-size=4096" npx next build 2>&1 | tail -3
@@ -42,6 +51,31 @@ echo -e "${GREEN}✅ Bygg ferdig${NC}"
 echo -e "${CYAN}🚀 Deployer til Cloudflare...${NC}"
 npx wrangler deploy --env "" --var "APP_VERSION:${VERSION}" 2>&1 | grep -E "Deployed|Error|error" || true
 echo -e "${GREEN}✅ Deployet${NC}"
+
+# ─── 2b. CRON_SECRET-post-deploy-guard ───
+# Verifiser at CRON_SECRET finnes i Worker (var borte 2026-07-31 = 6t trading-stopp).
+echo -e "${CYAN}🔑 Sjekker CRON_SECRET i Worker...${NC}"
+EXISTING_SECRET=$(npx wrangler secret list 2>/dev/null | grep -o "CRON_SECRET" || true)
+if [ -z "$EXISTING_SECRET" ]; then
+  echo -e "${YELLOW}⚠️  CRON_SECRET manglet i Worker — setter fra .env.local${NC}"
+  echo -n "$CRON_SECRET" | npx wrangler secret put CRON_SECRET >/dev/null 2>&1
+  [ $? -eq 0 ] && echo -e "${GREEN}✅ CRON_SECRET satt${NC}" || echo -e "${RED}❌ Kunne ikke sette CRON_SECRET${NC}"
+else
+  echo -e "${GREEN}✅ CRON_SECRET finnes i Worker${NC}"
+fi
+
+# Verifiser cron-endepunktet
+echo -e "${CYAN}🧪 Tester cron/tick...${NC}"
+CRON_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+  -H "Authorization: Bearer ${CRON_SECRET}" \
+  "https://www.klarpakke.no/api/cron/tick" 2>/dev/null || echo "000")
+if [ "$CRON_CODE" = "200" ]; then
+  echo -e "${GREEN}✅ Cron/tick: 200 — trading levende${NC}"
+else
+  echo -e "${RED}❌ Cron/tick: HTTP $CRON_CODE — trading stoppet!${NC}"
+  FAILED=1
+fi
+echo ""
 
 # ─── 3. CDN Purge ───
 if [ -n "$CF_API_TOKEN" ]; then

@@ -86,6 +86,7 @@ import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
 import { usdtToNok, getUsdtToNokRate } from "@/lib/trading/currency";
 import { runEnsembleForSymbol } from "@/lib/ai/ensemble-v2";
 import { validateCronSecret } from "@/lib/auth/cron";
+import { syncPaperAccountBalance } from "@/lib/trading/core/paper-account-sync";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -2096,6 +2097,16 @@ export async function GET(req: NextRequest) {
           action: "error",
           error: errorMessage,
         });
+      }
+    }
+
+    // Sync paper_accounts for alle berørte brukere
+    // (smart-trader-v3 trades går via Supabase direkte — her fanges alle)
+    const syncedUsers = new Set<string>();
+    for (const s of sessionsWithAuto) {
+      if (!syncedUsers.has(s.user_id)) {
+        syncedUsers.add(s.user_id);
+        syncPaperAccountBalance(db, s.user_id).catch(() => {});
       }
     }
 
