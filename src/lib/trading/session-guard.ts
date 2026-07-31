@@ -3,17 +3,21 @@
  *
  * Forsvar i dybden mot trading på deaktiverte sesjoner (Task 0.3).
  *
- * Guarden (jokertrade_health_guard) setter status='stopped' + stopped_at
- * + smart_trader_enabled=false + error_message='GUARD: …'. Eldre
- * guard-utløsninger (2026-07-31 05:04 og tidligere) satte KUN
- * smart_trader_enabled=false + error_message mens status forble 'active'
- * — tick fortsatte å kjøpe (prod-bevis: kjøp 06:08 og 07:45).
+ * Guarden (jokertrade_health_guard) deaktiverer slik:
+ *   - NY (2026-07-31+): status='stopped' + stopped_at + error_message='GUARD: …'
+ *   - GAMMEL: smart_trader_enabled=false + error_message='GUARD: …',
+ *     status forble 'active' → tick fortsatte å kjøpe (prod-bevis:
+ *     kjøp 06:08 og 07:45 etter guard 05:04).
  *
- * Denne modulen er den KODE-side garantien: en sesjon regnes som
- * tradeable kun hvis ALLE tre kriteriene er oppfylt:
+ * VIKTIG (regresjonsfiks 2026-07-31 kveld): smart_trader_enabled=false er
+ * IKKE et deaktiveringssignal — kolonnen har DB-default false og betyr bare
+ * "sesjonen bruker ikke SmartTrader v3-edge-funksjonen". DCA- og
+ * CryptoPilot-sesjoner har enabled=false og SKAL trades av tick-motoren.
+ * Det pålitelige guard-signalet er error_message LIKE 'GUARD:%' (+ status).
+ *
+ * En sesjon regnes som tradeable kun hvis BEGGE kriteriene er oppfylt:
  *   1. status = 'active'
- *   2. smart_trader_enabled != false
- *   3. error_message NOT LIKE 'GUARD:%'
+ *   2. error_message NOT LIKE 'GUARD:%'
  *
  * Brukes av /api/cron/tick og /api/jokertrade (query-filtre + JS-filter).
  */
@@ -34,13 +38,15 @@ export function isGuardError(message: string | null | undefined): boolean {
 /**
  * Kan denne sesjonen handle? false = skal ekskluderes fra ALL trading
  * (tick, JokerTrade, auto-trader).
+ *
+ * Merk: smart_trader_enabled sjekkes IKKE her — se fil-headeren.
+ * Guard-deaktivering fanges via status ('stopped') og GUARD-feilmelding.
  */
 export function isSessionTradeable(
   session: TradeableSessionLike | null | undefined,
 ): boolean {
   if (!session) return false;
   if (session.status !== "active") return false;
-  if (session.smart_trader_enabled === false) return false;
   if (isGuardError(session.error_message)) return false;
   return true;
 }
@@ -55,9 +61,6 @@ export function sessionSkipReason(
   if (!session) return "manglende sesjon";
   if (session.status !== "active") {
     return `status=${session.status} (krever 'active')`;
-  }
-  if (session.smart_trader_enabled === false) {
-    return "smart_trader_enabled=false";
   }
   if (isGuardError(session.error_message)) {
     return `error_message='${session.error_message}'`;
