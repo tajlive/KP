@@ -171,7 +171,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const isMarketing = !isAppShellPath(strippedPath);
 
   // Get CSP nonce from middleware header for inline scripts
-  const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
+  // ONLY set when a real nonce is provided — empty/falsy means no nonce
+  // (avoids hydration mismatch between dev server and SSR)
+  const rawNonce = hdrs.get("x-csp-nonce");
+  const cspNonce = rawNonce && rawNonce.length > 0 ? rawNonce : undefined;
 
   // Fetch design tokens server-side to eliminate FOUC
   const tokensCss = await getSanityTokensCSS().catch(() => DEFAULT_TOKENS_CSS);
@@ -194,6 +197,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     preconnect(supabaseHost, { crossOrigin: "anonymous" });
     prefetchDNS(supabaseHost);
   }
+  // Font CDN — Inter/Geist/Outfit/Instrument Serif lastes via next/font
+  preconnect("https://r2cdn.perplexity.ai", { crossOrigin: "anonymous" });
+  prefetchDNS("https://r2cdn.perplexity.ai");
+  // Analytics
+  preconnect("https://plausible.io");
   return (
     <html lang={locale} className={`${outfit.variable} ${geist.variable} ${inter.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
       <head suppressHydrationWarning>
