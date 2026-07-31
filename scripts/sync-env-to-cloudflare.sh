@@ -1,13 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-# Last inn .env.local
+# Last inn .env.local (robust loader — tåler '&' i URL-er)
 if [ ! -f .env.local ]; then
   echo "❌ Finner ikke .env.local!"
   exit 1
 fi
 
-source .env.local
+# shellcheck source=lib/load-env.sh
+. "$(dirname "${BASH_SOURCE[0]}")/lib/load-env.sh"
 
 echo "🔄 Synkroniserer env vars til Cloudflare Pages..."
 
