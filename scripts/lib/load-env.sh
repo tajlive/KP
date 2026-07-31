@@ -21,13 +21,21 @@ _load_env_file() {
     esac
     _key="${_line%%=*}"
     _value="${_line#*=}"
+    # Strip matchende anførselstegn rundt verdien ("..." eller '...')
+    # NB: .env.local har bl.a. CLOUDFLARE_API_TOKEN="cfat_..." — uten stripping
+    # får wrangler token-en inkl. quotes og auth feiler (kode 6111).
+    if [[ "$_value" == \"*\" ]]; then
+      _value="${_value#\"}"
+      _value="${_value%\"}"
+    elif [[ "$_value" == \'*\' ]]; then
+      _value="${_value#\'}"
+      _value="${_value%\'}"
+    fi
     if [ -n "$_key" ]; then
       export "$_key=$_value"
     fi
   done < "$_file"
 }
 
-# Kjør bare når scriptet er sourced direkte som loader (ikke ved import)
-if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-  _load_env_file "${1:-.env.local}"
-fi
+# Last alltid .env.local — både når sourced og når kjørt direkte.
+_load_env_file "${1:-.env.local}"
