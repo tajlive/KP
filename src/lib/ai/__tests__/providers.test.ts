@@ -1,8 +1,9 @@
 /**
- * providers.ts — KIMI K3 OAuth-konfigurasjon
+ * providers.ts — KIMI K3 Global API-konfigurasjon
  *
  * Verifiserer regler fra offisiell Kimi Model Parameter Reference (2026-07):
- * - temperature/top_p/n/penalties er FIKSETE for K3/K2.7 og skal IKKE sendes
+ * - temperature er FIKSERT=1.0 for K3 på Global API (api.moonshot.ai) — sendes eksplisitt
+ * - top_p/n/penalties sendes ALDRI
  * - reasoning_effort (low/high/max) støttes KUN av k3
  * - Default modell er k3 med effort 'high'
  */
@@ -45,18 +46,30 @@ describe('resolveKimiModel', () => {
 describe('buildKimiPayload', () => {
   const messages = [{ role: 'user' as const, content: 'Hei' }];
 
-  it('sender ALDRI temperature (fiksert=1.0 hos Kimi, 400-feil ellers)', () => {
+  // Global API (KIMI_API_KEY satt → api.moonshot.ai) — primær prod-vei.
+  // Uten KIMI_API_KEY faller getKimiEndpoint() tilbake til api.kimi.com (Kimi Code API).
+  beforeEach(() => {
+    process.env.KIMI_API_KEY = 'test-global-key';
+    delete process.env.KIMI_OAUTH_TOKEN;
+  });
+
+  afterEach(() => {
+    delete process.env.KIMI_API_KEY;
+  });
+
+  it('sender temperature=1 eksplisitt for k3 (Global API fiksert=1.0) — aldri top_p', () => {
     const body = buildKimiPayload(messages, { stream: false });
-    expect(body).not.toHaveProperty('temperature');
+    expect(body.model).toBe('kimi-k3');
+    expect(body.temperature).toBe(1);
     expect(body).not.toHaveProperty('top_p');
-    // Selv om caller ber om det — skal ignoreres
+    // Selv om caller ber om annet — fiksert 1.0, skal overstyres
     const body2 = buildKimiPayload(messages, { stream: false, temperature: 0.3 });
-    expect(body2).not.toHaveProperty('temperature');
+    expect(body2.temperature).toBe(1);
   });
 
   it('k3 får reasoning_effort=high som default, max_tokens=8192 (reasoning-headroom)', () => {
     const body = buildKimiPayload(messages, { stream: false });
-    expect(body.model).toBe('k3');
+    expect(body.model).toBe('kimi-k3');
     expect(body.reasoning_effort).toBe('high');
     expect(body.max_tokens).toBe(8192);
     expect(body.stream).toBe(false);
@@ -69,8 +82,9 @@ describe('buildKimiPayload', () => {
 
   it('kimi-for-coding får IKKE reasoning_effort — selv ved eksplisitt override', () => {
     const body = buildKimiPayload(messages, { stream: true, model: 'kimi-for-coding', reasoningEffort: 'high' });
-    expect(body.model).toBe('kimi-for-coding');
+    expect(body.model).toBe('kimi-k2.7-code');
     expect(body).not.toHaveProperty('reasoning_effort');
+    expect(body).not.toHaveProperty('temperature');
     expect(body.stream).toBe(true);
   });
 
