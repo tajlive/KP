@@ -731,6 +731,7 @@
       "autoTrade": "自动交易",
       "guide": "入门指南",
       "mainMenu": "主菜单",
+      "accountMenu": "账户菜单",
       "closeMenu": "关闭菜单"
     },
     "topBar": {

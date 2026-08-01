@@ -3,18 +3,14 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { Settings, User, ChevronDown, Activity } from "lucide-react";
-import { NotificationBell } from "@/features/notifications/NotificationBell";
-import { ThemeToggleIcon } from "@/shared/theme";
-import { Button } from "@/shared/ui/button";
+import { Activity } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_COINBASE_TOP_NAV,
-  DASHBOARD_MORE_NAV,
   isDashboardSidebarLinkActive,
 } from "@/lib/navigation/config";
+import { UserMenu } from "./UserMenu";
+import { useActiveTraderSessions } from "./use-active-trader-sessions";
 
 function TopNavLink({
   href,
@@ -39,119 +35,8 @@ function TopNavLink({
   );
 }
 
-function MoreDropdown({ locale, pathname }: { locale: string; pathname: string }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const t = useTranslations("dashboard.sidebar");
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const anyActive = DASHBOARD_MORE_NAV.some((item) =>
-    isDashboardSidebarLinkActive(
-      pathname,
-      locale,
-      item.href,
-      item.exact ? { exact: true } : undefined,
-    ),
-  );
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-          anyActive
-            ? "bg-kp-brand/10 text-kp-brand"
-            : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary"
-        }`}
-      >
-        {t("mainMenu")}
-        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-      {open && (
-        <div className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-kp-border bg-kp-bg-secondary py-1 shadow-lg">
-          {DASHBOARD_MORE_NAV.map((item) => {
-            const active = isDashboardSidebarLinkActive(
-              pathname,
-              locale,
-              item.href,
-              item.exact ? { exact: true } : undefined,
-            );
-            return (
-              <Link
-                key={item.href}
-                href={hrefWithLocale(locale, item.href)}
-                onClick={() => setOpen(false)}
-                className={`block px-4 py-2 text-sm ${
-                  active
-                    ? "bg-kp-brand/10 text-kp-brand"
-                    : "text-kp-text-secondary hover:bg-kp-bg-hover"
-                }`}
-              >
-                {t(item.labelKey)}
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-type ActiveTraderSession = {
-  mode?: "paper" | "live" | string | null;
-};
-
 function ActiveTraderPill({ locale }: { locale: string }) {
-  const [sessions, setSessions] = useState<ActiveTraderSession[]>([]);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const load = async () => {
-      try {
-        const response = await fetch("/api/trading/sessions?status=active", {
-          cache: "no-store",
-        });
-        if (!response.ok) {
-          if (!cancelled) setSessions([]);
-          return;
-        }
-
-        const payload = (await response.json()) as {
-          sessions?: ActiveTraderSession[];
-        };
-        if (!cancelled) setSessions(payload.sessions ?? []);
-      } catch {
-        if (!cancelled) setSessions([]);
-      }
-    };
-
-    const onFocusOrChange = () => {
-      void load();
-    };
-
-    void load();
-    const interval = window.setInterval(load, isMobile ? 60_000 : 30_000);
-    window.addEventListener("focus", onFocusOrChange);
-    window.addEventListener("klarpakke:trader-status-changed", onFocusOrChange);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-      window.removeEventListener("focus", onFocusOrChange);
-      window.removeEventListener("klarpakke:trader-status-changed", onFocusOrChange);
-    };
-  }, [isMobile]);
+  const sessions = useActiveTraderSessions();
 
   const activeCount = sessions.length;
   if (activeCount === 0) return null;
@@ -228,40 +113,12 @@ export function TopNav() {
                 )}
               />
             ))}
-            <MoreDropdown locale={locale} pathname={pathname} />
           </nav>
         </div>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <ActiveTraderPill locale={locale} />
-          <ThemeToggleIcon />
-          <Button
-            asChild
-            variant="secondary"
-            size="sm"
-            aria-label={t("settings")}
-            title={t("settings")}
-            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-          >
-            <Link href={hrefWithLocale(locale, "/dashboard/settings")}>
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("settings")}</span>
-            </Link>
-          </Button>
-          {/* Varsler-fjernet — route slettet */}
-          <Button
-            asChild
-            variant="secondary"
-            size="sm"
-            aria-label={t("profile")}
-            title={t("profile")}
-            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-          >
-            <Link href={hrefWithLocale(locale, "/profile")}>
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("profile")}</span>
-            </Link>
-          </Button>
+          <UserMenu />
         </div>
       </div>
     </header>

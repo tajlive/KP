@@ -282,8 +282,12 @@ export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/historikk", labelKey: "history" },
 ];
 
-/** Ekstra sider tilgjengelig via "Mer" dropdown i TopNav */
-export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
+/**
+ * Sekundære sider i brukermenyen (avatar-meny i TopNav).
+ * Profil og Innstillinger ligger som egne kontopunkter i menyen og skal
+ * derfor ikke dupliseres her.
+ */
+export const DASHBOARD_USER_MENU_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/historikk", labelKey: "history" },
   { href: "/dashboard/resultater", labelKey: "results" },
   { href: "/dashboard/analysis", labelKey: "analysis" },
@@ -291,7 +295,6 @@ export const DASHBOARD_MORE_NAV: readonly CoinbaseNavItem[] = [
   { href: "/kurs", labelKey: "learn" },
   { href: "/pilot", labelKey: "pilot" },
   { href: "/dashboard/referral", labelKey: "referral" },
-  { href: "/dashboard/settings", labelKey: "settings" },
 ];
 
 export const dashboardNavigation = {
@@ -299,7 +302,7 @@ export const dashboardNavigation = {
   trading: DASHBOARD_TRADING_NAV,
   coinbaseTop: DASHBOARD_COINBASE_TOP_NAV,
   coinbaseBottom: DASHBOARD_COINBASE_BOTTOM_NAV,
-  more: DASHBOARD_MORE_NAV,
+  userMenu: DASHBOARD_USER_MENU_NAV,
 } as const;
 
 /**

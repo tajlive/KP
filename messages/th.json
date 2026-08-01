@@ -946,6 +946,7 @@
       "autoTrade": "เทรดอัตโนมัติ",
       "guide": "เริ่มต้นใช้งาน",
       "mainMenu": "เมนูหลัก",
+      "accountMenu": "เมนูบัญชี",
       "closeMenu": "ปิดเมนู"
     },
     "bots": {
