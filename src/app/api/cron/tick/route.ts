@@ -1442,17 +1442,20 @@ async function processSession(
     // Live capital MUST be updated here.
     if (trade?.id) {
       try {
-        const rate = getUsdtToNokRate();
         const netValueUsdt =
           signal.action === "buy"
             ? totalValue + finalFee
             : totalValue - finalFee;
-        const netValueNok = usdtToNok(netValueUsdt, rate);
+        // Live-kapital er USDT-denominert (current_capital er USDT).
+        // FIX 2026-08-01: usdtToNok-konvertering her ga ×rate-inflasjon
+        // (47 USDT-kjøp trakk 453 NOK fra 10000 USDT → kapital 99546).
+        // RPC-ene decrement/increment_capital oppdaterer current_capital_nok
+        // og triggeren synker current_capital 1:1 → send USDT-beløpet direkte.
         const { error: capitalError } = await db.rpc(
           signal.action === "buy" ? "decrement_capital" : "increment_capital",
           {
             p_session_id: session.id,
-            p_amount: Math.abs(netValueNok),
+            p_amount: Math.abs(netValueUsdt),
             p_user_id: session.user_id,
           },
         );
