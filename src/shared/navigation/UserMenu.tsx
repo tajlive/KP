@@ -253,23 +253,21 @@ export function UserMenu() {
         )}
         <DropdownMenuSeparator className="bg-kp-border" />
 
-        <DropdownMenuItem asChild>
-          <Link
-            href={hrefWithLocale(locale, "/profile")}
-            className={isActive("/profile") ? itemActive : undefined}
-          >
-            <User className="h-4 w-4" />
-            {t("profile")}
-          </Link>
+        {/* NB: onSelect + router.push — Link inne i Radix-portalen mister
+            navigasjonen når menyen unmountes i samme klikk-event. */}
+        <DropdownMenuItem
+          onSelect={() => router.push(hrefWithLocale(locale, "/profile"))}
+          className={isActive("/profile") ? itemActive : undefined}
+        >
+          <User className="h-4 w-4" />
+          {t("profile")}
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link
-            href={hrefWithLocale(locale, "/dashboard/settings")}
-            className={isActive("/dashboard/settings") ? itemActive : undefined}
-          >
-            <Settings className="h-4 w-4" />
-            {t("settings")}
-          </Link>
+        <DropdownMenuItem
+          onSelect={() => router.push(hrefWithLocale(locale, "/dashboard/settings"))}
+          className={isActive("/dashboard/settings") ? itemActive : undefined}
+        >
+          <Settings className="h-4 w-4" />
+          {t("settings")}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator className="bg-kp-border" />
@@ -277,20 +275,19 @@ export function UserMenu() {
         <DropdownMenuSeparator className="bg-kp-border" />
 
         {secondaryLinks.map(({ href, labelKey, Icon }) => (
-          <DropdownMenuItem asChild key={href}>
-            <Link
-              href={hrefWithLocale(locale, href)}
-              className={isActive(href) ? itemActive : undefined}
-            >
-              <Icon className="h-4 w-4" />
-              {t(labelKey)}
-            </Link>
+          <DropdownMenuItem
+            key={href}
+            onSelect={() => router.push(hrefWithLocale(locale, href))}
+            className={isActive(href) ? itemActive : undefined}
+          >
+            <Icon className="h-4 w-4" />
+            {t(labelKey)}
           </DropdownMenuItem>
         ))}
 
         <DropdownMenuSeparator className="bg-kp-border" />
         <DropdownMenuItem
-          onClick={() => void handleSignOut()}
+          onSelect={() => void handleSignOut()}
           className="text-kp-danger focus:bg-kp-danger/10 focus:text-kp-danger"
         >
           <LogOut className="h-4 w-4" />
