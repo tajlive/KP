@@ -51,7 +51,7 @@ export class ExecutorFactory {
       .maybeSingle();
 
     if (exchangeConn?.api_key && exchangeConn.api_secret_ciphertext && exchangeConn.api_secret_nonce) {
-      let apiKey = exchangeConn.api_key;
+      const apiKey = exchangeConn.api_key;
       let apiSecret: string;
       try {
         apiSecret = decryptExchangeSecret(
