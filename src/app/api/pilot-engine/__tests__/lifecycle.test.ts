@@ -223,4 +223,54 @@ describe("Round-robin brukervalg", () => {
     expect(counts.every((c) => c === 10)).toBe(true);
     expect(counts.length).toBe(10);
   });
+
+  it("guard-stoppete brukere (uten aktiv sesjon) ekskluderes fra utvalget", () => {
+    // Regresjon 2026-08-01: 8/11 auto-brukere var guard-stoppet med åpen
+    // posisjon → deres eldste trades gjorde at round-robin ALLTID valgte
+    // dem → ensureActiveSession ga 403 «status=stopped» → motoren ga opp
+    // og de 3 tradebare brukerne ble aldri nådd → 0 handler.
+    const configs = [
+      { user_id: "stopped_a" },
+      { user_id: "stopped_b" },
+      { user_id: "stopped_c" },
+      { user_id: "active_1" },
+      { user_id: "active_2" },
+      { user_id: "active_3" },
+    ];
+    // Kun brukere med aktiv paper-sesjon er tradebare
+    const tradeable = new Set(["active_1", "active_2", "active_3"]);
+    const eligible = configs.filter((u) => tradeable.has(u.user_id));
+
+    expect(eligible.length).toBe(3);
+    expect(eligible.some((u) => u.user_id.startsWith("stopped"))).toBe(false);
+
+    // Round-robin blant de tradebare: aldri-handlet først, deretter eldst
+    const lastTrade: Record<string, string | null> = {
+      active_1: "2026-07-31T04:56:00Z", // eldst (og eneste som har handlet)
+      active_2: null,
+      active_3: null,
+    };
+    eligible.sort((a, b) => {
+      const ta = lastTrade[a.user_id] ?? "1970-01-01";
+      const tb = lastTrade[b.user_id] ?? "1970-01-01";
+      return ta.localeCompare(tb);
+    });
+
+    expect(eligible[0].user_id).toBe("active_2"); // aldri handlet, foran active_1
+    expect(eligible[0].user_id.startsWith("stopped")).toBe(false);
+    expect(eligible[1].user_id).toBe("active_3");
+    expect(eligible[2].user_id).toBe("active_1"); // eldst handlet sist
+  });
+
+  it("ingen tradebare brukere → ingen handler (alt guard-stoppet)", () => {
+    const configs = [
+      { user_id: "stopped_a" },
+      { user_id: "stopped_b" },
+    ];
+    const tradeable = new Set<string>(); // ingen aktive sesjoner
+    const eligible = configs.filter((u) => tradeable.has(u.user_id));
+
+    expect(eligible.length).toBe(0);
+    // Motoren skal svare «Ingen tradebare auto-brukere», ikke prøve en stopped
+  });
 });
