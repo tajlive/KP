@@ -12,8 +12,22 @@ export interface LotSizeInfo {
 }
 
 const STATIC_LOT_SIZES: Record<string, LotSizeInfo> = {
+  // Verifisert mot testnet.binance.vision exchangeInfo 2026-08-01.
+  // FIX: kun BTC/ETH → alle Klarpakke-symboler; feil fallback (BTC-presisjon)
+  // ga LOT_SIZE-reject for ADA/DOGE (prod-bevis: live-ordre 400 Filter failure).
   BTCUSDT: { stepSize: 0.00001, minQty: 0.00001 },
   ETHUSDT: { stepSize: 0.0001, minQty: 0.0001 },
+  BNBUSDT: { stepSize: 0.001, minQty: 0.001 },
+  SOLUSDT: { stepSize: 0.001, minQty: 0.001 },
+  XRPUSDT: { stepSize: 0.1, minQty: 0.1 },
+  ADAUSDT: { stepSize: 0.1, minQty: 0.1 },
+  DOGEUSDT: { stepSize: 1, minQty: 1 },
+  DOTUSDT: { stepSize: 0.01, minQty: 0.01 },
+  LINKUSDT: { stepSize: 0.01, minQty: 0.01 },
+  AVAXUSDT: { stepSize: 0.01, minQty: 0.01 },
+  // MATIC ble migrert til POL (2024) — MATICUSDT finnes ikke lenger på
+  // Binance (verken mainnet eller testnet).
+  POLUSDT: { stepSize: 0.1, minQty: 0.1 },
 };
 
 const DEFAULT_LOT_SIZE: LotSizeInfo = {
