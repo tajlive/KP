@@ -47,7 +47,7 @@ echo "Symbols: ${SYMBOLS[*]}"
 PROXY_RESPONSE=$(curl -s --max-time 10 \
   -X POST "$PROXY_ENDPOINT" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
   -H "x-binance-proxy-secret: $BINANCE_PROXY_SECRET" \
   -H "apikey: $SUPABASE_ANON_KEY" \
   -d "{\"action\":\"publicApi\",\"publicApiPath\":\"/api/v3/ticker/24hr?symbols=${ENCODED_SYMBOLS}\"}")

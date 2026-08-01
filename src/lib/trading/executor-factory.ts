@@ -16,6 +16,7 @@ import { BinanceProxyExecutor } from "./binance-proxy-executor";
 import type { OrderExecutor } from "./order-executor";
 import { PaperExecutor } from "./paper-executor";
 import { decryptExchangeSecret } from "@/lib/exchanges/secret-crypto";
+import { decrypt } from "@/lib/crypto";
 
 export class ExecutorFactory {
   /**
@@ -72,7 +73,46 @@ export class ExecutorFactory {
       return new BinanceExecutor({ apiKey, apiSecret, testnet });
     }
 
-    // 2) MIDLERTIDIG: user_binance_keys (api_key_id/api_secret_id → Supabase Vault)
+    // 2) API_KEYS: kundenes koblings-UI (BinanceAPISettings) skriver hit.
+    //    api_key_encrypted = klartekst nøkkel, api_secret_encrypted = AES-GCM
+    //    med BINANCE_ENCRYPTION_SECRET (lib/crypto encrypt()).
+    const { data: apiKeyRow } = await supabase
+      .from("api_keys")
+      .select("api_key_encrypted, api_secret_encrypted, is_testnet, is_active")
+      .eq("user_id", userId)
+      .eq("exchange", "binance")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (apiKeyRow?.api_key_encrypted && apiKeyRow.api_secret_encrypted) {
+      const encryptionSecret =
+        process.env.BINANCE_ENCRYPTION_SECRET ??
+        process.env.EXCHANGE_ENCRYPTION_SECRET;
+      if (encryptionSecret) {
+        try {
+          const apiKey = apiKeyRow.api_key_encrypted as string;
+          const apiSecret = decrypt(
+            apiKeyRow.api_secret_encrypted as string,
+            encryptionSecret,
+          );
+          const testnet = apiKeyRow.is_testnet || false;
+
+          const proxyEnabled = process.env.BINANCE_PROXY_ENABLED !== "0";
+          if (proxyEnabled) {
+            return new BinanceProxyExecutor(supabase, userId, apiKey, apiSecret, testnet);
+          }
+          return new BinanceExecutor({ apiKey, apiSecret, testnet });
+        } catch (err) {
+          console.error("[ExecutorFactory] decrypt api_keys row failed:", err);
+        }
+      } else {
+        console.error("[ExecutorFactory] BINANCE_ENCRYPTION_SECRET missing for api_keys row");
+      }
+    }
+
+    // 3) MIDLERTIDIG: user_binance_keys (api_key_id/api_secret_id → Supabase Vault)
     const { data: ubkRow } = await supabase
       .from("user_binance_keys")
       .select("api_key_id, api_secret_id, is_testnet, is_active")
@@ -254,7 +294,18 @@ export class ExecutorFactory {
       .limit(1)
       .maybeSingle();
 
-    const hasKeys = Boolean(exchangeConn) || Boolean(ubkRow) || Boolean(profile.binance_connected);
+    const { data: apiKeyRow } = await supabase
+      .from("api_keys")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("exchange", "binance")
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    const hasKeys =
+      Boolean(exchangeConn) || Boolean(ubkRow) || Boolean(apiKeyRow) ||
+      Boolean(profile.binance_connected);
     return tierOk && hasKeys;
   }
 }

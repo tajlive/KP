@@ -63,6 +63,15 @@ export async function POST(request: NextRequest) {
         .limit(1)
         .maybeSingle();
 
+      const { data: apiKeyRow } = await db
+        .from("api_keys")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("exchange", "binance")
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+
       const { data: profileRow } = await db
         .from("user_profiles")
         .select("tier, binance_connected")
@@ -72,7 +81,7 @@ export async function POST(request: NextRequest) {
       const perms = (connection?.permissions ?? {}) as Record<string, boolean>;
       const hasKeys =
         Boolean(connection) || Boolean(ubkRow?.api_key_id && ubkRow.api_secret_id) ||
-        Boolean(profileRow?.binance_connected);
+        Boolean(apiKeyRow) || Boolean(profileRow?.binance_connected);
 
       if (!hasKeys || (connection && !perms.trading)) {
         return NextResponse.json(
