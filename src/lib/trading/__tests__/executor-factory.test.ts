@@ -45,6 +45,8 @@ function makeSupabaseMock(options?: {
   sessionError?: Record<string, unknown> | null;
   rpcResult?: Record<string, unknown>[] | null;
   rpcError?: Record<string, unknown> | null;
+  exchangeConnection?: Record<string, unknown> | null;
+  userBinanceKeys?: Record<string, unknown> | null;
 }) {
   const {
     profile = {
@@ -58,17 +60,34 @@ function makeSupabaseMock(options?: {
     sessionError = null,
     rpcResult = [{ api_key: "test-api-key", api_secret: "test-api-secret", is_testnet: false }],
     rpcError = null,
+    exchangeConnection = null,
+    userBinanceKeys = null,
   } = options ?? {};
 
-  const fromMock = vi.fn((table: string) => ({
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue(
-      table === "user_profiles"
-        ? { data: profile, error: profileError }
-        : { data: sessionRow, error: sessionError },
-    ),
-  }));
+  const fromMock = vi.fn((table: string) => {
+    const query = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      is: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue(
+        table === "user_profiles"
+          ? { data: profile, error: profileError }
+          : table === "trading_sessions"
+            ? { data: sessionRow, error: sessionError }
+            : { data: null, error: null },
+      ),
+      maybeSingle: vi.fn().mockResolvedValue(
+        table === "exchange_connections"
+          ? { data: exchangeConnection, error: null }
+          : table === "user_binance_keys"
+            ? { data: userBinanceKeys, error: null }
+            : { data: null, error: null },
+      ),
+    };
+    return query;
+  });
 
   return {
     from: fromMock,

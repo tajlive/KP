@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { UnifiedTradeTerminal } from "@/features/trading/UnifiedTradeTerminal";
+import { InstallPrompt } from "@/shared/pwa/InstallPrompt";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,5 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default function TradePage() {
-  return <UnifiedTradeTerminal />;
+  return (
+    <>
+      <UnifiedTradeTerminal />
+      <InstallPrompt />
+    </>
+  );
 }

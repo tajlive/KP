@@ -43,6 +43,19 @@ function createMockSupabase(overrides: {
             })),
           };
         }
+        // Nye tabeller spurt av ExecutorFactory.canTradeLive — tomme som default
+        if (table === "exchange_connections" || table === "user_binance_keys") {
+          const emptyRow = async () => ({ data: null, error: null });
+          const limiter = { maybeSingle: emptyRow };
+          const withIs = { ...limiter, limit: vi.fn(() => limiter) };
+          const withEq = {
+            eq: vi.fn(() => withEq),
+            is: vi.fn(() => withIs),
+            limit: vi.fn(() => limiter),
+            maybeSingle: emptyRow,
+          };
+          return withEq;
+        }
         if (table === "trading_sessions" && columns === "*") {
           return {
             eq: vi.fn(() => ({
