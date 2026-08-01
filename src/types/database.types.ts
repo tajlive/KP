@@ -6725,6 +6725,27 @@ export type Database = {
         }
         Relationships: []
       }
+      system_flags: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string | null
+          value: Record<string, unknown> | null
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string | null
+          value?: Record<string, unknown> | null
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string | null
+          value?: Record<string, unknown> | null
+        }
+        Relationships: []
+      }
       strategy_followers: {
         Row: {
           allocation_percent: number | null
