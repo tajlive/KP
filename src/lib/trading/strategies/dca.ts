@@ -118,6 +118,7 @@ export class DCAStrategy implements StrategyEngine {
       const currentQty = session.open_position.quantity || 1;
       return {
         action: "sell",
+        exitReason: "take_profit",
         quantity: (nextLevel.sell_pct / 100) * currentQty,
         indicators: {
           pnl_pct: Math.round(pnlPct * 100) / 100,
@@ -138,6 +139,7 @@ export class DCAStrategy implements StrategyEngine {
       if (dropFromPeak >= trailingStopPct) {
         return {
           action: "sell",
+          exitReason: "stop_loss",
           indicators: {
             pnl_pct: Math.round(pnlPct * 100) / 100,
             trailing_stop: true,
@@ -154,6 +156,7 @@ export class DCAStrategy implements StrategyEngine {
     if (pnlPct <= stopLoss) {
       return {
         action: "sell",
+        exitReason: "stop_loss",
         indicators: {
           pnl_pct: Math.round(pnlPct * 100) / 100,
           stop_loss: stopLoss,

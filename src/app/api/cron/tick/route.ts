@@ -846,6 +846,7 @@ async function processSession(
     {
       const guard = evaluateSignalGuard({
         action: signal.action,
+        exitReason: signal.exitReason ?? "auto",
         confidence:
           (signal.indicators?.confidence as number | null | undefined) ?? null,
         expectancy: dynamicExpectancy ?? null,
