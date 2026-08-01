@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     siteName: "Klarpakke",
     title: "Klarpakke — AI-drevet trading for norske småsparere",
     description:
-      "Gratis beta: Du får 100 000 kr i lekepenger (JokerTrade). Lær og test tradingstrategier med autonome AI-agenter — uten å risikere egne penger.",
+      "Gratis beta: Du får 100 000 kr i lekepenger (Pilot). Lær og test tradingstrategier med autonome AI-agenter — uten å risikere egne penger.",
     images: [
       {
         url: "/og-image.png",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Klarpakke — AI-drevet trading for norske småsparere",
     description:
-      "Gratis beta: Du får 100 000 kr i lekepenger (JokerTrade). Lær og test tradingstrategier med autonome AI-agenter — uten å risikere egne penger.",
+      "Gratis beta: Du får 100 000 kr i lekepenger (Pilot). Lær og test tradingstrategier med autonome AI-agenter — uten å risikere egne penger.",
     images: ["/og-image.png"],
     creator: "@klarpakke",
   },

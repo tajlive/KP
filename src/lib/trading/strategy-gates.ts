@@ -273,7 +273,7 @@ export interface TrailingExitResult {
  *  3. Ellers: hold (peak oppdateres av kaller).
  *
  * Prod-problemet dette løser: fast TP på 15 % (smart-trader) og 5–8 %
- * (jokertrade) lot aldri gevinstene løpe, mens tapene (fast SL) var
+ * (pilot-engine) lot aldri gevinstene løpe, mens tapene (fast SL) var
  * garanterte → 0/36 seire.
  */
 export function evaluateTrailingExit(input: TrailingExitInput): TrailingExitResult {

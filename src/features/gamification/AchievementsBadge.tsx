@@ -66,10 +66,10 @@ const ACHIEVEMENT_DEFS: Record<string, Achievement> = {
     icon: <Crown className="w-5 h-5" />,
     color: "from-yellow-400 to-amber-500",
   },
-  joker_master: {
-    type: "joker_master",
-    label: "Joker-mester",
-    description: "Fullført 10 Joker-trades",
+  pilot_master: {
+    type: "pilot_master",
+    label: "Pilot-mester",
+    description: "Fullført 10 Pilot-trades",
     emoji: "🃏",
     icon: <Sparkles className="w-5 h-5" />,
     color: "from-purple-500 to-violet-500",

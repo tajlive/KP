@@ -3,7 +3,7 @@
  *
  * Forsvar i dybden mot trading på deaktiverte sesjoner (Task 0.3).
  *
- * Guarden (jokertrade_health_guard) deaktiverer slik:
+ * Guarden (pilot_health_guard) deaktiverer slik:
  *   - NY (2026-07-31+): status='stopped' + stopped_at + error_message='GUARD: …'
  *   - GAMMEL: smart_trader_enabled=false + error_message='GUARD: …',
  *     status forble 'active' → tick fortsatte å kjøpe (prod-bevis:
@@ -19,7 +19,7 @@
  *   1. status = 'active'
  *   2. error_message NOT LIKE 'GUARD:%'
  *
- * Brukes av /api/cron/tick og /api/jokertrade (query-filtre + JS-filter).
+ * Brukes av /api/cron/tick og /api/pilot-engine (query-filtre + JS-filter).
  */
 
 export interface TradeableSessionLike {
@@ -37,7 +37,7 @@ export function isGuardError(message: string | null | undefined): boolean {
 
 /**
  * Kan denne sesjonen handle? false = skal ekskluderes fra ALL trading
- * (tick, JokerTrade, auto-trader).
+ * (tick, PilotTrade, auto-trader).
  *
  * Merk: smart_trader_enabled sjekkes IKKE her — se fil-headeren.
  * Guard-deaktivering fanges via status ('stopped') og GUARD-feilmelding.
@@ -79,7 +79,7 @@ export const GUARD_ERROR_OR_FILTER =
 /**
  * Filtrer en liste med sesjoner ned til kun tradebare. Returnerer også
  * de hoppede-over med årsak, for logging. Brukes som JS-forsvar i tick
- * og jokertrade i tillegg til query-filtrene.
+ * og pilot-engine i tillegg til query-filtrene.
  */
 export function filterTradeableSessions<T extends TradeableSessionLike>(
   sessions: T[] | null | undefined,

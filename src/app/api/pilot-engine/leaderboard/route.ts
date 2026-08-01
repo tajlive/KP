@@ -1,5 +1,5 @@
 /**
- * JokerTrade Leaderboard API
+ * PilotTrade Leaderboard API
  * GET /api/pilot/leaderboard?period=weekly&limit=3
  * Returnerer topp tradere for LeaderboardWidget
  */

@@ -1,5 +1,5 @@
 /**
- * 🎭 JokerTrade enhetstester — signallogikk, posisjonsstørrelse, exits
+ * 🎭 PilotTrade enhetstester — signallogikk, posisjonsstørrelse, exits
  *
  * Kjøres: npm run test:unit
  */
@@ -74,7 +74,7 @@ function computeMinOrderValue(
 // Tester
 // ---------------------------------------------------------------------------
 
-describe("JokerTrade — calculateRSI", () => {
+describe("PilotTrade — calculateRSI", () => {
   it("returnerer bare nulls for utilstrekkelig data", () => {
     const rsi = calculateRSI([100], 14);
     expect(rsi.every((v: number | null) => v === null)).toBe(true);
@@ -100,7 +100,7 @@ describe("JokerTrade — calculateRSI", () => {
   });
 });
 
-describe("JokerTrade — dynamicPositionPct", () => {
+describe("PilotTrade — dynamicPositionPct", () => {
   it("gir minimum 2% ved høy volatilitet og lav confidence", () => {
     const pct = dynamicPositionPct(10, 200);
     expect(pct).toBe(2);
@@ -119,7 +119,7 @@ describe("JokerTrade — dynamicPositionPct", () => {
   });
 });
 
-describe("JokerTrade — generateSignal", () => {
+describe("PilotTrade — generateSignal", () => {
   it("BUY når RSI < 30 og trend ikke er down", () => {
     const s = generateSignal("BTCUSDT", 60000, 25, 50, "flat");
     expect(s.action).toBe("BUY");
@@ -151,7 +151,7 @@ describe("JokerTrade — generateSignal", () => {
   });
 });
 
-describe("JokerTrade — minimum ordrestørrelse", () => {
+describe("PilotTrade — minimum ordrestørrelse", () => {
   it("fanger små ordre — 100 kr kapital, 2% sizing", () => {
     const result = computeMinOrderValue(100, 2, 60000);
     expect(result.rawNok).toBe(2);
@@ -182,7 +182,7 @@ describe("JokerTrade — minimum ordrestørrelse", () => {
   });
 });
 
-describe("JokerTrade — exit-logikk (take-profit)", () => {
+describe("PilotTrade — exit-logikk (take-profit)", () => {
   it("detekterer take-profit for kjøpsposisjon", () => {
     const entryPrice = 100;
     const currentPrice = 103.5; // +3.5%

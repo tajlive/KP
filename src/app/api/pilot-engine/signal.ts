@@ -1,4 +1,4 @@
-/** 🎭 JokerTrade signalstrategi — RSI + MACD + Bollinger + SMA-crossover */
+/** 🎭 PilotTrade signalstrategi — RSI + MACD + Bollinger + SMA-crossover */
 export type MarketData = {
   currentPrice: number;
   rsi: number;
@@ -17,7 +17,7 @@ export type SignalResult = {
 };
 
 /** Generer handelssignal basert på RSI, MACD, Bollinger Bands og SMA-crossover */
-export function generateJokerSignal(market: MarketData, winMultiplier = 1): SignalResult {
+export function generatePilotSignal(market: MarketData, winMultiplier = 1): SignalResult {
   const { rsi, macd, bollinger, sma10, sma30, currentPrice, volatility, trend } = market;
 
   // === SIGNAL 1: RSI + MACD combo (størst vekt) ===

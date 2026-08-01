@@ -57,7 +57,7 @@ export function PilotDashboard() {
       const res = await fetch("/api/pilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "joker" }),
+        body: JSON.stringify({ mode: "pilot" }),
       });
       const data = await res.json();
       if (res.ok && data.success) {

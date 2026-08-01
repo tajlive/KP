@@ -34,9 +34,9 @@ export async function GET(request: Request) {
     // Hent Pilot-trades med forklaring
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, trading_pair, side, quantity, price, executed_at, joker_explanation, user_id")
-      .eq("joker_trade", true)
-      .not("joker_explanation", "is", null)
+      .select("id, trading_pair, side, quantity, price, executed_at, pilot_explanation, user_id")
+      .eq("pilot_trade", true)
+      .not("pilot_explanation", "is", null)
       .order("executed_at", { ascending: false })
       .limit(limit);
 
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
       quantity: number;
       price: number;
       executed_at: string | null;
-      joker_explanation: string | null;
+      pilot_explanation: string | null;
       user_id: string;
     }
     const tradeRows = (trades ?? []) as unknown as PilotTradeNotifRow[];
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       id: t.id,
       user_display_name: displayNames[t.user_id] || "Trader",
       title: `🎭 ${displayNames[t.user_id] || "Trader"} — ${t.side === "buy" ? "🟦 Kjøp" : "🔴 Salg"} ${t.trading_pair}`,
-      description: t.joker_explanation || "🎭 PilotTrade",
+      description: t.pilot_explanation || "🎭 PilotTrade",
       trading_pair: t.trading_pair,
       side: t.side,
       quantity: t.quantity,

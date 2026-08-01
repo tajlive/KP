@@ -25,6 +25,11 @@ WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'klarpakke-tick');
 SELECT cron.unschedule('test-session-role')
 WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'test-session-role');
 
+-- 2b. Fjern duplikat signal-health-selfcheck (*/30) — signal-engine-5min
+--     (hvert 5. min) kaller samme endepunkt og er referert i scripts.
+SELECT cron.unschedule('klarpakke-signal-health-selfcheck')
+WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'klarpakke-signal-health-selfcheck');
+
 -- 3. Kun tick-motoren skal styre DCA/CryptoPilot-sesjoner
 UPDATE trading_sessions
 SET smart_trader_enabled = false

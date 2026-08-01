@@ -215,9 +215,9 @@ export interface Trade {
   executed_at: string;
   created_at: string;
 
-  // 🎭 JokerTrade
-  joker_trade?: boolean;
-  joker_explanation?: string | null;
+  // 🎭 PilotTrade
+  pilot_trade?: boolean;
+  pilot_explanation?: string | null;
 }
 
 /**

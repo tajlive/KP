@@ -2289,5 +2289,8 @@
     "button": "JOKER",
     "loading": "Analyzing...",
     "analysing": "🎭 Analyzing market..."
-  }
+  },
+  "pilotTradeTitle": "ลอง Pilot",
+  "pilotTradeDesc": "AI วิเคราะห์ตลาดและเทรดอัตโนมัติด้วยเงินทดลอง",
+  "pilotTradeCta": "เริ่ม Pilot"
 }

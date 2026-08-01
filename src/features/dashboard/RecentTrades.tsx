@@ -35,8 +35,8 @@ export function RecentTrades({ trades }: RecentTradesProps) {
                 </span>
                 <div className="min-w-0">
                   <span className="text-sm text-white">{s.trading_pair}</span>
-                  {s.joker_explanation && (
-                    <p className="text-[10px] text-slate-400 truncate mt-0.5 leading-tight">{s.joker_explanation}</p>
+                  {s.pilot_explanation && (
+                    <p className="text-[10px] text-slate-400 truncate mt-0.5 leading-tight">{s.pilot_explanation}</p>
                   )}
                 </div>
               </div>

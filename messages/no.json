@@ -5977,5 +5977,8 @@
     "statusPaused": "Status pauset",
     "unknown": "Ukjent",
     "stop": "Stopp"
-  }
+  },
+  "pilotTradeTitle": "Prøv Pilot",
+  "pilotTradeDesc": "AI-en analyserer markedet og handler automatisk med lekepenger",
+  "pilotTradeCta": "Start Pilot"
 }
