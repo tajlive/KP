@@ -270,6 +270,18 @@ function isEnsembleFallbackOnCooldown(sessionId: string): boolean {
 }
 
 /**
+ * Minimum order value per trading mode. Paper-kapital er NOK (100 NOK ≈
+ * 10 USDT), live-kapital er USDT → live-terskelen må være i USDT.
+ * Live-fiks 2026-08-01: live-sesjoner ble holdt på ordrer på 75 USDT
+ * (innenfor Binance-minste på 10 USDT) fordi NOK-terskelen ble brukt.
+ */
+export function minOrderValueForMode(
+  mode: string | null | undefined,
+): number {
+  return mode === "live" ? 10 : 100;
+}
+
+/**
  * CRITICAL: Process session with Risk Management
  */
 async function processSession(
@@ -986,8 +998,9 @@ async function processSession(
     const tradeAmount = session.current_capital * positionSize;
 
     // Minimum order value — 10 USD ≈ 100 NOK (var kommentert $10 men
-    // sammenlignet NOK → reell terskel ~1 USD)
-    if (tradeAmount < 100) {
+    // sammenlignet NOK → reell terskel ~1 USD). Paper-kapital er NOK,
+    // live-kapital er USDT → terskelen må følge kapitalens valuta.
+    if (tradeAmount < minOrderValueForMode(session.mode)) {
       return { session_id: session.id, action: "hold" };
     }
 
