@@ -3,7 +3,7 @@
  *
  * En sesjon som er deaktivert av guard (status != 'active' eller
  * error_message LIKE 'GUARD:%') skal ALDRI kunne handle — verken via
- * tick, JokerTrade eller auto-traderen.
+ * tick, PilotTrade eller auto-traderen.
  *
  * Regresjonsfiks 2026-07-31 kveld: smart_trader_enabled=false er IKKE et
  * deaktiveringssignal (DB-default false — DCA-/CryptoPilot-sesjoner har

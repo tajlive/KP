@@ -1904,7 +1904,7 @@ export async function GET(req: NextRequest) {
     // Increased from 50 → 500 to avoid starving sessions when many users are active
     //
     // 🛡️ Forsvar i dybden (Task 0.3): kun TRADEBARE sesjoner. Guarden
-    // (jokertrade_health_guard) setter status='stopped' + stopped_at, og
+    // (pilot_health_guard) setter status='stopped' + stopped_at, og
     // eldre guard-utløsninger satte error_message='GUARD:…' mens status
     // forble 'active' → tick fortsatte å kjøpe (prod-bevis: kjøp 06:08 og
     // 07:45 etter guard 05:04). GUARD-feilfilteret fanger begge.

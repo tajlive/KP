@@ -7,17 +7,17 @@ export const dynamic = "force-dynamic";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/pilot — start/aktiver Pilot- eller Auto-sesjon
-// Body: { mode: "auto" | "joker", live?: boolean, symbols?: string[] }
+// Body: { mode: "auto" | "pilot", live?: boolean, symbols?: string[] }
 //
 // - mode "auto"  → Auto-strategi (tick kjører strategi-gates)
-// - mode "joker" → PilotTrade (ensemble-signaler)
+// - mode "pilot" → PilotTrade (ensemble-signaler)
 // - live=false (default) → paper-sesjon (lekepenger)
 // - live=true → ekte Binance-handel via brukerens egne API-nøkler
 //   (krever aktiv exchange_connection med trading-tillatelse + tier)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const pilotSchema = z.object({
-  mode: z.enum(["auto", "joker"]).default("auto"),
+  mode: z.enum(["auto", "pilot", "joker"]).default("auto"),
   live: z.boolean().optional().default(false),
   symbols: z.array(z.string()).max(11).optional(),
 });
@@ -42,7 +42,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { mode, live, symbols } = parsed.data;
+    const { mode: rawMode, live, symbols } = parsed.data;
+    // Backcompat: "joker" (gammelt navn) → "pilot"
+    const mode = rawMode === "joker" ? "pilot" : rawMode;
 
     // Live-krav: Binance-kobling (exchange_connections | user_binance_keys | legacy) + kvalifisert tier
     if (live) {
@@ -233,7 +235,7 @@ export async function GET(request: NextRequest) {
     const { data: trades, error } = await db
       .from("trades")
       .select(
-        "id, trading_pair, side, total_value, quantity, realized_pnl, joker_explanation, created_at",
+        "id, trading_pair, side, total_value, quantity, realized_pnl, pilot_explanation, created_at",
       )
       .eq("user_id", user.id)
       .gte("created_at", new Date(Date.now() - sinceDays * 86400000).toISOString())

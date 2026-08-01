@@ -39,10 +39,10 @@ export interface Trade {
   strategy_signal?: Record<string, unknown>;
   executed_at: string;
   created_at: string;
-  /** 🎭 JokerTrade: var dette en AI-automatisk handel? */
-  joker_trade?: boolean;
-  /** 🎭 JokerTrade: forklaring på hvorfor handelen skjedde */
-  joker_explanation?: string | null;
+  /** 🎭 PilotTrade: var dette en AI-automatisk handel? */
+  pilot_trade?: boolean;
+  /** 🎭 PilotTrade: forklaring på hvorfor handelen skjedde */
+  pilot_explanation?: string | null;
 }
 
 /** Synkroniserer JWT med Realtime slik at RLS-filterte postgres_changes faktisk leveres (ellers tom strøm). */
@@ -87,8 +87,8 @@ export function mapDbTradeRowToTrade(row: TradesRow): Trade {
         : undefined,
     executed_at: row.executed_at,
     created_at: row.created_at,
-    joker_trade: row.joker_trade ?? false,
-    joker_explanation: row.joker_explanation,
+    pilot_trade: row.pilot_trade ?? false,
+    pilot_explanation: row.pilot_explanation,
   };
 }
 

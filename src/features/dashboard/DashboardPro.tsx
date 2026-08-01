@@ -261,7 +261,7 @@ export function DashboardPro({
           />
         </m.div>
 
-        {/* Trading Mode Selector — Manuell/Auto/JokerTrade. Skjules for NyBruker:
+        {/* Trading Mode Selector — Manuell/Auto/Pilot. Skjules for NyBruker:
             nye brukere skal ha én tydelig CTA (lekepenger), ikke tre modusvalg øverst. */}
         {userState !== "NyBruker" && (
           <TradingModeSelector activeMode="manual" />

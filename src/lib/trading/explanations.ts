@@ -50,7 +50,7 @@ export interface TradeForExplanation {
   total_value?: number;
   fee?: number;
   /** 🎭 Pilot: forklaring på hvorfor handelen skjedde */
-  joker_explanation?: string | null;
+  pilot_explanation?: string | null;
 }
 
 // Mapping fra strategi-nøkkel til kursleksjon
@@ -388,12 +388,12 @@ export function getPaperModeNotice(locale: Locale = "no"): string {
  *          "Tok gevinst · +1 500 kr"
  */
 export function getTradeInlineExplanation(
-  trade: Pick<TradeForExplanation, 'side' | 'strategy_signal' | 'realized_pnl' | 'exit_reason' | 'price' | 'quantity' | 'total_value' | 'fee' | 'joker_explanation'>,
+  trade: Pick<TradeForExplanation, 'side' | 'strategy_signal' | 'realized_pnl' | 'exit_reason' | 'price' | 'quantity' | 'total_value' | 'fee' | 'pilot_explanation'>,
   locale: Locale = "no"
 ): string {
   // 🎭 Pilot: vis selve forklaringen fra AI-ensemblet
-  if (trade.joker_explanation) {
-    return trade.joker_explanation;
+  if (trade.pilot_explanation) {
+    return trade.pilot_explanation;
   }
 
   if (trade.side === "buy") {

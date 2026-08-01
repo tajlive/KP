@@ -7657,8 +7657,8 @@ export type Database = {
           indicator_snapshot: Json | null
           is_copy: boolean
           is_mock: boolean
-          joker_explanation: string | null
-          joker_trade: boolean | null
+          pilot_explanation: string | null
+          pilot_trade: boolean | null
           latency_ms: number | null
           leader_trade_id: string | null
           metadata: Json | null
@@ -7696,8 +7696,8 @@ export type Database = {
           indicator_snapshot?: Json | null
           is_copy?: boolean
           is_mock?: boolean
-          joker_explanation?: string | null
-          joker_trade?: boolean | null
+          pilot_explanation?: string | null
+          pilot_trade?: boolean | null
           latency_ms?: number | null
           leader_trade_id?: string | null
           metadata?: Json | null
@@ -7735,8 +7735,8 @@ export type Database = {
           indicator_snapshot?: Json | null
           is_copy?: boolean
           is_mock?: boolean
-          joker_explanation?: string | null
-          joker_trade?: boolean | null
+          pilot_explanation?: string | null
+          pilot_trade?: boolean | null
           latency_ms?: number | null
           leader_trade_id?: string | null
           metadata?: Json | null

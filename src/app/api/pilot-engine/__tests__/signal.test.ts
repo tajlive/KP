@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateJokerSignal, type MarketData } from "../signal";
+import { generatePilotSignal, type MarketData } from "../signal";
 
 const neutralMarket: MarketData = {
   currentPrice: 50000,
@@ -12,7 +12,7 @@ const neutralMarket: MarketData = {
   trend: "flat",
 };
 
-describe("generateJokerSignal", () => {
+describe("generatePilotSignal", () => {
   it("RSI oversold + MACD bullish → BUY med høy confidence", () => {
     const market: MarketData = {
       ...neutralMarket,
@@ -22,7 +22,7 @@ describe("generateJokerSignal", () => {
       sma30: 49000,
       trend: "up",
     };
-    const result = generateJokerSignal(market);
+    const result = generatePilotSignal(market);
     expect(result.action).toBe("BUY");
     // RSI oversold (+25) + MACD bullish + smaBullish (+20) = 50+25+20 = 95
     // SMA10 > SMA30 + trend up (+10) = 95+10 = 105, clamped to 99
@@ -39,7 +39,7 @@ describe("generateJokerSignal", () => {
       sma30: 51000,
       trend: "down",
     };
-    const result = generateJokerSignal(market);
+    const result = generatePilotSignal(market);
     expect(result.action).toBe("SELL");
     // RSI overkjøpt (-25) + MACD bearish + smaBearish (-20) = 50-25-20 = 5
     // SMA10 < SMA30 + trend down (-10) = 5-10 = -5, clamped to 0
@@ -53,7 +53,7 @@ describe("generateJokerSignal", () => {
       currentPrice: 44000,
       bollinger: { upper: 55000, middle: 50000, lower: 45000 },
     };
-    const result = generateJokerSignal(market);
+    const result = generatePilotSignal(market);
     expect(result.action).toBe("BUY");
     // RSI nøytral (+0) + MACD nøytral (+0) + belowLowerBand (+15) = 65
     expect(result.confidence).toBeGreaterThanOrEqual(60);
@@ -66,7 +66,7 @@ describe("generateJokerSignal", () => {
       currentPrice: 56000,
       bollinger: { upper: 55000, middle: 50000, lower: 45000 },
     };
-    const result = generateJokerSignal(market);
+    const result = generatePilotSignal(market);
     expect(result.action).toBe("SELL");
     // RSI nøytral (+0) + MACD nøytral (+0) + aboveUpperBand (-15) = 35
     expect(result.confidence).toBeLessThanOrEqual(40);
@@ -81,7 +81,7 @@ describe("generateJokerSignal", () => {
       sma30: 49000,
       trend: "up",
     };
-    const result = generateJokerSignal(market);
+    const result = generatePilotSignal(market);
     expect(result.action).toBe("BUY");
     // RSI nøytral (50) (+0) + MACD bullish + smaBullish (+20)
     // + SMA10 > SMA30 + trend up (+10) = 50+20+10 = 80
@@ -90,7 +90,7 @@ describe("generateJokerSignal", () => {
   });
 
   it("nøytral RSI + nøytral MACD → WAIT", () => {
-    const result = generateJokerSignal(neutralMarket);
+    const result = generatePilotSignal(neutralMarket);
     expect(result.action).toBe("WAIT");
     // 50 — ingen signaler trigger, vol=50 gir volDiscount=0
     expect(result.confidence).toBe(50);
@@ -106,10 +106,10 @@ describe("generateJokerSignal", () => {
       sma30: 51000, // smaBearish (MACD bullish + !smaBullish = +10)
     };
     // Base: 50 + RSI moderat bullish (+10) + MACD bullish + SMA bearish (+10) = 70
-    const normal = generateJokerSignal(market, 1.0);
+    const normal = generatePilotSignal(market, 1.0);
     expect(normal.confidence).toBe(70);
 
-    const boosted = generateJokerSignal(market, 1.3);
+    const boosted = generatePilotSignal(market, 1.3);
     // Math.round(70 * 1.3) = 91
     expect(boosted.confidence).toBe(91);
     expect(boosted.confidence).toBeGreaterThan(normal.confidence);
@@ -123,10 +123,10 @@ describe("generateJokerSignal", () => {
       sma10: 49000,
       sma30: 51000,
     };
-    const normal = generateJokerSignal(market, 1.0);
+    const normal = generatePilotSignal(market, 1.0);
     expect(normal.confidence).toBe(70);
 
-    const reduced = generateJokerSignal(market, 0.7);
+    const reduced = generatePilotSignal(market, 0.7);
     // Math.round(70 * 0.7) = 49
     expect(reduced.confidence).toBe(49);
     expect(reduced.confidence).toBeLessThan(normal.confidence);

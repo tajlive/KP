@@ -1,8 +1,8 @@
 /**
- * 🎭 JokerTrade v4.1 — AI-drevet papirhandel
+ * 🎭 PilotTrade v4.1 — AI-drevet papirhandel
  *
  * Hver 15. min: velg tilfeldig auto-bruker → hent ekte pris → analyser → trade.
- * Script-basert cron (0 tokens). Alle handler loggføres med joker_explanation.
+ * Script-basert cron (0 tokens). Alle handler loggføres med pilot_explanation.
  */
 
 import { NextResponse } from "next/server";
@@ -14,7 +14,7 @@ import { executeTrade } from "@/lib/trading/core/execute-trade";
 import type { ExecuteTradeRequest } from "@/types/trading";
 import { getNokUsdtRate } from "@/lib/trading/canonical/exchange-rate";
 import { calculateRSI as calcRSI, calculateMACD, calculateSMA, calculateBollingerBands } from "@/lib/trading/indicators";
-import { generateJokerSignal, type MarketData } from "./signal";
+import { generatePilotSignal, type MarketData } from "./signal";
 import {
   GUARD_ERROR_OR_FILTER,
   sessionSkipReason,
@@ -124,7 +124,7 @@ async function getCoinWinRate(
     .select("realized_pnl")
     .eq("user_id", userId)
     .eq("trading_pair", symbol)
-    .eq("joker_trade", true)
+    .eq("pilot_trade", true)
     .not("realized_pnl", "is", null)
     .order("created_at", { ascending: false })
     .limit(20);
@@ -179,16 +179,16 @@ async function ensureActiveSession(
   userId: string,
 ): Promise<{ id: string; capital: number; tradingPair: string; blocked?: string } | null> {
   // 🛡️ Forsvar i dybden (Task 0.3): en guard-deaktivert sesjon skal ALDRI
-  // kunne handle — verken via tick, JokerTrade eller auto-trader. Guarden
+  // kunne handle — verken via tick, PilotTrade eller auto-trader. Guarden
   // setter status='stopped' + error_message LIKE 'GUARD:%' (eldre
   // utløsninger satte kun feilmeldingen mens status forble 'active').
   // ⚠️ IKKE filtrer på smart_trader_enabled (regresjonsfiks 2026-07-31):
-  // kolonnen har DB-default false — jokertrade sine egne sesjoner fikk
+  // kolonnen har DB-default false — pilot-engine sine egne sesjoner fikk
   // enabled=false og ble blokkert av eget filter.
   //
   // P1-FIKS (2026-08-01): handel skjer i brukerens EKSISTERENDE aktive
   // paper-sesjon, og symbolet HENTES FRA sesjonen (tradingPair). Før
-  // valgte JokerTrade et tilfeldig symbol (ADA/DOGE/…) men DB tillater
+  // valgte PilotTrade et tilfeldig symbol (ADA/DOGE/…) men DB tillater
   // kun ÉN aktiv paper-sesjon per bruker (idx_one_active_paper_session
   // _per_user) → ordren kjørte mot f.eks. en BTCUSDT-sesjon →
   // fn_guard_session_position_symbol avviste («entry_price 176.5 er
@@ -230,7 +230,7 @@ async function ensureActiveSession(
     const reason = sessionSkipReason(disabled);
     if (reason) {
       console.warn(
-        `[JokerTrade] Hoppet over handel for ${userId}: sesjon ${disabled.id} er ikke tradebar (${reason})`,
+        `[PilotTrade] Hoppet over handel for ${userId}: sesjon ${disabled.id} er ikke tradebar (${reason})`,
       );
       return { id: disabled.id, capital: 0, tradingPair: "BTCUSDT", blocked: `Sesjonen er deaktivert (${reason})` };
     }
@@ -246,7 +246,7 @@ async function ensureActiveSession(
   if (capital <= 0) return null;
 
   // Ny sesjon opprettes med et topp-symbol (sesjonens symbol styrer hva
-  // JokerTrade senere handler for denne brukeren).
+  // PilotTrade senere handler for denne brukeren).
   const tradingPair = TOP_SYMBOLS[0];
 
   const { data: created, error } = await db
@@ -373,8 +373,8 @@ async function checkExits(
       if (result.success && result.tradeId) {
         exits++;
         await db.from("trades").update({
-          joker_trade: true,
-          joker_explanation: isTakeProfit
+          pilot_trade: true,
+          pilot_explanation: isTakeProfit
             ? `🎭 Auto-exit: +${pnlPct.toFixed(1)}% profitt`
             : `🎭 Stop-loss: ${pnlPct.toFixed(1)}% — begrenser tapet`,
         }).eq("id", result.tradeId);
@@ -417,7 +417,7 @@ export async function POST(request: NextRequest) {
       const { data: recentTrades } = await db
         .from("trades")
         .select("user_id, created_at")
-        .eq("joker_trade", true)
+        .eq("pilot_trade", true)
         .order("created_at", { ascending: false })
         .limit(100);
 
@@ -470,7 +470,7 @@ export async function POST(request: NextRequest) {
 
     // 4. Generer signal
     const winMultiplier = await getCoinWinRate(db, userId, symbol);
-    const signal = generateJokerSignal(market, winMultiplier);
+    const signal = generatePilotSignal(market, winMultiplier);
 
     // Touch heartbeat — sessions overlever detect_crashed_sessions
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", session.id);
@@ -525,8 +525,8 @@ export async function POST(request: NextRequest) {
 
           if (tradeData.success && tradeData.tradeId) {
             await db.from("trades").update({
-              joker_trade: true,
-              joker_explanation: `🎭 ${signal.action} ${symbol} — ${signal.reason} (${signal.confidence}% conf, ${sizingPct.toFixed(1)}% size)`,
+              pilot_trade: true,
+              pilot_explanation: `🎭 ${signal.action} ${symbol} — ${signal.reason} (${signal.confidence}% conf, ${sizingPct.toFixed(1)}% size)`,
             }).eq("id", tradeData.tradeId);
           }
         }
@@ -570,7 +570,7 @@ export async function GET(request: NextRequest) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const [trades, sessions, account] = await Promise.all([
-      db.from("trades").select("*").eq("user_id", user.id).eq("joker_trade", true).order("created_at", { ascending: false }).limit(30),
+      db.from("trades").select("*").eq("user_id", user.id).eq("pilot_trade", true).order("created_at", { ascending: false }).limit(30),
       db.from("trading_sessions").select("id, status, current_capital_nok, started_at, total_trades, total_pnl").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
       db.from("paper_accounts").select("current_balance").eq("user_id", user.id).maybeSingle(),
     ]);

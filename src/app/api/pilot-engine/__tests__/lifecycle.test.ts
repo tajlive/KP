@@ -1,5 +1,5 @@
 /**
- * Livssyklustester for JokerTrade — regresjonsguard mot session-crash, valuta-rot, min-ordre-avvik.
+ * Livssyklustester for PilotTrade — regresjonsguard mot session-crash, valuta-rot, min-ordre-avvik.
  *
  * Disse testene verifiserer at arkitekturfikser (Task 1–6) forblir intakte.
  */
@@ -42,8 +42,8 @@ describe("Heartbeat-kontrakt", () => {
 // P1 (2026-08-01): Handel skjer i brukerens eksisterende sesjon, symbol hentes fra sesjonen
 // ---------------------------------------------------------------------------
 describe("Sesjon er symbolkilden (P1-fiks 2026-08-01)", () => {
-  it("JokerTrade handler sesjonens eget symbol (tradingPair) — ikke tilfeldig", () => {
-    // Rotårsak: JokerTrade valgte tilfeldig symbol (ADA/DOGE) men DB tillater
+  it("PilotTrade handler sesjonens eget symbol (tradingPair) — ikke tilfeldig", () => {
+    // Rotårsak: PilotTrade valgte tilfeldig symbol (ADA/DOGE) men DB tillater
     // kun ÉN aktiv paper-sesjon per bruker → ordre kjørte mot f.eks. en
     // BTCUSDT-sesjon → fn_guard_session_position_symbol avviste
     // («entry_price 176.5 er ikke gyldig for BTCUSDT») → 0 handler siden 31. juli.
@@ -91,10 +91,10 @@ describe("Sesjon er symbolkilden (P1-fiks 2026-08-01)", () => {
   });
 
   it("samme ADA-pris mot en BTCUSDT-sesjon blir avvist (rotårsaken)", () => {
-    // 2026-08-01: JokerTrade valgte tilfeldig symbol (ADAUSDT) men kjørte
+    // 2026-08-01: PilotTrade valgte tilfeldig symbol (ADAUSDT) men kjørte
     // mot brukerens BTCUSDT-sesjon → triggeren bygget open_position med
     // ADA-pris i BTC-sesjon → guarden kastet «entry_price 176.5 er ikke
-    // gyldig for BTCUSDT» → ALLE JokerTrade-kjøp feilet siden 31. juli.
+    // gyldig for BTCUSDT» → ALLE PilotTrade-kjøp feilet siden 31. juli.
     const tradingPair = "BTCUSDT";
     const entryPrice = 0.173;
     const guardRanges: Record<string, [number, number] | null> = {

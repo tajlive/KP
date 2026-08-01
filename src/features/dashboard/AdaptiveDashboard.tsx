@@ -253,7 +253,7 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         </div>
       </Link>
 
-      {/* JokerTrade CTA — sekundær, under folden (progressive disclosure) */}
+      {/* PilotTrade CTA — sekundær, under folden (progressive disclosure) */}
       <Link
         href={`/${locale}/pilot`}
         prefetch={false}
@@ -262,16 +262,16 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         <div className="flex items-center justify-between gap-4">
           <div>
             <h4 className="text-sm font-semibold text-amber-300">
-              {t("jokerTradeTitle")}
+              {t("pilotTradeTitle")}
             </h4>
             <p className="text-xs text-[#9CA3AF] mt-0.5">
-              {t("jokerTradeDesc")}
+              {t("pilotTradeDesc")}
             </p>
           </div>
           <span
             className="btn-gold text-xs px-3 py-1.5"
           >
-            {t("jokerTradeCta")}
+            {t("pilotTradeCta")}
           </span>
         </div>
       </Link>

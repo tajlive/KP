@@ -13,7 +13,7 @@ const MIN_RATE = 5;
 const MAX_RATE = 20;
 // MÅ henge med markedet og med FALLBACK_USDT_NOK i currency.ts.
 // 2026-07-31: 10.5 var ~8.5 % over reell kurs (~9.6-9.7) og blåste opp
-// pnlPct i JokerTrade-exits → falske take-profits som solgte med tap.
+// pnlPct i PilotTrade-exits → falske take-profits som solgte med tap.
 const DEFAULT_FALLBACK = 9.6;
 
 interface CacheEntry {

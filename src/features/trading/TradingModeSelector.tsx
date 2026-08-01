@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-type TradeMode = "manual" | "auto" | "joker";
+type TradeMode = "manual" | "auto" | "pilot";
 
 interface ModeCard {
   id: TradeMode;
@@ -47,7 +47,7 @@ const MODES: ModeCard[] = [
     badge: "⚡ EFFEKTIV",
   },
   {
-    id: "joker",
+    id: "pilot",
     label: "Pilot",
     tagline: "AI bestemmer alt",
     description: "Vår AI analyserer markedet, velger handler og utfører. Du lener deg tilbake.",

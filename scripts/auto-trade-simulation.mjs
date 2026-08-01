@@ -150,7 +150,7 @@ async function main() {
         },
         reason_code: side === 'sell' ? 'SIM_SELL' : 'SIM_BUY',
         reason_params: { simulation: true, priceSource: 'binance' },
-        venue: 'binance', joker_trade: false,
+        venue: 'binance', pilot_trade: false,
       });
 
       if (side === 'buy') buys++; else sells++;

@@ -1,5 +1,5 @@
 /**
- * Regresjonsguard (2026-07-31): Falske take-profit-exits i JokerTrade.
+ * Regresjonsguard (2026-07-31): Falske take-profit-exits i PilotTrade.
  *
  * PROD-HENDELSE: checkExits kalte getNokUsdtRate() som returnerte
  * DEFAULT_FALLBACK (10.5) fordi proxy feilet. executeTrade hadde lagret
@@ -15,7 +15,7 @@
 import { describe, it, expect } from "vitest";
 
 /**
- * Gjenskaper exit-beregningen i checkExits (jokertrade/route.ts).
+ * Gjenskaper exit-beregningen i checkExits (pilot-engine/route.ts).
  * entry: NOK-pris lagret på traden. currentPriceUsdt: levende Binance-pris.
  * rate: raten som brukes for å konvertere current til NOK.
  */

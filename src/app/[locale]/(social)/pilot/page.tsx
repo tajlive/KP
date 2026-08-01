@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 /**
- * Pilot er nå en integrert del av Trade-siden (se /jokertrade).
+ * Pilot er nå en integrert del av Trade-siden.
  * Redirecter til /trade?first=1 for enklere brukeropplevelse.
  */
 export default function PilotPage() {

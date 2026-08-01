@@ -128,7 +128,7 @@ const ENDPOINTS = [
     }
   ]
 }`,
-    note: "Kun handler med `joker_trade = true` og en `joker_explanation` returneres."
+    note: "Kun handler med `pilot_trade = true` og en `pilot_explanation` returneres."
   },
   {
     method: "POST",

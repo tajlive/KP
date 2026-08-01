@@ -81,7 +81,7 @@ describe("getNokUsdtRate", () => {
 
     const rate = await getNokUsdtRate();
     // 2026-07-31: fallback endret 10.5 → 9.6 (markedsrate). 10.5 var ~8.5 %
-    // for høy og forårsaket falske take-profit-exits i JokerTrade.
+    // for høy og forårsaket falske take-profit-exits i PilotTrade.
     expect(rate).toBe(9.6);
   });
 });

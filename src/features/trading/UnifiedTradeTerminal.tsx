@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
-import { PilotDashboard } from "@/features/trading/JokerDashboard";
+import { PilotDashboard } from "@/features/trading/PilotDashboard";
 import { FirstTradeFlow } from "@/features/trading/FirstTradeFlow";
 import { WalletBalance } from "@/features/trading/WalletBalance";
 import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
@@ -17,7 +17,7 @@ import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/m
 import { BacktestPanel } from "@/features/backtest/BacktestPanel";
 
 // ─── Types ───
-type TradeMode = "manual" | "auto" | "joker" | "stats" | "backtest";
+type TradeMode = "manual" | "auto" | "pilot" | "stats" | "backtest";
 
 interface PriceData {
   symbol: string;
@@ -87,7 +87,7 @@ function LiveTicker() {
 const MODES: { id: TradeMode; label: string; short: string; accent: string }[] = [
   { id: "manual", label: "Manuell", short: "✋", accent: "data-[state=active]:border-emerald-400 data-[state=active]:text-emerald-400" },
   { id: "auto", label: "Auto", short: "🤖", accent: "data-[state=active]:border-amber-400 data-[state=active]:text-amber-400" },
-  { id: "joker", label: "Joker", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
+  { id: "pilot", label: "Pilot", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
   { id: "stats", label: "Statistikk", short: "📊", accent: "data-[state=active]:border-cyan-400 data-[state=active]:text-cyan-400" },
   { id: "backtest", label: "Backtest", short: "🔬", accent: "data-[state=active]:border-blue-400 data-[state=active]:text-blue-400" },
 ];
@@ -122,7 +122,7 @@ function ModeTabs({ active, onChange, locked }: { active: TradeMode; onChange: (
   );
 }
 
-// ─── Progressiv avsløring: Auto/Joker låses opp etter første handel ───
+// ─── Progressiv avsløring: Auto/Pilot låses opp etter første handel ───
 // Kilde: /api/paper-trading/balance → recentTrades. null = ukjent ennå
 // (viser ulåst mens vi laster — eksisterende brukere skal ikke flimre).
 function useHasTraded() {
@@ -140,7 +140,7 @@ function useHasTraded() {
         if (!r.ok) return; // 401/503/nettverk — ikke lås ut eksisterende brukere
         const d = await r.json().catch(() => null);
         // Bare manuelle handler teller — DCA-botens auto-handler (is_bot)
-        // skal ikke låse opp Auto/Joker for brukeren.
+        // skal ikke låse opp Auto/Pilot for brukeren.
         if (!cancelled && d)
           setHasTraded(
             (d.recentTrades?.filter((t: { is_bot?: boolean }) => !t.is_bot)
@@ -393,7 +393,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       if (data.success) {
         const qty = (Number(amount) / priceNok).toFixed(6);
         setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} ${selectedMeta.base} · ${formatNOK(Number(amount), { locale: "nb-NO" })}` });
-        // Progressiv avsløring: lås opp Auto/Joker i denne sesjonen
+        // Progressiv avsløring: lås opp Auto/Pilot i denne sesjonen
         window.dispatchEvent(new Event("kp:trade-executed"));
         // Send confirmation email
         fetch("/api/email/send", {
@@ -532,7 +532,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       )}>
         {mode === "manual" && "Du handler selv — full kontroll"}
         {mode === "auto" && "AI-en handler basert på dine regler"}
-        {mode === "joker" && "AI-en analyserer og handler automatisk"}
+        {mode === "pilot" && "AI-en analyserer og handler automatisk"}
       </div>
     </div>
   );
@@ -608,13 +608,13 @@ function MiniPositionList() {
   );
 }
 
-// ─── Statistikk-tab (merged from /dashboard/jokertrade, 2026-08-01) ────
+// ─── Statistikk-tab (merged from /dashboard/pilot, 2026-08-01) ────
 function StatsTab() {
   const [data, setData] = React.useState<{
     totalPnl: number; winRate: number; totalTrades: number;
     winningTrades: number; losingTrades: number;
     byCoin: Array<{coin:string;trades:number;pnl:number;winRate:number}>;
-    trades: Array<{id:string;trading_pair:string;side:string;total_value:number;realized_pnl:number|null;joker_explanation:string|null;created_at:string}>;
+    trades: Array<{id:string;trading_pair:string;side:string;total_value:number;realized_pnl:number|null;pilot_explanation:string|null;created_at:string}>;
   } | null>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -693,7 +693,7 @@ function StatsTab() {
                   {new Date(t.created_at).toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit"})}
                 </span>
               </div>
-              {t.joker_explanation && <p className="text-[#8B9DC3] text-xs mt-1 leading-relaxed">{t.joker_explanation}</p>}
+              {t.pilot_explanation && <p className="text-[#8B9DC3] text-xs mt-1 leading-relaxed">{t.pilot_explanation}</p>}
             </div>
           ))}
         </div>
@@ -719,18 +719,19 @@ export function UnifiedTradeTerminal() {
   const [showUnlock, setShowUnlock] = React.useState(false);
   const prevHasTraded = React.useRef<boolean | null>(null);
 
-  // URL-param: /trade?tab=auto|stats|joker|manual, /trade?first=1 → Pilot
+  // URL-param: /trade?tab=auto|stats|pilot|manual, /trade?first=1 → Pilot
+  // (tab=joker godtas fortsatt som gammelt alias → pilot)
   const searchParams = useSearchParams();
   React.useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab === "auto") setMode("auto");
     else if (tab === "stats") setMode("stats");
-    else if (tab === "joker") setMode("joker");
+    else if (tab === "pilot" || tab === "joker") setMode("pilot");
     else if (tab === "backtest") setMode("backtest");
-    else if (searchParams.get("first") === "1") setMode("joker");
+    else if (searchParams.get("first") === "1") setMode("pilot");
   }, [searchParams]);
 
-  // JokerTrade er åpen for alle uten forhåndskrav (beslutning Tom 2026-07-29).
+  // PilotTrade er åpen for alle uten forhåndskrav (beslutning Tom 2026-07-29).
   // Auto-modus forblir låst til brukeren har gjort minst én manuell trade.
   const lockedModes: TradeMode[] = hasTraded === false ? ["auto"] : [];
 
@@ -830,15 +831,15 @@ export function UnifiedTradeTerminal() {
                 !showUnlock && lockHint && "bg-slate-500/5 border-slate-500/20 text-slate-400",
                 !showUnlock && !lockHint && mode === "manual" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
                 !showUnlock && !lockHint && mode === "auto" && "bg-amber-500/5 border-amber-500/20 text-amber-400",
-                !showUnlock && !lockHint && mode === "joker" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
+                !showUnlock && !lockHint && mode === "pilot" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
                 !showUnlock && !lockHint && mode === "stats" && "bg-cyan-500/5 border-cyan-500/20 text-cyan-400",
               )}
             >
-              {showUnlock && "🔓 Auto og Joker er låst opp! Du bestemmer selv — ingenting handles automatisk før du skrur det på."}
-              {!showUnlock && lockHint && "🔒 Låses opp etter din første handel — gjør ett kjøp i Manuell modus, så åpnes Auto og Joker."}
+              {showUnlock && "🔓 Auto og Pilot er låst opp! Du bestemmer selv — ingenting handles automatisk før du skrur det på."}
+              {!showUnlock && lockHint && "🔒 Låses opp etter din første handel — gjør ett kjøp i Manuell modus, så åpnes Auto og Pilot."}
               {!showUnlock && !lockHint && mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
               {!showUnlock && !lockHint && mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
-              {!showUnlock && !lockHint && mode === "joker" && "🃏 Pilot — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
+              {!showUnlock && !lockHint && mode === "pilot" && "🃏 Pilot — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
               {!showUnlock && !lockHint && mode === "stats" && "📊 Statistikk — resultater, win-rate og AI-forklaringer for Pilot-handlene dine."}
             </motion.div>
           </div>
@@ -852,7 +853,7 @@ export function UnifiedTradeTerminal() {
               </>
             )}
             {mode === "auto" && <AutoStrategyPanel />}
-            {mode === "joker" && <PilotDashboard />}
+            {mode === "pilot" && <PilotDashboard />}
             {mode === "stats" && <StatsTab />}
             {mode === "backtest" && <BacktestPanel />}
           </div>

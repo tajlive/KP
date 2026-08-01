@@ -5983,5 +5983,8 @@
     "button": "JOKER",
     "loading": "Analyzing...",
     "analysing": "🎭 Analyzing market..."
-  }
+  },
+  "pilotTradeTitle": "Try Pilot",
+  "pilotTradeDesc": "The AI analyzes the market and trades automatically with play money",
+  "pilotTradeCta": "Start Pilot"
 }

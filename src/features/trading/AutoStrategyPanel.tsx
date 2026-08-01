@@ -530,7 +530,7 @@ export function AutoStrategyPanel() {
 
       {status !== "active" && (
         <>
-          {/* Auto vs Joker forklaring */}
+          {/* Auto vs Pilot forklaring */}
           <div className="bg-[#0A0D12] border border-[#1E2530] rounded-xl p-3">
             <p className="text-[11px] text-slate-400 leading-relaxed">
               <span className="text-amber-400 font-medium">Auto</span> = du velger strategi og risikonivå, AI-en følger reglene.{' '}

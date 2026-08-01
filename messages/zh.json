@@ -2068,5 +2068,8 @@
     "button": "JOKER",
     "loading": "Analyzing...",
     "analysing": "🎭 Analyzing market..."
-  }
+  },
+  "pilotTradeTitle": "试试 Pilot",
+  "pilotTradeDesc": "AI 分析市场并用模拟金自动交易",
+  "pilotTradeCta": "启动 Pilot"
 }
