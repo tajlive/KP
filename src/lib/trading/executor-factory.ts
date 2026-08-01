@@ -15,6 +15,7 @@ import { BinanceExecutor } from "./binance-executor";
 import { BinanceProxyExecutor } from "./binance-proxy-executor";
 import type { OrderExecutor } from "./order-executor";
 import { PaperExecutor } from "./paper-executor";
+import { decryptExchangeSecret } from "@/lib/exchanges/secret-crypto";
 
 export class ExecutorFactory {
   /**
@@ -36,8 +37,87 @@ export class ExecutorFactory {
     }
 
     // Live mode: fetch and decrypt Binance API keys
+    // Kilde-prioritet: 1) exchange_connections (ny kanonisk, BYO-UI),
+    //                  2) user_profiles.binance_api_key_id (legacy)
 
-    // Get user's tier (validate live trading access)
+    // 1) NY KANONISK KILDE: exchange_connections (kryptert med EXCHANGE_ENCRYPTION_SECRET)
+    const { data: exchangeConn } = await supabase
+      .from("exchange_connections")
+      .select("api_key, api_secret_ciphertext, api_secret_nonce, is_testnet, is_active")
+      .eq("user_id", userId)
+      .eq("exchange", "binance")
+      .eq("is_active", true)
+      .is("revoked_at", null)
+      .maybeSingle();
+
+    if (exchangeConn?.api_key && exchangeConn.api_secret_ciphertext && exchangeConn.api_secret_nonce) {
+      let apiKey = exchangeConn.api_key;
+      let apiSecret: string;
+      try {
+        apiSecret = decryptExchangeSecret(
+          exchangeConn.api_secret_ciphertext,
+          exchangeConn.api_secret_nonce,
+        );
+      } catch (err) {
+        console.error("[ExecutorFactory] decrypt exchange_connection failed:", err);
+        throw new Error("Failed to decrypt API keys. Please reconnect your exchange.");
+      }
+
+      const testnet = exchangeConn.is_testnet || false;
+
+      const proxyEnabled = process.env.BINANCE_PROXY_ENABLED !== "0";
+      if (proxyEnabled) {
+        return new BinanceProxyExecutor(supabase, userId, apiKey, apiSecret, testnet);
+      }
+      return new BinanceExecutor({ apiKey, apiSecret, testnet });
+    }
+
+    // 2) MIDLERTIDIG: user_binance_keys (api_key_id/api_secret_id → Supabase Vault)
+    const { data: ubkRow } = await supabase
+      .from("user_binance_keys")
+      .select("api_key_id, api_secret_id, is_testnet, is_active")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (ubkRow?.api_key_id && ubkRow.api_secret_id) {
+      const { data: decryptedKeys, error: vaultError } = await supabase.rpc(
+        "decrypt_binance_keys",
+        {
+          key_id: ubkRow.api_key_id,
+          secret_id: ubkRow.api_secret_id,
+        },
+      );
+
+      if (!vaultError && decryptedKeys && Array.isArray(decryptedKeys) && decryptedKeys.length > 0) {
+        const keys = decryptedKeys[0] as {
+          api_key: string;
+          api_secret: string;
+          is_testnet?: boolean;
+        };
+        const testnet = ubkRow.is_testnet || keys.is_testnet || false;
+
+        const proxyEnabled = process.env.BINANCE_PROXY_ENABLED !== "0";
+        if (proxyEnabled) {
+          return new BinanceProxyExecutor(
+            supabase,
+            userId,
+            keys.api_key,
+            keys.api_secret,
+            testnet,
+          );
+        }
+        return new BinanceExecutor({
+          apiKey: keys.api_key,
+          apiSecret: keys.api_secret,
+          testnet,
+        });
+      }
+      console.error("[ExecutorFactory] vault decrypt (user_binance_keys) failed:", vaultError);
+    }
+
+    // 3) LEGACY: user_profiles.binance_api_key_id + decrypt_binance_keys RPC
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
       .select(
@@ -154,9 +234,27 @@ export class ExecutorFactory {
       return false;
     }
 
-    return (
-      ["bachelor", "master", "phd", "professor"].includes(profile.tier) &&
-      profile.binance_connected
-    );
+    const tierOk = ["bachelor", "master", "phd", "professor"].includes(profile.tier);
+
+    // Nøkler: ny kanonisk (exchange_connections) ELLER user_binance_keys ELLER legacy
+    const { data: exchangeConn } = await supabase
+      .from("exchange_connections")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("exchange", "binance")
+      .eq("is_active", true)
+      .is("revoked_at", null)
+      .maybeSingle();
+
+    const { data: ubkRow } = await supabase
+      .from("user_binance_keys")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    const hasKeys = Boolean(exchangeConn) || Boolean(ubkRow) || Boolean(profile.binance_connected);
+    return tierOk && hasKeys;
   }
 }

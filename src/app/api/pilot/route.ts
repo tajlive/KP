@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     const { mode, live, symbols } = parsed.data;
 
-    // Live-krav: aktiv Binance-kobling med trading-tillatelse + kvalifisert tier
+    // Live-krav: Binance-kobling (exchange_connections | user_binance_keys | legacy) + kvalifisert tier
     if (live) {
       const { data: connection } = await db
         .from("exchange_connections")
@@ -55,25 +55,37 @@ export async function POST(request: NextRequest) {
         .is("revoked_at", null)
         .maybeSingle();
 
+      const { data: ubkRow } = await db
+        .from("user_binance_keys")
+        .select("api_key_id, api_secret_id")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+
+      const { data: profileRow } = await db
+        .from("user_profiles")
+        .select("tier, binance_connected")
+        .eq("id", user.id)
+        .single();
+
       const perms = (connection?.permissions ?? {}) as Record<string, boolean>;
-      if (!connection || !perms.trading) {
+      const hasKeys =
+        Boolean(connection) || Boolean(ubkRow?.api_key_id && ubkRow.api_secret_id) ||
+        Boolean(profileRow?.binance_connected);
+
+      if (!hasKeys || (connection && !perms.trading)) {
         return NextResponse.json(
           {
-            error: "Koble Binance med trading-tillatelse i Innstillinger → Børser før live-handel",
+            error: "Koble Binance i Innstillinger → Binance API før live-handel (trading-tillatelse kreves)",
             requiresConnection: true,
           },
           { status: 400 },
         );
       }
 
-      const { data: profile } = await db
-        .from("user_profiles")
-        .select("tier")
-        .eq("id", user.id)
-        .single();
-
       const allowedTiers = ["bachelor", "master", "phd", "professor"];
-      if (!allowedTiers.includes(profile?.tier as string)) {
+      if (!allowedTiers.includes(profileRow?.tier as string)) {
         return NextResponse.json(
           {
             error: "Live-handel krever Bachelor-tier eller høyere",
