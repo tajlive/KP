@@ -35,7 +35,7 @@ const MAX_POSITION_PCT = 10;
 const BASE_POSITION_PCT = 5;
 const TOP_SYMBOLS = [
   "BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT",
-  "LINKUSDT", "ADAUSDT", "DOTUSDT", "UNIUSDT", "MATICUSDT",
+  "LINKUSDT", "ADAUSDT", "DOTUSDT", "UNIUSDT", "POLUSDT",
 ];
 
 const FALLBACK_PRICES: Record<string, number> = {
@@ -177,6 +177,7 @@ function generateSignal(
 async function ensureActiveSession(
   db: ReturnType<typeof createClient>,
   userId: string,
+  symbol: string,
 ): Promise<{ id: string; capital: number; blocked?: string } | null> {
   // 🛡️ Forsvar i dybden (Task 0.3): en guard-deaktivert sesjon skal ALDRI
   // kunne handle — verken via tick, JokerTrade eller auto-trader. Guarden
@@ -185,12 +186,19 @@ async function ensureActiveSession(
   // ⚠️ IKKE filtrer på smart_trader_enabled (regresjonsfiks 2026-07-31):
   // kolonnen har DB-default false — jokertrade sine egne sesjoner fikk
   // enabled=false og ble blokkert av eget filter.
+  //
+  // FIX (2026-08-01, P1): sesjonen MÅ matche det valgte symbolet.
+  // Før ble «første beste aktive paper-sesjon» brukt — som regel en
+  // BTCUSDT-sesjon — så ADA/DOGE/UNI-ordrer ble avvist av
+  // fn_guard_session_position_symbol («entry_price 176.5 er ikke gyldig
+  // for BTCUSDT»). Nå: aktiv sesjon for `symbol`, ellers opprettes én.
   const { data: existing } = await db
     .from("trading_sessions")
     .select("id, current_capital_nok, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("status", "active")
     .eq("mode", "paper")
+    .eq("trading_pair", symbol)
     .or(GUARD_ERROR_OR_FILTER)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -201,7 +209,7 @@ async function ensureActiveSession(
     return { id: existing.id, capital: Number(existing.current_capital_nok ?? DEFAULT_CAPITAL) };
   }
 
-  // Ingen tradebar aktiv sesjon. Hvis brukeren HAR en sesjon som er
+  // Ingen tradebar aktiv sesjon for symbolet. Hvis brukeren HAR en sesjon som er
   // deaktivert (guard/status), skal vi IKKE opprette en ny — det ville
   // vært en omgåelse av guard-enforcement. Logg årsaken og blokker.
   const { data: disabled } = await db
@@ -209,6 +217,7 @@ async function ensureActiveSession(
     .select("id, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("mode", "paper")
+    .eq("trading_pair", symbol)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -239,7 +248,7 @@ async function ensureActiveSession(
       mode: "paper",
       strategy_id: "cryptopilot",
       status: "active",
-      trading_pair: "BTCUSDT",
+      trading_pair: symbol,
       starting_capital_nok: capital,
       current_capital_nok: capital,
       current_capital: capital,
@@ -282,7 +291,7 @@ async function checkExits(
   let exits = 0;
   const { data: positions } = await db
     .from("trades")
-    .select("id, trading_pair, quantity, price, side, usdt_nok_rate")
+    .select("id, session_id, trading_pair, quantity, price, side, usdt_nok_rate")
     .eq("user_id", userId)
     .eq("status", "filled")
     .is("realized_pnl", null)
@@ -335,7 +344,7 @@ async function checkExits(
     try {
       const result = await executeTrade(db, {
         userId,
-        sessionId,
+        sessionId: pos.session_id ?? sessionId, // posisjonens EGEN sesjon (per-symbol, P1-fiks 2026-08-01)
         symbol: pos.trading_pair,
         side: "sell",
         quantity: Number(pos.quantity),
@@ -439,8 +448,8 @@ export async function POST(request: NextRequest) {
     const winMultiplier = await getCoinWinRate(db, userId, symbol);
     const signal = generateJokerSignal(market, winMultiplier);
 
-    // 4. Session
-    const session = await ensureActiveSession(db, userId);
+    // 4. Session — MÅ matche valgt symbol (P1-fiks 2026-08-01)
+    const session = await ensureActiveSession(db, userId, symbol);
     if (!session) {
       return NextResponse.json({ error: "Ingen kapital" }, { status: 400 });
     }
