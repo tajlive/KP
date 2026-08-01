@@ -413,7 +413,32 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, message: "Ingen auto-brukere" });
       }
 
-      // Round-robin: finn brukeren med eldste siste trade
+      // 🎯 P1-oppfølging (2026-08-01): round-robin skal kun vurdere brukere
+      // som FAKTISK kan handle akkurat nå. Før: alle 11 auto-brukere ble
+      // sortert på eldste trade, men 8 av dem er guard-stoppet
+      // (GUARD: Drawdown > 20 % — korrekt stoppet, med åpen posisjon).
+      // Deres eldste trades gjorde at de ALLTID ble valgt først →
+      // ensureActiveSession returnerte 403 «status=stopped» → motoren
+      // ga opp og de 3 tradebare brukerne ble aldri nådd → 0 handler
+      // siden P1-fiksen. Nå filtrerer vi vekk ikke-tradebare FØR valg.
+      const { data: paperSessions } = await db
+        .from("trading_sessions")
+        .select("user_id")
+        .eq("mode", "paper")
+        .eq("status", "active")
+        .or(GUARD_ERROR_OR_FILTER);
+
+      const tradeableUsers = new Set((paperSessions ?? []).map((s) => s.user_id));
+      const eligible = users.filter((u) => tradeableUsers.has(u.user_id));
+
+      if (!eligible.length) {
+        return NextResponse.json({
+          success: true,
+          message: "Ingen tradebare auto-brukere (alle guard-stoppet eller uten aktiv sesjon)",
+        });
+      }
+
+      // Round-robin: finn brukeren med eldste siste trade (kun tradebare)
       const { data: recentTrades } = await db
         .from("trades")
         .select("user_id, created_at")
@@ -428,7 +453,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      users.sort((a, b) => {
+      eligible.sort((a, b) => {
         const aTime = lastTradeMap.get(a.user_id);
         const bTime = lastTradeMap.get(b.user_id);
         if (!aTime && !bTime) return 0;
@@ -437,7 +462,7 @@ export async function POST(request: NextRequest) {
         return aTime.localeCompare(bTime);
       });
 
-      userId = users[0].user_id;
+      userId = eligible[0].user_id;
     } else {
       const { data } = await db.auth.getUser();
       if (!data.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
