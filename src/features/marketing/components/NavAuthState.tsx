@@ -20,7 +20,6 @@ const AUTH_MARKETING_PATHS = new Set([
   "/dashboard",
   "/dashboard/portfolio",
   "/trade",
-  "/dashboard/auto-trade",
   "/profile",
 ]);
 

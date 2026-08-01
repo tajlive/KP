@@ -52,7 +52,7 @@ const MODES: ModeCard[] = [
     tagline: "AI bestemmer alt",
     description: "Vår AI analyserer markedet, velger handler og utfører. Du lener deg tilbake.",
     who: "For deg med lite tid",
-    href: "/jokertrade",
+    href: "/pilot",
     accent: "border-violet-500/60 hover:border-violet-400",
     bg: "from-violet-950/40 to-violet-900/20",
     dot: "bg-violet-400",

@@ -271,7 +271,7 @@ export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
   { href: "/trade", labelKey: "trade" },
-  { href: "/dashboard/auto-trade", labelKey: "autoTrade" },
+  // Auto-trade fjernet fra toppmeny 2026-08-01 (Tom): nås via Mer → Pilot / sidebar.
 ];
 
 /** Speiler MOBILE_BOTTOM_TABS (4 faner: hjem, portefølje, handel, historikk). */
@@ -360,8 +360,7 @@ export const FALLBACK_NAVIGATION: NavigationData = {
     { label: "Hjem", path: "/dashboard", order: 0 },
     { label: "Portefølje", path: "/dashboard/portfolio", order: 1 },
     { label: "Handel", path: "/trade", order: 2 },
-    { label: "Auto", path: "/dashboard/auto-trade", order: 3 },
-    { label: "Konto", path: "/profile", order: 4 },
+    { label: "Konto", path: "/profile", order: 3 },
   ],
 };
 

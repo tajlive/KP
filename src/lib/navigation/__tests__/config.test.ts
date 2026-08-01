@@ -34,9 +34,9 @@ describe("FALLBACK_NAVIGATION", () => {
       "/dashboard",
       "/dashboard/portfolio",
       "/trade",
-      "/dashboard/auto-trade",
       "/profile",
     ]);
+    expect(paths).not.toContain("/dashboard/auto-trade");
   });
 });
 
@@ -208,14 +208,14 @@ describe("DASHBOARD_TRADING_NAV", () => {
 });
 
 describe("DASHBOARD_COINBASE_TOP_NAV", () => {
-  it("skal være kort og bruke canonical auto-route", () => {
+  it("skal være kort og IKKE inneholde auto-trade (fjernet 2026-08-01, Tom)", () => {
     const hrefs = DASHBOARD_COINBASE_TOP_NAV.map((l) => l.href);
     expect(hrefs).toEqual([
       "/dashboard",
       "/dashboard/portfolio",
       "/trade",
-      "/dashboard/auto-trade",
     ]);
+    expect(hrefs).not.toContain("/dashboard/auto-trade");
     expect(hrefs).not.toContain("/dashboard/autopilot");
   });
 });
