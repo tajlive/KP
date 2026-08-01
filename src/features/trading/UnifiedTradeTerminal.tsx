@@ -343,16 +343,32 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
   const { prices } = usePrices();
   const [side, setSide] = React.useState<"buy" | "sell">("buy");
   const [amount, setAmount] = React.useState("1000");
+  const [symbol, setSymbol] = React.useState("BTCUSDT");
   const [loading, setLoading] = React.useState(false);
   const [feedback, setFeedback] = React.useState<{ ok: boolean; msg: string } | null>(null);
 
+  const SYMBOLS = [
+    { symbol: "BTCUSDT", base: "BTC", icon: "₿", name: "Bitcoin" },
+    { symbol: "ETHUSDT", base: "ETH", icon: "⟠", name: "Ethereum" },
+    { symbol: "SOLUSDT", base: "SOL", icon: "◎", name: "Solana" },
+    { symbol: "BNBUSDT", base: "BNB", icon: "◈", name: "BNB" },
+    { symbol: "XRPUSDT", base: "XRP", icon: "◎", name: "XRP" },
+    { symbol: "ADAUSDT", base: "ADA", icon: "⬡", name: "Cardano" },
+    { symbol: "AVAXUSDT", base: "AVAX", icon: "▲", name: "Avalanche" },
+    { symbol: "DOTUSDT", base: "DOT", icon: "●", name: "Polkadot" },
+    { symbol: "LINKUSDT", base: "LINK", icon: "⛓", name: "Chainlink" },
+    { symbol: "DOGEUSDT", base: "DOGE", icon: "Ð", name: "Dogecoin" },
+    { symbol: "MATICUSDT", base: "MATIC", icon: "◆", name: "Polygon" },
+  ];
+
+  const selectedMeta = SYMBOLS.find((s) => s.symbol === symbol) ?? SYMBOLS[0];
   const amountNum = Number(amount);
   const amountError = amountNum <= 0 ? "Beløpet må være større enn 0" : "";
 
   const priceNok = React.useMemo(() => {
-    const btc = prices["BTCUSDT"] as { price?: number } | undefined;
-    return btc?.price ?? usdtPriceToNok(63258);
-  }, [prices]);
+    const data = prices[symbol] as { price?: number } | undefined;
+    return data?.price ?? usdtPriceToNok(symbol === "BTCUSDT" ? 63258 : 100);
+  }, [prices, symbol]);
 
   const handleTrade = async () => {
     if (amountNum <= 0) {
@@ -366,7 +382,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          pair: "BTC/USDT",
+          pair: selectedMeta.base + "/USDT",
           side,
           amount_nok: Number(amount),
         }),
@@ -374,7 +390,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       const data = await res.json();
       if (data.success) {
         const qty = (Number(amount) / priceNok).toFixed(6);
-        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} BTC · ${formatNOK(Number(amount), { locale: "nb-NO" })}` });
+        setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} ${selectedMeta.base} · ${formatNOK(Number(amount), { locale: "nb-NO" })}` });
         // Progressiv avsløring: lås opp Auto/Joker i denne sesjonen
         window.dispatchEvent(new Event("kp:trade-executed"));
         // Send confirmation email
@@ -383,7 +399,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             type: "trade_confirmed",
-            symbol: "BTCUSDT",
+            symbol,
             side,
             amount: Number(amount),
             price: data.trade.price,
@@ -404,6 +420,29 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
 
   return (
     <div className="space-y-3">
+      {/* Symbol selector */}
+      <div>
+        <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1 block">
+          Valuta
+        </label>
+        <div className="flex rounded-lg bg-[#0A0D12] border border-[#1E2530] p-0.5 overflow-x-auto">
+          {SYMBOLS.map((s) => (
+            <button
+              key={s.symbol}
+              onClick={() => setSymbol(s.symbol)}
+              className={cn(
+                "flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all whitespace-nowrap",
+                symbol === s.symbol
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  : "text-slate-500 hover:text-slate-300",
+              )}
+            >
+              {s.icon} {s.base}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Side toggle */}
       <div className="flex rounded-lg bg-[#0A0D12] border border-[#1E2530] p-0.5">
         <button
@@ -445,7 +484,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
             placeholder="0.00"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-500 font-mono">
-            ≈ {(Number(amount) / priceNok).toFixed(6)} BTC
+            ≈ {(Number(amount) / priceNok).toFixed(6)} {selectedMeta.base}
           </span>
         </div>
         {amountError && (
@@ -455,7 +494,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
 
       {/* Price display */}
       <div className="flex justify-between text-xs text-slate-500">
-        <span>1 BTC = {priceNok.toLocaleString("no")} kr</span>
+        <span>1 {selectedMeta.base} = {priceNok.toLocaleString("no")} kr</span>
         <span>Spread: 0.02%</span>
       </div>
 
@@ -471,7 +510,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
             : "bg-red-500 text-white hover:bg-red-400 shadow-red-500/20",
         )}
       >
-        {loading ? "Utfører..." : `${side === "buy" ? "Kjøp" : "Selg"} BTC`}
+        {loading ? "Utfører..." : `${side === "buy" ? "Kjøp" : "Selg"} ${selectedMeta.base}`}
       </button>
 
       {/* Feedback */}
