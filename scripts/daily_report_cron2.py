@@ -36,14 +36,14 @@ if evts:
         print(f"  {e['created']} | {e.get('status_code')} | {e.get('job_name')} | {str(e.get('error_message',''))[:80]}")
 
 print("\n=== GUARD_LOG (siste 24t, kolonne=checked_at) ===")
-guard = get("jokertrade_guard_log", "select=checked_at,event_type,details&checked_at=gt.2026-07-31T08:17:00Z&order=checked_at.desc")
+guard = get("pilot_guard_log", "select=checked_at,event_type,details&checked_at=gt.2026-07-31T08:17:00Z&order=checked_at.desc")
 print(f"Antall: {len(guard)}")
 for g in guard[:10]:
     print(f"  {g['checked_at']} | {g.get('event_type')} | {str(g.get('details',''))[:100]}")
 
 print("\n=== KILL SWITCH STATUS ===")
 try:
-    ks = get("jokertrade_kill_switch", "select=*&limit=1")
+    ks = get("pilot_guard_log", "select=*&limit=1")
     print(json.dumps(ks, indent=2, default=str))
 except Exception as e:
     print(f"Ingen kill switch-tabell: {e}")

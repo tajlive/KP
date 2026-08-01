@@ -50,7 +50,7 @@ else:
     print(cron_events)
 
 print("\n=== JOKERTRADE_GUARD_LOG (siste 24t) ===")
-guard = rest_get("jokertrade_guard_log", f"select=created_at,event_type,details&created_at=gt.{cutoff}&order=created_at.desc")
+guard = rest_get("pilot_guard_log", f"select=checked_at,issue_type,severity,details&checked_at=gt.{cutoff}&order=checked_at.desc")
 if isinstance(guard, list):
     print(f"Guard-hendelser siste 24t: {len(guard)}")
     for g in guard[:10]:
@@ -59,10 +59,10 @@ else:
     print(guard)
 
 print("\n=== JOKERTRADE MONITOR VIEW ===")
-monitor = rest_get("jokertrade_monitor", "select=*&limit=5")
+monitor = rest_get("pilot_guard_log", "select=*&limit=5")
 print(json.dumps(monitor, indent=2, default=str) if not isinstance(monitor, dict) or 'error' not in monitor else monitor)
 
-print("\n=== CRON STATUS (jokertrade-relaterte) ===")
+print("\n=== CRON STATUS (pilot-relaterte) ===")
 # Prøv å hente fra cron.job — dette er i extensions-schema, kanskje ikke tilgjengelig via REST
 cron_jobs = rest_get("cron_health_events", "select=status_code&limit=0")
 print("cron_health_events tilgjengelig:", "Ja" if not isinstance(cron_jobs, dict) or 'error' not in cron_jobs else "Nei")

@@ -26,5 +26,5 @@ def get(path, params=""):
 print("=== cron_health_events (limit 1, alle kolonner) ===")
 print(json.dumps(get("cron_health_events", "limit=1"), indent=2, default=str))
 
-print("\n=== jokertrade_guard_log (limit 1) ===")
-print(json.dumps(get("jokertrade_guard_log", "limit=1"), indent=2, default=str))
+print("\n=== pilot_guard_log (limit 1) ===")
+print(json.dumps(get("pilot_guard_log", "limit=1"), indent=2, default=str))
