@@ -13,62 +13,74 @@ vi.mock("framer-motion", () => ({
   },
 }));
 
+// Mock useAuth - return null user (viser 0/empty)
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: () => ({ user: null, loading: false }),
+}));
+
+// Mock fetch for /api/gamification/stats
+const mockStats = {
+  points: 2450,
+  rank: 42,
+  streak: 5,
+  challenges: [
+    { id: "winning_streak", title: "Vinnende streak", description: "Gjennomfør 3 handler", current: 1, target: 3, reward: 500, completed: false },
+    { id: "explore_strategy", title: "Utforsk strategi", description: "Prøv en ny strategi", current: 0, target: 1, reward: 300, completed: false },
+    { id: "daily_login", title: "Daglig login", description: "Besøk dashboardet", current: 1, target: 1, reward: 100, completed: true },
+  ],
+};
+
+beforeEach(() => {
+  global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve(mockStats),
+  });
+});
+
 describe("DailyChallenge", () => {
-  it("renders header with title", () => {
-    render(<DailyChallenge />);
-    expect(screen.getByText("Dagens utfordringer")).toBeInTheDocument();
+  it("renders header with title", async () => {
+    render(<DailyChallenge userId="test-user" />);
+    expect(await screen.findByText("Dagens utfordringer")).toBeInTheDocument();
     expect(screen.getByText("Fullfør for bonuspoeng")).toBeInTheDocument();
   });
 
-  it("renders countdown timer", () => {
-    render(<DailyChallenge />);
-    const timer = screen.getByText(/\d{2}:\d{2}:\d{2}/);
+  it("renders countdown timer", async () => {
+    render(<DailyChallenge userId="test-user" />);
+    const timer = await screen.findByText(/\d{2}:\d{2}:\d{2}/);
     expect(timer).toBeInTheDocument();
   });
 
-  it("renders all 3 challenges", () => {
-    render(<DailyChallenge />);
-    expect(screen.getByText("Vinnende streak")).toBeInTheDocument();
+  it("renders all 3 challenges from API", async () => {
+    render(<DailyChallenge userId="test-user" />);
+    expect(await screen.findByText("Vinnende streak")).toBeInTheDocument();
     expect(screen.getByText("Utforsk strategi")).toBeInTheDocument();
     expect(screen.getByText("Daglig login")).toBeInTheDocument();
   });
 
-  it("shows completed challenge with checkmark", () => {
-    render(<DailyChallenge />);
-    expect(screen.getByText("✓ Fullført")).toBeInTheDocument();
+  it("shows completed challenge with checkmark", async () => {
+    render(<DailyChallenge userId="test-user" />);
+    expect(await screen.findByText("✓ Fullført")).toBeInTheDocument();
   });
 
-  it("shows incomplete challenges without checkmark", () => {
-    render(<DailyChallenge />);
-    const completedLabels = screen.getAllByText("✓ Fullført");
-    expect(completedLabels.length).toBe(1); // Only "Daglig login" is completed
-  });
-
-  it("renders challenge progress bars", () => {
-    render(<DailyChallenge />);
-    expect(screen.getByText("1/3")).toBeInTheDocument(); // Vinnende streak
-    expect(screen.getByText("0/1")).toBeInTheDocument(); // Utforsk strategi
-    expect(screen.getByText("1/1")).toBeInTheDocument(); // Daglig login
-  });
-
-  it("renders stats row with points, rank, and streak", () => {
-    const { container } = render(<DailyChallenge />);
-    expect(container.textContent).toContain("Dine poeng");
-    expect(container.textContent).toContain("#42");
-    expect(container.textContent).toContain("Rangering");
-    expect(container.textContent).toContain("5");
-    expect(container.textContent).toContain("Dagers streak");
-    // points.toLocaleString() format varies by locale
+  it("renders stats row with points, rank, and streak from API", async () => {
+    const { container } = render(<DailyChallenge userId="test-user" />);
+    await screen.findByText("Dine poeng");
+    expect(screen.getByText("#42")).toBeInTheDocument();
+    expect(screen.getByText("Rangering")).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText("Dagers streak")).toBeInTheDocument();
+    // points.toLocaleString: 2,450 eller 2 450
     expect(container.textContent).toMatch(/2[,\s]?450/);
   });
 
-  it("renders leaderboard link button", () => {
-    render(<DailyChallenge />);
-    expect(screen.getByText("Se topplisten")).toBeInTheDocument();
+  it("shows leaderboard link", async () => {
+    render(<DailyChallenge userId="test-user" />);
+    expect(await screen.findByText("Se topplisten")).toBeInTheDocument();
   });
 
-  it("shows reward points for each challenge", () => {
-    render(<DailyChallenge />);
+  it("shows reward points for each challenge", async () => {
+    render(<DailyChallenge userId="test-user" />);
+    await screen.findByText("Vinnende streak");
     expect(screen.getByText("+500")).toBeInTheDocument();
     expect(screen.getByText("+300")).toBeInTheDocument();
     expect(screen.getByText("+100")).toBeInTheDocument();

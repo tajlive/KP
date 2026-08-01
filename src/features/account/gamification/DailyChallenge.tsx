@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Target, Clock, Trophy, Zap, Flame, ChevronRight, Gift } from "lucide-react";
+import { Target, Clock, Zap, Flame, ChevronRight, Gift, Trophy } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Challenge {
   id: string;
@@ -14,81 +15,69 @@ interface Challenge {
   completed: boolean;
 }
 
+interface GamificationStats {
+  points: number;
+  rank: number | null;
+  streak: number;
+  challenges: Challenge[];
+}
+
 interface DailyChallengeProps {
   userId?: string;
 }
 
-export function DailyChallenge({ userId }: DailyChallengeProps) {
-  const [timeLeft, setTimeLeft] = useState({ hours: 4, minutes: 23, seconds: 45 });
-  const [streak, setStreak] = useState(5);
-  const [points, setPoints] = useState(2450);
-  const [rank, setRank] = useState(42);
+export function DailyChallenge({ userId: propUserId }: DailyChallengeProps) {
+  const { user } = useAuth();
+  const userId = propUserId || user?.id;
 
-  const [challenges, setChallenges] = useState<Challenge[]>([
-    {
-      id: "1",
-      title: "Vinnende streak",
-      description: "Gjennomfør 3 handler med positiv avkastning",
-      current: 1,
-      target: 3,
-      reward: 500,
-      completed: false,
-    },
-    {
-      id: "2",
-      title: "Utforsk strategi",
-      description: "Prøv en ny trading-strategi (DCA, Grid, etc.)",
-      current: 0,
-      target: 1,
-      reward: 300,
-      completed: false,
-    },
-    {
-      id: "3",
-      title: "Daglig login",
-      description: "Besøk dashboardet i dag",
-      current: 1,
-      target: 1,
-      reward: 100,
-      completed: true,
-    },
-  ]);
+  const [stats, setStats] = useState<GamificationStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
-  // Countdown timer
+  const fetchStats = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(`/api/gamification/stats?userId=${userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
-        return prev;
-      });
-    }, 1000);
+    fetchStats();
+  }, [fetchStats]);
 
+  // Countdown timer - reset at midnight
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date();
+      const midnight = new Date(now);
+      midnight.setHours(24, 0, 0, 0);
+      const diff = midnight.getTime() - now.getTime();
+      setTimeLeft({
+        hours: Math.floor(diff / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
+      });
+    };
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const completeChallenge = (challengeId: string) => {
-    setChallenges((prev) =>
-      prev.map((c) =>
-        c.id === challengeId && c.current >= c.target
-          ? { ...c, completed: true }
-          : c
-      )
-    );
-
-    const challenge = challenges.find((c) => c.id === challengeId);
-    if (challenge && challenge.current >= challenge.target) {
-      setPoints((p) => p + challenge.reward);
-    }
-  };
-
   const progressPercent = (current: number, target: number) =>
     Math.min(100, (current / target) * 100);
+
+  const challenges = stats?.challenges ?? [];
+  const points = stats?.points ?? 0;
+  const rank = stats?.rank;
+  const streak = stats?.streak ?? 0;
 
   return (
     <motion.div
@@ -120,58 +109,66 @@ export function DailyChallenge({ userId }: DailyChallengeProps) {
       </div>
 
       {/* Challenges */}
-      <div className="space-y-4 mb-6">
-        {challenges.map((challenge, index) => (
-          <motion.div
-            key={challenge.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={`p-4 rounded-xl border transition-all ${
-              challenge.completed
-                ? "bg-emerald-500/10 border-emerald-500/30"
-                : "bg-slate-800/50 border-slate-700 hover:border-purple-500/30"
-            }`}
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-white font-medium">{challenge.title}</h4>
-                  {challenge.completed && (
-                    <span className="text-emerald-400 text-xs">✓ Fullført</span>
-                  )}
+      {loading ? (
+        <div className="space-y-4 mb-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-4 rounded-xl border bg-slate-800/30 border-slate-700 animate-pulse h-20" />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4 mb-6">
+          {challenges.map((challenge, index) => (
+            <motion.div
+              key={challenge.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`p-4 rounded-xl border transition-all ${
+                challenge.completed
+                  ? "bg-emerald-500/10 border-emerald-500/30"
+                  : "bg-slate-800/50 border-slate-700 hover:border-purple-500/30"
+              }`}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-white font-medium">{challenge.title}</h4>
+                    {challenge.completed && (
+                      <span className="text-emerald-400 text-xs">✓ Fullført</span>
+                    )}
+                  </div>
+                  <p className="text-slate-500 text-sm">{challenge.description}</p>
                 </div>
-                <p className="text-slate-500 text-sm">{challenge.description}</p>
+
+                <div className="flex items-center gap-1 text-yellow-400">
+                  <Gift className="w-4 h-4" />
+                  <span className="text-sm font-medium">+{challenge.reward}</span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-1 text-yellow-400">
-                <Gift className="w-4 h-4" />
-                <span className="text-sm font-medium">+{challenge.reward}</span>
-              </div>
-            </div>
+              {/* Progress */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className={`h-full rounded-full ${
+                      challenge.completed ? "bg-emerald-500" : "bg-purple-500"
+                    }`}
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${progressPercent(challenge.current, challenge.target)}%`,
+                    }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  />
+                </div>
 
-            {/* Progress */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                <motion.div
-                  className={`h-full rounded-full ${
-                    challenge.completed ? "bg-emerald-500" : "bg-purple-500"
-                  }`}
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${progressPercent(challenge.current, challenge.target)}%`,
-                  }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                />
+                <span className="text-slate-400 text-sm whitespace-nowrap">
+                  {challenge.current}/{challenge.target}
+                </span>
               </div>
-
-              <span className="text-slate-400 text-sm whitespace-nowrap">
-                {challenge.current}/{challenge.target}
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
@@ -193,7 +190,9 @@ export function DailyChallenge({ userId }: DailyChallengeProps) {
           <div className="flex justify-center mb-1">
             <Trophy className="w-5 h-5 text-yellow-400" />
           </div>
-          <p className="text-xl font-bold text-white">#{rank}</p>
+          <p className="text-xl font-bold text-white">
+            {rank ? `#${rank}` : "-"}
+          </p>
           <p className="text-xs text-slate-500">Rangering</p>
         </motion.div>
 
