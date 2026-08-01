@@ -12,7 +12,7 @@ import {
   isAppShellPath,
   DASHBOARD_MAIN_NAV,
   DASHBOARD_TRADING_NAV,
-  DASHBOARD_MORE_NAV,
+  DASHBOARD_USER_MENU_NAV,
   DASHBOARD_COINBASE_TOP_NAV,
   DASHBOARD_COINBASE_BOTTOM_NAV,
 } from "../config";
@@ -232,9 +232,9 @@ describe("DASHBOARD_COINBASE_BOTTOM_NAV", () => {
   });
 });
 
-describe("DASHBOARD_MORE_NAV", () => {
-  it("skal samle sekundære sider under Mer", () => {
-    const keys: string[] = DASHBOARD_MORE_NAV.map(
+describe("DASHBOARD_USER_MENU_NAV", () => {
+  it("skal samle sekundære sider i brukermenyen (uten konto-duplikater)", () => {
+    const keys: string[] = DASHBOARD_USER_MENU_NAV.map(
       (l) => l.labelKey,
     );
     expect(keys).toEqual([
@@ -245,7 +245,8 @@ describe("DASHBOARD_MORE_NAV", () => {
       "learn",
       "pilot",
       "referral",
-      "settings",
     ]);
+    expect(keys).not.toContain("settings");
+    expect(keys).not.toContain("profile");
   });
 });
