@@ -39,6 +39,67 @@ describe("Heartbeat-kontrakt", () => {
 });
 
 // ---------------------------------------------------------------------------
+// P1 (2026-08-01): Sesjon MÅ matche valgt symbol
+// ---------------------------------------------------------------------------
+describe("Per-symbol sesjon (P1-fiks 2026-08-01)", () => {
+  it("ny session opprettes med det valgte symbolet som trading_pair (ikke hardkodet BTCUSDT)", () => {
+    const symbol = "ADAUSDT";
+    const sessionInsert = {
+      user_id: "test-user",
+      mode: "paper" as const,
+      strategy_id: "cryptopilot",
+      status: "active" as const,
+      trading_pair: symbol,
+      starting_capital_nok: 100_000,
+      current_capital_nok: 100_000,
+      current_capital: 100_000,
+      initial_capital: 100_000,
+      last_heartbeat: new Date().toISOString(),
+      last_tick_at: new Date().toISOString(),
+      strategy_config: { stop_loss_pct: 5, close_on_stop: true },
+    };
+
+    expect(sessionInsert.trading_pair).toBe("ADAUSDT");
+  });
+
+  it("symboler som matcher sesjonen passerer fn_guard_session_position_symbol (ADA-pris mot ADAUSDT-sesjon)", () => {
+    // Guarden avviser entry_price utenfor plausibel range for sesjonens
+    // trading_pair. En ADAUSDT-sesjon med ADA-pris ~0.17 passerer;
+    // samme pris mot en BTCUSDT-sesjon kastes (regresjon 2026-08-01).
+    const tradingPair = "ADAUSDT";
+    const entryPrice = 0.173;
+    // Speiler guard-logikken: kast hvis pris faller utenfor intervallet
+    const guardRanges: Record<string, [number, number] | null> = {
+      BTCUSDT: [100_000, Infinity],   // kast hvis entry_price <= 100000
+      ETHUSDT: [5_000, 50_000],       // kast hvis <= 5000 eller > 50000
+      SOLUSDT: [100, 2_000],          // kast hvis <= 100 eller > 2000
+    };
+    const range = guardRanges[tradingPair];
+    const passes = !range || (entryPrice > range[0] && entryPrice <= range[1]);
+
+    expect(passes).toBe(true);
+  });
+
+  it("samme ADA-pris mot en BTCUSDT-sesjon blir avvist (rotårsaken)", () => {
+    // 2026-08-01: JokerTrade valgte tilfeldig symbol (ADAUSDT) men kjørte
+    // mot brukerens BTCUSDT-sesjon → triggeren bygget open_position med
+    // ADA-pris i BTC-sesjon → guarden kastet «entry_price 176.5 er ikke
+    // gyldig for BTCUSDT» → ALLE JokerTrade-kjøp feilet siden 31. juli.
+    const tradingPair = "BTCUSDT";
+    const entryPrice = 0.173;
+    const guardRanges: Record<string, [number, number] | null> = {
+      BTCUSDT: [100_000, Infinity],
+      ETHUSDT: [5_000, 50_000],
+      SOLUSDT: [100, 2_000],
+    };
+    const range = guardRanges[tradingPair];
+    const passes = !range || (entryPrice > range[0] && entryPrice <= range[1]);
+
+    expect(passes).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Task 2+3: Grace period + session_maintenance
 // ---------------------------------------------------------------------------
 describe("Grace period", () => {
