@@ -24,7 +24,7 @@ SUMMARY_FILE="${REPORT_DIR}/summary.md"
 # 1–13: Marketing
 # 14–16: Legal
 # 17–20: Auth (login, register, reset/update password)
-# 21–24: Social (jokertrade, leaderboard, copy-trading)
+# 21–24: Social (pilot-redirect, leaderboard, copy-trading)
 # 25: Academy
 
 URLS=(
@@ -48,7 +48,7 @@ URLS=(
   "${BASE_URL}/register"                   # 18 — Registrer
   "${BASE_URL}/no/reset-password"          # 19 — Tilbakestill passord
   "${BASE_URL}/no/update-password"         # 20 — Oppdater passord
-  "${BASE_URL}/no/jokertrade"              # 21 — Joker Trade
+  "${BASE_URL}/no/jokertrade"              # 21 — Pilot (redirect)
   "${BASE_URL}/no/leaderboard"             # 22 — Toppliste
   "${BASE_URL}/no/copy-trading"            # 23 — Kopi-handel
   "${BASE_URL}/no/copy-trading/discover"   # 24 — Oppdag tradere

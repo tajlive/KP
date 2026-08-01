@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hent JokerTrade-daglig rapport-data fra Supabase."""
+"""Hent PilotTrade-daglig rapport-data fra Supabase."""
 import json, os, sys, urllib.request, urllib.error
 from pathlib import Path
 
@@ -120,9 +120,9 @@ try:
 except Exception as e:
     print(f"FEIL job_run_details: {e}")
 
-print("\n=== 5. JOKERTRADE MONITOR ===")
+print("\n=== 5. PILOT MONITOR (pilot_guard_log) ===")
 try:
-    monitor = mgmt_query("SELECT * FROM public.jokertrade_monitor LIMIT 5")
+    monitor = mgmt_query("SELECT * FROM public.pilot_guard_log ORDER BY created_at DESC LIMIT 5")
     print(json.dumps(monitor, indent=2, default=str))
 except Exception as e:
-    print(f"FEIL jokertrade_monitor (kan mangle): {e}")
+    print(f"FEIL pilot_guard_log (kan mangle): {e}")

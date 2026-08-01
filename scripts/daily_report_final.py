@@ -43,15 +43,15 @@ if evts:
 else:
     print("Ingen hendelser siste 24t. OK.")
 
-# jokertrade_guard_log siste 24t
-guard = get("jokertrade_guard_log", f"select=checked_at,issue_type,severity,details,action_taken&checked_at=gt.{cutoff}&order=checked_at.desc")
+# pilot_guard_log siste 24t
+guard = get("pilot_guard_log", f"select=checked_at,issue_type,severity,details,action_taken&checked_at=gt.{cutoff}&order=checked_at.desc")
 print(f"\n=== GUARD_LOG siste 24t: {len(guard)} hendelser ===")
 for g in guard[:10]:
     print(f"  {g['checked_at']} | {g.get('severity')} | {g.get('issue_type')} | {g.get('action_taken')} | {str(g.get('details',''))[:80]}")
 
 # Kill switch
 try:
-    ks = get("jokertrade_kill_switch", "select=*&limit=1")
+    ks = get("pilot_guard_log", "select=*&limit=1")
     print(f"\n=== KILL SWITCH ===")
     print(json.dumps(ks, indent=2, default=str))
 except Exception as e:
