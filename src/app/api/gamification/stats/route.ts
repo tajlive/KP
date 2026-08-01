@@ -18,12 +18,23 @@ export async function GET(req: NextRequest) {
   try {
     const db = getAdminClient();
 
-    // 1. Brukerens gamification-data
+    // 0. Award login XP (idempotent — en gang per dag, seeder nye brukere)
+    let loginAward = null;
+    try {
+      const { data } = await db.rpc("award_login_xp", {
+        p_user_id: userId,
+      });
+      loginAward = data;
+    } catch {
+      // RPC kan mangle — bruker eksisterende data
+    }
+
+    // 1. Brukerens gamification-data (fersk etter award)
     const { data: userGam, error: userErr } = (await db
       .from("user_gamification")
       .select("total_xp, current_level, current_streak, last_login_date")
       .eq("user_id", userId)
-      .maybeSingle()) as any;
+      .maybeSingle()) as unknown;
 
     if (userErr) throw userErr;
 
@@ -36,27 +47,26 @@ export async function GET(req: NextRequest) {
     const { count } = (await db
       .from("user_gamification")
       .select("*", { count: "exact", head: true })
-      .gt("total_xp", points)) as any;
+      .gt("total_xp", points)) as unknown;
     const rank = (count ?? 0) + 1;
 
     // 3. Daglige utfordringer
     const today = new Date().toISOString().split("T")[0];
 
-    // Vinnende streak
     const { count: winningTrades } = (await db
       .from("trades")
       .select("*", { count: "exact", head: true })
       .eq("user_id", userId)
       .gte("executed_at", today + "T00:00:00Z")
-      .gt("realized_pnl", 0)) as any;
+      .gt("realized_pnl", 0)) as unknown;
 
-    // Utforsk strategi
     const { data: strategies } = (await db
       .from("trades")
       .select("strategy_signal")
       .eq("user_id", userId)
       .not("strategy_signal", "is", null)
-      .limit(20)) as any;
+      .limit(20)) as unknown;
+
     const usedStrategies = new Set<string>();
     for (const t of strategies ?? []) {
       if (t.strategy_signal?.strategy) {
@@ -64,7 +74,6 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Daglig login
     const loggedInToday = lastLoginDate === today;
 
     const challenges = [
@@ -104,6 +113,14 @@ export async function GET(req: NextRequest) {
       level,
       lastLoginDate,
       challenges,
+      loginAward: loginAward
+        ? {
+            awarded: (loginAward as unknown)?.[0]?.success,
+            streak: (loginAward as unknown)?.[0]?.streak,
+            alreadyClaimed:
+              (loginAward as unknown)?.[0]?.already_claimed ?? false,
+          }
+        : null,
     });
   } catch (err) {
     console.error("Gamification stats error:", err);
