@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   User,
   Settings,
@@ -92,9 +92,28 @@ export function UserMenu() {
   const sessions = useActiveTraderSessions();
 
   const hasActiveTrader = sessions.length > 0;
-  const email = user?.email ?? "";
-  // AuthContext kan mangle bruker klient-side (server-cookie-auth) — da vises
-  // et nøytralt ikon i stedet for en misvisende initial.
+
+  // AuthContext kan mangle bruker klient-side (sesjonen lever i HttpOnly-
+  // cookies). /api/auth/me er den server-verifiserte kilden til e-post.
+  const [serverEmail, setServerEmail] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { user?: { email?: string | null } | null } | null) => {
+        if (!cancelled && data?.user?.email) {
+          setServerEmail(data.user.email);
+        }
+      })
+      .catch(() => {
+        // Ingen e-post tilgjengelig — menyen viser nøytralt ikon.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const email = user?.email ?? serverEmail ?? "";
   const initial = email ? email[0].toUpperCase() : null;
 
   const isActive = (href: string) =>
@@ -102,6 +121,13 @@ export function UserMenu() {
 
   const handleSignOut = async () => {
     setOpen(false);
+    // Server-side logout først — klient-signOut alene er en stille no-op
+    // når sesjonen kun lever i HttpOnly-cookies.
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Nettverksfeil — prøver likevel å rydde klient-state og sende hjem.
+    }
     await signOut();
     router.push(hrefWithLocale(locale, "/"));
     router.refresh();
