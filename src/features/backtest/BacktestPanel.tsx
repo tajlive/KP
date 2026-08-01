@@ -3,8 +3,18 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { Play, Loader2, TrendingUp, TrendingDown, Activity, BarChart3 } from 'lucide-react';
+import { Play, Loader2, TrendingUp, TrendingDown, Activity, BarChart3, Shield, Zap, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from "@/lib/utils";
+
+interface MonteCarloResult {
+  probabilityOfProfit: number;
+  probabilityOfRuin: number;
+  medianReturn: number;
+  meanReturn: number;
+  confidenceInterval95: [number, number];
+  confidenceInterval99: [number, number];
+  maxConsecutiveLosses: number;
+}
 
 interface BacktestResult {
   trades: unknown[];
@@ -19,6 +29,7 @@ interface BacktestResult {
   };
   buyHoldReturn: number;
   disclaimer: string;
+  monteCarlo?: MonteCarloResult;
 }
 
 // Alle 11 tradable symboler (samme liste som Auto-strategi)
@@ -60,6 +71,7 @@ export function BacktestPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<BacktestResult | null>(null);
+  const [showAdvancedMonteCarlo, setShowAdvancedMonteCarlo] = useState(false);
 
   const runBacktestAction = async () => {
     setLoading(true);
@@ -75,6 +87,7 @@ export function BacktestPanel() {
         includeMonteCarlo,
       });
       setResult(data);
+      setShowAdvancedMonteCarlo(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Backtest feilet');
     } finally {
@@ -93,6 +106,14 @@ export function BacktestPanel() {
     date: new Date(point.timestamp).toLocaleDateString('no-NO'),
     equity: point.equity,
   })) || [];
+
+  const mc = result?.monteCarlo;
+
+  const getRuinVerdict = (ruinPct: number) => {
+    if (ruinPct < 5) return { text: 'Trygg — lav risiko for store tap', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20' };
+    if (ruinPct <= 15) return { text: 'Moderat — tåler normalt svingninger', color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/20' };
+    return { text: 'Risikabel — høy fare for store tap', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' };
+  };
 
   return (
     <div className="space-y-3">
@@ -192,7 +213,7 @@ export function BacktestPanel() {
 
         {error && (
           <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-            ⚠️ {error}
+            {error}
           </p>
         )}
       </div>
@@ -237,7 +258,7 @@ export function BacktestPanel() {
               </ResponsiveContainer>
             </div>
 
-            {/* Metrikker */}
+            {/* Backtest-metrikker */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 pt-0">
               <MetricCard
                 label="Avkastning"
@@ -265,10 +286,85 @@ export function BacktestPanel() {
               />
             </div>
 
+            {/* Monte Carlo-resultater */}
+            {mc && (
+              <div className="px-4 pb-4 space-y-3">
+                <div className="border-t border-[#1E2530] pt-3">
+                  {/* Infoboks */}
+                  <div className="text-[11px] text-slate-400 bg-slate-800/30 border border-[#1E2530] rounded-lg px-3 py-2 mb-3 leading-relaxed">
+                    Handlene dine er stokket 10 000 ganger for å simulere ulike utfall — som 10 000 parallelle fremtider. Ikke bare det som skjedde én gang.
+                  </div>
+
+                  {/* Samlet vurdering */}
+                  {(() => {
+                    const v = getRuinVerdict(mc.probabilityOfRuin * 100);
+                    return (
+                      <div className={cn("flex items-center gap-2 rounded-lg px-3 py-2.5 border", v.bg, v.border)}>
+                        <Shield className={cn("w-4 h-4", v.color)} />
+                        <span className={cn("text-xs font-semibold", v.color)}>{v.text}</span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 4 hovedtall */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <MonteCarloCard
+                      label="Sjanse for gevinst"
+                      value={`${(mc.probabilityOfProfit * 100).toFixed(0)}%`}
+                      sub={`${(mc.probabilityOfProfit * 100).toFixed(0)} av 100 ganger går du i pluss`}
+                      positive={mc.probabilityOfProfit > 0.5}
+                      icon={<TrendingUp className="w-4 h-4" />}
+                    />
+                    <MonteCarloCard
+                      label="Risiko for ruin"
+                      value={`${(mc.probabilityOfRuin * 100).toFixed(1)}%`}
+                      sub="Sjanse for å miste halvparten"
+                      positive={mc.probabilityOfRuin < 0.05}
+                      icon={<TrendingDown className="w-4 h-4" />}
+                    />
+                    <MonteCarloCard
+                      label="Forventet resultat"
+                      value={`${mc.medianReturn > 0 ? '+' : ''}${mc.medianReturn.toFixed(1)}%`}
+                      sub={`Mellom ${mc.confidenceInterval95[0].toFixed(0)}% og ${mc.confidenceInterval95[1] > 0 ? '+' : ''}${mc.confidenceInterval95[1].toFixed(0)}%`}
+                      positive={mc.medianReturn > 0}
+                      icon={<Activity className="w-4 h-4" />}
+                    />
+                    <MonteCarloCard
+                      label="Tap på rad"
+                      value={`${mc.maxConsecutiveLosses}`}
+                      sub={`Verste tapsrekke — vær forberedt`}
+                      positive={mc.maxConsecutiveLosses <= 5}
+                      icon={<Zap className="w-4 h-4" />}
+                    />
+                  </div>
+
+                  {/* Avansert */}
+                  <button
+                    onClick={() => setShowAdvancedMonteCarlo(!showAdvancedMonteCarlo)}
+                    className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-300 transition-colors mt-2"
+                  >
+                    {showAdvancedMonteCarlo ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    Flere detaljer
+                  </button>
+
+                  {showAdvancedMonteCarlo && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2"
+                    >
+                      <AdvancedMetric label="Gjennomsnittlig avkastning" value={`${mc.meanReturn > 0 ? '+' : ''}${mc.meanReturn.toFixed(1)}%`} />
+                      <AdvancedMetric label="99% trygghetsintervall" value={`${mc.confidenceInterval99[0].toFixed(0)}% — ${mc.confidenceInterval99[1] > 0 ? '+' : ''}${mc.confidenceInterval99[1].toFixed(0)}%`} />
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Disclaimer */}
-            <div className="px-4 pb-4">
+            <div className={cn("px-4", mc ? "pb-4 pt-0" : "pb-4")}>
               <p className="text-[11px] text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2">
-                ⚠️ {result.disclaimer}
+                {result.disclaimer}
               </p>
             </div>
           </motion.div>
@@ -301,6 +397,44 @@ function MetricCard({
       </div>
       <span className="text-[11px] text-slate-500">{label}</span>
     </motion.div>
+  );
+}
+
+function MonteCarloCard({
+  label,
+  value,
+  sub,
+  positive,
+  icon,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  positive: boolean;
+  icon: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className="text-center p-3 rounded-lg bg-[#0B0F19] border border-[#1E2530]"
+    >
+      <div className={`flex items-center justify-center gap-1 mb-0.5 ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
+        {icon}
+        <span className="text-lg font-bold">{value}</span>
+      </div>
+      <span className="text-[11px] text-slate-300">{label}</span>
+      <div className="text-[10px] text-slate-500 mt-0.5">{sub}</div>
+    </motion.div>
+  );
+}
+
+function AdvancedMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-[#0B0F19] border border-[#1E2530] px-3 py-2">
+      <div className="text-[10px] text-slate-500">{label}</div>
+      <div className="text-xs font-semibold text-slate-300">{value}</div>
+    </div>
   );
 }
 
