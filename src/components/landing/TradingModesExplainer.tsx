@@ -19,13 +19,13 @@ const MODES = [
     id: "auto" as const,
     Illustration: AutoIllustration,
     color: "amber",
-    href: "/dashboard/auto-trade",
+    href: "/trade?tab=auto",
   },
   {
     id: "pilot" as const,
     Illustration: PilotIllustration,
     color: "violet",
-    href: "/dashboard/jokertrade",
+    href: "/trade?tab=stats",
   },
 ] as const;
 
