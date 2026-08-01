@@ -9,7 +9,10 @@
 import { describe, it, expect, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { executeTrade } from "@/lib/trading/core/execute-trade";
-import { executeLiveTrade } from "@/app/api/cron/tick/route";
+import {
+  executeLiveTrade,
+  minOrderValueForMode,
+} from "@/app/api/cron/tick/route";
 
 const { RATE } = vi.hoisted(() => ({ RATE: 10.92 }));
 
@@ -181,5 +184,15 @@ describe("tick route paper/live parity", () => {
 
     expect(paperOrder.orderType).toBe("market");
     expect(liveOrder.orderType).toBe("market");
+  });
+
+  it("minOrderValueForMode: live-terskel er 10 USDT (ikke 100 NOK) — live-fiks 2026-08-01", () => {
+    // Paper-kapital er NOK: 100 NOK ≈ 10 USDT
+    expect(minOrderValueForMode("paper")).toBe(100);
+    expect(minOrderValueForMode(null)).toBe(100);
+    // Live-kapital er USDT: 10 USDT er Binance-minste; 75 USDT-ordre
+    // ble feilaktig holdt med NOK-terskelen (regresjon bevist i prod)
+    expect(minOrderValueForMode("live")).toBe(10);
+    expect(minOrderValueForMode("live") < 100).toBe(true);
   });
 });
