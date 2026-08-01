@@ -451,7 +451,7 @@ export default function SpeedOnboarding({
             <div className="flex flex-col gap-3">
               <Button
                 onClick={() =>
-                  (window.location.href = `/${locale}/dashboard/auto-trade`)
+                  (window.location.href = `/${locale}/trade?tab=auto`)
                 }
                 className="h-14 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-lg font-bold shadow-xl shadow-blue-600/25"
               >
@@ -460,7 +460,7 @@ export default function SpeedOnboarding({
               <Button
                 variant="ghost"
                 onClick={() =>
-                  (window.location.href = `/${locale}/dashboard/auto-trade`)
+                  (window.location.href = `/${locale}/trade?tab=auto`)
                 }
                 className="text-slate-500 text-sm"
               >

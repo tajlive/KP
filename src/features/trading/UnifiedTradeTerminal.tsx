@@ -16,7 +16,7 @@ import { formatNOK } from "@/lib/format/currency";
 import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/market/nok";
 
 // ─── Types ───
-type TradeMode = "manual" | "auto" | "joker";
+type TradeMode = "manual" | "auto" | "joker" | "stats";
 
 interface PriceData {
   symbol: string;
@@ -87,6 +87,7 @@ const MODES: { id: TradeMode; label: string; short: string; accent: string }[] =
   { id: "manual", label: "Manuell", short: "✋", accent: "data-[state=active]:border-emerald-400 data-[state=active]:text-emerald-400" },
   { id: "auto", label: "Auto", short: "🤖", accent: "data-[state=active]:border-amber-400 data-[state=active]:text-amber-400" },
   { id: "joker", label: "Joker", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
+  { id: "stats", label: "Statistikk", short: "📊", accent: "data-[state=active]:border-cyan-400 data-[state=active]:text-cyan-400" },
 ];
 
 function ModeTabs({ active, onChange, locked }: { active: TradeMode; onChange: (m: TradeMode) => void; locked: TradeMode[] }) {
@@ -566,6 +567,108 @@ function MiniPositionList() {
   );
 }
 
+// ─── Statistikk-tab (merged from /dashboard/jokertrade, 2026-08-01) ────
+function StatsTab() {
+  const [data, setData] = React.useState<{
+    totalPnl: number; winRate: number; totalTrades: number;
+    winningTrades: number; losingTrades: number;
+    byCoin: Array<{coin:string;trades:number;pnl:number;winRate:number}>;
+    trades: Array<{id:string;trading_pair:string;side:string;total_value:number;realized_pnl:number|null;joker_explanation:string|null;created_at:string}>;
+  } | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch("/api/pilot", { credentials: "include" })
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(d => {
+        if (cancelled) return;
+        const a = d?.analytics ?? {};
+        setData({
+          totalPnl: a.totalPnl ?? 0,
+          winRate: a.winRate ?? 0,
+          totalTrades: a.totalTrades ?? 0,
+          winningTrades: a.winningTrades ?? 0,
+          losingTrades: a.losingTrades ?? 0,
+          byCoin: a.byCoin ?? [],
+          trades: (d?.trades ?? a?.trades ?? []),
+        });
+      })
+      .catch(() => setData(null))
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const fmt = (n: number) => new Intl.NumberFormat("nb-NO", { style: "currency", currency: "NOK", maximumFractionDigits: 0 }).format(n);
+  const coinLabel = (p: string) => p.replace("USDT", "");
+
+  if (loading) return <div className="flex items-center justify-center h-64 text-[#8B9DC3] text-sm">Laster statistikk...</div>;
+  if (!data) return <div className="text-red-400 text-sm p-4">Kunne ikke hente data</div>;
+
+  return (
+    <div className="space-y-4">
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard label="Resultat"  value={fmt(data.totalPnl)}       color={data.totalPnl>=0?"text-emerald-400":"text-red-400"}/>
+        <StatCard label="Win-rate"  value={`${data.winRate.toFixed(0)}%`} color="text-[#60A5FA]"/>
+        <StatCard label="Vinnere"   value={`${data.winningTrades}`}  color="text-emerald-400"/>
+        <StatCard label="Tapere"    value={`${data.losingTrades}`}   color="text-red-400"/>
+      </div>
+
+      {/* Per coin */}
+      {data.byCoin.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-white mb-2">Per kryptovaluta</h3>
+          <div className="space-y-1">
+            {data.byCoin.map(c => (
+              <div key={c.coin} className="flex items-center justify-between bg-[#1A1F2E] border border-[#1E2530] rounded-lg px-3 py-2 text-sm">
+                <span className="text-white font-medium">{coinLabel(c.coin)}</span>
+                <span className="text-[#8B9DC3]">{c.trades} handler</span>
+                <span className={c.pnl>=0?"text-emerald-400":"text-red-400"}>{fmt(c.pnl)}</span>
+                <span className="text-[#60A5FA]">{c.winRate.toFixed(0)}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent trades */}
+      <div>
+        <h3 className="text-sm font-semibold text-white mb-2">Siste handler</h3>
+        <div className="space-y-2">
+          {data.trades.slice(0,10).map(t => (
+            <div key={t.id} className="bg-[#1A1F2E] border border-[#1E2530] rounded-lg p-3 text-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={t.side==="buy"?"text-emerald-400":"text-red-400"}>
+                    {t.side==="buy"?"KJØP":"SALG"}
+                  </span>
+                  <span className="text-white font-medium">{coinLabel(t.trading_pair)}</span>
+                  {t.realized_pnl!==null && (
+                    <span className={t.realized_pnl>0?"text-emerald-400":"text-red-400"}>{fmt(t.realized_pnl)}</span>
+                  )}
+                </div>
+                <span className="text-[#8B9DC3] text-xs">
+                  {new Date(t.created_at).toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit"})}
+                </span>
+              </div>
+              {t.joker_explanation && <p className="text-[#8B9DC3] text-xs mt-1 leading-relaxed">{t.joker_explanation}</p>}
+            </div>
+          ))}
+        </div>
+        {data.trades.length===0 && <p className="text-[#8B9DC3] text-sm p-4">Ingen handler ennå. Pilot kjører automatisk.</p>}
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
+  return <div className="bg-[#1A1F2E] border border-[#1E2530] rounded-lg p-4">
+    <p className="text-[#8B9DC3] text-xs mb-1">{label}</p>
+    <p className={`text-lg font-bold ${color}`}>{value}</p>
+  </div>;
+}
+
 // ─── Main Terminal ───
 export function UnifiedTradeTerminal() {
   const t = useTranslations("trading");
@@ -574,6 +677,16 @@ export function UnifiedTradeTerminal() {
   const [lockHint, setLockHint] = React.useState(false);
   const [showUnlock, setShowUnlock] = React.useState(false);
   const prevHasTraded = React.useRef<boolean | null>(null);
+
+  // URL-param: /trade?tab=auto|stats|joker|manual, /trade?first=1 → Pilot
+  const searchParams = useSearchParams();
+  React.useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "auto") setMode("auto");
+    else if (tab === "stats") setMode("stats");
+    else if (tab === "joker") setMode("joker");
+    else if (searchParams.get("first") === "1") setMode("joker");
+  }, [searchParams]);
 
   // JokerTrade er åpen for alle uten forhåndskrav (beslutning Tom 2026-07-29).
   // Auto-modus forblir låst til brukeren har gjort minst én manuell trade.
@@ -601,7 +714,6 @@ export function UnifiedTradeTerminal() {
     setMode(m);
   };
 
-  const searchParams = useSearchParams();
   // Guided første-gangs-modus: opt-in via /trade?first=1 (fra OnboardingChecklist).
   // Eksisterende brukere og vanlig /trade påvirkes ikke.
   const isFirstTrade = searchParams.get("first") === "1";
@@ -677,6 +789,7 @@ export function UnifiedTradeTerminal() {
                 !showUnlock && !lockHint && mode === "manual" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
                 !showUnlock && !lockHint && mode === "auto" && "bg-amber-500/5 border-amber-500/20 text-amber-400",
                 !showUnlock && !lockHint && mode === "joker" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
+                !showUnlock && !lockHint && mode === "stats" && "bg-cyan-500/5 border-cyan-500/20 text-cyan-400",
               )}
             >
               {showUnlock && "🔓 Auto og Joker er låst opp! Du bestemmer selv — ingenting handles automatisk før du skrur det på."}
@@ -684,6 +797,7 @@ export function UnifiedTradeTerminal() {
               {!showUnlock && !lockHint && mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
               {!showUnlock && !lockHint && mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
               {!showUnlock && !lockHint && mode === "joker" && "🃏 Pilot — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
+              {!showUnlock && !lockHint && mode === "stats" && "📊 Statistikk — resultater, win-rate og AI-forklaringer for Pilot-handlene dine."}
             </motion.div>
           </div>
 
@@ -697,6 +811,7 @@ export function UnifiedTradeTerminal() {
             )}
             {mode === "auto" && <AutoStrategyPanel />}
             {mode === "joker" && <PilotDashboard />}
+            {mode === "stats" && <StatsTab />}
           </div>
         </div>
       </div>
