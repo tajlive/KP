@@ -59,6 +59,9 @@ export function AutoStrategyPanel() {
   const [checked, setChecked] = React.useState(false);
   const [stopping, setStopping] = React.useState(false);
   const [selected, setSelected] = React.useState<string[]>(DEFAULT_SELECTED);
+  const [liveMode, setLiveMode] = React.useState(false);
+  const [binanceConnected, setBinanceConnected] = React.useState<boolean | null>(null);
+  const [binanceTradingPerm, setBinanceTradingPerm] = React.useState(false);
   const activeSessionIdsRef = React.useRef<string[]>([]);
 
   // 24h endring fra usePrices() — tåler både DB-nøkkel (BTC) og WS-nøkkel (BTCUSDT)
@@ -96,6 +99,30 @@ export function AutoStrategyPanel() {
     return () => { cancelled = true; };
   }, []);
 
+  // Sjekk Binance-tilkobling (for live-toggle)
+  React.useEffect(() => {
+    let cancelled = false;
+    async function checkBinance() {
+      try {
+        const res = await fetch("/api/exchanges/connections");
+        if (!res.ok) { if (!cancelled) setBinanceConnected(false); return; }
+        const data = await res.json();
+        const conns: Array<{ exchange: string; isActive: boolean; permissions: string[] }> =
+          data?.connections ?? [];
+        const binance = conns.find(
+          (c) => c.exchange === "binance" && c.isActive,
+        );
+        if (cancelled) return;
+        setBinanceConnected(Boolean(binance));
+        setBinanceTradingPerm(Boolean(binance?.permissions?.includes("trading")));
+      } catch {
+        if (!cancelled) setBinanceConnected(false);
+      }
+    }
+    checkBinance();
+    return () => { cancelled = true; };
+  }, []);
+
   const toggleSymbol = (symbol: string) => {
     setSelected((prev) =>
       prev.includes(symbol) ? prev.filter((s) => s !== symbol) : [...prev, symbol],
@@ -103,19 +130,30 @@ export function AutoStrategyPanel() {
   };
 
   const startAutoTrade = async () => {
+    if (liveMode && !binanceTradingPerm) {
+      setStatus("error");
+      setMessage("Koble Binance med trading-tillatelse i Innstillinger → Børser først");
+      return;
+    }
     setStatus("starting");
-    setMessage("Starter auto-handel...");
+    setMessage(liveMode ? "Starter live-handel (ekte penger via Binance)..." : "Starter auto-handel...");
     try {
       const res = await fetch("/api/pilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "auto" }),
+        body: JSON.stringify({
+          mode: "auto",
+          live: liveMode,
+          symbols: selected,
+        }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus("active");
-        setMessage(`Auto-handel aktiv! Risiko: ${RISK_MAP[risk].label}, Kapital: ${capital} kr`);
+        setMessage(
+          `${liveMode ? "🔥 Live-handel" : "Auto-handel"} aktiv! ${RISK_MAP[risk].label} risiko, ${capital} kr, ${selected.length} valutaer`,
+        );
       } else {
         setStatus("error");
         setMessage(data.error || "Kunne ikke starte auto-handel — prøv igjen om litt");
@@ -328,7 +366,66 @@ export function AutoStrategyPanel() {
           />
         </div>
 
-        {/* 4. Start / Stopp */}
+        {/* 4. Modus: Paper vs Live (BYO Binance) */}
+        <div>
+          <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
+            Handelsmodus
+          </span>
+          <div className="grid grid-cols-2 gap-1.5">
+            <button
+              type="button"
+              onClick={() => setLiveMode(false)}
+              disabled={controlsLocked}
+              className={cn(
+                "rounded-lg border px-3 py-2 text-left transition-colors",
+                !liveMode
+                  ? "border-amber-500/40 bg-amber-500/[0.08]"
+                  : "border-[#1E2530] bg-[#0B0F19] hover:border-slate-600",
+                controlsLocked && "opacity-50 cursor-not-allowed",
+              )}
+            >
+              <div className="text-xs font-bold text-white">🧪 Papir</div>
+              <div className="text-[10px] text-slate-400">Lekepenger, null risiko</div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setLiveMode(true)}
+              disabled={controlsLocked}
+              className={cn(
+                "rounded-lg border px-3 py-2 text-left transition-colors",
+                liveMode
+                  ? "border-emerald-500/40 bg-emerald-500/[0.08]"
+                  : "border-[#1E2530] bg-[#0B0F19] hover:border-slate-600",
+                controlsLocked && "opacity-50 cursor-not-allowed",
+              )}
+            >
+              <div className="text-xs font-bold text-white">🔥 Live (Binance)</div>
+              <div className="text-[10px] text-slate-400">Ekte penger, dine nøkler</div>
+            </button>
+          </div>
+
+          {liveMode && (
+            <div className="mt-1.5 rounded-lg border border-[#1E2530] bg-[#0B0F19] px-3 py-2">
+              {binanceConnected === null ? (
+                <p className="text-[10px] text-slate-500">Sjekker Binance-tilkobling...</p>
+              ) : binanceTradingPerm ? (
+                <p className="text-[10px] text-emerald-400">
+                  ✅ Binance tilkoblet med trading-tillatelse — klar for live-handel
+                </p>
+              ) : (
+                <p className="text-[10px] text-amber-400">
+                  ⚠️ Koble Binance med <b>trading</b>-tillatelse i{" "}
+                  <a href="/no/dashboard/settings" className="underline hover:text-amber-300">
+                    Innstillinger → Binance API
+                  </a>{" "}
+                  før live-handel. Nøklene dine krypteres og brukes kun til dine ordrer.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 5. Start / Stopp */}
         <div className="space-y-2">
           <AnimatePresence mode="wait" initial={false}>
             {status === "active" ? (
