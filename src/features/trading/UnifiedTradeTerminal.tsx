@@ -14,9 +14,10 @@ import { WalletBalance } from "@/features/trading/WalletBalance";
 import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
 import { formatNOK } from "@/lib/format/currency";
 import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/market/nok";
+import { BacktestPanel } from "@/features/backtest/BacktestPanel";
 
 // ─── Types ───
-type TradeMode = "manual" | "auto" | "joker" | "stats";
+type TradeMode = "manual" | "auto" | "joker" | "stats" | "backtest";
 
 interface PriceData {
   symbol: string;
@@ -88,6 +89,7 @@ const MODES: { id: TradeMode; label: string; short: string; accent: string }[] =
   { id: "auto", label: "Auto", short: "🤖", accent: "data-[state=active]:border-amber-400 data-[state=active]:text-amber-400" },
   { id: "joker", label: "Joker", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
   { id: "stats", label: "Statistikk", short: "📊", accent: "data-[state=active]:border-cyan-400 data-[state=active]:text-cyan-400" },
+  { id: "backtest", label: "Backtest", short: "🔬", accent: "data-[state=active]:border-blue-400 data-[state=active]:text-blue-400" },
 ];
 
 function ModeTabs({ active, onChange, locked }: { active: TradeMode; onChange: (m: TradeMode) => void; locked: TradeMode[] }) {
@@ -724,6 +726,7 @@ export function UnifiedTradeTerminal() {
     if (tab === "auto") setMode("auto");
     else if (tab === "stats") setMode("stats");
     else if (tab === "joker") setMode("joker");
+    else if (tab === "backtest") setMode("backtest");
     else if (searchParams.get("first") === "1") setMode("joker");
   }, [searchParams]);
 
@@ -851,6 +854,7 @@ export function UnifiedTradeTerminal() {
             {mode === "auto" && <AutoStrategyPanel />}
             {mode === "joker" && <PilotDashboard />}
             {mode === "stats" && <StatsTab />}
+            {mode === "backtest" && <BacktestPanel />}
           </div>
         </div>
       </div>
