@@ -93,7 +93,9 @@ export function UserMenu() {
 
   const hasActiveTrader = sessions.length > 0;
   const email = user?.email ?? "";
-  const initial = (email[0] ?? "U").toUpperCase();
+  // AuthContext kan mangle bruker klient-side (server-cookie-auth) — da vises
+  // et nøytralt ikon i stedet for en misvisende initial.
+  const initial = email ? email[0].toUpperCase() : null;
 
   const isActive = (href: string) =>
     isDashboardSidebarLinkActive(pathname, locale, href);
@@ -145,7 +147,7 @@ export function UserMenu() {
     <>
       <Avatar className="h-9 w-9 border border-kp-border">
         <AvatarFallback className="bg-kp-brand/10 text-sm font-semibold text-kp-brand">
-          {initial}
+          {initial ?? <User className="h-4 w-4" aria-hidden />}
         </AvatarFallback>
       </Avatar>
       {hasActiveTrader && <TraderDot />}
@@ -244,9 +246,11 @@ export function UserMenu() {
         align="end"
         className="w-60 border-kp-border bg-kp-bg-secondary"
       >
-        <DropdownMenuLabel className="truncate text-xs font-normal text-kp-text-secondary">
-          {email}
-        </DropdownMenuLabel>
+        {email && (
+          <DropdownMenuLabel className="truncate text-xs font-normal text-kp-text-secondary">
+            {email}
+          </DropdownMenuLabel>
+        )}
         <DropdownMenuSeparator className="bg-kp-border" />
 
         <DropdownMenuItem asChild>
