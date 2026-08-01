@@ -177,8 +177,7 @@ function generateSignal(
 async function ensureActiveSession(
   db: ReturnType<typeof createClient>,
   userId: string,
-  symbol: string,
-): Promise<{ id: string; capital: number; blocked?: string } | null> {
+): Promise<{ id: string; capital: number; tradingPair: string; blocked?: string } | null> {
   // 🛡️ Forsvar i dybden (Task 0.3): en guard-deaktivert sesjon skal ALDRI
   // kunne handle — verken via tick, JokerTrade eller auto-trader. Guarden
   // setter status='stopped' + error_message LIKE 'GUARD:%' (eldre
@@ -187,18 +186,20 @@ async function ensureActiveSession(
   // kolonnen har DB-default false — jokertrade sine egne sesjoner fikk
   // enabled=false og ble blokkert av eget filter.
   //
-  // FIX (2026-08-01, P1): sesjonen MÅ matche det valgte symbolet.
-  // Før ble «første beste aktive paper-sesjon» brukt — som regel en
-  // BTCUSDT-sesjon — så ADA/DOGE/UNI-ordrer ble avvist av
-  // fn_guard_session_position_symbol («entry_price 176.5 er ikke gyldig
-  // for BTCUSDT»). Nå: aktiv sesjon for `symbol`, ellers opprettes én.
+  // P1-FIKS (2026-08-01): handel skjer i brukerens EKSISTERENDE aktive
+  // paper-sesjon, og symbolet HENTES FRA sesjonen (tradingPair). Før
+  // valgte JokerTrade et tilfeldig symbol (ADA/DOGE/…) men DB tillater
+  // kun ÉN aktiv paper-sesjon per bruker (idx_one_active_paper_session
+  // _per_user) → ordren kjørte mot f.eks. en BTCUSDT-sesjon →
+  // fn_guard_session_position_symbol avviste («entry_price 176.5 er
+  // ikke gyldig for BTCUSDT») → 0 handler siden 31. juli. Nå er symbol
+  // og sesjon alltid konsistente.
   const { data: existing } = await db
     .from("trading_sessions")
-    .select("id, current_capital_nok, status, smart_trader_enabled, error_message")
+    .select("id, current_capital_nok, trading_pair, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("status", "active")
     .eq("mode", "paper")
-    .eq("trading_pair", symbol)
     .or(GUARD_ERROR_OR_FILTER)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -206,10 +207,14 @@ async function ensureActiveSession(
 
   if (existing) {
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", existing.id);
-    return { id: existing.id, capital: Number(existing.current_capital_nok ?? DEFAULT_CAPITAL) };
+    return {
+      id: existing.id,
+      capital: Number(existing.current_capital_nok ?? DEFAULT_CAPITAL),
+      tradingPair: existing.trading_pair,
+    };
   }
 
-  // Ingen tradebar aktiv sesjon for symbolet. Hvis brukeren HAR en sesjon som er
+  // Ingen tradebar aktiv sesjon. Hvis brukeren HAR en sesjon som er
   // deaktivert (guard/status), skal vi IKKE opprette en ny — det ville
   // vært en omgåelse av guard-enforcement. Logg årsaken og blokker.
   const { data: disabled } = await db
@@ -217,7 +222,6 @@ async function ensureActiveSession(
     .select("id, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("mode", "paper")
-    .eq("trading_pair", symbol)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -228,7 +232,7 @@ async function ensureActiveSession(
       console.warn(
         `[JokerTrade] Hoppet over handel for ${userId}: sesjon ${disabled.id} er ikke tradebar (${reason})`,
       );
-      return { id: disabled.id, capital: 0, blocked: `Sesjonen er deaktivert (${reason})` };
+      return { id: disabled.id, capital: 0, tradingPair: "BTCUSDT", blocked: `Sesjonen er deaktivert (${reason})` };
     }
   }
 
@@ -241,6 +245,10 @@ async function ensureActiveSession(
   const capital = Number(account?.current_balance ?? DEFAULT_CAPITAL);
   if (capital <= 0) return null;
 
+  // Ny sesjon opprettes med et topp-symbol (sesjonens symbol styrer hva
+  // JokerTrade senere handler for denne brukeren).
+  const tradingPair = TOP_SYMBOLS[0];
+
   const { data: created, error } = await db
     .from("trading_sessions")
     .insert({
@@ -248,7 +256,7 @@ async function ensureActiveSession(
       mode: "paper",
       strategy_id: "cryptopilot",
       status: "active",
-      trading_pair: symbol,
+      trading_pair: tradingPair,
       starting_capital_nok: capital,
       current_capital_nok: capital,
       current_capital: capital,
@@ -261,7 +269,7 @@ async function ensureActiveSession(
     .single();
 
   if (error || !created) return null;
-  return { id: created.id, capital };
+  return { id: created.id, capital, tradingPair };
 }
 
 // ---------------------------------------------------------------------------
@@ -436,20 +444,11 @@ export async function POST(request: NextRequest) {
       userId = data.user.id;
     }
 
-    // 1. Velg symbol
-    const symbol = TOP_SYMBOLS[Math.floor(Math.random() * TOP_SYMBOLS.length)];
-
-    // 2. Hent markedsdata
-    const market = await fetchMarketData(symbol);
-    const price = market.currentPrice > 0 ? market.currentPrice : (FALLBACK_PRICES[symbol] ?? 100);
-    if (market.currentPrice <= 0) market.currentPrice = price;
-
-    // 3. Generer signal
-    const winMultiplier = await getCoinWinRate(db, userId, symbol);
-    const signal = generateJokerSignal(market, winMultiplier);
-
-    // 4. Session — MÅ matche valgt symbol (P1-fiks 2026-08-01)
-    const session = await ensureActiveSession(db, userId, symbol);
+    // 1. Session — brukerens aktive paper-sesjon er kilden til symbolet
+    // (P1-fiks 2026-08-01: før ble symbol valgt tilfeldig, men DB tillater
+    // kun ÉN aktiv paper-sesjon per bruker → ordre kjørte mot feil sesjon
+    // → fn_guard_session_position_symbol avviste → 0 handler siden 31. juli)
+    const session = await ensureActiveSession(db, userId);
     if (!session) {
       return NextResponse.json({ error: "Ingen kapital" }, { status: 400 });
     }
@@ -460,6 +459,18 @@ export async function POST(request: NextRequest) {
         { status: 403 },
       );
     }
+
+    // 2. Symbol — alltid sesjonens eget symbol
+    const symbol = session.tradingPair;
+
+    // 3. Hent markedsdata
+    const market = await fetchMarketData(symbol);
+    const price = market.currentPrice > 0 ? market.currentPrice : (FALLBACK_PRICES[symbol] ?? 100);
+    if (market.currentPrice <= 0) market.currentPrice = price;
+
+    // 4. Generer signal
+    const winMultiplier = await getCoinWinRate(db, userId, symbol);
+    const signal = generateJokerSignal(market, winMultiplier);
 
     // Touch heartbeat — sessions overlever detect_crashed_sessions
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", session.id);

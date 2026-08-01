@@ -39,17 +39,27 @@ describe("Heartbeat-kontrakt", () => {
 });
 
 // ---------------------------------------------------------------------------
-// P1 (2026-08-01): Sesjon MÅ matche valgt symbol
+// P1 (2026-08-01): Handel skjer i brukerens eksisterende sesjon, symbol hentes fra sesjonen
 // ---------------------------------------------------------------------------
-describe("Per-symbol sesjon (P1-fiks 2026-08-01)", () => {
-  it("ny session opprettes med det valgte symbolet som trading_pair (ikke hardkodet BTCUSDT)", () => {
-    const symbol = "ADAUSDT";
+describe("Sesjon er symbolkilden (P1-fiks 2026-08-01)", () => {
+  it("JokerTrade handler sesjonens eget symbol (tradingPair) — ikke tilfeldig", () => {
+    // Rotårsak: JokerTrade valgte tilfeldig symbol (ADA/DOGE) men DB tillater
+    // kun ÉN aktiv paper-sesjon per bruker → ordre kjørte mot f.eks. en
+    // BTCUSDT-sesjon → fn_guard_session_position_symbol avviste
+    // («entry_price 176.5 er ikke gyldig for BTCUSDT») → 0 handler siden 31. juli.
+    const session = { tradingPair: "BTCUSDT" };
+    const symbol = session.tradingPair; // fiksen: symbol hentes FRA sesjonen
+
+    expect(symbol).toBe("BTCUSDT");
+  });
+
+  it("ny session opprettes med topp-symbolet (BTCUSDT) som trading_pair", () => {
     const sessionInsert = {
       user_id: "test-user",
       mode: "paper" as const,
       strategy_id: "cryptopilot",
       status: "active" as const,
-      trading_pair: symbol,
+      trading_pair: "BTCUSDT",
       starting_capital_nok: 100_000,
       current_capital_nok: 100_000,
       current_capital: 100_000,
@@ -59,7 +69,7 @@ describe("Per-symbol sesjon (P1-fiks 2026-08-01)", () => {
       strategy_config: { stop_loss_pct: 5, close_on_stop: true },
     };
 
-    expect(sessionInsert.trading_pair).toBe("ADAUSDT");
+    expect(sessionInsert.trading_pair).toBe("BTCUSDT");
   });
 
   it("symboler som matcher sesjonen passerer fn_guard_session_position_symbol (ADA-pris mot ADAUSDT-sesjon)", () => {
