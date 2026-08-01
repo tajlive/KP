@@ -262,6 +262,38 @@ describe("Round-robin brukervalg", () => {
     expect(eligible[2].user_id).toBe("active_1"); // eldst handlet sist
   });
 
+  it("round-robin-peker roterer gjennom brukerne selv uten handler (WAIT)", () => {
+    // Regresjon 2026-08-01: stateless «eldste trade» = fastlåsning.
+    // Når alle er i WAIT endres ingen trades → sorteringen er identisk hver
+    // kjøring → samme bruker velges ALLTID → brukere med åpne posisjoner
+    // (take-profit/stop-loss-kandidater) når aldri tur.
+    const eligible = [
+      { user_id: "u1" },
+      { user_id: "u2" },
+      { user_id: "u3" },
+      { user_id: "u4" },
+    ];
+
+    // Simuler 8 kjøringer med peker: hver kjøring velger NESTE etter forrige
+    let pointerUserId: string | undefined = undefined;
+    const picks: string[] = [];
+    for (let round = 0; round < 8; round++) {
+      let idx = 0;
+      if (pointerUserId) {
+        const prev = eligible.findIndex((u) => u.user_id === pointerUserId);
+        idx = prev === -1 ? 0 : (prev + 1) % eligible.length;
+      }
+      const chosen = eligible[idx].user_id;
+      picks.push(chosen);
+      pointerUserId = chosen; // pekeren oppdateres uansett utfall
+    }
+
+    // Uten peker ville picks vært u1 × 8 (fastlåst). Med peker: u2,u3,u4,u1,u2,...
+    expect(picks).toEqual(["u1", "u2", "u3", "u4", "u1", "u2", "u3", "u4"]);
+    // Alle 4 brukere ble vurdert — også de med potensielle exits
+    expect(new Set(picks).size).toBe(4);
+  });
+
   it("ingen tradebare brukere → ingen handler (alt guard-stoppet)", () => {
     const configs = [
       { user_id: "stopped_a" },

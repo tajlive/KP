@@ -462,7 +462,39 @@ export async function POST(request: NextRequest) {
         return aTime.localeCompare(bTime);
       });
 
-      userId = eligible[0].user_id;
+      // 🎯 P1-følge #2 (2026-08-01): stateless «eldste trade» = fastlåsning.
+      // Når ingen handler skjer (alle i WAIT), forblir de samme brukerne
+      // «eldst» → velges hver gang → brukere med åpne posisjoner (som kan
+      // gi take-profit/stop-loss-exits) når ALDRI tur. Løsning: round-robin
+      // -peker i system_flags — velg NESTE bruker etter sist valgte, med
+      // wrap-around. Peker oppdateres uansett trade eller ikke.
+      const { data: rrRows } = await db
+        .from("system_flags")
+        .select("value")
+        .eq("key", "pilot_round_robin_pointer")
+        .maybeSingle();
+
+      let pointerIdx = 0;
+      const pointerUserId = rrRows?.value?.last_user_id as string | undefined;
+      if (pointerUserId) {
+        const prevIdx = eligible.findIndex((u) => u.user_id === pointerUserId);
+        if (prevIdx !== -1) {
+          pointerIdx = (prevIdx + 1) % eligible.length;
+        }
+      }
+
+      userId = eligible[pointerIdx].user_id;
+
+      // Oppdater pekeren (upsert) — uansett utfall, så neste kjøring går videre
+      try {
+        await db.from("system_flags").upsert(
+          {
+            key: "pilot_round_robin_pointer",
+            value: { last_user_id: userId, updated_at: new Date().toISOString() },
+          },
+          { onConflict: "key" },
+        );
+      } catch { /* best effort — neste kjøring faller tilbake til 0 */ }
     } else {
       const { data } = await db.auth.getUser();
       if (!data.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
