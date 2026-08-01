@@ -47,6 +47,7 @@ function makeSupabaseMock(options?: {
   rpcError?: Record<string, unknown> | null;
   exchangeConnection?: Record<string, unknown> | null;
   userBinanceKeys?: Record<string, unknown> | null;
+  apiKeysRow?: Record<string, unknown> | null;
 }) {
   const {
     profile = {
@@ -62,6 +63,7 @@ function makeSupabaseMock(options?: {
     rpcError = null,
     exchangeConnection = null,
     userBinanceKeys = null,
+    apiKeysRow = null,
   } = options ?? {};
 
   const fromMock = vi.fn((table: string) => {
@@ -83,7 +85,9 @@ function makeSupabaseMock(options?: {
           ? { data: exchangeConnection, error: null }
           : table === "user_binance_keys"
             ? { data: userBinanceKeys, error: null }
-            : { data: null, error: null },
+            : table === "api_keys"
+              ? { data: apiKeysRow, error: null }
+              : { data: null, error: null },
       ),
     };
     return query;
