@@ -8,7 +8,9 @@ import { validateCronSecret } from "@/lib/auth/cron";
 
 // System user for AI-generated signals. All active auto-traders
 // read from ai_decision_log regardless of user_id, but FK requires a valid UUID.
-const SYSTEM_SIGNAL_USER_ID = '6408d389-2021-4a2f-92b6-bebf0459a398';
+// NOTE 2026-08-01: gammel ID (6408d389-…) fantes IKKE i auth.users → FK-feil
+// på hver insert. Erstattet med systembrukeren algo1@klarpakke.no.
+const SYSTEM_SIGNAL_USER_ID = 'b0700000-0000-0000-0000-000000000001';
 
 import { fetchKlinesViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
 
@@ -174,11 +176,20 @@ export async function GET(req: NextRequest) {
         }
 
         // 3) Persist to ai_decision_log (legacy observability)
+        // NOTE 2026-08-01: skjema-mismatch (symbol/decision_type/sentiment_score
+        // eksisterte ikke) gjorde at denne inserten ALLTID feilet → `continue`
+        // blokkerte trading_signals-insertene nedenfor → ensemble-signaler nådde
+        // aldri tick. Fikset: riktige kolonner + best-effort (aldri blokker kritisk sti).
         const { error: insertError } = await db.from('ai_decision_log').insert({
-          symbol,
-          decision_type: consensus.action.toUpperCase(),
-          sentiment_score: Math.round(consensus.confidence),
-          analysis_data: {
+          user_id: SYSTEM_SIGNAL_USER_ID,
+          strategy_id: 'ensemble-v2',
+          timestamp: asOf,
+          sentiment_value: consensus.confidence,
+          sentiment_classification: consensus.action.toUpperCase(),
+          sentiment_recommendation: consensus.action,
+          sentiment_confidence: consensus.confidence,
+          sentiment_reasoning: consensus.reasoning,
+          adjustments: {
             ensemble: true,
             ensemble_run_id: consensus.runId,
             current_price: lastPrice,
@@ -189,16 +200,15 @@ export async function GET(req: NextRequest) {
               confidence: a.signal.confidence,
             })),
           } as unknown as import('@/types/database.types').Json,
-          decision_reason: consensus.reasoning,
-          user_id: SYSTEM_SIGNAL_USER_ID,
-          executed_at: asOf,
+          explanation: consensus.reasoning,
+          idempotency_key: `ai-engine-${symbol}-${asOf}`,
+          idempotency_scope: 'ai-decision',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         if (insertError) {
-          console.error(`[Cron AI-Engine] DB insert error for ${symbol}:`, insertError);
-          results.push({ symbol, status: 'db_error', error: insertError.message });
-          continue;
+          // Observability er best-effort — logg og fortsett (aldri blokkér trading_signals)
+          console.error(`[Cron AI-Engine] ai_decision_log insert error for ${symbol}:`, insertError);
         }
 
         // 4) Write agent rows to trading_signals
