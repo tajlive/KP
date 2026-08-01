@@ -44,7 +44,7 @@ ENCODED_SYMBOLS=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$SY
 echo "Symbols: ${SYMBOLS[*]}"
 
 # === Hent ticker-data via Binance proxy ===
-PROXY_RESPONSE=$(curl -s --max-time 10 \
+PROXY_RESPONSE=$(curl -s --max-time 20 --retry 2 --retry-delay 2 \
   -X POST "$PROXY_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
@@ -112,7 +112,7 @@ echo "Parsed $RECORD_COUNT records fra Binance proxy"
 UPSERT_BODY_FILE=$(mktemp)
 trap 'rm -f "$UPSERT_BODY_FILE"' EXIT
 
-HTTP_STATUS=$(curl -s --max-time 15 \
+HTTP_STATUS=$(curl -s --max-time 20 --retry 2 --retry-delay 2 \
   -o "$UPSERT_BODY_FILE" \
   -w "%{http_code}" \
   -X POST "${REST_ENDPOINT}?on_conflict=symbol" \
@@ -134,7 +134,7 @@ rm -f "$UPSERT_BODY_FILE"
 trap - EXIT
 
 # === Verifiser ved å lese tilbake ===
-VERIFY_DATA=$(curl -s --max-time 5 \
+VERIFY_DATA=$(curl -s --max-time 10 --retry 2 --retry-delay 2 \
   -X GET "${REST_ENDPOINT}?select=symbol,name,price,last_updated&order=name.asc" \
   -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
   -H "apikey: $SUPABASE_SERVICE_ROLE_KEY")
