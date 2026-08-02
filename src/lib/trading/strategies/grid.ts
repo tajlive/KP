@@ -54,7 +54,7 @@ export class GridBotStrategy implements StrategyEngine {
     const savedState = stratCfg as PersistedGridState;
 
     const currentPrice = candles[candles.length - 1].close;
-    const symbol = (config?.symbol as string) || "BTCUSDT";
+    const symbol = (config?.symbol as string) || ((input.session as unknown) as Record<string, unknown>)?.trading_pair as string || "BTCUSDT";
 
     // ── 1. Hent eller generer grid-state ───────────────────────────────────
     let levels: GridLevel[];
@@ -96,9 +96,13 @@ export class GridBotStrategy implements StrategyEngine {
 
     // ── 3. Map til StrategySignal ─────────────────────────────────────────
     if (signal.action === "buy") {
+      // Capital fra session (NOK), fallback til config
+      const capital = ((session as unknown) as Record<string, unknown>)?.current_capital_nok as number
+        ?? (config?.capital as number)
+        ?? 10000;
       return {
         action: "buy",
-        positionSize: gridConfig.amountPerGrid / ((config?.capital as number) ?? 10000),
+        positionSize: gridConfig.amountPerGrid / capital,
         confidence: 0.7,
         indicators: {
           grid_level: signal.level?.level,
