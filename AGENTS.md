@@ -22,6 +22,20 @@
 5. **Health-worker (`klarpakke-health`):** execute-proben MÅ gå via `APP_ORIGIN` = appens workers.dev-URL (`https://klarpakke.tomarnejensen.workers.dev`) — subrequests til egen zone-hostname går til ikke-eksisterende zone-origin → HTTP 522. Secrets (STRIPE/RESEND) ligger som wrangler secrets, ALDRI i `wrangler.health.jsonc` (de lå der i klartekst — rotasjon i Stripe/Resend-dashboard gjenstår fordi de ligger i git-historikk).
 6. **Sikkerhetsbaseline 2026-08-02:** npm audit 0 kritiske, 10 high (KUN dev/build-verktøy: sanity-klyngen, perplexity-mcp, MCP-sdk — ingen upstream-patch ennå). Overrides i package.json: `sharp ^0.35.3`, `postcss ^8.5.25`. Overvåkes av cron-jobben «Klarpakke Sikkerhetsvakt» (mandag 09:23) — ikke fjern baselinen uten å oppdatere jobben.
 
+### 🚨 Hendelsesrapport: nøkkelrotasjon 2026-08-02 (Resend + Stripe)
+
+**Rotårsak:** `wrangler.health.jsonc` lå i git med `STRIPE_SECRET_KEY` og `RESEND_API_KEY` i klartekst. Resend-nøkkelen var live; Stripe-avskriften var en tegn-manglet (ugyldig) kopi av den ekte «Hermes»-nøkkelen — som altså selv var kompromitterbar via historikken.
+
+**Utfall:** Begge nøkler rotert og verifisert i prod samme natt. Resend 100 % via API (opprett → propager til `.env.local` + begge workers + Supabase secret → tilbakekall gammel → verifiser død). Stripe krevde dashboard (ingen key-API), 2 passkey-runder fra Tom, og ga ~2,5 t Stripe-nedetid (05:00–07:39 UTC) fordi 1-times utløpsvinduet rakk å gå ut før verifiseringen var på plass. Ny Stripe-nøkkel «Klarpakke prod runtime» har minimale eksplisitte tillatelser (Checkout/Customers/Prices/Products/Customer Portal = Write). Ubrukte nøkler `…S9jt` og `…QI5w` står igjen aktive i Stripe-dashboard — kan expires ved neste påloggede økt.
+
+**Lærdommer (harde regler):**
+1. **Aldri hemmeligheter i *-config-filer som committes** — alltid `wrangler secret put`. Sjekk `git log -p -- '*wrangler*'` ved tvil.
+2. **Stripe har ingen key-rotasjons-API** og krever passkey step-up PER operasjon (oppretting, visning, sletting). Rotasjon = planlagt økt med Tom ved maskinen, aldri improvisert nattarbeid.
+3. **Ved rotasjon med utløpstimer: propager NY nøkkel FØR timeren settes**, eller bruk 24-timers vindu. Rekkefølgen denne natten (timer først) ga nedetid.
+4. **Nøkkelverdier limes aldri i chat** — bruk sikker kanal (1Password/direkte filoverføring). Denne gangen var det nødvendig on-the-fly; notert som unntak.
+5. **WebBridge mot Stripe-dashboard:** Workbench-panelet overlapper tabellrader (elementFromPoint avslører det — lukk via «Close Workbench»), CDP-klipplim inn fungerer ikke, men `pbpaste` leser macOS-utklippstavle når dashboard faktisk kopierer.
+6. **Resend API-nøkkel-API** (`POST/DELETE /api-keys`) støtter full rotasjon uten dashboard — bruk det.
+
 ### 📌 STATUS 2026-07-29 (fra Kimi — redaktør, kode, sosiale medier)
 
 **Mandat (oppdatert 2026-07-30):** Hermes er **hovedarkitekt med ansvar for hele prosjektet** — arkitektur, design, funksjonalitet, logikk, kode, infrastruktur, DB, deploy, overvåking, innhold, samt løpende oppdatering og optimalisering av alle flater. Hermes har full DB-tilgang og deploy-mandat («fiks alt») og forbedrer produktet proaktivt uten å bli bedt.
