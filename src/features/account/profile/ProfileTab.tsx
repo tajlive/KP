@@ -416,6 +416,21 @@ function ProfileTabContent() {
         </div>
 
         <div>
+          <label htmlFor="profileEmail" className="text-sm text-slate-300">
+            {t("email")}
+          </label>
+          <input
+            id="profileEmail"
+            title={t("email")}
+            type="email"
+            readOnly
+            disabled
+            value={(profile as { email?: string }).email ?? ""}
+            className="w-full border border-slate-700 bg-slate-800/50 rounded px-3 py-2 mt-1 text-slate-400 cursor-not-allowed"
+          />
+        </div>
+
+        <div>
           <label htmlFor="profileName" className="text-sm text-slate-300">
             Navn
           </label>

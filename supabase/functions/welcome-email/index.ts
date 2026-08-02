@@ -92,7 +92,7 @@ serve(async (req) => {
       body: JSON.stringify({
         // IMPORTANT: Must be a verified domain in Resend.
         // Use 'onboarding@resend.dev' for sandbox testing.
-        from: "Klarpakke <tom@klarpakke.no>",
+        from: "Klarpakke <post@klarpakke.no>",
         to: [email],
         subject: isEnglish ? subjects.en : subjects.no,
         html: htmlContent,

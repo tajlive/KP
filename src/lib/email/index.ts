@@ -30,7 +30,7 @@ function getResendClient(): Resend {
 }
 
 const FROM_EMAIL = "Klarpakke <post@klarpakke.no>";
-const REPLY_TO = "support@klarpakke.no";
+const REPLY_TO = "post@klarpakke.no";
 
 // Email types that require user consent
 export type EmailType =
@@ -548,7 +548,7 @@ const templates = {
       </p>
       <a href="${restartUrl}" class="button">Restart Trading</a>
       <p style="font-size: 14px; color: #94a3b8; margin-top: 24px;">
-        Har du spørsmål? Kontakt support@klarpakke.no
+        Har du spørsmål? Kontakt post@klarpakke.no
       </p>
     `,
       `Trading stoppet: Portfolio drawdown ${drawdown}`,

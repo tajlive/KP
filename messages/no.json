@@ -72,7 +72,7 @@
       "title": "Kontakt oss",
       "subtitle": "Har du spørsmål? Vi er her for å hjelpe deg.",
       "email": "E-post",
-      "emailValue": "kontakt@klarpakke.no",
+      "emailValue": "post@klarpakke.no",
       "org": "Organisasjonsnummer",
       "orgNumber": "932 985 312 MVA",
       "orgName": "Klarpakke AS",
@@ -3754,6 +3754,7 @@
     "profile": {
       "title": "Min Konto",
       "subtitle": "Administrer profilen din, lommebok og innstillinger",
+      "email": "E-post",
       "namePlaceholder": "Ditt navn",
       "avatarUrlPlaceholder": "https://eksempel.com/avatar.jpg",
       "tabs": {
