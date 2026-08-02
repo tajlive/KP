@@ -58,6 +58,10 @@ export interface DashboardMetrics {
    * avvike. null for live-modus eller når kontoen ikke finnes.
    */
   accountBalance: number | null;
+  /** Total investert i åpne posisjoner (kjøpspris × antall) */
+  investedCapital: number;
+  /** Antall åpne posisjoner (par med aktiv investering) */
+  positionCount: number;
   /** The 5 most recent sessions for display in the dashboard. */
   recentSessions: TradingSessionRow[];
 }
@@ -96,18 +100,30 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
 async function getAccountBalance(
   supabaseClient: SupabaseClient<Database>,
   userId: string,
-): Promise<number | null> {
-  // Primær: summer aktiv kapital fra alle aktive/pausede paper-sesjoner
+): Promise<{ available: number; invested: number; positionCount: number } | null> {
+  // Hent alle aktive paper-sesjoner med open_position
   const { data: sessions, error: sessionError } = await supabaseClient
     .from("trading_sessions")
-    .select("current_capital_nok, status")
+    .select("current_capital_nok, open_position, trading_pair")
     .eq("user_id", userId)
     .eq("mode", "paper")
     .in("status", ["active"]);
 
   if (!sessionError && sessions && sessions.length > 0) {
-    const total = sessions.reduce((sum, s) => sum + Number(s.current_capital_nok ?? 0), 0);
-    if (Number.isFinite(total) && total > 0) return total;
+    let available = 0;
+    let invested = 0;
+    let positionCount = 0;
+    for (const s of sessions) {
+      available += Number(s.current_capital_nok ?? 0);
+      const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
+      if (pos?.quantity && pos?.entry_price) {
+        invested += pos.quantity * pos.entry_price;
+        positionCount++;
+      }
+    }
+    if (Number.isFinite(available + invested) && (available + invested) > 0) {
+      return { available, invested, positionCount };
+    }
   }
 
   // Fallback: paper_accounts (kan være stale hvis sync ikke har kjørt)
@@ -121,7 +137,10 @@ async function getAccountBalance(
     console.warn("[getUserDashboardMetrics] account balance fetch failed:", error.message);
     return null;
   }
-  return typeof data?.current_balance === "number" ? data.current_balance : null;
+  const dataSingle = data as unknown as { current_balance?: number };
+  return typeof dataSingle?.current_balance === "number" 
+    ? { available: dataSingle.current_balance, invested: 0, positionCount: 0 } 
+    : null;
 }
 
 /** Komplement til getAccountBalance — FIKS 6. */
@@ -145,10 +164,13 @@ export async function getUserDashboardMetrics(
 
   // Kontobalanse (source of truth) — hentes alltid for paper-modus slik at
   // ALLE retur-veier (RPC + fallbacks) leverer samme balanse-tall.
-  const accountBalance =
+  const balResult =
     mode === "paper"
       ? await getAccountBalance(supabaseClient, userId)
       : null;
+  const accountBalance = balResult?.available ?? null;
+  const investedCapital = balResult?.invested ?? 0;
+  const positionCount = balResult?.positionCount ?? 0;
   const accountInitial =
     mode === "paper"
       ? await getAccountInitial(supabaseClient, userId)
@@ -195,8 +217,8 @@ export async function getUserDashboardMetrics(
     const row = rpcRows?.[0];
     if (!row) {
       // No data returned — valid state (no sessions/trades).
-      const fb = await fallbackMetrics(supabaseClient, userId, mode);
-      return { ...fb, recentSessions: recentSessions || [] };
+      const metrics = await fallbackMetrics(supabaseClient, userId, mode);
+      return { ...metrics, recentSessions: recentSessions || [], investedCapital, positionCount };
     }
 
     const totalPnl = Number(row.total_pnl ?? 0);
@@ -230,6 +252,8 @@ export async function getUserDashboardMetrics(
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),
       accountBalance,
+      investedCapital,
+      positionCount,
       recentSessions: recentSessions || [],
     };
   } catch (error) {
@@ -243,7 +267,7 @@ export async function getUserDashboardMetrics(
         error.message,
       );
       const metrics = await tsAggregationFallback(input);
-      return { ...metrics, recentSessions: recentSessions || [] };
+      return { ...metrics, recentSessions: recentSessions || [], investedCapital, positionCount };
     }
     throw error;
   }
@@ -302,7 +326,9 @@ async function fallbackMetrics(
       winningTrades: 0,
       losingTrades: 0,
       sessionCount: 0,
-      accountBalance: fb.totalCapital, // getProfileFallback leser paper_accounts først
+      accountBalance: fb.totalCapital,
+      investedCapital: 0,
+      positionCount: 0,
       recentSessions: [],
     };
   }
@@ -316,7 +342,9 @@ async function fallbackMetrics(
     winningTrades: 0,
     losingTrades: 0,
     sessionCount: 0,
-    accountBalance: null, // live-modus: ingen paper-kontobalanse
+    accountBalance: null,
+    investedCapital: 0,
+    positionCount: 0,
     recentSessions: [],
   };
 }
@@ -408,8 +436,10 @@ async function tsAggregationFallback(
       ? winningTrades / (winningTrades + losingTrades)
       : 0;
 
-  const accountBalance =
-    mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
+  const balResult = mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
+  const accountBalance = balResult?.available ?? null;
+  const investedCapital = balResult?.invested ?? 0;
+  const positionCount = balResult?.positionCount ?? 0;
 
   return {
     totalPnl: Math.round(totalPnl * 100) / 100,
@@ -421,6 +451,8 @@ async function tsAggregationFallback(
     losingTrades,
     sessionCount: sessions?.length ?? 0,
     accountBalance,
+    investedCapital,
+    positionCount,
     recentSessions: [], // Fallback doesn't fetch recent sessions details
   };
 }
