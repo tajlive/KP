@@ -23,10 +23,11 @@ export interface GridConfig {
 
 export interface GridLevel {
   level: number;
-  buyPrice: number;        // Kjøp når pris treffer dette
-  sellPrice: number;       // Selg når pris treffer dette
-  quantity: number;        // Antall å kjøpe/selge
+  buyPrice: number;
+  sellPrice: number;
+  quantity: number;
   status: "empty" | "bought" | "sold";
+  dcaLevel?: number; // DCA under bunn: 1=lett, 2=medium, 3=tung
 }
 
 export interface GridSignal {
@@ -35,6 +36,10 @@ export interface GridSignal {
   reason: string;
   expectedProfitPct: number;
 }
+
+/** DCA under bunn: 3 nivåer under laveste grid, progressivt større beløp */
+const DCA_LEVELS_PCT = [0.95, 0.90, 0.85]; // 95%, 90%, 85% av lowerPrice
+const DCA_SIZE_MULTIPLIER = [1.0, 1.5, 2.0]; // 1×, 1.5×, 2× normal grid-størrelse
 
 /**
  * Generer grid-nivåer basert på konfig
@@ -75,15 +80,49 @@ export function evaluateGridSignal(
   levels: GridLevel[],
   currentPrice: number
 ): GridSignal {
-  // Utenfor grid → vent
-  if (currentPrice < config.lowerPrice || currentPrice > config.upperPrice) {
+  // Utenfor grid UNDER → DCA: kjøp på fallende pris (aldri stopp kjøp)
+  if (currentPrice < config.lowerPrice) {
+    const lowestBuy = levels[0].buyPrice;
+    for (let dcaIdx = 0; dcaIdx < DCA_LEVELS_PCT.length; dcaIdx++) {
+      const dcaPrice = config.lowerPrice * DCA_LEVELS_PCT[dcaIdx];
+      // Sjekk om vi har en lagret DCA-kjøpsordre for dette nivået
+      const existingDca = levels.find(l => l.dcaLevel === dcaIdx + 1);
+      if (currentPrice <= dcaPrice && (!existingDca || existingDca.status === "empty")) {
+        const multiplier = DCA_SIZE_MULTIPLIER[dcaIdx];
+        const qty = (config.amountPerGrid * multiplier) / dcaPrice;
+        const dcaLevel: GridLevel = {
+          level: -1,
+          buyPrice: dcaPrice,
+          sellPrice: lowestBuy, // selg tilbake ved laveste grid-nivå
+          quantity: qty,
+          status: "empty",
+          dcaLevel: dcaIdx + 1,
+        };
+        const profitPct = ((lowestBuy - dcaPrice) / dcaPrice) * 100;
+        return {
+          action: "buy",
+          level: dcaLevel,
+          reason: `📉 DCA ${multiplier}× @ ${dcaPrice.toFixed(2)} (kjøp under bunn, selg ved ${lowestBuy.toFixed(2)} = +${profitPct.toFixed(1)}%)`,
+          expectedProfitPct: profitPct,
+        };
+      }
+    }
     return {
       action: "wait",
-      reason: `Pris ${currentPrice.toFixed(2)} utenfor grid [${config.lowerPrice.toFixed(2)}-${config.upperPrice.toFixed(2)}]`,
+      reason: `Pris ${currentPrice.toFixed(2)} under grid — alle DCA-nivåer fylt`,
       expectedProfitPct: 0,
     };
   }
   
+  // Utenfor grid OVER → vent (grid tjener ikke på trend opp)
+  if (currentPrice > config.upperPrice) {
+    return {
+      action: "wait",
+      reason: `Pris ${currentPrice.toFixed(2)} over grid ${config.upperPrice.toFixed(2)} — venter på retur`,
+      expectedProfitPct: 0,
+    };
+  }
+
   const step = (config.upperPrice - config.lowerPrice) / config.gridLevels;
   const cellIndex = Math.min(config.gridLevels - 1, Math.floor((currentPrice - config.lowerPrice) / step));
   const cell = levels[cellIndex];

@@ -454,70 +454,72 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Round-robin: finn brukeren med eldste siste trade (kun tradebare)
-      const { data: recentTrades } = await db
-        .from("trades")
-        .select("user_id, created_at")
-        .eq("pilot_trade", true)
-        .order("created_at", { ascending: false })
-        .limit(100);
+      const eligibleUserIds = eligible.map(u => u.user_id);
+      
+      // Prosesser ALLE brukere — ikke bare én per cron-kjøring
+      const allUserResults: Array<{
+        userId: string;
+        results: Array<{ symbol: string; action: string; reason: string }>;
+        exits: number;
+      }> = [];
 
-      const lastTradeMap = new Map<string, string>();
-      for (const t of recentTrades ?? []) {
-        if (!lastTradeMap.has(t.user_id)) {
-          lastTradeMap.set(t.user_id, t.created_at);
+      for (const uid of eligibleUserIds) {
+        try {
+          const userResult = await processUser(db, uid);
+          if (userResult) allUserResults.push(userResult);
+        } catch (userErr) {
+          console.error(`[pilot-engine] Bruker ${uid} feilet:`, userErr);
         }
       }
 
-      eligible.sort((a, b) => {
-        const aTime = lastTradeMap.get(a.user_id);
-        const bTime = lastTradeMap.get(b.user_id);
-        if (!aTime && !bTime) return 0;
-        if (!aTime) return -1;
-        if (!bTime) return 1;
-        return aTime.localeCompare(bTime);
+      const totalSignals = allUserResults.flatMap(r => r.results);
+      const activeSignals = totalSignals.filter(s => s.action !== "WAIT");
+      const msg = `🎭 ${allUserResults.length} brukere behandlet, ${activeSignals.length} handler (${totalSignals.filter(s=>s.action==='BUY').length} kjøp, ${totalSignals.filter(s=>s.action==='SELL').length} salg)`;
+      
+      return NextResponse.json({
+        success: true,
+        users: allUserResults.length,
+        message: msg,
+        results: totalSignals.slice(0, 50),
+        details: allUserResults.map(r => ({
+          userId: r.userId.slice(0,8),
+          pairs: r.results.length,
+          active: r.results.filter(s => s.action !== 'WAIT').length,
+          exits: r.exits,
+        })),
       });
-
-      // 🎯 P1-følge #2 (2026-08-01): stateless «eldste trade» = fastlåsning.
-      // Når ingen handler skjer (alle i WAIT), forblir de samme brukerne
-      // «eldst» → velges hver gang → brukere med åpne posisjoner (som kan
-      // gi take-profit/stop-loss-exits) når ALDRI tur. Løsning: round-robin
-      // -peker i system_flags — velg NESTE bruker etter sist valgte, med
-      // wrap-around. Peker oppdateres uansett trade eller ikke.
-      const { data: rrRows } = await db
-        .from("system_flags")
-        .select("value")
-        .eq("key", "pilot_round_robin_pointer")
-        .maybeSingle();
-
-      let pointerIdx = 0;
-      const pointerUserId = rrRows?.value?.last_user_id as string | undefined;
-      if (pointerUserId) {
-        const prevIdx = eligible.findIndex((u) => u.user_id === pointerUserId);
-        if (prevIdx !== -1) {
-          pointerIdx = (prevIdx + 1) % eligible.length;
-        }
-      }
-
-      userId = eligible[pointerIdx].user_id;
-
-      // Oppdater pekeren (upsert) — uansett utfall, så neste kjøring går videre
-      try {
-        await db.from("system_flags").upsert(
-          {
-            key: "pilot_round_robin_pointer",
-            value: { last_user_id: userId, updated_at: new Date().toISOString() },
-          },
-          { onConflict: "key" },
-        );
-      } catch { /* best effort — neste kjøring faller tilbake til 0 */ }
     } else {
       const { data } = await db.auth.getUser();
       if (!data.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      userId = data.user.id;
+      
+      // Manuell trigger (én bruker)
+      const userResult = await processUser(db, data.user.id);
+      if (!userResult) return NextResponse.json({ success: true, message: "Ingen aktive sesjoner" });
+      
+      const activeSignals = userResult.results.filter(s => s.action !== "WAIT");
+      return NextResponse.json({
+        success: true,
+        users: 1,
+        message: `🎭 ${userResult.results.length} par: ${activeSignals.map(r=>`${r.symbol}: ${r.action}`).join(', ')}`,
+        results: userResult.results,
+        exits: userResult.exits,
+      });
     }
+  } catch (err) {
+    const e = err as { message?: string; status?: number };
+    console.error("[pilot-engine] POST error:", e.message ?? err);
+    return NextResponse.json({
+      success: false,
+      error: e.message ?? "Ukjent feil",
+    }, { status: e.status ?? 500 });
+  }
+}
 
-    // 1. Sessions — ALLE aktive paper-sesjoner (én per trading par)
+async function processUser(
+  db: ReturnType<typeof createClient>,
+  userId: string
+): Promise<{ userId: string; results: Array<{ symbol: string; action: string; reason: string }>; exits: number } | null> {
+  try {
     const sessions = await ensureActiveSessions(db, userId);
     const allResults: Array<{ symbol: string; action: string; reason: string }> = [];
     let totalExits = 0;
@@ -661,15 +663,10 @@ export async function POST(request: NextRequest) {
       allResults.push({ symbol, action: signal.action, reason: signal.reason });
     }
 
-    const msg = allResults.map(r => `${r.symbol}: ${r.action}`).join(", ");
-    return NextResponse.json({
-      success: true,
-      message: `🎭 ${allResults.length} par behandlet: ${msg}`,
-      results: allResults,
-      exits: totalExits,
-    });
+    return { userId, results: allResults, exits: totalExits };
   } catch (err) {
-    return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
+    console.error(`[processUser] ${userId}:`, err);
+    return null;
   }
 }
 
