@@ -873,13 +873,23 @@ async function processSession(
     // ── Engine-nivå signal-guard (produktkrav 2026-07-25) ──────────────────
     // Avvis ALLE kjøp med expectancy < 0 ELLER confidence = 0.
     // Salg blokkeres aldri — exits skal alltid gjennomføres.
+    //
+    // Klarpakke-fiks 2026-08-02: Grid-signaler er MEKANISKE nivå-ordre, ikke
+    // prediksjoner. Expectancy beregnet fra gamle multi-signal/DCA-trades er
+    // irrelevant for grid — grid har egen gevinstlogikk (+2% per nivå).
+    // Uten unntak ble brukere med tidligere tap (f.eks. fra DCA) permanent
+    // utestengt fra grid, mens nye brukere slapp gjennom — urettferdig og feil.
+    const isGridSignalForGuard =
+      (signal.reason ?? "").includes("Grid buy") ||
+      (signal.reason ?? "").includes("Grid sell") ||
+      (signal.reason ?? "").includes("DCA buy");
     {
       const guard = evaluateSignalGuard({
         action: signal.action,
         exitReason: signal.exitReason ?? "auto",
         confidence:
           (signal.indicators?.confidence as number | null | undefined) ?? null,
-        expectancy: dynamicExpectancy ?? null,
+        expectancy: isGridSignalForGuard ? null : (dynamicExpectancy ?? null),
       });
       if (!guard.allowed) {
         try {
