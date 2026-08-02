@@ -422,11 +422,6 @@ export async function POST(request: NextRequest) {
       // 🫀 Bulk heartbeat på ALLE aktive sessions
       try { await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("status", "active").eq("mode", "paper"); } catch { /* best effort */ }
 
-      // Auto-opprett auto_trading_configs for nye brukere (de som har paper-konto men mangler config)
-      try {
-        await db.rpc("ensure_auto_trading_configs_for_new_users" as never);
-      } catch { /* best effort */ }
-
       const { data: users } = await db
         .from("auto_trading_configs")
         .select("user_id")
