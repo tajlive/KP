@@ -136,6 +136,8 @@ export function DashboardContent({
     >
       <DashboardTopBar
         balance={data?.accountBalance ?? data?.totalCapital}
+        investedCapital={data?.investedCapital ?? 0}
+        positionCount={data?.positionCount ?? 0}
         changePct={totalReturn}
         mode={mode}
         ctaLink={cmsData?.heroCtaLink}

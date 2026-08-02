@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { m } from "framer-motion";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Info } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -11,6 +11,8 @@ import type { DashboardMode } from "@/hooks/useDashboardMetrics";
 
 interface DashboardTopBarProps {
   balance?: number | null;
+  investedCapital?: number;
+  positionCount?: number;
   changePct?: number | null;
   mode: DashboardMode;
   ctaLink?: string;
@@ -18,6 +20,8 @@ interface DashboardTopBarProps {
 
 export function DashboardTopBar({
   balance,
+  investedCapital = 0,
+  positionCount = 0,
   changePct,
   mode,
   ctaLink,
@@ -74,35 +78,50 @@ export function DashboardTopBar({
             {isPaper ? t("paperMode") : t("liveMode")}
           </span>
 
-          {/* Balance + change */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="text-base sm:text-lg font-bold text-kp-text-primary tabular-nums truncate">
-              {balance == null ? (
-                <span>{t("noData")}</span>
-              ) : (
-                formatByMode(balance, mode)
-              )}
-            </div>
+          {/* Balance + endring */}
+          <div className="flex flex-col items-end min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="text-base sm:text-lg font-bold text-kp-text-primary tabular-nums truncate">
+                {balance == null ? (
+                  <span>{t("noData")}</span>
+                ) : (
+                  formatByMode((balance ?? 0) + investedCapital, mode)
+                )}
+              </div>
 
-            <div
-              className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold tabular-nums ${
-                changeTrend === "up"
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  : changeTrend === "down"
-                    ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                    : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-              }`}
-            >
-              <TrendIcon className="w-3 h-3" />
-              {safeChangePct == null ? (
-                <span>{t("noData")}</span>
-              ) : (
-                <>
-                  {safeChangePct > 0 ? "+" : ""}
-                  {safeChangePct.toFixed(2)}%
-                </>
-              )}
+              <div
+                className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold tabular-nums ${
+                  changeTrend === "up"
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : changeTrend === "down"
+                      ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                      : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                }`}
+              >
+                <TrendIcon className="w-3 h-3" />
+                {safeChangePct == null ? (
+                  <span>{t("noData")}</span>
+                ) : (
+                  <>
+                    {safeChangePct > 0 ? "+" : ""}
+                    {safeChangePct.toFixed(2)}%
+                  </>
+                )}
+              </div>
             </div>
+            {/* Forklaring: vis ledig + investert */}
+            {isPaper && (balance != null || investedCapital > 0) && (
+              <div className="text-[11px] text-kp-text-secondary mt-0.5 flex items-center gap-1.5">
+                <span>💳 {formatByMode(balance ?? 0, mode)} ledig</span>
+                <span className="text-kp-border">·</span>
+                <span>📈 {formatByMode(investedCapital, mode)} investert</span>
+                {positionCount > 0 && (
+                  <span className="text-kp-border">
+                    · {positionCount} posisjon{positionCount !== 1 ? "er" : ""}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* CTA — skjult på smale skjermer (duplikat av hero-CTA under) */}
