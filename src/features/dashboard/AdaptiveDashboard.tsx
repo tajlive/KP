@@ -85,9 +85,7 @@ function NewUserHero({ tradeCount, userName, preferredTradingMode }: { tradeCoun
       <OnboardingChecklistFromState tradeCount={tradeCount} />
 
       <SmartActions userState="NyBruker" compact />
-
-      {/* DemoChart fjernet — viste fake generert kurve, ikke ekte data */}
-    </m.div>
+      </m.div>
   );
 }
 
