@@ -238,6 +238,9 @@ export function PaperTradingCard() {
           <p className="text-2xl font-bold text-kp-text-primary">
             {formatByMode(balance.current, "paper")}
           </p>
+          <p className="text-[11px] text-kp-text-muted/70 mt-0.5 leading-tight">
+            Urealisert verdi — endres med markedet hvert sekund. Handler er ikke solgt ennå.
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -247,7 +250,7 @@ export function PaperTradingCard() {
             </p>
           </div>
           <div>
-            <p className="text-xs text-kp-text-muted">{t("pnl")}</p>
+            <p className="text-xs text-kp-text-muted">{t("pnl")} <span className="text-kp-text-muted/60">(urealisert)</span></p>
             <p
               className={cn(
                 "text-sm font-semibold",
