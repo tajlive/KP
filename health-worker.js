@@ -6,7 +6,12 @@ export default {
       const checks = {};
 
       try {
-        const executeUrl = new URL("/api/paper-trading/execute", url.origin);
+        // VIKTIG: Ikke probe via egen zone-hostname — subrequests fra en Worker
+        // til samme zone går til zone-origin (som ikke finnes → HTTP 522).
+        // Proben går derfor mot appens workers.dev-URL, som treffer
+        // hoved-workeren direkte. Overstyr med var APP_ORIGIN ved behov.
+        const appOrigin = env.APP_ORIGIN || "https://klarpakke.tomarnejensen.workers.dev";
+        const executeUrl = new URL("/api/paper-trading/execute", appOrigin);
         const executeProbe = await fetch(executeUrl.toString(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
