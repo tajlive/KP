@@ -1,0 +1,3 @@
+{
+  "/[locale]/(academy)/kurs/[moduleSlug]/leksjon/[lessonSlug]/page": "app/[locale]/(academy)/kurs/[moduleSlug]/leksjon/[lessonSlug]/page.js"
+}

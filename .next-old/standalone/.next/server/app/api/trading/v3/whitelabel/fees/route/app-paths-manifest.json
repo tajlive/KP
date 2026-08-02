@@ -1,0 +1,3 @@
+{
+  "/api/trading/v3/whitelabel/fees/route": "app/api/trading/v3/whitelabel/fees/route.js"
+}

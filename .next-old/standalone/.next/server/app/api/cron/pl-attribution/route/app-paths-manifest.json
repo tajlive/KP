@@ -1,0 +1,3 @@
+{
+  "/api/cron/pl-attribution/route": "app/api/cron/pl-attribution/route.js"
+}

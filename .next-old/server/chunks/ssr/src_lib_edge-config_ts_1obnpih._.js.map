@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "debugId": "89f0f9bc-3fcb-da6f-2642-0fdf94b2b990",
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../src/lib/edge-config.ts"],"sourcesContent":["/**\n * Edge Config stub — migrert fra tidligere Edge Config-løsning til Supabase/Redis.\n * Feature flags leses nå fra Redis eller Supabase (se src/lib/flags.ts).\n * Den opprinnelige edge-config-pakken er avinstallert.\n */\n\nexport type EdgeFeatureFlags = {\n  tradingV3?: boolean;\n  rlSignals?: boolean;\n  euTaxReport?: boolean;\n  betaTrading?: boolean;\n  whitelabelFees?: boolean;\n  maintenanceMode?: boolean;\n  signalEngineKillSwitch?: boolean;\n};\n\nexport async function getEdgeFlags(): Promise<EdgeFeatureFlags> {\n  // TODO: Les fra Redis/Supabase etter behov\n  return {};\n}\n\nexport async function isMaintenanceMode(): Promise<boolean> {\n  // TODO: Les fra Redis/Supabase etter behov\n  return false;\n}\n"],"names":["getEdgeFlags","isMaintenanceMode"],"mappings":"wCAgBO,eAAeA,IAEpB,MAAO,CAAC,CACV"}}]
+}

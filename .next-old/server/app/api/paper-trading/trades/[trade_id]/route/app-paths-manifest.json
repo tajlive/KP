@@ -1,0 +1,3 @@
+{
+  "/api/paper-trading/trades/[trade_id]/route": "app/api/paper-trading/trades/[trade_id]/route.js"
+}

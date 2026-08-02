@@ -1,0 +1,3 @@
+{
+  "/api/admin/github-health/route": "app/api/admin/github-health/route.js"
+}

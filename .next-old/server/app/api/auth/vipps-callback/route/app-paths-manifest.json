@@ -1,0 +1,3 @@
+{
+  "/api/auth/vipps-callback/route": "app/api/auth/vipps-callback/route.js"
+}

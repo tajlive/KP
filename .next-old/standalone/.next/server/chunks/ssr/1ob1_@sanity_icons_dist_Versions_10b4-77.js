@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="e9ebad21-ed68-8a9b-87ca-7a783a385bed")}catch(e){}}();
+module.exports=[949804,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"versions",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M10.5 7.5H7.5V17.5H10.5M7.5 9.5H4.5V15.5H7.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M20.5 19.5V5.5H10.5V19.5H20.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["VersionsIcon",0,d,"default",0,d])}];
+
+//# debugId=e9ebad21-ed68-8a9b-87ca-7a783a385bed
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_Versions_10b4-77.js.map

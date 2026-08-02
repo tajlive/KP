@@ -1,0 +1,3 @@
+{
+  "/api/cron/auto-trade/route": "app/api/cron/auto-trade/route.js"
+}

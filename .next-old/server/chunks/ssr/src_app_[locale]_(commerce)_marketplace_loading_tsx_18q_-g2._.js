@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="54f95d62-fef2-1b30-ccb6-380733bed5a4")}catch(e){}}();
+module.exports=[706704,a=>{"use strict";var b=a.i(907997);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"min-h-screen p-4 pt-6 space-y-6 animate-pulse",children:[(0,b.jsx)("div",{className:"h-12 bg-gray-200 dark:bg-gray-800 rounded-xl"}),(0,b.jsx)("div",{className:"flex gap-2 overflow-hidden",children:[1,2,3,4].map(a=>(0,b.jsx)("div",{className:"h-8 w-20 bg-gray-200 dark:bg-gray-800 rounded-full shrink-0"},a))}),(0,b.jsx)("div",{className:"space-y-4",children:[1,2,3,4].map(a=>(0,b.jsx)("div",{className:"h-32 bg-gray-200 dark:bg-gray-800 rounded-2xl"},a))})]})}])},924809,a=>{a.n(a.i(706704))}];
+
+//# debugId=54f95d62-fef2-1b30-ccb6-380733bed5a4
+//# sourceMappingURL=src_app_%5Blocale%5D_%28commerce%29_marketplace_loading_tsx_18q_-g2._.js.map

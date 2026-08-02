@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="e2b88e04-1054-8edc-cb28-966a7ff4852d")}catch(e){}}();
+module.exports=[594999,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"trend-upward",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M4.5 18.5L11.5 10.5L13.5 14.5L20.5 6.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M20.5 11V6.5H16",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["TrendUpwardIcon",0,d,"default",0,d])}];
+
+//# debugId=e2b88e04-1054-8edc-cb28-966a7ff4852d
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_TrendUpward_1ymc2e_.js.map

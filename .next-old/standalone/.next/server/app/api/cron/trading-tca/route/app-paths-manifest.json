@@ -1,0 +1,3 @@
+{
+  "/api/cron/trading-tca/route": "app/api/cron/trading-tca/route.js"
+}

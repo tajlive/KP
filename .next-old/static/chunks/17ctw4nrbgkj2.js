@@ -1,0 +1,4 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="19443c78-ae70-8039-a89e-0924d4fffb83")}catch(e){}}();
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,153007,t=>{"use strict";var r=t.i(271645),e=t.i(843476);let o=(0,r.forwardRef)(function(t,r){return(0,e.jsx)("svg",{"data-sanity-icon":"bar-chart",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...t,ref:r,children:(0,e.jsx)("path",{d:"M5.5 5V19.5H20M8.5 18V13M11.5 18V9M14.5 18V11M17.5 18V7",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});t.s(["BarChartIcon",0,o,"default",0,o])}]);
+
+//# debugId=19443c78-ae70-8039-a89e-0924d4fffb83

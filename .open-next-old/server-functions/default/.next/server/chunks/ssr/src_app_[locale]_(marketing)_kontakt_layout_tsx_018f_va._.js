@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="b9171cae-f230-79ab-c441-5610893d9cb9")}catch(e){}}();
+module.exports=[838144,a=>{"use strict";var b=a.i(332776);async function c({params:a}){let{locale:d}=await a,e=await (0,b.getTranslations)({locale:d,namespace:"metadata"});return{title:e("contact.title"),description:e("contact.description"),alternates:{canonical:`/${d}/kontakt`,languages:{no:"/no/kontakt",en:"/en/kontakt"}},openGraph:{title:e("contact.title"),description:e("contact.description"),type:"website",locale:"no"===d?"nb_NO":"en_US"}}}a.s(["default",0,function({children:a}){return a},"generateMetadata",0,c,"runtime",0,"nodejs"])},120103,a=>{a.n(a.i(838144))}];
+
+//# debugId=b9171cae-f230-79ab-c441-5610893d9cb9
+//# sourceMappingURL=src_app_%5Blocale%5D_%28marketing%29_kontakt_layout_tsx_018f_va._.js.map

@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="c2e9f476-b6ab-f050-330a-8197d01b0a76")}catch(e){}}();
+module.exports=[740868,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"redo",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M19 9.5L10 9.5C7.51472 9.5 5.5 11.5147 5.5 14C5.5 16.4853 7.51472 18.5 10 18.5H19",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M15 13.5L19 9.5L15 5.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["RedoIcon",0,d,"default",0,d])}];
+
+//# debugId=c2e9f476-b6ab-f050-330a-8197d01b0a76
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_Redo_0sw2vi-.js.map

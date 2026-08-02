@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="bbbf0a80-f42b-9b9d-c370-26547c44ecbe")}catch(e){}}();
+module.exports=[999361,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"envelope",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M20.5 18.5H4.5V6.5H20.5V18.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M20.5 18.5L17.75 15.5L15 12.5M4.5 18.5L10 12.5M20.5 6.5L12.5 15L4.5 6.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["EnvelopeIcon",0,d,"default",0,d])}];
+
+//# debugId=bbbf0a80-f42b-9b9d-c370-26547c44ecbe
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_Envelope_1d7iniu.js.map

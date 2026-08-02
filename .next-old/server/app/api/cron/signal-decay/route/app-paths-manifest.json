@@ -1,0 +1,3 @@
+{
+  "/api/cron/signal-decay/route": "app/api/cron/signal-decay/route.js"
+}

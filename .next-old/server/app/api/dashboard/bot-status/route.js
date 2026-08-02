@@ -1,0 +1,13 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/dashboard/bot-status/route.js")
+R.c("server/chunks/node_modules_0w9tlag._.js")
+R.c("server/chunks/[root-of-the-server]__16le3c0._.js")
+R.c("server/chunks/node_modules_next_dist_0wckegx._.js")
+R.c("server/chunks/node_modules_next_16bdwk4._.js")
+R.c("server/chunks/node_modules_next_1hqep3n._.js")
+R.c("server/chunks/src_lib_redis-client_ts_1ff0uv-._.js")
+R.c("server/chunks/[root-of-the-server]__0d10ycn._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7._.js")
+R.c("server/chunks/node_modules_next_1ir7qn-._.js")
+R.c("server/chunks/_next-internal_server_app_api_dashboard_bot-status_route_actions_1hkokvn.js")
+R.m(994695)
+module.exports=R.m(994695).exports

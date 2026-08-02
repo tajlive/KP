@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="0fc9a5b0-73fd-0d22-893d-b96dbf77f1a1")}catch(e){}}();
+module.exports=[143722,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"inbox",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M9 8.5H8.17703C7.76813 8.5 7.40042 8.74895 7.24856 9.12861L5.5 13.5M5.5 13.5V17.5C5.5 18.0523 5.94302 18.5 6.4953 18.5C9.00381 18.5 15.5919 18.5 18.504 18.5C19.0563 18.5 19.5 18.0523 19.5 17.5V13.5M5.5 13.5H8.5L10 15.5H15L16.5 13.5H19.5M19.5 13.5L17.7514 9.12861C17.5996 8.74895 17.2319 8.5 16.823 8.5H16M12.5 5V12.5M12.5 12.5L15 10M12.5 12.5L10 10",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["InboxIcon",0,d,"default",0,d])}];
+
+//# debugId=0fc9a5b0-73fd-0d22-893d-b96dbf77f1a1
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_Inbox_17u-rqc.js.map

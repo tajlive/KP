@@ -1,0 +1,4 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="a8ef3377-ec88-0672-f5fa-bbb935c1d46c")}catch(e){}}();
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,246681,t=>{"use strict";var e=t.i(271645),o=t.i(843476);let r=(0,e.forwardRef)(function(t,e){return(0,o.jsxs)("svg",{"data-sanity-icon":"enter-right",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...t,ref:e,children:[(0,o.jsx)("path",{d:"M19 14.5H5.5V7",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,o.jsx)("path",{d:"M15 18.5L19 14.5L15 10.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});t.s(["EnterRightIcon",0,r,"default",0,r])}]);
+
+//# debugId=a8ef3377-ec88-0672-f5fa-bbb935c1d46c

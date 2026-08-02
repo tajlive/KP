@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "debugId": "56766218-2c5e-1694-a8d6-4f0607ace31f",
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../node_modules/sanity/node_modules/%40sanity/icons/src/exports/Compose.tsx"],"sourcesContent":["/* THIS FILE IS AUTO-GENERATED – DO NOT EDIT */\n\nimport {forwardRef, type ForwardRefExoticComponent, type RefAttributes, type SVGProps} from 'react'\n\n/**\n * @public\n */\nexport const ComposeIcon: ForwardRefExoticComponent<\n  Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>\n> = /* @__PURE__ */ forwardRef(function ComposeIcon(props, ref) {\n  return (\n    <svg\n      data-sanity-icon=\"compose\"\n      width=\"1em\"\n      height=\"1em\"\n      viewBox=\"0 0 25 25\"\n      fill=\"none\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n      {...props}\n      ref={ref}\n    >\n      <path\n        d=\"M17 6L19 8M14 5.5H5.5V19.5H19.5V11M9 16L9.5 13.5L19 4L21 6L11.5 15.5L9 16Z\"\n        stroke=\"currentColor\"\n        strokeWidth={1.2}\n        strokeLinejoin=\"round\"\n      />\n    </svg>\n  )\n})\n\nexport {ComposeIcon as default}\n"],"names":[],"mappings":"wEAOA,IAAa,EAEO,CAAA,EAAA,EAAA,OAAA,GAAA,EAAW,QAAX,CAAgC,CAAA,CAAO,CAAA,EACzD,AAD8D,MAE5D,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,EAAA,CACE,mBAAiB,UACjB,MAAM,MACN,OAAO,MACP,QAAQ,YACR,KAAK,OACL,MAAM,6BACN,GAAI,CAAA,KACC,EAEL,SAAA,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,GAAA,CACE,EAAE,6EACF,OAAO,eACP,YAAa,IACb,eAAe,OAChB,CAAA,CACE,CAAA,CAET,CAAC"}}]
+}

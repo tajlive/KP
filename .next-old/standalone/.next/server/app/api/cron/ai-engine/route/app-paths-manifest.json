@@ -1,0 +1,3 @@
+{
+  "/api/cron/ai-engine/route": "app/api/cron/ai-engine/route.js"
+}

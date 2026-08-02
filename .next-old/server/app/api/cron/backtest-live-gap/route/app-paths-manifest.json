@@ -1,0 +1,3 @@
+{
+  "/api/cron/backtest-live-gap/route": "app/api/cron/backtest-live-gap/route.js"
+}
