@@ -49,20 +49,20 @@ const GUIDES: Record<TradeMode, { icon: typeof Lightbulb; title: string; steps: 
 };
 
 export function ModeGuide({ mode, className }: ModeGuideProps) {
-  const guide = GUIDES[mode];
-  if (!guide) return null;
-
   const [visible, setVisible] = React.useState(true);
   const [dismissed, setDismissed] = React.useState(false);
 
+  const guide = GUIDES[mode];
+
   React.useEffect(() => {
+    if (!guide) return;
     // Sjekk om brukeren har sett guiden før (per modus)
     const key = `klp-modeguide-${mode}`;
     if (localStorage.getItem(key)) {
       setVisible(false);
       setDismissed(true);
     }
-  }, [mode]);
+  }, [mode, guide]);
 
   const handleDismiss = () => {
     localStorage.setItem(`klp-modeguide-${mode}`, "1");
@@ -70,7 +70,7 @@ export function ModeGuide({ mode, className }: ModeGuideProps) {
     setDismissed(true);
   };
 
-  if (!visible || dismissed) return null;
+  if (!guide || !visible || dismissed) return null;
 
   return (
     <motion.div
