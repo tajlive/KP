@@ -778,6 +778,24 @@ async function processSession(
 
     // If hold, just return heartbeat
     if (signal.action === "hold") {
+      // Diagnostikk (2026-08-02): logg hvorfor grid-signaler blir hold
+      if (resolvedEngine === "grid") {
+        try {
+          await db.from("trading_logs").insert({
+            session_id: session.id,
+            user_id: session.user_id,
+            action: "grid_hold_diagnostic",
+            details: {
+              signal_reason: signal.reason ?? null,
+              signal_indicators: signal.indicators ?? null,
+              strategy_id: session.strategy_id,
+              resolved_engine: resolvedEngine,
+              current_price: currentPrice,
+              has_open_position: !!session.open_position,
+            } as never,
+          } as never);
+        } catch { /* non-critical */ }
+      }
       return { session_id: session.id, action: "heartbeat" };
     }
 
