@@ -600,6 +600,7 @@ export async function POST(request: NextRequest) {
     const { takeProfitPct, stopLossPct } = dynamicExits(market.volatility, market.rsi, signal.confidence);
     const priceMap = new Map([[symbol, price]]);
     const exitsExecuted = await checkExits(db, userId, session.id, priceMap, takeProfitPct, stopLossPct);
+    totalExits += exitsExecuted;
 
     // 6. Utfør trade
     let tradeData: { success?: boolean; tradeId?: string; error?: string } = {};
