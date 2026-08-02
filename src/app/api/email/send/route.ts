@@ -3,7 +3,7 @@
  * 
  * POST /api/email/send — Send transactional email
  * 
- * Bruker Resend API (re_gWaFt2VN_...) fra environment
+ * Bruker Resend API (re_ROTERT_2026-08-02_se-1password...) fra environment
  */
 
 import { NextResponse } from "next/server";

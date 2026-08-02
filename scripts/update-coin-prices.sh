@@ -137,7 +137,7 @@ trap - EXIT
 VERIFY_DATA=$(curl -s --max-time 10 --retry 2 --retry-delay 2 \
   -X GET "${REST_ENDPOINT}?select=symbol,name,price,last_updated&order=name.asc" \
   -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY")
+  -H "apikey: $SUPABASE_ANON_KEY")
 
 VERIFY_COUNT=$(echo "$VERIFY_DATA" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
 

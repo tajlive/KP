@@ -49,8 +49,18 @@ const TOP_SYMBOLS = [
 
 const FALLBACK_PRICES: Record<string, number> = {
   BTCUSDT: 60000, ETHUSDT: 2500, SOLUSDT: 140, AVAXUSDT: 18, DOGEUSDT: 0.12,
-  LINKUSDT: 12, ADAUSDT: 0.45, DOTUSDT: 5.5, UNIUSDT: 7.5, MATICUSDT: 0.55,
+  LINKUSDT: 12, ADAUSDT: 0.45, DOTUSDT: 5.5, UNIUSDT: 7.5, POLUSDT: 0.25,
 };
+
+/** Persistert grid-state — lagres i strategy_config per sesjon */
+interface PersistedGridState {
+  lowerPrice?: number;
+  upperPrice?: number;
+  gridLevelsCount?: number;
+  amountPerGrid?: number;
+  regime?: string;
+  grid_levels?: GridLevel[];
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -549,54 +559,85 @@ async function processUser(
     // Strategi: grid er standard (verdensledende), multi_signal er legacy
     const strategyType = userConfig?.strategy ?? "grid";
     let signal: ReturnType<typeof generatePilotSignal> & { gridLevel?: GridLevel };
+    let gridConfig: GridConfig | undefined;     // satt kun for grid-path
+    let levels: GridLevel[] | undefined;        // satt kun for grid-path
+    let currentState: PersistedGridState | undefined; // satt kun for grid-path
     
     if (strategyType === "grid") {
       // 🎯 GRID STRATEGY — verdensledende standard (Pionex/3Commas)
-      // Markedsregime: detekter sideways vs trend → juster grid
+      // ════════════════════════════════════════════════════════════
+      // FASE 4 FIX (2026-08-02): Fast grid-intervall.
+      // Før: calculateOptimalGrid re-ankret intervallet rundt
+      // nåværende pris hver 15. min → referanserammen drev oppover
+      // → "buy high". Nå: intervallet låses til pris bryter ut eller
+      // regime endres — likt Pionex/3Commas.
+      // ════════════════════════════════════════════════════════════
       const regime = detectMarketRegime(market.priceChange24h ?? 0, market.volatility);
-      
-      // Beregn optimale grid-parametere basert på volatilitet + regime
-      let gridParams = calculateOptimalGrid(price, market.volatility, session.capital);
-      gridParams = adjustGridForRegime(gridParams, regime, price);
-      const gridConfig: GridConfig = {
-        symbol,
-        currentPrice: price,
-        ...gridParams,
-      };
-      
-      // Hent eller generer grid-state (hvilke nivåer er kjøpt)
-      const { data: gridState } = await db
+
+      const { data: gridStateRaw } = await db
         .from("trading_sessions")
         .select("strategy_config")
         .eq("id", session.id)
         .maybeSingle();
-      
-      const savedLevels = (gridState?.strategy_config as { grid_levels?: GridLevel[] })?.grid_levels;
-      const levels = savedLevels ?? generateGridLevels(gridConfig);
-      
+
+      const savedState = (gridStateRaw?.strategy_config ?? {}) as PersistedGridState;
+      const savedLevels = savedState.grid_levels;
+
+      // Rekalibrerings-betingelser:
+      const hasSavedRange = savedState.lowerPrice && savedState.upperPrice
+        && savedState.gridLevelsCount && savedState.amountPerGrid && savedLevels?.length;
+      const breakoutUp = hasSavedRange && price > savedState.upperPrice! * 1.03;
+      const deepBreak = hasSavedRange && price < savedState.lowerPrice! * 0.80;
+      const regimeChanged = hasSavedRange && savedState.regime !== regime;
+
+      let gridConfig: GridConfig;
+      let levels: GridLevel[];
+      let currentState: PersistedGridState = { ...savedState };
+
+      if (hasSavedRange && !breakoutUp && !deepBreak && !regimeChanged) {
+        // Gjenbruk lagret range — grid-intervall er låst
+        gridConfig = {
+          symbol, currentPrice: price,
+          lowerPrice: savedState.lowerPrice!,
+          upperPrice: savedState.upperPrice!,
+          gridLevels: savedState.gridLevelsCount!,
+          amountPerGrid: savedState.amountPerGrid!,
+        };
+        levels = savedLevels!;
+      } else {
+        // Rekalibrer: pris utenfor grid, regime-skifte, eller første kjøring
+        let gridParams = calculateOptimalGrid(price, market.volatility, session.capital);
+        gridParams = adjustGridForRegime(gridParams, regime, price);
+        gridConfig = { symbol, currentPrice: price, ...gridParams };
+        levels = generateGridLevels(gridConfig);
+        currentState = {
+          ...currentState,
+          lowerPrice: gridConfig.lowerPrice,
+          upperPrice: gridConfig.upperPrice,
+          gridLevelsCount: gridConfig.gridLevels,
+          amountPerGrid: gridConfig.amountPerGrid,
+          regime,
+          grid_levels: levels,
+        };
+        await db.from("trading_sessions").update({
+          strategy_config: currentState as Record<string, unknown>,
+        } as never).eq("id", session.id);
+      }
+
       // Evaluer grid-signal
       const gridSignal = evaluateGridSignal(gridConfig, levels, price);
-      
-      // Map grid-signal til pilot-signal format
+
       signal = {
         action: gridSignal.action === "buy" ? "BUY" : gridSignal.action === "sell" ? "SELL" : "WAIT",
-        confidence: gridSignal.action !== "wait" ? 70 : 50, // Grid har fast confidence
+        confidence: 70,
         reason: gridSignal.reason,
         gridLevel: gridSignal.level,
       };
-      
-      // Oppdater grid-state hvis trade utføres
-      if (gridSignal.action !== "wait" && gridSignal.level) {
-        const updatedLevels = levels.map(l => 
-          l.level === gridSignal.level!.level 
-            ? { ...l, status: gridSignal.action === "buy" ? "bought" as const : "sold" as const }
-            : l
-        );
-        const existingConfig = (gridState?.strategy_config as Record<string, unknown>) ?? {};
-        await db.from("trading_sessions").update({
-          strategy_config: { ...existingConfig, grid_levels: updatedLevels },
-        } as never).eq("id", session.id);
-      }
+
+      // ════════════════════════════════════════════════════════════
+      // Oppdater grid-state ETTER vellykket trade (ikke før — unngå
+      // state-desync hvis executeTrade feiler). Lagres nedenfor ↓
+      // ════════════════════════════════════════════════════════════
     } else {
       // 🎯 MULTI-SIGNAL (default) — RSI + trend + MACD
       signal = generatePilotSignal(market, winMultiplier);
@@ -605,28 +646,60 @@ async function processUser(
     // Touch heartbeat — sessions overlever detect_crashed_sessions
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", session.id);
 
-    // 5. Sjekk exits
+    // 5. Sjekk exits — grid bruker katastrofe-SL (25 %), ingen TP (trailing håndterer)
+    const isGrid = strategyType === "grid";
     const { takeProfitPct, stopLossPct } = dynamicExits(market.volatility, market.rsi, signal.confidence);
+    const effectiveTP = isGrid ? Number.POSITIVE_INFINITY : takeProfitPct;
+    const effectiveSL = isGrid ? Math.max(stopLossPct, 25) : stopLossPct;
     const priceMap = new Map([[symbol, price]]);
-    const exitsExecuted = await checkExits(db, userId, session.id, priceMap, takeProfitPct, stopLossPct);
+    const exitsExecuted = await checkExits(db, userId, session.id, priceMap, effectiveTP, effectiveSL);
     totalExits += exitsExecuted;
+
+    // Grid-state-synk: frigjør kjøpt nivå som ble solgt av auto-exit
+    if (isGrid && exitsExecuted > 0) {
+      try {
+        const { data: sess } = await db.from("trading_sessions").select("strategy_config").eq("id", session.id).maybeSingle();
+        const cfg = sess?.strategy_config as PersistedGridState | null;
+        if (cfg?.grid_levels?.length) {
+          const lvls = cfg.grid_levels;
+          const bought = lvls.filter(l => l.status === "bought").sort((a, b) => a.buyPrice - b.buyPrice);
+          if (bought.length) {
+            const target = bought[0];
+            const updated = lvls.map(l =>
+              l.level === target.level && l.dcaLevel === target.dcaLevel && l.buyPrice === target.buyPrice
+                ? { ...l, status: "empty" as const } : l);
+            await db.from("trading_sessions").update({
+              strategy_config: { ...cfg, grid_levels: updated } as Record<string, unknown>,
+            } as never).eq("id", session.id);
+          }
+        }
+      } catch { /* best effort — grid-state synk er en bonus */ }
+    }
 
     // 6. Utfør trade
     let tradeData: { success?: boolean; tradeId?: string; error?: string } = {};
 
     if (signal.action !== "WAIT") {
       try {
-        const sizingPct = dynamicPositionPct(signal.confidence, market.volatility);
-        // Konverter kapital til USDT — session.capital er i NOK
-        const nokToUsdt = await getNokUsdtRate(); // levende kurs (NOK→USDT)
+        const nokToUsdt = await getNokUsdtRate();
         const capitalUsdt = session.capital / nokToUsdt;
-        let positionUsdt = capitalUsdt * (sizingPct / 100);
-        // Minimum 10 USDT ordre
+        let positionUsdt: number;
+
+        if (strategyType === "grid" && signal.gridLevel) {
+          // Grid-sizing: amountPerGrid × DCA-multiplikator (designet pengestyring)
+          const mult = signal.gridLevel.sizeMultiplier ?? 1;
+          const positionNok = gridConfig!.amountPerGrid * mult;
+          positionUsdt = positionNok / nokToUsdt;
+        } else {
+          const sizingPct = dynamicPositionPct(signal.confidence, market.volatility);
+          positionUsdt = capitalUsdt * (sizingPct / 100);
+        }
         if (positionUsdt < 10) positionUsdt = 10;
-        const quantity = positionUsdt / price;
+        if (positionUsdt > capitalUsdt) positionUsdt = capitalUsdt;
+        let quantity = positionUsdt / price;
         const side = signal.action === "BUY" ? "buy" as const : "sell" as const;
 
-        let doTrade = true;
+        // Sell-guard: selg maks det vi faktisk holder (FIFO)
         if (side === "sell") {
           const { data: openPos } = await db
             .from("trades")
@@ -636,7 +709,23 @@ async function processUser(
             .eq("status", "filled")
             .is("realized_pnl", null);
           const held = openPos?.reduce((s, p) => s + Number(p.quantity), 0) ?? 0;
-          if (quantity > held) doTrade = false;
+          if (held <= 0) { quantity = 0; }
+          else if (quantity > held) { quantity = held; }
+        }
+        const doTrade = quantity > 0;
+
+        // ReasonCode: skill grid vs multi-signal for audit
+        let reasonCode: string;
+        let sizingLabel: string;
+        if (strategyType === "grid" && side === "buy") {
+          reasonCode = signal.gridLevel?.dcaLevel ? "DCA_INTERVAL_BUY" : "GRID_BUY";
+          sizingLabel = `${((signal.gridLevel!.sizeMultiplier ?? 1) * gridConfig!.amountPerGrid / session.capital * 100).toFixed(1)}% grid`;
+        } else if (strategyType === "grid" && side === "sell") {
+          reasonCode = (signal as any).gridLevel?.sellType === "trailing" ? "TRAILING_TP_SELL" : "TAKE_PROFIT_SELL";
+          sizingLabel = `${((signal.gridLevel?.sizeMultiplier ?? 1) * gridConfig!.amountPerGrid / session.capital * 100).toFixed(1)}% grid`;
+        } else {
+          reasonCode = side === "buy" ? "MULTI_SIGNAL_BUY" : "TAKE_PROFIT_SELL";
+          sizingLabel = `${dynamicPositionPct(signal.confidence, market.volatility).toFixed(1)}%`;
         }
 
         if (doTrade) {
@@ -650,15 +739,45 @@ async function processUser(
             orderType: "market",
             mode: "paper",
             signalContext: { action: side, confidence: signal.confidence, strategy: "cryptopilot", reason: signal.reason },
-            reasonCode: side === "buy" ? "MULTI_SIGNAL_BUY" : "TAKE_PROFIT_SELL",
-            reasonParams: { rsi: Math.round(market.rsi), confidence: signal.confidence, sizingPct: Math.round(sizingPct * 10) / 10 },
+            reasonCode: reasonCode as any,
+            reasonParams: { rsi: Math.round(market.rsi), confidence: signal.confidence, sizingPct: Math.round(parseFloat(sizingLabel) * 10) / 10 },
           });
 
           if (tradeData.success && tradeData.tradeId) {
             await db.from("trades").update({
               pilot_trade: true,
-              pilot_explanation: `🎭 ${signal.action} ${symbol} — ${signal.reason} (${signal.confidence}% conf, ${sizingPct.toFixed(1)}% size)`,
+              pilot_explanation: `🎭 ${signal.action} ${symbol} — ${signal.reason} (${signal.confidence}% conf, ${sizingLabel})`,
             }).eq("id", tradeData.tradeId);
+
+            // ══════════════════════════════════════════════════════
+            // Grid-state: persister DCA-nivå / frigjør celle
+            // KUN etter vellykket trade — unngår state-desync.
+            // ══════════════════════════════════════════════════════
+            if (strategyType === "grid" && signal.gridLevel) {
+              const lvl = signal.gridLevel;
+              let updatedLevels: GridLevel[];
+              if (side === "buy") {
+                if (lvl.dcaLevel) {
+                  // DCA: erstatt evt. gammel DCA-oppføring, legg til ny
+                  updatedLevels = [...levels!.filter(l => l.dcaLevel !== lvl.dcaLevel), { ...lvl, status: "bought" }];
+                } else {
+                  updatedLevels = levels!.map(l =>
+                    l.level === lvl.level && !l.dcaLevel ? { ...l, status: "bought" as const } : l);
+                }
+              } else {
+                // SELL: cella frigjøres → grid handler samme nivå igjen (round-trip)
+                if (lvl.dcaLevel) {
+                  updatedLevels = levels!.map(l =>
+                    l.dcaLevel === lvl.dcaLevel ? { ...l, status: "empty" as const } : l);
+                } else {
+                  updatedLevels = levels!.map(l =>
+                    l.level === lvl.level && !l.dcaLevel ? { ...l, status: "empty" as const } : l);
+                }
+              }
+              await db.from("trading_sessions").update({
+                strategy_config: { ...currentState, grid_levels: updatedLevels } as Record<string, unknown>,
+              } as never).eq("id", session.id);
+            }
           }
         }
       } catch (err) {
