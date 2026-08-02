@@ -216,7 +216,14 @@ export function evaluateDarkFleetSignal(
   // ── 6. POSITION SIZING ──────────────────────────────────────────────────
   let positionSize = baseSignal.positionSize ?? 0.1;
   // Reduce size in uncertain regimes
-  if (regime === "high-vol" || regime === "unknown") {
+  // Klarpakke-fiks 2026-08-02: IKKE reduser grid-signaler — grid har allerede
+  // egen sizing (amountPerGrid). Halvering i high-vol gjorde at grid-trades
+  // falt under minOrderValue (54 NOK < 100 NOK) og aldri ble utført.
+  const isGridForSizing =
+    (baseSignal.reason ?? "").includes("Grid buy") ||
+    (baseSignal.reason ?? "").includes("Grid sell") ||
+    (baseSignal.reason ?? "").includes("DCA buy");
+  if (!isGridForSizing && (regime === "high-vol" || regime === "unknown")) {
     positionSize *= 0.5;
   }
   // Cap at max
