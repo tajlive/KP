@@ -185,11 +185,32 @@ export function evaluateDarkFleetSignal(
   }
 
   // No-trade guardrails
-  if (regime === "high-vol" && regimeConfidence > 0.7) {
-    finalAction = "hold";
+  // Klarpakke-fiks 2026-08-02: Grid-strategi er designet FOR volatilitet —
+  // high-vol er når grid tjener mest. Grid-signaler (baseSignal.reason inneholder
+  // "Grid buy"/"Grid sell"/"DCA") skal ALDRI blokkeres av regime-guardrails.
+  // De har egen katastrofe-SL (25%) og DCA-håndtering i grid-strategy.ts.
+  const isGridSignal =
+    (baseSignal.reason ?? "").includes("Grid buy") ||
+    (baseSignal.reason ?? "").includes("Grid sell") ||
+    (baseSignal.reason ?? "").includes("DCA buy");
+
+  if (!isGridSignal) {
+    if (regime === "high-vol" && regimeConfidence > 0.7) {
+      finalAction = "hold";
+    }
+    if (regime === "unknown" && regimeConfidence < 0.3) {
+      finalAction = "hold";
+    }
   }
-  if (regime === "unknown" && regimeConfidence < 0.3) {
-    finalAction = "hold";
+  // Merk: high-vol er IKKE en grunn til å stoppe grid — det er grid sitt
+  // hjemmebane. Tick sin regime-gate (evaluateRegimeGate) blokkerer allerede
+  // kjøp i bekreftet crash, og grid-strategien har egen DCA + 25% katastrofe-SL.
+
+  // Grid-signaler er mekaniske (nivå-baserte) — de skal handles uavhengig av
+  // ensemble-score. Hvis grid-strategien sier kjøp på et nivå, er det et
+  // limit-order-nivå som er nådd, ikke en spekulativ prediksjon.
+  if (isGridSignal && baseSignal.action !== "hold") {
+    finalAction = baseSignal.action;
   }
 
   // ── 6. POSITION SIZING ──────────────────────────────────────────────────
