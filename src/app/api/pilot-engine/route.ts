@@ -19,6 +19,8 @@ import {
   generateGridLevels,
   evaluateGridSignal,
   calculateOptimalGrid,
+  detectMarketRegime,
+  adjustGridForRegime,
   type GridConfig,
   type GridLevel,
 } from "@/lib/trading/grid-strategy";
@@ -69,6 +71,7 @@ async function fetchMarketData(symbol: string): Promise<{
   sma10: number;
   sma30: number;
   volatility: number;
+  priceChange24h: number;
   trend: "up" | "down" | "flat";
 }> {
   try {
@@ -114,9 +117,9 @@ async function fetchMarketData(symbol: string): Promise<{
 
     const trend: "up" | "down" | "flat" = change24h > 2 ? "up" : change24h < -2 ? "down" : "flat";
 
-    return { currentPrice, rsi, macd, bollinger, sma10, sma30, volatility, trend };
+    return { currentPrice, rsi, macd, bollinger, sma10, sma30, volatility, priceChange24h: change24h, trend };
   } catch {
-    return { currentPrice: 0, rsi: 50, macd: { histogram: 0, signal: 0, macd: 0 }, bollinger: { upper: 0, middle: 0, lower: 0 }, sma10: 0, sma30: 0, volatility: 50, trend: "flat" };
+    return { currentPrice: 0, rsi: 50, macd: { histogram: 0, signal: 0, macd: 0 }, bollinger: { upper: 0, middle: 0, lower: 0 }, sma10: 0, sma30: 0, volatility: 50, priceChange24h: 0, trend: "flat" };
   }
 }
 
@@ -549,8 +552,12 @@ async function processUser(
     
     if (strategyType === "grid") {
       // 🎯 GRID STRATEGY — verdensledende standard (Pionex/3Commas)
-      // Beregn optimale grid-parametere basert på volatilitet
-      const gridParams = calculateOptimalGrid(price, market.volatility, session.capital);
+      // Markedsregime: detekter sideways vs trend → juster grid
+      const regime = detectMarketRegime(market.priceChange24h ?? 0, market.volatility);
+      
+      // Beregn optimale grid-parametere basert på volatilitet + regime
+      let gridParams = calculateOptimalGrid(price, market.volatility, session.capital);
+      gridParams = adjustGridForRegime(gridParams, regime, price);
       const gridConfig: GridConfig = {
         symbol,
         currentPrice: price,
