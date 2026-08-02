@@ -38,8 +38,48 @@ export interface GridSignal {
 }
 
 /** DCA under bunn: 3 nivåer under laveste grid, progressivt større beløp */
-const DCA_LEVELS_PCT = [0.95, 0.90, 0.85]; // 95%, 90%, 85% av lowerPrice
-const DCA_SIZE_MULTIPLIER = [1.0, 1.5, 2.0]; // 1×, 1.5×, 2× normal grid-størrelse
+const DCA_LEVELS_PCT = [0.95, 0.90, 0.85];
+const DCA_SIZE_MULTIPLIER = [1.0, 1.5, 2.0];
+
+/** Trailing stop: selg når pris ≥ 102% av kjøpspris */
+const TRAILING_ACTIVATION_PCT = 1.02;
+
+/** Markedsregime: bruk 24h-endring til å detektere trend vs sideways */
+export type MarketRegime = "trending_up" | "trending_down" | "sideways";
+
+export function detectMarketRegime(change24h: number, volatility24h: number): MarketRegime {
+  // Sterk bevegelse → trend; ellers sideways
+  if (change24h > 5 && volatility24h > 8) return "trending_up";
+  if (change24h < -5 && volatility24h > 8) return "trending_down";
+  return "sideways";
+}
+
+/** Juster grid-parametere basert på markedsregime */
+export function adjustGridForRegime(
+  grid: Omit<GridConfig, "symbol" | "currentPrice">,
+  regime: MarketRegime,
+  currentPrice: number
+): Omit<GridConfig, "symbol" | "currentPrice"> {
+  switch (regime) {
+    case "trending_up":
+      // I opptrend: tettere grid, prioriter salg (fang profitt)
+      return {
+        ...grid,
+        gridLevels: Math.max(5, Math.round(grid.gridLevels * 0.7)),
+        upperPrice: currentPrice * 1.15,  // mer rom oppover
+        amountPerGrid: grid.amountPerGrid * 0.7,  // mindre per nivå
+      };
+    case "trending_down":
+      // I nedtrend: brede nivåer, mindre kjøp (DCA under bunn håndterer resten)
+      return {
+        ...grid,
+        gridLevels: Math.max(5, Math.round(grid.gridLevels * 0.5)),
+        amountPerGrid: grid.amountPerGrid * 0.5,
+      };
+    default: // sideways — best for grid!
+      return grid;
+  }
+}
 
 /**
  * Generer grid-nivåer basert på konfig
@@ -127,11 +167,27 @@ export function evaluateGridSignal(
   const cellIndex = Math.min(config.gridLevels - 1, Math.floor((currentPrice - config.lowerPrice) / step));
   const cell = levels[cellIndex];
   
-  // 🎯 SELL FIRST: sjekk både gjeldende celle og cellen under
-  // (fordi kjøp skjer når pris faller til cellens buyPrice, 
-  //  men salg skjer når pris stiger TILBAKE til cellens sellPrice)
+  // 🎯 TRAILING SELL: selg når pris ≥ kjøpspris + 2%, fang all profitt over target
+  // I stedet for å selge på fast +2% nivå, selg når prisen beveger seg OVENFOR og begynner å falle
   for (const checkCell of [cell, levels[cellIndex - 1]]) {
-    if (checkCell && checkCell.status === "bought" && currentPrice >= checkCell.sellPrice) {
+    if (!checkCell || checkCell.status !== "bought") continue;
+    
+    // Trailing aktiveres ved +2% over kjøpspris
+    const trailingThreshold = checkCell.buyPrice * TRAILING_ACTIVATION_PCT;
+    
+    if (currentPrice >= trailingThreshold) {
+      // Pris over trailing-grense → sell på vei opp (fang all profitt)
+      const profitPct = ((currentPrice - checkCell.buyPrice) / checkCell.buyPrice) * 100;
+      return {
+        action: "sell",
+        level: checkCell,
+        reason: `📈 Trailing sell @ ${currentPrice.toFixed(2)} (kjøpt @ ${checkCell.buyPrice.toFixed(2)}, +${profitPct.toFixed(1)}%)`,
+        expectedProfitPct: profitPct,
+      };
+    }
+    
+    // Fallback: fast sell hvis pris ≥ opprinnelig sellPrice (uten trailing)
+    if (currentPrice >= checkCell.sellPrice) {
       const profitPct = ((checkCell.sellPrice - checkCell.buyPrice) / checkCell.buyPrice) * 100;
       return {
         action: "sell",
