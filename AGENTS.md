@@ -12,7 +12,17 @@
 
 ---
 
-## 📌 STATUS 2026-07-29 (fra Kimi — redaktør, kode, sosiale medier)
+## 📌 STATUS 2026-08-02 (fra Kimi — nav-redesign, auth-grunnmur, sikkerhet)
+
+**Deployet og verifisert i prod:**
+1. **TopNav redesign (mobil-først):** Én avatar-knapp (`UserMenu.tsx`) erstatter Tema/Innstillinger/Profil-knappene + «Mer»-dropdown. Bottom sheet på mobil, dropdown på desktop. `DASHBOARD_MORE_NAV` → `DASHBOARD_USER_MENU_NAV` (uten settings). Sekundærsider (Resultater/Analyse/Marked/Kurs/Pilot/Verveprogram) er nå nåbare på mobil for første gang.
+2. **Radix-felle (VIKTIG mønster):** `DropdownMenuItem asChild + Link` i portal mister navigasjonen — lenken unmountes i samme klikk-event. Bruk alltid `onSelect={() => router.push(...)}` i Radix-menyer.
+3. **Auth-grunnmur:** Sesjonen lever i HttpOnly-cookies → klient-side `AuthContext.user` er ofte `null` i prod (ikke en bug å "fikse" klient-side). Nye ruter: `GET /api/auth/me` (server-verifisert e-post/id) og `POST /api/auth/logout` (service-role `admin.signOut(token, "global")` FØR cookies slettes — ellers gjenoppstår sesjonen fra andre faners in-memory refresh-token). Profilsiden viser e-post via `/api/user/profile` (har allerede `profile.email`).
+4. **E-poststandard:** `post@klarpakke.no` er ENESTE brukerflate-adresse (om-oss, reply-to, velkomstmail). `ops@`/`admin@`/`no-reply@` er interne og skal ikke vises.
+5. **Health-worker (`klarpakke-health`):** execute-proben MÅ gå via `APP_ORIGIN` = appens workers.dev-URL (`https://klarpakke.tomarnejensen.workers.dev`) — subrequests til egen zone-hostname går til ikke-eksisterende zone-origin → HTTP 522. Secrets (STRIPE/RESEND) ligger som wrangler secrets, ALDRI i `wrangler.health.jsonc` (de lå der i klartekst — rotasjon i Stripe/Resend-dashboard gjenstår fordi de ligger i git-historikk).
+6. **Sikkerhetsbaseline 2026-08-02:** npm audit 0 kritiske, 10 high (KUN dev/build-verktøy: sanity-klyngen, perplexity-mcp, MCP-sdk — ingen upstream-patch ennå). Overrides i package.json: `sharp ^0.35.3`, `postcss ^8.5.25`. Overvåkes av cron-jobben «Klarpakke Sikkerhetsvakt» (mandag 09:23) — ikke fjern baselinen uten å oppdatere jobben.
+
+### 📌 STATUS 2026-07-29 (fra Kimi — redaktør, kode, sosiale medier)
 
 **Mandat (oppdatert 2026-07-30):** Hermes er **hovedarkitekt med ansvar for hele prosjektet** — arkitektur, design, funksjonalitet, logikk, kode, infrastruktur, DB, deploy, overvåking, innhold, samt løpende oppdatering og optimalisering av alle flater. Hermes har full DB-tilgang og deploy-mandat («fiks alt») og forbedrer produktet proaktivt uten å bli bedt.
 
