@@ -1,0 +1,11 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/klt/spending-options/route.js")
+R.c("server/chunks/node_modules_0w9tlag._.js")
+R.c("server/chunks/node_modules_next_16bdwk4._.js")
+R.c("server/chunks/[root-of-the-server]__1co-4e_._.js")
+R.c("server/chunks/node_modules_next_dist_13kw1hb._.js")
+R.c("server/chunks/node_modules_next_1zdbrne._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7._.js")
+R.c("server/chunks/[root-of-the-server]__0d10ycn._.js")
+R.c("server/chunks/_next-internal_server_app_api_klt_spending-options_route_actions_1hed1oh.js")
+R.m(603254)
+module.exports=R.m(603254).exports

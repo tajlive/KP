@@ -1,0 +1,12 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/trading/position/route.js")
+R.c("server/chunks/node_modules_0w9tlag._.js")
+R.c("server/chunks/[root-of-the-server]__10hbv_f._.js")
+R.c("server/chunks/node_modules_next_16bdwk4._.js")
+R.c("server/chunks/node_modules_next_1zdbrne._.js")
+R.c("server/chunks/[root-of-the-server]__0d10ycn._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7._.js")
+R.c("server/chunks/node_modules_next_dist_13kw1hb._.js")
+R.c("server/chunks/node_modules_decimal_js_decimal_mjs_0pm18xx._.js")
+R.c("server/chunks/_next-internal_server_app_api_trading_position_route_actions_1kml7_9.js")
+R.m(433514)
+module.exports=R.m(433514).exports

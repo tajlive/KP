@@ -1,0 +1,3 @@
+{
+  "/api/cron/outbox-recovery/route": "app/api/cron/outbox-recovery/route.js"
+}

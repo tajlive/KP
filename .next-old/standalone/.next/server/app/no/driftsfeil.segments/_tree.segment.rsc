@@ -1,0 +1,16 @@
+:HL["/_next/static/chunks/45277ch7d--tu.css","style"]
+:HL["/_next/static/chunks/0swe2xu0g599i.css","style"]
+:HL["/_next/static/media/1b99372b3eaef0c8.p.1gsd1jahc5dg_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/7ebf22b5a21034f8-s.p.3j3877k49yy0l.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/e41d5df559864f9e-s.p.1g73gv09-xcb6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HC["https://api.binance.com",""]
+:HD"https://api.binance.com"
+:HC["https://pskhryjzkobytnfwucrb.supabase.co",""]
+:HD"https://pskhryjzkobytnfwucrb.supabase.co"
+:HC["https://r2cdn.perplexity.ai",""]
+:HD"https://r2cdn.perplexity.ai"
+:HC"https://plausible.io"
+:HL["/logo.svg","image",{"type":"image/svg+xml"}]
+0:{"tree":{"name":"","param":null,"prefetchHints":28,"slots":{"children":{"name":"locale","param":{"type":"d","key":"no","siblings":null},"prefetchHints":4,"slots":{"children":{"name":"(legal)","param":null,"prefetchHints":0,"slots":{"children":{"name":"driftsfeil","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}}}},"staleTime":300,"buildId":"1785687792907"}

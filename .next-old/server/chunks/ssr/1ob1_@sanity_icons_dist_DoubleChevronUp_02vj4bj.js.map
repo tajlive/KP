@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "debugId": "0465e427-438f-137c-a0ac-7dce1793dc5a",
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../node_modules/sanity/node_modules/%40sanity/icons/src/exports/DoubleChevronUp.tsx"],"sourcesContent":["/* THIS FILE IS AUTO-GENERATED – DO NOT EDIT */\n\nimport {forwardRef, type ForwardRefExoticComponent, type RefAttributes, type SVGProps} from 'react'\n\n/**\n * @public\n */\nexport const DoubleChevronUpIcon: ForwardRefExoticComponent<\n  Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>\n> = /* @__PURE__ */ forwardRef(function DoubleChevronUpIcon(props, ref) {\n  return (\n    <svg\n      data-sanity-icon=\"double-chevron-up\"\n      width=\"1em\"\n      height=\"1em\"\n      viewBox=\"0 0 25 25\"\n      fill=\"none\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n      {...props}\n      ref={ref}\n    >\n      <path\n        d=\"M8 12.5L12.5 8L17 12.5M8 17.5L12.5 13L17 17.5\"\n        stroke=\"currentColor\"\n        strokeWidth={1.2}\n        strokeLinejoin=\"round\"\n      />\n    </svg>\n  )\n})\n\nexport {DoubleChevronUpIcon as default}\n"],"names":[],"mappings":"wEAOA,IAAa,EAEO,CAAA,EAAA,EAAA,UAAA,EAAW,GAAX,MAAwC,CAAA,CAAO,CAAA,EACjE,AADsE,EAApD,IAEhB,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,EAAA,CACE,mBAAiB,oBACjB,MAAM,MACN,OAAO,MACP,QAAQ,YACR,KAAK,OACL,MAAM,6BACN,GAAI,CAAA,KACC,EAEL,SAAA,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,GAAA,CACE,EAAE,gDACF,OAAO,eACP,YAAa,IACb,eAAe,OAChB,CAAA,CACE,CAAA,CAET,CAAC"}}]
+}

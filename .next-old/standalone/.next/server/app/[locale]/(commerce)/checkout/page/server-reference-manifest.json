@@ -1,0 +1,17 @@
+{
+  "node": {
+    "4072f4bafa166c160f4e303f98d8190f19a9913e6b": {
+      "workers": {
+        "app/[locale]/(commerce)/checkout/page": {
+          "moduleId": 447257,
+          "async": false,
+          "exportedName": "revalidateSyncTagsAction",
+          "filename": "node_modules/next-sanity/dist/live/server-actions/index.js"
+        }
+      },
+      "exportedName": "revalidateSyncTagsAction",
+      "filename": "node_modules/next-sanity/dist/live/server-actions/index.js"
+    }
+  },
+  "edge": {}
+}

@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/[locale]/layout,_N_T_/[locale]/(legal)/layout,_N_T_/[locale]/(legal)/driftsfeil/layout,_N_T_/[locale]/(legal)/driftsfeil/page,_N_T_/no/driftsfeil,sanity,sanity:designTokens,sanity:navigation,flags"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/$d$locale/!KGxlZ2FsKQ/driftsfeil/__PAGE__",
+    "/$d$locale/!KGxlZ2FsKQ/driftsfeil",
+    "/$d$locale/!KGxlZ2FsKQ",
+    "/$d$locale",
+    "/_index",
+    "/_head"
+  ]
+}

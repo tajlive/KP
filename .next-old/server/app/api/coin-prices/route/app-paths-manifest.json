@@ -1,0 +1,3 @@
+{
+  "/api/coin-prices/route": "app/api/coin-prices/route.js"
+}

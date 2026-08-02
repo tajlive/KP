@@ -1,0 +1,3 @@
+{
+  "/api/market/binance-prices/route": "app/api/market/binance-prices/route.js"
+}

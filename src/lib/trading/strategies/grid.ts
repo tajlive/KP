@@ -1,179 +1,152 @@
 /**
- * Grid Bot Strategy — Dynamic Price Grid
+ * Grid Bot Strategy — Level-based grid med persistert state
  *
- * Setter opp et gitter av kjøps- og salgsnivåer rundt nåværende pris.
- * Kjøper når prisen treffer et nedre nivå, selger når den treffer et øvre.
+ * Bruker den testede evaluateGridSignal() fra grid-strategy.ts.
+ * Én sann kilde for grid-logikk — brukt av BÅDE tick-engine og pilot-engine.
  *
- * Forbedringer fra v1:
- * - Volatilitetsjustert grid-range (bredere i volatile markeder)
- * - Regime detection: deaktiveres i sterke trender
+ * Forbedringer fra v1 (ATR-basert dynamisk grid):
+ * - Multi-nivå kjøp: kjøper på FLERE nivåer selv om posisjon finnes
+ * - Persistert state: grid_levels lagres i session.strategy_config
+ * - Ingen regime-deaktivering: grid handler i ALLE markeder (med trailing-up)
+ * - DCA under grid-bunn med stigende multiplikatorer
+ *
+ * @module trading/strategies
+ * @version 2.0.0
  */
 
 import type { MinimalSession, StrategyEngine, StrategyInput, StrategySignal } from "./types";
-import { detectMarketRegime, atr } from "./indicators";
+import {
+  generateGridLevels,
+  evaluateGridSignal,
+  calculateOptimalGrid,
+  detectMarketRegime,
+  type GridConfig,
+  type GridLevel,
+} from "../grid-strategy";
 
-export interface GridConfig {
+export interface GridStrategyConfig {
   upper_price?: number;
   upperPrice?: number;
   lower_price?: number;
   lowerPrice?: number;
   grid_levels?: number;
   levels?: number;
+  amountPerGrid?: number;
   volatility_adjust?: boolean;
   stop_loss_pct?: number;
+}
+
+/** Persistert grid-state i session.strategy_config */
+interface PersistedGridState {
+  lowerPrice?: number;
+  upperPrice?: number;
+  gridLevelsCount?: number;
+  amountPerGrid?: number;
+  regime?: string;
+  grid_levels?: GridLevel[];
 }
 
 export class GridBotStrategy implements StrategyEngine {
   evaluate(input: StrategyInput): StrategySignal {
     const { candles, session, config } = input;
-    const cfg: GridConfig = config as GridConfig;
-    const stratCfg = (session.strategy_config as Record<string, unknown> | undefined);
-    const storedGrid = stratCfg?.grid_config as Record<string, number> | undefined;
+    const cfg: GridStrategyConfig = config as GridStrategyConfig;
+    const stratCfg = (session.strategy_config as Record<string, unknown> | undefined) ?? {};
+    const savedState = stratCfg as PersistedGridState;
 
     const currentPrice = candles[candles.length - 1].close;
+    const symbol = (config?.symbol as string) || "BTCUSDT";
 
-    // Regime detection: disable grid in strong trends
-    const highs = candles.map((c) => c.high);
-    const lows = candles.map((c) => c.low);
-    const closes = candles.map((c) => c.close);
-    const regime = detectMarketRegime(highs, lows, closes);
+    // ── 1. Hent eller generer grid-state ───────────────────────────────────
+    let levels: GridLevel[];
+    let gridConfig: GridConfig;
 
-    if (regime === "trending_up" || regime === "trending_down") {
-      return {
-        action: "hold",
-        reason: `Grid disabled: market is ${regime.replace("_", " ")} (ADX too high). Grid works best in ranging markets.`,
-        indicators: { regime, grid_disabled: true },
+    const hasSavedRange =
+      savedState.lowerPrice &&
+      savedState.upperPrice &&
+      savedState.gridLevelsCount &&
+      savedState.amountPerGrid &&
+      savedState.grid_levels?.length;
+
+    // Re-kalibreringsbetingelser: breakout > 3% over topp eller > 10% under bunn
+    const breakoutUp = hasSavedRange && currentPrice > savedState.upperPrice! * 1.03;
+    const breakoutDown = hasSavedRange && currentPrice < savedState.lowerPrice! * 0.90;
+
+    if (!hasSavedRange || breakoutUp || breakoutDown) {
+      // Første kjøring eller re-kalibrering — beregn optimalt grid
+      const capital = (config?.capital as number) ?? 10000; // NOK
+      const volatility = this.estimateVolatility(candles);
+      const optimal = calculateOptimalGrid(currentPrice, volatility, capital);
+      gridConfig = { ...optimal, symbol, currentPrice };
+      levels = generateGridLevels(gridConfig);
+    } else {
+      // Bruk persistert state
+      gridConfig = {
+        symbol,
+        lowerPrice: savedState.lowerPrice!,
+        upperPrice: savedState.upperPrice!,
+        gridLevels: savedState.gridLevelsCount!,
+        amountPerGrid: savedState.amountPerGrid!,
+        currentPrice,
       };
+      levels = savedState.grid_levels!;
     }
 
-    // Use stored grid boundaries if available (set at bot creation), otherwise fall back to config
-    // This prevents the grid from "chasing" the price every tick
-    let upper = cfg.upper_price ?? cfg.upperPrice ?? storedGrid?.upper_price;
-    let lower = cfg.lower_price ?? cfg.lowerPrice ?? storedGrid?.lower_price;
+    // ── 2. Evaluer grid-signal (testet logikk fra grid-strategy.ts) ──────
+    const signal = evaluateGridSignal(gridConfig, levels, currentPrice);
 
-    // If no fixed boundaries exist yet, calculate from current price and store for next tick
-    if (!upper || !lower) {
-      const gridRangePct = 20; // Default ±10%
-      upper = currentPrice * (1 + gridRangePct / 100 / 2);
-      lower = currentPrice * (1 - gridRangePct / 100 / 2);
-    }
-
-    // ATR-based range expansion for volatile markets
-    const atrBasedRange = (session.strategy_config as Record<string, unknown>)?.atr_based_range !== false;
-    if ((cfg.volatility_adjust !== false || atrBasedRange) && candles.length >= 14) {
-      const atrValue = atr(highs, lows, closes, 14);
-      const volatilityPct = (atrValue / currentPrice) * 100;
-      // Widen range in volatile markets — use ATR directly for range sizing
-      const atrMultiplier = Math.max(1, volatilityPct / 5);
-      const mid = (upper + lower) / 2;
-      const baseHalfRange = (upper - lower) / 2;
-      // If ATR-based range is enabled, use 3x ATR as half-range (more adaptive)
-      const atrHalfRange = atrBasedRange ? atrValue * 3 : baseHalfRange;
-      const halfRange = atrBasedRange
-        ? Math.max(baseHalfRange, atrHalfRange) * atrMultiplier
-        : baseHalfRange * atrMultiplier;
-      upper = mid + halfRange;
-      lower = mid - halfRange;
-    }
-
-    // Trailing Up logic - shifts the grid upwards if price breaks out above upper bound
-    // This captures gains in bull markets and prevents premature grid exits.
-    const trailingUp = (session.strategy_config as Record<string, unknown>)?.trailing_up !== false;
-    let gridShifted = false;
-    if (trailingUp && currentPrice > upper) {
-      const shift = currentPrice - upper;
-      upper += shift;
-      lower += shift;
-      gridShifted = true;
-    }
-
-    const levels = cfg.grid_levels ?? cfg.levels ?? storedGrid?.levels ?? 10;
-    const gridSize = (upper - lower) / levels;
-
-    // Stop-Loss / Kill Switch Logic
-    // If price drops X% below the lower grid bound, liquidate to prevent catastrophic loss.
-    const stopLossPct = cfg.stop_loss_pct ?? -10; // Default 10% below lower bound
-    const hardStopLossPrice = lower * (1 + stopLossPct / 100);
-
-    if (currentPrice < hardStopLossPrice) {
-      if (session.open_position) {
-        return {
-          action: "sell",
-          indicators: { stop_loss_triggered: true, regime, stop_loss: stopLossPct, grid_disabled: true },
-          reason: `CRITICAL: Stop-Loss triggered. Price ($${currentPrice.toFixed(2)}) fell ${Math.abs(stopLossPct)}% below grid lower bound ($${lower.toFixed(2)}). Liquidating position.`,
-        };
-      } else {
-        return {
-          action: "hold",
-          indicators: { stop_loss_triggered: true, regime, grid_disabled: true },
-          reason: `Grid disabled: Price ($${currentPrice.toFixed(2)}) is below hard stop-loss level ($${hardStopLossPrice.toFixed(2)}).`,
-        };
-      }
-    }
-
-    // If we shifted the grid, we must re-buy to enter the new grid
-    if (gridShifted && !session.open_position) {
+    // ── 3. Map til StrategySignal ─────────────────────────────────────────
+    if (signal.action === "buy") {
       return {
         action: "buy",
-        positionSize: 1 / levels, // enter with 1 level of position
+        positionSize: gridConfig.amountPerGrid / ((config?.capital as number) ?? 10000),
+        confidence: 0.7,
         indicators: {
-          new_grid_upper: upper,
-          new_grid_lower: lower,
-          regime,
-          trailing_up_triggered: true
+          grid_level: signal.level?.level,
+          buy_price: signal.level?.buyPrice,
+          sell_price: signal.level?.sellPrice,
+          profit_pct: signal.expectedProfitPct,
+          dca_level: signal.level?.dcaLevel,
+          size_multiplier: signal.level?.sizeMultiplier,
         },
-        reason: `Trailing Up: Grid shifted up to capture bull run. Re-entering at $${currentPrice.toFixed(0)}`,
+        reason: signal.reason,
       };
     }
 
-    if (currentPrice > upper || currentPrice < lower) {
-      return {
-        action: "hold",
-        reason: "Price outside grid range — rebalancing needed",
-        indicators: { currentPrice, upper, lower, regime },
-      };
-    }
-
-    const currentLevel = Math.floor((currentPrice - lower) / gridSize);
-    const gridBuyPrice = lower + gridSize * currentLevel;
-    const gridSellPrice = gridBuyPrice + gridSize;
-
-    // Buy if near grid buy level (within 0.5%)
-    if (!session.open_position && currentPrice <= gridBuyPrice * 1.005) {
-      return {
-        action: "buy",
-        positionSize: 1 / levels,
-        indicators: {
-          grid_level: currentLevel,
-          buy_at: Math.round(gridBuyPrice * 100) / 100,
-          sell_at: Math.round(gridSellPrice * 100) / 100,
-          regime,
-        },
-        reason: `Grid buy at level ${currentLevel} ($${gridBuyPrice.toFixed(0)}) — market is ${regime}`,
-      };
-    }
-
-    // Sell if near grid sell level (within 0.5%)
-    if (session.open_position && currentPrice >= gridSellPrice * 0.995) {
+    if (signal.action === "sell") {
       return {
         action: "sell",
+        quantity: signal.level?.quantity,
+        confidence: 0.8,
+        exitReason: "take_profit",
         indicators: {
-          grid_level: currentLevel,
-          sell_at: Math.round(gridSellPrice * 100) / 100,
-          regime,
+          grid_level: signal.level?.level,
+          sell_price: signal.level?.sellPrice,
+          profit_pct: signal.expectedProfitPct,
+          sell_type: signal.sellType,
         },
-        reason: `Grid sell at level ${currentLevel} ($${gridSellPrice.toFixed(0)}) — profit grid level reached`,
+        reason: signal.reason,
       };
     }
 
+    // WAIT
     return {
       action: "hold",
-      indicators: { 
-        grid_level: currentLevel, 
-        regime,
-        ...(gridShifted ? { new_grid_upper: upper, new_grid_lower: lower } : {})
+      reason: signal.reason,
+      indicators: {
+        grid_lower: gridConfig.lowerPrice,
+        grid_upper: gridConfig.upperPrice,
+        current_price: currentPrice,
+        regime: savedState.regime,
       },
-      reason: gridShifted ? `Trailing Up: Grid shifted up to capture bull run.` : undefined,
     };
+  }
+
+  /** Estimer volatilitet fra candles (annualisert %) */
+  private estimateVolatility(candles: Array<{ close: number }>): number {
+    if (candles.length < 14) return 50; // default
+    const closes = candles.slice(-14).map((c) => c.close);
+    const mean = closes.reduce((a, b) => a + b, 0) / closes.length;
+    const variance = closes.reduce((s, p) => s + (p - mean) ** 2, 0) / closes.length;
+    return Math.min((Math.sqrt(variance) / mean) * 100 * Math.sqrt(365), 200);
   }
 }

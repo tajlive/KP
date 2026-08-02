@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="8e92f3fe-7ffe-79f5-31fc-0af0e3ac971d")}catch(e){}}();
+module.exports=[973039,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"document-video",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M11.5 16.5V13.5L14 15L11.5 16.5Z",fill:"currentColor",stroke:"currentColor",strokeWidth:1.2}),(0,c.jsx)("path",{d:"M11.5 4.5V9.5H6.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M11.5 4.5H18.5V20.5H6.5V9.5L11.5 4.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["DocumentVideoIcon",0,d,"default",0,d])}];
+
+//# debugId=8e92f3fe-7ffe-79f5-31fc-0af0e3ac971d
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_DocumentVideo_0yelj0j.js.map

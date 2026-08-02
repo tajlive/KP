@@ -1,0 +1,4 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="2cace8e7-c3f1-fb18-84d9-db42a763ea8d")}catch(e){}}();
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,924629,o=>{"use strict";var e=o.i(271645),t=o.i(843476);let n=(0,e.forwardRef)(function(o,e){return(0,t.jsx)("svg",{"data-sanity-icon":"double-chevron-down",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...o,ref:e,children:(0,t.jsx)("path",{d:"M17 7.5C15.6332 8.86683 12.5 12 12.5 12L8 7.5M17 12.5C15.6332 13.8668 12.5 17 12.5 17L8 12.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});o.s(["DoubleChevronDownIcon",0,n,"default",0,n])}]);
+
+//# debugId=2cace8e7-c3f1-fb18-84d9-db42a763ea8d

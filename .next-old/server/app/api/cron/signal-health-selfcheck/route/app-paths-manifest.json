@@ -1,0 +1,3 @@
+{
+  "/api/cron/signal-health-selfcheck/route": "app/api/cron/signal-health-selfcheck/route.js"
+}

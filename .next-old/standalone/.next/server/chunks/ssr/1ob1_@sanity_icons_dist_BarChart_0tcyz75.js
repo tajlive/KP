@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="0c1669f4-2a77-600e-6b6c-bbc52c39d2ea")}catch(e){}}();
+module.exports=[79586,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"bar-chart",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M5.5 5V19.5H20M8.5 18V13M11.5 18V9M14.5 18V11M17.5 18V7",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["BarChartIcon",0,d,"default",0,d])}];
+
+//# debugId=0c1669f4-2a77-600e-6b6c-bbc52c39d2ea
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_BarChart_0tcyz75.js.map

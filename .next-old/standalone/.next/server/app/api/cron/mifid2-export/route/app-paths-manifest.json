@@ -1,0 +1,3 @@
+{
+  "/api/cron/mifid2-export/route": "app/api/cron/mifid2-export/route.js"
+}

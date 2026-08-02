@@ -1,0 +1,3 @@
+{
+  "/api/stripe/customer-portal/route": "app/api/stripe/customer-portal/route.js"
+}

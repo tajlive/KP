@@ -1237,6 +1237,40 @@ async function processSession(
         };
       }
 
+      // ── Grid-state persistens (v2): oppdater bought/empty etter trade ──
+      if (resolvedEngine === "grid" && result.success) {
+        try {
+          const stratCfg = session.strategy_config as Record<string, unknown>;
+          const gridLevels = (stratCfg.grid_levels as Array<Record<string, unknown>> | undefined) ?? [];
+          const signalLevel = signal.indicators?.grid_level as number | undefined;
+          const dcaLevel = signal.indicators?.dca_level as number | undefined;
+
+          if (signalLevel !== undefined) {
+            const updatedLevels = gridLevels.map((l) => {
+              if (l.level === signalLevel && (dcaLevel === undefined || l.dcaLevel === dcaLevel)) {
+                return {
+                  ...l,
+                  status: signal.action === "buy" ? "bought" : "empty",
+                };
+              }
+              return l;
+            });
+
+            await db
+              .from("trading_sessions")
+              .update({
+                strategy_config: {
+                  ...stratCfg,
+                  grid_levels: updatedLevels,
+                } as never,
+              })
+              .eq("id", session.id);
+          }
+        } catch (gridErr) {
+          console.error(`[Tick] Failed to persist grid state for ${session.id}:`, gridErr);
+        }
+      }
+
       // Log Dark Fleet / regime metadata for every trade
       if (signal.action === "buy" || signal.action === "sell") {
         try {

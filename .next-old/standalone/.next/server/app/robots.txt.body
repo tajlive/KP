@@ -1,0 +1,60 @@
+User-Agent: *
+Allow: /
+Allow: /en/
+Allow: /th/
+Allow: /zh/
+Allow: /sitemap.xml
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin-dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /*.rsc$
+Disallow: /admin-login
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+Disallow: /registrer
+
+User-Agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin-dashboard/
+Disallow: /dashboard/
+Disallow: /login
+
+User-Agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin-dashboard/
+Disallow: /dashboard/
+Disallow: /login
+
+User-Agent: CCBot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin-dashboard/
+Disallow: /dashboard/
+Disallow: /login
+
+User-Agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin-dashboard/
+Disallow: /dashboard/
+
+User-Agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin-dashboard/
+Disallow: /dashboard/
+
+Host: https://www.klarpakke.no
+Sitemap: https://www.klarpakke.no/sitemap.xml

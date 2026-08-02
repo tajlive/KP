@@ -1,0 +1,3 @@
+{
+  "/api/cron/market-impact/route": "app/api/cron/market-impact/route.js"
+}

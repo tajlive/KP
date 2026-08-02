@@ -1,0 +1,3 @@
+{
+  "/[locale]/(user)/dashboard/asset/[symbol]/page": "app/[locale]/(user)/dashboard/asset/[symbol]/page.js"
+}

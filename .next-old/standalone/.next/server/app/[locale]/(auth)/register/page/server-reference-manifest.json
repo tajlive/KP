@@ -1,0 +1,29 @@
+{
+  "node": {
+    "4072f4bafa166c160f4e303f98d8190f19a9913e6b": {
+      "workers": {
+        "app/[locale]/(auth)/register/page": {
+          "moduleId": 477208,
+          "async": false,
+          "exportedName": "revalidateSyncTagsAction",
+          "filename": "node_modules/next-sanity/dist/live/server-actions/index.js"
+        }
+      },
+      "exportedName": "revalidateSyncTagsAction",
+      "filename": "node_modules/next-sanity/dist/live/server-actions/index.js"
+    },
+    "40946847c860964fa4703bfbace2f09e302a1ebbd5": {
+      "workers": {
+        "app/[locale]/(auth)/register/page": {
+          "moduleId": 477208,
+          "async": false,
+          "exportedName": "signUpWithEmail",
+          "filename": "src/lib/auth/new/auth-actions.ts"
+        }
+      },
+      "exportedName": "signUpWithEmail",
+      "filename": "src/lib/auth/new/auth-actions.ts"
+    }
+  },
+  "edge": {}
+}

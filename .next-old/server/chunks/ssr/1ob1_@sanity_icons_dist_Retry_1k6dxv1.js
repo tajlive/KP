@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="09b41c62-8d32-fc8e-add3-548ace7751c5")}catch(e){}}();
+module.exports=[844008,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"retry",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M19 9.5L10 9.5C7.51472 9.5 5.5 11.5147 5.5 14C5.5 16.4853 7.51472 18.5 10 18.5H19",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M15 13.5L19 9.5L15 5.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["RetryIcon",0,d,"default",0,d])}];
+
+//# debugId=09b41c62-8d32-fc8e-add3-548ace7751c5
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_Retry_1k6dxv1.js.map

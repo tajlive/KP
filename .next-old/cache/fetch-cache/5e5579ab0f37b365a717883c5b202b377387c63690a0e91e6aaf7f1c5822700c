@@ -1,0 +1,1 @@
+{"kind":"FETCH","data":{"headers":{},"body":"{\"tradingV3\":false,\"rlSignals\":false,\"euTaxReport\":false,\"betaTrading\":false,\"whitelabelFees\":false,\"maintenanceMode\":false,\"signalEngineKillSwitch\":false,\"sonarUi\":false,\"aiInsight\":true,\"darkFleetPhase1\":false,\"darkFleetKillSwitch\":false}","status":200,"url":""},"revalidate":60,"tags":["flags"]}

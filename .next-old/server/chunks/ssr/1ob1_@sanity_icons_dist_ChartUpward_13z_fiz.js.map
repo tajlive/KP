@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "debugId": "bee24fda-5dc3-d915-e149-34cbf017368b",
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../node_modules/sanity/node_modules/%40sanity/icons/src/exports/ChartUpward.tsx"],"sourcesContent":["/* THIS FILE IS AUTO-GENERATED – DO NOT EDIT */\n\nimport {forwardRef, type ForwardRefExoticComponent, type RefAttributes, type SVGProps} from 'react'\n\n/**\n * @public\n */\nexport const ChartUpwardIcon: ForwardRefExoticComponent<\n  Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>\n> = /* @__PURE__ */ forwardRef(function ChartUpwardIcon(props, ref) {\n  return (\n    <svg\n      data-sanity-icon=\"chart-upward\"\n      width=\"1em\"\n      height=\"1em\"\n      viewBox=\"0 0 25 25\"\n      fill=\"none\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n      {...props}\n      ref={ref}\n    >\n      <path\n        d=\"M5.5 5V19.5H20M7.5 16L11.5 11.5L15.5 14L19.5 8.5\"\n        stroke=\"currentColor\"\n        strokeWidth={1.2}\n        strokeLinejoin=\"round\"\n      />\n    </svg>\n  )\n})\n\nexport {ChartUpwardIcon as default}\n"],"names":[],"mappings":"wEAOA,IAAa,EAEO,CAAA,EAAA,EAAA,UAAA,CAAA,CAAW,SAAyB,CAAA,CAAO,CAA3C,AAA2C,EAC7D,AADkE,MAEhE,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,EAAA,CACE,mBAAiB,eACjB,MAAM,MACN,OAAO,MACP,QAAQ,YACR,KAAK,OACL,MAAM,6BACN,GAAI,CAAA,KACC,EAEL,SAAA,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,GAAA,CACE,EAAE,mDACF,OAAO,eACP,YAAa,IACb,eAAe,OAChB,CAAA,CACE,CAAA,CAET,CAAC"}}]
+}

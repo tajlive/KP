@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="ef0b4cec-0096-f378-0166-f71426e11924")}catch(e){}}();
+module.exports=[132925,a=>{"use strict";var b=a.i(332776);async function c({params:a}){let{locale:d}=await a,e=await (0,b.getTranslations)({locale:d,namespace:"metadata"});return{title:e("courses.title"),description:e("courses.description"),alternates:{canonical:`/${d}/kurs`,languages:{no:"/no/kurs",en:"/en/kurs"}},openGraph:{title:e("courses.title"),description:e("courses.description"),type:"website",locale:"no"===d?"nb_NO":"en_US"}}}a.s(["default",0,function({children:a}){return a},"dynamic",0,"force-dynamic","generateMetadata",0,c,"runtime",0,"nodejs"])},448469,a=>{a.n(a.i(132925))}];
+
+//# debugId=ef0b4cec-0096-f378-0166-f71426e11924
+//# sourceMappingURL=src_app_%5Blocale%5D_%28academy%29_kurs_layout_tsx_1hzrztq._.js.map

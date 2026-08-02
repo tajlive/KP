@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="aae33096-0284-eaba-57a1-043f4e28e0db")}catch(e){}}();
+module.exports=[36480,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"thumbs-up",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M9.5 10C9.5 10 12.5 8.5 12.5 7C12.5 5.5 13.5 5.5 13.5 5.5C13.5 5.5 14.5 5.5 14.5 7C14.5 8.5 14.5 9.5 14.5 9.5H18C18 9.5 18 9.5 18 9.5C18 9.5 19 9.5 19 10.5C19 11.5 19.5 11 19.5 12C19.5 13 19 13.5 19 14.5C19 15.5 18 15.5 18 16.5C18 17.5 17 17.5 16.5 17.5C16 17.5 9.5 17.5 9.5 17.5M9.5 17.5H6.5V9.5H9.5V17.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["ThumbsUpIcon",0,d,"default",0,d])}];
+
+//# debugId=aae33096-0284-eaba-57a1-043f4e28e0db
+//# sourceMappingURL=1ob1_%40sanity_icons_dist_ThumbsUp_1nkkl3c.js.map

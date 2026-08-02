@@ -1,0 +1,3 @@
+{
+  "/api/ai/analyze-trade/route": "app/api/ai/analyze-trade/route.js"
+}
