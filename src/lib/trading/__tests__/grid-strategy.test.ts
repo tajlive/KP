@@ -65,11 +65,19 @@ describe("Grid Trading Strategy", () => {
       expect(signal.action).toBe("wait");
     });
 
-    it("returnerer WAIT når pris er utenfor grid", () => {
+    it("returnerer DCA BUY når pris er under grid (DCA under bunn)", () => {
       const levels = generateGridLevels(baseConfig);
+      // lowerPrice=90000, DCA nivå 1: 90000*0.95=85500, 80000 ≤ 85500 → BUY
       const signal = evaluateGridSignal(baseConfig, levels, 80000);
+      expect(signal.action).toBe("buy");
+      expect(signal.reason).toContain("DCA");
+    });
+
+    it("returnerer WAIT når pris er over grid", () => {
+      const levels = generateGridLevels(baseConfig);
+      const signal = evaluateGridSignal(baseConfig, levels, 120000);
       expect(signal.action).toBe("wait");
-      expect(signal.reason).toContain("utenfor grid");
+      expect(signal.reason).toContain("over grid");
     });
   });
 
