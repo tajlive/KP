@@ -977,10 +977,23 @@ async function processSession(
       const closes = candles.map((c) => c.close);
       const regimeGate = evaluateRegimeGate(closes);
       if (!regimeGate.allowed) {
-        console.info(
-          `[Tick] Fase2 regime-gate: ${regimeGate.reason} (session ${session.id})`,
-        );
-        return { session_id: session.id, action: "hold", reason: regimeGate.reason };
+        // Grid-unntak (2026-08-02): grid har egen 25% katastrofe-SL + DCA.
+        // Mekaniske nivå-kjøp skal ikke stoppes av SMA-regime — men vi logger det.
+        const isGrid = (signal.reason ?? "").includes("Grid buy") || (signal.reason ?? "").includes("DCA buy");
+        if (!isGrid) {
+          try {
+            await db.from("trading_logs").insert({
+              session_id: session.id,
+              user_id: session.user_id,
+              action: "regime_gate_blocked",
+              details: { reason: regimeGate.reason, regime: regimeGate.regime, signal_reason: signal.reason ?? null, strategy_id: session.strategy_id } as never,
+            } as never);
+          } catch { /* non-critical */ }
+          console.info(
+            `[Tick] Fase2 regime-gate: ${regimeGate.reason} (session ${session.id})`,
+          );
+          return { session_id: session.id, action: "hold", reason: regimeGate.reason };
+        }
       }
       signal.indicators = { ...signal.indicators, regime: regimeGate.regime };
 
@@ -1029,6 +1042,17 @@ async function processSession(
     // sammenlignet NOK → reell terskel ~1 USD). Paper-kapital er NOK,
     // live-kapital er USDT → terskelen må følge kapitalens valuta.
     if (tradeAmount < minOrderValueForMode(session.mode)) {
+      // Diagnostikk: logg hvorfor trade stoppes på minsteverdi
+      if (resolvedEngine === "grid") {
+        try {
+          await db.from("trading_logs").insert({
+            session_id: session.id,
+            user_id: session.user_id,
+            action: "grid_below_min_order",
+            details: { trade_amount: tradeAmount, min_order: minOrderValueForMode(session.mode), position_size: positionSize, capital: session.current_capital, signal_reason: signal.reason ?? null } as never,
+          } as never);
+        } catch { /* non-critical */ }
+      }
       return { session_id: session.id, action: "hold" };
     }
 
