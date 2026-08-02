@@ -27,32 +27,24 @@ interface PriceData {
 }
 
 // ─── Live Ticker Bar ───
+const TICKER_SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","AVAXUSDT","DOGEUSDT","LINKUSDT","ADAUSDT","DOTUSDT","UNIUSDT","POLUSDT"];
+const TICKER_ICONS: Record<string,string> = {BTCUSDT:"₿",ETHUSDT:"⟠",SOLUSDT:"◎",AVAXUSDT:"▲",DOGEUSDT:"Ð",LINKUSDT:"⬡",ADAUSDT:"⬢",DOTUSDT:"◈",UNIUSDT:"🦄",POLUSDT:"◆"};
+
 function LiveTicker() {
   const { prices } = usePrices();
   const tickers: PriceData[] = React.useMemo(() => {
-    const map: Record<string, string> = {
-      BTCUSDT: "₿",
-      ETHUSDT: "⟠",
-      XRPUSDT: "◎",
-      SOLUSDT: "◎",
-      ADAUSDT: "⬡",
-    };
     const priceData: PriceData[] = [];
-    for (const [symbol, data] of Object.entries(prices).slice(0, 8)) {
-      const p = (data as { price?: number; price_change_percent_24h?: number | null }).price ?? 0;
-      const change = (data as { price_change_percent_24h?: number | null }).price_change_percent_24h ?? 0;
-      priceData.push({
-        symbol: symbol.replace("USDT", ""),
-        price: p,
-        change24h: change,
-      });
+    for (const symbol of TICKER_SYMBOLS) {
+      const data = prices[symbol];
+      if (!data && priceData.length > 0) continue; // mangler data, men minst én pris er der
+      const p = (data as { price?: number; price_change_percent_24h?: number | null } | undefined)?.price ?? 0;
+      const change = (data as { price_change_percent_24h?: number | null } | undefined)?.price_change_percent_24h ?? 0;
+      priceData.push({ symbol: symbol.replace("USDT",""), price: p, change24h: change });
     }
     return priceData.length > 0 ? priceData : [
       { symbol: "BTC", price: usdtPriceToNok(63258), change24h: 2.3 },
       { symbol: "ETH", price: usdtPriceToNok(2245), change24h: -0.8 },
-      { symbol: "XRP", price: usdtPriceToNok(3.12), change24h: 0.5 },
       { symbol: "SOL", price: usdtPriceToNok(142.3), change24h: 4.1 },
-      { symbol: "ADA", price: usdtPriceToNok(0.89), change24h: -1.2 },
     ];
   }, [prices]);
 
@@ -64,7 +56,9 @@ function LiveTicker() {
             key={i}
             className="flex items-center gap-2 px-4 py-2 text-xs font-mono whitespace-nowrap border-r border-[#1E2530] shrink-0"
           >
-            <span className="text-slate-400">{t.symbol}</span>
+            <span className="text-slate-400">
+              {TICKER_ICONS[t.symbol + "USDT"] ?? ""} {t.symbol}
+            </span>
             <span className="text-white font-medium">
               {formatNOK(t.price, { locale: "nb-NO", fractionDigits: t.price > 1000 ? 0 : 2 })}
             </span>
