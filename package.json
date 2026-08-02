@@ -489,9 +489,8 @@
     "lighthouse": "^13.4.0",
     "lint-staged": "^17.0.8",
     "perplexity-mcp": "^0.2.3",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.25",
     "resend-mcp": "^2.9.0",
-    "sql-language-server": "^1.7.1",
     "storybook": "^10.4.6",
     "tailwindcss": "^4.2.4",
     "ts-morph": "^28.0.0",
@@ -520,7 +519,9 @@
     "tmp": "^0.2.4",
     "import-in-the-middle": "3.0.0",
     "playwright": "1.59.1",
-    "playwright-core": "1.59.1"
+    "playwright-core": "1.59.1",
+    "sharp": "^0.35.3",
+    "postcss": "^8.5.25"
   },
   "browserslist": [
     "chrome >= 109",
