@@ -842,6 +842,18 @@ async function processSession(
     const regime = (signal.indicators?.regime as string) ?? "unknown";
 
     if (signal.action === "buy" || signal.action === "sell") {
+      // Grid-unntak (2026-08-02): grid har egen mekanisk sizing (amountPerGrid).
+      // Dynamic/Kelly-sizing basert på historisk win-rate skal ikke overstyre grid —
+      // det halverte Tom sin size til 0.54% (54 NOK < 100 NOK min) og blokkerte ALT.
+      const isGridForDynamicSize =
+        (signal.reason ?? "").includes("Grid buy") ||
+        (signal.reason ?? "").includes("Grid sell") ||
+        (signal.reason ?? "").includes("DCA buy");
+      if (isGridForDynamicSize) {
+        logger.debug(
+          `[PositionSize] Session ${session.id}: grid-size bevart (${(positionSize * 100).toFixed(2)}% — dynamic sizing hoppet over)`,
+        );
+      } else {
       try {
         const dynamicSize = await calculateDynamicPositionSize(db, {
           userId: session.user_id,
@@ -867,6 +879,7 @@ async function processSession(
           `[PositionSize] Failed for session ${session.id}, using fallback:`,
           (err as Error).message,
         );
+      }
       }
     }
 
