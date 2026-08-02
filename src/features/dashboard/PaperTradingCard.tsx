@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 import { captureException, captureMessage } from "@/lib/sentry";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
@@ -33,6 +35,7 @@ interface BalanceData {
 
 export function PaperTradingCard() {
   const t = useTranslations("trading.paperTrading.card");
+  const locale = useLocale();
   const { toast } = useToast();
   const { formatByMode } = useCurrency();
   const [balance, setBalance] = useState<BalanceData["balance"] | null>(null);
@@ -239,7 +242,10 @@ export function PaperTradingCard() {
             {formatByMode(balance.current, "paper")}
           </p>
           <p className="text-[11px] text-kp-text-muted/70 mt-0.5 leading-tight">
-            Urealisert verdi — endres med markedet hvert sekund. Handler er ikke solgt ennå.
+            Urealisert verdi — endres med markedet hvert sekund. Handler er ikke solgt ennå.{' '}
+            <Link href={`/${locale}/vanlige-sporsmal`} className="underline hover:text-kp-text-muted">
+              Hvorfor?
+            </Link>
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">

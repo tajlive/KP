@@ -10,7 +10,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const FROM_EMAIL = 'Klarpakke <post@klarpakke.no>';
-const REPLY_TO = 'support@klarpakke.no';
+const REPLY_TO = 'post@klarpakke.no';
 const BATCH_SIZE = 10;
 
 // Brand colors
