@@ -15,6 +15,7 @@ import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
 import { formatNOK } from "@/lib/format/currency";
 import { getDisplayUsdtToNokRate, nokPriceToUsdt, usdtPriceToNok } from "@/lib/market/nok";
 import { BacktestPanel } from "@/features/backtest/BacktestPanel";
+import { ModeGuide } from "@/features/trading/ModeGuide";
 
 // ─── Types ───
 type TradeMode = "manual" | "auto" | "pilot" | "stats" | "backtest";
@@ -842,6 +843,10 @@ export function UnifiedTradeTerminal() {
               {!showUnlock && !lockHint && mode === "pilot" && "🃏 Pilot — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
               {!showUnlock && !lockHint && mode === "stats" && "📊 Statistikk — resultater, win-rate og AI-forklaringer for Pilot-handlene dine."}
             </motion.div>
+            {/* Mode guide — trinn-for-trinn for nye brukere */}
+            {(mode === "manual" || mode === "auto" || mode === "pilot") && (
+              <ModeGuide mode={mode} />
+            )}
           </div>
 
           {/* Side panel: Mode-spesifikt innhold */}
