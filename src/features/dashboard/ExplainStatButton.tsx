@@ -40,8 +40,8 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
           ? `Din win rate på ${v}% betyr at ${v} av 100 trades er profitable. En win rate over 50% er positiv, men det som virkelig betyr noe er forholdet mellom gjennomsnittlig gevinst og gjennomsnittlig tap (risk/reward).`
           : `Your win rate of ${v}% means ${v} out of 100 trades are profitable. A win rate above 50% is positive, but what really matters is the ratio between average gain and average loss (risk/reward).`,
         benchmark: t
-          ? "Bransjesnitt: 45-55% for day tradere. Profesjonelle ofte 50-60%."
-          : "Industry average: 45-55% for day traders. Professionals often 50-60%.",
+          ? "Win rate bransjesnitt: 45-55% for day tradere. Profesjonelle ofte 50-60%."
+          : "Win rate industry average: 45-55% for day traders. Professionals often 50-60%.",
         action:
           v < 45
             ? t
