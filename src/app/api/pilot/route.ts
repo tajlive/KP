@@ -194,6 +194,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Auto-opprett/synk auto_trading_configs så cron plukker opp brukeren
+    try {
+      await db.from("auto_trading_configs").upsert({
+        user_id: user.id,
+        is_enabled: true,
+        strategy: mode === "pilot" ? "grid" : "multi_signal",
+      }, { onConflict: "user_id" });
+    } catch { /* best effort */ }
+
     return NextResponse.json({
       success: true,
       mode,
