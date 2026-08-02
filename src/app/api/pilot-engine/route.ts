@@ -535,17 +535,15 @@ export async function POST(request: NextRequest) {
     // 4. Generer signal — grid eller multi-signal basert på brukerens strategi
     const winMultiplier = await getCoinWinRate(db, userId, symbol);
     
-    // Hent brukerens strategi-valg (default: multi-signal)
+    // Hent brukerens strategi-valg (default: grid — Pionex/3Commas-standard)
     const { data: userConfig } = await db
       .from("auto_trading_configs")
       .select("strategy, config")
       .eq("user_id", userId)
       .maybeSingle();
     
-    // Strategi kan være i strategy-kolonnen eller config.type
-    const strategyType = userConfig?.strategy === "grid" 
-      ? "grid" 
-      : (userConfig?.config as { type?: string })?.type ?? "multi_signal";
+    // Strategi: grid er standard (verdensledende), multi_signal er legacy
+    const strategyType = userConfig?.strategy ?? "grid";
     let signal: ReturnType<typeof generatePilotSignal> & { gridLevel?: GridLevel };
     
     if (strategyType === "grid") {
