@@ -16,6 +16,13 @@ import { getNokUsdtRate } from "@/lib/trading/canonical/exchange-rate";
 import { calculateRSI as calcRSI, calculateMACD, calculateSMA, calculateBollingerBands } from "@/lib/trading/indicators";
 import { generatePilotSignal, type MarketData } from "./signal";
 import {
+  generateGridLevels,
+  evaluateGridSignal,
+  calculateOptimalGrid,
+  type GridConfig,
+  type GridLevel,
+} from "@/lib/trading/grid-strategy";
+import {
   GUARD_ERROR_OR_FILTER,
   sessionSkipReason,
 } from "@/lib/trading/session-guard";
@@ -525,9 +532,69 @@ export async function POST(request: NextRequest) {
     const price = market.currentPrice > 0 ? market.currentPrice : (FALLBACK_PRICES[symbol] ?? 100);
     if (market.currentPrice <= 0) market.currentPrice = price;
 
-    // 4. Generer signal
+    // 4. Generer signal — grid eller multi-signal basert på brukerens strategi
     const winMultiplier = await getCoinWinRate(db, userId, symbol);
-    const signal = generatePilotSignal(market, winMultiplier);
+    
+    // Hent brukerens strategi-valg (default: multi-signal)
+    const { data: userConfig } = await db
+      .from("auto_trading_configs")
+      .select("strategy, config")
+      .eq("user_id", userId)
+      .maybeSingle();
+    
+    // Strategi kan være i strategy-kolonnen eller config.type
+    const strategyType = userConfig?.strategy === "grid" 
+      ? "grid" 
+      : (userConfig?.config as { type?: string })?.type ?? "multi_signal";
+    let signal: ReturnType<typeof generatePilotSignal> & { gridLevel?: GridLevel };
+    
+    if (strategyType === "grid") {
+      // 🎯 GRID STRATEGY — verdensledende standard (Pionex/3Commas)
+      // Beregn optimale grid-parametere basert på volatilitet
+      const gridParams = calculateOptimalGrid(price, market.volatility, session.capital);
+      const gridConfig: GridConfig = {
+        symbol,
+        currentPrice: price,
+        ...gridParams,
+      };
+      
+      // Hent eller generer grid-state (hvilke nivåer er kjøpt)
+      const { data: gridState } = await db
+        .from("trading_sessions")
+        .select("strategy_config")
+        .eq("id", session.id)
+        .maybeSingle();
+      
+      const savedLevels = (gridState?.strategy_config as { grid_levels?: GridLevel[] })?.grid_levels;
+      const levels = savedLevels ?? generateGridLevels(gridConfig);
+      
+      // Evaluer grid-signal
+      const gridSignal = evaluateGridSignal(gridConfig, levels, price);
+      
+      // Map grid-signal til pilot-signal format
+      signal = {
+        action: gridSignal.action === "buy" ? "BUY" : gridSignal.action === "sell" ? "SELL" : "WAIT",
+        confidence: gridSignal.action !== "wait" ? 70 : 50, // Grid har fast confidence
+        reason: gridSignal.reason,
+        gridLevel: gridSignal.level,
+      };
+      
+      // Oppdater grid-state hvis trade utføres
+      if (gridSignal.action !== "wait" && gridSignal.level) {
+        const updatedLevels = levels.map(l => 
+          l.level === gridSignal.level!.level 
+            ? { ...l, status: gridSignal.action === "buy" ? "bought" as const : "sold" as const }
+            : l
+        );
+        const existingConfig = (gridState?.strategy_config as Record<string, unknown>) ?? {};
+        await db.from("trading_sessions").update({
+          strategy_config: { ...existingConfig, grid_levels: updatedLevels },
+        } as never).eq("id", session.id);
+      }
+    } else {
+      // 🎯 MULTI-SIGNAL (default) — RSI + trend + MACD
+      signal = generatePilotSignal(market, winMultiplier);
+    }
 
     // Touch heartbeat — sessions overlever detect_crashed_sessions
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", session.id);
