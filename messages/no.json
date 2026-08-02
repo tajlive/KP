@@ -15,7 +15,7 @@
       "p2": "For to år siden tok jeg kontrollen selv. Jeg fordypet meg i avansert programmering og kunstig intelligens, og utviklet min egen auto-trader. Jeg startet i det små, testet, feilet og justerte. Etter hvert som algoritmene begynte å levere stabile resultater, fikk jeg selvtilliten til å investere mer.",
       "p3": "Jeg kuttet ut tipping, lotto og tradisjonell banksparing. Alt fokus ble rettet mot systemet. Da resultatene overgikk forventningene, begynte jeg å dele verktøyet med venner og familie. Responsen var overveldende. Det ble tydelig at det fantes et behov for en ærlig og transparent vei inn i kryptomarkedet for folk flest.",
       "quote": "I 2021 tapte jeg penger fordi jeg handlet på følelser. Jeg bygget Klarpakke for å fjerne følelsene fra ligningen. Ved å bruke programvare til å følge regler, og trading med lekepenger for å bevise ferdigheter først, har vi fjernet de største fellene for nye tradere.",
-      "quoteAuthor": "Tom Jensen"
+      "quoteAuthor": "Tom Arne Jensen"
     },
     "mission": {
       "title": "Vår misjon",
@@ -81,7 +81,7 @@
     },
     "cta": {
       "title": "Klar for å komme i gang?",
-      "subtitle": "Bli med over 100 norske tradere som allerede bruker Klarpakke.",
+      "subtitle": "Bli med norske tradere som allerede bruker Klarpakke.",
       "button": "Kom i gang",
       "noCard": "Ingen betalingskort nødvendig for å starte"
     }
@@ -94,12 +94,12 @@
     "quote": {
       "title": "Fra \"Håp\" til \"Struktur\"",
       "text": "I 2021 tapte jeg penger fordi jeg handlet på følelser. Jeg bygget Klarpakke for å fjerne følelsene fra ligningen. Ved å bruke programvare til å følge regler, og trading med lekepenger for å bevise ferdigheter først, har vi fjernet de største fellene for nye tradere.",
-      "author": "Tom Jensen",
+      "author": "Tom Arne Jensen",
       "role": "Grunnlegger & Utvikler"
     },
     "title": "Om Oss",
     "heroTitle": "Fra dyrekjøpt lærdom til",
-    "heroTitleHighlight": "Klarpakke Universitet",
+    "heroTitleHighlight": "Klarpakke",
     "heroDescription": "Min reise fra å tape alt til å knekke koden – og hvordan du kan gjøre det samme.",
     "story": {
       "part1": {
@@ -116,7 +116,7 @@
       },
       "part4": {
         "title": "Klarpakke blir til",
-        "content": "Jeg samlet et team av eksperter, utviklere og tradere. Målet var enkelt: Å gjøre avansert teknologi tilgjengelig for alle, helt uten skjulte agendaer. Slik ble Klarpakke Universitetet født – et sted hvor kunnskap og ærlighet står i sentrum."
+        "content": "Jeg samlet et team av eksperter, utviklere og tradere. Målet var enkelt: Å gjøre avansert teknologi tilgjengelig for alle, helt uten skjulte agendaer. Slik ble Klarpakke født – et sted hvor kunnskap og ærlighet står i sentrum."
       }
     },
     "philosophy": {
@@ -321,7 +321,7 @@
     "noAdminAccess": "Du har ikke tilgang til admin-panelet",
     "loginError": "En feil oppstod. Prøv igjen.",
     "adminLogin": "Admin Login",
-    "adminPortal": "Klarpakke Universitet - Admin Portal",
+    "adminPortal": "Klarpakke - Admin Portal",
     "founderConfirmDesc": "Dette vil gi brukeren \"founder\"-rollen og tildele 10,000 KLT tokens. Er du sikker?",
     "banConfirmDesc": "Dette vil sperre brukeren fra plattformen. Er du sikker?",
     "roleConfirmDesc": "Er du sikker på at du vil endre rollen til \"{role}\"?",
@@ -468,8 +468,8 @@
     "signInDescription": "Velg din foretrukne innloggingsmetode",
     "noAccount": "Har du ikke konto ennå?",
     "signupTitle": "Opprett konto",
-    "signupDescription": "Opprett din gratis konto i dag og start din reise mot smartere krypto-trading med Klarpakke Universitet",
-    "subtitle": "Klarpakke Universitet",
+    "signupDescription": "Opprett din gratis konto i dag og start din reise mot smartere krypto-trading med Klarpakke",
+    "subtitle": "Klarpakke",
     "checkStatus": "Sjekk din status",
     "checkStatusDesc": "Logg inn med Google/Microsoft, eller sjekk om du er registrert",
     "email": "E-postadresse",
@@ -883,7 +883,7 @@
     }
   },
   "base": {
-    "brand": "Klarpakke Universitet",
+    "brand": "Klarpakke",
     "tagline": "Norsk krypto-utdanning. Lær uten risiko.",
     "loading": "Laster...",
     "error": "Det oppstod en feil",
@@ -969,7 +969,7 @@
   },
   "binanceGuide": {
     "metadata": {
-      "title": "Slik kommer du i gang med Binance - Klarpakke Universitet",
+      "title": "Slik kommer du i gang med Binance - Klarpakke",
       "description": "Komplett guide for å opprette Binance-konto via Klarpakke. Få lavere gebyrer og støtt vårt arbeid."
     },
     "title": "Binance Guide",
@@ -2288,7 +2288,7 @@
   },
   "helpPage": {
     "title": "Hjelp & Support",
-    "subtitle": "Finn svar på de vanligste spørsmålene om Klarpakke Universitet",
+    "subtitle": "Finn svar på de vanligste spørsmålene om Klarpakke",
     "searchPlaceholder": "Spør vår chatbot...",
     "noResults": "Ingen resultater funnet for \"{query}\"",
     "tryAnother": "Prøv et annet søkeord eller kontakt oss direkte",
@@ -2296,7 +2296,7 @@
       "emailTitle": "Send oss en e-post",
       "emailDesc": "Fant du ikke svaret? Vi svarer vanligvis innen 24 timer på hverdager.",
       "linksTitle": "Nyttige lenker",
-      "aboutLink": "Om Klarpakke Universitet →",
+      "aboutLink": "Om Klarpakke →",
       "pricingLink": "Se priser og planer →",
       "privacyLink": "Personvernerklæring →",
       "termsLink": "Vilkår for bruk →"
@@ -2715,11 +2715,11 @@
       "sections": {
         "1": {
           "title": "1. Aksept av vilkår",
-          "content": "Ved å registrere deg og bruke Klarpakke Universitet, aksepterer du disse vilkårene. Hvis du ikke aksepterer vilkårene, kan du ikke bruke tjenesten."
+          "content": "Ved å registrere deg og bruke Klarpakke, aksepterer du disse vilkårene. Hvis du ikke aksepterer vilkårene, kan du ikke bruke tjenesten."
         },
         "2": {
           "title": "2. Beskrivelse av tjenesten",
-          "content": "Klarpakke Universitet er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading med lekepenger.",
+          "content": "Klarpakke er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading med lekepenger.",
           "bold": "VI BRUKER ALDRI EKTE PENGER."
         },
         "3": {
@@ -2877,7 +2877,7 @@
     },
     "loginDescription": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, lekepenger og automatiserte signaler.",
     "coursesDescription": "Lær trading fra grunnen av med våre strukturerte krypto-kurs på norsk.",
-    "pricingDescription": "Se våre prisplaner for Klarpakke Universitet. Start gratis med lekepenger i dag.",
+    "pricingDescription": "Se våre prisplaner for Klarpakke. Start gratis med lekepenger i dag.",
     "pricing": {
       "title": "Priser | Klarpakke",
       "description": "Velg riktig abonnement for din krypto-reise."
@@ -3495,7 +3495,7 @@
   },
   "pricing": {
     "metadata": {
-      "title": "Priser - Klarpakke Universitet",
+      "title": "Priser - Klarpakke",
       "description": "Velg den planen som passer deg. Start gratis med Student, eller oppgrader til Bachelor, Master eller PhD for mer avanserte funksjoner."
     },
     "hero": {
