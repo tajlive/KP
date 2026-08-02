@@ -181,10 +181,10 @@ function generateSignal(
 // Session
 // ---------------------------------------------------------------------------
 
-async function ensureActiveSession(
+async function ensureActiveSessions(
   db: ReturnType<typeof createClient>,
   userId: string,
-): Promise<{ id: string; capital: number; tradingPair: string; blocked?: string } | null> {
+): Promise<Array<{ id: string; capital: number; tradingPair: string; blocked?: string }>> {
   // 🛡️ Forsvar i dybden (Task 0.3): en guard-deaktivert sesjon skal ALDRI
   // kunne handle — verken via tick, PilotTrade eller auto-trader. Guarden
   // setter status='stopped' + error_message LIKE 'GUARD:%' (eldre
@@ -201,29 +201,33 @@ async function ensureActiveSession(
   // fn_guard_session_position_symbol avviste («entry_price 176.5 er
   // ikke gyldig for BTCUSDT») → 0 handler siden 31. juli. Nå er symbol
   // og sesjon alltid konsistente.
+  //
+  // MULTI-PAR (2026-08-02): DB-indeks endret til (user_id, trading_pair).
+  // Én sesjon per par per bruker — returnerer ALLE aktive sesjoner.
   const { data: existing } = await db
     .from("trading_sessions")
     .select("id, current_capital_nok, trading_pair, status, smart_trader_enabled, error_message")
     .eq("user_id", userId)
     .eq("status", "active")
     .eq("mode", "paper")
-    .or(GUARD_ERROR_OR_FILTER)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .or(GUARD_ERROR_OR_FILTER);
 
-  if (existing) {
-    await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", existing.id);
-    return {
-      id: existing.id,
-      capital: Number(existing.current_capital_nok ?? DEFAULT_CAPITAL),
-      tradingPair: existing.trading_pair,
-    };
+  const sessions: Array<{ id: string; capital: number; tradingPair: string; blocked?: string }> = [];
+
+  for (const s of existing ?? []) {
+    await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", s.id);
+    sessions.push({
+      id: s.id,
+      capital: Number(s.current_capital_nok ?? DEFAULT_CAPITAL),
+      tradingPair: s.trading_pair,
+    });
   }
 
-  // Ingen tradebar aktiv sesjon. Hvis brukeren HAR en sesjon som er
-  // deaktivert (guard/status), skal vi IKKE opprette en ny — det ville
-  // vært en omgåelse av guard-enforcement. Logg årsaken og blokker.
+  // Opprett sesjoner for manglende par (multi-par: alle 10 skal ha session)
+  const existingPairs = new Set(sessions.map(s => s.tradingPair));
+  const missingPairs = TOP_SYMBOLS.filter(p => !existingPairs.has(p));
+
+  // Sjekk om brukeren er guard-deaktivert
   const { data: disabled } = await db
     .from("trading_sessions")
     .select("id, status, smart_trader_enabled, error_message")
@@ -235,14 +239,15 @@ async function ensureActiveSession(
 
   if (disabled) {
     const reason = sessionSkipReason(disabled);
-    if (reason) {
-      console.warn(
-        `[PilotTrade] Hoppet over handel for ${userId}: sesjon ${disabled.id} er ikke tradebar (${reason})`,
-      );
-      return { id: disabled.id, capital: 0, tradingPair: "BTCUSDT", blocked: `Sesjonen er deaktivert (${reason})` };
+    if (reason && sessions.length === 0) {
+      // Ingen aktive + guard-deaktivert → blokkér
+      return [{ id: disabled.id, capital: 0, tradingPair: "BTCUSDT", blocked: `Sesjonen er deaktivert (${reason})` }];
     }
+    // Har allerede aktive sesjoner — fortsett med de eksisterende
+    if (missingPairs.length === 0) return sessions;
   }
 
+  // Hent kapital for nye sesjoner
   const { data: account } = await db
     .from("paper_accounts")
     .select("current_balance")
@@ -250,33 +255,37 @@ async function ensureActiveSession(
     .maybeSingle();
 
   const capital = Number(account?.current_balance ?? DEFAULT_CAPITAL);
-  if (capital <= 0) return null;
+  if (capital <= 0) return sessions; // Returner eksisterende om noen
 
-  // Ny sesjon opprettes med et topp-symbol (sesjonens symbol styrer hva
-  // PilotTrade senere handler for denne brukeren).
-  const tradingPair = TOP_SYMBOLS[0];
+  // MULTI-PAR: Opprett sesjoner kun for MANGLENDE par
+  const capitalPerPair = Math.round(capital / TOP_SYMBOLS.length);
 
-  const { data: created, error } = await db
-    .from("trading_sessions")
-    .insert({
-      user_id: userId,
-      mode: "paper",
-      strategy_id: "cryptopilot",
-      status: "active",
-      trading_pair: tradingPair,
-      starting_capital_nok: capital,
-      current_capital_nok: capital,
-      current_capital: capital,
-      initial_capital: capital,
-      last_heartbeat: new Date().toISOString(),
-      last_tick_at: new Date().toISOString(),
-      strategy_config: { stop_loss_pct: 5, close_on_stop: true },
-    })
-    .select("id")
-    .single();
+  for (const pair of missingPairs) {
+    const { data: created } = await db
+      .from("trading_sessions")
+      .insert({
+        user_id: userId,
+        mode: "paper",
+        strategy_id: "cryptopilot",
+        status: "active",
+        trading_pair: pair,
+        starting_capital_nok: capitalPerPair,
+        current_capital_nok: capitalPerPair,
+        current_capital: capitalPerPair,
+        initial_capital: capitalPerPair,
+        last_heartbeat: new Date().toISOString(),
+        last_tick_at: new Date().toISOString(),
+        strategy_config: { stop_loss_pct: 5, close_on_stop: true },
+      })
+      .select("id")
+      .single();
 
-  if (error || !created) return null;
-  return { id: created.id, capital, tradingPair };
+    if (created) {
+      sessions.push({ id: created.id, capital: capitalPerPair, tradingPair: pair });
+    }
+  }
+
+  return sessions;
 }
 
 // ---------------------------------------------------------------------------
@@ -508,24 +517,14 @@ export async function POST(request: NextRequest) {
       userId = data.user.id;
     }
 
-    // 1. Session — brukerens aktive paper-sesjon er kilden til symbolet
-    // (P1-fiks 2026-08-01: før ble symbol valgt tilfeldig, men DB tillater
-    // kun ÉN aktiv paper-sesjon per bruker → ordre kjørte mot feil sesjon
-    // → fn_guard_session_position_symbol avviste → 0 handler siden 31. juli)
-    const session = await ensureActiveSession(db, userId);
-    if (!session) {
-      return NextResponse.json({ error: "Ingen kapital" }, { status: 400 });
-    }
-    if (session.blocked) {
-      // Guard-deaktivert sesjon: aldri opprett ny, aldri handel.
-      return NextResponse.json(
-        { error: session.blocked, blocked: true },
-        { status: 403 },
-      );
-    }
+    // 1. Sessions — ALLE aktive paper-sesjoner (én per trading par)
+    const sessions = await ensureActiveSessions(db, userId);
+    const allResults: Array<{ symbol: string; action: string; reason: string }> = [];
+    let totalExits = 0;
 
-    // 2. Symbol — alltid sesjonens eget symbol
-    const symbol = session.tradingPair;
+    for (const session of sessions) {
+      if (session.blocked) continue;
+      const symbol = session.tradingPair;
 
     // 3. Hent markedsdata
     const market = await fetchMarketData(symbol);
@@ -658,22 +657,15 @@ export async function POST(request: NextRequest) {
     }
 
     // 7. Ikke stopp session — behold aktiv for neste syklus
+      allResults.push({ symbol, action: signal.action, reason: signal.reason });
+    }
 
-    // 8. Response
-    const sizingPct = dynamicPositionPct(signal.confidence, market.volatility);
-    const msg = tradeData.success
-      ? `🎭 CryptoPilot: ${signal.action} ${symbol} (${sizingPct.toFixed(1)}% size) — trade utført`
-      : signal.action === "WAIT"
-        ? `🎭 ${symbol}: ${signal.reason}`
-        : `⚠️ ${signal.action} ${symbol} feilet: ${tradeData.error || "ukjent"}`;
-
+    const msg = allResults.map(r => `${r.symbol}: ${r.action}`).join(", ");
     return NextResponse.json({
       success: true,
-      message: msg,
-      signal: { action: signal.action, symbol, price, confidence: signal.confidence, reason: signal.reason },
-      sizing: { pct: sizingPct, volatility: Math.round(market.volatility) },
-      exits: exitsExecuted,
-      trade: tradeData.success ? { success: true, id: tradeData.tradeId } : { success: false, error: tradeData.error },
+      message: `🎭 ${allResults.length} par behandlet: ${msg}`,
+      results: allResults,
+      exits: totalExits,
     });
   } catch (err) {
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
