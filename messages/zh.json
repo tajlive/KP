@@ -54,7 +54,25 @@
     "users": "用户",
     "students": "学生",
     "tradeSync": "交易同步",
-    "system": "系统",
+    "system": {
+      "authProvider": "授权提供者",
+      "customDomain": "自定义域",
+      "databaseInfo": "数据库信息",
+      "deployment": "部署",
+      "emailStatus": "电子邮件状态",
+      "enabled": "启用",
+      "functions": "功能",
+      "plan": "计划",
+      "platform": "平台",
+      "provider": "提供商",
+      "rateLimiting": "速率限制",
+      "region": "地区",
+      "security": "安全性",
+      "sentToday": "今天发送",
+      "successRate": "成功率",
+      "tables": "表格",
+      "tokenExpiry": "令牌到期"
+    },
     "settings": "设置",
     "loggedInAs": "登录为",
     "logout": "退出登录",
@@ -91,7 +109,266 @@
     },
     "search": {
       "placeholder": "搜索用户..."
-    }
+    },
+    "active": "活跃",
+    "adminError": "管理员错误",
+    "adminLogin": "管理员登录",
+    "adminPanel": "管理仪表板",
+    "adminPortal": "克拉帕克大学 - 管理门户",
+    "allServicesNormal": "一切服务正常",
+    "allStatuses": "所有状态",
+    "backToLogin": "返回登录",
+    "banConfirmDesc": "这将禁止用户使用该平台。你确定吗？",
+    "banUserError": "禁止用户时出错",
+    "banned": "禁止",
+    "cancel": "取消",
+    "changeToAdmin": "更改为管理员",
+    "checkInbox": "检查您的收件箱（和垃圾邮件）。该链接的有效期为 1 小时。",
+    "checking": "正在检查...",
+    "choosePassword": "选择密码",
+    "confirmBan": "确认禁令",
+    "confirmFounder": "确认创始人身份",
+    "confirmNewPassword": "确认新密码",
+    "confirmRoleChange": "确认角色变更",
+    "confirmStopBot": "您确定要阻止这个机器人吗？",
+    "connected": "已连接",
+    "count": "计数",
+    "email": "电子邮件",
+    "emailBody": "留言",
+    "emailSent": "电子邮件已发送",
+    "emailSentDesc": "如果我们的系统中存在该电子邮件，我们会发送一个链接来重置您的密码。",
+    "emailSubject": "主题",
+    "emailTo": "至",
+    "error": "错误",
+    "errorCode": "错误代码",
+    "forgotPassword": "忘记密码？",
+    "forgotPasswordDesc": "输入您的电子邮件，我们将发送一个链接以重置您的密码。",
+    "forgotPasswordError": "发生错误。请再试一次。",
+    "founderConfirmDesc": "这将授予用户“创始人”角色并分配 10,000 个 KLT 代币。你确定吗？",
+    "grantFounderError": "授予创始人身份时出错",
+    "id": "身份证号",
+    "impersonation": {
+      "description": "描述",
+      "email": "电子邮件",
+      "emailPlaceholder": "你@example.com",
+      "endSession": "结束会议",
+      "endSessionAria": "结束会话咏叹调",
+      "ending": "结局",
+      "password": "密码",
+      "passwordHint": "密码提示",
+      "passwordPlaceholder": "输入密码",
+      "reason": "原因",
+      "reasonPlaceholder": "冒充原因",
+      "start": "开始",
+      "starting": "开始",
+      "title": "标题",
+      "warningText": "警告文字",
+      "warningTitle": "警告标题"
+    },
+    "invalidCredentials": "电子邮件或密码无效",
+    "invalidLink": "链接无效",
+    "invalidResetLink": "链接无效或过期。请求新的重置链接。",
+    "liveActivity": "实时活动（Supabase Realtime）",
+    "loadUsersError": "无法加载用户",
+    "loggingIn": "登录",
+    "login": "登录",
+    "loginError": "发生错误。请再试一次。",
+    "loginNow": "立即登录",
+    "manageUsers": "管理用户和访问",
+    "nav": {
+      "abTests": "抗体测试",
+      "adminV2": "管理员",
+      "analytics": "分析",
+      "autoTrading": "自动交易",
+      "campaign": "活动",
+      "impersonate": "冒充",
+      "monetization": "货币化",
+      "sectionOverview": "章节概述",
+      "sectionProduct": "部分产品",
+      "sectionSupport": "部门支持",
+      "sectionSystem": "剖面系统",
+      "sectionUsers": "用户部分",
+      "tradeHealth": "交易否则",
+      "traderVerifications": "交易者验证",
+      "tradingSessions": "交易时段"
+    },
+    "newPassword": "新密码",
+    "noAdminAccess": "您无权访问管理面板",
+    "operational": "运营中",
+    "password": "密码",
+    "passwordTooShort": "密码必须至少为 8 个字符",
+    "passwordUpdated": "密码已更新！",
+    "passwordUpdatedDesc": "您的新密码现已生效。您可以立即登录。",
+    "passwordsMismatch": "密码不匹配",
+    "ready": "准备好",
+    "requestNewLink": "请求新链接",
+    "resetError": "发生错误。请再试一次。",
+    "resetPassword": "重置密码",
+    "role": "角色",
+    "roleConfirmDesc": "您确定要将角色更改为“{role}”吗？",
+    "roleUpdated": "角色更新",
+    "saveNewPassword": "保存新密码",
+    "searchSessions": "按会话 ID、用户或配对搜索...",
+    "searchUsers": "搜索用户",
+    "selectTier": "选择等级",
+    "send": "发送",
+    "sendEmail": "发送电子邮件",
+    "sendLink": "发送链接",
+    "sending": "正在发送...",
+    "serviceStatus": "服务状态",
+    "statusActive": "活跃",
+    "statusCrashed": "坠毁",
+    "statusPaused": "已暂停",
+    "statusStopped": "已停止",
+    "stop": "停止",
+    "subtitle": "连接到 Supabase 和 Resend 的高级控制面板。",
+    "supabaseDB": "苏帕数据库",
+    "systemHealth": {
+      "allOperational": "所有系统均可运行",
+      "apiKeyConfigured": "API 密钥已配置",
+      "authServiceUnreachable": "身份验证服务无法访问",
+      "authValid": "验证有效",
+      "betaCapacity": "测试容量",
+      "checkAgain": "再次检查",
+      "checkStatusBelow": "请检查下面的状态",
+      "checking": "正在检查...",
+      "cloudflareWorkers": "Cloudflare 工人",
+      "connectionFailed": "连接失败",
+      "couldNotFetchCount": "无法获取计数",
+      "lastChecked": "最后检查",
+      "latency": "{ms}ms 延迟",
+      "loading": "正在加载...",
+      "ofStudents": "{count} 100 名学生（{percentage}% 已满）",
+      "resendEmail": "重新发送电子邮件",
+      "someIssues": "部分系统有问题",
+      "status": {
+        "degraded": "降级",
+        "down": "向下",
+        "operational": "运营中"
+      },
+      "supabaseAuth": "Supabase认证",
+      "supabaseDB": "苏帕数据库",
+      "title": "系统健康状况",
+      "workerDeploymentActive": "工作人员部署已激活"
+    },
+    "systemStatus": "系统状态",
+    "totalUsers": "用户总数",
+    "tradeHealth": {
+      "cards": {
+        "activeSessions": "活跃/所有会话",
+        "ambiguous": "雷德",
+        "balanceDrift": "平衡漂移",
+        "mixedRows": "布兰德·雷德",
+        "mockRows": "模拟雷达",
+        "sessionProliferation": "布鲁克雷 m/ >12 会话",
+        "tradesTotal": "交易总数",
+        "usdtRows": "USDT-rader"
+      },
+      "fixError": "奥托菲克斯菲莱特",
+      "fixPartial": "Auto-fiks delvis fullført — se advarsler",
+      "fixSuccess": "自动菲克斯福尔特",
+      "fixing": "菲克瑟...",
+      "footerNote": "Samme sjekker kjøres automatisk hver mandag 07:17 med auto-fiks（首先备份）。 Denne knappen kjører samme fiks umiddelbart。",
+      "lastFix": "西斯特自动菲克斯",
+      "loadError": "最后的最后数据",
+      "loading": "拉斯特...",
+      "nothingToFix": "Ingenting å fikse — alt var 租金",
+      "pairTable": {
+        "closed": "卢克德",
+        "empty": "Ingen Lukkede 处理程序 siste 30 dager",
+        "pair": "帕",
+        "pnl": "PNL",
+        "title": "每杆胜率（30 达格）",
+        "winRate": "胜率"
+      },
+      "refresh": "奥普达特",
+      "runFix": "Kjør 自动装置",
+      "statusClean": "Alt ser sunt ut ✓",
+      "statusIssues": "Avvik funnet — kjør auto-fiks",
+      "title": "交易否则",
+      "updated": "奥普达特"
+    },
+    "traderVerifications": {
+      "actions": "行动",
+      "approve": "批准",
+      "approvedSuccess": "交易商批准",
+      "date": "日期",
+      "empty": "没有找到验证",
+      "fetchError": "无法获取验证",
+      "reason": "原因",
+      "reject": "拒绝",
+      "rejectPrompt": "拒绝原因",
+      "rejectedSuccess": "交易者被拒绝",
+      "retry": "重试",
+      "status": {
+        "all": "全部",
+        "approved": "已批准",
+        "pending": "待定",
+        "rejected": "被拒绝"
+      },
+      "statusColumn": "状态",
+      "subtitle": "批准或拒绝交易者请求",
+      "title": "交易者验证",
+      "trader": "交易员"
+    },
+    "tryAgain": "再试一次",
+    "unexpectedError": "发生意外错误",
+    "unknown": "未知",
+    "unknownError": "发生未知错误",
+    "unknownName": "未知名字",
+    "updateRoleError": "无法更新角色",
+    "updating": "更新中...",
+    "usersPage": {
+      "ariaFilterRole": "Aria 过滤器角色",
+      "ariaFilterSource": "Aria 过滤源",
+      "ariaFilterTier": "Aria 过滤层",
+      "ariaSelectAllUsers": "Aria 选择所有用户",
+      "balanceKr": "平衡克尔",
+      "cockpitReport": "驾驶舱报告",
+      "filterAllRoles": "过滤所有角色",
+      "filterAllSources": "过滤所有来源",
+      "filterAllTiers": "过滤所有层级",
+      "impersonate": "冒充",
+      "paperBalance": "纸平衡",
+      "paperError": "纸张错误",
+      "paperModalHint": "纸张模态提示",
+      "paperModalTitle": "论文模态标题",
+      "paperSaved": "节省纸张",
+      "reportClose": "报告关闭",
+      "reportDone": "报告完成",
+      "reportDownload": "报告下载",
+      "reportError": "报告错误",
+      "reportExpires": "报告过期",
+      "reportFailed": "报告失败",
+      "reportJobId": "报告职位 ID",
+      "reportModalHint": "报告模式提示",
+      "reportModalTitle": "报告模态标题",
+      "reportPending": "报告待处理",
+      "reportQueueing": "报告排队",
+      "reportReady": "报告准备就绪",
+      "reportRunning": "报告运行情况",
+      "reportStatus": "报告状态",
+      "resetBaseline": "重置基线",
+      "roles": {
+        "admin": "管理员",
+        "analyst": "分析师",
+        "founder": "创始人",
+        "student": "学生",
+        "trader": "交易员"
+      },
+      "savePaper": "节省纸张",
+      "setPaper": "套纸",
+      "students": {
+        "ariaFilterRole": "Aria 过滤器角色",
+        "filterAllRoles": "过滤所有角色"
+      },
+      "syncSessions": "同步会话",
+      "tierError": "层错误",
+      "tierUpdated": "等级更新"
+    },
+    "verifyLinkError": "无法验证链接",
+    "verifyingLink": "正在验证链接...",
+    "waitingForEvents": "等待活动..."
   },
   "adminDashboard": {
     "title": "Admin Dashboard",
@@ -234,7 +511,8 @@
         "createAccount": "Create account",
         "passwordPlaceholder": "At least 8 characters",
         "haveAccount": "Already have an account?",
-        "logIn": "Log in"
+        "logIn": "Log in",
+        "paperCreditsAwait": "确认后，100,000 克朗的纸币将在您的仪表板上等待 — 准备好您的第一笔交易。"
       },
       "resetPassword": {
         "title": "Forgot password?",
@@ -255,6 +533,20 @@
         "successDesc": "Your password has been changed. You can now log in with the new password.",
         "goToLogin": "Go to login"
       }
+    },
+    "accessDenied": "访问被拒绝",
+    "accessDeniedDesc": "您无权访问此页面。",
+    "email": "电子邮件地址",
+    "login": "登录",
+    "loginRequired": "您必须登录才能查看此页面",
+    "loginRequiredDesc": "登录以访问此内容。",
+    "loginRequiredTitle": "登录以继续",
+    "next": "下一页",
+    "password": "密码",
+    "verify": {
+      "noToken": "未找到验证令牌",
+      "title": "正在验证电子邮件...",
+      "tokenLabel": "代币：{token}"
     }
   },
   "autoTrade": {
@@ -275,7 +567,10 @@
       "sell": "卖出",
       "hold": "持有",
       "avgConfidence": "平均置信度",
-      "lastRun": "最近分析"
+      "lastRun": "最近分析",
+      "balance": "平衡",
+      "positions": "职位",
+      "totalPnL": "总损益"
     },
     "config": {
       "title": "配置",
@@ -333,7 +628,115 @@
       "mins": "{n} 分钟前",
       "hour": "{n} 小时前",
       "hours": "{n} 小时前"
-    }
+    },
+    "page": {
+      "activeBots": "{count, plural, =1 {你有 1 个活跃的自动交易机器人} other {你有 # 个活跃的自动交易机器人}}",
+      "description": "设置您的自动交易策略。",
+      "title": "自动交易"
+    },
+    "dashboard": {
+      "activeStrategies": "积极策略",
+      "activeTrial": "积极试用",
+      "allExecuted": "所有已执行的交易",
+      "apiKey": "API密钥",
+      "apiKeysSaved": "API 密钥已保存！",
+      "apiSecret": "API秘密",
+      "apiSecurityNote": "API 密钥在存储前已加密。我们从不以纯文本形式存储密钥。",
+      "binanceAccount": "币安账户",
+      "binanceAccountLink": "您可以在您的",
+      "binanceDescription": "管理您的币安 API 密钥以进行自动交易",
+      "binanceSettings": "币安 API 设置",
+      "capital": "资金（USDT）",
+      "configureApiKeys": "配置API密钥",
+      "confirmDelete": "您确定要删除该策略吗？",
+      "connectBinance": "连接到币安",
+      "couldNotCreateStrategy": "无法创建策略",
+      "couldNotSaveKeys": "无法保存密钥",
+      "createNewStrategy": "制定新战略",
+      "createStrategy": "制定策略",
+      "currentTier": "当前等级",
+      "duplicateStrategy": "在这种模式下你已经有了这种类型的策略",
+      "error": {
+        "errorCode": "错误代码：{code}",
+        "title": "出了点问题",
+        "unexpectedError": "仪表板中发生意外错误"
+      },
+      "getStarted": "从创建您的第一个自动交易策略开始",
+      "history": "历史",
+      "liveRequiresBachelor": "实时交易需要学士或更高级别",
+      "liveRequiresPaid": "实时交易需要付费订阅",
+      "liveTrading": "实时交易",
+      "liveTradingMode": "实时交易",
+      "loadingDashboard": "正在加载仪表板...",
+      "locked": "锁定",
+      "lossFromAll": "所有策略的损失",
+      "maxStrategies": "最大策略",
+      "maxStrategiesReached": "您已达到订阅策略的最大数量 ({max})",
+      "newStrategy": "新战略",
+      "noStrategies": "还没有策略",
+      "noTrades": "还没有交易",
+      "paperSimulated": "纸币（模拟）",
+      "paperTrading": "纸上交易",
+      "profitFromAll": "从所有策略中获利",
+      "recentTrades": "最近的交易",
+      "runningNow": "正在运行",
+      "saveAndConnect": "保存并连接",
+      "settings": "设置",
+      "strategies": "策略",
+      "strategyDeleted": "策略已删除",
+      "strategyType": "策略类型",
+      "strategyUpdated": "策略已更新",
+      "subscriptionAccess": "订阅和访问",
+      "subtitle": "管理您的自动交易策略",
+      "symbol": "符号",
+      "title": "自动交易仪表板",
+      "totalPnl": "总损益",
+      "totalTrades": "总交易数",
+      "tradingMode": "交易模式",
+      "upgradeSubscription": "升级订阅",
+      "useTestnet": "使用测试网（纸币）",
+      "winRate": "胜率",
+      "winningTrades": "获胜交易"
+    },
+    "emergencyStop": "紧急停止",
+    "forceCloseAll": "强制关闭全部",
+    "liveStatus": "实时状态",
+    "loading": "正在加载...",
+    "maxPositions": "最大持仓量",
+    "pauseRobot": "暂停机器人",
+    "recentActivity": "最近的活动",
+    "risk": {
+      "aggressive": "好斗的",
+      "balanced": "平衡",
+      "conservative": "保守派",
+      "highRisk": "高风险",
+      "lowRisk": "低风险",
+      "recommended": "推荐"
+    },
+    "startRobot": "启动机器人",
+    "strategyTypes": {
+      "ai_copy": {
+        "description": "复制人工智能生成的信号",
+        "name": "人工智能复制"
+      },
+      "dca_trygg": {
+        "description": "每周美元成本平均",
+        "name": "DCA 安全"
+      },
+      "grid_bot": {
+        "description": "自动网格交易",
+        "name": "网格机器人"
+      },
+      "multisignal_aktiv": {
+        "description": "RSI + 4 小时动能",
+        "name": "多信号激活"
+      },
+      "trend_balansert": {
+        "description": "带 RSI 滤波器的 MA 交叉",
+        "name": "趋势平衡"
+      }
+    },
+    "tradingPairs": "交易对"
   },
   "autoTrading": {
     "title": "AI Auto-Trading",
@@ -482,7 +885,24 @@
     "close": "关闭",
     "open": "打开",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "errors": {
+      "403": {
+        "backHome": "回到家",
+        "description": "您无权查看此页面。",
+        "title": "访问被拒绝"
+      },
+      "404": {
+        "backHome": "回到家",
+        "description": "抱歉，我们找不到您要查找的页面。",
+        "title": "找不到页面"
+      },
+      "500": {
+        "backHome": "回到家",
+        "description": "我们这边出了点问题。请稍后重试。",
+        "title": "服务器错误"
+      }
+    }
   },
   "beta": {
     "autoTrade": "AI 自动交易 Beta",
@@ -506,14 +926,51 @@
     "betaWarningText": "Beta 测试涉及真实风险。仅投资您能承受损失的金额。",
     "submitting": "提交中...",
     "submitApplication": "提交申请",
-    "applicationError": "发生错误，请重试。"
+    "applicationError": "发生错误，请重试。",
+    "aiCopilot": "人工智能副驾驶",
+    "aiCopilotDesc": "交易决策人工智能助手",
+    "autoTradeDesc": "人工智能自动交易",
+    "betaDashboard": "测试版仪表板",
+    "competition": "竞争",
+    "competitionDesc": "赢得奖品并跟单最佳交易者",
+    "connectBinance": "连接币安",
+    "copyLink": "复制您的链接",
+    "exchangeConnectDesc": "要开始实时交易，您需要连接您的币安账户。",
+    "linkCopied": "推荐链接已复制到剪贴板！",
+    "liveTrading": "实时交易",
+    "liveTradingDesc": "用真实货币和人工智能指导进行交易",
+    "loss": "损失",
+    "maxDailyLoss": "每日最大损失",
+    "maxDailyTrades": "每日最大交易量",
+    "maxTradeSize": "最大交易规模",
+    "noExchangeConnected": "没有连接交易所",
+    "paperTrading": "模拟交易",
+    "paperTradingDesc": "用模拟货币练习",
+    "profit": "利润",
+    "referralCta": "邀请 3 位朋友 – 免费试用 1 个月！",
+    "referralDesc": "帮助我们成长！如果您邀请 3 位朋友成为付费会员，我们将在下个月免费为您提供。",
+    "referralTitle": "推荐并获胜",
+    "todayStats": "今天",
+    "trades": "交易",
+    "tradingLimits": "交易限额",
+    "winRate": "胜率"
   },
   "binanceGuide": {
     "title": "Binance 指南",
     "description": "Binance 指南",
     "subtitle": "Binance 是全球最大的加密货币交易所。我们将逐步引导您完成注册。",
     "startSmall": "从小额开始（例如 500 元）通过银行转账。您随时可以存入更多。永远不要投入超出您承受能力的资金。",
-    "timeEstimate": "注册大约需要5分钟 • KYC验证最多需要24小时"
+    "timeEstimate": "注册大约需要5分钟 • KYC验证最多需要24小时",
+    "deposit": "存入资金",
+    "guide": "指南",
+    "metadata": {
+      "description": "通过 Klarpakke 创建币安账户的完整指南。获得更低的费用并支持我们的工作。",
+      "title": "如何开始使用币安 - Klarpakke University"
+    },
+    "register": "注册账号",
+    "startTrading": "开始交易",
+    "steps": "步骤",
+    "verify": "验证身份"
   },
   "calculator": {
     "title": "计算器",
@@ -549,7 +1006,30 @@
       "button": "尝试模拟交易"
     },
     "cta_after_result": "学习方法 — 免费开始",
-    "cta_no_card": "无需信用卡"
+    "cta_no_card": "无需信用卡",
+    "custom": "定制",
+    "lotto": {
+      "annualRate": "年利率3%（安全）",
+      "bankGuarantee": "由银行担保",
+      "cryptoTheoretical": "加密（理论）",
+      "dailyReturn": "每日 0.1%（极其乐观）",
+      "disclaimer": "计算器显示理论数据。日回报率 0.1% 是极其乐观的，随着时间的推移并不现实。您可能会损失全部投资。这不是投资建议。自己做研究。",
+      "expectedLoss": "预期损失",
+      "highInterest": "高收益储蓄",
+      "important": "重要的是要知道",
+      "lotto": "彩票",
+      "noGuarantee": "没有保证，你可能会失去一切",
+      "statLoss": "统计损失 40%",
+      "subtitle": "比较同样的努力所得到的结果",
+      "timeHorizon": "时间范围",
+      "title": "你的习惯要付出什么代价？",
+      "weeklySpend": "每周花的钱",
+      "years": "年"
+    },
+    "metadata": {
+      "description": "了解理论金额如何随着每日复合回报而增长。 Klarpakke 的计算器是一个假设练习——不能保证。",
+      "title": "计算器 |克拉帕克"
+    }
   },
   "checkout": {
     "title": "Kasse",
@@ -565,7 +1045,32 @@
     "courseIsFree": "Dette kurset er gratis. Ingen betaling nødvendig.",
     "successTitle": "Betaling Vellykket! 🎉",
     "successMessage": "Du har nå tilgang til kurset. Gå til dashboard for å begynne.",
-    "goToDashboard": "Gå til Dashboard"
+    "goToDashboard": "Gå til Dashboard",
+    "bachelorNoTrialDescription": "学士 无试用说明",
+    "bachelorNoTrialTitle": "学士无试用头衔",
+    "backToPricing": "返回定价",
+    "billingCurrency": "计费货币",
+    "cardForInternational": "国际卡",
+    "course": "课程",
+    "currency": "货币",
+    "currencyHelp": "货币帮助",
+    "free": "0 克朗",
+    "loading": "正在加载...",
+    "paymentDescription": "选择您喜欢的付款方式",
+    "paymentMethod": "付款方式",
+    "perMonthSuffix": "每月后缀",
+    "plan": "计划",
+    "secureNote": "安全付款。我们没有存储卡信息。",
+    "session_id": "会话 ID",
+    "stripeNotConfigured": "条带未配置",
+    "studentPlanFree": "学生计划免费",
+    "subscription": "订阅",
+    "totalDueToday": "今日到期总额",
+    "totalToday": "今天总计",
+    "trialDescription": "在试用期结束之前，我们不会向您收取费用。",
+    "trialPeriod": "14 天免费试用",
+    "vippsForNorwegians": "挪威人的 VIP 特权",
+    "yourOrder": "您的订单"
   },
   "common": {
     "loading": "加载中...",
@@ -583,7 +1088,156 @@
     "tryAgain": "重试",
     "learnMore": "了解更多",
     "seeAll": "查看全部",
-    "comingSoon": "即将推出"
+    "comingSoon": "即将推出",
+    "binanceNotConnectedDesc": "Binance 未连接说明",
+    "binanceNotConnectedTitle": "Binance 未连接 标题",
+    "botConfigStrategy": "机器人配置策略",
+    "botStrategyAi": "机器人策略人工智能",
+    "botStrategyAiDesc": "机器人策略 Ai 描述",
+    "botStrategyDca": "机器人策略 DCA",
+    "botStrategyDcaDesc": "机器人策略 Dca 描述",
+    "botStrategyGrid": "机器人策略网格",
+    "botStrategyGridDesc": "机器人策略网格描述",
+    "botStrategyMulti": "机器人策略多",
+    "botStrategyMultiDesc": "机器人策略多描述",
+    "botStrategyTrend": "机器人策略趋势",
+    "botStrategyTrendDesc": "机器人策略趋势描述",
+    "chooseRisk": "选择风险",
+    "chooseStrategy": "选择策略",
+    "clickToSelect": "单击选择",
+    "connectBinanceCta": "连接币安 Cta",
+    "connectBinanceToStart": "连接币安开始",
+    "customAmount": "定制金额",
+    "duplicateSessionDesc": "重复的会话描述",
+    "duplicateSessionTitle": "重复的会话标题",
+    "edit": "编辑",
+    "interactive": {
+      "error": {
+        "finish": "完成"
+      },
+      "step1": {
+        "cta": "克塔",
+        "description": "描述",
+        "howItWorksTitle": "它是如何运作的",
+        "list1": "列表",
+        "list2": "列表",
+        "list3": "列表",
+        "title1": "标题",
+        "title2": "标题"
+      },
+      "step2": {
+        "preloaded": "预载",
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "step3": {
+        "currencySuffix": "货币后缀",
+        "goalStrategy": "目标策略",
+        "initializing": "正在初始化",
+        "playMoney": "虚拟货币",
+        "startBot": "启动机器人",
+        "status": "状态",
+        "statusValue": "状态值",
+        "subtitle": "副标题",
+        "title": "标题",
+        "tooltip": "工具提示",
+        "tradingMode": "交易模式",
+        "tradingModeValue": "交易模式价值"
+      },
+      "step4": {
+        "redirecting": "重定向",
+        "subtitle": "副标题",
+        "title": "标题"
+      }
+    },
+    "kellyNotice": "凯利通知",
+    "liveBalanceUnknownWarning": "实时平衡未知警告",
+    "liveCapitalHighWarning": "实时资本高警告",
+    "liveConfirmWarning": "确认直播开始",
+    "liveModeLabel": "实时模式标签",
+    "liveNotAllowedDesc": "不允许直播说明",
+    "liveNotAllowedTitle": "不允许直播标题",
+    "liveWarningDesc": "实时警告说明",
+    "liveWarningTitle": "实时警告标题",
+    "mobile": {
+      "step2": {
+        "backAriaLabel": "返回 Aria 标签",
+        "subtitle": "副标题",
+        "title": "标题"
+      }
+    },
+    "modeLabel": "模式标签",
+    "paperModeLabel": "纸张模式标签",
+    "recommended": "推荐",
+    "refresh": "刷新",
+    "riskHighDesc": "风险高描述",
+    "riskHighLabel": "高风险标签",
+    "riskLowDesc": "风险低描述",
+    "riskLowLabel": "低风险标签",
+    "riskMedDesc": "风险医学描述",
+    "riskMedLabel": "风险医疗标签",
+    "seePlans": "查看计划",
+    "selectCoins": "选择硬币",
+    "sessionLimitTitle": "会话限制标题",
+    "speedOnboarding": {
+      "step1": {
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "step2": {
+        "paperTradingZeroRisk": "模拟交易零风险",
+        "startTrading": "开始交易",
+        "starting": "开始",
+        "startingCapital": "启动资金",
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "step3": {
+        "goToDashboard": "转到仪表板",
+        "line1": "线",
+        "line2": "线",
+        "line3": "线",
+        "title": "标题",
+        "viewActivity": "查看活动"
+      },
+      "timerPrefix": "定时器前缀"
+    },
+    "startBotAction": "启动机器人",
+    "startBotTitle": "启动机器人标题",
+    "startFailedTitle": "开始失败的标题",
+    "startLiveBotAction": "启动直播机器人",
+    "starting": "开始",
+    "stepAmount": "步数",
+    "stepStart": "步骤开始",
+    "stepStrategy": "步骤策略",
+    "strategyAi": "策略人工智能",
+    "strategyAiDesc": "策略AI描述",
+    "strategyDca": "策略 DCA",
+    "strategyDcaDesc": "策略 DCA 描述",
+    "strategyGrid": "策略网格",
+    "strategyGridDesc": "策略网格描述",
+    "strategyMulti": "策略多",
+    "strategyMultiDesc": "策略多描述",
+    "strategyTrend": "策略趋势",
+    "strategyTrendDesc": "策略趋势描述",
+    "submit": "提交",
+    "summary": "总结",
+    "title": "标题",
+    "toasts": {
+      "general": {
+        "error": "错误",
+        "saved": "已保存"
+      },
+      "paperBot": {
+        "networkError": "网络错误"
+      }
+    },
+    "unexpectedError": "意外错误",
+    "update": "更新",
+    "upgradeCta": "升级CTA",
+    "upgradeNotice": "升级通知",
+    "upgradeToStartLive": "升级开始直播",
+    "waitingForSignal": "等待信号"
   },
   "competition": {
     "title": "比赛",
@@ -597,7 +1251,30 @@
     "timeLeft": "剩余时间",
     "participants": "参与者",
     "yourRank": "您的排名",
-    "noActive": "目前没有进行中的比赛。"
+    "noActive": "目前没有进行中的比赛。",
+    "allTime": "所有时间",
+    "copy": "复制",
+    "copyError": "无法复制策略。请稍后重试。",
+    "copyStrategy": "你想复制{name}的策略吗？",
+    "copyStrategyDesc": "这将开始一个新的模拟，风险级别为：{risk}。",
+    "emptyCta": "开始交易",
+    "howToWin": "如何获胜？",
+    "howToWinDesc": "回报百分比 (ROI) 最高者获胜。我们通过查看夏普比率来调整风险。",
+    "loading": "正在加载排行榜...",
+    "monthly": "每月",
+    "monthlyPrize": "每月纸张交易大赛",
+    "notParticipating": "您还没有参加比赛",
+    "return": "返回",
+    "risk": "风险",
+    "startFirstTrade": "开始您的第一笔交易",
+    "topPercent": "顶部 {percent}%",
+    "trades": "交易",
+    "weekly": "每周",
+    "weeklyPrize": "每周获胜者可免费订阅 1 个月",
+    "whatIsCopying": "什么是抄袭？",
+    "whatIsCopyingDesc": "当您跟单交易者时，您会启动一个与他们具有相同风险状况和策略的机器人。",
+    "winRate": "胜率",
+    "yourPosition": "你的立场"
   },
   "contact": {
     "title": "联系我们",
@@ -611,21 +1288,36 @@
       "emailPlaceholder": "your@email.com",
       "message": "消息",
       "messagePlaceholder": "在这里输入您的消息...",
-      "submit": "发送消息"
+      "submit": "发送消息",
+      "emailInvalid": "电子邮件地址无效",
+      "emailRequired": "电子邮件为必填项",
+      "messageMinLength": "消息长度必须至少为 10 个字符",
+      "messageRequired": "需要留言",
+      "nameRequired": "姓名为必填项",
+      "sendNew": "发送新消息",
+      "sending": "正在发送...",
+      "successDesc": "我们已收到您的询问并将尽快回复。",
+      "successTitle": "谢谢您的留言！"
     },
     "info": {
       "emailTitle": "邮件支持",
       "emailResponse": "我们通常在24小时内回复。",
       "chatTitle": "在线聊天",
       "chatHours": "周一至周五 09:00-17:00",
-      "startChat": "开始聊天"
+      "startChat": "开始聊天",
+      "headquarters": "总部",
+      "location": "挪威奥斯陆"
     },
     "emailDesc": "给我们发送电子邮件，我们会尽快回复。",
     "linksTitle": "有用链接",
     "aboutLink": "关于我们",
     "pricingLink": "价格",
     "privacyLink": "隐私政策",
-    "termsLink": "条款"
+    "termsLink": "条款",
+    "metadata": {
+      "description": "联系 Klarpakke——挪威的虚拟货币人工智能交易平台。我们会尽快回复。",
+      "title": "联系我们"
+    }
   },
   "courses": {
     "title": "Kurs",
@@ -672,7 +1364,28 @@
     "sortBy": "Sorter etter",
     "newest": "Nyeste",
     "popular": "Mest populære",
-    "duration": "Varighet"
+    "duration": "Varighet",
+    "backToCourses": "返回课程",
+    "backToModule": "返回模块",
+    "complete": "完成",
+    "completeLesson": "标记为已完成",
+    "continueLesson": "继续",
+    "correct": "正确！",
+    "incorrect": "不太正确",
+    "learningItem1": "基本概念",
+    "learningItem2": "实际例子",
+    "learningItem3": "测验测试知识",
+    "lessons": "教训",
+    "next": "下一页",
+    "optional": "可选",
+    "passRequired": "你需要80%才能完成",
+    "quiz": "测验",
+    "required": "纸质交易前需要",
+    "requiredBanner": "完成必修课程以解锁模拟交易",
+    "score": "分数",
+    "startLesson": "开始上课",
+    "submitAnswer": "提交答案",
+    "underDevelopment": "本课程正在开发中。请尽快回来查看完整内容！"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -707,7 +1420,9 @@
       "events": {
         "title": "最新事件",
         "noEvents": "暂无最新事件"
-      }
+      },
+      "avg": "平均",
+      "shares": "股票"
     },
     "welcome": "Velkommen til Klarpakke",
     "welcomeBack": "Velkommen tilbake 👋",
@@ -732,13 +1447,39 @@
       "guide": "入门指南",
       "mainMenu": "主菜单",
       "accountMenu": "账户菜单",
-      "closeMenu": "关闭菜单"
+      "closeMenu": "关闭菜单",
+      "ai": "人工智能",
+      "analysis": "分析",
+      "breadcrumbYouAreHere": "你在这里",
+      "collapseSidebar": "折叠侧边栏",
+      "courses": "课程",
+      "displayCurrency": "货币",
+      "expandSidebar": "展开侧边栏",
+      "history": "历史",
+      "home": "仪表板",
+      "language": "语言",
+      "learn": "学习",
+      "market": "市场",
+      "mode": "模式",
+      "paper": "纸",
+      "paperTrading": "模拟交易",
+      "pilot": "飞行员",
+      "profile": "公司简介",
+      "referral": "推荐",
+      "results": "结果",
+      "sectionTrading": "交易",
+      "trade": "贸易"
     },
     "topBar": {
       "myOverview": "Min Oversikt",
       "systemOnline": "System Online",
       "allSystemsOperational": "Alle systemer operative",
-      "systemStatus": "Systemstatus"
+      "systemStatus": "Systemstatus",
+      "ctaLive": "开始交易",
+      "ctaPaper": "开始交易",
+      "liveMode": "实时交易",
+      "noData": "无数据",
+      "paperMode": "模拟交易"
     },
     "statusDesc": "Systemstatus oppdatert live",
     "stats": {
@@ -843,14 +1584,25 @@
       "margin": "Margin",
       "freeMargin": "Fri Margin",
       "marginLevel": "Margin Nivå",
-      "drawdown": "Drawdown"
+      "drawdown": "Drawdown",
+      "positions": "职位",
+      "totalReturn": "总回报",
+      "totalValue": "总价值"
     },
     "portfolio": {
       "title": "Portefølje",
       "overview": "Oversikt",
       "performance": "Ytelse",
       "analytics": "Analyse",
-      "history": "Historikk"
+      "history": "Historikk",
+      "errorMessage": "我们现在无法加载投资组合图表。请再试一次。",
+      "errorTitle": "图表无法显示",
+      "noChartData": "重新加载图表",
+      "noData": "无数据",
+      "noDataHint": "开始交易时段以查看投资组合图表",
+      "retry": "刷新",
+      "sessionLabel": "图表仅显示本次会议",
+      "sessionTitle": "会议"
     },
     "notifications": {
       "title": "Varsler",
@@ -867,7 +1619,578 @@
     "bots": {
       "modeLive": "实盘",
       "modePaper": "模拟"
-    }
+    },
+    "nlqChat": {
+      "quickQuestions": [
+        {
+          "label": "Win rate?",
+          "query": "What's my win rate?"
+        },
+        {
+          "label": "P&L last week",
+          "query": "How did I do last week?"
+        },
+        {
+          "label": "Risk",
+          "query": "What's my max drawdown?"
+        },
+        {
+          "label": "Balance",
+          "query": "What's my account balance?"
+        }
+      ],
+      "close": "关闭",
+      "error": "抱歉，出了点问题。请稍后重试。",
+      "notUnderstood": "抱歉，我不明白。",
+      "openChat": "打开聊天",
+      "placeholder": "询问你的号码...",
+      "send": "发送",
+      "subtitle": "询问您的电话号码",
+      "title": "交易助理",
+      "waiting": "等待回复...",
+      "welcome": "嗨！我可以帮助您了解您的交易数据。"
+    },
+    "winLossHeatmap": {
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
+      "subtitle": "{winningDays, plural, one {# 个绿色} other {# 个绿色}} · {losingDays, plural, one {# 个红色} other {# 个红色}} · {winRate}% 胜率",
+      "infoTooltip": "每种颜色代表您一天的损益。深绿色=大赢，深红色=大输。用它来识别模式（例如，周一的损失）。",
+      "loss": "损失",
+      "noData": "热图数据不足",
+      "title": "每日损益热图",
+      "win": "赢"
+    },
+    "activeSignals": "活跃信号",
+    "activity": "活动",
+    "activityComingSoon": "活动日志即将推出！",
+    "activityPage": {
+      "subtitle": "您的最新交易和交易。",
+      "title": "活动"
+    },
+    "adaptive": {
+      "activeSessionsTitle": "您的活跃会话",
+      "greatWorkSubtitle": "你已经有了一个好的开始。不断学习并积累经验。",
+      "greatWorkTitle": "干得好，{userName}",
+      "leaderboardCta": "查看排名 →",
+      "leaderboardDesc": "与其他交易者进行比较并提升排名。",
+      "leaderboardTitle": "🏆 排行榜",
+      "ofTotal": "占总数",
+      "pilotCta": "探索试点 →",
+      "pilotDesc": "让人工智能找到交易思路。您选择金额并批准每笔交易。",
+      "pilotTitle": "🎭 Pilot — AI 为您交易",
+      "pilotTradeCta": "启动自动",
+      "pilotTradeDesc": "人工智能分析市场并自动用虚拟货币进行交易",
+      "pilotTradeTitle": "尝试自动交易",
+      "pnl": "损益表",
+      "progress": "进展",
+      "return": "返回",
+      "step1": "创建帐户",
+      "step2": "开始纸质交易",
+      "step3": "完成 5 笔交易",
+      "step4": "上线",
+      "total": "合计",
+      "trades": "交易",
+      "welcomeSubtitle": "在这里开始您的交易之旅。在上线之前，通过模拟交易进行无风险练习。",
+      "welcomeTitle": "欢迎您，{userName}",
+      "winRate": "胜率"
+    },
+    "adminCard": {
+      "button": "打开管理面板",
+      "description": "管理用户、查看系统状态并管理平台。",
+      "subtitle": "系统管理",
+      "title": "管理面板"
+    },
+    "advancedAnalytics": {
+      "cash": "现金",
+      "loadError": "无法加载分析数据。",
+      "loadErrorRetry": "无法加载分析数据。请再试一次。",
+      "maxLossStreak": "最大连败",
+      "maxLossStreakLabel": "最长连败",
+      "riskMetrics": "风险指标",
+      "riskMetricsTitle": "风险指标",
+      "title": "高级分析",
+      "tryAgain": "再试一次"
+    },
+    "aiInsight": {
+      "cached": "（缓存）",
+      "confidence": {
+        "high": "高置信度",
+        "low": "信心度低",
+        "medium": "中等置信度"
+      },
+      "disclaimer": "这是教育，而不是财务建议。",
+      "error": "无法获取洞察",
+      "metrics": {
+        "drawdown": "回撤",
+        "streak": "连胜",
+        "winRate": "胜率"
+      },
+      "retry": "重试",
+      "subtitle": "Kimi 教授分析您的交易",
+      "tabs": {
+        "performance": "性能",
+        "risk": "风险",
+        "strategy": "策略"
+      },
+      "title": "人工智能洞察"
+    },
+    "aiTip": {
+      "default": {
+        "message": "在这里开始您的第一次纸质交易，查看人工智能见解。"
+      },
+      "doingGreat": {
+        "message": "强的！ {winRate}% 胜率和正回报。考虑逐步增加资本。"
+      },
+      "drawdownHigh": {
+        "action": "查看风险设置",
+        "message": "{maxDrawdown}% 的最大回撤很高。考虑减少头寸规模。"
+      },
+      "pnlFlat": {
+        "action": "探索跟单交易",
+        "message": "经过几次交易后，损益表持平。尝试复制交易，看看经验丰富的交易者如何操作。"
+      },
+      "tryCopy": {
+        "action": "查看排行榜",
+        "message": "新交易注册。向顶级交易者寻求灵感。"
+      },
+      "winRateLow": {
+        "action": "前往交易历史",
+        "message": "{winRate}% 的胜率低于行业平均水平 (55%)。回顾亏损交易以寻找模式。"
+      }
+    },
+    "amount": "金额",
+    "assetAllocation": {
+      "infoTooltip": "您的资金如何分配：未平仓头寸（按成本）和现金。帮助您了解投资金额与可用金额。",
+      "noData": "尚无可显示的持股",
+      "other": "其他",
+      "title": "资产配置",
+      "trades": "交易"
+    },
+    "binanceCard": {
+      "button": "连接币安",
+      "description": "通过 API 连接到币安进行实时交易和投资组合概览。我们只需要只读访问权限。",
+      "subtitle": "连接您的币安账户",
+      "title": "币安API"
+    },
+    "bought": "买了",
+    "cash": "现金",
+    "coinbase": {
+      "amountNok": "金额 挪威克朗",
+      "backToTrade": "返回交易",
+      "buy": "购买",
+      "buySellPaper": "买卖纸",
+      "buySellPaperDesc": "购买 出售 纸张描述",
+      "goToTrade": "前往交易",
+      "loadingPrice": "装载价格",
+      "marketSubtitle": "最交易的加密货币的实时价格",
+      "marketTitle": "市场",
+      "networkError": "网络错误",
+      "orderSubmittedPaper": "订单提交论文",
+      "quickActionsGroupAria": "快速行动组咏叹调",
+      "sell": "出售",
+      "send": "发送",
+      "topMovers": "顶级推动者（24 小时）",
+      "tradeFailed": "交易失败",
+      "viewMarket": "查看市场",
+      "watchlistTitle": "关注列表标题"
+    },
+    "dailyChange": "每日变化",
+    "dashboardPro": {
+      "advancedAnalyticsDesc": "股本曲线、损益热图、风险指标和头寸计算器",
+      "advancedAnalyticsLink": "查看完整分析 →",
+      "advancedAnalyticsTitle": "高级分析",
+      "chart": {
+        "emptyDesc": "开始您的第一次练习以查看图表",
+        "emptyTitle": "尚无交易历史",
+        "errorMessage": "我们现在无法加载投资组合图表。请再试一次。",
+        "errorTitle": "图表无法显示",
+        "retry": "刷新",
+        "title": "你的投资组合"
+      },
+      "emptyState": "所选模式尚无交易。启动一个新会话以查看统计信息。",
+      "emptyStateLive": "还没有实时交易。连接币安并从 /handel 开始实时交易。",
+      "emptyStatePaper": "还没有交易。从 /handel 开始纸质交易以在此处查看交易。",
+      "errorFallback": "如果问题仍然存在，请重试或联系支持人员。",
+      "errorTitle": "无法加载仪表板指标",
+      "lastUpdated": "最后更新",
+      "liveFeedTitle": "实时交易",
+      "noChartData": "重新加载图表",
+      "noData": "无数据",
+      "noDataHint": "开始交易时段以查看投资组合图表",
+      "retry": "再试一次",
+      "scopeLabel": "基于活动和已完成的会话",
+      "seeAll": "查看全部",
+      "sessionLabel": "图表仅显示本次会议",
+      "sessionTitle": "会议",
+      "sessionsTitle": "您的会议",
+      "showingLive": "显示实时交易",
+      "showingPaper": "显示纸质交易",
+      "smartActionsTitle": "聪明的行动",
+      "stats": {
+        "balance": "账户余额",
+        "balanceHelp": "流动资金=启动资金+已实现的盈亏。未平仓头寸不包括在内。",
+        "balanceSub": "可用资金",
+        "totalReturn": "总回报",
+        "totalReturnHelp": "起始资本 → 流动资本 → 损益。显示已平仓交易的已实现收益/损失。",
+        "totalReturnSub": "累计利润",
+        "winRate": "胜率",
+        "winRateHelp": "所有已平仓交易中盈利交易的份额。",
+        "winRateSub": "{totalTrades} 交易总额"
+      },
+      "upgradeCta": "查看定价",
+      "upgradeDescription": "升级到学士以获得实时交易、高级策略和优先支持。",
+      "upgradeTitle": "准备好进入下一个级别了吗？",
+      "widgetErrorMessage": "我们现在无法显示仪表板的这一部分。请重试，或者如果问题仍然存在，请重新加载页面。",
+      "widgetErrorTitle": "仪表板小部件无法加载"
+    },
+    "dataSource": {
+      "prices": "价格",
+      "pricesEducational": "价格 教育"
+    },
+    "demoChart": {
+      "demoLabel": "演示 — 您的结果将如下所示",
+      "week1": "第一周",
+      "week2": "第 2 周",
+      "week3": "第三周",
+      "week4": "第 4 周"
+    },
+    "demoSimulator": "演示模拟器",
+    "email": "电子邮件",
+    "emptyBotState": {
+      "dca": {
+        "description": "平均成本法：随着时间的推移逐渐建立头寸",
+        "name": "DCA"
+      },
+      "grid": {
+        "description": "在一定价格范围内低买高卖",
+        "name": "网格交易"
+      },
+      "safetyHint": "所有策略均从模拟交易开始",
+      "select": "选择",
+      "subtitle": "选择开始模拟交易的策略",
+      "title": "选择你的第一个策略",
+      "trend": {
+        "description": "跟随市场趋势以获得最大回报",
+        "name": "趋势追踪"
+      }
+    },
+    "equityCurve": {
+      "ariaLabel": "什么是权益曲线？",
+      "infoTooltip": "净值曲线显示您随时间的累积损益。上升的曲线表明交易有利可图。观察下跌（回撤）以评估风险管理。",
+      "max": "最大",
+      "min": "最小",
+      "noData": "权益曲线数据不足",
+      "sessionScope": "Σ 所有会话",
+      "title": "权益曲线"
+    },
+    "error": {
+      "errorCode": "错误代码：{{code}}",
+      "reload": "重新加载",
+      "title": "无法加载仪表板",
+      "unexpectedError": "发生错误。请再试一次。"
+    },
+    "firstTradeReward": {
+      "description": "继续交易以获得更多奖励。",
+      "dismiss": "解雇",
+      "stats": "{count}交易完成",
+      "subtitle": "+200 克林特",
+      "title": "恭喜您完成第一笔交易！"
+    },
+    "getStarted": {
+      "checklist": {
+        "completeOnboarding": "完成入职",
+        "createAccount": "创建帐户",
+        "firstTrade": "进行第一笔交易",
+        "inviteFriend": "邀请朋友",
+        "leaderboard": "探索排行榜"
+      },
+      "subtitle": "完成这些步骤以掌握交易",
+      "title": "开始使用"
+    },
+    "greeting": {
+      "day": "下午好",
+      "evening": "晚上好",
+      "morning": "早上好",
+      "night": "晚安",
+      "performance": {
+        "steady": "稳定交易——保持下去。",
+        "strong": "你在 🔥 — 表现强劲！",
+        "tough": "困难重重——考虑调整你的策略。",
+        "uneven": "有利可图，但参差不齐——注重一致性。"
+      },
+      "pnlLabel": "损益表",
+      "winRateLabel": "胜率"
+    },
+    "hero": {
+      "ctaLive": "开始实时交易",
+      "ctaPaper": "开始交易",
+      "latestChange": "最新变动",
+      "liveMode": "实时模式",
+      "noData": "无数据",
+      "paperMode": "纸张模式"
+    },
+    "homeOverview": {
+      "subtitle": "您的完整投资组合",
+      "title": "投资组合概览"
+    },
+    "klt": {
+      "founderBenefits": {
+        "desc": "前 100 名注册者可获得 5,000 个免费 KLT。",
+        "title": "创始人福利"
+      },
+      "founderNumber": "创始人学生#{number}",
+      "futureValue": {
+        "desc": "KLT 可用于解锁高级交易算法并降低费用。",
+        "title": "未来价值"
+      },
+      "learnEarn": {
+        "desc": "您完成的每一节课和通过的每一个测验都会获得奖励。",
+        "title": "学习和赚钱"
+      },
+      "readMore": "了解有关 KLT 生态系统的更多信息",
+      "title": "Klarpakke 代币 (KLT)",
+      "yourBalance": "您的余额"
+    },
+    "learningPath": {
+      "continueWhere": "从上次停下的地方继续",
+      "done": "完成",
+      "goToAcademy": "去学院",
+      "lessons": "教训",
+      "level": "等级",
+      "title": "学习路径",
+      "yourBadges": "你的徽章",
+      "yourTracks": "你的足迹"
+    },
+    "loading": "正在加载仪表板...",
+    "logout": "退出",
+    "loss": "损失",
+    "marketDesk": {
+      "buy": "购买",
+      "chart": "图表",
+      "close": "关闭",
+      "emptyCta": "开始交易",
+      "integrityPollWarning": "同步错误",
+      "integritySyncAria": "完整性同步咏叹调",
+      "livePricesHeading": "实时价格",
+      "myPositions": "我的职位",
+      "noPositions": "没有职位",
+      "noTrades": "没有交易",
+      "recentTrades": "最近的交易",
+      "seeAll": "查看全部",
+      "subtitle": "实时市场数据和您的仓位",
+      "title": "市场服务台"
+    },
+    "marketPerformance": "市场表现",
+    "modeBar": {
+      "live": "直播",
+      "liveDesc": "用真钱进行交易",
+      "noSessionDesc": "没有活动会话",
+      "paper": "纸",
+      "paperDesc": "用游戏币进行交易"
+    },
+    "name": "名称",
+    "namePlaceholder": "你的名字",
+    "newToday": "今天新",
+    "newUserHero": {
+      "badge": "新学生",
+      "cta": "启动你的第一个机器人",
+      "defaultName": "交易员",
+      "demoHint": "您正在使用 100,000 挪威克朗的虚拟资本进行交易",
+      "step1": "选择策略",
+      "step2": "启动纸质机器人",
+      "step3": "追踪结果",
+      "subtitle": "让我们开始使用您的第一个交易机器人。",
+      "welcome": "欢迎，{name}！"
+    },
+    "noTrades": "还没有交易。点击“同步币安”加载您的币安交易。",
+    "onboardingChecklist": {
+      "accountCreated": "帐户已创建",
+      "complete": "你已经启动并运行了！全部 3 个步骤完成。",
+      "firstTrade": "进行您的第一笔交易",
+      "seeResult": "查看您的结果",
+      "title": "开始使用 — 3 个简单步骤"
+    },
+    "orderHistory": {
+      "amount": "金额",
+      "buy": "买入",
+      "date": "日期",
+      "loading": "正在加载订单历史记录...",
+      "noOrders": "没有找到订单。",
+      "pair": "一对",
+      "price": "价格",
+      "sell": "卖出",
+      "side": "侧面",
+      "total": "总计（挪威克朗）"
+    },
+    "overview": "概述",
+    "paperToLive": {
+      "progress": "{current}/{target} 交易完成",
+      "title": "票据交易进展",
+      "unlockText": "完成 {remaining} 更多交易以解锁实时交易预览",
+      "unlocked": "实时交易预览已解锁！",
+      "winningTrades": "{count} 获奖者"
+    },
+    "pnl": "损益表",
+    "portfolioComingSoon": "投资组合功能即将推出！",
+    "portfolioHero": {
+      "balanceLabel": "投资组合平衡",
+      "footerHint": "下图：持仓和交易",
+      "periodLabel": "期间",
+      "pnlHint": "结果"
+    },
+    "portfolioPage": {
+      "available": "可用",
+      "balance": "平衡",
+      "goToTrade": "前往交易",
+      "mainHolding": "主要控股",
+      "noAssets": {
+        "button": "开始您的第一笔交易",
+        "description": "您的投资组合中还没有活跃资产。开始交易，在这里看到他们！",
+        "title": "没有活跃币"
+      },
+      "paper_balance": "纸平衡",
+      "positionsTitle": "未平仓头寸",
+      "pullToRefresh": {
+        "pull": "下拉刷新",
+        "refreshing": "清爽...",
+        "release": "释放刷新"
+      },
+      "quantity": "单位",
+      "sinceStart": "自开始以来",
+      "statsPnl": "已实现损益",
+      "statsTrades": "交易",
+      "statsWinRate": "胜率",
+      "subtitle": "您的活跃资产概览。",
+      "title": "我的投资组合",
+      "totalAssets": "总计：{count} 资产",
+      "totalPortfolio": "总投资组合",
+      "totalValue": "总价值",
+      "walletTitle": "钱包"
+    },
+    "portfolioStats": {
+      "available": "可用",
+      "marginUsed": "已用保证金",
+      "percentUsed": "使用百分比",
+      "totalEquity": "总股本",
+      "totalPnl": "总盈亏"
+    },
+    "positionSizing": {
+      "accountBalance": "账户余额",
+      "effectiveLeverage": "有效杠杆",
+      "entryPrice": "入场费（挪威克朗）",
+      "formula": "公式：",
+      "infoDescription": "根据您的风险承受能力和止损计算最佳头寸规模。规则是：每笔交易的风险切勿超过账户的 1-2%。",
+      "leverageTooHighWarning": "超过5倍的杠杆风险极高。考虑一个较小的位置。",
+      "positionSize": "持仓规模",
+      "riskAmount": "风险金额",
+      "riskPerTrade": "每笔交易的风险",
+      "riskTooHighWarning": "保守交易时不建议超过 2%。",
+      "stopLossPercent": "止损%",
+      "title": "头寸规模计算器",
+      "units": "单位"
+    },
+    "price": "价格",
+    "profileSettings": "配置文件设置",
+    "profit": "利润",
+    "quickLinks": "快速链接",
+    "recentActivity": "最近的活动",
+    "recentTrades": {
+      "title": "标题",
+      "viewAll": "查看全部"
+    },
+    "riskNote": {
+      "body": "您可以在此处调整交易时段的风险参数。我们建议保守地开始。",
+      "settingsCta": "前往设置",
+      "title": "风险评估"
+    },
+    "sessionCards": {
+      "active": "活跃",
+      "activeLC": "活跃的",
+      "all": "全部",
+      "crashed": "坠毁",
+      "live": "直播",
+      "noFiltered": "没有 {status} 会话",
+      "paused": "已暂停",
+      "pausedLC": "暂停",
+      "seeDetails": "查看详情",
+      "stopped": "已停止",
+      "stoppedLC": "停止了",
+      "title": "交易时段",
+      "trades": "交易",
+      "winRate": "胜率"
+    },
+    "settings": "设置",
+    "settingsPage": {
+      "email": "电子邮件",
+      "emailNote": "无法手动更改电子邮件。",
+      "fullName": "全名",
+      "namePlaceholder": "你的名字",
+      "notifications": "通知",
+      "notificationsComingSoon": "通知管理将在稍后的更新中推出。",
+      "personalInfo": "个人信息",
+      "profileUpdated": "个人资料已更新！",
+      "saveChanges": "保存更改",
+      "security": "安全性",
+      "securityDesc": "双因素身份验证和安全设置。",
+      "subtitle": "管理您的帐户和个人偏好。",
+      "title": "设置"
+    },
+    "signalPreview": {
+      "curated": "策划",
+      "demoBadge": "演示",
+      "directionBuy": "购买",
+      "directionSell": "出售",
+      "empty": "空",
+      "emptyBadge": "无数据",
+      "errorBadge": "错误",
+      "liveBadge": "直播",
+      "seeAll": "查看全部",
+      "staleBadge": "陈旧的",
+      "title": "交易信号"
+    },
+    "smartActions": {
+      "liveMode": {
+        "cta": "查看结果",
+        "description": "查看结果并调整您的策略以获得更好的回报。",
+        "title": "优化策略"
+      },
+      "newUser": {
+        "cta": "开始使用",
+        "description": "使用 100,000 挪威克朗的虚拟资本进行无风险实践。",
+        "title": "开始模拟交易"
+      },
+      "noSession": {
+        "cta": "探索策略",
+        "description": "让我们的人工智能在您睡觉时为您进行交易。",
+        "title": "激活策略"
+      },
+      "paperMode": {
+        "cta": "激活实时",
+        "description": "准备好进行真实交易了吗？升级到实时模式。",
+        "title": "上线"
+      }
+    },
+    "sold": "已售出",
+    "startTrading": "开始交易",
+    "totalProfit": "利润总额",
+    "totalTrades": "总交易数",
+    "totalValue": "总价值",
+    "trading": "交易",
+    "tradingComingSoon": "交易功能即将推出！",
+    "tradingMode": {
+      "live": "直播",
+      "paper": "纸",
+      "switchedToLive": "切换至实时交易",
+      "switchedToPaper": "切换至模拟交易"
+    },
+    "winRate": "胜率"
   },
   "footer": {
     "product": "产品",
@@ -884,8 +2207,10 @@
       "about": "关于我们",
       "contact": "联系我们",
       "privacy": "隐私",
-      "terms": "条款"
-    }
+      "terms": "条款",
+      "cookies": "饼干"
+    },
+    "paymentSubtitle": "我们使用 Stripe 和 Vipps 进行安全支付。我们不会存储卡的详细信息。"
   },
   "gamification": {
     "title": "游戏化",
@@ -899,7 +2224,18 @@
     "dailyChallenge": "每日挑战",
     "weeklyGoal": "每周目标",
     "achievements": "成就",
-    "progress": "进度"
+    "progress": "进度",
+    "daysLeft": "剩余天数",
+    "kltStoryShort": "Klt 故事短片",
+    "monthlyCompetitionOngoing": "正在进行的",
+    "monthlyPrize": "每月纸张交易大赛",
+    "rank": "排名",
+    "stats": {
+      "accuracy": "交易准确性",
+      "completed": "已完成课程",
+      "lessonsAvailable": "可用课程"
+    },
+    "viewLeaderboard": "查看排行榜"
   },
   "helpPage": {
     "title": "Hjelp & Support",
@@ -916,32 +2252,32 @@
       "privacyLink": "Personvernerklæring →",
       "termsLink": "Vilkår for bruk →"
     },
-    "faqs": [
-      {
-        "q": "Hva er Klarpakke Universitet?",
-        "a": "Klarpakke Universitet er en norsk plattform for krypto-utdanning. Vi tilbyr kurs, simulator, paper trading og quizer – alt for å lære deg trading på en trygg måte. Alt er 100% simulert, så du kan øve uten å risikere ekte penger."
+    "faqs": {
+      "0": {
+        "q": "问",
+        "a": "一个"
       },
-      {
-        "q": "Hvilke planer finnes og hva koster de?",
-        "a": "Vi har fire planer: Gratis (0 kr) gir deg en smakebit. Basis (199 kr/mnd) inkluderer alle grunnkurs. Komplett (399 kr/mnd) er vår mest populære plan med alt i Basis pluss avanserte kurs, sertifikat og webinarer. Pro (999 kr/mnd) gir ekstra ressurser og prioritert support."
+      "1": {
+        "q": "问",
+        "a": "一个"
       },
-      {
-        "q": "Kan jeg tape penger?",
-        "a": "Nei! Alt på Klarpakke Universitet er simulert. Når du bruker paper trading eller simulatoren, handler du med virtuelle penger. Du kan ikke tape ekte penger her. Dette er et trygt sted å lære før du eventuelt bruker ekte penger hos en ekstern megler."
+      "2": {
+        "q": "问",
+        "a": "一个"
       },
-      {
-        "q": "Hvordan sier jeg opp?",
-        "a": "Du kan kansellere når som helst fra kontoinnstillingene dine. Du beholder tilgangen til slutten av den betalte perioden. Det er ingen bindingstid – du bestemmer selv hvor lenge du vil være med."
+      "3": {
+        "q": "问",
+        "a": "一个"
       },
-      {
-        "q": "Hvordan starter jeg med paper trading?",
-        "a": "Registrer deg gratis, så får du automatisk 100 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+      "4": {
+        "q": "问",
+        "a": "一个"
       },
-      {
-        "q": "Hva lærer jeg i kursene?",
-        "a": "Grunnkursene dekker hva krypto er, hvordan trading fungerer, og grunnleggende risikostyring. Avanserte kurs går dypere inn i teknisk analyse, strategier og trading-psykologi. Alt er på norsk og tilpasset norske småsparere."
+      "5": {
+        "q": "问",
+        "a": "一个"
       }
-    ]
+    }
   },
   "hero": {
     "title": "Klarpakke",
@@ -959,12 +2295,36 @@
       "weeks": "实时市场数据",
       "students": "活跃学生",
       "accuracy": "信号准确率"
-    }
+    },
+    "price": "$65,284.25",
+    "priceChange": "-12.20%",
+    "priceLabel": "比特币/泰达币",
+    "stat1": "100,000 克朗",
+    "stat1Label": "纸币",
+    "stat2": "直播",
+    "stat2Label": "实时价格",
+    "stat3": "0 克朗",
+    "stat3Label": "押金",
+    "titleLine1": "我因加密货币损失了 64,000 挪威克朗。",
+    "titleLine2": "你不必犯同样的错误。"
   },
   "interestTest": {
     "title": "兴趣测试",
     "description": "找到你的交易风格",
-    "subtitle": "回答5个问题，找到最适合你的课程。"
+    "subtitle": "回答5个问题，找到最适合你的课程。",
+    "advanced": "高级",
+    "back": "返回",
+    "beginner": "初学者",
+    "intermediate": "中级",
+    "loading": "正在加载兴趣测试...",
+    "next": "下一页",
+    "of": "的",
+    "question": "问题",
+    "recommended": "推荐课程",
+    "result": "你的结果",
+    "start": "开始测试",
+    "submit": "查看结果",
+    "tryAgain": "再次参加测试"
   },
   "landing": {
     "hero": {
@@ -976,7 +2336,9 @@
       "cta-secondary": "See Pilot",
       "livePrices": "Live market data",
       "liveUpdates": "Updated live",
-      "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money"
+      "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money",
+      "badge": "🔬 Beta - 仅限挪威。前 100 名 5,000 KLT",
+      "trustNote": "测试版 • 仅限挪威 • 即将推出实时交易 • 没有信用卡"
     },
     "modes": {
       "title": "One account — three ways to trade",
@@ -995,6 +2357,11 @@
         "name": "Pilot",
         "tagline": "AI does everything",
         "description": "Press start. AI handles the rest."
+      },
+      "pilot": {
+        "description": "人工智能做一切。按开始，它会处理剩下的事情。",
+        "name": "飞行员",
+        "tagline": "人工智能掌舵"
       }
     },
     "socialProof": {
@@ -1006,6 +2373,47 @@
     "metadata": {
       "title": "Klarpakke — Norway's crypto platform",
       "description": "AI trading platform."
+    },
+    "cta": {
+      "button": "免费开始",
+      "footer": "没有信用卡 • 没有 KYC • 没有承诺",
+      "subtitle": "100,000 瑞典克朗的游戏币等待着您。零风险。零承诺。",
+      "title": "准备好尝试了吗？"
+    },
+    "features": {
+      "aiAgents": {
+        "desc": "选择手动、自动或飞行员 - 人工智能处理繁重的工作",
+        "title": "人工智能代理"
+      },
+      "noKYC": {
+        "desc": "没有身份证，无需等待。只需注册即可开始。",
+        "title": "没有了解您的客户"
+      },
+      "norwegian": {
+        "desc": "完整的挪威语用户界面。挪威支持。挪威建造。",
+        "title": "挪威平台"
+      },
+      "playMoney": {
+        "desc": "拿游戏钱去训练。零风险。没有承诺。",
+        "title": "免费 100,000 瑞典克朗"
+      },
+      "realData": {
+        "desc": "直接来自 Binance — BTC、ETH、SOL 等的实时价格",
+        "title": "真实市场数据"
+      },
+      "riskFree": {
+        "desc": "您最多可能损失的是游戏币。实际损失为零。",
+        "title": "无风险"
+      },
+      "subtitle": "挪威唯一基于真实市场数据的人工智能纸质交易平台",
+      "title": "为什么是克拉帕克？"
+    },
+    "stats": {
+      "markets": "市场",
+      "title": "克拉帕克的数字",
+      "trades": "已执行的交易",
+      "uptime": "正常运行时间",
+      "users": "活跃交易者"
     }
   },
   "leagues": {
@@ -1020,7 +2428,18 @@
     "participants": "参与者",
     "startsIn": "开始于",
     "endsIn": "结束于",
-    "competitionEnded": "比赛已结束"
+    "competitionEnded": "比赛已结束",
+    "endDate": "结束日期",
+    "forBeginners": "对于初学者",
+    "joinLeague": "加入联盟",
+    "monthly": "每月",
+    "paperTrading": "模拟交易",
+    "players": "玩家",
+    "prize": "奖品",
+    "rank": "排名",
+    "startDate": "开始日期",
+    "weekly": "每周",
+    "winBitcoin": "赢得比特币"
   },
   "learning": {
     "title": "学习",
@@ -1115,6 +2534,49 @@
           "content": "Spørsmål om vilkårene? Kontakt oss på:"
         }
       }
+    },
+    "cookieTitle": "饼干",
+    "cookies": {
+      "categories": {
+        "analytics": {
+          "description": "描述",
+          "name": "名称"
+        },
+        "functional": {
+          "description": "描述",
+          "name": "名称"
+        },
+        "marketing": {
+          "description": "描述",
+          "name": "名称"
+        },
+        "necessary": {
+          "description": "描述",
+          "name": "名称"
+        },
+        "title": "标题"
+      },
+      "contact": {
+        "content": "内容",
+        "title": "标题"
+      },
+      "manage": {
+        "lastUpdated": "最后更新",
+        "noConsent": "不同意",
+        "revoke": "撤销",
+        "title": "标题"
+      },
+      "thirdParty": {
+        "google": "谷歌",
+        "sentry": "哨兵",
+        "supabase": "苏帕贝斯",
+        "title": "标题"
+      },
+      "title": "标题",
+      "whatAreCookies": {
+        "content": "内容",
+        "title": "标题"
+      }
     }
   },
   "liveTrading": {
@@ -1125,7 +2587,56 @@
     "marketOverview": "市场概览",
     "openPositions": "持仓",
     "placeOrder": "下单",
-    "orderBook": "订单簿"
+    "orderBook": "订单簿",
+    "amountPlaceholder": "输入 USDT 金额",
+    "balance": "平衡",
+    "buy": "购买",
+    "confirm": {
+      "action": "行动",
+      "amount": "金额",
+      "bought": "买了",
+      "cancel": "取消",
+      "confirm": "确认交易",
+      "price": "价格",
+      "quantity": "数量",
+      "sold": "已售出",
+      "symbol": "符号",
+      "title": "确认交易"
+    },
+    "errors": {
+      "checkBinance": "检查您的币安连接",
+      "enterAmount": "请输入金额",
+      "loginRequired": "您必须登录才能交易",
+      "priceData": "无法获取价格数据",
+      "tradeFailed": "交易失败。请再试一次。"
+    },
+    "info": {
+      "minimumAmount": "最低金额",
+      "minimumAmountDesc": "最低交易金额为10 USDT。",
+      "realtimeData": "实时数据",
+      "realtimeDataDesc": "价格通过 WebSocket 实时更新。",
+      "title": "重要信息",
+      "usdtRequirement": "需要 USDT",
+      "usdtRequirementDesc": "您的币安账户中需要有 USDT 才能进行交易。"
+    },
+    "loading": "正在加载交易数据...",
+    "masterOnly": "仅限硕士生",
+    "masterOnlyDesc": "总体规划及以上版本可进行实时交易。",
+    "recentOrders": "最近订单",
+    "retry": "重试",
+    "security": {
+      "fullControl": "你拥有完全的控制权",
+      "fullControlDesc": "您的 API 密钥已加密并安全存储。",
+      "noWithdrawal": "无提款权限",
+      "noWithdrawalDesc": "我们永远无法提取您的资金。",
+      "title": "您的安全是我们的首要任务",
+      "transparency": "完全透明",
+      "transparencyDesc": "所有交易都可以直接在您的币安账户中追踪。"
+    },
+    "sell": "出售",
+    "upgradeBtn": "升级计划",
+    "warning": "警告",
+    "warningText": "实时交易涉及风险。仅使用您可以承受损失的资金进行交易。"
   },
   "meta": {
     "title": "自动交易 | Klarpakke - 3年测试",
@@ -1186,6 +2697,10 @@
     "login": {
       "title": "登录 | Klarpakke",
       "description": "登录您的Klarpakke账户"
+    },
+    "dashboard": {
+      "description": "您的投资组合、实时价格和交易概览。",
+      "title": "仪表板"
     }
   },
   "navigation": {
@@ -1213,7 +2728,21 @@
     "closeMenu": "关闭菜单",
     "openMenu": "打开菜单",
     "studyProgram": "学习项目",
-    "school": "学校"
+    "school": "学校",
+    "account": "账户",
+    "history": "历史",
+    "logout": "退出",
+    "market": "市场",
+    "pilot": "飞行员",
+    "portfolio": "投资组合",
+    "security": {
+      "title": "标题",
+      "warning": "警告"
+    },
+    "selectExchange": "选择交易所",
+    "siteNavAria": "主导航",
+    "tagline": "以智能方式学习加密货币交易",
+    "trade": "贸易"
   },
   "notifications": {
     "title": "通知",
@@ -1227,7 +2756,26 @@
     "save": "保存",
     "saved": "已保存！",
     "forCompleteMembers": "面向完整会员",
-    "tip": "提示：开启通知以免错过机会"
+    "tip": "提示：开启通知以免错过机会",
+    "toggleSettingAria": "{enabled, select, true {关闭} other {开启}} {label}",
+    "emailUpdates": "电子邮件更新",
+    "emailUpdatesDesc": "通过电子邮件接收重要更新",
+    "forProMembers": "对于专业会员",
+    "headerDescription": "选择您想要接收的有关课程、网络研讨会和学习活动的提醒",
+    "newCourses": "新课程",
+    "newCoursesDesc": "当新课程模块可用时收到通知",
+    "quizReminders": "测验提醒",
+    "setReminder": "设置提醒",
+    "streakReminders": "每日连续提醒",
+    "streakRemindersDesc": "提醒登录并继续学习",
+    "tipLabel": "提示：",
+    "upcomingWebinars": "即将举行的网络研讨会",
+    "webinarAdvancedDate": "2026 年 3 月 1 日晚上 7:00 • 时长：90 分钟",
+    "webinarAdvancedDesc": "斐波那契、艾略特波浪和风险管理实践",
+    "webinarAdvancedTitle": "深入探讨：高级交易策略",
+    "webinarBeginnersDate": "2026 年 2 月 15 日晚上 7:00 • 时长：60 分钟",
+    "webinarBeginnersDesc": "有关烛台、支撑/水平和基本指标的问题",
+    "webinarBeginnersTitle": "现场问答：初学者的技术分析"
   },
   "onboarding": {
     "welcome": "Welcome, {{name}}!",
@@ -1237,7 +2785,12 @@
     "getStarted": "Get Started",
     "step1": {
       "title": "Welcome to Klarpakke! 🎉",
-      "description": "We're glad to have you here! Let us show you how to get the most out of our platform."
+      "description": "We're glad to have you here! Let us show you how to get the most out of our platform.",
+      "error": {
+        "retryHint": "单击“继续”重试。",
+        "saveFailed": "无法保存您的答案。检查您的连接并重试。"
+      },
+      "timeEstimate": "耗时不到 1 分钟"
     },
     "step2": {
       "title": "Explore Our Courses",
@@ -1246,7 +2799,295 @@
     "step3": {
       "title": "Practice With Paper Trading",
       "description": "Use our paper trading simulator to practice without risk. Build confidence before using real money."
-    }
+    },
+    "accountCreated": "帐户已创建",
+    "agreeTerms": "继续，即表示您同意我们的",
+    "aiMapping": {
+      "coachName": "教练姓名",
+      "cta": "克塔",
+      "skip": "跳过",
+      "subtitle": "副标题",
+      "title": "标题"
+    },
+    "and": "和",
+    "bankid": "银行ID",
+    "bankidSubtitle": "我们使用BankID来确保平台上的所有用户都是真实的人。这为每个人创建了一个安全的社区。",
+    "bankidTitle": "安全识别",
+    "canvas-confetti": "帆布五彩纸屑",
+    "clickToPlay": "点击播放视频",
+    "completelyFree": "测试阶段 100% 免费",
+    "connectBinance": "连接币安",
+    "connectBinanceDesc": "当您准备好进行实时交易时，您可以连接自己的交易所",
+    "connecting": "正在连接到银行 ID...",
+    "continueToDashboard": "继续仪表板",
+    "done": "完成",
+    "email": "电子邮件",
+    "fastRegistration": "闪电般快速注册！",
+    "firstSignal": "你的第一个信号",
+    "firstSignalDesc": "当 300 种经过测试的算法找到机会时，我们会向您发送通知",
+    "founderName": "汤姆·阿恩·詹森",
+    "founderTitle": "创始人兼首席执行官",
+    "goToDashboard": "转到仪表板",
+    "identityConfirmed": "通过 BankID 验证身份",
+    "interactive": {
+      "error": {
+        "finish": "完成"
+      },
+      "step1": {
+        "cta": "克塔",
+        "description": "描述",
+        "howItWorksTitle": "它是如何运作的",
+        "list1": "清单1",
+        "list2": "清单2",
+        "list3": "清单3",
+        "title1": "标题 1",
+        "title2": "标题 2"
+      },
+      "step2": {
+        "preloaded": "预载",
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "step3": {
+        "currencySuffix": "货币后缀",
+        "goalStrategy": "目标策略",
+        "initializing": "正在初始化",
+        "playMoney": "虚拟货币",
+        "startBot": "启动机器人",
+        "status": "状态",
+        "statusValue": "状态值",
+        "subtitle": "副标题",
+        "title": "标题",
+        "tooltip": "工具提示",
+        "tradingMode": "交易模式",
+        "tradingModeValue": "交易模式价值"
+      },
+      "step4": {
+        "redirecting": "重定向",
+        "subtitle": "副标题",
+        "title": "标题"
+      }
+    },
+    "loginWithBankid": "通过 BankID 进行识别",
+    "mobile": {
+      "step1": {
+        "badges": {
+          "bankid": "班克德",
+          "finanstilsynet": "金融网",
+          "noHiddenFees": "无隐藏费用"
+        },
+        "badgesAriaLabel": "徽章咏叹调标签",
+        "cta": "克塔",
+        "description": "描述",
+        "skip": "跳过",
+        "title": "标题"
+      },
+      "step2": {
+        "backAriaLabel": "返回 Aria 标签",
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "step3": {
+        "cta": "克塔",
+        "description": "描述",
+        "loading": "加载中",
+        "selectedStrategy": "选定的策略",
+        "title": "标题"
+      }
+    },
+    "noCreditCard": "无需信用卡",
+    "noStorage": "不存储个人数据。",
+    "noStorageDesc": "我们从不存储 BankID 的敏感数据。",
+    "oneTime": "一次性过程。",
+    "oneTimeDesc": "您只需执行一次此操作。",
+    "paperSetup": {
+      "badge": "纸",
+      "balanceLabel": "平衡标签",
+      "cta": "克塔",
+      "currencySuffix": "货币后缀",
+      "error": "错误",
+      "loading": "加载中",
+      "subtitle": "副标题",
+      "title": "标题",
+      "tooltip": "工具提示",
+      "virtual": "虚拟",
+      "whatIs": "什么是"
+    },
+    "privacyPolicy": "隐私政策",
+    "questions": "安全问题？",
+    "ref": "参考号",
+    "secureVerification": "安全验证。",
+    "secureVerificationDesc": "我们仅收到您的姓名和年龄确认信息。",
+    "setRiskProfile": "设定风险状况",
+    "setRiskProfileDesc": "选择保守、平衡或进攻策略",
+    "speedOnboarding": {
+      "riskProfiles": {
+        "aggressive": {
+          "dailyLoss": "每日最大损失 15%",
+          "description": "最大潜力，高风险",
+          "name": "好斗的"
+        },
+        "balanced": {
+          "dailyLoss": "每日最大损失 5%",
+          "description": "中等风险和回报",
+          "name": "平衡"
+        },
+        "offensive": {
+          "dailyLoss": "每日最大损失 10%",
+          "description": "风险更高，潜力更大",
+          "name": "进攻性"
+        },
+        "safe": {
+          "dailyLoss": "每日最大损失 2%",
+          "description": "风险最小，逐步增长",
+          "name": "安全"
+        }
+      },
+      "step1": {
+        "subtitle": "您能承受多少风险？",
+        "title": "选择风险状况"
+      },
+      "step2": {
+        "paperTradingZeroRisk": "纸质交易100%无风险",
+        "startTrading": "开始交易",
+        "starting": "开始...",
+        "startingCapital": "启动资金",
+        "subtitle": "您想交易哪种加密货币？",
+        "title": "选择您的硬币"
+      },
+      "step3": {
+        "goToDashboard": "转到仪表板",
+        "line1": "您的模拟交易账户",
+        "line2": "是活跃的。",
+        "line3": "转到仪表板来跟踪您的结果。",
+        "title": "你准备好了！",
+        "viewActivity": "查看活动"
+      },
+      "timerPrefix": "剩余时间："
+    },
+    "startFree": "现在开始——完全免费",
+    "step4": {
+      "apiKey": {
+        "label": "标签",
+        "placeholder": "粘贴您的 API 密钥"
+      },
+      "apiSecret": {
+        "label": "标签",
+        "placeholder": "粘贴您的 API 机密"
+      },
+      "connecting": "正在连接",
+      "cta": "克塔",
+      "error": "错误",
+      "security": {
+        "description": "描述",
+        "title": "标题"
+      },
+      "skip": "跳过",
+      "skipping": "跳绳",
+      "subtitle": "副标题",
+      "title": "标题"
+    },
+    "step5": {
+      "botReady": "机器人准备就绪",
+      "cta": "转到仪表板",
+      "error": {
+        "completeFailed": "无法完成入职。检查您的连接并重试。",
+        "retry": "再试一次"
+      },
+      "features": {
+        "analytics": "追踪结果",
+        "paperTrading": "用纸币练习",
+        "strategies": "测试策略"
+      },
+      "initializing": "正在设置您的帐户...",
+      "loading": "正在加载...",
+      "nextSteps": {
+        "step1": "探索仪表板",
+        "step2": "开始您的第一次纸质交易",
+        "step3": "完成“您的第一次纸质交易”课程",
+        "title": "接下来会发生什么？"
+      },
+      "paperBalance": "您的启动资金",
+      "safetyNotice": {
+        "description": "没有真正的金钱受到威胁。只要您愿意，就可以安全地练习。",
+        "title": "您正在用纸币进行交易"
+      },
+      "subtitle": "您的模拟交易账户现已激活。没有真正的金钱受到威胁。",
+      "title": "你准备好了！"
+    },
+    "terms": "使用条款",
+    "totalTime": "总时间：2分钟以内",
+    "transcript": "视频摘要",
+    "transcriptText": "嗨！我是 Tom Arne，Klarpakke 的创始人。 \n\n 我们非常高兴您的旅程。我们的目标是让加密货币交易对每个人来说都可以理解并有利可图，而无需通常的“炒作”。 \n\n 您现在可以使用我们的模拟交易模拟器，其中包含 100,000 挪威克朗的虚拟资金，因此您可以在进行真实交易之前完全无风险地进行练习。祝你好运！",
+    "trustBar": {
+      "bankid": "班克德",
+      "encrypted": "加密的",
+      "regulated": "受监管"
+    },
+    "video": "欢迎视频",
+    "virtualCapital": "包含 100,000 挪威克朗虚拟资本",
+    "welcomePage": {
+      "benefits": {
+        "items": {
+          "influence": {
+            "desc": "描述",
+            "title": "标题"
+          },
+          "journal": {
+            "desc": "描述",
+            "title": "标题"
+          },
+          "kltPoints": {
+            "desc": "描述",
+            "title": "标题"
+          },
+          "paperMoney": {
+            "desc": "描述",
+            "title": "标题"
+          }
+        },
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "cta": {
+        "button": "按钮",
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "footer": {
+        "questions": "问题"
+      },
+      "hero": {
+        "highlight": "亮点",
+        "subtitle": "副标题",
+        "title": "标题"
+      },
+      "safety": {
+        "desc": "描述",
+        "title": "标题"
+      },
+      "steps": {
+        "items": {
+          "checkStatus": {
+            "action": "行动",
+            "desc": "描述",
+            "title": "标题"
+          },
+          "dashboard": {
+            "action": "行动",
+            "desc": "描述",
+            "title": "标题"
+          },
+          "wait": {
+            "desc": "描述",
+            "title": "标题"
+          }
+        },
+        "title": "标题"
+      }
+    },
+    "welcomeTitle": "欢迎来到 Klarpakke 团队！ 🚀",
+    "welcomeVideo": "观看这个短视频"
   },
   "orderHistory": {
     "title": "订单历史",
@@ -1260,7 +3101,10 @@
     "price": "价格",
     "amount": "数量",
     "total": "总计",
-    "status": "状态"
+    "status": "状态",
+    "buy": "购买",
+    "loading": "正在加载订单...",
+    "sell": "出售"
   },
   "paperTrading": {
     "title": "Paper Trading",
@@ -1329,7 +3173,99 @@
       "text": "Opprett en gratis konto for å delta i konkurransen",
       "button": "Logg inn / Registrer deg"
     },
-    "saving": "Lagrer..."
+    "saving": "Lagrer...",
+    "sessions": {
+      "activeOverview": "{active, plural, =0 {目前没有活跃的交易者} =1 {有 1 个活跃的交易者在运行} other {有 # 个活跃的交易者在运行}}",
+      "historyHidden": "{count, plural, =1 {已隐藏 1 个较早的崩溃/停止会话以保持整洁} other {已隐藏 # 个较早的崩溃/停止会话以保持整洁}}",
+      "maxActiveReached": "已达到最大活动会话数。正在重定向...",
+      "maxActiveStudent": "您已达到计划的最大活动会话数。",
+      "showHistory": "显示历史记录"
+    },
+    "active": "活跃",
+    "backToDashboard": "返回仪表板",
+    "backToOverview": "返回概览",
+    "balance": "平衡",
+    "binanceUpdateInfo": "价格从币安实时更新",
+    "buy": "购买",
+    "cancel": "取消",
+    "capital": "资本",
+    "confirmResetAll": "重置所有模拟交易时段？所有交易都将被删除，余额将重置为 100000 克朗。",
+    "crashed": "坠毁",
+    "description": "无风险练习交易",
+    "errors": {
+      "forbidden": "您无权创建此类会话。",
+      "generic": "出了点问题。请再试一次。",
+      "missingSessionId": "会话缺少 ID。联系支持人员。",
+      "network": "无法到达服务器。检查您的连接。",
+      "resetFailed": "重置失败。请再试一次。",
+      "resetNetwork": "重置期间网络错误。",
+      "unauthorized": "您必须登录才能创建会话。",
+      "validationFailed": "输入无效 - 检查字段并重试。"
+    },
+    "lastUpdated": "最后更新",
+    "modeBanner": {
+      "live": "活着——真金白银。谨慎交易。",
+      "paper": "练习模式——没有真钱"
+    },
+    "modeLive": "直播",
+    "modePaper": "纸",
+    "mySessions": "我的会议",
+    "newSession": "新贸易",
+    "noSessions": "没有会议",
+    "noSessionsDesc": "开始您的第一个模拟交易时段，进行无风险练习。",
+    "noTrades": "还没有交易",
+    "now": "现在",
+    "pauseBot": "暂停机器人",
+    "paused": "已暂停",
+    "refreshList": "刷新",
+    "resetSession": "重置会话",
+    "resetSuccess": "模拟交易重置。余额：100000 克朗。",
+    "resume": "恢复",
+    "sell": "出售",
+    "sessionDetail": {
+      "active": "活跃",
+      "backToHub": "返回概览",
+      "buy": "购买",
+      "capital": "资本",
+      "contextBanner": "背景横幅",
+      "crashed": "坠毁",
+      "eyebrowLive": "实时交易",
+      "eyebrowPaper": "纸上交易",
+      "noTrades": "没有交易",
+      "pauseBot": "暂停机器人",
+      "paused": "已暂停",
+      "resume": "简历",
+      "sell": "出售",
+      "startCapital": "启动资本",
+      "startedOn": "开始 {date}",
+      "stopSession": "停止会话",
+      "stopped": "已停止",
+      "total": "合计",
+      "trades": "交易",
+      "winRate": "胜率"
+    },
+    "start": "开始",
+    "startCapital": "启动资金",
+    "startFirst": "开始第一个会话",
+    "started": "开始",
+    "stopSession": "停止会话",
+    "stopped": "已停止",
+    "tooltip": "模拟交易让您无需冒真钱风险即可进行练习",
+    "total": "合计",
+    "tradeHistory": "贸易历史",
+    "trades": "交易",
+    "tradingPair": "交易对",
+    "viewTrades": "查看交易",
+    "virtual": "虚拟",
+    "winRate": "胜率",
+    "workspaceHeader": {
+      "badge": "交易工作区",
+      "eyebrowLive": "实时工作空间",
+      "eyebrowPaper": "练习工作区",
+      "subtitle": "练习用纸币进行交易",
+      "title": "交易工作区"
+    },
+    "yourBalance": "您的余额"
   },
   "payment": {
     "back": "返回",
@@ -1340,7 +3276,13 @@
     "payWithCard": "使用银行卡支付",
     "securePayment": "安全加密支付",
     "vipps": "银行卡/Apple Pay",
-    "vippsDescription": "使用银行卡或Apple Pay快速便捷支付"
+    "vippsDescription": "使用银行卡或Apple Pay快速便捷支付",
+    "errors": {
+      "checkout_failed": "无法开始付款",
+      "unexpected": "无法开始付款。请再试一次。"
+    },
+    "loading": "正在加载...",
+    "securePaymentNoVipps": "安全支付 无 VIP"
   },
   "pricing": {
     "success": {
@@ -1359,7 +3301,8 @@
       "cta": "前往仪表板",
       "viewProgram": "查看学习计划",
       "errorTitle": "出错了",
-      "backToPricing": "返回价格方案"
+      "backToPricing": "返回价格方案",
+      "session_id": "会话 ID"
     },
     "cancel": {
       "title": "付款取消",
@@ -1382,7 +3325,56 @@
     "savePercent": "节省 {percent}%",
     "perMonth": "每月",
     "getStarted": "开始使用",
-    "mostPopular": "最受欢迎"
+    "mostPopular": "最受欢迎",
+    "comparison": {
+      "feature": "特点",
+      "title": "比较计划"
+    },
+    "cta": {
+      "button": "立即开始",
+      "guarantee": "纸质交易是免费的。付费计划解锁工具——不退款。",
+      "subtitle": "与其他挪威人一起学习如何用虚拟货币进行安全交易。",
+      "title": "准备好开始了吗？"
+    },
+    "description": "描述",
+    "disclaimer": "免责声明",
+    "faq": {
+      "title": "常见问题解答"
+    },
+    "free": "免费",
+    "hero": {
+      "subtitle": "从初学者到专家。免费开始，准备好后升级。",
+      "title": "选择您的学习旅程"
+    },
+    "metadata": {
+      "description": "选择适合您的计划。从学生开始免费，或升级到学士、硕士或博士以获得更多高级功能。",
+      "title": "定价-克拉帕克大学"
+    },
+    "plans": {
+      "bachelor": {
+        "description": "对于认真的交易者"
+      },
+      "master": {
+        "description": "高级工具"
+      },
+      "phd": {
+        "description": "完全访问权限"
+      },
+      "student": {
+        "description": "非常适合入门"
+      }
+    },
+    "sectionTitle": "章节标题",
+    "startFree": "免费开始",
+    "startTrial": "开始试用",
+    "tiers": {
+      "student": {
+        "period": "期间"
+      }
+    },
+    "trust": {
+      "title": "安全付款"
+    }
   },
   "pricingCancel": {
     "title": "付款已取消",
@@ -1518,7 +3510,9 @@
       "validation_descriptionMax": "Description too long",
       "validation_priceMin": "Invalid price",
       "validation_priceMax": "Price too high",
-      "validation_priceRequired": "Price required for this model"
+      "validation_priceRequired": "Price required for this model",
+      "free": "免费",
+      "other": "其他"
     }
   },
   "copyStrategy": {
@@ -1558,7 +3552,59 @@
       "changePassword": "Endre passord",
       "save": "Lagre endringer",
       "saved": "Endringer lagret!",
-      "error": "Kunne ikke lagre endringer"
+      "error": "Kunne ikke lagre endringer",
+      "avatarPlaceholder": "https://example.com/photo.jpg",
+      "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
+      "badges": "徽章",
+      "daysStreak": "{count}日连胜！",
+      "deleteProfile": "删除个人资料",
+      "earnedAt": "获得{date}",
+      "earnedCount": "{earned}/{total} 已获",
+      "finishTrack": "完成“{track}”",
+      "fullNamePlaceholder": "约翰·多伊",
+      "includedInSubscription": "包含在您的订阅中",
+      "moreFeatures": "+{count}更多功能",
+      "myProfile": "我的个人资料",
+      "namePlaceholder": "你的名字",
+      "noBadgesYet": "您还没有任何徽章。完成一门课程即可获得您的第一个课程！",
+      "profile": "公司简介",
+      "riskLevel": "风险等级",
+      "riskOptions": {
+        "advanced": "高级",
+        "normal": "正常",
+        "safe": "安全"
+      },
+      "saveProfile": "创建个人资料",
+      "savingProfile": "正在保存...",
+      "sections": {
+        "avatar": "个人资料图片",
+        "avatarPlaceholder": "https://example.com/image.jpg",
+        "avatarUrlPlaceholder": "个人资料图片网址",
+        "bio": "简介",
+        "changePassword": "更改密码",
+        "email": "电子邮件",
+        "error": "无法保存更改",
+        "fullName": "全名",
+        "fullNamePlaceholder": "输入您的全名",
+        "loading": "正在加载...",
+        "loadingProfile": "正在加载个人资料...",
+        "namePlaceholder": "名称",
+        "noProfileFound": "未找到个人资料。通过填写以下字段来创建个人资料。",
+        "save": "保存更改",
+        "saved": "更改已保存！",
+        "title": "简介信息",
+        "uploadAvatar": "上传图片"
+      },
+      "settings": "设置",
+      "streakDescription": "每天坚持登录以保持连续记录。",
+      "subtitle": "管理您的个人资料、钱包和设置",
+      "tabs": {
+        "notifications": "通知",
+        "profile": "公司简介",
+        "settings": "设置",
+        "wallet": "钱包"
+      },
+      "yourSubscription": "您的订阅"
     },
     "api": {
       "title": "API Innstillinger",
@@ -1608,7 +3654,17 @@
           "step7": "7. Lim inn over og test tilkoblingen",
           "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
         }
-      }
+      },
+      "apiKeyPlaceholder": "输入您的币安 API 密钥",
+      "apiSecretPlaceholder": "输入您的币安 API 密钥",
+      "copyKeys": "复制钥匙",
+      "deleteError": "删除时出错",
+      "deleteSuccess": "API 密钥已删除",
+      "labelPlaceholder": "例如主账户",
+      "loadError": "无法加载 API 密钥",
+      "referralCopied": "推荐链接已复制！",
+      "saveError": "无法保存 API 密钥",
+      "saveSuccess": "API 密钥已保存！"
     },
     "notifications": {
       "title": "Varselinnstillinger",
@@ -1619,7 +3675,35 @@
       "positionClosed": "Når en posisjon lukkes",
       "priceAlerts": "Prisvarsler",
       "courseUpdates": "Kursoppdateringer",
-      "newsletter": "Nyhetsbrev"
+      "newsletter": "Nyhetsbrev",
+      "browserNotSupported": "您的浏览器不支持推送通知。",
+      "competitions": "比赛",
+      "competitionsDesc": "排行榜、联赛",
+      "from": "来自",
+      "marketNews": "市场新闻",
+      "marketNewsDesc": "重要事件",
+      "permissionDenied": "您必须允许浏览器中的通知",
+      "portfolioUpdates": "产品组合更新",
+      "portfolioUpdatesDesc": "每日总结",
+      "priceAlertsDesc": "当您的货币达到目标价格时",
+      "pushDescription": "直接在您的设备上获取有关重要事件的通知。",
+      "pushDisabled": "推送通知已禁用",
+      "pushEnabled": "推送通知已启用！ 🔔",
+      "pushNotifications": "推送通知",
+      "quietHours": "安静时间",
+      "quietHoursDesc": "晚上没有通知（紧急情况除外）",
+      "saveError": "无法保存设置",
+      "saved": "设置已保存！",
+      "stopLossTakeProfit": "止损/止盈",
+      "stopLossTakeProfitDesc": "关键交易（始终开启）",
+      "to": "至",
+      "tradingSignals": "交易信号",
+      "tradingSignalsDesc": "新的买入和卖出建议",
+      "transactions": "交易",
+      "transactionsDesc": "存款、取款、交易",
+      "updateError": "无法更新通知",
+      "vapidMissing": "配置中缺少 VAPID 密钥",
+      "whatToNotify": "您希望收到什么通知？"
     },
     "security": {
       "title": "Sikkerhet",
@@ -1638,6 +3722,40 @@
       "themeLight": "Lys",
       "themeDark": "Mørk",
       "themeAuto": "Automatisk"
+    },
+    "accessibility": {
+      "fontSize": "字体大小",
+      "fontSizeHint": "“大字母”模式提高可读性",
+      "fontSizeLarge": "大（24 像素）",
+      "fontSizeNormal": "正常（20 像素）",
+      "highContrast": "高对比度",
+      "highContrastDesc": "黑底+白字，适合视障人士",
+      "highContrastOff": "关闭高对比度",
+      "highContrastOn": "开启高对比度",
+      "previewNote": "对于“奶奶测试”批准，普通文本最小为 20 像素。",
+      "previewText": "这就是文本的外观。",
+      "previewTitle": "预览：",
+      "title": "♿ 辅助功能"
+    },
+    "billing": {
+      "cta": "打开计费门户",
+      "description": "在安全计费门户 (Stripe) 中查看发票、更改计划或取消订阅。",
+      "error": "无法打开计费门户。请再试一次。",
+      "loading": "开幕…",
+      "sectionTitle": "订阅和计费",
+      "title": "管理您的订阅"
+    },
+    "theme": {
+      "dark": "黑暗",
+      "darkDesc": "深色背景搭配浅色文字",
+      "darkModeActive": "深色模式已启用",
+      "light": "光",
+      "lightDesc": "浅色背景搭配深色文字",
+      "lightModeActive": "灯光模式已激活",
+      "preview": "预览",
+      "selected": "已选择",
+      "system": "系统",
+      "systemDesc": "遵循设备设置"
     }
   },
   "simulator": {
@@ -1806,7 +3924,26 @@
           "每月 10,000 KLT 代币",
           "抢先体验新功能"
         ]
-      }
+      },
+      "bachelorNoTrialDescription": "学士 无试用说明",
+      "bachelorNoTrialTitle": "学士无试用头衔",
+      "backToPricing": "返回定价",
+      "billingCurrency": "计费货币",
+      "cardForInternational": "国际卡",
+      "currencyHelp": "货币帮助",
+      "loading": "加载中",
+      "paymentDescription": "付款说明",
+      "paymentMethod": "付款方式",
+      "perMonthSuffix": "每月后缀",
+      "secureNote": "安全注意事项",
+      "securePayment": "安全支付",
+      "stripeNotConfigured": "条带未配置",
+      "studentPlanFree": "学生计划免费",
+      "totalDueToday": "今日到期总额",
+      "totalToday": "今天总计",
+      "trialDescription": "试用说明",
+      "trialPeriod": "试用期",
+      "yourOrder": "您的订单"
     }
   },
   "taxReport": {
@@ -1875,7 +4012,57 @@
     "title": "交易历史",
     "totalPnl": "总盈亏",
     "totalTrades": "总交易数",
-    "winRate": "胜率"
+    "winRate": "胜率",
+    "accountPnl": "账户损益",
+    "breakeven": "盈亏平衡",
+    "copyDiagnostics": "复制诊断",
+    "decisionAllow": "允许",
+    "decisionLogHint": "允许和拒绝的订单尝试（风险和机器人检查）。遵循上面的过滤器。",
+    "decisionLogTitle": "决策日志",
+    "decisionModify": "调整后",
+    "decisionReject": "被拒绝",
+    "decisionsEmpty": "尚未记录任何决定。",
+    "diagnosticsCopied": "诊断已复制",
+    "diagnosticsCopyFailed": "诊断复制失败",
+    "emptyCta": "进行您的第一笔交易",
+    "errorTitle": "无法加载交易",
+    "fetchError": "无法加载交易。检查您的连接并重试。",
+    "integrityPollWarning": "诚信民意调查警告",
+    "losses": "损失",
+    "noRealizedPnl": "没有已实现的损益",
+    "noRealizedPnlExplainer": "通常买入/卖出平仓利润/亏损尚未存储在该行中的行。",
+    "noRealizedPnlShort": "—",
+    "noTradesFiltered": "没有过滤交易",
+    "noTradesFilteredHint": "没有交易过滤提示",
+    "noTradesHint": "数据库中还没有您的用户的行。从交易台进行模拟交易，或确保过滤器设置为“全部”。",
+    "notLoggedIn": "您尚未登录。登录即可查看您的交易。",
+    "positionsAvgEntry": "平均。条目",
+    "positionsNow": "现价",
+    "positionsPriceUnavailable": "价格不详",
+    "positionsQty": "数量",
+    "positionsTitle": "未平仓头寸",
+    "positionsTotal": "未实现损益总额",
+    "rejectReason": {
+      "BOT_NOT_HEALTHY": "机器人不健康/已停止",
+      "DAILY_LOSS_CHECK_FAILED": "每日损失检查失败",
+      "DAILY_LOSS_LIMIT_EXCEEDED": "每日损失限额已达",
+      "EXPOSURE_LIMIT_EXCEEDED": "超出暴露限值",
+      "INSUFFICIENT_BALANCE": "余额不足",
+      "INVALID_TRADING_MODE": "交易模式无效",
+      "LEVERAGE_NOT_ALLOWED": "不允许使用杠杆",
+      "LIVE_NOT_ALLOWED": "不允许现场交易",
+      "NO_RISK_PROFILE": "无风险状况",
+      "PAIR_NOT_ALLOWED": "不允许交易对",
+      "POSITION_LIMIT_EXCEEDED": "超出持仓限制",
+      "SESSION_NOT_ACTIVE": "会话不活跃"
+    },
+    "rejectReasonUnknown": "原因不明",
+    "retry": "重试",
+    "totalRealizedPnl": "已实现损益（总和）",
+    "whyColumn": "为什么",
+    "whyMissing": "无信号文字",
+    "winRateRealizedHint": "仅存储已实现损益的交易",
+    "wins": "胜利"
   },
   "trading": {
     "paperMode": "Paper Trading",
@@ -1950,11 +4137,1000 @@
     "total": "Totalt",
     "fee": "Gebyr",
     "confirmTrade": "Bekreft Handel",
-    "positions": "Posisjoner",
+    "positions": {
+      "close": "关闭",
+      "columns": {
+        "action": "行动",
+        "current": "当前",
+        "entry": "参赛作品",
+        "pnl": "PNL",
+        "side": "侧面",
+        "size": "尺寸",
+        "symbol": "符号"
+      },
+      "empty": {
+        "description": "描述",
+        "title": "标题"
+      },
+      "totalUnrealizedPnL": "未实现盈亏总额"
+    },
     "noPositions": "Ingen åpne posisjoner",
     "unrealizedPnL": "Urealisert P&L",
     "realizedPnL": "Realisert P&L",
-    "closePosition": "Lukk posisjon"
+    "closePosition": "Lukk posisjon",
+    "activeAdjustment": "主动调整",
+    "activeStatus": "活跃",
+    "activeStrategiesPanel": {
+      "emptyHint": "空提示",
+      "liveEmptyHint": "实时空提示",
+      "liveStop": "实时停止",
+      "liveTitle": "实时标题",
+      "stop": "停止",
+      "title": "标题"
+    },
+    "activeTraders": "{count} 活跃交易者",
+    "advancedStats": {
+      "backtestFailed": "回测失败",
+      "backtestUnavailable": "回测不可用",
+      "emptyBacktests": "空回测",
+      "emptySignals": "空信号",
+      "errorRunBacktest": "错误运行回测",
+      "labelBestTrade": "最佳贸易标签",
+      "labelLosingTrades": "标签亏损交易",
+      "labelWinRate": "标签胜率",
+      "labelWinningTrades": "标签获胜交易",
+      "labelWorstTrade": "标签最差贸易",
+      "monthlyPnLTitle": "每月 Pn L 标题",
+      "sectionTradeStats": "部分贸易统计",
+      "statMaxDrawdown": "统计最大回撤",
+      "statProfitFactor": "统计利润系数",
+      "statTotalTrades": "统计总交易",
+      "statWinRate": "统计胜率",
+      "tabHistory": "标签历史记录",
+      "tabOverview": "选项卡概述",
+      "tabPerformance": "选项卡性能"
+    },
+    "aggressiveOption": "好斗的",
+    "aggressiveness": "攻击性",
+    "aggressivitySlider": {
+      "levels": {
+        "sections": {
+          "comparison": "比较",
+          "comparisonAggressive": "比较激进",
+          "comparisonBalanced": "比较平衡",
+          "comparisonConservative": "比较保守",
+          "confirmation": "确认",
+          "lessLikely": "不太可能",
+          "moreLikely": "更有可能",
+          "reactionTime": "反应时间"
+        },
+        "title": "标题"
+      },
+      "sections": {
+        "comparison": "比较",
+        "comparisonAggressive": "比较激进iv",
+        "comparisonBalanced": "比较平衡插入",
+        "comparisonConservative": "比较保守性",
+        "confirmation": "确认",
+        "lessLikely": "不太可能",
+        "moreLikely": "更有可能",
+        "reactionTime": "反应时间"
+      },
+      "title": "标题"
+    },
+    "autoTradingConfig": {
+      "disabledDesc": "禁用 - 手动交易",
+      "enabledDesc": "启用 - AI 自动交易",
+      "id": "身份证号",
+      "liveDesc": "实时交易使用真实货币。首先从纸质交易开始！",
+      "loading": "正在加载...",
+      "loginRequired": "您必须登录",
+      "maxAmount": "100,000 挪威克朗",
+      "maxTradeSize": "最大交易规模",
+      "minAmount": "1,000 挪威克朗",
+      "modeLabel": "交易方式",
+      "paperDesc": "模拟交易使用模拟货币。没有真正的损失。",
+      "riskLabel": "风险等级",
+      "riskLevels": {
+        "high": {
+          "description": "风险较高，潜在回报较高",
+          "label": "好斗的"
+        },
+        "low": {
+          "description": "风险最小化，回报较低",
+          "label": "保守派"
+        },
+        "medium": {
+          "description": "中等风险和回报",
+          "label": "平衡"
+        }
+      },
+      "save": "保存设置",
+      "saveError": "无法保存设置",
+      "saveSuccess": "设置已保存！",
+      "saving": "正在保存...",
+      "subtitle": "让人工智能根据市场分析代表您进行交易",
+      "title": "自动交易",
+      "toggleLabel": "自动交易"
+    },
+    "automatic": "自动",
+    "avg": "平均",
+    "botDetail": {
+      "activePairs": "活跃对",
+      "back": "返回",
+      "botDetails": "机器人详情",
+      "buy": "购买",
+      "defaultBotName": "交易机器人",
+      "equityChart": "股票图表",
+      "equityPreview": "股票预览",
+      "liveTrading": "实时交易",
+      "noTradesYet": "还没有交易",
+      "openTradeHistory": "开放交易历史",
+      "pair": "一对",
+      "paperTrading": "模拟交易",
+      "price": "价格",
+      "quantity": "数量",
+      "riskLevel": "风险等级",
+      "runtime": "运行时",
+      "sell": "出售",
+      "side": "侧面",
+      "started": "开始",
+      "strategy": "策略",
+      "strategyInfo": "策略信息",
+      "time": "时间",
+      "total": "合计",
+      "tradeHistory": "贸易历史",
+      "trades": "交易",
+      "trades1": "交易",
+      "winRate": "胜率"
+    },
+    "botStatus": {
+      "action": "行动",
+      "advanced": "高级",
+      "advancedStatistics": "高级统计",
+      "avgTrade": "平均贸易额",
+      "belowOptimal": "低于最佳值",
+      "bestTrade": "最佳贸易",
+      "botControlCenter": "机器人控制中心",
+      "botIsWorking": "机器人正在工作",
+      "copyTrading": "复制交易",
+      "currentStatus": "目前状态",
+      "dailyResult": "每日结果",
+      "description": "描述",
+      "detailedPerformanceMetrics": "详细的性能指标",
+      "emergencyStop": "紧急停止",
+      "followSuccessfulTraders": "关注成功交易者",
+      "goodRiskAdjustedReturns": "良好的风险调整回报",
+      "higherRisk": "风险较高",
+      "kryptoProfessor": "氪教授",
+      "lastCompletedAction": "最后完成的操作",
+      "leaderboard": "排行榜",
+      "lowRisk": "低风险",
+      "market": "市场",
+      "maxDrawdown": "最大回撤",
+      "monitoringPriceMovements": "监控价格变动",
+      "monthlyResult": "每月结果",
+      "myStrategies": "我的策略",
+      "needsDailyReturnSeries": "需求日报系列",
+      "needsEquityCurve": "需要资产曲线",
+      "newStrategy": "新战略",
+      "newStrategyDesc": "新策略描述",
+      "nextCheck": "下一步检查",
+      "noStrategiesDescription": "无策略描述",
+      "noTradesYet": "还没有交易",
+      "on": "开",
+      "overview": "概述",
+      "paper": "纸",
+      "pauseBot": "暂停机器人",
+      "plTotal": "PL 总计",
+      "portfolioValue": "投资组合价值",
+      "positionSize": "头寸规模",
+      "price": "价格",
+      "profitLossBreakdown": "利润损失明细",
+      "quickActions": "快速行动",
+      "recentTrades": "最近的交易",
+      "risk": {
+        "balanced": "平衡",
+        "high": "高",
+        "low": "低"
+      },
+      "riskLabel": "风险标签",
+      "scanningMarket": "扫描市场",
+      "seeAll": "查看全部",
+      "smartTradingInsights": "智能交易洞察",
+      "soon": "很快",
+      "startNow": "现在开始",
+      "stopAll": "全部停止",
+      "strategies": {
+        "empty": "空"
+      },
+      "symbol": "符号",
+      "thisMonth": "本月",
+      "thisWeek": "本周",
+      "time": "时间",
+      "today": "今天",
+      "totalPl": "总PL",
+      "trades": {
+        "empty": "空"
+      },
+      "value": "价值",
+      "waitingForYou": "等你",
+      "weeklyResult": "每周结果",
+      "winRate": "胜率",
+      "worstTrade": "最差的贸易",
+      "yourBotIsRunning": "你的机器人正在运行"
+    },
+    "buyAction": "买了",
+    "charts": {
+      "allocation": "分配",
+      "cash": "现金",
+      "cumulativePnl": "累计盈亏",
+      "equityCurve": "权益曲线",
+      "noAllocation": "无分配",
+      "noTradesYet": "还没有交易",
+      "startTrading": "开始交易"
+    },
+    "chips": {
+      "automatic": "自动",
+      "confidence": "信心",
+      "signal": "信号"
+    },
+    "close": "关闭",
+    "closeStrategy": "关闭策略",
+    "cockpit": {
+      "activation": {
+        "activateButton": "激活按钮",
+        "error": "错误",
+        "missingDescription": "缺少描述",
+        "missingTitle": "缺少标题",
+        "pausedDescription": "暂停说明",
+        "pausedTitle": "暂停标题",
+        "success": "成功"
+      },
+      "analysis": {
+        "chart": {
+          "pnl": "PNL",
+          "pnlTitle": "总标题",
+          "symbolTitle": "符号标题",
+          "togglePnl": "切换 Pnl",
+          "toggleTrades": "切换交易"
+        },
+        "description": "描述",
+        "empty": {
+          "description": "描述",
+          "title": "标题"
+        },
+        "period": {
+          "label": "标签"
+        },
+        "stats": {
+          "bestPair": "最佳配对",
+          "bestSession": "最佳会议",
+          "maxDrawdown": "最大回撤",
+          "profitFactor": "利润系数",
+          "totalFees": "总费用",
+          "totalPnl": "总盈亏",
+          "totalTrades": "总交易数",
+          "winRate": "胜率",
+          "worstPair": "最差的一对",
+          "worstSession": "最差的会议"
+        },
+        "title": "标题"
+      },
+      "empty": {
+        "sessionsDescription": "会议说明",
+        "sessionsTitle": "会议标题"
+      },
+      "error": {
+        "analyticsFailed": "分析失败",
+        "description": "描述",
+        "retry": "重试",
+        "title": "标题"
+      },
+      "header": {
+        "title": "标题"
+      },
+      "kpi": {
+        "portfolioValue": "投资组合价值",
+        "totalPnl": "总盈亏",
+        "totalTrades": "总交易数",
+        "winRate": "胜率"
+      },
+      "liveModeConfirm": {
+        "cancel": "取消",
+        "confirm": "确认",
+        "description": "描述",
+        "rememberDefault": "记住默认值",
+        "title": "标题"
+      },
+      "loading": "加载中",
+      "marketData": {
+        "delayed": "延误",
+        "ok": "好的",
+        "stale": "陈旧的"
+      },
+      "mode": {
+        "live": "直播",
+        "liveShort": "短住",
+        "lockedTooltip": "锁定的工具提示",
+        "paper": "纸",
+        "paperShort": "纸短",
+        "upgrade": "升级"
+      },
+      "quickActions": {
+        "error": "错误",
+        "startRobot": "启动机器人",
+        "viewHistory": "查看历史记录"
+      },
+      "realtime": {
+        "newTrade": {
+          "title": "标题"
+        }
+      },
+      "riskBanner": {
+        "crashed": "坠毁",
+        "dailyLossLimit": "每日损失限额",
+        "maxDrawdown": "最大回撤",
+        "title": "标题"
+      },
+      "sessions": {
+        "columns": {
+          "currentCapital": "流动资金",
+          "pair": "一对",
+          "pnl": "PNL",
+          "startingCapital": "启动资金",
+          "status": "状态",
+          "updatedAt": "更新于"
+        },
+        "loadMore": "加载更多",
+        "loading": "加载中",
+        "title": "标题"
+      },
+      "statusLog": {
+        "evaluatingSignals": "评估信号",
+        "last_tick_at": "最后一次报价时间",
+        "loading": "加载中",
+        "noRecentDecisions": "最近没有决定",
+        "title": "标题",
+        "tradeFailedNoReason": "交易无故失败"
+      },
+      "toast": {
+        "sessionStatusChanged": {
+          "title": "标题"
+        },
+        "startRobotExisting": "启动现有机器人",
+        "startRobotSuccess": "启动机器人成功"
+      },
+      "trades": {
+        "columns": {
+          "createdAt": "创建于",
+          "effectivePnl": "有效盈亏",
+          "executedAt": "执行于",
+          "fee": "费用",
+          "price": "价格",
+          "quantity": "数量",
+          "realizedPnl": "已实现盈亏",
+          "totalValue": "总价值"
+        },
+        "details": {
+          "description": "描述",
+          "id": "身份证号",
+          "noSignal": "无信号",
+          "readMore": "了解更多",
+          "reason": "原因",
+          "sessionId": "会话 ID",
+          "title": "标题"
+        },
+        "error": {
+          "retry": "重试",
+          "title": "标题"
+        },
+        "filters": {
+          "all": "全部",
+          "apply": "申请",
+          "dateRange": "日期范围",
+          "open": "打开",
+          "pair": "一对",
+          "placeholder": "搜索交易",
+          "remove": "删除",
+          "reset": "重置",
+          "search": "搜索",
+          "sessionStatus": "会话状态",
+          "side": "侧面",
+          "title": "标题",
+          "tradeStatus": "贸易状况"
+        },
+        "loadMore": "加载更多",
+        "loading": "加载中",
+        "noTradesDescription": "暂无交易描述",
+        "noTradesTitle": "没有交易标题",
+        "side": {
+          "buy": "购买",
+          "sell": "出售"
+        },
+        "title": "标题"
+      }
+    },
+    "confidence": "信心",
+    "connectBinanceModal": {
+      "apiKeyLabel": "API密钥",
+      "apiKeyPlaceholder": "将您的 API 密钥粘贴到此处...",
+      "apiSecretLabel": "API秘密",
+      "apiSecretPlaceholder": "将您的 API 机密粘贴到此处...",
+      "back": "返回",
+      "connectSecurely": "安全连接",
+      "continue": "我明白了，继续",
+      "description": "链接您的币安账户以使用真实加密货币进行实时交易。",
+      "goToBinance": "前往币安 API 管理",
+      "noWithdrawConfirm": "我确认我的 API 密钥没有启用“提款”权限",
+      "secretHint": "您的 API 密钥在存储前已加密，并且不会再次显示。",
+      "security1": "API 密钥使用 AES-256 加密",
+      "security2": "我们从不以纯文本形式存储密钥",
+      "security3": "存储后密钥永远不会发送到前端",
+      "security4": "您可以随时断开连接",
+      "securityTitle": "您的安全是我们的首要任务：",
+      "startTrading": "开始交易",
+      "step1": "登录您的币安账户",
+      "step2": "进入API管理",
+      "step3": "创建新的 API 密钥",
+      "step4Important": "重要：",
+      "step4OnlyEnable": "仅启用：",
+      "step4Reading": "✅ 启用阅读",
+      "step4Trading": "✅ 启用现货和保证金交易",
+      "step4Withdrawals": "❌ 启用提款（必须禁用）",
+      "step5": "复制并粘贴您的 API 密钥和密码如下",
+      "stepsTitle": "如何创建 API 密钥：",
+      "successDesc": "您的币安账户现已连接。您现在可以切换到实时交易模式。",
+      "successTitle": "连接成功！",
+      "title": "连接币安账户",
+      "understandRisks": "我了解实时交易涉及真实资金和风险",
+      "verifyingDesc": "这可能需要几秒钟。我们正在通过币安检查您的 API 权限。",
+      "verifyingTitle": "正在验证您的 API 密钥...",
+      "warningText": "在币安上创建 API 密钥时，切勿启用“提款”权限。仅应启用“启用读取”和“启用现货和保证金交易”。",
+      "warningTitle": "重要："
+    },
+    "conservativeOption": "保守派",
+    "copyDiagnostics": "复制诊断",
+    "date": "日期",
+    "decisionAllow": "决定允许",
+    "decisionLogHint": "决策日志提示",
+    "decisionLogTitle": "决策日志标题",
+    "decisionModify": "决定修改",
+    "decisionReject": "决定拒绝",
+    "decisionsEmpty": "决定为空",
+    "desk": {
+      "cash": "现金",
+      "liveAiInsights": "实时人工智能见解",
+      "pnl": "PNL",
+      "sonarLoadError": "声纳负载错误",
+      "totalValue": "总价值",
+      "upgradeDesc": "升级说明",
+      "upgradeForMore": "升级更多",
+      "welcomeEmpty": "欢迎空",
+      "winRate": "胜率"
+    },
+    "diagnosticsCopied": "诊断已复制",
+    "diagnosticsCopyFailed": "诊断复制失败",
+    "disabledDesc": "禁用描述",
+    "empty": "空",
+    "enabledDesc": "启用描述",
+    "entryPrice": "入场价格",
+    "exitPrice": "退出价格",
+    "exportCsv": "导出CSV",
+    "fetchError": "获取错误",
+    "filterAll": "过滤全部",
+    "filterLive": "过滤直播",
+    "filterPaper": "滤纸",
+    "firstTrade": {
+      "confirmCta": "确认购买",
+      "exitToFull": "转到完整终端",
+      "minError": "最低金额为 50 克朗",
+      "paperBadge": "纸币",
+      "seeResult": "查看您的交易",
+      "stepAmount": "选择金额",
+      "stepCoin": "选择加密货币",
+      "stepConfirm": "确认",
+      "summary": "您正在以 {amount} kr 的价格购买 {coin}",
+      "title": "您的第一笔交易"
+    },
+    "goToTrade": "前往交易",
+    "integrityPollWarning": "诚信民意调查警告",
+    "learnMore": "了解更多",
+    "live": "直播",
+    "liveAiInsights": "实时人工智能见解（声纳）",
+    "liveDesc": "实时描述",
+    "liveStrategy": {
+      "back": "返回",
+      "botLogTitle": "机器人日志标题",
+      "currentPrice": "当前价格",
+      "liveBadge": "直播",
+      "paperBadge": "纸",
+      "statMaxDrawdown": "统计最大回撤",
+      "statPnl": "统计盈亏",
+      "statTrades": "统计交易",
+      "statWinRate": "统计胜率",
+      "waitingForSignals": "等待信号",
+      "warmupAnalyzing": "热身分析"
+    },
+    "liveTrades": "实时交易",
+    "loading": "加载中",
+    "loginRequired": "需要登录",
+    "losses": "损失",
+    "marketDataLoadError": "无法加载市场数据",
+    "marketIntelligence": "市场情报",
+    "marketRegime": "市场机制",
+    "marketSubtitle": "市场概览和观察名单",
+    "marketTitle": "市场",
+    "maxAmount": "最大金额",
+    "maxTradeSize": "最大交易规模",
+    "minAmount": "最低金额",
+    "mode": "模式",
+    "modeLabel": "模式标签",
+    "modeSelector": {
+      "title": "标题"
+    },
+    "noRealizedPnlExplainer": "无已实现盈亏解释器",
+    "noRealizedPnlShort": "无已实现盈亏空头",
+    "noTrades": "没有交易",
+    "noTradesFiltered": "没有过滤交易",
+    "noTradesFilteredHint": "没有交易过滤提示",
+    "noTradesHint": "无交易提示",
+    "noTradesYet": "还没有交易",
+    "normalOption": "正常",
+    "notFound": "未找到",
+    "notLoggedIn": "未登录",
+    "notStarted": "未开始",
+    "numbers": "数字",
+    "overview": "概述",
+    "pair": "一对",
+    "paper": "纸",
+    "paperDesc": "论文描述",
+    "paperModeHint": "💡 纸质模式——没有真钱",
+    "paperNotice": "纸质通知",
+    "paperTrading": {
+      "active": "活跃",
+      "backToDashboard": "返回仪表板",
+      "backToOverview": "返回概览",
+      "binanceUpdateInfo": "币安更新信息",
+      "cancel": "取消",
+      "card": {
+        "currentBalance": "当前余额",
+        "empty": "空",
+        "error": "错误",
+        "loading": "加载中",
+        "pnl": "PNL",
+        "startingCapital": "启动资金"
+      },
+      "confirmResetAll": "确认全部重置",
+      "crashed": "坠毁",
+      "description": "描述",
+      "errors": {
+        "forbidden": "禁止",
+        "generic": "通用",
+        "missingSessionId": "缺少会话 ID",
+        "network": "网络",
+        "resetFailed": "重置失败",
+        "resetNetwork": "重置网络",
+        "unauthorized": "未经授权",
+        "validationFailed": "验证失败"
+      },
+      "modeBanner": {
+        "live": "直播",
+        "paper": "纸"
+      },
+      "modeLive": "现场模式",
+      "modePaper": "模式纸",
+      "mySessions": "我的会议",
+      "newSession": "新会议",
+      "noSessions": "没有会议",
+      "noSessionsDesc": "无会话描述",
+      "now": "现在",
+      "paused": "已暂停",
+      "refreshList": "刷新列表",
+      "resetSession": "重置会话",
+      "resetSuccess": "重置成功",
+      "sessions": {
+        "maxActiveReached": "已达到最大活跃状态",
+        "maxActiveStudent": "最大活跃学生数",
+        "showHistory": "显示历史"
+      },
+      "start": "开始",
+      "startCapital": "启动资本",
+      "startFirst": "首先开始",
+      "started": "开始",
+      "stats": {
+        "availableBalance": "可用余额"
+      },
+      "stopped": "已停止",
+      "trades": "交易",
+      "tradingPair": "交易对",
+      "viewTrades": "查看交易",
+      "workspaceHeader": {
+        "badge": "纸",
+        "subtitle": "副标题",
+        "title": "标题"
+      }
+    },
+    "performance": {
+      "avgTrade": "平均贸易额",
+      "bestDay": "最好的一天",
+      "dailyHeatmap": "每日热图",
+      "keepTrading": "继续交易",
+      "loss": "损失",
+      "maxDrawdown": "最大回撤",
+      "profit": "利润",
+      "worstDay": "最糟糕的一天"
+    },
+    "pnl": "PNL",
+    "positionLots": {
+      "age": "年龄",
+      "entryPrice": "入场价格",
+      "error": "错误",
+      "loading": "加载中",
+      "lot": "地段",
+      "noPosition": "没有职位",
+      "quantity": "数量",
+      "title": "标题",
+      "totalQuantity": "总量",
+      "totalUnrealizedPnL": "未实现盈亏总额",
+      "unrealizedPnL": "未实现盈亏",
+      "weightedEntry": "加权参赛"
+    },
+    "quantity": "数量",
+    "readMore": "了解更多",
+    "recentActivity": "最近的社区活动",
+    "recentTrades": {
+      "buy": "购买",
+      "empty": "空",
+      "emptyAll": "全部清空",
+      "emptyLive": "空直播",
+      "emptyPaper": "空纸",
+      "filter": "过滤器",
+      "filterAll": "过滤全部",
+      "filterLive": "过滤直播",
+      "filterPaper": "滤纸",
+      "modeLive": "现场模式",
+      "modePaper": "模式纸",
+      "paperShort": "纸短",
+      "pnl": "PNL",
+      "sell": "出售",
+      "size": "尺寸",
+      "strategy": "策略",
+      "symbol": "符号",
+      "time": "时间",
+      "tradeType": "贸易类型"
+    },
+    "recentTradesMixedModesHint": "包括纸质和现场——上面的作品集遵循您选择的模式。",
+    "recentTradesPanel": {
+      "empty": "空的",
+      "sideBuy": "侧面购买",
+      "sideSell": "侧面销售",
+      "title": "标题",
+      "unknownStrategy": "未知策略"
+    },
+    "rejectReason": {
+      "BOT_NOT_HEALTHY": "博不健康",
+      "DAILY_LOSS_CHECK_FAILED": "戴尔洛斯检查失败",
+      "DAILY_LOSS_LIMIT_EXCEEDED": "超过 Dail Los Limi",
+      "EXPOSURE_LIMIT_EXCEEDED": "超出暴露限额",
+      "INSUFFICIENT_BALANCE": "余额不足",
+      "INVALID_TRADING_MODE": "无效交易模式",
+      "LEVERAGE_NOT_ALLOWED": "不允许杠杆",
+      "LIVE_NOT_ALLOWED": "丽芙不允许",
+      "NO_RISK_PROFILE": "N Ris 简介",
+      "PAIR_NOT_ALLOWED": "拜县不允许",
+      "POSITION_LIMIT_EXCEEDED": "超过头寸限制",
+      "SESSION_NOT_ACTIVE": "会话没有活动"
+    },
+    "restart": {
+      "button": "重启交易",
+      "description": "{stoppedCount} 已停止 + {crashedCount} 会话崩溃。可能会出现熔断（回撤）。",
+      "networkError": "网络错误",
+      "reloading": "正在重新加载...",
+      "success": "{count} 会话重新启动！",
+      "title": "交易已停止",
+      "unknownError": "发生错误"
+    },
+    "result": "结果",
+    "retry": "重试",
+    "riskLabel": "风险标签",
+    "riskMetrics": {
+      "calmarRatio": "卡尔玛比率",
+      "calmarTooltip": "卡尔玛工具提示",
+      "gainPainRatio": "增益痛苦比",
+      "gainPainTooltip": "获得痛苦工具提示",
+      "hideDetails": "隐藏详细信息",
+      "loadError": "加载错误",
+      "maxConsecutiveLosses": "最大连续损失",
+      "maxConsecutiveLossesTooltip": "最大连续损失工具提示",
+      "omegaRatio": "欧米茄比率",
+      "omegaTooltip": "欧米茄工具提示",
+      "panelTooltip": "基于多个指标对您的投资组合风险水平进行总体评估。分数越高=风险越低。",
+      "scoreDescription": {
+        "high": "高风险——您的投资组合需要关注",
+        "low": "低风险——您的投资组合显示出可靠的风险指标",
+        "moderate": "中等风险——您的投资组合还有改进的空间"
+      },
+      "scoreLabel": {
+        "high": "高风险",
+        "low": "低风险",
+        "moderate": "中等风险"
+      },
+      "scoreTitle": "风险评分",
+      "showDetails": "显示详情",
+      "sortinoRatio": "索蒂诺比率",
+      "sortinoTooltip": "索蒂诺工具提示",
+      "var95": "瓦尔",
+      "var95Tooltip": "变量工具提示"
+    },
+    "riskProfile": "风险概况",
+    "robotBrain": {
+      "ariaLabel": "咏叹调标签",
+      "badge": "人工智能监控",
+      "chip_risk": "风险分析",
+      "chip_scan": "扫描",
+      "chip_signal": "信号强度",
+      "disclaimer": "免责声明",
+      "line1": "人工智能正在实时分析市场......",
+      "line2": "评估风险和潜力...",
+      "line3": "检查技术指标...",
+      "line4": "监控价格变动...",
+      "line5": "计算最佳切入点...",
+      "line6": "等待正确的信号..."
+    },
+    "save": "保存",
+    "saveError": "保存错误",
+    "saveSuccess": "保存成功",
+    "saving": "节省",
+    "seeAllTrades": "查看所有交易 →",
+    "selectStrategy": "选择策略",
+    "selectStrategyAria": "选择{name}",
+    "sellAction": "已售出",
+    "sessionDetail": {
+      "active": "活跃",
+      "buy": "购买",
+      "capital": "资本",
+      "clickForDetails": "点击交易查看详情",
+      "closeOnStopCreditFailed": "销售已记录，但资本未记入贷方。该位置已保留 - 请联系支持人员。",
+      "closeOnStopDisabled": "机器人已停止 — 该仓位仍处于开仓状态且不再受到监控。",
+      "closeOnStopError": "机器人被停止，但仓位无法自动卖出。它仍然开放 - 手动销售或联系支持人员。",
+      "closeOnStopHint": "该头寸以市场价格出售，结果显示并附有学习解释。如果关闭，该位置将保持打开状态，没有任何监控。",
+      "closeOnStopLabel": "当机器人停止时卖出未平仓头寸（推荐）",
+      "contextBanner": "背景横幅",
+      "crashed": "坠毁",
+      "deleteConfirm": "删除该交易吗？此操作无法撤消。",
+      "deleteError": "无法删除交易",
+      "deleteTrade": "删除交易",
+      "direction": "方向",
+      "directionBuy": "购买",
+      "directionSell": "出售",
+      "fee": "费用",
+      "liveBanner": "用真钱进行实时交易——谨慎交易。",
+      "networkError": "网络错误-请重试",
+      "noTrades": "没有交易",
+      "orderType": "订单类型",
+      "pair": "交易对",
+      "pauseBot": "暂停机器人",
+      "paused": "已暂停",
+      "pnl": "损益（PnL）",
+      "price": "价格",
+      "quantity": "数量",
+      "resume": "简历",
+      "seePlans": "查看计划",
+      "sell": "出售",
+      "sessionDetail": {
+        "backToHub": "返回集线器",
+        "eyebrowLive": "眉毛直播",
+        "eyebrowPaper": "眉纸"
+      },
+      "signal": "策略信号",
+      "specialOffer": "特别优惠",
+      "startCapital": "启动资本",
+      "status": "状态",
+      "stopSession": "停止会话",
+      "stopped": "已停止",
+      "subtitle": "副标题",
+      "timestamp": "时间戳",
+      "total": "合计",
+      "tradeDeleted": "交易已删除",
+      "tradeDetails": "交易详情",
+      "trades": "交易",
+      "trialExpired": "试用期已过",
+      "trialExpiredTitle": "试用期已过期标题",
+      "trialExpiringSoon": "试用期即将到期",
+      "trialProgress": "试用进度",
+      "trialWarning": "试用警告",
+      "upgrade": "升级",
+      "upgradeNow": "立即升级",
+      "upgradePrompt": "升级提示",
+      "value": "价值",
+      "winRate": "胜率"
+    },
+    "shares": "股份",
+    "side": "侧面",
+    "sideBuy": "侧面购买",
+    "sideSell": "侧面销售",
+    "signalFeed": {
+      "directionBuy": "方向买入",
+      "directionHold": "方向保持",
+      "directionSell": "方向销售",
+      "emptyBody": "空身",
+      "emptyFooter": "空页脚",
+      "emptyTitle": "空标题",
+      "locked": "锁定",
+      "priceEntry": "价格输入",
+      "priceStop": "价格止损",
+      "priceTarget": "价格目标",
+      "refreshAria": "刷新咏叹调",
+      "statusEmpty": "状态为空",
+      "statusError": "状态错误",
+      "statusLive": "实时状态",
+      "statusStale": "状态陈旧",
+      "title": "标题",
+      "updatedPrefix": "更新的前缀"
+    },
+    "sonarLoadError": "无法加载 Sonar AI 分析。",
+    "startStrategy": "启动策略",
+    "starting": "开始...",
+    "status": "状态",
+    "stopLoss": "止损",
+    "stopStrategy": "止损策略",
+    "strategies": {
+      "ai_copy": {
+        "description": "复制由人工智能过滤的顶级交易者。",
+        "name": "人工智能复制"
+      },
+      "dca_trygg": {
+        "description": "每周自动购买 BTC/ETH。大跌幅时双倍。",
+        "name": "DCA 安全"
+      },
+      "ensemble_ai": {
+        "description": "结合多种人工智能模型，根据市场数据、情绪和技术分析做出最佳决策。",
+        "name": "集成人工智能"
+      },
+      "grid_bot": {
+        "description": "在价格网格中低买高卖。",
+        "name": "网格机器人"
+      },
+      "multisignal_aktiv": {
+        "description": "RSI + MACD + 布林线用于更频繁的交易。",
+        "name": "多信号激活"
+      },
+      "trend_balansert": {
+        "description": "遵循带有 RSI 滤波器的 MA50/MA200 交叉。",
+        "name": "趋势平衡"
+      }
+    },
+    "strategy": "策略",
+    "strategyParams": "策略参数",
+    "strategyPicker": {
+      "ariaClose": "咏叹调·克洛斯",
+      "livePaperHint": "实时纸张提示",
+      "liveStartStrategy": "实时启动策略",
+      "liveStarting": "现场开始",
+      "liveStatusActive": "实时状态 活动",
+      "liveStatusIdle": "实时状态 空闲",
+      "liveStopStrategy": "实时止损策略",
+      "paperHint": "论文提示",
+      "startStrategy": "启动策略",
+      "starting": "开始",
+      "statusActive": "状态活跃",
+      "statusIdle": "状态 空闲",
+      "stopStrategy": "停止策略",
+      "title": "标题"
+    },
+    "subtitle": "副标题",
+    "takeProfit": "止盈",
+    "title": "标题",
+    "toggleAria": "切换咏叹调",
+    "toggleLabel": "切换标签",
+    "totalRealizedPnl": "已实现盈亏总额",
+    "totalTrades": "总交易数",
+    "totalValue": "总价值",
+    "tradeAmountSlider": {
+      "alreadyInMarket": "已经上市",
+      "balance": "平衡",
+      "maxPerTrade": "每笔交易最高限额",
+      "paperTrading": {
+        "description": "描述",
+        "title": "标题"
+      },
+      "status": {
+        "blocked": {
+          "description": "描述"
+        },
+        "caution": {
+          "description": "描述"
+        },
+        "ok": {
+          "description": "描述"
+        },
+        "warning": {
+          "title": "标题"
+        }
+      },
+      "title": "标题",
+      "whatThisMeans": "这意味着什么"
+    },
+    "tradeDetails": {
+      "automatic": "自动",
+      "avg": "平均",
+      "buy": "购买",
+      "chart": "图表",
+      "close": "关闭",
+      "confidence": "信心",
+      "created": "已创建",
+      "entryPrice": "入场价格",
+      "exitPrice": "退出价格",
+      "fee": "费用",
+      "filled": "充满",
+      "learnMore": "了解更多",
+      "limit": "限制",
+      "live": "直播",
+      "market": "市场",
+      "notFound": "未找到",
+      "numbers": "数字",
+      "overview": "概述",
+      "paper": "纸",
+      "paperNotice": "纸质通知",
+      "quantity": "数量",
+      "readMore": "了解更多",
+      "reason": "原因",
+      "remaining": "剩余",
+      "result": "结果",
+      "sell": "出售",
+      "shares": "股份",
+      "side": "侧面",
+      "status": "状态",
+      "statusCancelled": "状态已取消",
+      "statusFilled": "状态已满",
+      "statusOpen": "状态 开放",
+      "statusPartial": "状态 部分",
+      "stopLoss": "止损",
+      "strategy": "策略",
+      "strategyParams": "策略参数",
+      "takeProfit": "止盈",
+      "totalValue": "总价值",
+      "type": "类型",
+      "whyBuy": "为什么购买",
+      "whySell": "为何出售"
+    },
+    "tradingModeSelector": {
+      "live": {
+        "description": "描述",
+        "feature1": "特点",
+        "feature2": "特点",
+        "feature3": "特点",
+        "title": "标题",
+        "warning": "警告"
+      },
+      "liveWarning": {
+        "description": "描述",
+        "title": "标题"
+      },
+      "locked": {
+        "comingSoon": "即将推出",
+        "connectExchange": "连接交易所"
+      },
+      "paper": {
+        "description": "描述",
+        "feature1": "特点",
+        "feature2": "特点",
+        "feature3": "特点",
+        "title": "标题"
+      },
+      "title": "标题"
+    },
+    "type": "类型",
+    "unknownStrategy": "未知策略",
+    "upgradeDesc": "获取 ETH、SOL 和 20 多种其他加密资产的实时声纳分析。",
+    "upgradeForMore": "升级以获得更多分析",
+    "welcomeStart": "欢迎！开始制定策略。",
+    "whyBuy": "为什么购买",
+    "whyColumn": "为什么专栏",
+    "whyMissing": "为什么失踪",
+    "whySell": "为何出售",
+    "wins": "胜利"
   },
   "wallet": {
     "title": "Lommebok",
@@ -2072,5 +5248,942 @@
   },
   "pilotTradeTitle": "试试 Pilot",
   "pilotTradeDesc": "AI 分析市场并用模拟金自动交易",
-  "pilotTradeCta": "启动 Pilot"
+  "pilotTradeCta": "启动 Pilot",
+  "tradingResults": {
+    "charts": {
+      "modeTrades": "{count, plural, one {# 笔交易} other {# 笔交易}}",
+      "cumulativeHint": "随着时间的推移表现",
+      "cumulativeSeries": "累计盈亏",
+      "cumulativeTitle": "累计结果",
+      "dailyHint": "每天结果",
+      "dailySeries": "每日盈亏",
+      "dailyTitle": "每日盈亏",
+      "modeHint": "纸质结果与实时结果",
+      "modeTitle": "按模式划分的损益",
+      "outcomeHint": "盈利交易与亏损交易",
+      "outcomeTitle": "结果分布",
+      "pairPnl": "损益",
+      "pairsHint": "按加密货币划分的结果",
+      "pairsTitle": "按交易对划分的损益",
+      "worstDayBadge": "最糟糕的一天：{day} · {amount}"
+    },
+    "empty": {
+      "needDaily": "没有每日数据",
+      "needModes": "无模式数据",
+      "needPairs": "无交易对数据",
+      "needTrades": "进行一些交易以查看统计数据",
+      "noOutcomes": "没有结果数据",
+      "noTradesDesc": "从进行第一笔交易开始",
+      "noTradesTitle": "还没有交易"
+    },
+    "errorLoad": "无法加载结果",
+    "errorTitle": "加载结果时出错",
+    "exportCsv": "导出 CSV",
+    "eyebrow": "交易结果",
+    "intervalHint": "过去 30 天",
+    "kpi": {
+      "bestDay": "最好的一天",
+      "modeTrades": "交易",
+      "totalPnl": "总盈亏",
+      "totalPnlHint": "所有交易的综合结果",
+      "trades": "交易",
+      "winRate": "胜率",
+      "worstDay": "最糟糕的一天"
+    },
+    "lastUpdated": "最后更新 {time}",
+    "meta": {
+      "title": "结果"
+    },
+    "mode": {
+      "live": "直播",
+      "paper": "纸",
+      "unknown": "未知"
+    },
+    "notYetLoaded": "正在加载结果...",
+    "openHistory": "查看交易历史",
+    "outcome": {
+      "breakeven": "盈亏平衡",
+      "loss": "损失",
+      "unknown": "没有结果",
+      "win": "赢了"
+    },
+    "refresh": "刷新",
+    "subtitle": "查看您的交易结果和统计数据",
+    "title": "我的结果"
+  },
+  "AdminSessions": {
+    "allStatuses": "所有状态",
+    "confirmStopBot": "确认停止机器人",
+    "searchSessions": "搜索会话",
+    "statusActive": "状态活跃",
+    "statusCrashed": "状态崩溃",
+    "statusPaused": "状态已暂停",
+    "statusStopped": "状态已停止",
+    "stop": "停止",
+    "unknown": "未知",
+    "unknownError": "未知错误"
+  },
+  "BotWizard": {
+    "back": "返回",
+    "binanceNotConnectedDesc": "在设置中连接您的币安 API 密钥即可开始实时交易。",
+    "binanceNotConnectedTitle": "币安未连接",
+    "chooseRisk": "选择风险级别",
+    "chooseStrategy": "选择策略",
+    "clickToSelect": "点击策略进行选择",
+    "connectBinanceCta": "连接币安",
+    "connectBinanceToStart": "连接币安开始实时交易。",
+    "customAmount": "定制金额：",
+    "duplicateSessionDesc": "您已经有一个针对该对的活动机器人 - 首先停止它或选择另一对。",
+    "duplicateSessionTitle": "重复会话",
+    "high": "高",
+    "kellyNotice": "🛡️ 机器人使用凯利准则根据表现调整头寸大小。这降低了风险，但并没有消除风险——您仍然可能会赔钱。",
+    "liveBalanceUnknownWarning": "我们不知道您的币安余额。开始之前请确保该金额可用。",
+    "liveCapitalHighWarning": "金额大。考虑从较少的资本开始以限制风险。",
+    "liveConfirmWarning": "确认：您即将用真钱启动一个实时机器人。",
+    "liveModeLabel": "直播",
+    "liveNotAllowedDesc": "实时交易需要学士或更高级别以及连接的币安账户。",
+    "liveNotAllowedTitle": "未启用实时交易",
+    "liveStartedDesc": "您的实时交易机器人现在正在用真钱运行",
+    "liveStartedTitle": "直播机器人已启动",
+    "liveStartingCapital": "启动资金（真实资金）",
+    "liveStartingCapitalDesc": "机器人从您的币安账户进行交易的金额。",
+    "liveWarningDesc": "该机器人将使用您币安账户中的真实资金进行交易。损失是真实存在的。",
+    "liveWarningTitle": "真钱",
+    "low": "低",
+    "maxCoinsNotice": "{tier} 等级的最大 {limit} 硬币",
+    "medium": "中等",
+    "modeLabel": "交易方式",
+    "modeLabelLive": "用真钱进行交易",
+    "modeLabelPaper": "无风险地使用纸质基金进行练习",
+    "next": "下一页",
+    "paperModeLabel": "纸",
+    "recommended": "推荐",
+    "requiresTier": "需要 {tier}",
+    "riskHighDesc": "积极的策略",
+    "riskHighLabel": "高风险",
+    "riskLowDesc": "缓慢而稳定的增长",
+    "riskLowLabel": "低风险",
+    "riskMedDesc": "平衡",
+    "riskMedLabel": "中等风险",
+    "seePlans": "查看计划",
+    "selectCoins": "选择硬币",
+    "sessionLimitDesc": "您只能有 {max} 活动会话",
+    "sessionLimitTitle": "已达到会话限制",
+    "startBotAction": "启动机器人",
+    "startBotSubtitle": "制定策略、风险和资本。该机器人以模拟交易启动并不断更新交易历史记录。",
+    "startBotSubtitleLive": "制定策略、风险和资本。该机器人以实时模式启动并使用真钱。",
+    "startBotTitle": "启动交易机器人",
+    "startFailedTitle": "无法启动机器人",
+    "startLiveBotAction": "启动直播机器人",
+    "startedDesc": "您的交易机器人正在运行",
+    "startedTitle": "机器人已启动",
+    "starting": "开始...",
+    "startingCapital": "启动资金（纸质）",
+    "startingCapitalDesc": "机器人在纸质模式下交易的金额。",
+    "stepAmount": "金额及币种",
+    "stepStart": "开始",
+    "stepStrategy": "策略",
+    "strategyAiDesc": "利用人工智能复制顶级交易者",
+    "strategyDcaDesc": "平均成本 — 按计划自动购买",
+    "strategyGridDesc": "在一定价格范围内低买高卖",
+    "strategyMultiDesc": "组合多个信号指标",
+    "strategySelected": "已选择 {name} — 点击下一步继续",
+    "strategyTrendDesc": "通过技术分析跟踪市场趋势",
+    "summary": "总结",
+    "upgradeCta": "查看计划",
+    "upgradeNotice": "您将获得 1 项策略。升级以获得更多策略和金币。",
+    "upgradeToStartLive": "升级到学士或更高版本以开始实时交易。",
+    "waitingForSignal": "启动后：机器人可以在等待信号的一段时间内处于活动状态而不进行交易。这是正常的。"
+  },
+  "ClientKurs": {
+    "activeStudents": "活跃的学生",
+    "advanced": "高级",
+    "all": "全部",
+    "avgRating": "平均评分",
+    "beginner": "初学者",
+    "intermediate": "中级",
+    "lessonsLabel": "教训",
+    "moduler": "模块",
+    "noFilteredResults": "该类别还没有课程。",
+    "openForAll": "向所有人开放",
+    "popular": "热门",
+    "studenterCount": "{count}学生"
+  },
+  "FAQ": {
+    "badge": "问答",
+    "contactUs": "联系我们",
+    "fallbacks": {
+      "f1": {
+        "a": "不，您不需要任何先验知识。我们的课程从基本概念开始，逐步建立。一切都用实际例子解释得很清楚。您将逐步学习，从最基本的原理到高级策略。",
+        "q": "我需要具备交易方面的先验知识吗？"
+      },
+      "f10": {
+        "a": "您将获得一份数字证书，确认您完成了课程。您可以永久访问所有内容，包括未来的更新。准备好后，您还可以升级到更高的计划以获得更高级的功能。",
+        "q": "完成课程后会发生什么？"
+      },
+      "f2": {
+        "a": "模拟交易意味着您在安全的环境中使用模拟资金（100,000 挪威克朗）进行交易。您可以练习买卖加密货币、设置止损并测试策略，而无需冒真金白银的风险。它就像一个用于交易的飞行模拟器——您可以学习而不会产生任何后果。",
+        "q": "什么是票据交易？"
+      },
+      "f3": {
+        "a": "不需要。您为使用我们的工具付费，而不是为结果或回报承诺付费。 100 000 挪威克朗游戏币的模拟交易是免费且无限制的。升级后，您可以立即访问实时交易、更多策略和高级工具（例如软件订阅）等功能。",
+        "q": "如果我不满意可以退款吗？"
+      },
+      "f4": {
+        "a": "大多数人每天花费 30-60 分钟，在 1-2 周内完成基础课程。您设定自己的步调。该课程全天候（24/7）开放，因此您可以在最适合您的时候学习。有些需要更长的时间，有些则更短——重要的是你要学得彻底。",
+        "q": "需要多长时间才能学会？"
+      },
+      "f5": {
+        "a": "不，交易是一项需要学习、练习和纪律的技能。我们的目标是为您提供扎实的知识，使您成为知情且负责任的交易者。我们注重长期学习，而不是不切实际的快速赚钱承诺。",
+        "q": "这是赚快钱的捷径吗？"
+      },
+      "f6_stripe": {
+        "a": "付款通过 Stripe 处理，包括 Visa、Mastercard 和 PayPal（以及 Stripe 支持的 Apple Pay 和 Google Pay）。付款是加密的；我们不存储您的卡信息。",
+        "q": "你们接受什么付款方式？"
+      },
+      "f6_vipps": {
+        "a": "我们提供 Vipps（挪威、瑞典、丹麦和芬兰），并通过 Stripe 付款，包括 Visa、Mastercard 和 PayPal（以及 Stripe 支持的 Apple Pay 和 Google Pay）。付款是加密的；我们不存储您的卡信息。",
+        "q": "你们接受什么付款方式？"
+      },
+      "f7": {
+        "a": "是的，整个平台都针对移动设备进行了优化。您可以通过手机参加课程、进行纸质交易以及与学习助手聊天。随时随地学习。",
+        "q": "这在移动设备上有效吗？"
+      },
+      "f8": {
+        "a": "我们的学习助理随时为您服务，并以挪威语解答。此外，您还可以访问社区，在那里您可以提出问题并与其他学生分享经验。我们还会在 24 小时内回复电子邮件。",
+        "q": "如果我一路上有疑问怎么办？"
+      },
+      "f9": {
+        "a": "不，Klarpakke 是完全独立的。当您准备好用真实货币进行交易时，您可以选择要使用的经纪商。我们为您提供知识——您决定在哪里进行交易。",
+        "q": "我必须使用特定的经纪人吗？"
+      }
+    },
+    "moreQuestions": "还有其他问题吗？",
+    "subtitle": "开始之前您需要了解的一切",
+    "title": "常见问题解答"
+  },
+  "KursPage": {
+    "advanced": "高级",
+    "beginner": "初学者",
+    "completed": "已完成",
+    "continue": "继续",
+    "intermediate": "中级",
+    "metadataDescription": "从头开始学习加密货币交易",
+    "metadataTitle": "课程 |克拉帕克",
+    "minutes": "分钟",
+    "noCourses": "还没有可用的课程。",
+    "optional": "可选",
+    "required": "纸质交易前需要",
+    "requiredBanner": "完成必修课程以解锁模拟交易",
+    "startModule": "启动模块",
+    "subtitle": "从头开始学习加密货币交易",
+    "title": "课程"
+  },
+  "LessonPage": {
+    "backToModule": "返回模块",
+    "completed": "已完成",
+    "finishModule": "完成模块",
+    "lesson": "课程",
+    "loginButton": "登录",
+    "loginRequired": "登录参加测验并保存进度",
+    "metadataDescription": "通过结构化课程学习加密货币交易",
+    "metadataTitle": "{title} |克拉帕克",
+    "minutes": "分钟",
+    "next": "下一页",
+    "of": "的",
+    "previous": "上一页",
+    "questions": "问题",
+    "quiz": "测验",
+    "testKnowledge": "测试你的知识"
+  },
+  "LessonQuiz": {
+    "congratulations": "恭喜！",
+    "correct": "正确的！",
+    "failed": "未通过",
+    "failedMessage": "您得到了 {percentage}%（{total} 的 {score} 正确）。你需要80%才能通过。",
+    "incorrect": "不太正确",
+    "lessonCompleted": "课程现已标记为已完成！",
+    "next": "下一页",
+    "passedMessage": "您通过了测验，成绩为 {percentage}%（{score} 或 {total} 正确）",
+    "progress": "{total} 的问题 {current}",
+    "score": "得分：{score}",
+    "seeResults": "查看结果",
+    "submit": "提交答案",
+    "tryAgain": "再试一次"
+  },
+  "ModulePage": {
+    "advanced": "高级",
+    "backToCourses": "返回课程",
+    "beginner": "初学者",
+    "completed": "已完成",
+    "continueLesson": "继续",
+    "inProgress": "进行中",
+    "intermediate": "中级",
+    "lessonCount": "{count} 课程",
+    "lessonNumber": "课程 {number}",
+    "lessons": "教训",
+    "loginButton": "登录",
+    "loginRequired": "登录以跟踪进度",
+    "metadataDescription": "通过结构化课程学习加密货币交易",
+    "metadataTitle": "{title} |克拉帕克",
+    "minutes": "分钟",
+    "notStarted": "未开始",
+    "of": "的",
+    "optional": "可选",
+    "percentageCompleted": "{percentage}% 已完成",
+    "progress": "进展",
+    "required": "必填",
+    "reviewLesson": "评论",
+    "startLesson": "开始上课",
+    "withQuiz": "有测验"
+  },
+  "PaperLiveToggle": {
+    "live": "直播",
+    "paper": "虚拟",
+    "upgradeHint": "升级到学士学位进行实时交易"
+  },
+  "ProgressBar": {
+    "completedText": "{total} 课程的 {current} 已完成"
+  },
+  "RiskSlider": {
+    "aggressive": "好斗的",
+    "aggressiveDesc": "高风险。潜在的高回报。",
+    "bachelorPlan": "学士",
+    "balanced": "平衡",
+    "balancedDesc": "中等风险。随着时间的推移会有良好的回报。",
+    "confirm": "确认选择",
+    "expected": "预计",
+    "masterPlan": "大师",
+    "maxTrade": "最大/交易",
+    "safe": "安全",
+    "safeDesc": "风险最小。非常适合初学者。",
+    "strategy": "策略",
+    "studentPlan": "学生（免费）",
+    "swipe": "← 滑动更改风险级别 →"
+  },
+  "TradeEventFeed": {
+    "buy": "购买",
+    "daysAgo": "{count}d 前",
+    "failedToLoad": "无法加载交易",
+    "hoursAgo": "{count}h 前",
+    "justNow": "刚才",
+    "minsAgo": "{count}m 前",
+    "noTradesYet": "还没有交易",
+    "recentTrades": "最近的交易",
+    "sell": "出售",
+    "viewAll": "查看全部"
+  },
+  "about": {
+    "contact": {
+      "email": "电子邮件",
+      "emailValue": "post@klarpakke.no",
+      "location": "地点",
+      "locationValue": "挪威奥斯陆",
+      "org": "组织编号",
+      "orgName": "克拉帕克公司",
+      "orgNumber": "932 985 312 伏安",
+      "subtitle": "有疑问吗？我们随时为您提供帮助。",
+      "title": "联系我们"
+    },
+    "cta": {
+      "button": "开始使用",
+      "noCard": "无需信用卡即可启动",
+      "subtitle": "加入已经使用 Klarpakke 的挪威交易者行列。",
+      "title": "准备好开始了吗？"
+    },
+    "different": {
+      "community": "经验丰富的交易者分享知识的活跃社区",
+      "education": "专注于教育和理解，而不仅仅是交易",
+      "norwegian": "具有挪威客户服务和用户体验的挪威平台",
+      "paperTrading": "首先用纸币进行交易 – 无风险地证明您的技能",
+      "subtitle": "我们在几个方面脱颖而出：",
+      "title": "是什么让我们与众不同？",
+      "transparency": "费用、算法和结果完全透明"
+    },
+    "hero": {
+      "badge": "关于克拉帕克",
+      "subtitle": "我从损失 65,000 挪威克朗到建立更安全的加密方式的旅程。",
+      "title": "从惨痛的教训到财务自由"
+    },
+    "metadata": {
+      "description": "Klarpakke 是挪威的一个用虚拟货币进行人工智能交易的平台——通过自主人工智能代理根据真实市场数据无风险地学习加密货币。",
+      "title": "关于克拉帕克"
+    },
+    "mission": {
+      "text": "通过教育、透明度和纸质交易，让每个人都能接触到先进的加密货币交易——这样您就可以学习和练习，而不必拿自己辛苦赚来的钱冒险。",
+      "title": "我们的使命",
+      "values": "我们相信知识、透明度和长远眼光是成功的关键。没有传销，没有秘密——只有诚实和透明的技术。"
+    },
+    "risk": {
+      "warning": "警告：加密货币交易涉及高风险。您可能会损失全部存款。仅用您可以承受损失的资金进行交易。过去的结果并不能保证未来的回报。"
+    },
+    "story": {
+      "p1": "六年前，我因加密货币损失了 65,000 挪威克朗。这是一个残酷的警钟。我盲目地相信了“专家”，他们许诺了月亮，但除了费用和空洞的承诺之外什么也没兑现。钱花光了，我得到了一个代价高昂但很有价值的教训：除了你自己，不要相信任何人。",
+      "p2": "两年前，我掌控了一切。我沉浸在高级编程和人工智能中，开发了自己的自动交易器。我从小事做起，经过测试、失败和调整。随着算法开始提供一致的结果，我获得了扩大规模的信心。",
+      "p3": "我放弃了赌博、彩票和传统的储蓄账户。我所有的注意力都集中在系统上。当结果超出我的预期时，我开始与朋友和家人分享该工具。反响热烈。很明显，人们需要一个诚实、透明的加密货币网关。",
+      "quote": "2021年，我因为情绪交易而亏损。我构建 Klarpakke 是为了消除方程式中的情绪。通过使用软件来遵循规则，并通过模拟交易来首先证明技能，我们已经消除了新交易者的最大陷阱。",
+      "quoteAuthor": "汤姆·阿恩·詹森",
+      "title": "克拉帕克的故事"
+    },
+    "team": {
+      "partners": {
+        "binance": "币安 - 流动性和市场准入",
+        "cloudflare": "Cloudflare - 基础设施和安全",
+        "supabase": "Supabase - 数据库和身份验证",
+        "title": "我们的合作伙伴"
+      },
+      "title": "认识团队",
+      "tom": {
+        "bio": "Tom 是一位经验丰富的开发人员和交易员，拥有人工智能和算法交易背景。在看到挪威需要一个诚实透明的加密货币交易平台后，他创立了 Klarpakke。",
+        "initials": "泰杰",
+        "name": "汤姆·阿恩·詹森",
+        "role": "创始人及开发者"
+      }
+    },
+    "values": {
+      "education": {
+        "desc": "我们为您提供工具，但您处于驾驶座上。我们的自动交易员承担繁重的工作，但您的理解确保成功。",
+        "title": "知识第一"
+      },
+      "norwegian": {
+        "desc": "我们是挪威的服务机构，遵守挪威的法律和法规。挪威语客户服务以及真正的个人跟进。",
+        "title": "挪威语且值得信赖"
+      },
+      "risk": {
+        "desc": "我们始终提醒您，加密货币交易涉及风险。从纸币开始，永远不要用你无法承受损失的钱进行交易。",
+        "title": "风险意识"
+      },
+      "title": "我们的价值观",
+      "transparency": {
+        "desc": "没有传销，没有招募，没有秘密。我们相信诚实是唯一可持续的政策。",
+        "title": "完全透明"
+      }
+    }
+  },
+  "autopilot": {
+    "activate": "激活自动交易",
+    "capital": {
+      "title": "启动资金"
+    },
+    "errors": {
+      "activationFailed": "无法激活自动交易",
+      "generic": "出了点问题"
+    },
+    "monitor": {
+      "status": {
+        "active": "自动交易运行"
+      }
+    },
+    "risk": {
+      "aggressive": {
+        "desc": "高风险，高回报",
+        "emoji": "🚀",
+        "label": "好斗的"
+      },
+      "conservative": {
+        "desc": "低风险，低回报",
+        "emoji": "🛡️",
+        "label": "保守派"
+      },
+      "moderate": {
+        "desc": "平衡风险/回报",
+        "emoji": "⚖️",
+        "label": "中等"
+      },
+      "title": "风险等级"
+    },
+    "subtitle": "让人工智能为您交易——全自动",
+    "title": "自动交易"
+  },
+  "chat": {
+    "moonshotPlaceholder": "询问加密货币...",
+    "placeholder": "问一个问题..."
+  },
+  "components": {
+    "livePill": {
+      "label": "标签"
+    },
+    "themeToggle": {
+      "dark": "黑暗",
+      "light": "光",
+      "switchTo": "切换主题",
+      "toggleTheme": "切换主题"
+    }
+  },
+  "cookieConsent": {
+    "acceptAll": "全部接受",
+    "analytics": {
+      "description": "帮助我们改进网站",
+      "label": "分析"
+    },
+    "and": "和",
+    "back": "返回",
+    "bannerText": "我们使用 cookie 来改善您的体验。",
+    "cookieLink": "Cookie 政策",
+    "customize": "定制",
+    "decline": "拒绝",
+    "functional": {
+      "description": "记住您的选择和偏好",
+      "label": "功能性"
+    },
+    "marketing": {
+      "description": "用于定向广告",
+      "label": "营销"
+    },
+    "necessary": {
+      "description": "网站正常运行所必需的",
+      "label": "必要的"
+    },
+    "preferencesTitle": "Cookie 偏好设置",
+    "privacyLink": "隐私政策",
+    "savePreferences": "保存首选项"
+  },
+  "copyTrading": {
+    "backToLeaderboard": "返回排行榜",
+    "copy": "复制",
+    "copyRequiresSubscription": "复制交易需要付费订阅",
+    "couldNotCopy": "无法跟单交易者",
+    "dashboard": {
+      "discoverCta": "发现领导者",
+      "emptyBody": "探索精心策划的论文领袖以安全地开始——或者等待社区的发展。",
+      "emptyTitle": "还没有交易者",
+      "fetchErrorHint": "尝试“刷新”。您登录了吗？如果您刚刚开始复制，请重新加载页面。",
+      "fetchErrorTitle": "无法加载您的交易者",
+      "latency": "{ms}ms 延迟",
+      "maxAlloc": "最大{amount}",
+      "mineTitle": "我的交易员",
+      "paused": "已暂停",
+      "pnlPercentUnavailable": "–",
+      "recentCopies": "最近复制的交易",
+      "refresh": "刷新",
+      "settingsAria": "{name} 的设置",
+      "sizingFixed": "固定",
+      "sizingProportional": "比例",
+      "subtitleActive": "{count} 活跃交易者",
+      "title": "复制交易",
+      "totalPnlLabel": "总副本损益"
+    },
+    "discover": {
+      "alreadyFollowing": "✓ 已经关注",
+      "ariaFilter": "过滤器列表",
+      "ariaTimeframe": "选择表演期间",
+      "authRequired": "您必须登录才能查看发现列表。",
+      "communityBadge": "社区",
+      "comparisonCaption": "相对强度 30d vs 90d（不是时间线）",
+      "copyNow": "立即复制",
+      "drawdown": "30天回撤",
+      "empty": "目前没有活跃的领导人。",
+      "emptyBackend": "目前无法加载交易者列表。稍后再次尝试刷新。",
+      "emptyNoPublic": "目前没有找到公共交易者。要求团队检查 Leaderboard_bots 和 trader_profiles。",
+      "fee": "演出费",
+      "filterAll": "全部",
+      "filterFollowing": "正在关注",
+      "filterFollowingEmpty": "您没有关注此列表中的任何领导者 - 切换到“全部”或探索新的个人资料。",
+      "followers": "{count} 位关注者",
+      "following": "正在关注",
+      "loadError": "无法加载领导者",
+      "loadMore": "显示更多（最多 100 个）",
+      "paperBadge": "论文/演示",
+      "refresh": "刷新",
+      "refreshing": "清爽…",
+      "resultsLine": "显示 {visible} · 此期间加载的 {total}",
+      "resultsMeta": "数据库中：考虑了 {bots} 策划的机器人 · {profiles} 公共配置文件",
+      "riskHigh": "风险较高（简化）",
+      "riskHint": "风险是来自夏普和胜率的简化信号，而不是投资建议。",
+      "riskLow": "降低风险（简化）",
+      "riskMedium": "中等风险（简化）",
+      "sharpe": "夏普",
+      "subtitle": "Paper 和 Klarpakke 演示 - 清晰标记。在遵循之前先比较绩效和风险。",
+      "timeframe30": "30天",
+      "timeframe7": "7天",
+      "timeframe90": "90天",
+      "title": "发现领导者",
+      "viewProfile": "查看个人资料",
+      "winRate": "胜率"
+    },
+    "externalFollow": {
+      "allocationHint": "每笔交易使用的纸质资本的百分比。",
+      "allocationLabel": "资本配置",
+      "close": "关闭",
+      "cta": "开始复印",
+      "disclaimer": "跟单交易者涉及风险。过去的表现并不代表未来的回报。",
+      "errorGeneric": "出了点问题。请再试一次。",
+      "following": "开始复制...",
+      "maxAmountHint": "可选。最低 {min} 挪威克朗。",
+      "maxAmountLabel": "每笔交易最大金额",
+      "maxAmountPlaceholder": "无限制",
+      "scaleFactorHint": "1.0x = 与交易者相同的规模。更高=更大的头寸。",
+      "scaleFactorLabel": "比例因子",
+      "sheetAriaLabel": "复制{name}",
+      "subtitle": "配置{name}的复制",
+      "title": "复制币安交易平台"
+    },
+    "followLimitReached": "您最多可以关注您级别的 {limit} 交易者",
+    "nav": {
+      "discover": "发现",
+      "mine": "概述"
+    },
+    "noPublicStrategies": "尚无公共策略",
+    "nowCopying": "您现在正在复制 {name}！",
+    "profile": {
+      "backToLeaderboard": "返回排行榜",
+      "copyRequiresSubscription": "复制需要订阅",
+      "couldNotCopy": "无法复制",
+      "id": "身份证号",
+      "noPublicStrategies": "没有公开策略",
+      "totalTradesLabel": "总交易标签",
+      "trustPaper": "这是 Klarpakke 论文/演示简介。过去的结果并不能保证未来的回报。",
+      "trustRisk": "风险标签已被简化，并且不会取代您自己的研究。"
+    },
+    "quickFollow": {
+      "allocHint": "最低 {min} 挪威克朗",
+      "allocLabel": "每笔交易最大金额",
+      "close": "关闭",
+      "cta": "开始复印",
+      "disclaimer": "复制交易涉及风险。过去的表现并不代表未来的回报。",
+      "errorGeneric": "出了点问题。再试一次。",
+      "following": "开始复制...",
+      "sheetAriaLabel": "复制{name}",
+      "sizingFixedHint": "尺寸始终相同",
+      "sizingFixedTitle": "固定金额",
+      "sizingLabel": "交易规模",
+      "sizingPropHint": "与交易者扩大规模",
+      "sizingPropTitle": "比例",
+      "subtitle": "您正在复制 {name}",
+      "title": "复制交易者"
+    },
+    "seeAll": "查看全部",
+    "thisMonthBest": "本月最佳",
+    "topTraders": "👑 顶级交易者",
+    "totalTradesLabel": "总交易量",
+    "traderNotFound": "未找到交易者",
+    "winRate": "胜率"
+  },
+  "coursePreview": {
+    "course1": {
+      "level": "初学者",
+      "time": "15分钟",
+      "title": "什么是比特币？"
+    },
+    "course2": {
+      "level": "初学者",
+      "time": "20分钟",
+      "title": "如何阅读图表"
+    },
+    "course3": {
+      "level": "初学者",
+      "time": "10分钟",
+      "title": "您的第一次纸质交易"
+    },
+    "freeBadge": "免费",
+    "sectionSubtitle": "免费开始——按照您自己的节奏完成",
+    "sectionTitle": "一小时内即可开始使用",
+    "seeAllCourses": "查看所有课程 →"
+  },
+  "funding": {
+    "historicalPerformanceTitle": "历史表现"
+  },
+  "gapAnalysis": {
+    "actions": {
+      "changeVenue": "换汇",
+      "changeVenueDesc": "一些交易所具有更好的流动性和更低的费用。",
+      "checkLatency": "检查互联网/延迟",
+      "checkLatencyDesc": "更快的连接=更好的执行。",
+      "contactSupport": "联系支持人员",
+      "contactSupportDesc": "如果您发现持续存在的问题，请联系我们。",
+      "reduceSize": "减少头寸规模",
+      "reduceSizeDesc": "更小的交易=更少的滑点和更好的成交率。",
+      "reviewStrategy": "审查策略",
+      "reviewStrategyDesc": "回测和实时之间的巨大差距可能意味着策略需要更新。",
+      "whatToDo": "你能做什么？"
+    },
+    "gaps": {
+      "adverseSelection": {
+        "alertDesc": "如果超过 55% 的交易显示逆向选择，您就会收到警报。",
+        "fullDesc": "逆向选择意味着您系统性地以“错误的方式”进行交易——在价格下跌之前买入，或者在价格上涨之前卖出。这可能表明其他交易者看到了您看不到的信息。",
+        "metricAdverse": "不良%",
+        "metricAdverseDesc": "走错方向的交易百分比。",
+        "metricToxic": "有毒流量分数",
+        "metricToxicDesc": "0-100分。更高意味着更多的交易走上了“错误的道路”。",
+        "shortDesc": "你的交易方向是错误的吗？",
+        "title": "逆向选择"
+      },
+      "backtestGap": {
+        "alertDesc": "如果策略偏差超过 20%，或平均偏差超过 10%，您会收到警报。",
+        "attribution": "偏差从何而来？",
+        "attributionFees": "费用：交易费用比模拟的要高。",
+        "attributionLatency": "延迟：信号和交易之间的延迟。",
+        "attributionOther": "其他：市场变化、流动性或策略退化。",
+        "attributionSlippage": "滑点：订单以与预期不同的价格成交。",
+        "fullDesc": "我们将您的实时结果与回测数据进行比较，看看该策略是否按预期执行。较大的偏差可能意味着市场发生了变化，或者执行条件比模拟的更差。",
+        "metricGap": "间隙",
+        "metricGapDesc": "实时回报率和回测回报率之间的差异（以百分比表示）。",
+        "shortDesc": "结果符合预期吗？",
+        "title": "回测与实时测试"
+      },
+      "fillRate": {
+        "alertDesc": "如果填充率低于 95%，您会收到警报。",
+        "fullDesc": "“部分成交”意味着您的订单仅被执行了一部分。这种情况可能会发生在波动的市场中，并且会让您付出额外的代价。",
+        "metricFillRate": "填充率",
+        "metricFillRateDesc": "已完成订单的百分比。 100% 是理想的。",
+        "metricPartial": "部分填充",
+        "metricPartialDesc": "未完全成交的交易数量。",
+        "shortDesc": "订单是否已完全履行？",
+        "title": "填充率"
+      },
+      "marketImpact": {
+        "alertDesc": "如果交易量超过每日交易量的 0.1%，您会收到警报。",
+        "fullDesc": "非常大的头寸会影响市场价格。我们检查您的交易规模是否足以影响市场。",
+        "levelHigh": "高影响力",
+        "levelLow": "低影响",
+        "levelMedium": "中等影响",
+        "metricRatio": "影响比",
+        "metricRatioDesc": "您的交易规模除以每日交易量。越低越好。",
+        "shortDesc": "您的交易会影响市场吗？",
+        "title": "市场影响"
+      },
+      "plAttribution": {
+        "alertDesc": "如果执行成本占回报的比例超过 1%，您就会收到警报。",
+        "fullDesc": "我们将您的回报分为四个部分：您自己的技能（alpha）、市场走势（beta）、货币影响（NOK/USDT）和执行质量（费用+滑点）。",
+        "metricAlpha": "阿尔法（你的技能）",
+        "metricAlphaDesc": "从您的策略选择中获得回报，独立于市场。",
+        "metricBeta": "贝塔（市场）",
+        "metricBetaDesc": "您只需投资市场即可获得回报。",
+        "metricCurrency": "货币",
+        "metricCurrencyDesc": "USDT/NOK 汇率变化如何影响您的结果。",
+        "metricExecution": "执行",
+        "metricExecutionDesc": "费用和滑点成本。负数意味着成本。",
+        "shortDesc": "你的利润从哪里来？",
+        "title": "损益明细"
+      },
+      "signalDecay": {
+        "alertDesc": "如果您的准确度低于 50% 或超过 30% 的交易耗时超过 2 秒，您会收到警报。",
+        "bucketFast": "100ms以下",
+        "bucketFastDesc": "快如闪电——信号仍然新鲜。",
+        "bucketMedium": "100毫秒-2秒",
+        "bucketMediumDesc": "好——信号仍然具有很高的价值。",
+        "bucketSlow": "超过2秒",
+        "bucketSlowDesc": "缓慢——市场可能已经发生变化。",
+        "fullDesc": "交易信号在出现后才最有价值。您等待交易的时间越长，它的价值就越低。我们根据您行动的速度来衡量您的准确性。",
+        "shortDesc": "信号衰减的速度有多快？",
+        "title": "信号衰减"
+      },
+      "tca": {
+        "alertDesc": "如果滑点超过 20 个基点 (0.2%) 或成本超过交易量的 0.5%，您会收到警报。",
+        "alertTitle": "你什么时候收到警报？",
+        "fullDesc": "我们衡量每笔交易的点差、滑点和费用。目标是最大限度地减少影响您回报的隐性成本。",
+        "metricLatency": "延迟",
+        "metricLatencyDesc": "从发出信号到执行交易的时间。越快越好。",
+        "metricSlippage": "滑点",
+        "metricSlippageDesc": "预期执行价格与实际执行价格之间的差异。当市场在您的订单被执行之前发生变化时发生。",
+        "metricSpread": "传播",
+        "metricSpreadDesc": "买入价和卖出价之间的差额。越低越好。",
+        "shortDesc": "交易成本是多少？",
+        "title": "交易成本（TCA）"
+      }
+    },
+    "status": {
+      "critical": "关键",
+      "good": "好",
+      "noData": "还没有数据",
+      "warning": "警告"
+    },
+    "subtitle": "了解影响结果的因素",
+    "title": "贸易分析",
+    "whatIsThis": "这是什么？",
+    "whatIsThisDesc": "我们不断分析每笔交易，以确保您获得最佳结果。在这里您可以看到我们检查的内容以及它对您意味着什么。"
+  },
+  "help": {
+    "metadata": {
+      "description": "关于 Klarpakke 的常见问题解答 — 100,000 kr 的虚拟货币人工智能交易、Pilot 以及无风险的安全实践。",
+      "title": "帮助与支持"
+    }
+  },
+  "kursPage": {
+    "advanced": "高级",
+    "backToCourses": "返回课程",
+    "badgeAvailable": "可用徽章",
+    "badgeEarned": "徽章获得！",
+    "badgeInProgress": "{pct} 完成%",
+    "badgeLocked": "锁定",
+    "beginner": "初学者",
+    "completed": "已完成",
+    "completedLessons": "完成课程",
+    "continue": "继续",
+    "continueLesson": "继续",
+    "inProgress": "进行中",
+    "intermediate": "中级",
+    "lessonCount": "{count} 课程",
+    "lessonNumber": "课程 {number}",
+    "lessons": "教训",
+    "loginButton": "登录",
+    "loginDescription": "登录以跟踪您的进度并访问所有课程。",
+    "loginRequired": "登录以访问课程内容",
+    "loginTitle": "登录",
+    "metadataDescription": "用您的语言学习加密货币和交易",
+    "metadataTitle": "一步步学习加密货币 - Klarpakke Academy",
+    "minutes": "分钟",
+    "of": "的",
+    "optional": "可选",
+    "percentageCompleted": "{percentage} 完成%",
+    "progress": "进展",
+    "required": "必填",
+    "requiredBanner": "先完成这些",
+    "reviewCourse": "再次审核",
+    "reviewLesson": "评论",
+    "startCourse": "开始课程",
+    "startLesson": "开始上课",
+    "subtitle": "一步步学习加密货币交易",
+    "title": "克拉帕克学院",
+    "totalLessons": "总课时数",
+    "totalMinutes": "总分钟数",
+    "withQuiz": "有测验"
+  },
+  "marketplace": {
+    "loadError": "无法加载市场",
+    "reviewLabel": "写下您的评论",
+    "reviewPlaceholder": "写下您的评论（可选）...",
+    "riskLevelPlaceholder": "风险等级",
+    "sortByPlaceholder": "排序依据",
+    "subscribeError": "无法订阅策略",
+    "subscribeSuccess": "策略已订阅！转到仪表板查看它。"
+  },
+  "pnlBreakdown": {
+    "allocated": "分配给机器人",
+    "available": "可用纸币",
+    "buyTotal": "购买（钱出）",
+    "capitalTitle": "资本",
+    "cashFlowTitle": "钱进出",
+    "empty": "尚未显示任何交易。启动机器人以查看结果。",
+    "fees": "费用",
+    "hint": "已实现盈亏显示仓位何时被平仓。未实现显示未平仓头寸的价值变化。现金流量是交易进出的净资金。",
+    "netCashFlow": "净现金流量",
+    "pnlTitle": "利润/亏损",
+    "realized": "已实现",
+    "sellTotal": "卖（钱进来）",
+    "title": "了解您的结果",
+    "unrealized": "未实现"
+  },
+  "profile": {
+    "avatar": "阿凡达",
+    "avatarPlaceholder": "https://example.com/photo.jpg",
+    "avatarUrlPlaceholder": "https://example.com/photo.jpg",
+    "badges": "徽章",
+    "deleteProfile": "删除个人资料",
+    "fullName": "全名",
+    "fullNamePlaceholder": "约翰·多伊",
+    "includedInSubscription": "包含在订阅中",
+    "loading": "加载中",
+    "loadingProfile": "加载配置文件",
+    "myProfile": "我的个人资料",
+    "namePlaceholder": "约翰·多伊",
+    "noBadgesYet": "还没有徽章",
+    "noProfileFound": "未找到个人资料",
+    "profile": "公司简介",
+    "riskLevel": "风险等级",
+    "riskOptions": {
+      "advanced": "高级",
+      "normal": "正常",
+      "safe": "安全"
+    },
+    "saveProfile": "保存个人资料",
+    "savingProfile": "保存配置文件",
+    "settings": "设置",
+    "streakDescription": "连胜描述",
+    "subtitle": "管理您的帐户、钱包和设置",
+    "tabs": {
+      "notifications": "通知",
+      "profile": "公司简介",
+      "settings": "设置",
+      "wallet": "钱包"
+    },
+    "title": "公司简介",
+    "yourSubscription": "您的订阅"
+  },
+  "threeSteps": {
+    "ctaButton": "今天开始免费",
+    "ctaButtonLoggedIn": "转到仪表板",
+    "ctaSubtext": "无需信用卡 · 随时取消",
+    "ctaSubtextLoggedIn": "继续你的学习之旅",
+    "sectionSubtitle": "无需先验知识。我们从第一刻起就为您提供指导。",
+    "sectionTitle": "只需 4 个简单步骤即可开始",
+    "step1": {
+      "description": "使用 BankID 创建帐户。无需信用卡。 2 分钟内即可开始。",
+      "title": "免费注册"
+    },
+    "step2": {
+      "description": "选择挪威语初学者课程。按照自己的节奏学习。",
+      "title": "参加你的第一门课程"
+    },
+    "step3": {
+      "description": "使用虚拟资金 100,000 克朗。无风险地测试策略。",
+      "title": "练习纸上交易"
+    }
+  },
+  "toasts": {
+    "general": {
+      "error": "出了点问题",
+      "saved": "保存成功"
+    },
+    "paperBot": {
+      "duplicateSessionDesc": "您已经有一个针对该对的活动机器人 - 首先停止它或选择另一对。",
+      "duplicateSessionTitle": "重复会话",
+      "networkError": "网络错误。请再试一次。",
+      "sessionLimitDesc": "您只能有 {max} 活动会话",
+      "sessionLimitTitle": "已达到会话限制",
+      "startFailedTitle": "无法启动机器人",
+      "startedDesc": "您的交易机器人正在运行",
+      "startedTitle": "机器人已启动"
+    }
+  },
+  "tradingGuide": {
+    "cta": {
+      "button": "前往交易",
+      "description": "转到交易仪表板并从纸币开始。您可以随时回到这里寻求指导。",
+      "title": "准备好开始了吗？"
+    },
+    "faq": {
+      "q1": {
+        "answer": "不，纸币是 100% 模拟的。你没有任何风险。它非常适合学习和练习。",
+        "question": "我会通过模拟交易损失真钱吗？"
+      },
+      "q2": {
+        "answer": "自动交易让机器人根据您选择的策略为您进行交易。您决定风险和资本。",
+        "question": "什么是自动交易？"
+      },
+      "q3": {
+        "answer": "不适用于纸质交易。如果您想使用实时交易，您需要一个带有 API 密钥的币安账户。",
+        "question": "我需要币安账户吗？"
+      },
+      "title": "常见问题解答"
+    },
+    "leaderboard": {
+      "badge": "排行榜",
+      "ctaPrimary": "查看完整排行榜",
+      "ctaSecondary": "立即加入",
+      "subtitle": "看看谁在本周的纸质交易竞赛中处于领先地位。开始你自己的巅峰之旅吧！",
+      "title": "最赚钱的交易者",
+      "trustNote": "模拟交易的结果。不是财务建议。"
+    },
+    "steps": {
+      "1": {
+        "description": "免费注册并获得 100,000 瑞典克朗纸币。无需信用卡。",
+        "title": "创建帐户并登录"
+      },
+      "2": {
+        "description": "浏览我们有关加密货币、市场分析和风险管理的课程模块。按照你自己的节奏进行。",
+        "title": "学习基础知识"
+      },
+      "3": {
+        "description": "使用模拟交易来无风险地测试策略。了解市场在实践中如何运作。",
+        "title": "用纸币练习"
+      },
+      "4": {
+        "description": "准备好后，设置一个自动交易机器人，根据您选择的风险级别为您进行交易。",
+        "title": "激活自动交易"
+      }
+    },
+    "subtitle": "请按照以下步骤安全智能地开始您的交易之旅",
+    "title": "开始交易"
+  }
 }
