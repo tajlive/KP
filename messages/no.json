@@ -4896,7 +4896,8 @@
         "low": "Lav risiko",
         "moderate": "Moderat risiko",
         "high": "Høy risiko"
-      }
+      },
+      "aiTemplateNotice": "Forenklet forklaring (AI midlertidig utilgjengelig)"
     },
     "positionLots": {
       "loading": "Laster...",

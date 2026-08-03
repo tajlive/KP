@@ -7,6 +7,13 @@ export const dynamic = "force-dynamic";
 
 const MAX_TRADES = 4000;
 
+// Forurensings-cutoff (2026-08-03, PROMPT #14):
+// Trades fra før 2026-07-30 inneholder inflated realized_pnl fra
+// oversell-buggen (sell > buy uten posisjon). Samme cutoff brukes i
+// klarpakke-trading-agent-skillen. Risikometrikker skal ALDRI
+// baseres på forurensede data.
+const CONTAMINATION_CUTOFF = "2026-07-30T00:00:00.000Z";
+
 const tradeRowSchema = z.object({
   id: z.string(),
   trading_pair: z.string(),
@@ -69,6 +76,15 @@ const responseSchema = z.object({
     avgTimeToRecovery: z.number(),
     gainPainRatio: z.number(),
   }),
+  // AI-forklaringer (PROMPT #14 / BRIEF §9) — nullable ved LLM-nedetid
+  riskAI: z
+    .object({
+      summary: z.string(),
+      metrics: z.record(z.string(), z.string()),
+      source: z.enum(["llm", "template"]),
+      generatedAt: z.string(),
+    })
+    .nullable(),
 });
 
 function getAuthUser(request: NextRequest) {
@@ -109,6 +125,7 @@ export async function GET(request: NextRequest) {
       )
       .eq("user_id", user.id)
       .in("session_id", sessionIds.length > 0 ? sessionIds : ["__none__"])
+      .gte("executed_at", CONTAMINATION_CUTOFF)
       .order("created_at", { ascending: false })
       .limit(MAX_TRADES);
 
@@ -144,6 +161,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // ── AI-forklaringer (PROMPT #14 / BRIEF §9) ──────────────────────────
+    // Én forklaring per nøkkeltall + samlet oppsummering, på brukerens språk.
+    // Cachet per dag (KV hvis tilgjengelig). Fakta-regel: forklarer tallene,
+    // lover aldri fremtidig avkastning. Feiler stille til null ved LLM-nedetid.
+    let riskAI: import("@/lib/trading/risk-ai-explanations").RiskAIExplanation | null = null;
+    try {
+      const locale = request.headers.get("accept-language")?.startsWith("en") ? "en" : "no";
+      const { generateRiskExplanations } = await import(
+        "@/lib/trading/risk-ai-explanations"
+      );
+      riskAI = await generateRiskExplanations(
+        {
+          ...built.riskMetrics,
+          riskScore: 0, // beregnes i panel — ikke nødvendig for forklaringen
+          tradeCount: built.tradeCount,
+          winRatePct: built.aggregates.winRateRealizedPct,
+        },
+        locale,
+      );
+    } catch (aiErr) {
+      console.warn("[GET /api/user/trading-analytics] riskAI feilet:", (aiErr as Error).message);
+    }
+
     const body = {
       ok: true as const,
       generatedAt: built.generatedAt,
@@ -157,6 +197,7 @@ export async function GET(request: NextRequest) {
       bestDay: built.bestDay,
       worstDay: built.worstDay,
       riskMetrics: built.riskMetrics,
+      riskAI,
     };
 
     const check = responseSchema.safeParse(body);
