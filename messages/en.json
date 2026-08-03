@@ -2256,7 +2256,7 @@
     "tagline": "Norwegian crypto education. Learn without risk.",
     "paymentLabel": "Secure payment with:",
     "paymentSubtitle": "We use Stripe and Vipps for secure payment. No card details are stored with us.",
-    "copyright": "© {year} Klarpakke AS. Org.no: 934 123 456. All rights reserved.",
+    "copyright": "© {year} Klarpakke AS. Org.no: 929 003 292. All rights reserved.",
     "disclaimer": "Trading cryptocurrency involves risk. Klarpakke is an educational platform and does not provide financial advice. All investment decisions are your own responsibility. Past results are no guarantee of future returns. Never invest more than you can afford to lose.",
     "links": {
       "courses": "Courses",
@@ -2418,7 +2418,11 @@
       "title": "Top traders right now",
       "verifiedBadge": "Verified",
       "tradeCount": "trades",
-      "returnLabel": "return"
+      "returnLabel": "return",
+      "playMoney": "Play money",
+      "realRates": "Real Binance rates",
+      "realtime": "Real-time",
+      "tagline": "We never show numbers we can't verify. Start with 100,000 kr in play money — completely risk-free."
     },
     "stats": {
       "title": "Klarpakke by the numbers",
@@ -2889,6 +2893,38 @@
     "pricing": {
       "title": "Pricing | Klarpakke",
       "description": "Choose the right plan for your crypto trading journey."
+    },
+    "pricingGrid": {
+      "title": "Choose your plan",
+      "subtitle": "Start free, upgrade when you're ready. All plans include paper trading and AI signals.",
+      "mostPopular": "Most popular",
+      "free": "Free",
+      "perMonth": "kr/month",
+      "startFree": "Start free",
+      "choosePlan": "Choose plan",
+      "footnote": "All prices include VAT. No lock-in period. Cancel anytime.",
+      "plans": {
+        "student": {
+          "name": "Student", "price": "0", "popular": "false",
+          "features": ["Paper trading 100k", "1 auto-strategy", "AI signals", "Community"]
+        },
+        "bachelor": {
+          "name": "Bachelor", "price": "249", "popular": "false",
+          "features": ["Everything in Student", "Live trading", "3 strategies", "Copy-trading paper"]
+        },
+        "master": {
+          "name": "Master", "price": "499", "popular": "true",
+          "features": ["Everything in Bachelor", "7 strategies", "VIP signals", "Live copy-trading"]
+        },
+        "phd": {
+          "name": "PhD", "price": "999", "popular": "false",
+          "features": ["Everything in Master", "Unlimited strategies", "1:1 advisor", "API access"]
+        },
+        "professor": {
+          "name": "Professor", "price": "1999", "popular": "false",
+          "features": ["Everything in PhD", "1:1 coaching", "Alpha strategies", "Founder group"]
+        }
+      }
     },
     "autoTrade": {
       "title": "Auto-Trading | Klarpakke",
