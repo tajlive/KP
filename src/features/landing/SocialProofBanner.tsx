@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 /**
  * SocialProofBanner — viser at plattformen er i live.
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
  */
 export function SocialProofBanner() {
   const [visible, setVisible] = useState(false);
+  const t = useTranslations("socialProof");
   useEffect(() => { setVisible(true); }, []);
 
   return (
@@ -24,7 +26,7 @@ export function SocialProofBanner() {
               <span className="text-[#3B82F6] font-bold text-lg">🛡️</span>
             </div>
             <div>
-              <p className="text-xs text-[#6B7280] font-medium">Lekepenger</p>
+              <p className="text-xs text-[#6B7280] font-medium">{t("playMoney")}</p>
               <p className="text-[#F9FAFB] font-bold text-base sm:text-lg">
                 100 000 kr
               </p>
@@ -41,16 +43,16 @@ export function SocialProofBanner() {
               <span className="text-[#10B981] font-bold text-lg">📊</span>
             </div>
             <div>
-              <p className="text-xs text-[#6B7280] font-medium">Ekte Binance-kurser</p>
+              <p className="text-xs text-[#6B7280] font-medium">{t("realRates")}</p>
               <p className="text-[#10B981] font-bold text-base sm:text-lg">
-                Sanntid
+                {t("realtime")}
               </p>
             </div>
           </div>
         </div>
 
         <p className="mt-3 text-center text-xs sm:text-sm text-[#6B7280]">
-          Vi viser aldri tall vi ikke kan verifisere. Start med 100 000 kr i lekepenger — helt risikofritt.
+          {t("tagline")}
         </p>
       </div>
     </section>

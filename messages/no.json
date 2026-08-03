@@ -51,7 +51,7 @@
       "community": "Aktivt fellesskap med erfarne tradere som deler kunnskap"
     },
     "risk": {
-      "warning": "Advarsel: Kryptohandel innebærer høy risiko. Du kan tape hele innskuddet. Handlet kun med penger du har råd til å tape. Resultater fra fortiden garanterer ikke fremtidig avkastning."
+      "warning": "Advarsel: Kryptohandel innebærer høy risiko. Du kan tape hele innskuddet. Handle kun med penger du har råd til å tape. Resultater fra fortiden garanterer ikke fremtidig avkastning."
     },
     "team": {
       "title": "Møt teamet",
@@ -83,7 +83,7 @@
       "title": "Klar for å komme i gang?",
       "subtitle": "Bli med norske tradere som allerede bruker Klarpakke.",
       "button": "Kom i gang",
-      "noCard": "Ingen betalingskort nødvendig for å starte"
+      "noCard": "Ingen bankkort nødvendig for å starte"
     }
   },
   "aboutUs": {
@@ -2251,7 +2251,7 @@
     "tagline": "Norsk krypto-utdanning. Lær uten risiko.",
     "paymentLabel": "Sikker betaling med:",
     "paymentSubtitle": "Vi bruker Stripe og Vipps for sikker betaling. Ingen kortdetaljer lagres hos oss.",
-    "copyright": "© {year} Klarpakke AS. Org.nr: 934 123 456. Alle rettigheter reservert.",
+    "copyright": "© {year} Klarpakke AS. Org.nr: 929 003 292. Alle rettigheter reservert.",
     "disclaimer": "Trading med kryptovaluta innebærer risiko. Klarpakke er en læringsplattform og gir ikke finansiell rådgivning. Alle investeringsbeslutninger er ditt eget ansvar. Tidligere resultater er ingen garanti for fremtidige avkastninger. Invester aldri mer enn du har råd til å tape.",
     "links": {
       "courses": "Kurs",
@@ -2413,7 +2413,11 @@
       "title": "Topp tradere akkurat nå",
       "verifiedBadge": "Verifisert",
       "tradeCount": "handler",
-      "returnLabel": "avkastning"
+      "returnLabel": "avkastning",
+      "playMoney": "Lekepenger",
+      "realRates": "Ekte Binance-kurser",
+      "realtime": "Sanntid",
+      "tagline": "Vi viser aldri tall vi ikke kan verifisere. Start med 100 000 kr i lekepenger — helt risikofritt."
     },
     "stats": {
       "title": "Klarpakke i tall",
@@ -2884,6 +2888,38 @@
     "pricing": {
       "title": "Priser | Klarpakke",
       "description": "Velg riktig abonnement for din krypto-reise."
+    },
+    "pricingGrid": {
+      "title": "Velg din plan",
+      "subtitle": "Start gratis, oppgrader når du er klar. Alle planer inkluderer papirhandel og AI-signaler.",
+      "mostPopular": "Mest populær",
+      "free": "Gratis",
+      "perMonth": "kr/mnd",
+      "startFree": "Start gratis",
+      "choosePlan": "Velg plan",
+      "footnote": "Alle priser er inkl. MVA. Ingen bindingstid. Avslutt når som helst.",
+      "plans": {
+        "student": {
+          "name": "Student", "price": "0", "popular": "false",
+          "features": ["Papirhandel 100k", "1 auto-strategi", "AI-signaler", "Community"]
+        },
+        "bachelor": {
+          "name": "Bachelor", "price": "249", "popular": "false",
+          "features": ["Alt i Student", "Live trading", "3 strategier", "Copy-trading paper"]
+        },
+        "master": {
+          "name": "Master", "price": "499", "popular": "true",
+          "features": ["Alt i Bachelor", "7 strategier", "VIP-signaler", "Live copy-trading"]
+        },
+        "phd": {
+          "name": "PhD", "price": "999", "popular": "false",
+          "features": ["Alt i Master", "Ubegrenset strategier", "1:1 rådgiver", "API-tilgang"]
+        },
+        "professor": {
+          "name": "Professor", "price": "1999", "popular": "false",
+          "features": ["Alt i PhD", "1:1 coaching", "Alpha-strategier", "Founder-gruppe"]
+        }
+      }
     },
     "autoTrade": {
       "title": "Auto-Trading | Klarpakke",

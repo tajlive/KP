@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,10 +10,11 @@ export const metadata = {
 };
 
 /**
- * Pilot er nå en integrert del av Trade-siden.
- * Redirecter til /trade?first=1 for enklere brukeropplevelse.
- * (Ruten /jokertrade beholdes som intern redirect for gamle lenker.)
+ * JokerTrade er avviklet (vedtatt 2026-08-03) — heter nå Pilot.
+ * 301 permanent redirect til /pilot (som viderefører til /trade?first=1).
+ * permanentRedirect gir HTTP 308 (permanent, metode-beholdende) —
+ * SEO-ekvivalent til 301 for GET.
  */
 export default function JokerTradePage() {
-  redirect("/trade?first=1");
+  permanentRedirect("/pilot");
 }
