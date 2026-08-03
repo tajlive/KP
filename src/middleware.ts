@@ -16,6 +16,7 @@ import { rateLimitMiddleware } from "@/middleware/exports";
 import { cspMiddleware } from "@/middleware/exports";
 import { cacheControlMiddleware } from "@/middleware/exports";
 import { correlationIdMiddleware } from "@/middleware/exports";
+import { legacyRedirectsMiddleware } from "@/middleware/legacy-redirects";
 
 export const config = {
   matcher: [
@@ -26,6 +27,7 @@ export const config = {
 
 const composed = chain(
   correlationIdMiddleware,
+  legacyRedirectsMiddleware,
   i18nMiddleware,
   authMiddleware,
   rateLimitMiddleware,
