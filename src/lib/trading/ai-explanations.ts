@@ -111,7 +111,8 @@ function templateExplanation(ctx: TradeContext): string {
   const sym = ctx.symbol.replace("USDT", "");
 
   // Dark Fleet / Ensemble (hovedstrategi for auto-trading)
-  if (ctx.strategy === "dark_fleet" || ctx.strategy === "ensemble") {
+  // Merk: strategy_id kan være "grid" selv om Dark Fleet kjører (V2-arkitektur)
+  if (ctx.strategy === "dark_fleet" || ctx.strategy === "ensemble" || ctx.strategy === "grid") {
     const level = ctx.indicators?.grid_level;
     const profit = ctx.indicators?.profit_pct;
     const conf = ctx.indicators?.confidence;

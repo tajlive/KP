@@ -92,7 +92,9 @@ export class GridBotStrategy implements StrategyEngine {
     }
 
     // ── 2. Evaluer grid-signal (testet logikk fra grid-strategy.ts) ──────
-    const signal = evaluateGridSignal(gridConfig, levels, currentPrice);
+    // Send med USDT→NOK rate for korrekt valuta-sammenligning
+    const rate = (config?.usdtToNokRate as number) ?? 10.0; // fallback ~10 NOK/USDT
+    const signal = evaluateGridSignal(gridConfig, levels, currentPrice, rate);
 
     // ── 3. Map til StrategySignal ─────────────────────────────────────────
     if (signal.action === "buy") {
