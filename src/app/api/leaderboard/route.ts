@@ -107,6 +107,29 @@ export async function GET(req: Request) {
       .select("user_id, total_trades, winning_trades")
       .in("user_id", userIds);
 
+    // ── BALANSER FRA SESSIONS (2026-08-03) ─────────────────────────────────
+    // paper_accounts.current_balance er ustabilt (overskrives av sync-prosesser).
+    // trading_sessions.current_capital_nok er master for cash per sesjon.
+    // MERK: noen brukere har inflated current_capital_nok fra historisk
+    // oversell-bug (før trigger-fiks 2026-08-03). Vi begrenser derfor
+    // sessions-sum til max 3x initial_balance som sanity-cap, og faller
+    // tilbake til paper_accounts ved mistenkelig avvik.
+    const { data: sessionSums } = await supabase
+      .from("trading_sessions")
+      .select("user_id, current_capital_nok")
+      .in("user_id", userIds)
+      .eq("mode", "paper")
+      .in("status", ["active", "paused", "stopped"]);
+
+    const sessionBalanceMap = new Map<string, number>();
+    for (const s of sessionSums ?? []) {
+      if (!s.user_id) continue;
+      sessionBalanceMap.set(
+        s.user_id,
+        (sessionBalanceMap.get(s.user_id) ?? 0) + Number(s.current_capital_nok ?? 0)
+      );
+    }
+
     const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
     const statsMap = new Map((stats ?? []).map((s) => [s.user_id, s]));
 
@@ -150,7 +173,17 @@ export async function GET(req: Request) {
       // hardkodet 100k ga falsk +900% for kontoer med 1M initial (FACT-bug).
       const initial = Number(acc.initial_balance ?? 0);
       const startBalance = initial > 0 ? initial : DEFAULT_START_BALANCE;
-      const returnPct = ((balance - startBalance) / startBalance) * 100;
+
+      // Bruk sessions-sum som primær kilde (paper_accounts overskrives),
+      // men med sanity-cap: ved inflated sessions-sum (historisk oversell-bug)
+      // faller vi tilbake til paper_accounts. Max 3x start = plausibelt tak.
+      const sessionsSum = sessionBalanceMap.get(uid) ?? 0;
+      const maxPlausible = startBalance * 3;
+      const effectiveBalance =
+        sessionsSum > 0 && sessionsSum <= maxPlausible
+          ? sessionsSum
+          : balance;
+      const returnPct = ((effectiveBalance - startBalance) / startBalance) * 100;
 
       const winningTrades = stat?.winning_trades ?? 0;
       const winRate = totalTrades > 0
