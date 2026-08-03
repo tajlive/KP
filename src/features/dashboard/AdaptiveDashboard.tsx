@@ -39,6 +39,8 @@ export interface UserStats {
   winRate: number;
   totalPnl: number;
   currentCapital: number;
+  /** FIKS 6: KONTO-balanse (paper_accounts) — source of truth, ikke sesjons-sum */
+  accountBalance?: number | null;
   startingCapital: number;
   winningTrades: number;
   recentSessions?: TradingSession[];
@@ -154,7 +156,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
             </h3>
             <PaperTradingList 
               sessions={stats.recentSessions || []} 
-              balance={stats.currentCapital} 
+              balance={stats.accountBalance ?? stats.currentCapital} 
               locale={locale}
               userId={userId}
               sessionMode={preferredTradingMode}

@@ -332,7 +332,7 @@ export function DashboardPro({
               ) : (
                 <PaperTradingList 
                   sessions={effectiveStats.recentSessions || []} 
-                  balance={effectiveStats.currentCapital} 
+                  balance={effectiveStats.accountBalance ?? effectiveStats.currentCapital} 
                   locale={locale}
                   userId={userId}
                   sessionMode={preferredTradingMode}
@@ -373,8 +373,8 @@ export function DashboardPro({
                       {effectiveStats.winRate != null && (
                         <ExplainStatButton statType="winRate" value={effectiveStats.winRate != null ? effectiveStats.winRate * 100 : undefined} />
                       )}
-                      {effectiveStats.currentCapital != null && (
-                        <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
+                      {effectiveStats.accountBalance != null && (
+                        <ExplainStatButton statType="balance" value={effectiveStats.accountBalance} />
                       )}
                     </div>
                   </div>
