@@ -30,6 +30,11 @@ const BOT_DISPLAY_NAMES = new Set([
 // ---------------------------------------------------------------------------
 // Testkonto-mønstre (case-insensitive)
 // ---------------------------------------------------------------------------
+const TEST_USER_IDS = new Set([
+  "ded5288d-c979-48f7-943b-360c6dd0ed40", // Perjan Jensen (perjan.jensen@klarpakke.test)
+  "ef80466f-222e-4039-ba45-561eacc57d34", // Gudrun Myhre (gudrun.myhre@klarpakke.no — QA-persona)
+]);
+
 function isTestAccount(name: string): boolean {
   const lower = name.toLowerCase();
   return (
@@ -38,6 +43,8 @@ function isTestAccount(name: string): boolean {
     lower.includes("+verify") ||
     lower.includes("direct test") ||
     lower.includes("viking trader") ||
+    lower.includes("perjan") ||
+    lower.includes("gudrun") ||
     (lower.includes("test") && lower.length < 20) ||
     lower === "tom"
   );
@@ -150,6 +157,7 @@ export async function GET(req: Request) {
     for (const acc of accounts) {
       const uid = acc.user_id;
       if (!uid || (uid as string).includes("0000-0000")) continue;
+      if (TEST_USER_IDS.has(uid as string)) continue;
 
       const profile = profileMap.get(uid);
       const rawName = profile?.display_name ?? "";
