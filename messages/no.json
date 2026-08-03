@@ -2141,7 +2141,10 @@
       "leaderboardCta": "Se rangering →",
       "pilotTitle": "🎭 Pilot — AI-en trader for deg",
       "pilotDesc": "La AI finne trade-idéer. Du velger beløp og godkjenner hver trade.",
-      "pilotCta": "Utforsk Pilot →"
+      "pilotCta": "Utforsk Pilot →",
+      "pilotTradeTitle": "Prøv Auto-handel",
+      "pilotTradeDesc": "AI-en analyserer markedet og handler automatisk med lekepenger",
+      "pilotTradeCta": "Start Auto"
     },
     "hero": {
       "paperMode": "Lekepenger-modus",
