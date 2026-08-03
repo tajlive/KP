@@ -41,6 +41,8 @@ export interface UserStats {
   currentCapital: number;
   /** FIKS 6: KONTO-balanse (paper_accounts) — source of truth, ikke sesjons-sum */
   accountBalance?: number | null;
+  /** Timestamp for siste balance-justering (fra paper_accounts.updated_at) */
+  accountBalanceUpdatedAt?: string | null;
   startingCapital: number;
   winningTrades: number;
   recentSessions?: TradingSession[];
