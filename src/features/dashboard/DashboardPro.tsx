@@ -7,6 +7,7 @@ import { m, AnimatePresence } from "framer-motion";
 import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw, Zap, Flame } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
+import { BalanceAdjustmentBadge, usePreviousBalance } from "@/components/BalanceAdjustmentBadge";
 
 // Nye WOW-komponenter
 import { PortfolioChart } from "@/features/portfolio/PortfolioChart";
@@ -53,6 +54,8 @@ interface UserStats {
   sessionCount?: number;
   /** FIKS 6: KONTO-balanse (paper_accounts) — source of truth, ikke sesjons-sum */
   accountBalance?: number | null;
+  /** Timestamp for siste balance-justering (fra paper_accounts.updated_at) */
+  accountBalanceUpdatedAt?: string | null;
   recentSessions?: TradingSession[];
 }
 
@@ -146,6 +149,9 @@ export function DashboardPro({
   const isPaperMode = preferredTradingMode === "paper";
   const { formatByMode } = useCurrency();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  
+  // Track previous balance for adjustment detection
+  const previousBalance = usePreviousBalance(stats?.accountBalance ?? 0);
 
   useEffect(() => {
     if (!isLoading && !isError && stats) {
@@ -221,7 +227,16 @@ export function DashboardPro({
     },
     {
       label: t("stats.balance"),
-      value: formatByModeOrDash(heroBalance, preferredTradingMode),
+      value: (
+        <span className="inline-flex items-baseline">
+          {formatByModeOrDash(heroBalance, preferredTradingMode)}
+          <BalanceAdjustmentBadge
+            updatedAt={effectiveStats.accountBalanceUpdatedAt ?? null}
+            currentBalance={heroBalance ?? 0}
+            previousBalance={previousBalance}
+          />
+        </span>
+      ),
       subtext: t("stats.balanceSub"),
       trend: "neutral" as const,
       icon: Wallet,

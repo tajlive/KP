@@ -58,6 +58,7 @@ export interface DashboardMetrics {
    * avvike. null for live-modus eller når kontoen ikke finnes.
    */
   accountBalance: number | null;
+  accountBalanceUpdatedAt: string | null;
   /** Total investert i åpne posisjoner (kjøpspris × antall) */
   investedCapital: number;
   /** Antall åpne posisjoner (par med aktiv investering) */
@@ -100,7 +101,7 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
 async function getAccountBalance(
   supabaseClient: SupabaseClient<Database>,
   userId: string,
-): Promise<{ available: number; invested: number; positionCount: number } | null> {
+): Promise<{ available: number; invested: number; positionCount: number; updated_at: string | null } | null> {
   // Hent alle aktive paper-sesjoner med open_position
   const { data: sessions, error: sessionError } = await supabaseClient
     .from("trading_sessions")
@@ -122,14 +123,14 @@ async function getAccountBalance(
       }
     }
     if (Number.isFinite(available + invested) && (available + invested) > 0) {
-      return { available, invested, positionCount };
+      return { available, invested, positionCount, updated_at: null }; // Sessions har ingen updated_at
     }
   }
 
   // Fallback: paper_accounts (kan være stale hvis sync ikke har kjørt)
   const { data, error } = await supabaseClient
     .from("paper_accounts")
-    .select("current_balance")
+    .select("current_balance, updated_at")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -137,9 +138,9 @@ async function getAccountBalance(
     console.warn("[getUserDashboardMetrics] account balance fetch failed:", error.message);
     return null;
   }
-  const dataSingle = data as unknown as { current_balance?: number };
+  const dataSingle = data as unknown as { current_balance?: number; updated_at?: string };
   return typeof dataSingle?.current_balance === "number" 
-    ? { available: dataSingle.current_balance, invested: 0, positionCount: 0 } 
+    ? { available: dataSingle.current_balance, invested: 0, positionCount: 0, updated_at: dataSingle.updated_at ?? null } 
     : null;
 }
 
@@ -169,6 +170,7 @@ export async function getUserDashboardMetrics(
       ? await getAccountBalance(supabaseClient, userId)
       : null;
   const accountBalance = balResult?.available ?? null;
+  const accountBalanceUpdatedAt = balResult?.updated_at ?? null;
   const investedCapital = balResult?.invested ?? 0;
   const positionCount = balResult?.positionCount ?? 0;
   const accountInitial =
@@ -252,6 +254,7 @@ export async function getUserDashboardMetrics(
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),
       accountBalance,
+      accountBalanceUpdatedAt,
       investedCapital,
       positionCount,
       recentSessions: recentSessions || [],
@@ -327,6 +330,7 @@ async function fallbackMetrics(
       losingTrades: 0,
       sessionCount: 0,
       accountBalance: fb.totalCapital,
+      accountBalanceUpdatedAt: null,
       investedCapital: 0,
       positionCount: 0,
       recentSessions: [],
@@ -343,6 +347,7 @@ async function fallbackMetrics(
     losingTrades: 0,
     sessionCount: 0,
     accountBalance: null,
+    accountBalanceUpdatedAt: null,
     investedCapital: 0,
     positionCount: 0,
     recentSessions: [],
@@ -438,6 +443,7 @@ async function tsAggregationFallback(
 
   const balResult = mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
   const accountBalance = balResult?.available ?? null;
+  const accountBalanceUpdatedAt = balResult?.updated_at ?? null;
   const investedCapital = balResult?.invested ?? 0;
   const positionCount = balResult?.positionCount ?? 0;
 
@@ -451,6 +457,7 @@ async function tsAggregationFallback(
     losingTrades,
     sessionCount: sessions?.length ?? 0,
     accountBalance,
+    accountBalanceUpdatedAt,
     investedCapital,
     positionCount,
     recentSessions: [], // Fallback doesn't fetch recent sessions details
