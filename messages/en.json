@@ -2146,7 +2146,10 @@
       "leaderboardCta": "View ranking →",
       "pilotTitle": "🎭 Pilot — the AI trades for you",
       "pilotDesc": "Let the AI find trade ideas. You choose the amount and approve each trade.",
-      "pilotCta": "Explore Pilot →"
+      "pilotCta": "Explore Pilot →",
+      "pilotTradeTitle": "Try Auto-trading",
+      "pilotTradeDesc": "The AI analyzes the market and trades automatically with play money",
+      "pilotTradeCta": "Start Auto"
     },
     "hero": {
       "paperMode": "Paper Mode",
