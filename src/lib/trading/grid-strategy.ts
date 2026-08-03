@@ -121,8 +121,26 @@ export function generateGridLevels(config: GridConfig): GridLevel[] {
 export function evaluateGridSignal(
   config: GridConfig,
   levels: GridLevel[],
-  currentPrice: number
+  currentPrice: number,
+  usdtToNokRate?: number
 ): GridSignal {
+  // ═════════════════════════════════════════════════════════════════
+  // VALUTA-KORREKSJON (2026-08-03): Grid-nivåer lagres i USDT,
+  // men currentPrice er i NOK. Konverter nivåer til NOK for korrekt
+  // sammenligning. Hvis rate mangler, anta at alt er i samme valuta.
+  // ═════════════════════════════════════════════════════════════════
+  const rate = usdtToNokRate ?? 1;
+  const levelsNok = rate !== 1 
+    ? levels.map(l => ({
+        ...l,
+        buyPrice: l.buyPrice * rate,
+        sellPrice: l.sellPrice * rate,
+      }))
+    : levels;
+  const configNok = rate !== 1
+    ? { ...config, lowerPrice: config.lowerPrice * rate, upperPrice: config.upperPrice * rate }
+    : config;
+
   // ═════════════════════════════════════════════════════════════════
   // PRIORITET 0 — SELL: realiser profitt FØR ny kapital deployeres.
   // Kjøres ALLTID, uavhengig av om prisen er under/over/i grid.
@@ -131,7 +149,7 @@ export function evaluateGridSignal(
   // ═════════════════════════════════════════════════════════════════
   let bestSell: { level: GridLevel; profitPct: number; reason: string; sellType: "trailing" | "grid" } | null = null;
 
-  for (const l of levels) {
+  for (const l of levelsNok) {
     if (l.status !== "bought") continue;
 
     // Trailing: pris ≥ kjøpspris + 2% → selg til markedspris
@@ -170,14 +188,14 @@ export function evaluateGridSignal(
   // ═════════════════════════════════════════════════════════════════
   // PRIORITET 1 — BUY: DCA under grid-bunn (progressivt større kjøp)
   // ═════════════════════════════════════════════════════════════════
-  if (currentPrice < config.lowerPrice) {
-    const lowestBuy = levels[0].buyPrice;
+  if (currentPrice < configNok.lowerPrice) {
+    const lowestBuy = levelsNok[0].buyPrice;
     for (let dcaIdx = 0; dcaIdx < DCA_LEVELS_PCT.length; dcaIdx++) {
-      const dcaPrice = config.lowerPrice * DCA_LEVELS_PCT[dcaIdx];
-      const existingDca = levels.find(l => l.dcaLevel === dcaIdx + 1);
+      const dcaPrice = configNok.lowerPrice * DCA_LEVELS_PCT[dcaIdx];
+      const existingDca = levelsNok.find(l => l.dcaLevel === dcaIdx + 1);
       if (currentPrice <= dcaPrice && (!existingDca || existingDca.status === "empty")) {
         const multiplier = DCA_SIZE_MULTIPLIER[dcaIdx];
-        const qty = (config.amountPerGrid * multiplier) / dcaPrice;
+        const qty = (configNok.amountPerGrid * multiplier) / dcaPrice;
         const dcaLevel: GridLevel = {
           level: -1, buyPrice: dcaPrice, sellPrice: lowestBuy,
           quantity: qty, status: "empty", dcaLevel: dcaIdx + 1, sizeMultiplier: multiplier,
@@ -204,24 +222,24 @@ export function evaluateGridSignal(
   // ═════════════════════════════════════════════════════════════════
   // PRIORITET 2 — OVER grid: vent. Sells er allerede håndtert over ↓
   // ═════════════════════════════════════════════════════════════════
-  if (currentPrice > config.upperPrice) {
+  if (currentPrice > configNok.upperPrice) {
     return {
       action: "wait",
-      reason: `Pris ${currentPrice.toFixed(2)} over grid ${config.upperPrice.toFixed(2)} — venter på retur`,
+      reason: `Pris ${currentPrice.toFixed(2)} over grid ${configNok.upperPrice.toFixed(2)} — venter på retur`,
       expectedProfitPct: 0,
     };
   }
 
-  const step = (config.upperPrice - config.lowerPrice) / config.gridLevels;
-  const cellIndex = Math.min(config.gridLevels - 1, Math.floor((currentPrice - config.lowerPrice) / step));
-  const cell = levels[cellIndex];
+  const step = (configNok.upperPrice - configNok.lowerPrice) / configNok.gridLevels;
+  const cellIndex = Math.min(configNok.gridLevels - 1, Math.floor((currentPrice - configNok.lowerPrice) / step));
+  const cell = levelsNok[cellIndex];
 
   // ═════════════════════════════════════════════════════════════════
   // PRIORITET 3 — BUY: pris er i grid — kjøp på høyeste empty nivå
   // under eller lik currentPrice. Dette er nivået prisen har falt TIL.
   // ═════════════════════════════════════════════════════════════════
   let bestBuy: { level: GridLevel; profitPct: number } | null = null;
-  for (const l of levels) {
+  for (const l of levelsNok) {
     if (l.status !== "empty") continue;
     if (l.buyPrice <= currentPrice) {
       const profitPct = ((l.sellPrice - l.buyPrice) / l.buyPrice) * 100;
@@ -237,7 +255,7 @@ export function evaluateGridSignal(
     // nå ALLE empty nivåer under pris slik at tick kan fylle dem samlet.
     // Dette deployer hele kapitalen umiddelbart i stedet for å vente på at
     // prisen skal falle til hvert nivå sekvensielt.
-    const allBuys = levels.filter(
+    const allBuys = levelsNok.filter(
       (l) => l.status === "empty" && l.buyPrice <= currentPrice,
     );
     return {
