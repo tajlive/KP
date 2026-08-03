@@ -191,7 +191,7 @@ export function DashboardPro({
       value:
         effectiveStats.totalPnl == null
           ? "—"
-          : `${effectiveStats.totalPnl >= 0 ? "+" : ""}${formatByMode(
+          : `${effectiveStats.totalPnl >= 0 ? "+" : "-"}${formatByMode(
               Math.abs(effectiveStats.totalPnl),
               preferredTradingMode,
             )}`,
