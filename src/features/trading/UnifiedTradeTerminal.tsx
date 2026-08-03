@@ -667,31 +667,53 @@ function StatsTab() {
         </div>
       )}
 
-      {/* Recent trades */}
+      {/* Recent trades — moderne AI-forklaringer (2026-08-03) */}
       <div>
         <h3 className="text-sm font-semibold text-white mb-2">Siste handler</h3>
         <div className="space-y-2">
           {data.trades.slice(0,10).map(t => (
-            <div key={t.id} className="bg-[#1A1F2E] border border-[#1E2530] rounded-lg p-3 text-sm">
+            <div key={t.id} className="bg-[#1A1F2E] border border-[#1E2530] rounded-xl p-3 text-sm hover:border-[#2A3142] transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className={t.side==="buy"?"text-emerald-400":"text-red-400"}>
-                    {t.side==="buy"?"KJØP":"SALG"}
+                  <span className={cn(
+                    "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                    t.side === "buy"
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : "bg-red-500/10 text-red-400",
+                  )}>
+                    {t.side === "buy" ? "▲ KJØP" : "▼ SALG"}
                   </span>
                   <span className="text-white font-medium">{coinLabel(t.trading_pair)}</span>
-                  {t.realized_pnl!==null && (
-                    <span className={t.realized_pnl>0?"text-emerald-400":"text-red-400"}>{fmt(t.realized_pnl)}</span>
+                  {t.realized_pnl !== null && (
+                    <span className={cn(
+                      "rounded-md px-1.5 py-0.5 text-[11px] font-semibold",
+                      t.realized_pnl > 0
+                        ? "bg-emerald-500/10 text-emerald-400"
+                        : "bg-red-500/10 text-red-400",
+                    )}>
+                      {fmt(t.realized_pnl)}
+                    </span>
                   )}
                 </div>
-                <span className="text-[#8B9DC3] text-xs">
+                <span className="text-[#5E6478] text-xs tabular-nums">
                   {new Date(t.created_at).toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit"})}
                 </span>
               </div>
-              {t.pilot_explanation && <p className="text-[#8B9DC3] text-xs mt-1 leading-relaxed">{t.pilot_explanation}</p>}
+              {t.pilot_explanation && (
+                <div className="mt-2 flex gap-2 rounded-lg bg-[#0D1117] border border-[#1E2530]/50 p-2.5">
+                  <span className="text-sm shrink-0 mt-0.5">🧠</span>
+                  <p className="text-[#A8B8D8] text-xs leading-relaxed">{t.pilot_explanation}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>
-        {data.trades.length===0 && <p className="text-[#8B9DC3] text-sm p-4">Ingen handler ennå. Pilot kjører automatisk.</p>}
+        {data.trades.length===0 && (
+          <div className="text-center py-8">
+            <p className="text-[#8B9DC3] text-sm">Ingen handler ennå.</p>
+            <p className="text-[#5E6478] text-xs mt-1">Start Auto-handel for å se AI-forklaringer her.</p>
+          </div>
+        )}
       </div>
     </div>
   );

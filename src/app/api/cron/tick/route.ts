@@ -1420,6 +1420,47 @@ async function processSession(
         }
       }
 
+      // ── AI-forklaring (2026-08-03): generer brukervennlig forklaring ──────
+      // Kalles ETTER executeTrade — feil skal ALDRI stoppe trading.
+      // Lagres i trades.pilot_explanation slik at UI kan vise den.
+      if (result.tradeId && (signal.action === "buy" || signal.action === "sell")) {
+        try {
+          const { generateTradeExplanation } = await import(
+            "@/lib/trading/ai-explanations"
+          );
+          const rate = getUsdtToNokRate();
+          const execPrice = result.executedPrice ?? currentPrice;
+          const execQty = result.executedQuantity ?? quantity;
+          const explanation = await generateTradeExplanation({
+            symbol: pair.replace("/", ""),
+            side: signal.action,
+            priceNok: usdtToNok(execPrice, rate),
+            amountNok: usdtToNok(execQty * execPrice, rate),
+            strategy: resolvedEngine,
+            reason: signal.reason,
+            indicators: {
+              rsi: (signal.indicators?.rsi as number | undefined),
+              regime: (signal.indicators?.regime as string | undefined),
+              grid_level: (signal.indicators?.grid_level as number | undefined),
+              buy_price: (signal.indicators?.buy_price as number | undefined),
+              sell_price: (signal.indicators?.sell_price as number | undefined),
+              profit_pct: (signal.indicators?.profit_pct as number | undefined),
+              confidence: (signal.indicators?.confidence as number | undefined),
+              ensemble_score: (signal.indicators?.ensembleScore as number | undefined),
+            },
+          });
+
+          // Oppdater trade med AI-forklaringen
+          await db
+            .from("trades")
+            .update({ pilot_explanation: explanation.text } as never)
+            .eq("id", result.tradeId);
+        } catch (explErr) {
+          // Non-critical: AI-forklaring er nice-to-have, ikke kritisk
+          console.warn(`[Tick] AI-forklaring feilet for ${result.tradeId}:`, (explErr as Error).message);
+        }
+      }
+
       return {
         session_id: session.id,
         action: signal.action,
