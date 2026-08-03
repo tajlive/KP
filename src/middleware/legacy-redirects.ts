@@ -23,6 +23,8 @@ export const LEGACY_REDIRECTS: readonly LegacyRedirect[] = [
   { from: "/tradere", to: "/copy-trading" },
   { from: "/dashboard/auto-handel", to: "/dashboard/auto-trade" },
   { from: "/dashboard/autopilot/launch", to: "/dashboard/autopilot" },
+  // JokerTrade er avviklet (vedtatt 2026-08-03) — heter nå Pilot.
+  { from: "/jokertrade", to: "/pilot" },
 ];
 
 /**
