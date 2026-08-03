@@ -110,6 +110,17 @@ function buildPrompt(ctx: TradeContext): string {
 function templateExplanation(ctx: TradeContext): string {
   const sym = ctx.symbol.replace("USDT", "");
 
+  // Dark Fleet / Ensemble (hovedstrategi for auto-trading)
+  if (ctx.strategy === "dark_fleet" || ctx.strategy === "ensemble") {
+    const level = ctx.indicators?.grid_level;
+    const profit = ctx.indicators?.profit_pct;
+    const conf = ctx.indicators?.confidence;
+    if (ctx.side === "buy") {
+      return `🤖 AI-kjøp: Dark Fleet analyserte markedet (${conf?.toFixed(0) ?? "?"}% sikkerhet) og kjøpte ${ctx.amountNok.toFixed(0)} kr ${sym}${level ? ` på grid-nivå ${level}` : ""}. Mål: +${profit?.toFixed(1) ?? "2"}% gevinst.`;
+    }
+    return `💰 AI-salg: Dark Fleet solgte ${sym} med +${profit?.toFixed(1) ?? "?"}% gevinst. Strategien kjøper lavt og selger høyt automatisk.`;
+  }
+
   if (ctx.strategy === "grid" && ctx.side === "buy") {
     const level = ctx.indicators?.grid_level;
     const profit = ctx.indicators?.profit_pct;
