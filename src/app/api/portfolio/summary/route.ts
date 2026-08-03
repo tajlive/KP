@@ -136,11 +136,20 @@ export async function GET(request: NextRequest) {
       }))
       .sort((a, b) => b.qty * b.avgBuyPrice - a.qty * a.avgBuyPrice);
 
+    // Beregn balance fra trading_sessions (SSoT — paper_accounts kan være stale)
+    const { data: balanceSessions } = await supabase
+      .from("trading_sessions")
+      .select("current_capital_nok")
+      .eq("user_id", user.id)
+      .eq("mode", "paper")
+      .in("status", ["active", "paused", "stopped"]);
+    
+    const sessionBalance = balanceSessions?.reduce((sum, s) => sum + Number(s.current_capital_nok ?? 0), 0) ?? null;
+
     return NextResponse.json({
-      balance:
-        accountRes.data?.current_balance != null
-          ? Number(accountRes.data.current_balance)
-          : null,
+      balance: sessionBalance ?? (accountRes.data?.current_balance != null
+        ? Number(accountRes.data.current_balance)
+        : null),
       initialBalance:
         accountRes.data?.initial_balance != null
           ? Number(accountRes.data.initial_balance)
