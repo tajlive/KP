@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
+import { PilotDashboard } from "@/features/trading/PilotDashboard";
 import { FirstTradeFlow } from "@/features/trading/FirstTradeFlow";
 import { WalletBalance } from "@/features/trading/WalletBalance";
 import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
@@ -17,9 +18,7 @@ import { BacktestPanel } from "@/features/backtest/BacktestPanel";
 import { ModeGuide } from "@/features/trading/ModeGuide";
 
 // ─── Types ───
-// 2026-08-03: Pilot slått sammen med Auto — Pilot var samme motor, bare annet UI.
-// "pilot" beholdes som URL-alias → auto for backcompat.
-type TradeMode = "manual" | "auto" | "stats" | "backtest";
+type TradeMode = "manual" | "auto" | "pilot" | "stats" | "backtest";
 
 interface PriceData {
   symbol: string;
@@ -83,6 +82,7 @@ function LiveTicker() {
 const MODES: { id: TradeMode; label: string; short: string; accent: string }[] = [
   { id: "manual", label: "Manuell", short: "✋", accent: "data-[state=active]:border-emerald-400 data-[state=active]:text-emerald-400" },
   { id: "auto", label: "Auto", short: "🤖", accent: "data-[state=active]:border-amber-400 data-[state=active]:text-amber-400" },
+  { id: "pilot", label: "Pilot", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
   { id: "stats", label: "Statistikk", short: "📊", accent: "data-[state=active]:border-cyan-400 data-[state=active]:text-cyan-400" },
   { id: "backtest", label: "Backtest", short: "🔬", accent: "data-[state=active]:border-blue-400 data-[state=active]:text-blue-400" },
 ];
@@ -527,6 +527,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       )}>
         {mode === "manual" && "Du handler selv — full kontroll"}
         {mode === "auto" && "AI-en handler basert på dine regler"}
+        {mode === "pilot" && "AI-en analyserer og handler automatisk"}
       </div>
     </div>
   );
@@ -735,16 +736,16 @@ export function UnifiedTradeTerminal() {
   const [showUnlock, setShowUnlock] = React.useState(false);
   const prevHasTraded = React.useRef<boolean | null>(null);
 
-  // URL-param: /trade?tab=auto|stats|manual, /trade?first=1 → Auto (guided)
-  // 2026-08-03: pilot/joker slått sammen med Auto — alias redirectes til auto.
+  // URL-param: /trade?tab=auto|stats|pilot|manual, /trade?first=1 → Pilot
+  // (tab=joker godtas fortsatt som gammelt alias → pilot)
   const searchParams = useSearchParams();
   React.useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab === "auto") setMode("auto");
     else if (tab === "stats") setMode("stats");
-    else if (tab === "pilot" || tab === "joker") setMode("auto"); // backcompat-alias
+    else if (tab === "pilot" || tab === "joker") setMode("pilot");
     else if (tab === "backtest") setMode("backtest");
-    else if (searchParams.get("first") === "1") setMode("auto"); // guided → auto
+    else if (searchParams.get("first") === "1") setMode("pilot");
   }, [searchParams]);
 
   // Auto er låst til brukeren har gjort minst én manuell trade.
@@ -870,6 +871,7 @@ export function UnifiedTradeTerminal() {
               </>
             )}
             {mode === "auto" && <AutoStrategyPanel />}
+            {mode === "pilot" && <PilotDashboard />}
             {mode === "stats" && <StatsTab />}
             {mode === "backtest" && <BacktestPanel />}
           </div>
