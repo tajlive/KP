@@ -64,6 +64,12 @@ function calculateRiskScore(metrics: RiskMetrics): number {
 export function RiskMetricsPanel() {
   const t = useTranslations("trading.riskMetrics");
   const [metrics, setMetrics] = useState<RiskMetrics | null>(null);
+  const [riskAI, setRiskAI] = useState<{
+    summary: string;
+    metrics: Record<string, string>;
+    source: "llm" | "template";
+    generatedAt: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -77,6 +83,7 @@ export function RiskMetricsPanel() {
       .then((data) => {
         if (data.ok && data.riskMetrics) {
           setMetrics(data.riskMetrics);
+          if (data.riskAI) setRiskAI(data.riskAI);
         } else {
           setError(t("loadError"));
         }
@@ -162,6 +169,25 @@ export function RiskMetricsPanel() {
       transition={{ duration: 0.4 }}
       className="space-y-4"
     >
+      {/* AI-oppsummering (PROMPT #14 / BRIEF §9) — én setning på folkeskole-norsk */}
+      {riskAI?.summary && (
+        <div className="rounded-2xl border border-blue-500/30 bg-blue-950/30 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <Activity className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-blue-200">
+                {riskAI.summary}
+              </p>
+              {riskAI.source === "template" && (
+                <p className="text-[11px] text-blue-400/60">
+                  {t("aiTemplateNotice")}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Single risk score card */}
       <div className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-800/50 p-5 sm:p-6">
         <div
@@ -244,34 +270,53 @@ export function RiskMetricsPanel() {
             className="overflow-hidden"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cards.map((card, i) => (
-                <m.div
-                  key={card.key}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="relative group bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-colors"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-slate-400 text-sm">{card.label}</span>
-                    {card.good ? (
-                      <TrendingUp className="w-4 h-4 text-emerald-400" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-red-400" />
-                    )}
-                  </div>
-                  <p
-                    className={`text-2xl font-bold ${
-                      card.good ? "text-emerald-400" : "text-red-400"
-                    }`}
+              {cards.map((card, i) => {
+                const aiKey =
+                  card.key === "sortino"
+                    ? "sortinoRatio"
+                    : card.key === "maxLosses"
+                      ? "maxConsecutiveLosses"
+                      : card.key === "var95"
+                        ? "var95"
+                        : null;
+                const aiText = aiKey ? riskAI?.metrics?.[aiKey] : undefined;
+                return (
+                  <m.div
+                    key={card.key}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className="relative group bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-colors"
                   >
-                    {card.value}
-                  </p>
-                  <div className="absolute bottom-full left-0 mb-2 w-full p-2 bg-slate-800 text-slate-300 text-xs rounded-lg border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    {card.tooltip}
-                  </div>
-                </m.div>
-              ))}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-slate-400 text-sm">{card.label}</span>
+                      {card.good ? (
+                        <TrendingUp className="w-4 h-4 text-emerald-400" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4 text-red-400" />
+                      )}
+                    </div>
+                    <p
+                      className={`text-2xl font-bold ${
+                        card.good ? "text-emerald-400" : "text-red-400"
+                      }`}
+                    >
+                      {card.value}
+                    </p>
+                    {/* AI-forklaring på folkeskole-norsk (BRIEF §9) */}
+                    {aiText && (
+                      <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+                        {aiText}
+                      </p>
+                    )}
+                    {!aiText && (
+                      <div className="absolute bottom-full left-0 mb-2 w-full p-2 bg-slate-800 text-slate-300 text-xs rounded-lg border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                        {card.tooltip}
+                      </div>
+                    )}
+                  </m.div>
+                );
+              })}
             </div>
           </m.div>
         )}

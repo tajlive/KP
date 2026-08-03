@@ -4902,7 +4902,8 @@
         "low": "Low Risk",
         "moderate": "Moderate Risk",
         "high": "High Risk"
-      }
+      },
+      "aiTemplateNotice": "Simplified explanation (AI temporarily unavailable)"
     },
     "positionLots": {
       "loading": "Loading",
