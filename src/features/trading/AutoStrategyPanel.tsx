@@ -530,11 +530,10 @@ export function AutoStrategyPanel() {
 
       {status !== "active" && (
         <>
-          {/* Auto vs Pilot forklaring */}
+          {/* Hvordan Auto fungerer (2026-08-03: Pilot slått sammen — AI-forklaringer er nå standard) */}
           <div className="bg-[#0A0D12] border border-[#1E2530] rounded-xl p-3">
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              <span className="text-amber-400 font-medium">Auto</span> = du velger strategi og risikonivå, AI-en følger reglene.{' '}
-              <span className="text-violet-400 font-medium">Pilot</span> = AI-en gjør alt — analyserer, velger markeder og handler. Perfekt hvis du vil ha full autopilot.
+              <span className="text-amber-400 font-medium">Auto</span> = du velger strategi og risikonivå, AI-en følger reglene — og forklarer hvert kjøp og salg i historikken. Perfekt både for deg som vil ha kontroll, og deg som vil lære hvordan AI-en tenker.
             </p>
           </div>
 

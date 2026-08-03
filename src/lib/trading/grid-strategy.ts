@@ -37,6 +37,7 @@ export interface GridSignal {
   reason: string;
   expectedProfitPct: number;
   sellType?: "trailing" | "grid"; // satt kun ved action="sell" — for audit/reasonCode
+  allBuyLevels?: GridLevel[]; // alle empty nivåer under pris (deploy-all) — satt kun ved action="buy"
 }
 
 /** DCA under bunn: 3 nivåer under laveste grid, progressivt større beløp */
@@ -231,10 +232,19 @@ export function evaluateGridSignal(
   }
 
   if (bestBuy) {
+    // 2026-08-03 (Toms krav): ALL kapital skal være investert til enhver tid.
+    // I stedet for å kjøpe KUN det høyeste empty nivået per tick, returneres
+    // nå ALLE empty nivåer under pris slik at tick kan fylle dem samlet.
+    // Dette deployer hele kapitalen umiddelbart i stedet for å vente på at
+    // prisen skal falle til hvert nivå sekvensielt.
+    const allBuys = levels.filter(
+      (l) => l.status === "empty" && l.buyPrice <= currentPrice,
+    );
     return {
       action: "buy", level: bestBuy.level,
       reason: `Grid buy @ ${bestBuy.level.buyPrice.toFixed(2)} (nivå ${bestBuy.level.level}, target +${bestBuy.profitPct.toFixed(1)}%)`,
       expectedProfitPct: bestBuy.profitPct,
+      allBuyLevels: allBuys.length > 1 ? allBuys : undefined,
     };
   }
 
