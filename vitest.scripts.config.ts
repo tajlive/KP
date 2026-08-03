@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
-    include: ["scripts/*.{test,spec}.ts"],
+    include: ["scripts/**/*.{test,spec}.ts"],
     exclude: ["node_modules/**", "**/*.d.ts"],
     coverage: {
       provider: "v8",
