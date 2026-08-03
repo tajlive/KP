@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
 import { AutoStrategyPanel } from "@/features/trading/AutoStrategyPanel";
-import { PilotDashboard } from "@/features/trading/PilotDashboard";
 import { FirstTradeFlow } from "@/features/trading/FirstTradeFlow";
 import { WalletBalance } from "@/features/trading/WalletBalance";
 import { FirstTradeReward } from "@/features/dashboard/FirstTradeReward";
@@ -18,7 +17,9 @@ import { BacktestPanel } from "@/features/backtest/BacktestPanel";
 import { ModeGuide } from "@/features/trading/ModeGuide";
 
 // ─── Types ───
-type TradeMode = "manual" | "auto" | "pilot" | "stats" | "backtest";
+// 2026-08-03: Pilot slått sammen med Auto — Pilot var samme motor, bare annet UI.
+// "pilot" beholdes som URL-alias → auto for backcompat.
+type TradeMode = "manual" | "auto" | "stats" | "backtest";
 
 interface PriceData {
   symbol: string;
@@ -82,7 +83,6 @@ function LiveTicker() {
 const MODES: { id: TradeMode; label: string; short: string; accent: string }[] = [
   { id: "manual", label: "Manuell", short: "✋", accent: "data-[state=active]:border-emerald-400 data-[state=active]:text-emerald-400" },
   { id: "auto", label: "Auto", short: "🤖", accent: "data-[state=active]:border-amber-400 data-[state=active]:text-amber-400" },
-  { id: "pilot", label: "Pilot", short: "🃏", accent: "data-[state=active]:border-violet-400 data-[state=active]:text-violet-400" },
   { id: "stats", label: "Statistikk", short: "📊", accent: "data-[state=active]:border-cyan-400 data-[state=active]:text-cyan-400" },
   { id: "backtest", label: "Backtest", short: "🔬", accent: "data-[state=active]:border-blue-400 data-[state=active]:text-blue-400" },
 ];
@@ -527,7 +527,6 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
       )}>
         {mode === "manual" && "Du handler selv — full kontroll"}
         {mode === "auto" && "AI-en handler basert på dine regler"}
-        {mode === "pilot" && "AI-en analyserer og handler automatisk"}
       </div>
     </div>
   );
@@ -714,20 +713,19 @@ export function UnifiedTradeTerminal() {
   const [showUnlock, setShowUnlock] = React.useState(false);
   const prevHasTraded = React.useRef<boolean | null>(null);
 
-  // URL-param: /trade?tab=auto|stats|pilot|manual, /trade?first=1 → Pilot
-  // (tab=joker godtas fortsatt som gammelt alias → pilot)
+  // URL-param: /trade?tab=auto|stats|manual, /trade?first=1 → Auto (guided)
+  // 2026-08-03: pilot/joker slått sammen med Auto — alias redirectes til auto.
   const searchParams = useSearchParams();
   React.useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab === "auto") setMode("auto");
     else if (tab === "stats") setMode("stats");
-    else if (tab === "pilot" || tab === "joker") setMode("pilot");
+    else if (tab === "pilot" || tab === "joker") setMode("auto"); // backcompat-alias
     else if (tab === "backtest") setMode("backtest");
-    else if (searchParams.get("first") === "1") setMode("pilot");
+    else if (searchParams.get("first") === "1") setMode("auto"); // guided → auto
   }, [searchParams]);
 
-  // PilotTrade er åpen for alle uten forhåndskrav (beslutning Tom 2026-07-29).
-  // Auto-modus forblir låst til brukeren har gjort minst én manuell trade.
+  // Auto er låst til brukeren har gjort minst én manuell trade.
   const lockedModes: TradeMode[] = hasTraded === false ? ["auto"] : [];
 
   React.useEffect(() => {
@@ -826,19 +824,17 @@ export function UnifiedTradeTerminal() {
                 !showUnlock && lockHint && "bg-slate-500/5 border-slate-500/20 text-slate-400",
                 !showUnlock && !lockHint && mode === "manual" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
                 !showUnlock && !lockHint && mode === "auto" && "bg-amber-500/5 border-amber-500/20 text-amber-400",
-                !showUnlock && !lockHint && mode === "pilot" && "bg-violet-500/5 border-violet-500/20 text-violet-400",
                 !showUnlock && !lockHint && mode === "stats" && "bg-cyan-500/5 border-cyan-500/20 text-cyan-400",
               )}
             >
-              {showUnlock && "🔓 Auto og Pilot er låst opp! Du bestemmer selv — ingenting handles automatisk før du skrur det på."}
-              {!showUnlock && lockHint && "🔒 Låses opp etter din første handel — gjør ett kjøp i Manuell modus, så åpnes Auto og Pilot."}
+              {showUnlock && "🔓 Auto er låst opp! Du bestemmer selv — ingenting handles automatisk før du skrur det på."}
+              {!showUnlock && lockHint && "🔒 Låses opp etter din første handel — gjør ett kjøp i Manuell modus, så åpnes Auto."}
               {!showUnlock && !lockHint && mode === "manual" && "✋ Manuell modus — du bestemmer alt. Kjøp og selg direkte fra ordrepanelet."}
-              {!showUnlock && !lockHint && mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene. Du beholder kontroll over strategien."}
-              {!showUnlock && !lockHint && mode === "pilot" && "🃏 Pilot — AI-en analyserer markedet, velger handler og utfører. Len deg tilbake."}
-              {!showUnlock && !lockHint && mode === "stats" && "📊 Statistikk — resultater, win-rate og AI-forklaringer for Pilot-handlene dine."}
+              {!showUnlock && !lockHint && mode === "auto" && "🤖 Auto modus — sett dine regler, AI-en utfører handlene og forklarer hvert valg. Du beholder kontroll over strategien."}
+              {!showUnlock && !lockHint && mode === "stats" && "📊 Statistikk — resultater, win-rate og AI-forklaringer for handlene dine."}
             </motion.div>
             {/* Mode guide — trinn-for-trinn for nye brukere */}
-            {(mode === "manual" || mode === "auto" || mode === "pilot") && (
+            {(mode === "manual" || mode === "auto") && (
               <ModeGuide mode={mode} />
             )}
           </div>
@@ -852,7 +848,6 @@ export function UnifiedTradeTerminal() {
               </>
             )}
             {mode === "auto" && <AutoStrategyPanel />}
-            {mode === "pilot" && <PilotDashboard />}
             {mode === "stats" && <StatsTab />}
             {mode === "backtest" && <BacktestPanel />}
           </div>

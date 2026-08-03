@@ -251,9 +251,9 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
         </div>
       </Link>
 
-      {/* PilotTrade CTA — sekundær, under folden (progressive disclosure) */}
+      {/* Auto-handel CTA — sekundær, under folden (progressive disclosure) */}
       <Link
-        href={`/${locale}/pilot`}
+        href={`/${locale}/trade?tab=auto`}
         prefetch={false}
         className="block glass-card p-4 border-amber-500/30 hover:border-amber-500/40 transition-all duration-200"
       >

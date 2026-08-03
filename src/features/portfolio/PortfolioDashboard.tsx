@@ -343,6 +343,29 @@ export default function PortfolioDashboard({
     (p: Position) => p.qty > 0,
   );
 
+  // ── Kapital-fordeling (2026-08-03, Toms krav om forklaring) ──────────────
+  // Konkurrentene (Pionex/Bitsgap) viser grid-kapital som "investert i ordre",
+  // ikke som ubrukelig cash. Vi gjør det samme: cash + posisjoner + grid-ordre
+  // = total. Brukeren skal forstå at pengene "jobber" selv om de ikke er kjøpt.
+  const investedInPositions = positionList.reduce(
+    (sum: number, p: Position) => sum + Math.abs(p.value),
+    0,
+  );
+  // Grid-reservert: cash som er øremerket grid-nivåer under pris.
+  // For grid-sesjoner er all cash potensiell ordre-kapital (grid kjøper ved fall).
+  const isGridSession =
+    (activeSession?.strategy_id as string | undefined)?.toLowerCase() ===
+      "grid" ||
+    ((activeSession?.strategy_config as Record<string, unknown> | undefined)
+      ?.grid_levels != null);
+  const gridReserved = isGridSession
+    ? Math.max(0, displayBalance - investedInPositions)
+    : 0;
+  const freeCapital = Math.max(
+    0,
+    displayBalance - investedInPositions - gridReserved,
+  );
+
   const priceForSymbol = (sym: string) => {
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
     const rawPrice = liveCoins.find((c) => c.symbol === key)?.price ?? 0;
@@ -518,6 +541,47 @@ export default function PortfolioDashboard({
             </div>
           )}
         </div>
+
+        {/* Kapital-fordeling: forklar hva pengene gjør (konkurrent-stil) */}
+        {(investedInPositions > 0 || gridReserved > 0) && (
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/80">
+            {investedInPositions > 0 && (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-300" />
+                {formatNOK(investedInPositions, locale)}{" "}
+                {no ? "i posisjoner" : "in positions"}
+              </span>
+            )}
+            {gridReserved > 0 && (
+              <span
+                className="inline-flex items-center gap-1.5"
+                title={
+                  no
+                    ? "Pengene dine er plassert som kjøpsordre i grid-botten. De kjøper automatisk når prisen faller til et grid-nivå — akkurat som Pionex/Bitsgap. Du trenger ikke gjøre noe."
+                    : "Your money is placed as buy orders in the grid bot. It buys automatically when price falls to a grid level — just like Pionex/Bitsgap. You don't need to do anything."
+                }
+              >
+                <span className="w-2 h-2 rounded-full bg-sky-300" />
+                {formatNOK(gridReserved, locale)}{" "}
+                {no ? "i aktive grid-ordre" : "in active grid orders"}
+              </span>
+            )}
+            {freeCapital > 1 && (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-white/40" />
+                {formatNOK(freeCapital, locale)}{" "}
+                {no ? "ledig" : "available"}
+              </span>
+            )}
+          </div>
+        )}
+        {gridReserved > 0 && (
+          <p className="mt-1.5 text-[11px] leading-snug text-white/60 max-w-lg">
+            {no
+              ? "💡 Grid-botten har lagt inn kjøpsordre på alle prisnivåer under dagens pris. Pengene dine er ikke «parkert» — de venter på å kjøpe billig når markedet faller, og selger med gevinst når det stiger igjen. Setter du inn mer, fordeles de på nye ordre automatisk."
+              : "💡 The grid bot has placed buy orders at all price levels below today's price. Your money isn't 'parked' — it's waiting to buy cheap when the market falls, and sells at a profit when it rises again. New deposits are automatically spread across new orders."}
+          </p>
+        )}
         <div className="mt-3">
           <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1.5">
             {t("portfolioHero.periodLabel")}
