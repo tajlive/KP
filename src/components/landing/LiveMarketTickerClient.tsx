@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import type { Database } from "@/types/database.types";
 
 type CoinPrice = Database["public"]["Tables"]["coin_prices"]["Row"];
@@ -64,6 +65,7 @@ interface Props {
 }
 
 export default function LiveMarketTickerClient({ coins }: Props) {
+  const t = useTranslations("liveTicker");
   const [localCoins, setLocalCoins] = useState(coins);
   const [flashMap, setFlashMap] = useState<Record<string, "up" | "down" | null>>({});
 
@@ -110,7 +112,7 @@ export default function LiveMarketTickerClient({ coins }: Props) {
           <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
         </span>
         <span className="text-xs font-semibold text-kp-text-muted uppercase tracking-wider">
-          Live markeder
+          {t("liveMarkets")}
         </span>
       </div>
 
@@ -157,7 +159,7 @@ export default function LiveMarketTickerClient({ coins }: Props) {
 
       {/* Footer */}
       <div className="mt-3 text-[10px] text-kp-text-muted/60 text-right">
-        Oppdateres hvert 15. sekund
+        {t("updateInterval")}
       </div>
     </div>
   );

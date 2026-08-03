@@ -5,6 +5,8 @@
  */
 "use client";
 
+import { useTranslations } from "next-intl";
+
 const ENDPOINTS = [
   {
     method: "GET",
@@ -196,6 +198,7 @@ const CODE_EXAMPLES = {
 };
 
 export default function ApiDokumentasjonPage() {
+  const tFooter = useTranslations("footer");
   return (
     <div className="min-h-screen bg-[#0A0B0D]" style={{ fontFamily: "system-ui, sans-serif" }}>
       {/* Header */}
@@ -386,7 +389,7 @@ export default function ApiDokumentasjonPage() {
           <div className="flex items-center justify-center gap-2 mb-4">
             <span className="text-[#F9FAFB] font-bold">Klarpakke</span>
             <span className="text-[#6B7280]">|</span>
-            <span className="text-sm text-[#6B7280]">Norges enkleste krypto-trading</span>
+            <span className="text-sm text-[#6B7280]">{tFooter("brandTagline")}</span>
           </div>
           <div className="flex items-center justify-center gap-3 text-xs text-[#6B7280]">
             <a href="/no/vilkar" className="hover:text-[#9CA3AF] transition-colors">Vilkår</a>

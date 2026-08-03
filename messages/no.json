@@ -2262,7 +2262,8 @@
       "privacy": "Personvern",
       "terms": "Vilkår",
       "cookies": "Cookies"
-    }
+    },
+    "brandTagline": "Norges enkleste krypto-trading"
   },
   "gamification": {
     "title": "Gamification",
@@ -2886,7 +2887,7 @@
     "coursesDescription": "Lær trading fra grunnen av med våre strukturerte krypto-kurs på norsk.",
     "pricingDescription": "Se våre prisplaner for Klarpakke. Start gratis med lekepenger i dag.",
     "pricing": {
-      "title": "Priser | Klarpakke",
+      "title": "Priser",
       "description": "Velg riktig abonnement for din krypto-reise."
     },
     "pricingGrid": {
@@ -2900,24 +2901,59 @@
       "footnote": "Alle priser er inkl. MVA. Ingen bindingstid. Avslutt når som helst.",
       "plans": {
         "student": {
-          "name": "Student", "price": "0", "popular": "false",
-          "features": ["Papirhandel 100k", "1 auto-strategi", "AI-signaler", "Community"]
+          "name": "Student",
+          "price": "0",
+          "popular": "false",
+          "features": [
+            "Papirhandel 100k",
+            "1 auto-strategi",
+            "AI-signaler",
+            "Community"
+          ]
         },
         "bachelor": {
-          "name": "Bachelor", "price": "249", "popular": "false",
-          "features": ["Alt i Student", "Live trading", "3 strategier", "Copy-trading paper"]
+          "name": "Bachelor",
+          "price": "249",
+          "popular": "false",
+          "features": [
+            "Alt i Student",
+            "Live trading",
+            "3 strategier",
+            "Copy-trading paper"
+          ]
         },
         "master": {
-          "name": "Master", "price": "499", "popular": "true",
-          "features": ["Alt i Bachelor", "7 strategier", "VIP-signaler", "Live copy-trading"]
+          "name": "Master",
+          "price": "499",
+          "popular": "true",
+          "features": [
+            "Alt i Bachelor",
+            "7 strategier",
+            "VIP-signaler",
+            "Live copy-trading"
+          ]
         },
         "phd": {
-          "name": "PhD", "price": "999", "popular": "false",
-          "features": ["Alt i Master", "Ubegrenset strategier", "1:1 rådgiver", "API-tilgang"]
+          "name": "PhD",
+          "price": "999",
+          "popular": "false",
+          "features": [
+            "Alt i Master",
+            "Ubegrenset strategier",
+            "1:1 rådgiver",
+            "API-tilgang"
+          ]
         },
         "professor": {
-          "name": "Professor", "price": "1999", "popular": "false",
-          "features": ["Alt i PhD", "1:1 coaching", "Alpha-strategier", "Founder-gruppe"]
+          "name": "Professor",
+          "price": "1999",
+          "popular": "false",
+          "features": [
+            "Alt i PhD",
+            "1:1 coaching",
+            "Alpha-strategier",
+            "Founder-gruppe"
+          ]
         }
       }
     },
@@ -6021,5 +6057,9 @@
   },
   "pilotTradeTitle": "Prøv Pilot",
   "pilotTradeDesc": "AI-en analyserer markedet og handler automatisk med lekepenger",
-  "pilotTradeCta": "Start Pilot"
+  "pilotTradeCta": "Start Pilot",
+  "liveTicker": {
+    "liveMarkets": "Live markeder",
+    "updateInterval": "Oppdateres hvert 15. sekund"
+  }
 }

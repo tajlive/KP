@@ -2267,7 +2267,8 @@
       "privacy": "Privacy",
       "terms": "Terms",
       "cookies": "Cookies"
-    }
+    },
+    "brandTagline": "Norway's easiest crypto trading"
   },
   "gamification": {
     "title": "Gamification",
@@ -2891,7 +2892,7 @@
     "coursesDescription": "Learn trading from scratch with our structured crypto courses in Norwegian.",
     "pricingDescription": "See our pricing plans for Klarpakke University. Start free with paper trading today.",
     "pricing": {
-      "title": "Pricing | Klarpakke",
+      "title": "Pricing",
       "description": "Choose the right plan for your crypto trading journey."
     },
     "pricingGrid": {
@@ -2905,24 +2906,59 @@
       "footnote": "All prices include VAT. No lock-in period. Cancel anytime.",
       "plans": {
         "student": {
-          "name": "Student", "price": "0", "popular": "false",
-          "features": ["Paper trading 100k", "1 auto-strategy", "AI signals", "Community"]
+          "name": "Student",
+          "price": "0",
+          "popular": "false",
+          "features": [
+            "Paper trading 100k",
+            "1 auto-strategy",
+            "AI signals",
+            "Community"
+          ]
         },
         "bachelor": {
-          "name": "Bachelor", "price": "249", "popular": "false",
-          "features": ["Everything in Student", "Live trading", "3 strategies", "Copy-trading paper"]
+          "name": "Bachelor",
+          "price": "249",
+          "popular": "false",
+          "features": [
+            "Everything in Student",
+            "Live trading",
+            "3 strategies",
+            "Copy-trading paper"
+          ]
         },
         "master": {
-          "name": "Master", "price": "499", "popular": "true",
-          "features": ["Everything in Bachelor", "7 strategies", "VIP signals", "Live copy-trading"]
+          "name": "Master",
+          "price": "499",
+          "popular": "true",
+          "features": [
+            "Everything in Bachelor",
+            "7 strategies",
+            "VIP signals",
+            "Live copy-trading"
+          ]
         },
         "phd": {
-          "name": "PhD", "price": "999", "popular": "false",
-          "features": ["Everything in Master", "Unlimited strategies", "1:1 advisor", "API access"]
+          "name": "PhD",
+          "price": "999",
+          "popular": "false",
+          "features": [
+            "Everything in Master",
+            "Unlimited strategies",
+            "1:1 advisor",
+            "API access"
+          ]
         },
         "professor": {
-          "name": "Professor", "price": "1999", "popular": "false",
-          "features": ["Everything in PhD", "1:1 coaching", "Alpha strategies", "Founder group"]
+          "name": "Professor",
+          "price": "1999",
+          "popular": "false",
+          "features": [
+            "Everything in PhD",
+            "1:1 coaching",
+            "Alpha strategies",
+            "Founder group"
+          ]
         }
       }
     },
@@ -6027,5 +6063,9 @@
   },
   "pilotTradeTitle": "Try Pilot",
   "pilotTradeDesc": "The AI analyzes the market and trades automatically with play money",
-  "pilotTradeCta": "Start Pilot"
+  "pilotTradeCta": "Start Pilot",
+  "liveTicker": {
+    "liveMarkets": "Live markets",
+    "updateInterval": "Updates every 15 seconds"
+  }
 }
