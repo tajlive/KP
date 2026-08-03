@@ -649,13 +649,36 @@ async function processSession(
       const currentHigh = candles[candles.length - 1].high;
       const newHighest = Math.max(highest, currentPrice, currentHigh);
       if (newHighest > highest) {
+        // 2026-08-03: session.open_position er USDT-normalisert (linje ~341),
+        // men DB-kontrakten er NOK (guard fn_guard_session_position_symbol).
+        // Konverter ALLE prisfelt tilbake til NOK før lagring — ellers
+        // overskrives entry_price med USDT hver tick prisen stiger, og
+        // posisjonen "forvitrer" (prod-bevis: Toms ADA 1,79 → 0,187 på 3 min).
+        const rate = getUsdtToNokRate();
+        const posToStore =
+          rate > 1
+            ? {
+                ...session.open_position,
+                entry_price:
+                  typeof session.open_position.entry_price === "number"
+                    ? session.open_position.entry_price * rate
+                    : session.open_position.entry_price,
+                highest_price: newHighest * rate,
+                lots: Array.isArray(session.open_position.lots)
+                  ? session.open_position.lots.map((lot: { quantity?: number; entryPrice?: number; timestamp?: string }) => ({
+                      ...lot,
+                      entryPrice:
+                        typeof lot?.entryPrice === "number"
+                          ? lot.entryPrice * rate
+                          : lot?.entryPrice,
+                    }))
+                  : session.open_position.lots,
+              }
+            : { ...session.open_position, highest_price: newHighest };
         await db
           .from("trading_sessions")
           .update({
-            open_position: {
-              ...session.open_position,
-              highest_price: newHighest,
-            },
+            open_position: posToStore,
           })
           .eq("id", session.id);
       }
