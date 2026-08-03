@@ -5,7 +5,7 @@
  * Sjekker og RETTER automatisk:
  *   1. is_mock-rader i trades          -> slettes (backup først)
  *   2. USDT-prisede paper-trades       -> konverteres til NOK (backup først)
- *   3. Sesjonsproliferasjon (>12/bruker) -> gamle stoppede sesjoner slettes,
+ *   3. Sesjonsproliferasjon (>12/bruker) -> gamle stoppede sesjoner arkiveres,
  *      nyeste aktive beholdes (backup først)
  *   4. Balanse-drift paper_accounts vs user_profiles -> resync
  *
@@ -126,30 +126,40 @@ if (currencyFixes.length > 0 && APPLY) {
   report.fixes.currency_converted = `(dry-run) ${currencyFixes.length}`;
 }
 
-// ── 3. Sesjonsproliferasjon ──────────────────────────────────────
-const allSessions = await fetchAll(() => supabase.from("trading_sessions").select("id, user_id, status, created_at"));
+// ── 3. Sesjonsproliferasjon (arkivering, ikke sletting) ─────────
+// Unngår FK-kræsj: trades.session_id → ON DELETE CASCADE, og
+// copy_trade_queue.original_trade_id → ON DELETE SET NULL men NOT NULL.
+// Arkivering = trygg.
+const allSessions = await fetchAll(() =>
+  supabase.from("trading_sessions")
+    .select("id, user_id, status, created_at, archived")
+    .or("archived.is.null,archived.eq.false"));
 const byUser = {};
 for (const s of allSessions) (byUser[s.user_id] ??= []).push(s);
-let sessionDeletes = [];
+let sessionArchiveIds = [];
 for (const [uid, sessions] of Object.entries(byUser)) {
   if (sessions.length <= MAX_SESSIONS_PER_USER) continue;
   const sorted = sessions.sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
   const active = sorted.filter((s) => s.status === "active" || s.status === "paused");
   const inactive = sorted.filter((s) => s.status !== "active" && s.status !== "paused");
   const keepInactive = Math.max(0, MAX_SESSIONS_PER_USER - active.length);
-  sessionDeletes.push(...inactive.slice(0, Math.max(0, inactive.length - keepInactive)).map((s) => s.id));
+  sessionArchiveIds.push(...inactive.slice(0, Math.max(0, inactive.length - keepInactive)).map((s) => s.id));
 }
 const prolificUsers = Object.entries(byUser).filter(([, s]) => s.length > MAX_SESSIONS_PER_USER).length;
 report.stats.users_over_session_limit = prolificUsers;
-if (sessionDeletes.length > 0 && APPLY) {
-  backup("session-deleted-ids", { ids: sessionDeletes });
-  for (let i = 0; i < sessionDeletes.length; i += 200) {
-    const { error } = await supabase.from("trading_sessions").delete().in("id", sessionDeletes.slice(i, i + 200));
-    if (error) { report.warnings.push(`sesjonssletting feilet: ${error.message}`); break; }
+if (sessionArchiveIds.length > 0 && APPLY) {
+  backup("session-archived-ids", { ids: sessionArchiveIds });
+  const now = new Date().toISOString();
+  for (let i = 0; i < sessionArchiveIds.length; i += 200) {
+    const batch = sessionArchiveIds.slice(i, i + 200);
+    const { error } = await supabase.from("trading_sessions")
+      .update({ archived: true, archived_at: now })
+      .in("id", batch);
+    if (error) { report.warnings.push(`sesjonsarkivering feilet: ${error.message}`); break; }
   }
-  report.fixes.sessions_deleted = sessionDeletes.length;
-} else if (sessionDeletes.length > 0) {
-  report.fixes.sessions_deleted = `(dry-run) ${sessionDeletes.length}`;
+  report.fixes.sessions_archived = sessionArchiveIds.length;
+} else if (sessionArchiveIds.length > 0) {
+  report.fixes.sessions_archived = `(dry-run) ${sessionArchiveIds.length}`;
 }
 
 // ── 4. Balanse-drift ─────────────────────────────────────────────
