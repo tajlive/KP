@@ -5,7 +5,11 @@ export default defineConfig({
   fullyParallel: true,
   retries: 1,
   workers: 2,
-  reporter: [["html", { outputFolder: "playwright-report" }], ["list"]],
+  reporter: [
+    ["html", { outputFolder: "playwright-report" }],
+    ["list"],
+    ["allure-playwright", { outputFolder: "allure-results" }],
+  ],
   timeout: 30000,
   expect: { timeout: 10000 },
 
@@ -14,6 +18,7 @@ export default defineConfig({
     storageState: ".auth/user.json",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
 
   projects: [

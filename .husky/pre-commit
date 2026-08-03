@@ -129,6 +129,36 @@ else
 fi
 
 # ============================================================================
+# 5e. E2E smoke-test (kun hvis kritiske UI-filer endres)
+# ============================================================================
+
+CRITICAL_UI_PATHS="src/features/trading/ src/features/dashboard/ src/app/\[locale\]/"
+NEEDS_E2E=false
+
+for path in $CRITICAL_UI_PATHS; do
+  if has_staged_in_path "^$path"; then
+    NEEDS_E2E=true
+    echo "📁 Fant endringer i $path — kjører E2E smoke-test"
+    break
+  fi
+done
+
+if [ "$NEEDS_E2E" = true ]; then
+  echo "🔍 [5e/8] E2E smoke-test (alle sider)..."
+  npx playwright test e2e/smoke/all-pages.spec.ts --project=chromium --reporter=list 2>&1 | tail -5
+  E2E_EXIT=$?
+  if [ $E2E_EXIT -ne 0 ]; then
+    echo ""
+    echo "❌ E2E smoke-test feilet! Commit blokkert."
+    echo "   Sjekk at alle sider laster uten krasj."
+    echo ""
+    exit 1
+  fi
+else
+  echo "⏭️  [5e/8] Ingen kritiske UI-filer endret — skipper E2E"
+fi
+
+# ============================================================================
 # 6. MemPalace Auto-Capture (valgfritt)
 # ============================================================================
 
