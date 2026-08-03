@@ -226,9 +226,41 @@ export async function adoptOrphanPositions(
     ? (mergeOrphanPositions([existing, merged]) ?? merged)
     : merged;
 
+  // ── Valuta-kontrakt (2026-08-03) ─────────────────────────────────────────
+  // DB-guard fn_guard_session_position_symbol krever at entry_price er NOK
+  // (BTC > 100 000 etc.). Internt over har vi normalisert til USDT for
+  // korrekt sammenligning/merging — før lagring konverteres prisfeltene
+  // TILBAKE til NOK. Ellers dobbeltkonverteres posisjonen ved neste tick
+  // (adopsjon kjører hver tick): 1,79 NOK → 0,189 USDT → lagret som 0,0681
+  // etter gjentatte delinger. Prod-bevis: Toms ADA entry 0,0681.
+  const rate = market?.usdtNokRate ?? 0;
+  const finalPositionNok =
+    rate > 1
+      ? ({
+          ...finalPosition,
+          entry_price:
+            typeof finalPosition.entry_price === "number"
+              ? finalPosition.entry_price * rate
+              : finalPosition.entry_price,
+          highest_price:
+            typeof finalPosition.highest_price === "number"
+              ? finalPosition.highest_price * rate
+              : finalPosition.highest_price,
+          lots: Array.isArray(finalPosition.lots)
+            ? finalPosition.lots.map((lot) => ({
+                ...lot,
+                entryPrice:
+                  typeof lot?.entryPrice === "number"
+                    ? lot.entryPrice * rate
+                    : lot?.entryPrice,
+              }))
+            : finalPosition.lots,
+        } as StrategyPosition)
+      : finalPosition;
+
   const { error: updateError } = await db
     .from("trading_sessions")
-    .update({ open_position: finalPosition as never })
+    .update({ open_position: finalPositionNok as never })
     .eq("id", activeSession.id);
 
   if (updateError) {

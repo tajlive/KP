@@ -167,7 +167,7 @@ describe("adoptOrphanPositions", () => {
     );
   }
 
-  it("NOK-denominert orphan normaliseres til USDT ved adopsjon", async () => {
+  it("NOK-denominert orphan: internt normalisert til USDT for merge, lagres tilbake som NOK (DB-kontrakt)", async () => {
     const orphans = [
       {
         id: "orphan-1",
@@ -175,7 +175,7 @@ describe("adoptOrphanPositions", () => {
         open_position: {
           side: "long",
           quantity: 0.0321,
-          entry_price: 618900, // NOK → ~64 469 USDT
+          entry_price: 618900, // NOK → ~64 469 USDT internt
           entry_time: "2026-07-19T22:40:00Z",
           highest_price: 624080,
         },
@@ -191,8 +191,11 @@ describe("adoptOrphanPositions", () => {
     const adoptUpdate = findAdoptUpdate(updates);
     expect(adoptUpdate).toBeDefined();
     const pos = adoptUpdate!.payload.open_position as { entry_price: number; highest_price: number };
-    expect(pos.entry_price).toBeCloseTo(618900 / 9.6, 1);
-    expect(pos.highest_price).toBeCloseTo(624080 / 9.6, 1);
+    // 2026-08-03: DB-kontrakten er NOK (guard fn_guard_session_position_symbol
+    // krever BTC > 100 000). Internt normaliseres til USDT for merging, men
+    // prisfeltene konverteres tilbake til NOK før lagring.
+    expect(pos.entry_price).toBeCloseTo(618900, 0);
+    expect(pos.highest_price).toBeCloseTo(624080, 0);
   });
 
   it("KORRUPT orphan (entry 4,5k vs marked 64,5k) droppes og nullstilles", async () => {
@@ -248,7 +251,9 @@ describe("adoptOrphanPositions", () => {
     expect(result.adopted).toBe(1);
     const adoptUpdate = findAdoptUpdate(updates);
     const pos = adoptUpdate!.payload.open_position as { entry_price: number };
-    expect(pos.entry_price).toBe(62000);
+    // 2026-08-03: USDT-orphan (62 000) normaliseres ikke internt (riktig valuta),
+    // men konverteres til NOK ved lagring per DB-kontrakt: 62 000 × 9.6 = 595 200.
+    expect(pos.entry_price).toBeCloseTo(62000 * 9.6, 0);
   });
 
   it("uten markedscontext beholdes legacy-oppførsel (ingen validering)", async () => {
