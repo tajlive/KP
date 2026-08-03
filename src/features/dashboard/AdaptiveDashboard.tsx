@@ -118,7 +118,7 @@ function OnboardedView({ userId, stats, userName, preferredTradingMode }: { user
         },
         {
           label: t("pnl"),
-          value: `${stats.totalPnl >= 0 ? "+" : ""}${formatByMode(Math.abs(stats.totalPnl), preferredTradingMode)}`,
+          value: `${stats.totalPnl >= 0 ? "+" : "-"}${formatByMode(Math.abs(stats.totalPnl), preferredTradingMode)}`,
           subtext: t("return"),
           trend: stats.totalPnl >= 0 ? ("up" as const) : ("down" as const),
           icon: Wallet,
