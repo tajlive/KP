@@ -54,7 +54,8 @@ test.describe("Landing smoke — post-deploy verifisering", () => {
     // Sjekk at nøkkelseksjoner har innhold
     const checks = [
       { name: "Hero", text: "Klarpakke" },
-      { name: "CTA", text: "Kom i gang" },
+      { name: "CTA", text: "Start gratis" },
+      { name: "Trade-modes-seksjon", text: "En konto \u2014 tre m\u00e5ter \u00e5 trade p\u00e5" },
       { name: "Footer", selector: "footer" },
     ];
 

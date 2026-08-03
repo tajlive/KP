@@ -47,7 +47,7 @@ echo "Symbols: ${SYMBOLS[*]}"
 PROXY_RESPONSE=$(curl -s --max-time 20 --retry 2 --retry-delay 2 \
   -X POST "$PROXY_ENDPOINT" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
   -H "x-binance-proxy-secret: $BINANCE_PROXY_SECRET" \
   -H "apikey: $SUPABASE_ANON_KEY" \
   -d "{\"action\":\"publicApi\",\"publicApiPath\":\"/api/v3/ticker/24hr?symbols=${ENCODED_SYMBOLS}\"}")
@@ -112,13 +112,13 @@ echo "Parsed $RECORD_COUNT records fra Binance proxy"
 UPSERT_BODY_FILE=$(mktemp)
 trap 'rm -f "$UPSERT_BODY_FILE"' EXIT
 
-HTTP_STATUS=$(curl -s --max-time 20 --retry 2 --retry-delay 2 \
+HTTP_STATUS=$(curl -s --max-time 60 --retry 2 --retry-delay 2 \
   -o "$UPSERT_BODY_FILE" \
   -w "%{http_code}" \
   -X POST "${REST_ENDPOINT}?on_conflict=symbol" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "apikey: $SUPABASE_ANON_KEY" \
+  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
   -H "Prefer: resolution=merge-duplicates" \
   -d "$UPSERT_JSON" 2>&1)
 
@@ -134,10 +134,10 @@ rm -f "$UPSERT_BODY_FILE"
 trap - EXIT
 
 # === Verifiser ved å lese tilbake ===
-VERIFY_DATA=$(curl -s --max-time 10 --retry 2 --retry-delay 2 \
+VERIFY_DATA=$(curl -s --max-time 60 --retry 2 --retry-delay 2 \
   -X GET "${REST_ENDPOINT}?select=symbol,name,price,last_updated&order=name.asc" \
   -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "apikey: $SUPABASE_ANON_KEY")
+  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY")
 
 VERIFY_COUNT=$(echo "$VERIFY_DATA" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
 

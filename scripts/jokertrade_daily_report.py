@@ -1,128 +1,260 @@
 #!/usr/bin/env python3
-"""Hent JokerTrade data fra Supabase Postgres for daglig rapport."""
-import os
-from datetime import datetime, timezone
-import psycopg2
-from urllib.parse import urlparse
-from collections import defaultdict
-from decimal import Decimal
+"""JokerTrade Daily Status Report — data collector"""
+import json, os, requests, sys
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
 
-url = urlparse(os.environ["DATABASE_URL"])
-conn = psycopg2.connect(
-    host=url.hostname,
-    port=url.port or 5432,
-    dbname=url.path[1:] if url.path else "postgres",
-    user=url.username,
-    password=url.password,
-    sslmode="require"
-)
+# Read .env.local ourselves
+env_path = Path(__file__).parent.parent / '.env.local'
+for line in env_path.read_text().splitlines():
+    line = line.strip()
+    if not line or line.startswith('#'):
+        continue
+    if '=' in line:
+        key, val = line.split('=', 1)
+        # Remove surrounding quotes if present
+        if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+            val = val[1:-1]
+        os.environ.setdefault(key, val)
 
-def to_float(v):
-    return float(v) if isinstance(v, Decimal) else v
+SUPABASE_URL = os.environ['NEXT_PUBLIC_SUPABASE_URL']
+SERVICE_KEY = os.environ['SUPABASE_SERVICE_ROLE_KEY']
+MGMT_TOKEN = os.environ.get('SUPABASE_ACCESS_TOKEN')
+PROJECT_REF = os.environ.get('SUPABASE_PROJECT_REF')
 
-def query(sql, params=None):
-    with conn.cursor() as cur:
-        cur.execute(sql, params)
-        cols = [d[0] for d in cur.description] if cur.description else []
-        rows = cur.fetchall() if cur.description else []
-        return [dict(zip(cols, r)) for r in rows]
+REST_BASE = f"{SUPABASE_URL}/rest/v1"
+HEADERS = {
+    'apikey': SERVICE_KEY,
+    'Authorization': f'Bearer {SERVICE_KEY}',
+    'Content-Type': 'application/json',
+    'Prefer': 'count=exact',
+}
 
-FIX_DATE = "2026-07-30T11:00:00+00"
+FIX_DATE = '2026-07-30T11:00:00Z'
+NOW_UTC = datetime.now(timezone.utc)
+ALARM_HEARTBEAT_MIN = 10
+ALARM_NEW_SESSIONS = 5
 
-# 1. TRADES
-print("=== TRADES ===")
-trades = query("SELECT trading_pair, realized_pnl, created_at FROM public.trades WHERE created_at >= %s ORDER BY created_at DESC", (FIX_DATE,))
-print(f"Total trades siden fiks: {len(trades)}")
+def mgmt_query(sql: str):
+    """Run SQL via Supabase Management API (requires SUPABASE_ACCESS_TOKEN)."""
+    if not MGMT_TOKEN or not PROJECT_REF:
+        return None, 'Missing MGMT_TOKEN or PROJECT_REF'
+    url = f'https://api.supabase.com/v1/projects/{PROJECT_REF}/database/query'
+    resp = requests.post(url, headers={
+        'Authorization': f'Bearer {MGMT_TOKEN}',
+        'Content-Type': 'application/json',
+    }, json={'query': sql})
+    if resp.status_code != 200:
+        return None, f"HTTP {resp.status_code}: {resp.text[:500]}"
+    return resp.json(), None
 
-if trades:
-    for t in trades:
-        t["realized_pnl"] = to_float(t.get("realized_pnl"))
-    wins = [t for t in trades if t.get("realized_pnl") is not None and t["realized_pnl"] > 0]
-    losses = [t for t in trades if t.get("realized_pnl") is not None and t["realized_pnl"] <= 0]
-    pnl_vals = [t["realized_pnl"] for t in trades if t.get("realized_pnl") is not None]
-    print(f"Wins: {len(wins)}, Losses: {len(losses)}, Uten PnL: {len(trades)-len(wins)-len(losses)}")
-    print(f"Sum realized_pnl: {sum(pnl_vals):.2f}, Avg: {sum(pnl_vals)/len(pnl_vals):.4f}")
+def rest_get(table: str, params: dict):
+    resp = requests.get(f"{REST_BASE}/{table}", headers=HEADERS, params=params)
+    if not (200 <= resp.status_code < 300):
+        return None, f"HTTP {resp.status_code}: {resp.text[:500]}"
+    return resp.json(), None
+    resp = requests.get(f"{REST_BASE}/{table}", headers=HEADERS, params=params)
+    if resp.status_code != 200:
+        return None, f"HTTP {resp.status_code}: {resp.text[:500]}"
+    return resp.json(), None
 
-    sym = defaultdict(lambda: {"count":0, "wins":0, "pnl":0.0})
-    for t in trades:
-        s = t.get("trading_pair", "unknown")
-        sym[s]["count"] += 1
-        pnl = t.get("realized_pnl")
-        if pnl is not None:
-            sym[s]["pnl"] += pnl
-            if pnl > 0:
-                sym[s]["wins"] += 1
-    print("\nPer symbol:")
-    for s, v in sorted(sym.items(), key=lambda x: x[1]["count"], reverse=True):
-        print(f"  {s}: {v['count']} handler, wins {v['wins']}, PnL {v['pnl']:.2f}")
+# ============================================================
+# 1. TRADING DATA
+# ============================================================
+print("=" * 60)
+print("1. TRADING DATA (after fix)")
+print("=" * 60)
 
-    daily = defaultdict(lambda: {"count":0, "wins":0, "pnl":0.0})
-    for t in trades:
-        d = t["created_at"].isoformat()[:10] if hasattr(t["created_at"], 'isoformat') else str(t["created_at"])[:10]
-        daily[d]["count"] += 1
-        pnl = t.get("realized_pnl")
-        if pnl is not None:
-            daily[d]["pnl"] += pnl
-            if pnl > 0:
-                daily[d]["wins"] += 1
-    print("\nPer dag:")
-    for d in sorted(daily.keys()):
-        v = daily[d]
-        print(f"  {d}: {v['count']} handler, wins {v['wins']}, PnL {v['pnl']:.2f}")
+# Get all trades after fix date
+all_trades = []
+offset = 0
+limit = 1000
+while True:
+    batch, err = rest_get('trades', {
+        'select': '*',
+        'created_at': f'gte.{FIX_DATE}',
+        'order': 'created_at.asc',
+        'limit': limit,
+        'offset': offset,
+    })
+    if err:
+        print(f"ERROR fetching trades: {err}")
+        sys.exit(1)
+    if not batch:
+        break
+    all_trades.extend(batch)
+    if len(batch) < limit:
+        break
+    offset += limit
 
+print(f"Total trades fetched: {len(all_trades)}")
+
+if all_trades:
+    # Verify keys
+    sample_keys = set(all_trades[0].keys())
+    print(f"Trade fields: {sample_keys}")
+
+    realized_key = 'realized_pnl' if 'realized_pnl' in sample_keys else 'pnl'
+    pair_key = 'trading_pair' if 'trading_pair' in sample_keys else 'symbol'
+
+    total = len(all_trades)
+    wins = sum(1 for t in all_trades if t.get(realized_key, 0) is not None and t.get(realized_key, 0) > 0)
+    total_pnl = sum(t.get(realized_key, 0) or 0 for t in all_trades)
+    avg_pnl = total_pnl / total if total else 0
+
+    print(f"\n--- TOTAL ---")
+    print(f"Trades:     {total}")
+    print(f"Wins:       {wins} ({100*wins/total:.1f}%)")
+    print(f"Total PnL:  {total_pnl:.2f}")
+    print(f"Avg PnL:    {avg_pnl:.2f}")
+
+    # Per symbol
+    from collections import defaultdict
+    by_pair = defaultdict(lambda: {'trades': 0, 'wins': 0, 'pnl': 0.0})
+    by_day = defaultdict(lambda: {'trades': 0, 'wins': 0, 'pnl': 0.0})
+
+    for t in all_trades:
+        pnl = t.get(realized_key, 0) or 0
+        pair = t.get(pair_key, 'UNKNOWN')
+        day = str(t.get('created_at', ''))[:10]  # YYYY-MM-DD
+
+        by_pair[pair]['trades'] += 1
+        by_pair[pair]['pnl'] += pnl
+        if pnl > 0:
+            by_pair[pair]['wins'] += 1
+
+        by_day[day]['trades'] += 1
+        by_day[day]['pnl'] += pnl
+        if pnl > 0:
+            by_day[day]['wins'] += 1
+
+    print(f"\n--- PER SYMBOL ---")
+    for pair, stats in sorted(by_pair.items(), key=lambda x: -x[1]['pnl']):
+        wr = 100*stats['wins']/stats['trades'] if stats['trades'] else 0
+        print(f"  {pair:>10}: {stats['trades']:>3} trades, {stats['wins']:>3} wins ({wr:>5.1f}%), PnL {stats['pnl']:>+10.2f}")
+
+    print(f"\n--- PER DAY ---")
+    for day in sorted(by_day.keys(), reverse=True):
+        stats = by_day[day]
+        wr = 100*stats['wins']/stats['trades'] if stats['trades'] else 0
+        print(f"  {day}: {stats['trades']:>3} trades, {stats['wins']:>3} wins ({wr:>5.1f}%), PnL {stats['pnl']:>+10.2f}")
+else:
+    print("No trades found after fix date.")
+
+# ============================================================
 # 2. SESSION HEALTH
-print("\n=== SESSION HEALTH ===")
-sessions = query("SELECT user_id, status, mode, last_heartbeat, started_at FROM public.trading_sessions WHERE status = 'active' AND mode = 'paper'")
-print(f"Aktive paper-sesjoner: {len(sessions)}")
-now = datetime.now(timezone.utc)
-stale = 0
-for s in sessions:
-    hb = s.get("last_heartbeat")
-    if hb:
-        mins = (now - hb).total_seconds() / 60 if hasattr(hb, 'year') else 0
-        if mins > 10:
-            stale += 1
-            print(f"  STALE {s.get('user_id')[:8]}... heartbeat {mins:.0f} min siden")
-if stale == 0:
-    print("  OK: alle hjerteslag friske")
-else:
-    print(f"  ALARM: {stale} sesjon(er) med heartbeat > 10 min")
+# ============================================================
+print("\n" + "=" * 60)
+print("2. SESSION HEALTH")
+print("=" * 60)
 
-new_sessions = query("SELECT COUNT(*) as cnt FROM public.trading_sessions WHERE started_at >= now() - interval '24 hours'")
-new_cnt = new_sessions[0]["cnt"] if new_sessions else 0
-print(f"\nNye sesjoner siste 24t: {new_cnt}")
-if new_cnt > 5:
-    print("  ALARM: >5 nye sesjoner siste 24t (bølge-guard)")
+active, err = rest_get('trading_sessions', {
+    'select': 'id,last_heartbeat,created_at,user_id,status,mode',
+    'status': 'eq.active',
+    'mode': 'eq.paper',
+    'limit': 1000,
+})
+if err:
+    print(f"ERROR: {err}")
 else:
-    print("  OK: bølge-guard passert")
+    print(f"Active paper sessions: {len(active)}")
+    if active:
+        heartbeats = [s.get('last_heartbeat') for s in active if s.get('last_heartbeat')]
+        if heartbeats:
+            freshest = max(heartbeats)
+            print(f"Freshest heartbeat: {freshest}")
+            # Calculate age in minutes
+            try:
+                hb_dt = datetime.fromisoformat(freshest.replace('Z', '+00:00'))
+                age_min = (NOW_UTC - hb_dt).total_seconds() / 60
+                print(f"Age: {age_min:.1f} minutes")
+                if age_min > ALARM_HEARTBEAT_MIN:
+                    print(f"ALARM: Heartbeat older than {ALARM_HEARTBEAT_MIN} min!")
+            except Exception as e:
+                print(f"Could not parse heartbeat: {e}")
+        else:
+            print("WARNING: No heartbeats on active sessions!")
 
+# New sessions last 24h
+new_sessions, err = rest_get('trading_sessions', {
+    'select': 'id,created_at',
+    'created_at': f'gte.{(NOW_UTC - timedelta(hours=24)).isoformat()}',
+    'limit': 1000,
+})
+if err:
+    print(f"ERROR fetching new sessions: {err}")
+else:
+    new_count = len(new_sessions)
+    print(f"New sessions last 24h: {new_count}")
+    if new_count > ALARM_NEW_SESSIONS:
+        print(f"ALARM: More than {ALARM_NEW_SESSIONS} new sessions in 24h!")
+
+# ============================================================
 # 3. CRON HEALTH
-print("\n=== CRON HEALTH ===")
-cron_events = query("SELECT status_code, job_name, COUNT(*) as cnt FROM public.cron_health_events WHERE created >= now() - interval '24 hours' GROUP BY status_code, job_name ORDER BY cnt DESC")
-if cron_events:
-    print("Cron-hendelser siste 24t:")
-    for r in cron_events:
-        print(f"  {r.get('job_name') or 'N/A'} status={r.get('status_code')}: {r.get('cnt')} hendelser")
+# ============================================================
+print("\n" + "=" * 60)
+print("3. CRON HEALTH")
+print("=" * 60)
+
+# Try Management API for cron health events
+if MGMT_TOKEN and PROJECT_REF:
+    sql_events = """
+SELECT status_code, job_name, count(*) as antall
+FROM cron_health_events
+WHERE created_at > now() - interval '24 hours'
+GROUP BY status_code, job_name
+ORDER BY antall DESC
+"""
+    events, err = mgmt_query(sql_events)
+    if err:
+        print(f"Management API error for events: {err}")
+    else:
+        print("Cron health events last 24h:")
+        if events and len(events) > 0:
+            for row in events:
+                print(f"  {row.get('status_code')} | {row.get('job_name')} | {row.get('antall')}")
+        else:
+            print("  (none)")
+
+    sql_jobs = """
+SELECT jobid, jobname, start_time, status
+FROM cron.job_run_details
+WHERE jobname IN ('cron-health-collector', 'klarpakke-trading-tick', 'smart-trader-v3')
+  AND start_time > now() - interval '24 hours'
+ORDER BY start_time DESC
+LIMIT 20
+"""
+    jobs, err = mgmt_query(sql_jobs)
+    if err:
+        print(f"Management API error for job details: {err}")
+    else:
+        print("\nKey cron job runs last 24h:")
+        if jobs and len(jobs) > 0:
+            for row in jobs:
+                print(f"  {row.get('jobname')} | {row.get('start_time')} | {row.get('status')}")
+        else:
+            print("  (none found)")
 else:
-    print("Ingen hendelser i cron_health_events siste 24t")
+    print("Missing SUPABASE_ACCESS_TOKEN or PROJECT_REF — skipping Management API queries.")
 
-post_fix_events = query("SELECT COUNT(*) as cnt FROM public.cron_health_events WHERE created >= '2026-07-30T15:20:00+00'::timestamptz")
-pf_cnt = post_fix_events[0]["cnt"] if post_fix_events else 0
-print(f"\nHendelser etter 2026-07-30 15:20 UTC: {pf_cnt}")
-if pf_cnt > 0:
-    print("  ALARM: nye cron-feil etter fiks-tidspunkt")
+# Also try REST for cron_health_events directly
+cron_events, err = rest_get('cron_health_events', {
+    'select': '*',
+    'created_at': f'gte.{(NOW_UTC - timedelta(hours=24)).isoformat()}',
+    'order': 'created_at.desc',
+    'limit': 1000,
+})
+if err:
+    print(f"REST error for cron_health_events: {err}")
 else:
-    print("  OK: ingen nye feil etter fiks-tidspunkt")
+    print(f"\nREST: cron_health_events rows last 24h: {len(cron_events)}")
+    if cron_events:
+        by_status = {}
+        for ev in cron_events:
+            sc = ev.get('status_code', 'N/A')
+            by_status[sc] = by_status.get(sc, 0) + 1
+        for sc, cnt in sorted(by_status.items()):
+            print(f"  status_code={sc}: {cnt}")
 
-job_runs = query("SELECT jobid, jobname, status, start_time, end_time FROM cron.job_run_details WHERE jobname IN ('cron-health-collector','klarpakke-trading-tick','smart-trader-v3') AND start_time >= now() - interval '24 hours' ORDER BY start_time DESC")
-print(f"\nJob runs siste 24t: {len(job_runs)}")
-for j in job_runs[:20]:
-    print(f"  {j.get('jobname')}: {j.get('status')} @ {j.get('start_time')}")
-
-latest_jobs = query("SELECT DISTINCT ON (jobname) jobname, status, start_time, end_time FROM cron.job_run_details WHERE jobname IN ('cron-health-collector','klarpakke-trading-tick','smart-trader-v3') ORDER BY jobname, start_time DESC")
-print("\nSiste kjøring per nøkkeljobb:")
-for j in latest_jobs:
-    print(f"  {j.get('jobname')}: {j.get('status')} @ {j.get('start_time')}")
-
-conn.close()
-print("\n=== FERDIG ===")
+print("\n" + "=" * 60)
+print("Done.")
