@@ -148,12 +148,12 @@ export async function generateTradeExplanation(
   try {
     const prompt = buildPrompt(ctx);
 
+    // Bruk Kimi (OAuth-token er deployet i Workers) — DeepSeek krever egen API-nøkkel
     const response: AIResponse = await chatWithAI({
-      provider: "deepseek",
+      provider: "kimi",
       messages: [{ role: "user", content: prompt }],
       systemPrompt: SYSTEM_PROMPT,
       maxTokens: 200,
-      temperature: 0.7,
     });
 
     const text = response.content?.trim();
