@@ -1,95 +1,118 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 /**
- * Priser page — static HTML. Zero SSR, zero Worker crashes.
- * Cloudflare Workers compatible by design.
- * Premium dark glassmorphism with gold CTA — Pilot theme.
+ * Priser page — i18n-aware (2026-08-03).
+ * Server component med getTranslations for korrekt /en-rendring.
  */
 
-export const metadata: Metadata = {
-  title: "Priser",
-  description:
-    "Se Klarpakkes priser og planer. Start gratis med 100 000 kr i lekepenger. Oppgrader til Bachelor, Master eller Professor når du er klar. Ingen bindingstid.",
-  openGraph: {
-    title: "Priser | Klarpakke — Norges krypto-skole",
-    description:
-      "Se Klarpakkes priser og planer. Start gratis med 100 000 kr i lekepenger. Ingen bindingstid.",
-  },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta.pricing" });
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+    },
+  };
+}
+
+const PLAN_SLUGS = ["student", "bachelor", "master", "phd", "professor"] as const;
+const FEATURE_COUNT: Record<(typeof PLAN_SLUGS)[number], number> = {
+  student: 4,
+  bachelor: 4,
+  master: 4,
+  phd: 4,
+  professor: 4,
 };
 
-const TIERS = [
-  { name: "Student", price: "0", period: "Gratis", features: ["Papirhandel 100 000 kr", "1 auto-strategi", "AI-signaler", "Community-tilgang"], cta: "Start gratis", popular: false },
-  { name: "Bachelor", price: "249", period: "kr/mnd", features: ["Alt i Student", "Live trading", "3 strategier", "Copy-trading (paper)"], cta: "Prøv gratis", popular: false },
-  { name: "Master", price: "499", period: "kr/mnd", features: ["Alt i Bachelor", "7 strategier", "VIP-signaler", "Live copy-trading"], cta: "Start nå", popular: true },
-  { name: "PhD", price: "999", period: "kr/mnd", features: ["Alt i Master", "Ubegrenset strategier", "1:1 rådgiver", "API-tilgang"], cta: "Start nå", popular: false },
-  { name: "Professor", price: "1 999", period: "kr/mnd", features: ["Alt i PhD", "1:1 coaching", "Alpha-strategier", "Founder-gruppe"], cta: "Kontakt oss", popular: false },
-];
+export default async function PriserPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "pricingGrid" });
 
-export default function PriserPage() {
   return (
     <div className="min-h-screen bg-[#0A0B0D]" style={{ fontFamily: "system-ui, sans-serif" }}>
       {/* Hero */}
       <section className="text-center px-6 pt-20 pb-10">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-[#F9FAFB] mb-4 tracking-tight">
-          Velg din plan
+          {t("title")}
         </h1>
         <p className="text-lg text-[#9CA3AF] max-w-xl mx-auto leading-relaxed">
-          Start gratis, oppgrader når du er klar. Alle planer inkluderer papirhandel og AI-signaler.
+          {t("subtitle")}
         </p>
       </section>
 
       {/* Pricing grid */}
       <section className="max-w-6xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {TIERS.map((tier) => (
-            <div
-              key={tier.name}
-              className={`relative flex flex-col rounded-2xl p-6 backdrop-blur-xl transition-all duration-200 hover-lift ${
-                tier.popular
-                  ? "bg-[#1A1D26]/90 border-2 border-[#F59E0B] shadow-lg shadow-amber-500/10"
-                  : "bg-[#1A1D26]/70 border border-[#2A2D35] hover:border-[#3A3D45]"
-              }`}
-            >
-              {tier.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#0A0B0D] px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
-                  🎲 Mest populær
-                </span>
-              )}
-              <h3 className="text-xl font-bold text-[#F9FAFB] mb-3">{tier.name}</h3>
-              <div className="mb-4">
-                {tier.price === "0" ? (
-                  <span className="text-3xl font-extrabold text-[#F9FAFB]">Gratis</span>
-                ) : (
-                  <>
-                    <span className="text-3xl font-extrabold text-[#F9FAFB]">{tier.price}</span>
-                    <span className="text-sm text-[#6B7280] ml-1"> {tier.period}</span>
-                  </>
-                )}
-              </div>
-              <ul className="list-none p-0 m-0 flex-1 space-y-2 mb-6">
-                {tier.features.map((f, i) => (
-                  <li key={i} className="text-sm text-[#9CA3AF] flex items-center gap-2">
-                    <span className="text-[#10B981] font-bold shrink-0">✓</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <a
-                href={`/no/register?plan=${tier.name.toLowerCase()}`}
-                className={`block text-center py-3 rounded-xl text-sm font-semibold no-underline transition-all duration-200 ${
-                  tier.popular
-                    ? "bg-[#F59E0B] text-[#0A0B0D] hover:bg-[#D97706] hover:shadow-lg hover:shadow-amber-500/20 active:scale-[0.98]"
-                    : "bg-[#2A2D35] text-[#F9FAFB] hover:bg-[#3A3D45] active:scale-[0.98]"
+          {PLAN_SLUGS.map((slug) => {
+            const price = t(`plans.${slug}.price`);
+            const popular = t(`plans.${slug}.popular`) === "true";
+            const isFree = price === "0";
+            return (
+              <div
+                key={slug}
+                className={`relative flex flex-col rounded-2xl p-6 backdrop-blur-xl transition-all duration-200 hover-lift ${
+                  popular
+                    ? "bg-[#1A1D26]/90 border-2 border-[#F59E0B] shadow-lg shadow-amber-500/10"
+                    : "bg-[#1A1D26]/70 border border-[#2A2D35] hover:border-[#3A3D45]"
                 }`}
               >
-                {tier.cta}
-              </a>
-            </div>
-          ))}
+                {popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#0A0B0D] px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                    {t("mostPopular")}
+                  </span>
+                )}
+                <h3 className="text-xl font-bold text-[#F9FAFB] mb-3">
+                  {t(`plans.${slug}.name`)}
+                </h3>
+                <div className="mb-4">
+                  {isFree ? (
+                    <span className="text-3xl font-extrabold text-[#F9FAFB]">{t("free")}</span>
+                  ) : (
+                    <>
+                      <span className="text-3xl font-extrabold text-[#F9FAFB]">{price}</span>
+                      <span className="text-sm text-[#6B7280] ml-1"> {t("perMonth")}</span>
+                    </>
+                  )}
+                </div>
+                <ul className="list-none p-0 m-0 flex-1 space-y-2 mb-6">
+                  {Array.from({ length: FEATURE_COUNT[slug] }, (_, i) => (
+                    <li key={i} className="text-sm text-[#9CA3AF] flex items-center gap-2">
+                      <span className="text-[#10B981] font-bold shrink-0">✓</span>
+                      <span>{t(`plans.${slug}.features.${i}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href={`/${locale}/register?plan=${slug}`}
+                  className={`block text-center py-3 rounded-xl text-sm font-semibold no-underline transition-all duration-200 ${
+                    popular
+                      ? "bg-[#F59E0B] text-[#0A0B0D] hover:bg-[#FBBF24]"
+                      : "bg-[#2A2D35] text-[#F9FAFB] hover:bg-[#3A3D45]"
+                  }`}
+                >
+                  {isFree ? t("startFree") : t("choosePlan")}
+                </a>
+              </div>
+            );
+          })}
         </div>
-        <p className="text-center mt-8 text-xs text-[#6B7280]">
-          Alle priser inkl. MVA. Ingen bindingstid. Avslutt når som helst.
-        </p>
+      </section>
+
+      {/* Footnote */}
+      <section className="text-center px-6 pb-20">
+        <p className="text-sm text-[#6B7280]">{t("footnote")}</p>
       </section>
     </div>
   );
