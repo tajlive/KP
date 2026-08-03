@@ -108,7 +108,7 @@ async function getAccountBalance(
     .select("current_capital_nok, open_position, trading_pair")
     .eq("user_id", userId)
     .eq("mode", "paper")
-    .in("status", ["active"]);
+    .in("status", ["active", "paused", "stopped"]);
 
   if (!sessionError && sessions && sessions.length > 0) {
     let available = 0;
