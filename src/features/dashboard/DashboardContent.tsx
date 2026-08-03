@@ -106,7 +106,7 @@ export function DashboardContent({
         // Keep winRate as a 0-1 fraction; DashboardPro/AdaptiveDashboard multiply by 100 for display.
         winRate: data.winRate,
         totalPnl: data.totalPnl,
-        currentCapital: data.totalCapital,
+        currentCapital: data.accountBalance ?? data.totalCapital,
         startingCapital: data.startingCapital,
         winningTrades: data.winningTrades,
         sessionCount: data.sessionCount,
