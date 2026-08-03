@@ -14,7 +14,6 @@ interface MarketContext {
 interface PersonalizedGreetingProps {
   userName?: string | null;
   totalPnl?: number;
-  winRate?: number;
   isPriority?: boolean;
 }
 
@@ -75,33 +74,28 @@ function useMarketContext(): MarketContext | null {
 
 function getPerformanceMessage(
   totalPnl: number | undefined,
-  winRate: number | undefined,
   t: (key: string) => string
 ): string | null {
-  if (totalPnl === undefined || winRate === undefined) return null;
-
-  if (totalPnl > 10000 && winRate >= 55) {
+  // FJERNET: "Profittabel men ujevn", "Tøff periode", etc.
+  // Behold kun positive meldinger — ingen analyse/råd
+  if (totalPnl === undefined) return null;
+  
+  if (totalPnl > 10000) {
     return t("performance.strong");
   }
-  if (totalPnl < 0 && winRate < 45) {
-    return t("performance.tough");
-  }
-  if (winRate >= 50 && totalPnl >= 0) {
+  if (totalPnl >= 0) {
     return t("performance.steady");
-  }
-  if (totalPnl > 0 && winRate < 50) {
-    return t("performance.uneven");
   }
   return null;
 }
 
-export function PersonalizedGreeting({ userName, totalPnl, winRate, isPriority }: PersonalizedGreetingProps) {
+export function PersonalizedGreeting({ userName, totalPnl, isPriority }: PersonalizedGreetingProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.greeting");
   const [mounted, setMounted] = useState(false);
   const timeOfDay = getTimeOfDay();
   const market = useMarketContext();
-  const performanceMsg = getPerformanceMessage(totalPnl, winRate, t);
+  const performanceMsg = getPerformanceMessage(totalPnl, t);
 
   useEffect(() => {
     setMounted(true);
@@ -186,41 +180,23 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate, isPriority }
           </div>
 
           {/* Quick stats mini — desktop only */}
-          {(totalPnl !== undefined || winRate !== undefined) && (
+          {totalPnl !== undefined && (
             <div className="hidden sm:flex items-center gap-5 shrink-0">
-              {totalPnl !== undefined && (
-                <div className="text-right">
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-                    {t("pnlLabel")}
-                  </p>
-                  <p
-                    className={`text-sm font-bold tabular-nums ${
-                      totalPnl >= 0
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    }`}
-                  >
-                    {totalPnl >= 0 ? "+" : ""}
-                    {totalPnl.toLocaleString()} NOK
-                  </p>
-                </div>
-              )}
-              {winRate !== undefined && (
-                <div className="text-right">
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-                    {t("winRateLabel")}
-                  </p>
-                  <p
-                    className={`text-sm font-bold tabular-nums ${
-                      winRate >= 50
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-amber-600 dark:text-amber-400"
-                    }`}
-                  >
-                    {winRate}%
-                  </p>
-                </div>
-              )}
+              <div className="text-right">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
+                  {t("pnlLabel")}
+                </p>
+                <p
+                  className={`text-sm font-bold tabular-nums ${
+                    totalPnl >= 0
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-rose-600 dark:text-rose-400"
+                  }`}
+                >
+                  {totalPnl >= 0 ? "+" : ""}
+                  {totalPnl.toLocaleString()} NOK
+                </p>
+              </div>
             </div>
           )}
         </div>

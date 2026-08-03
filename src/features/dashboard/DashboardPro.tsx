@@ -213,19 +213,6 @@ export function DashboardPro({
       help: t("stats.totalReturnHelp"),
     },
     {
-      label: t("stats.winRate"),
-      value: formatWinRateOrDash(effectiveStats.winRate),
-      subtext: t("stats.winRateSub", { totalTrades: effectiveStats.totalTrades }),
-      trend:
-        effectiveStats.winRate == null
-          ? ("neutral" as const)
-          : effectiveStats.winRate >= 0.5
-            ? ("up" as const)
-            : ("down" as const),
-      icon: Target,
-      help: t("stats.winRateHelp"),
-    },
-    {
       label: t("stats.balance"),
       value: (
         <span className="inline-flex items-baseline">
@@ -254,7 +241,6 @@ export function DashboardPro({
             totalPnl={effectiveStats.accountBalance != null
               ? effectiveStats.accountBalance - (effectiveStats.startingCapital ?? 0)
               : effectiveStats.totalPnl}
-            winRate={effectiveStats.winRate != null ? effectiveStats.winRate * 100 : undefined}
             isPriority={isPriority}
           />
 
@@ -384,9 +370,6 @@ export function DashboardPro({
                     <div className="flex items-center gap-3 px-1">
                       {effectiveStats.totalPnl != null && (
                         <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
-                      )}
-                      {effectiveStats.winRate != null && (
-                        <ExplainStatButton statType="winRate" value={effectiveStats.winRate != null ? effectiveStats.winRate * 100 : undefined} />
                       )}
                       {effectiveStats.accountBalance != null && (
                         <ExplainStatButton statType="balance" value={effectiveStats.accountBalance} />
