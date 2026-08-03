@@ -526,37 +526,49 @@ async function executeTradeWithLock(
                 ? usdtToNok(execResult.fee || 0, rate ?? undefined)
                 : execResult.fee || 0;
 
-            const priorBuys: TradePnlInput[] =
-              openPosition.lots && openPosition.lots.length > 0
-                ? openPosition.lots.map((lot) => {
-                    const lotPrice = Number(lot.entryPrice);
-                    if (Number.isNaN(lotPrice)) {
-                      console.warn(
-                        "execute-trade: missing entryPrice in open_position lot",
-                        { symbol: request.symbol, session: request.sessionId },
-                      );
-                    }
-                    return {
-                      symbol: request.symbol,
-                      side: "buy" as const,
-                      quantity: lot.quantity,
-                      price: Number.isNaN(lotPrice) ? 0 : lotPrice,
-                      fee: 0,
-                      timestamp: lot.timestamp,
-                      currency: tradeCurrency,
-                    };
-                  })
-                : [
-                    {
-                      symbol: request.symbol,
-                      side: "buy" as const,
-                      quantity: positionQty,
-                      price: Number(openPosition.entry_price ?? 0),
-                      fee: 0,
-                      timestamp: openPosition.entry_time,
-                      currency: tradeCurrency,
-                    },
-                  ];
+            // FIFO-lots: Bruk eldste kjøp først (Binance-stil)
+            // Hvis lots finnes, bruk dem. Ellers bruk enkel entry_price (legacy).
+            let priorBuys: TradePnlInput[];
+            if (openPosition.lots && openPosition.lots.length > 0) {
+              // FIFO: Sortér lots etter timestamp (eldste først)
+              const sortedLots = [...openPosition.lots].sort((a, b) => 
+                new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime()
+              );
+              
+              // Trekk fra eldste lots først (FIFO)
+              let remainingQty = matchedQty;
+              const usedLots: TradePnlInput[] = [];
+              
+              for (const lot of sortedLots) {
+                if (remainingQty <= 0) break;
+                const lotQty = Math.min(lot.quantity, remainingQty);
+                usedLots.push({
+                  symbol: request.symbol,
+                  side: "buy" as const,
+                  quantity: lotQty,
+                  price: Number(lot.entryPrice),
+                  fee: 0,
+                  timestamp: lot.timestamp,
+                  currency: tradeCurrency,
+                });
+                remainingQty -= lotQty;
+              }
+              
+              priorBuys = usedLots;
+            } else {
+              // Legacy: Bruk enkel entry_price (ikke FIFO)
+              priorBuys = [
+                {
+                  symbol: request.symbol,
+                  side: "buy" as const,
+                  quantity: matchedQty,
+                  price: Number(openPosition.entry_price ?? 0),
+                  fee: 0,
+                  timestamp: openPosition.entry_time,
+                  currency: tradeCurrency,
+                },
+              ];
+            }
 
             const currentSell: TradePnlInput = {
               symbol: request.symbol,
