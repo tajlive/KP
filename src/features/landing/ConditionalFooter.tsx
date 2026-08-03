@@ -48,7 +48,7 @@ function InlineFooter() {
           <div className="flex items-center gap-2">
             <span className="text-white font-bold text-lg">Klarpakke</span>
             <span className="text-white/60 text-sm">|</span>
-            <span className="text-white/60 text-sm">Norges enkleste krypto-trading</span>
+            <span className="text-white/60 text-sm">{t("brandTagline")}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-white/70">
             <Link href="/vilkar" prefetch={false} className="hover:text-white transition-colors py-3 px-2 min-h-[48px] flex items-center">{t("links.terms")}</Link>
