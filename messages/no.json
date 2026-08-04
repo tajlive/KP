@@ -1305,7 +1305,13 @@
     "ended": "Avsluttet",
     "ofParticipants": "av {count}",
     "youLead": "Du leder konkurransen! 🏆",
-    "gapToNext": "{gap} poeng igjen til #{rank}"
+    "gapToNext": "{gap} poeng igjen til #{rank}",
+    "joinCta": "Bli med i konkurransen",
+    "joinLoginCta": "Logg inn for å bli med",
+    "joinedBadge": "Du er med!",
+    "joinSuccess": "Du er påmeldt — lykke til! 🏆",
+    "joinError": "Kunne ikke melde deg på. Prøv igjen.",
+    "participationPrize": "Alle med minst {count} handler er med i trekningen om 1 måned Pro."
   },
   "help": {
     "metadata": {

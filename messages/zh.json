@@ -1293,7 +1293,13 @@
     "ended": "已结束",
     "ofParticipants": "共 {count} 人",
     "youLead": "你正在领跑比赛！🏆",
-    "gapToNext": "距第 {rank} 名还差 {gap} 分"
+    "gapToNext": "距第 {rank} 名还差 {gap} 分",
+    "joinCta": "参加比赛",
+    "joinLoginCta": "登录参加",
+    "joinedBadge": "你已加入！",
+    "joinSuccess": "已加入 — 祝你好运！🏆",
+    "joinError": "加入失败，请重试。",
+    "participationPrize": "完成至少 {count} 笔交易即可参与抽取 1 个月 Pro。"
   },
   "contact": {
     "title": "联系我们",

@@ -5,6 +5,7 @@ import CompetitionClient from "../CompetitionClient";
 const mockPush = vi.fn();
 const mockStartAutoTrade = vi.fn();
 const mockToastError = vi.fn();
+const mockToastSuccess = vi.fn();
 
 // Mock next-intl
 vi.mock("next-intl", () => ({
@@ -74,7 +75,10 @@ vi.mock("@/hooks/usePaperTrading", () => ({
 
 // Mock sonner
 vi.mock("sonner", () => ({
-  toast: { error: (...args: unknown[]) => mockToastError(...args) },
+  toast: {
+    error: (...args: unknown[]) => mockToastError(...args),
+    success: (...args: unknown[]) => mockToastSuccess(...args),
+  },
 }));
 
 import { getLeaderboard, getUserRank } from "@/lib/paper-trading/supabase";
@@ -230,5 +234,58 @@ describe("CompetitionClient", () => {
       expect(screen.getByText("Hva er kopiering?")).toBeInTheDocument();
       expect(screen.getByText("Premier")).toBeInTheDocument();
     });
+  });
+
+  it("shows join CTA when user has not joined", async () => {
+    vi.mocked(getLeaderboard).mockResolvedValue([]);
+    vi.mocked(getUserRank).mockResolvedValue(null);
+    vi.stubGlobal("fetch", vi.fn((url: string) =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(
+          String(url).includes("display-name")
+            ? { display_name: "RaskRev", suggestion: "" }
+            : { joined: false, participants: 10 }
+        ),
+      })
+    ));
+
+    render(<CompetitionClient params={{ locale: "no" }} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("joinCta")).toBeInTheDocument();
+    });
+    vi.unstubAllGlobals();
+  });
+
+  it("shows joined badge after successful join", async () => {
+    vi.mocked(getLeaderboard).mockResolvedValue([]);
+    vi.mocked(getUserRank).mockResolvedValue(null);
+    vi.stubGlobal("fetch", vi.fn((url: string, init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(
+          String(url).includes("display-name")
+            ? { display_name: "RaskRev", suggestion: "" }
+            : init?.method === "POST"
+              ? { joined: true, participants: 11 }
+              : { joined: false, participants: 10 }
+        ),
+      })
+    ));
+
+    render(<CompetitionClient params={{ locale: "no" }} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("joinCta")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText("joinCta"));
+
+    await waitFor(() => {
+      expect(screen.getByText(/joinedBadge/)).toBeInTheDocument();
+      expect(mockToastSuccess).toHaveBeenCalledWith("joinSuccess");
+    });
+    vi.unstubAllGlobals();
   });
 });
