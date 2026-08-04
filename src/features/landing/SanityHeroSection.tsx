@@ -107,7 +107,7 @@ export default async function SanityHeroSection({
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
         <div className="text-center max-w-4xl mx-auto">
           {/* Main Headline — Sanity overrides, otherwise i18n fallback */}
-          <h1 className="hero-headline text-[clamp(2rem,6.5vw,5.5rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.15] sm:leading-[1.1] mb-6 break-words">
+          <h1 className="hero-headline text-[clamp(1.75rem,6vw,5.5rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.15] sm:leading-[1.1] mb-6 [overflow-wrap:break-word] [word-break:keep-all]">
             {title}
             {titleAccent && (
               <span className="block mt-2 bg-gradient-to-r from-kp-brand via-kp-brand-light to-purple-400 bg-clip-text text-transparent">
