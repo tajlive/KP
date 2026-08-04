@@ -28,6 +28,68 @@ export interface BinanceLeader {
 
 const BINANCE_FAPI = "https://fapi.binance.com";
 
+/** Rå trader-rad fra Binance leaderboard API. */
+interface RawLeaderboardTrader {
+  encryptedUid: string;
+  nickName: string;
+  rank: number;
+  avatar?: string;
+  value: string;
+  dailyROI: string;
+  weeklyROI: string;
+  monthlyROI: string;
+  sharpeRatio: string;
+  winRate: string;
+  maxDrawdown: string;
+  tradeCount: number;
+  followerCount: number;
+  daysSinceCreated: number;
+}
+
+/**
+ * Hent fapi-endepunkt via binance-proxy (Supabase Edge Function).
+ * fapi.binance.com er geo-blocket fra Cloudflare Workers (403) —
+ * proxyen når Binance fra Supabase sitt nettverk. Fallback til direkte
+ * fetch ved proxy-feil (lokal dev, SSR uten secrets).
+ */
+async function fetchFapiViaProxy<T = unknown>(path: string): Promise<T | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const proxySecret = process.env.BINANCE_PROXY_SECRET;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && proxySecret && anonKey) {
+    try {
+      const res = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${anonKey}`,
+          "X-Binance-Proxy-Secret": proxySecret,
+        },
+        body: JSON.stringify({ action: "publicApi", publicApiPath: path }),
+      });
+      if (res.ok) {
+        const payload = (await res.json()) as { ok: boolean; data?: T };
+        if (payload.ok && payload.data !== undefined) return payload.data;
+      }
+    } catch {
+      // fallthrough til direkte fetch
+    }
+  }
+
+  // Fallback: direkte (fungerer utenfor Workers / i dev)
+  try {
+    const res = await fetch(`${BINANCE_FAPI}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 300 },
+    } as RequestInit);
+    if (res.ok) return (await res.json()) as T;
+  } catch {
+    // ignorer — kaller håndterer null
+  }
+  return null;
+}
+
 /**
  * Fetch Binance futures leaderboard
  */
@@ -36,45 +98,18 @@ export async function fetchBinanceLeaderboard(
   limit: number = 20
 ): Promise<BinanceLeader[]> {
   try {
-    const response = await fetch(
-      `${BINANCE_FAPI}/fapi/v1/leaderboard?period=ALL&tradeType=PERPETUAL&isIsolated=false&isShared=false&limit=${limit}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        next: { revalidate: 300 }, // Cache 5 minutter
-      }
+    const data = await fetchFapiViaProxy<{ data?: RawLeaderboardTrader[] }>(
+      `/fapi/v1/leaderboard?period=ALL&tradeType=PERPETUAL&isIsolated=false&isShared=false&limit=${limit}`,
     );
 
-    if (!response.ok) {
-      throw new Error(`Binance API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.data || !Array.isArray(data.data)) {
-      throw new Error("Invalid Binance response format");
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      throw new Error("Binance leaderboard utilgjengelig (proxy + direkte feilet)");
     }
 
     // Map og filtrer
     const leaders: BinanceLeader[] = data.data
-      .filter((trader: { daysSinceCreated: number }) => trader.daysSinceCreated >= 30)
-      .map((trader: {
-        encryptedUid: string;
-        nickName: string;
-        rank: number;
-        avatar?: string;
-        value: string;
-        dailyROI: string;
-        weeklyROI: string;
-        monthlyROI: string;
-        sharpeRatio: string;
-        winRate: string;
-        maxDrawdown: string;
-        tradeCount: number;
-        followerCount: number;
-        daysSinceCreated: number;
-      }) => ({
+      .filter((trader) => trader.daysSinceCreated >= 30)
+      .map((trader) => ({
         encryptedUid: trader.encryptedUid,
         nickName: trader.nickName || "Anonymous",
         rank: trader.rank,
@@ -122,24 +157,25 @@ export async function getTraderDetails(encryptedUid: string): Promise<{
   }>;
 } | null> {
   try {
-    // Hent åpne posisjoner
-    const positionsRes = await fetch(
-      `${BINANCE_FAPI}/fapi/v1/leaderboardPosition?encryptedUid=${encryptedUid}&tradeType=PERPETUAL`,
-      { next: { revalidate: 60 } }
-    );
-
-    // Hent historikk
-    const historyRes = await fetch(
-      `${BINANCE_FAPI}/fapi/v1/leaderboardHistory?encryptedUid=${encryptedUid}&tradeType=PERPETUAL`,
-      { next: { revalidate: 300 } }
-    );
-
-    const positions = positionsRes.ok ? await positionsRes.json() : [];
-    const history = historyRes.ok ? await historyRes.json() : [];
+    // Hent åpne posisjoner + historikk via proxy (fapi geo-blocket fra Workers)
+    const [positions, history] = await Promise.all([
+      fetchFapiViaProxy<{ data?: unknown[] }>(
+        `/fapi/v1/leaderboardPosition?encryptedUid=${encryptedUid}&tradeType=PERPETUAL`,
+      ),
+      fetchFapiViaProxy<{ data?: unknown[] }>(
+        `/fapi/v1/leaderboardHistory?encryptedUid=${encryptedUid}&tradeType=PERPETUAL`,
+      ),
+    ]);
 
     return {
-      positions: positions.data || [],
-      history: history.data || [],
+      positions: (positions?.data || []) as Array<{
+        symbol: string; side: "LONG" | "SHORT"; entryPrice: number;
+        markPrice: number; pnl: number; roe: number; updateTime: string;
+      }>,
+      history: (history?.data || []) as Array<{
+        symbol: string; side: string; entryPrice: number;
+        exitPrice: number; pnl: number; closeTime: string;
+      }>,
     };
   } catch (error) {
     logError(error instanceof Error ? error : String(error), { domain: "trader_details", encryptedUid });
