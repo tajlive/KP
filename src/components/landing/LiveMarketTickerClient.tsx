@@ -10,7 +10,7 @@ const COIN_LOGOS: Record<string, string> = {
   BTC: "₿",
   ETH: "⟠",
   SOL: "◎",
-  XRP: "✕",
+  XRP: "◈",
   ADA: "🅰",
   DOGE: "Ð",
   DOT: "◈",

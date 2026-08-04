@@ -22,7 +22,7 @@ const GUIDES: Record<TradeMode, { icon: typeof Lightbulb; title: string; steps: 
       "3. Trykk «Kjøp» — handelen utføres med én gang til markedspris",
       "4. Følg med i porteføljen og selg når du vil",
     ],
-    tip: "💡 Start med små beløp (200–500 kr) for å lære. Du har 100 000 kr i lekepenger — null risiko!",
+    tip: "💡 Start med små beløp (200–500 kr) for å lære. Du startet med 100 000 kr i lekepenger — null risiko!",
   },
   auto: {
     icon: Settings,

@@ -255,7 +255,7 @@ export function DemoWidget() {
                   ₿
                 </div>
                 <div className="min-w-0">
-                  <div className="font-bold text-white">BTC / USDT</div>
+                  <div className="font-bold text-white">BTC / NOK</div>
                   <div className="text-xs text-emerald-400 font-medium flex items-center gap-1">
                     {t("livePrice")}
                     <span className="relative flex h-1.5 w-1.5">

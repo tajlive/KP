@@ -388,6 +388,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/pilot",
   "/marked",
   "/leagues",
+  "/leaderboard",
   "/profile",
   "/innstillinger",
   "/callback",
