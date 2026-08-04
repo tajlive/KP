@@ -144,12 +144,20 @@ for path in $CRITICAL_UI_PATHS; do
 done
 
 if [ "$NEEDS_E2E" = true ]; then
-  echo "🔍 [5e/8] E2E smoke-test (alle sider)..."
-  npx playwright test e2e/smoke/all-pages.spec.ts --project=chromium --reporter=list 2>&1 | tail -5
+  echo "🔍 [5e/8] E2E smoke-test (alle sider, mot prod — maks 300s)..."
+  # E2E_BASE_URL=prod → playwright starter IKKE lokal dev-server (henget
+  # pre-commit i 30+ min 2026-08-04). with-timeout.sh er hard stop-backstop,
+  # og logg via fil (ikke pipe) så exit-koden faktisk når gaten.
+  E2E_LOG=$(mktemp -t klarpakke-e2e)
+  E2E_BASE_URL="https://www.klarpakke.no" bash scripts/with-timeout.sh 300 \
+    npx playwright test e2e/smoke/all-pages.spec.ts --project=chromium --reporter=list \
+    > "$E2E_LOG" 2>&1
   E2E_EXIT=$?
-  if [ $E2E_EXIT -ne 0 ]; then
+  tail -5 "$E2E_LOG"
+  rm -f "$E2E_LOG"
+  if [ "$E2E_EXIT" -ne 0 ]; then
     echo ""
-    echo "❌ E2E smoke-test feilet! Commit blokkert."
+    echo "❌ E2E smoke-test feilet eller timet ut (300s)! Commit blokkert."
     echo "   Sjekk at alle sider laster uten krasj."
     echo ""
     exit 1

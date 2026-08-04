@@ -171,10 +171,13 @@ const eslintConfig = [
   {
     ignores: [
       "**/node_modules/**",
-      "**/.next/**",
-      "**/.open-next/**",
+      // .next*/.open-next* dekker også gamle build-copies (.next-old, .open-next-old)
+      // — en 35 MB minifisert handler.mjs der OOMet eslint (2026-08-04)
+      "**/.next*/**",
+      "**/.open-next*/**",
       "**/out/",
       "**/.cache/**",
+      "design-audit/**",
       "**/public/**",
       "**/allure-report/**",
       "**/allure-results/**",
