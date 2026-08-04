@@ -23,6 +23,15 @@ const BINANCE_SIGNED_API_BASES = [
   "https://data-api.binance.vision",
 ];
 
+// Futures (fapi) bases — brukes når publicApiPath starter med /fapi/
+// (leaderboard, copy-trading-data). Geo-blocket fra Cloudflare Workers,
+// men nådd fra Supabase Edge (samme som spot-basene).
+const BINANCE_FAPI_BASES = [
+  "https://fapi.binance.com",
+  "https://fapi1.binance.com",
+  "https://fapi2.binance.com",
+];
+
 const BINANCE_TESTNET_BASES = ["https://testnet.binance.vision"];
 
 const DEFAULT_RECV_WINDOW_MS = 5000;
@@ -197,7 +206,12 @@ async function proxyRequest(payload: ProxyPayload): Promise<ProxySuccess | Proxy
 
   // Public API passthrough — unsigned GET, no signing required
   if (action === "publicApi" && publicApiPath) {
-    const bases = testnet ? BINANCE_TESTNET_BASES : BINANCE_SIGNED_API_BASES;
+    const isFapi = publicApiPath.startsWith("/fapi/");
+    const bases = testnet
+      ? BINANCE_TESTNET_BASES
+      : isFapi
+        ? BINANCE_FAPI_BASES
+        : BINANCE_SIGNED_API_BASES;
     for (const base of bases) {
       const url = `${base}${publicApiPath}`;
       const result = await fetchOncePublic(url);

@@ -25,6 +25,7 @@ import {
   type GridLevel,
   type GridSignal,
 } from "@/lib/trading/grid-strategy";
+import { getGridConfigForSymbol } from "@/lib/trading/backtest/best-config";
 import {
   GUARD_ERROR_OR_FILTER,
   sessionSkipReason,
@@ -606,8 +607,23 @@ async function processUser(
         };
         levels = savedLevels!;
       } else {
-        // Rekalibrer: pris utenfor grid, regime-skifte, eller første kjøring
+        // Rekalibrer: pris utenfor grid, regime-skifte, eller første kjøring.
+        // Hent beste oppsett fra walk-forward-backtest (best-config) —
+        // backtestede grid_levels + range vinner over gjetting.
         let gridParams = calculateOptimalGrid(price, market.volatility, session.capital);
+        try {
+          const backtestCfg = await getGridConfigForSymbol(db, symbol, price);
+          if (backtestCfg.source === "backtest") {
+            gridParams = {
+              ...gridParams,
+              gridLevels: backtestCfg.gridLevels,
+              lowerPrice: backtestCfg.lowerPrice,
+              upperPrice: backtestCfg.upperPrice,
+            };
+          }
+        } catch {
+          // stille fallback til calculateOptimalGrid
+        }
         gridParams = adjustGridForRegime(gridParams, regime, price);
         gridConfig = { symbol, currentPrice: price, ...gridParams };
         levels = generateGridLevels(gridConfig);
