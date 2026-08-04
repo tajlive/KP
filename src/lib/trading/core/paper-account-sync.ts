@@ -24,10 +24,9 @@ export async function syncPaperAccountBalance(
   userId: string,
 ): Promise<void> {
   try {
-    // Kun aktive sesjoner — pausede/stoppete telles ikke
     const { data: sessions, error: sessionError } = await supabase
       .from("trading_sessions")
-      .select("current_capital_nok")
+      .select("current_capital_nok, starting_capital_nok")
       .eq("user_id", userId)
       .eq("mode", "paper")
       .eq("status", "active");
@@ -37,12 +36,24 @@ export async function syncPaperAccountBalance(
       return;
     }
 
-    // Summer kapital: kun aktive sesjoner
     const totalCapital = (sessions ?? []).reduce(
       (sum, s) => sum + Number(s.current_capital_nok ?? 0), 0);
+    const totalInitial = (sessions ?? []).reduce(
+      (sum, s) => sum + Number(s.starting_capital_nok ?? 0), 0);
 
     if (!Number.isFinite(totalCapital) || totalCapital <= 0) {
       return; // Ingen gyldige sesjoner — ikke oppdater
+    }
+
+    // Sanity-cap (2026-08-04): sesjons-sum > 3× startkapital = arvet inflasjon
+    // (f.eks. fra sesjoner opprettet med hele balansen per symbol — prod-hendelse:
+    // 11 × 94 389 kr ble 1 038 280 kr i paper_accounts). Da skriver vi IKKE —
+    // bedre å beholde forrige kjente balance enn å spre inflasjon til SSoT.
+    if (totalInitial > 0 && totalCapital > totalInitial * 3) {
+      console.warn(
+        `[syncPaperBalance] Sanity-cap: sessions-sum ${totalCapital} > 3× initial ${totalInitial} — hopper over (user ${userId})`,
+      );
+      return;
     }
 
     const { error: updateError } = await supabase

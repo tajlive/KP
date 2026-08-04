@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/pilot — start/aktiver Pilot- eller Auto-sesjon
-// Body: { mode: "auto" | "pilot", live?: boolean, symbols?: string[] }
+// Body: { mode: "auto" | "pilot", live?: boolean, symbols?: string[], capital?: number }
 //
 // - mode "auto"  → Auto-strategi (tick kjører strategi-gates)
 // - mode "pilot" → PilotTrade (ensemble-signaler)
@@ -17,9 +17,12 @@ export const dynamic = "force-dynamic";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const pilotSchema = z.object({
-  mode: z.enum(["auto", "pilot", "joker"]).default("auto"),
+  mode: z.enum(["auto", "pilot"]).default("auto"),
   live: z.boolean().optional().default(false),
   symbols: z.array(z.string()).max(11).optional(),
+  // Valgt kapital (NOK). Tom valgte 10 000 2026-08-04 men fikk hele balansen
+  // per symbol (94 389 × 11). Default: hele paper-balansen (bakoverkompatibelt).
+  capital: z.number().min(1000).max(10_000_000).optional(),
 });
 
 const GUARD_ERROR_OR_FILTER = "error_message.not.like.GUARD:%,error_message.is.null";
@@ -42,9 +45,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { mode: rawMode, live, symbols } = parsed.data;
-    // Backcompat: "joker" (gammelt navn) → "pilot"
-    const mode = rawMode === "joker" ? "pilot" : rawMode;
+    const { mode, live, symbols, capital: requestedCapital } = parsed.data;
 
     // Live-krav: Binance-kobling (exchange_connections | user_binance_keys | legacy) + kvalifisert tier
     if (live) {
@@ -110,7 +111,10 @@ export async function POST(request: NextRequest) {
     // Sikre aktive sesjoner (paper eller live) — én per valgt symbol
     const sessionMode = live ? "live" : "paper";
 
-    // Kapital fra paper-konto (paper) eller standard (live)
+    // Kapital: brukerens valgte beløp hvis gitt, ellers hele paper-balansen.
+    // FIKS (2026-08-04): Tom valgte 10 000 kr men fikk hele balansen per
+    // symbol (94 389 × 11 = 1 038 281 kr "investert"). Nå respekteres
+    // requestedCapital, og det deles jevnt på antall symboler.
     let capital = 10000;
     if (!live) {
       const { data: account } = await db
@@ -118,9 +122,12 @@ export async function POST(request: NextRequest) {
         .select("current_balance")
         .eq("user_id", user.id)
         .maybeSingle();
-      capital = Number(account?.current_balance ?? 10000);
+      const balance = Number(account?.current_balance ?? 10000);
+      capital = requestedCapital != null
+        ? Math.min(requestedCapital, balance) // aldri mer enn faktisk saldo
+        : balance;
     } else {
-      capital = 10000; // live: kun posisjonsstørrelse teller, ikke "kapital"
+      capital = requestedCapital ?? 10000; // live: kun posisjonsstørrelse teller
     }
 
     // Multi-symbol: én sesjon per valgt valuta (tick = 1 sesjon : 1 trading_pair).
@@ -129,6 +136,9 @@ export async function POST(request: NextRequest) {
       symbols && symbols.length > 0
         ? symbols
         : [mode === "auto" ? "BTCUSDT" : "BTCUSDT"];
+
+    // Del valgt kapital jevnt på antall symboler.
+    const capitalPerSymbol = Math.round(capital / tradeSymbols.length);
 
     const createdIds: string[] = [];
     let createFailed = false;
@@ -165,10 +175,10 @@ export async function POST(request: NextRequest) {
           strategy_id: mode === "auto" ? "multi_signal" : "cryptopilot",
           status: "active",
           trading_pair: pair,
-          starting_capital_nok: capital,
-          current_capital_nok: capital,
-          current_capital: capital,
-          initial_capital: capital,
+          starting_capital_nok: capitalPerSymbol,
+          current_capital_nok: capitalPerSymbol,
+          current_capital: capitalPerSymbol,
+          initial_capital: capitalPerSymbol,
           last_heartbeat: new Date().toISOString(),
           last_tick_at: new Date().toISOString(),
           strategy_config: {

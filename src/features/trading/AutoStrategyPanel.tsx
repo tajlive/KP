@@ -145,6 +145,7 @@ export function AutoStrategyPanel() {
           mode: "auto",
           live: liveMode,
           symbols: selected,
+          capital: Number(capital) || 10000,
         }),
       });
 

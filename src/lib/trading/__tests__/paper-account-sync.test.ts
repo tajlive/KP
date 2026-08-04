@@ -7,8 +7,11 @@
 import { describe, it, expect, vi } from "vitest";
 import { syncPaperAccountBalance } from "../core/paper-account-sync";
 
-function mockSupabaseWithSessions(sessions: { current_capital_nok: number }[]) {
+function mockSupabaseWithSessions(
+  sessions: { current_capital_nok: number; starting_capital_nok?: number }[],
+) {
   let eqCount = 0;
+  let updatedBalance: number | null = null;
   const chain: any = {
     eq: vi.fn(() => {
       eqCount++;
@@ -18,8 +21,20 @@ function mockSupabaseWithSessions(sessions: { current_capital_nok: number }[]) {
   };
 
   return {
-    from: vi.fn(() => ({ select: vi.fn(() => chain) })),
+    from: vi.fn((table: string) => {
+      if (table === "trading_sessions") {
+        return { select: vi.fn(() => chain) };
+      }
+      // paper_accounts update
+      return {
+        update: vi.fn((row: { current_balance?: number }) => {
+          updatedBalance = row.current_balance ?? null;
+          return { eq: vi.fn(() => ({ error: null })) };
+        }),
+      };
+    }),
     getEqCount: () => eqCount,
+    getUpdatedBalance: () => updatedBalance,
   };
 }
 
@@ -47,5 +62,32 @@ describe("syncPaperAccountBalance", () => {
     await expect(
       syncPaperAccountBalance(supabase, "u1"),
     ).resolves.toBeUndefined();
+  });
+
+  it("sanity-cap: sum > 3× initial skrives IKKE til paper_accounts", async () => {
+    // Reproduserer prod-hendelsen 2026-08-04: 11 sesjoner à 94 389 kr
+    // (hele balansen per symbol) = 1 038 280 kr > 3× initial.
+    const mock = mockSupabaseWithSessions([
+      { current_capital_nok: 1_038_280, starting_capital_nok: 100_000 },
+    ]);
+    await syncPaperAccountBalance(mock as any, "u1");
+    expect(mock.getUpdatedBalance()).toBeNull();
+  });
+
+  it("innenfor cap: sum ≤ 3× initial synkes normalt", async () => {
+    const mock = mockSupabaseWithSessions([
+      { current_capital_nok: 55_000, starting_capital_nok: 50_000 },
+      { current_capital_nok: 49_389, starting_capital_nok: 50_000 },
+    ]);
+    await syncPaperAccountBalance(mock as any, "u1");
+    expect(mock.getUpdatedBalance()).toBe(104_389);
+  });
+
+  it("uten starting_capital_nok (legacy-rader) skippes cap", async () => {
+    const mock = mockSupabaseWithSessions([
+      { current_capital_nok: 500_000 }, // initial ukjent → 0 → cap inaktiv
+    ]);
+    await syncPaperAccountBalance(mock as any, "u1");
+    expect(mock.getUpdatedBalance()).toBe(500_000);
   });
 });
