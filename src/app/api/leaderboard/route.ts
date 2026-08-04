@@ -1,12 +1,14 @@
 /**
- * Leaderboard API — Kun ekte, validerte brukere (FACT-AUDIT 2.1/2.2)
+ * Leaderboard API — ekte, validerte brukere (FACT-AUDIT 2.1/2.2)
  *
  * GET /api/leaderboard?period=weekly
  *
  * Filtrerer eksplisitt bort:
  * 1. Bot-profiler (AI-genererte navn fra seed-data)
- * 2. Testkontoer (tom+sim, tom+verify, Direct Test, etc.)
- * 3. Ugyldige display_name (injection, HTML, kontrolltegn)
+ * 2. Ugyldige display_name (injection, HTML, kontrolltegn)
+ *
+ * Testkontoer er MED (Toms beslutning 2026-08-04 — han bruker dem
+ * aktivt til å teste konkurransen; kun seed-botter filtreres).
  *
  * Bygger leaderboard fra paper_accounts (reell balanse),
  * trading_stats (antall handler, win-rate), og user_profiles (navn).
@@ -26,29 +28,6 @@ const BOT_DISPLAY_NAMES = new Set([
   "Anne Mo", "Ingrid Sol", "Lars Vik", "Kari Aas", "Marte Hav",
   "Per Berg", "Bjørn Fjell", "Trond Dal", "Silje Lund", "Ola Nordmann",
 ]);
-
-// ---------------------------------------------------------------------------
-// Testkonto-mønstre (case-insensitive)
-// ---------------------------------------------------------------------------
-const TEST_USER_IDS = new Set([
-  "ded5288d-c979-48f7-943b-360c6dd0ed40", // Perjan Jensen (perjan.jensen@klarpakke.test)
-  "ef80466f-222e-4039-ba45-561eacc57d34", // Gudrun Myhre (gudrun.myhre@klarpakke.no — QA-persona)
-]);
-
-function isTestAccount(name: string): boolean {
-  const lower = name.toLowerCase();
-  return (
-    lower.includes("tom+") ||
-    lower.includes("+sim") ||
-    lower.includes("+verify") ||
-    lower.includes("direct test") ||
-    lower.includes("viking trader") ||
-    lower.includes("perjan") ||
-    lower.includes("gudrun") ||
-    (lower.includes("test") && lower.length < 20) ||
-    lower === "tom"
-  );
-}
 
 // Emoji / spesialtegn — skal ikke i display_name
 const HAS_EMOJI_OR_SYMBOL = /[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B06}]/u;
@@ -157,7 +136,6 @@ export async function GET(req: Request) {
     for (const acc of accounts) {
       const uid = acc.user_id;
       if (!uid || (uid as string).includes("0000-0000")) continue;
-      if (TEST_USER_IDS.has(uid as string)) continue;
 
       const profile = profileMap.get(uid);
       const rawName = profile?.display_name ?? "";
@@ -165,9 +143,7 @@ export async function GET(req: Request) {
       // --- FILTRERING ---
       // 1. Bot-navn
       if (BOT_DISPLAY_NAMES.has(rawName)) continue;
-      // 2. Testkontoer
-      if (isTestAccount(rawName)) continue;
-      // 3. Valider/saniter
+      // 2. Valider/saniter
       const safeName = sanitizeDisplayName(rawName);
       if (!safeName) continue;
 
