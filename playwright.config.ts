@@ -1,5 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const baseURL = process.env.E2E_BASE_URL || "https://www.klarpakke.no";
+// webServer kun når testene faktisk kjører mot en lokal server.
+// Før 2026-08-04 startet configen `npm run dev` selv om testene gikk mot PROD —
+// pre-commit-gaten hang da i 30+ min mot en overbelastet dev-server.
+const isLocalBaseURL = /localhost|127\.0\.0\.1/.test(baseURL);
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -14,7 +20,7 @@ export default defineConfig({
   expect: { timeout: 10000 },
 
   use: {
-    baseURL: process.env.E2E_BASE_URL || "https://www.klarpakke.no",
+    baseURL,
     storageState: ".auth/user.json",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
@@ -32,12 +38,13 @@ export default defineConfig({
     },
   ],
 
-  webServer: process.env.CI
-    ? undefined
-    : {
-        command: "npm run dev",
-        url: "http://localhost:3000",
-        reuseExistingServer: true,
-        timeout: 120000,
-      },
+  webServer:
+    process.env.CI || !isLocalBaseURL
+      ? undefined
+      : {
+          command: "npm run dev",
+          url: baseURL,
+          reuseExistingServer: true,
+          timeout: 120000,
+        },
 });

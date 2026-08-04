@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { executeTrade } from "@/lib/trading/core/execute-trade";
-import type { ExecuteTradeRequest } from "@/types/trading";
+import type { ExecuteTradeRequest, TradeReasonCode } from "@/types/trading";
 import { getNokUsdtRate } from "@/lib/trading/canonical/exchange-rate";
 import { calculateRSI as calcRSI, calculateMACD, calculateSMA, calculateBollingerBands } from "@/lib/trading/indicators";
 import { generatePilotSignal, type MarketData } from "./signal";
@@ -23,6 +23,7 @@ import {
   adjustGridForRegime,
   type GridConfig,
   type GridLevel,
+  type GridSignal,
 } from "@/lib/trading/grid-strategy";
 import {
   GUARD_ERROR_OR_FILTER,
@@ -558,7 +559,7 @@ async function processUser(
     
     // Strategi: grid er standard (verdensledende), multi_signal er legacy
     const strategyType = userConfig?.strategy ?? "grid";
-    let signal: ReturnType<typeof generatePilotSignal> & { gridLevel?: GridLevel };
+    let signal: ReturnType<typeof generatePilotSignal> & { gridLevel?: GridLevel; sellType?: GridSignal["sellType"] };
     let gridConfig: GridConfig | undefined;     // satt kun for grid-path
     let levels: GridLevel[] | undefined;        // satt kun for grid-path
     let currentState: PersistedGridState | undefined; // satt kun for grid-path
@@ -632,6 +633,7 @@ async function processUser(
         confidence: 70,
         reason: gridSignal.reason,
         gridLevel: gridSignal.level,
+        sellType: gridSignal.sellType,
       };
 
       // ════════════════════════════════════════════════════════════
@@ -715,13 +717,13 @@ async function processUser(
         const doTrade = quantity > 0;
 
         // ReasonCode: skill grid vs multi-signal for audit
-        let reasonCode: string;
+        let reasonCode: TradeReasonCode;
         let sizingLabel: string;
         if (strategyType === "grid" && side === "buy") {
           reasonCode = signal.gridLevel?.dcaLevel ? "DCA_INTERVAL_BUY" : "GRID_BUY";
           sizingLabel = `${((signal.gridLevel!.sizeMultiplier ?? 1) * gridConfig!.amountPerGrid / session.capital * 100).toFixed(1)}% grid`;
         } else if (strategyType === "grid" && side === "sell") {
-          reasonCode = (signal as any).gridLevel?.sellType === "trailing" ? "TRAILING_TP_SELL" : "TAKE_PROFIT_SELL";
+          reasonCode = signal.sellType === "trailing" ? "TRAILING_TP_SELL" : "TAKE_PROFIT_SELL";
           sizingLabel = `${((signal.gridLevel?.sizeMultiplier ?? 1) * gridConfig!.amountPerGrid / session.capital * 100).toFixed(1)}% grid`;
         } else {
           reasonCode = side === "buy" ? "MULTI_SIGNAL_BUY" : "TAKE_PROFIT_SELL";
@@ -739,7 +741,7 @@ async function processUser(
             orderType: "market",
             mode: "paper",
             signalContext: { action: side, confidence: signal.confidence, strategy: "cryptopilot", reason: signal.reason },
-            reasonCode: reasonCode as any,
+            reasonCode,
             reasonParams: { rsi: Math.round(market.rsi), confidence: signal.confidence, sizingPct: Math.round(parseFloat(sizingLabel) * 10) / 10 },
           });
 
