@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/utils";
 import { TABLE } from "@/lib/design/tokens";
 import {
   ArrowUpCircle,
@@ -75,21 +74,27 @@ export default function ClientAdminUsers() {
     };
   }, []);
 
-  const supabase = createClient();
-
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (error) throw error;
-      const rows = (data || []) as Record<string, unknown>[];
+      // Browser-supabase er alltid anon i Klarpakke (httpOnly-cookie) —
+      // direkte user_profiles-spørring ga RLS-filtrert/tom liste.
+      // Derfor: server-API med requireAdmin + service-role.
+      const res = await fetch("/api/admin/students", {
+        credentials: "same-origin",
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.ok) {
+        throw new Error(body.error || `HTTP ${res.status}`);
+      }
+      const rows = (body.users || []) as Record<string, unknown>[];
+      // Behold stigende created_at-sortering (samme visning som før)
+      rows.sort((a, b) =>
+        String(a.created_at ?? "").localeCompare(String(b.created_at ?? "")),
+      );
       setUsers(
         rows.map((row) => {
           const tierRaw =
@@ -129,25 +134,20 @@ export default function ClientAdminUsers() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { data, error } = await supabase.rpc("admin_change_role", {
-        p_user_id: userId,
-        p_new_role: newRole,
-        p_admin_id: user?.id || "",
+      // Anon-RPC admin_change_role persiserte aldri (browser-klient uten JWT).
+      // Server-API med requireAdmin i stedet.
+      const res = await fetch("/api/admin/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ userId, role: newRole }),
       });
-
-      if (error) throw error;
-
-      const result = data as { success?: boolean; error?: string } | null;
-      if (result?.success) {
-        toast.success(`Rolle endret til ${newRole}`);
-        fetchUsers();
-      } else {
-        toast.error(result?.error || "Kunne ikke endre rolle");
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.ok) {
+        throw new Error(body.error || `HTTP ${res.status}`);
       }
+      toast.success(`Rolle endret til ${newRole}`);
+      fetchUsers();
     } catch (error) {
       console.error("Error updating role:", error);
       toast.error("Kunne ikke endre rolle");
