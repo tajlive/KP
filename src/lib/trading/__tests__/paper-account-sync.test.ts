@@ -1,8 +1,8 @@
 /**
- * Test: syncPaperAccountBalance skal KUN telle aktive sesjoner.
- * Pausede/stoppete sesjoner skal IKKE bidra til kontobalansen.
- *
- * Regresjonsbeskyttelse for dobbel balansevisning (2026-07-29).
+ * Test: syncPaperAccountBalance teller active + paused + stopped sesjoner
+ * (stoppede sesjoner eier fortsatt cash/posisjoner — Tom-bevis 2026-08-03)
+ * og nekter å skrive når summen er > 3× startkapital (sanity-cap mot
+ * arvet inflasjon, prod-hendelse 2026-08-04).
  */
 import { describe, it, expect, vi } from "vitest";
 import { syncPaperAccountBalance } from "../core/paper-account-sync";
@@ -11,12 +11,16 @@ function mockSupabaseWithSessions(
   sessions: { current_capital_nok: number; starting_capital_nok?: number }[],
 ) {
   let eqCount = 0;
+  let inUsed = false;
   let updatedBalance: number | null = null;
   const chain: any = {
     eq: vi.fn(() => {
       eqCount++;
-      if (eqCount >= 3) return { data: sessions, error: null };
       return chain;
+    }),
+    in: vi.fn(() => {
+      inUsed = true;
+      return { data: sessions, error: null };
     }),
   };
 
@@ -34,15 +38,17 @@ function mockSupabaseWithSessions(
       };
     }),
     getEqCount: () => eqCount,
+    getInUsed: () => inUsed,
     getUpdatedBalance: () => updatedBalance,
   };
 }
 
 describe("syncPaperAccountBalance", () => {
-  it("bruker 3 eq()-kall: user_id, mode, status", async () => {
+  it("bruker user_id + mode + status-filter (active/paused/stopped)", async () => {
     const mock = mockSupabaseWithSessions([{ current_capital_nok: 100_000 }]);
     await syncPaperAccountBalance(mock as any, "u1");
-    expect(mock.getEqCount()).toBe(3);
+    expect(mock.getEqCount()).toBe(2); // user_id + mode
+    expect(mock.getInUsed()).toBe(true); // status IN (...)
   });
 
   it("håndterer tom resultatliste uten feil", async () => {

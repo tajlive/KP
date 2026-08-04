@@ -2,22 +2,25 @@
  * paper-account-sync.ts
  *
  * Synkroniserer paper_accounts.current_balance med faktisk kapital fra
- * KUN aktive trading_sessions. Kalles etter hver trade for å holde
- * kontobalansen i sync — slik at dashboard og trade-side viser riktige tall.
+ * trading_sessions. Kalles etter hver trade for å holde kontobalansen
+ * i sync — slik at dashboard og trade-side viser riktige tall.
  *
  * Arkitektur-sannhet #1: paper_accounts.current_balance er source of truth.
- * Denne garantien opprettholdes KUN hvis vi synkroniserer aktivt.
  *
- * ⚠️  Pausede/stoppete sesjoner telles IKKE — de representerer ikke aktiv
- *     kapital. Dette var tidligere en kilde til dobbel balansevisning.
+ * ⚠️  Scope (2026-08-04): active + paused + stopped paper-sesjoner telles
+ *     ALLE med. Stoppede sesjoner har fortsatt cash + posisjoner som tilhører
+ *     brukeren — de er ikke slettet, bare stoppet (Tom-bevis: 9 578 vs
+ *     199 198 kr når kun 'active' ble telt). Matcher
+ *     klarpakke_hourly_balance_sync og portfolio/summary.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
 /**
- * Beregn total kapital på tvers av alle AKTIVE paper-sesjoner for én bruker,
- * og skriv resultatet tilbake til paper_accounts.current_balance.
+ * Beregn total kapital på tvers av alle aktive/pausede/stoppede
+ * paper-sesjoner for én bruker, og skriv resultatet tilbake til
+ * paper_accounts.current_balance.
  */
 export async function syncPaperAccountBalance(
   supabase: SupabaseClient<Database>,
@@ -29,7 +32,7 @@ export async function syncPaperAccountBalance(
       .select("current_capital_nok, starting_capital_nok")
       .eq("user_id", userId)
       .eq("mode", "paper")
-      .eq("status", "active");
+      .in("status", ["active", "paused", "stopped"]);
 
     if (sessionError) {
       console.warn("[syncPaperBalance] session fetch error:", sessionError.message);
