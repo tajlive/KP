@@ -363,7 +363,7 @@ export default function SpeedOnboarding({
                         {coin.name}
                       </div>
                       <div className="text-xs text-slate-500">
-                        {coin.id}/USDT
+                        {coin.id}/NOK
                       </div>
                     </div>
                     <div

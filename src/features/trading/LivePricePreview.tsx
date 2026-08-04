@@ -61,7 +61,7 @@ export function LivePricePreview({ symbol, className = "", showInNok = false }: 
     <div className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 flex items-center justify-between shadow-sm overflow-hidden ${className}`}>
       <div className="flex items-center gap-2">
         <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
-          {symbol.replace("USDT", "")}/USDT
+          {symbol.replace("USDT", "")}/NOK
         </span>
         <span
           className={`inline-flex h-2 w-2 rounded-full ${

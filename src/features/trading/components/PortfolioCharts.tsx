@@ -74,7 +74,7 @@ export function PortfolioCharts({ portfolio, trades, activeStrategies, formatNOK
     let colorIdx = 0;
     for (const [pair, value] of pairMap) {
       if (value > 0) {
-        data.push({ name: pair.replace("USDT", "/USDT"), value, color: COLORS[colorIdx % COLORS.length] });
+        data.push({ name: pair.replace("USDT", "/NOK"), value, color: COLORS[colorIdx % COLORS.length] });
         colorIdx++;
       }
     }

@@ -40,7 +40,7 @@ interface AdvancedAnalyticsSectionProps {
   defaultExpanded?: boolean;
 }
 
-export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpanded = false }: AdvancedAnalyticsSectionProps) {
+export function AdvancedAnalyticsSection({ accountBalance, defaultExpanded = false }: AdvancedAnalyticsSectionProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.advancedAnalytics");
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);

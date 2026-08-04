@@ -116,7 +116,7 @@ export function DashboardTopBar({
                 <span className="text-kp-border">·</span>
                 <span>📈 {formatByMode(investedCapital, mode)} investert</span>
                 {positionCount > 0 && (
-                  <span className="text-kp-border">
+                  <span className="text-kp-text-muted">
                     · {positionCount} posisjon{positionCount !== 1 ? "er" : ""}
                   </span>
                 )}

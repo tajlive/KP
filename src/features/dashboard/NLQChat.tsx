@@ -141,7 +141,7 @@ export function NLQChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-4 z-50 flex h-[480px] w-[92vw] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:bottom-8 sm:right-8"
+            className="fixed bottom-24 right-4 z-40 flex h-[480px] w-[92vw] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:bottom-8 sm:right-8"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-slate-700">
