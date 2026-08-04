@@ -17,6 +17,7 @@ import {
   Gift,
   Sun,
   Moon,
+  ShieldCheck,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import {
@@ -43,6 +44,7 @@ import {
   type DashboardSidebarLabelKey,
 } from "@/lib/navigation/config";
 import { useActiveTraderSessions } from "./use-active-trader-sessions";
+import { isEmailInAdminFallbackList } from "@/lib/admin/admin-allowlist.shared";
 
 const SECONDARY_ICONS: Partial<
   Record<DashboardSidebarLabelKey, React.ComponentType<{ className?: string }>>
@@ -115,6 +117,7 @@ export function UserMenu() {
 
   const email = user?.email ?? serverEmail ?? "";
   const initial = email ? email[0].toUpperCase() : null;
+  const isAdmin = isEmailInAdminFallbackList(email);
 
   const isActive = (href: string) =>
     isDashboardSidebarLinkActive(pathname, locale, href);
@@ -224,6 +227,16 @@ export function UserMenu() {
                 <Settings className="h-4 w-4" />
                 {t("settings")}
               </Link>
+              {isAdmin && (
+                <Link
+                  href={hrefWithLocale(locale, "/admin")}
+                  onClick={() => setOpen(false)}
+                  className={`${itemClass} min-h-12 ${isActive("/admin") ? itemActive : itemIdle}`}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin
+                </Link>
+              )}
 
               <div className="my-1.5 border-t border-kp-border" />
               {themeToggle}
@@ -295,6 +308,15 @@ export function UserMenu() {
           <Settings className="h-4 w-4" />
           {t("settings")}
         </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem
+            onSelect={() => router.push(hrefWithLocale(locale, "/admin"))}
+            className={isActive("/admin") ? itemActive : undefined}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Admin
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator className="bg-kp-border" />
         {themeToggle}
