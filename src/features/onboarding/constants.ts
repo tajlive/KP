@@ -65,7 +65,7 @@ export const STRATEGIES: Strategy[] = [
 
 export const MOCK_WIN_TRADE: MockTrade = {
   id: "win-1",
-  pair: "BTC/USDT",
+  pair: "BTC/NOK",
   side: "BUY",
   amount: 25000,
   pnlPercent: 5.2,
@@ -77,7 +77,7 @@ export const MOCK_WIN_TRADE: MockTrade = {
 
 export const MOCK_LOSS_TRADE: MockTrade = {
   id: "loss-1",
-  pair: "ETH/USDT",
+  pair: "ETH/NOK",
   side: "BUY",
   amount: 15000,
   pnlPercent: -2.8,

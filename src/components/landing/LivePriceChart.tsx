@@ -58,7 +58,7 @@ function loadOrCreateSeed(): { seed: number; prices: number[] } {
     /* corrupt entry — regenerate */
   }
   const seed = Math.floor(Math.random() * 2147483647);
-  const basePrice = 65000 + Math.random() * 45000; // 65k-110k
+  const basePrice = 700000 + Math.random() * 500000; // 700k–1.2M NOK (BTC i NOK-range)
   const prices = generateSeedPrices(basePrice, seed);
   const entry = { seed, prices };
   try {
@@ -70,7 +70,10 @@ function loadOrCreateSeed(): { seed: number; prices: number[] } {
 }
 
 function formatPrice(v: number): string {
-  return "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  // NOK-visning (valuta-kontrakten): "1 042 500 kr" — aldri $/USDT mot nybegynnere
+  return (
+    Math.round(v).toLocaleString("nb-NO").replace(/,/g, "\u00A0") + "\u00A0kr"
+  );
 }
 
 /** Build SVG area path from price points (left-to-right, with padding). */
@@ -131,14 +134,24 @@ export default function LivePriceChart() {
     mountRef.current = true;
   }, []);
 
-  // ── fetch price ──
+  // ── fetch price (Binance USDT → NOK via eget fx-endepunkt, valuta-kontrakten) ──
   const fetchPrice = useCallback(async () => {
     try {
-      const res = await fetch(BINANCE_URL);
-      if (!res.ok) return;
-      const data = (await res.json()) as { symbol: string; price: string };
-      const newPrice = Number.parseFloat(data.price);
-      if (Number.isNaN(newPrice)) return;
+      const [priceRes, fxRes] = await Promise.all([
+        fetch(BINANCE_URL),
+        fetch("/api/fx/usdt-nok"),
+      ]);
+      if (!priceRes.ok) return;
+      const data = (await priceRes.json()) as { symbol: string; price: string };
+      const usdtPrice = Number.parseFloat(data.price);
+      if (Number.isNaN(usdtPrice)) return;
+
+      let rate = 10.5; // fallback hvis fx-endepunkt er nede
+      if (fxRes.ok) {
+        const fx = (await fxRes.json()) as { rate?: number };
+        if (fx.rate && fx.rate > 0) rate = fx.rate;
+      }
+      const newPrice = usdtPrice * rate;
 
       setPrevPrice(price);
       setPrice((old) => {
@@ -176,9 +189,10 @@ export default function LivePriceChart() {
   }, [fetchPrice]);
 
   // ── display values ──
-  const displayPrice = price ?? 65000;
+  const displayPrice = price ?? 950000; // fallback: BTC ~950k NOK
   const displayChange = change24h ?? 2.4;
-  const displayPrices = priceHistory.length >= 2 ? priceHistory : generateSeedPrices(displayPrice, 12345);
+  const displayPrices =
+    priceHistory.length >= 2 ? priceHistory : generateSeedPrices(displayPrice, 12345);
   const svgW = CHART_W;
   const svgH = CHART_H;
 
@@ -198,7 +212,7 @@ export default function LivePriceChart() {
               fill="white"
             />
           </svg>
-          <span className={styles.pair}>BTC / USDT</span>
+          <span className={styles.pair}>BTC / NOK</span>
         </div>
         <div className={`${styles.change} ${displayChange >= 0 ? styles.changeUp : styles.changeDown}`}>
           <svg
@@ -233,7 +247,7 @@ export default function LivePriceChart() {
         >
           {formatPrice(displayPrice)}
         </span>
-        <span className={styles.usdtSuffix}>USDT</span>
+        <span className={styles.usdtSuffix}>NOK</span>
       </div>
 
       {/* ── SVG Area Chart ── */}

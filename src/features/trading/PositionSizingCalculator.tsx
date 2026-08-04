@@ -9,7 +9,7 @@ interface PositionSizingCalculatorProps {
   accountBalance?: number;
 }
 
-export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSizingCalculatorProps) {
+export function PositionSizingCalculator({ accountBalance }: PositionSizingCalculatorProps) {
   const locale = useLocale();
   const t = useTranslations("dashboard.positionSizing");
   const [riskPercent, setRiskPercent] = useState(1);
@@ -17,11 +17,12 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
   const [entryPrice, setEntryPrice] = useState(50000);
   const [showInfo, setShowInfo] = useState(false);
 
-  // Calculations (guarded against division by zero)
-  const riskAmount = accountBalance * (riskPercent / 100);
+  // Calculations (guarded against division by zero + unknown balance)
+  const balance = accountBalance ?? 0;
+  const riskAmount = balance * (riskPercent / 100);
   const positionSize = riskAmount / (stopLossPercent / 100);
   const units = entryPrice > 0 ? positionSize / entryPrice : 0;
-  const leverage = accountBalance > 0 ? positionSize / accountBalance : 0;
+  const leverage = balance > 0 ? positionSize / balance : 0;
 
   // Norsk tallformat (92 418,17) — toLocaleString() uten locale gir US-format.
   const fmtNok = (n: number) =>
@@ -67,7 +68,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
           <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("accountBalance")}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">
-            {fmtNok(accountBalance)} NOK
+            {accountBalance != null ? `${fmtNok(accountBalance)} NOK` : "—"}
           </span>
         </div>
 

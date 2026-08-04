@@ -32,7 +32,6 @@ import GetStartedCard from "./GetStartedCard";
 
 // Enterprise 2026 komponenter
 import { PersonalizedGreeting } from "./PersonalizedGreeting";
-import { ExplainStatButton } from "./ExplainStatButton";
 import { NLQChat } from "./NLQChat";
 import { AIInsightCard } from "./AIInsightCard";
 import { FeatureGate } from "@/lib/feature-flags";
@@ -365,16 +364,11 @@ export function DashboardPro({
                 ) : (
                   <div className="space-y-2">
                     <StatsGrid stats={statItems} updatedAt={lastUpdated} />
+                    {/* C2 (PROMPT #15): ExplainStatButton-rad fjernet — StatsGrid har
+                        allerede Info-tooltips per kort. To forklarings-UI-er for
+                        samme tall var forvirrende. */}
                     {/* TODO: RecentTrades krever ekte trades-feed (Trade[]) — metrics-APIet
                         har kun recentSessions. Skjult til /api/dashboard/metrics returnerer trades. */}
-                    <div className="flex items-center gap-3 px-1">
-                      {effectiveStats.totalPnl != null && (
-                        <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
-                      )}
-                      {effectiveStats.accountBalance != null && (
-                        <ExplainStatButton statType="balance" value={effectiveStats.accountBalance} />
-                      )}
-                    </div>
                   </div>
                 )}
               </>
