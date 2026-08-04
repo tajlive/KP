@@ -1299,7 +1299,8 @@
     "joinedBadge": "你已加入！",
     "joinSuccess": "已加入 — 祝你好运！🏆",
     "joinError": "加入失败，请重试。",
-    "participationPrize": "完成至少 {count} 笔交易即可参与抽取 1 个月 Pro。"
+    "participationPrize": "完成至少 {count} 笔交易即可参与抽取 1 个月 Pro。",
+    "emptyDesc": "还没有交易者有成绩。开始交易即可上榜！"
   },
   "contact": {
     "title": "联系我们",
