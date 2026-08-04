@@ -244,7 +244,7 @@ export default function CompetitionClient({
                     </h1>
                     <p className="text-sm text-[#9CA3AF]">
                         {tComp('heroLine', {
-                            participants: participants ?? (leaderboard.length || '—'),
+                            participants: participants ? participants : (leaderboard.length || '—'),
                             balance: '100 000 kr',
                             prize: tComp('grandPrize'),
                         })}
