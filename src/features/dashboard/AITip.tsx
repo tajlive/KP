@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Lightbulb, TrendingUp, AlertTriangle, Copy } from "lucide-react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 export type AITipType = "winRateLow" | "pnlFlat" | "drawdownHigh" | "doingGreat" | "tryCopy" | "default";
 
@@ -101,11 +103,21 @@ const ICON_MAP: Record<AITipType, React.ElementType> = {
   default: Lightbulb,
 };
 
+/** Mål for handlingslenkene (uten locale-prefix — legges til via hrefWithLocale). */
+const ACTION_HREFS: Partial<Record<AITipType, string>> = {
+  winRateLow: "/dashboard/historikk",
+  drawdownHigh: "/dashboard/auto-trade",
+  pnlFlat: "/copy-trading/discover",
+  tryCopy: "/leaderboard",
+};
+
 export function AITip(props: AITipProps) {
   const t = useTranslations("dashboard.aiTip");
+  const locale = useLocale();
   const tip = getTip(props, t);
   const styles = SEVERITY_STYLES[tip.severity];
   const Icon = ICON_MAP[tip.type];
+  const actionHref = tip.action ? ACTION_HREFS[tip.type] : undefined;
 
   return (
     <motion.div
@@ -118,10 +130,19 @@ export function AITip(props: AITipProps) {
         <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${styles.icon}`} />
         <div className="flex-1 min-w-0">
           <p className={`text-sm ${styles.text}`}>{tip.message}</p>
-          {tip.action && (
-            <span className="text-xs text-slate-400 mt-1 block">
+          {tip.action && actionHref ? (
+            <Link
+              href={hrefWithLocale(locale, actionHref)}
+              className="text-xs text-slate-400 mt-1 block hover:text-slate-200 hover:underline"
+            >
               {tip.action} →
-            </span>
+            </Link>
+          ) : (
+            tip.action && (
+              <span className="text-xs text-slate-400 mt-1 block">
+                {tip.action} →
+              </span>
+            )
           )}
         </div>
       </div>

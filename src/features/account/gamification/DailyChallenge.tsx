@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Target, Clock, Zap, Flame, ChevronRight, Gift, Trophy } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 interface GamificationStats {
   points: number;
   rank: number | null;
@@ -13,6 +15,7 @@ interface GamificationStats {
 interface DailyChallengeProps { userId?: string }
 
 export function DailyChallenge({ userId: propUserId }: DailyChallengeProps) {
+  const locale = (useParams()?.locale as string) ?? "no";
   const [stats, setStats] = useState<GamificationStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -137,10 +140,13 @@ export function DailyChallenge({ userId: propUserId }: DailyChallengeProps) {
       </div>
 
       {/* Leaderboard link */}
-      <button className="w-full mt-3 sm:mt-4 py-2.5 sm:py-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-700 rounded-lg sm:rounded-xl text-slate-300 text-[12px] sm:text-sm flex items-center justify-center gap-1.5 transition-colors group">
+      <Link
+        href={`/${locale}/leaderboard`}
+        className="w-full mt-3 sm:mt-4 py-2.5 sm:py-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-700 rounded-lg sm:rounded-xl text-slate-300 text-[12px] sm:text-sm flex items-center justify-center gap-1.5 transition-colors group"
+      >
         Se topplisten
         <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
-      </button>
+      </Link>
     </motion.div>
   );
 }

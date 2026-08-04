@@ -21,7 +21,7 @@ interface Explanation {
   title: string;
   short: string;
   detailed: string;
-  benchmark: string;
+  benchmark?: string; // valgfri — kun dokumenterte tall (Alltid-fakta-regelen)
   action: string;
 }
 
@@ -39,9 +39,7 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
         detailed: t
           ? `Din win rate på ${v}% betyr at ${v} av 100 trades er profitable. En win rate over 50% er positiv, men det som virkelig betyr noe er forholdet mellom gjennomsnittlig gevinst og gjennomsnittlig tap (risk/reward).`
           : `Your win rate of ${v}% means ${v} out of 100 trades are profitable. A win rate above 50% is positive, but what really matters is the ratio between average gain and average loss (risk/reward).`,
-        benchmark: t
-          ? "Win rate bransjesnitt: 45-55% for day tradere. Profesjonelle ofte 50-60%."
-          : "Win rate industry average: 45-55% for day traders. Professionals often 50-60%.",
+        benchmark: undefined, // Fjernet 2026-08-04: «45-55% bransjesnitt» var udokumentert — brudd på Alltid-fakta-regelen
         action:
           v < 45
             ? t
@@ -63,8 +61,8 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
           ? `Din totale avkastning på ${v.toLocaleString()} NOK er forskjellen mellom gjeldende kapital og startkapital: Startkapital → Gjeldende kapital → PnL. Tallet er basert på realiserte gevinster og tap, og inkluderer ikke åpne posisjoner (urealisert PnL).`
           : `Your total return of ${v.toLocaleString()} NOK is the difference between current capital and starting capital: Starting Capital → Current Capital → PnL. The figure is based on realized gains and losses and does not include open positions (unrealized PnL).`,
         benchmark: t
-          ? "Mål: Overgå indeks (f.eks. S&P 500 ~10% årlig)."
-          : "Goal: Outperform index (e.g., S&P 500 ~10% annually).",
+          ? "Mål: Jevn, positiv avkastning over tid — uten store nedturer."
+          : "Goal: Steady, positive returns over time — without major drawdowns.",
         action:
           v < 0
             ? t
