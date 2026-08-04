@@ -136,24 +136,43 @@ export async function GET(request: NextRequest) {
       }))
       .sort((a, b) => b.qty * b.avgBuyPrice - a.qty * a.avgBuyPrice);
 
-    // Beregn balance fra trading_sessions (SSoT — paper_accounts kan være stale)
+    // Beregn balance fra trading_sessions (SSoT — paper_accounts kan være stale).
+    // PROMPT #15 A3: sanity-cap 3× initial (samme som leaderboard) — uten cap
+    // gir arvet inflasjon fra oversell-bug-perioden urealistisk høy balance.
     const { data: balanceSessions } = await supabase
       .from("trading_sessions")
-      .select("current_capital_nok")
+      .select("current_capital_nok, starting_capital_nok")
       .eq("user_id", user.id)
       .eq("mode", "paper")
       .in("status", ["active", "paused", "stopped"]);
-    
-    const sessionBalance = balanceSessions?.reduce((sum, s) => sum + Number(s.current_capital_nok ?? 0), 0) ?? null;
+
+    const sessionsSum = balanceSessions?.reduce(
+      (sum, s) => sum + Number(s.current_capital_nok ?? 0),
+      0,
+    ) ?? null;
+    const sessionsInitial = balanceSessions?.reduce(
+      (sum, s) => sum + Number(s.starting_capital_nok ?? 0),
+      0,
+    ) ?? 0;
+    const fallbackBalance =
+      accountRes.data?.current_balance != null
+        ? Number(accountRes.data.current_balance)
+        : null;
+    // Sanity-cap: sessions-sum > 3× initial = arvet inflasjon → fallback
+    const useSessionsBalance =
+      sessionsSum != null &&
+      sessionsSum > 0 &&
+      (sessionsInitial <= 0 || sessionsSum <= sessionsInitial * 3);
+    const balance = useSessionsBalance ? sessionsSum : fallbackBalance;
+    const initialBalance = useSessionsBalance
+      ? sessionsInitial
+      : accountRes.data?.initial_balance != null
+        ? Number(accountRes.data.initial_balance)
+        : null;
 
     return NextResponse.json({
-      balance: sessionBalance ?? (accountRes.data?.current_balance != null
-        ? Number(accountRes.data.current_balance)
-        : null),
-      initialBalance:
-        accountRes.data?.initial_balance != null
-          ? Number(accountRes.data.initial_balance)
-          : null,
+      balance,
+      initialBalance,
       totalTrades: trades.length,
       closedTrades: closedCount,
       winRate: closedCount > 0 ? winCount / closedCount : null,
