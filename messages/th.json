@@ -634,7 +634,16 @@
     "nicknameLater": "ภายหลัง",
     "nicknameTaken": "ชื่อเล่นนี้ถูกใช้แล้ว",
     "nicknameInvalid": "ชื่อเล่นไม่ถูกต้อง",
-    "nicknameSaved": "บันทึกชื่อเล่นแล้ว — ขอให้โชคดีบนกระดานผู้นำ!"
+    "nicknameSaved": "บันทึกชื่อเล่นแล้ว — ขอให้โชคดีบนกระดานผู้นำ!",
+    "eyebrow": "สิงหาคม 2026",
+    "heroLine": "{participants} เทรดเดอร์ · เงินจำลอง {balance} · ผู้ชนะได้รับ {prize}",
+    "grandPrize": "Pro 3 เดือน",
+    "days": "วัน",
+    "hours": "ชั่วโมง",
+    "ended": "สิ้นสุดแล้ว",
+    "ofParticipants": "จาก {count}",
+    "youLead": "คุณกำลังนำการแข่งขัน! 🏆",
+    "gapToNext": "อีก {gap} คะแนนถึง #{rank}"
   },
   "contact": {
     "title": "ติดต่อเรา",

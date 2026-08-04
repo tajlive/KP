@@ -1296,7 +1296,16 @@
     "nicknameLater": "Senere",
     "nicknameTaken": "Kallenavnet er allerede i bruk",
     "nicknameInvalid": "Ugyldig kallenavn",
-    "nicknameSaved": "Kallenavn lagret — lykke til på ledertavlen!"
+    "nicknameSaved": "Kallenavn lagret — lykke til på ledertavlen!",
+    "eyebrow": "August 2026",
+    "heroLine": "{participants} tradere · {balance} i lekepenger · vinneren får {prize}",
+    "grandPrize": "3 måneder Pro",
+    "days": "dager",
+    "hours": "timer",
+    "ended": "Avsluttet",
+    "ofParticipants": "av {count}",
+    "youLead": "Du leder konkurransen! 🏆",
+    "gapToNext": "{gap} poeng igjen til #{rank}"
   },
   "help": {
     "metadata": {
