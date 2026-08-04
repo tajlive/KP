@@ -1,4 +1,9 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
+import {
+  cleanTradeStats,
+  getCleanTrades,
+  type CleanTrade,
+} from "@/lib/trading/clean-trades";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +15,8 @@ export const dynamic = "force-dynamic";
  * (source of truth — IKKE sum av sesjoner, se migrasjon
  * 20260724120000_fix_balance_sync_direction). Posisjoner aggregeres
  * fra filled paper-trades: netto mengde + vektet snittkjøpspris per symbol.
+ * P&L-statistikk (totalPnl/winRate) bygger på cleanTradeStats — rene trades
+ * med forurensings-cutoff + oversell-clamp (clean-trades.ts, PROMPT #16).
  */
 export async function GET(request: NextRequest) {
   try {
@@ -42,21 +49,12 @@ export async function GET(request: NextRequest) {
       .filter((s) => s.status === "active" || s.status === "paused")
       .map((s) => s.id);
 
-    const [accountRes, tradesRes, openTradesRes] = await Promise.all([
+    const [accountRes, openTradesRes] = await Promise.all([
       supabase
         .from("paper_accounts")
         .select("current_balance, initial_balance")
         .eq("user_id", user.id)
         .maybeSingle(),
-      sessionIds.length === 0
-        ? { data: [], error: null }
-        : await supabase
-            .from("trades")
-            .select("trading_pair, side, quantity, price, total_value, realized_pnl")
-            .eq("user_id", user.id)
-            .eq("mode", "paper")
-            .eq("status", "filled")
-            .in("session_id", sessionIds),
       liveSessionIds.length === 0
         ? { data: [], error: null }
         : await supabase
@@ -68,32 +66,24 @@ export async function GET(request: NextRequest) {
             .in("session_id", liveSessionIds),
     ]);
 
-    if (tradesRes.error) {
-      console.error(
-        "[GET /api/portfolio/summary] trades error:",
-        tradesRes.error.code,
-        tradesRes.error.message,
-      );
-      return NextResponse.json(
-        { error: tradesRes.error.message },
-        { status: 500 },
-      );
-    }
-
-    const trades = tradesRes.data ?? [];
     const openTrades = openTradesRes.data ?? [];
 
-    // Statistikk over hele (ikke-arkiverte) historikken.
-    let totalPnl = 0;
-    let closedCount = 0;
-    let winCount = 0;
-    for (const t of trades) {
-      if (t.realized_pnl != null) {
-        totalPnl += Number(t.realized_pnl);
-        closedCount += 1;
-        if (Number(t.realized_pnl) > 0) winCount += 1;
-      }
+    // Statistikk over hele (ikke-arkiverte) historikken — rene trades med
+    // cutoff + oversell-clamp (clean-trades.ts). Samme scope som før:
+    // filled paper-trades i ikke-arkiverte sesjoner.
+    let cleanTrades: CleanTrade[];
+    try {
+      cleanTrades = await getCleanTrades(supabase, user.id, sessionIds, {
+        mode: "paper",
+        status: "filled",
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      console.error("[GET /api/portfolio/summary] trades error:", msg);
+      return NextResponse.json({ error: msg }, { status: 500 });
     }
+
+    const stats = cleanTradeStats(cleanTrades);
 
     // Posisjoner kun fra aktive/pausete sesjoner.
     const positionsMap = new Map<
@@ -173,10 +163,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       balance,
       initialBalance,
-      totalTrades: trades.length,
-      closedTrades: closedCount,
-      winRate: closedCount > 0 ? winCount / closedCount : null,
-      totalPnl,
+      totalTrades: cleanTrades.length,
+      closedTrades: stats.closedCount,
+      winRate: stats.winRate,
+      totalPnl: stats.totalPnl,
       positions,
     });
   } catch (err) {

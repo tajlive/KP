@@ -1,4 +1,12 @@
-import { buildTradingAnalytics } from "@/lib/trading/build-trading-analytics";
+import {
+  buildTradingAnalytics,
+  type TradeAnalyticsInput,
+} from "@/lib/trading/build-trading-analytics";
+import {
+  clampedRealizedPnl,
+  getCleanTrades,
+  type CleanTrade,
+} from "@/lib/trading/clean-trades";
 import { createClient, createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -7,23 +15,8 @@ export const dynamic = "force-dynamic";
 
 const MAX_TRADES = 4000;
 
-// Forurensings-cutoff (2026-08-03, PROMPT #14):
-// Trades fra før 2026-07-30 inneholder inflated realized_pnl fra
-// oversell-buggen (sell > buy uten posisjon). Samme cutoff brukes i
-// klarpakke-trading-agent-skillen. Risikometrikker skal ALDRI
-// baseres på forurensede data.
-const CONTAMINATION_CUTOFF = "2026-07-30T00:00:00.000Z";
-
-const tradeRowSchema = z.object({
-  id: z.string(),
-  trading_pair: z.string(),
-  side: z.string(),
-  realized_pnl: z.coerce.number().nullish().transform((v) => (v == null ? null : v)),
-  mode: z.string().nullish().transform((v) => (v == null ? null : v)),
-  created_at: z.string(),
-  executed_at: z.string().nullish().transform((v) => (v == null ? null : v)),
-  total_value: z.coerce.number().nullish().transform((v) => (v == null ? null : v)),
-});
+// Trades hentes via getCleanTrades() — forurensings-cutoff (2026-07-30) og
+// oversell-clamp eies av clean-trades.ts (PROMPT #16), ikke av denne ruta.
 
 const responseSchema = z.object({
   ok: z.literal(true),
@@ -118,40 +111,35 @@ export async function GET(request: NextRequest) {
 
     const sessionIds = (sessions ?? []).map((s) => s.id);
 
-    const { data: rows, error } = await supabase
-      .from("trades")
-      .select(
-        "id, trading_pair, side, realized_pnl, mode, created_at, executed_at, total_value",
-      )
-      .eq("user_id", user.id)
-      .in("session_id", sessionIds.length > 0 ? sessionIds : ["__none__"])
-      .gte("executed_at", CONTAMINATION_CUTOFF)
-      .order("created_at", { ascending: false })
-      .limit(MAX_TRADES);
-
-    if (error) {
-      console.error("[GET /api/user/trading-analytics]", error.message);
-      return NextResponse.json(
-        { ok: false, error: error.message },
-        { status: 500 },
-      );
+    let cleanTrades: CleanTrade[];
+    try {
+      cleanTrades = await getCleanTrades(supabase, user.id, sessionIds, {
+        limit: MAX_TRADES,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      console.error("[GET /api/user/trading-analytics]", msg);
+      return NextResponse.json({ ok: false, error: msg }, { status: 500 });
     }
 
-    const parsed = z.array(tradeRowSchema).safeParse(rows ?? []);
-    if (!parsed.success) {
-      console.error(
-        "[GET /api/user/trading-analytics] Trade row validation failed:",
-        parsed.error.flatten(),
-      );
-      return NextResponse.json(
-        { ok: false, error: "Invalid trade payload", details: parsed.error.format() },
-        { status: 500 },
-      );
-    }
+    // Clamp: sell kan ikke overstige akkumulert buy per posisjon — alle
+    // påfølgende tall (aggregates, kurver, risikometrikker) bygger på
+    // clamped verdier, aldri rå realized_pnl fra oversell-perioden.
+    const clamped = clampedRealizedPnl(cleanTrades);
+    const analyticsInput: TradeAnalyticsInput[] = cleanTrades.map((t) => ({
+      id: t.id,
+      trading_pair: t.trading_pair,
+      side: t.side,
+      realized_pnl: clamped.get(t.id) ?? null,
+      mode: t.mode,
+      created_at: t.created_at,
+      executed_at: t.executed_at,
+      total_value: t.total_value,
+    }));
 
     let built;
     try {
-      built = buildTradingAnalytics(parsed.data);
+      built = buildTradingAnalytics(analyticsInput);
     } catch (buildErr) {
       const buildMsg = buildErr instanceof Error ? buildErr.message : "Unknown build error";
       console.error("[GET /api/user/trading-analytics] buildTradingAnalytics failed:", buildMsg, buildErr);
