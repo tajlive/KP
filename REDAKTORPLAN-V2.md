@@ -13,7 +13,7 @@ Alt vi publiserer skal kunne spores tilbake til denne setningen. Selger konkurre
 **Støtteargumenter (alle faktagodkjente):**
 - Gratis beta
 - 100 000 kr virtuelle lekepenger ved registrering
-- JokerTrade og autonome AI-agenter som paper trader på ekte markedsdata
+- Pilot og autonome AI-agenter som paper trader på ekte markedsdata
 - 5000 gratis KLT til de 100 første som registrerer seg
 - Norsk plattform, norsk språk, norsk gründer
 
@@ -69,7 +69,7 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 > 2. Du får 100 000 kr i lekepenger. Ikke ekte penger. Nettopp derfor er det genialt.
 > 3. Du trader på ekte markedsdata. Ekte kurser. Ekte bevegelser. Null risiko.
 >
-> Mens du tester, jobber autonome AI-agenter i bakgrunnen. JokerTrade analyserer markedet og plasserer paper trades — så du ser hva en AI faktisk gjør, ikke bare hva markedsføringen lover.
+> Mens du tester, jobber autonome AI-agenter i bakgrunnen. Pilot analyserer markedet og plasserer paper trades — så du ser hva en AI faktisk gjør, ikke bare hva markedsføringen lover.
 >
 > Betaen er gratis. Og de 100 første som registrerer seg får 5000 gratis KLT.
 >
@@ -81,7 +81,7 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 
 > 🎮 100 000 kr i lekepenger. Helt gratis. Du kan ikke tape en krone.
 >
-> Klarpakke er en norsk tradingplattform der du trener på ekte markedsdata — med virtuelle penger. AI-agenten JokerTrade trader også for deg, så du kan se hvordan det fungerer i praksis.
+> Klarpakke er en norsk tradingplattform der du trener på ekte markedsdata — med virtuelle penger. AI-agenten Pilot trader også for deg, så du kan se hvordan det fungerer i praksis.
 >
 > 💰 5000 gratis KLT til de 100 første som registrerer seg.
 >
@@ -132,9 +132,9 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 
 *LinkedIn:*
 
-> Møt JokerTrade — AI-agenten som trader mens du sover. Med lekepenger, heldigvis.
+> Møt Pilot — AI-agenten som trader mens du sover. Med lekepenger, heldigvis.
 >
-> JokerTrade er en autonom AI-agent i Klarpakke. Den:
+> Pilot er en autonom AI-agent i Klarpakke. Den:
 >
 > 1. Analyserer ekte markedsdata, hele døgnet.
 > 2. Tar beslutninger selv — ikke if-this-then-that-regler du må programmere.
@@ -150,7 +150,7 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 
 *Facebook:*
 
-> 🤖 Møt JokerTrade — AI-agenten som trader mens du sover.
+> 🤖 Møt Pilot — AI-agenten som trader mens du sover.
 >
 > Den analyserer ekte markedsdata og tar egne beslutninger. Alt med lekepenger, så du kan følge med uten risiko.
 >
@@ -211,7 +211,7 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 > Derfor bygget jeg Klarpakke:
 >
 > → 100 000 kr i lekepenger på ekte markedsdata
-> → Autonome AI-agenter (JokerTrade) som trader transparent, så du lærer av å se
+> → Autonome AI-agenter (Pilot) som trader transparent, så du lærer av å se
 > → Helt på norsk, bygget for norske småsparere
 > → Gratis beta
 >
@@ -315,7 +315,7 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 >
 > **Steg 1:** Gå til klarpakke.no og registrer deg.
 > **Steg 2:** Kontoen din fylles automatisk med 100 000 kr i lekepenger.
-> **Steg 3:** Velg selv: Trade manuelt på ekte markedsdata — eller slå på JokerTrade og se hva AI-agenten gjør.
+> **Steg 3:** Velg selv: Trade manuelt på ekte markedsdata — eller slå på Pilot og se hva AI-agenten gjør.
 >
 > Det er det. Ingen kort. Ingen innskudd. Ingen risiko.
 >
@@ -329,7 +329,7 @@ Alle tekster er ferdige utkast. [TALL FRA DASHBOARD] = Tom/agent limer inn reelt
 >
 > 1️⃣ Registrer deg på klarpakke.no
 > 2️⃣ Få 100 000 kr i lekepenger
-> 3️⃣ Trade selv — eller la AI-agenten JokerTrade gjøre jobben
+> 3️⃣ Trade selv — eller la AI-agenten Pilot gjøre jobben
 >
 > Ingen kort. Ingen innskudd. Ingen risiko. 5000 gratis KLT til de 100 første.
 >
