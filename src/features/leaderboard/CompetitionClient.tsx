@@ -36,6 +36,20 @@ function needsRealNickname(name: string | null | undefined): boolean {
     return false
 }
 
+/** Aktiv konkurranseperiode — oppdater per konkurranse (eller hent fra config/API senere). */
+const COMPETITION_START = new Date('2026-08-01T00:00:00+02:00')
+const COMPETITION_END = new Date('2026-08-15T23:59:59+02:00')
+
+function timeLeft(now: Date): { days: number; hours: number; ended: boolean } {
+    const ms = COMPETITION_END.getTime() - now.getTime()
+    if (ms <= 0) return { days: 0, hours: 0, ended: true }
+    return {
+        days: Math.floor(ms / 86_400_000),
+        hours: Math.floor((ms % 86_400_000) / 3_600_000),
+        ended: false,
+    }
+}
+
 export default function CompetitionClient({
     params
 }: {
@@ -56,8 +70,32 @@ export default function CompetitionClient({
     const [expandedTrader, setExpandedTrader] = useState<string | null>(null)
     const [showNicknameModal, setShowNicknameModal] = useState(false)
     const [nicknameSuggestion, setNicknameSuggestion] = useState('')
+    const [now, setNow] = useState(() => new Date())
     const mountedRef = useRef(true)
     const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    // Nedtelling — oppdateres hvert minutt
+    useEffect(() => {
+        const id = setInterval(() => setNow(new Date()), 60_000)
+        return () => clearInterval(id)
+    }, [])
+
+    const countdown = timeLeft(now)
+
+    // Raden rett over brukeren — for progresjonsbar («X poeng igjen til #N»)
+    const nextRankEntry = userRank && userRank.rank > 1
+        ? leaderboard.find(e => e.rank === userRank.rank - 1) ?? null
+        : null
+    const gapToNext = nextRankEntry
+        ? Math.max(0, nextRankEntry.return_pct - userRank!.return_pct)
+        : 0
+    const progressPct = userRank
+        ? userRank.rank <= 1
+            ? 100
+            : nextRankEntry && nextRankEntry.return_pct > 0
+                ? Math.min(100, Math.max(4, (userRank.return_pct / nextRankEntry.return_pct) * 100))
+                : 50
+        : 0
 
     useEffect(() => {
         mountedRef.current = true;
@@ -160,44 +198,82 @@ export default function CompetitionClient({
             )}
             <div className="max-w-6xl mx-auto space-y-8">
 
-                {/* Header */}
+                {/* Konkurranse-hero — periode, deltakere, premie, nedtelling */}
                 <div className="text-center max-w-2xl mx-auto mb-12">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#78350F] rounded-full mb-6">
-                        <Trophy className="w-8 h-8 text-[#F59E0B]" />
+                    <div className="text-xs font-semibold tracking-[0.2em] text-[#2DD4BF] mb-3 uppercase">
+                        {tComp('eyebrow')}
                     </div>
-                    <h1 className="text-4xl font-bold text-[#F9FAFB] mb-4">
+                    <h1 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-[#3B82F6] to-[#2DD4BF] bg-clip-text text-transparent">
                         {tComp('title')}
                     </h1>
-                    <p className="text-xl text-[#9CA3AF]">
-                        {tComp('subtitle')}
+                    <p className="text-sm text-[#9CA3AF]">
+                        {tComp('heroLine', {
+                            participants: leaderboard.length || '—',
+                            balance: '100 000 kr',
+                            prize: tComp('grandPrize'),
+                        })}
                     </p>
+
+                    {/* Nedtellingsbokser */}
+                    <div className="inline-flex gap-3 mt-6" role="timer" aria-label={tComp('timeLeft')}>
+                        {countdown.ended ? (
+                            <div className="bg-[#15171B] border border-[#2A2D35] rounded-xl px-5 py-3">
+                                <div className="text-lg font-bold text-[#F59E0B] font-mono">{tComp('ended')}</div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="bg-[#15171B] border border-[#2A2D35] rounded-xl px-5 py-3 min-w-[84px]">
+                                    <div className="text-2xl font-bold text-[#F9FAFB] font-mono tabular-nums">{countdown.days}</div>
+                                    <div className="text-[10px] tracking-[0.15em] text-[#6B7280] mt-0.5 uppercase">{tComp('days')}</div>
+                                </div>
+                                <div className="bg-[#15171B] border border-[#2A2D35] rounded-xl px-5 py-3 min-w-[84px]">
+                                    <div className="text-2xl font-bold text-[#F9FAFB] font-mono tabular-nums">{countdown.hours}</div>
+                                    <div className="text-[10px] tracking-[0.15em] text-[#6B7280] mt-0.5 uppercase">{tComp('hours')}</div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
 
-                {/* User Rank Card — kun når data er lastet */}
+                {/* User Rank Card — gradient-kant + progresjon mot neste plass */}
                 {!loading && (userRank ? (
-                    <Card className="glass-card border-[#2A2D35]">
-                        <CardContent className="p-6 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 glass-card rounded-full flex items-center justify-center font-bold text-[#3B82F6] text-xl">
-                                    #{userRank.rank}
-                                </div>
+                    <div className="rounded-2xl p-px bg-gradient-to-r from-[#3B82F6] to-[#2DD4BF]">
+                        <div className="rounded-[15px] bg-[#15171B] p-6">
+                            <div className="flex items-center justify-between flex-wrap gap-4">
                                 <div>
-                                    <p className="text-sm text-[#6B7280] font-medium">{tComp('yourPosition')}</p>
-                                    <p className="text-lg font-bold text-[#F9FAFB]">
-                                    {leaderboard.length > 0
-                                        ? `Topp ${Math.min(100, Math.round((userRank.rank / leaderboard.length) * 100))}%`
-                                        : tComp('notParticipating')}
-                                </p>
+                                    <p className="text-[11px] tracking-[0.12em] text-[#6B7280] font-semibold mb-1.5 uppercase">{tComp('yourPosition')}</p>
+                                    <div className="flex items-baseline gap-3">
+                                        <span className="text-3xl font-extrabold text-[#F9FAFB] font-mono tabular-nums">#{userRank.rank}</span>
+                                        <span className="text-sm text-[#9CA3AF]">
+                                            {tComp('ofParticipants', { count: leaderboard.length })} · {userRank.user_display_name}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className={`text-2xl font-bold font-mono tabular-nums ${userRank.return_pct >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+                                        {userRank.return_pct > 0 ? '+' : ''}{userRank.return_pct.toFixed(2)}%
+                                    </p>
+                                    <p className="text-xs text-[#6B7280]">{userRank.total_trades} {tComp('trades')}</p>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <p className="text-sm text-[#6B7280] font-medium">Avkastning</p>
-                                <p className={`text-xl font-bold ${userRank.return_pct >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
-                                    {userRank.return_pct > 0 ? '+' : ''}{userRank.return_pct.toFixed(2)}%
+                            {/* Progresjonsbar */}
+                            <div className="mt-4">
+                                <div className="h-1.5 rounded-full bg-[#2A2D35] overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full bg-gradient-to-r from-[#3B82F6] to-[#2DD4BF] transition-[width] duration-500 ease-out"
+                                        style={{ width: `${progressPct}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-[#6B7280] mt-2">
+                                    {userRank.rank <= 1
+                                        ? tComp('youLead')
+                                        : nextRankEntry
+                                            ? tComp('gapToNext', { gap: gapToNext.toFixed(1), rank: userRank.rank - 1 })
+                                            : tComp('topPercent', { percent: Math.min(100, Math.round((userRank.rank / Math.max(1, leaderboard.length)) * 100)) })}
                                 </p>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 ) : (
                     <Card className="glass-card border-[#2A2D35]">
                         <CardContent className="p-6 text-center">
@@ -336,6 +412,11 @@ export default function CompetitionClient({
                         )}
                     </CardContent>
                 </Card>
+
+                {/* Privacy-linje — samme budskap som i kallenavn-onboarding */}
+                <p className="text-center text-xs text-[#6B7280] leading-relaxed max-w-xl mx-auto">
+                    {tComp('nicknameDesc')}
+                </p>
 
                 {/* Info Card */}
                 <div className="grid md:grid-cols-3 gap-6 mt-8">

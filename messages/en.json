@@ -1296,7 +1296,16 @@
     "nicknameLater": "Later",
     "nicknameTaken": "That nickname is already taken",
     "nicknameInvalid": "Invalid nickname",
-    "nicknameSaved": "Nickname saved — good luck on the leaderboard!"
+    "nicknameSaved": "Nickname saved — good luck on the leaderboard!",
+    "eyebrow": "August 2026",
+    "heroLine": "{participants} traders · {balance} in paper money · winner gets {prize}",
+    "grandPrize": "3 months of Pro",
+    "days": "days",
+    "hours": "hours",
+    "ended": "Ended",
+    "ofParticipants": "of {count}",
+    "youLead": "You are leading the competition! 🏆",
+    "gapToNext": "{gap} points to go to #{rank}"
   },
   "help": {
     "metadata": {
