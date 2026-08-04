@@ -643,7 +643,13 @@
     "ended": "สิ้นสุดแล้ว",
     "ofParticipants": "จาก {count}",
     "youLead": "คุณกำลังนำการแข่งขัน! 🏆",
-    "gapToNext": "อีก {gap} คะแนนถึง #{rank}"
+    "gapToNext": "อีก {gap} คะแนนถึง #{rank}",
+    "joinCta": "เข้าร่วมการแข่งขัน",
+    "joinLoginCta": "เข้าสู่ระบบเพื่อเข้าร่วม",
+    "joinedBadge": "คุณเข้าร่วมแล้ว!",
+    "joinSuccess": "เข้าร่วมแล้ว — ขอให้โชคดี! 🏆",
+    "joinError": "ไม่สามารถเข้าร่วมได้ ลองอีกครั้ง",
+    "participationPrize": "ทุกคนที่มีอย่างน้อย {count} เทรด มีสิทธิ์ลุ้นรับ Pro 1 เดือน"
   },
   "contact": {
     "title": "ติดต่อเรา",

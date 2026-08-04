@@ -26,6 +26,7 @@ import { TraderBadges, getBadges } from '@/features/leaderboard/Badges'
 import { TraderProgress } from '@/features/leaderboard/ProgressBar'
 import { TraderInsight } from '@/features/leaderboard/TraderInsight'
 import { NicknameModal } from '@/features/leaderboard/NicknameModal'
+import { COMPETITION_START, COMPETITION_END } from '@/lib/competition'
 
 /** Kallenavn som regnes som "ikke valgt" — generisk placeholder eller fullt navn. */
 function needsRealNickname(name: string | null | undefined): boolean {
@@ -35,10 +36,6 @@ function needsRealNickname(name: string | null | undefined): boolean {
     if (n.toLowerCase() === 'trader') return true
     return false
 }
-
-/** Aktiv konkurranseperiode — oppdater per konkurranse (eller hent fra config/API senere). */
-const COMPETITION_START = new Date('2026-08-01T00:00:00+02:00')
-const COMPETITION_END = new Date('2026-08-15T23:59:59+02:00')
 
 function timeLeft(now: Date): { days: number; hours: number; ended: boolean } {
     const ms = COMPETITION_END.getTime() - now.getTime()
@@ -71,6 +68,10 @@ export default function CompetitionClient({
     const [showNicknameModal, setShowNicknameModal] = useState(false)
     const [nicknameSuggestion, setNicknameSuggestion] = useState('')
     const [now, setNow] = useState(() => new Date())
+    const [joined, setJoined] = useState(false)
+    const [participants, setParticipants] = useState<number | null>(null)
+    const [joining, setJoining] = useState(false)
+    const [hasUser, setHasUser] = useState(false)
     const mountedRef = useRef(true)
     const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -81,6 +82,40 @@ export default function CompetitionClient({
     }, [])
 
     const countdown = timeLeft(now)
+
+    // Påmeldingsstatus + deltakertall (best effort — blokkerer aldri rendering)
+    useEffect(() => {
+        fetch('/api/competition', { cache: 'no-store' })
+            .then(res => (res.ok ? res.json() : null))
+            .then((data: { joined?: boolean; participants?: number } | null) => {
+                if (!mountedRef.current || !data) return
+                setJoined(!!data.joined)
+                if (typeof data.participants === 'number') setParticipants(data.participants)
+            })
+            .catch(() => { /* ignorer — fallback til leaderboard.length */ })
+    }, [])
+
+    async function handleJoin() {
+        if (joining) return
+        setJoining(true)
+        try {
+            const res = await fetch('/api/competition', { method: 'POST' })
+            if (res.status === 401) {
+                router.push(`/${params.locale}/login`)
+                return
+            }
+            if (!res.ok) throw new Error('join failed')
+            const data = await res.json()
+            if (!mountedRef.current) return
+            setJoined(true)
+            if (typeof data.participants === 'number') setParticipants(data.participants)
+            toast.success(tComp('joinSuccess'))
+        } catch {
+            toast.error(tComp('joinError'))
+        } finally {
+            if (mountedRef.current) setJoining(false)
+        }
+    }
 
     // Raden rett over brukeren — for progresjonsbar («X poeng igjen til #N»)
     const nextRankEntry = userRank && userRank.rank > 1
@@ -114,6 +149,7 @@ export default function CompetitionClient({
             }, 8000)
 
             const { data: { user } } = await supabase.auth.getUser()
+            if (mountedRef.current) setHasUser(!!user)
 
             // Fetch leaderboard FIRST (user rank can lag)
             const data = await getLeaderboard(timeframe)
@@ -208,7 +244,7 @@ export default function CompetitionClient({
                     </h1>
                     <p className="text-sm text-[#9CA3AF]">
                         {tComp('heroLine', {
-                            participants: leaderboard.length || '—',
+                            participants: participants ?? (leaderboard.length || '—'),
                             balance: '100 000 kr',
                             prize: tComp('grandPrize'),
                         })}
@@ -233,6 +269,25 @@ export default function CompetitionClient({
                             </>
                         )}
                     </div>
+
+                    {/* Bli med / Du er med */}
+                    {!countdown.ended && (
+                        <div className="mt-6">
+                            {joined ? (
+                                <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#10B981] bg-[#064E3B]/60 border border-[#10B981]/40 rounded-full px-5 py-2.5">
+                                    ✓ {tComp('joinedBadge')}
+                                </span>
+                            ) : (
+                                <button
+                                    onClick={handleJoin}
+                                    disabled={joining}
+                                    className="h-12 px-8 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white font-bold shadow-lg shadow-[#3B82F6]/25 transition-all duration-150 ease-out hover:shadow-[#3B82F6]/40 active:scale-[0.97] disabled:opacity-60 disabled:pointer-events-none"
+                                >
+                                    {joining ? '…' : hasUser ? tComp('joinCta') : tComp('joinLoginCta')}
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* User Rank Card — gradient-kant + progresjon mot neste plass */}
@@ -445,6 +500,9 @@ export default function CompetitionClient({
                         <h3 className="font-bold text-[#F9FAFB] mb-2">Premier</h3>
                         <p className="text-sm text-[#6B7280]">
                             {tComp('weeklyPrize')}. {tComp('monthlyPrize')}.
+                        </p>
+                        <p className="text-sm text-[#10B981] mt-2">
+                            {tComp('participationPrize', { count: 5 })}
                         </p>
                     </div>
                 </div>

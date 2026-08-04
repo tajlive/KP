@@ -1305,7 +1305,13 @@
     "ended": "Ended",
     "ofParticipants": "of {count}",
     "youLead": "You are leading the competition! 🏆",
-    "gapToNext": "{gap} points to go to #{rank}"
+    "gapToNext": "{gap} points to go to #{rank}",
+    "joinCta": "Join the competition",
+    "joinLoginCta": "Log in to join",
+    "joinedBadge": "You are in!",
+    "joinSuccess": "You are in — good luck! 🏆",
+    "joinError": "Could not join. Please try again.",
+    "participationPrize": "Everyone with at least {count} trades enters the draw for 1 month of Pro."
   },
   "help": {
     "metadata": {
