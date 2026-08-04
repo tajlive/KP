@@ -107,7 +107,7 @@ export default async function SanityHeroSection({
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
         <div className="text-center max-w-4xl mx-auto">
           {/* Main Headline — Sanity overrides, otherwise i18n fallback */}
-          <h1 className="hero-headline text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.1] mb-6">
+          <h1 className="hero-headline text-[clamp(2rem,6.5vw,5.5rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.15] sm:leading-[1.1] mb-6 break-words">
             {title}
             {titleAccent && (
               <span className="block mt-2 bg-gradient-to-r from-kp-brand via-kp-brand-light to-purple-400 bg-clip-text text-transparent">
@@ -156,7 +156,7 @@ export default async function SanityHeroSection({
 
           {/* Trust indicators — from Sanity / fallback */}
           {trustBadges.length > 0 && (
-            <div className="mt-10 pt-6 border-t border-kp-border flex flex-wrap items-center justify-center gap-6 text-sm text-kp-text-secondary">
+            <div className="mt-10 pt-6 border-t border-kp-border flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-kp-text-secondary">
               {trustBadges.map((badge, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <svg

@@ -2210,7 +2210,8 @@
       "terms": "条款",
       "cookies": "饼干"
     },
-    "paymentSubtitle": "我们使用 Stripe 和 Vipps 进行安全支付。我们不会存储卡的详细信息。"
+    "paymentSubtitle": "我们使用 Stripe 和 Vipps 进行安全支付。我们不会存储卡的详细信息。",
+    "brandTagline": "Norway's easiest crypto trading"
   },
   "gamification": {
     "title": "游戏化",
@@ -2368,7 +2369,11 @@
       "title": "Top traders right now",
       "verifiedBadge": "Verified",
       "tradeCount": "trades",
-      "returnLabel": "return"
+      "returnLabel": "return",
+      "playMoney": "Play money",
+      "realRates": "Real Binance rates",
+      "realtime": "Real-time",
+      "tagline": "We never show numbers we can't verify. Start with 100,000 kr in play money — completely risk-free."
     },
     "metadata": {
       "title": "Klarpakke — Norway's crypto platform",
@@ -2671,6 +2676,73 @@
     "autoTrade": {
       "title": "Auto-Trading | Klarpakke",
       "description": "基于3年测试和硬数据的自动交易"
+    },
+    "pricingGrid": {
+      "title": "Choose your plan",
+      "subtitle": "Start free, upgrade when you're ready. All plans include paper trading and AI signals.",
+      "mostPopular": "Most popular",
+      "free": "Free",
+      "perMonth": "kr/month",
+      "startFree": "Start free",
+      "choosePlan": "Choose plan",
+      "footnote": "All prices include VAT. No lock-in period. Cancel anytime.",
+      "plans": {
+        "student": {
+          "name": "Student",
+          "price": "0",
+          "popular": "false",
+          "features": [
+            "Paper trading 100k",
+            "1 auto-strategy",
+            "AI signals",
+            "Community"
+          ]
+        },
+        "bachelor": {
+          "name": "Bachelor",
+          "price": "249",
+          "popular": "false",
+          "features": [
+            "Everything in Student",
+            "Live trading",
+            "3 strategies",
+            "Copy-trading paper"
+          ]
+        },
+        "master": {
+          "name": "Master",
+          "price": "499",
+          "popular": "true",
+          "features": [
+            "Everything in Bachelor",
+            "7 strategies",
+            "VIP signals",
+            "Live copy-trading"
+          ]
+        },
+        "phd": {
+          "name": "PhD",
+          "price": "999",
+          "popular": "false",
+          "features": [
+            "Everything in Master",
+            "Unlimited strategies",
+            "1:1 advisor",
+            "API access"
+          ]
+        },
+        "professor": {
+          "name": "Professor",
+          "price": "1999",
+          "popular": "false",
+          "features": [
+            "Everything in PhD",
+            "1:1 coaching",
+            "Alpha strategies",
+            "Founder group"
+          ]
+        }
+      }
     }
   },
   "metadata": {
@@ -4861,7 +4933,8 @@
       "sortinoRatio": "索蒂诺比率",
       "sortinoTooltip": "索蒂诺工具提示",
       "var95": "瓦尔",
-      "var95Tooltip": "变量工具提示"
+      "var95Tooltip": "变量工具提示",
+      "aiTemplateNotice": "Simplified explanation (AI temporarily unavailable)"
     },
     "riskProfile": "风险概况",
     "robotBrain": {
@@ -5130,7 +5203,8 @@
     "whyColumn": "为什么专栏",
     "whyMissing": "为什么失踪",
     "whySell": "为何出售",
-    "wins": "胜利"
+    "wins": "胜利",
+    "accountPnl": "Account P&L"
   },
   "wallet": {
     "title": "Lommebok",
@@ -6118,6 +6192,11 @@
     "step3": {
       "description": "使用虚拟资金 100,000 克朗。无风险地测试策略。",
       "title": "练习纸上交易"
+    },
+    "step4": {
+      "title": "Automate with bot",
+      "description": "Let AI trade for you when you're ready. You decide when.",
+      "badge": "Optional · Pro feature"
     }
   },
   "toasts": {
@@ -6185,5 +6264,10 @@
     },
     "subtitle": "请按照以下步骤安全智能地开始您的交易之旅",
     "title": "开始交易"
-  }
+  },
+  "liveTicker": {
+    "liveMarkets": "实时市场",
+    "updateInterval": "每15秒更新"
+  },
+  "nav": {}
 }
