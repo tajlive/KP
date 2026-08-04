@@ -24,6 +24,7 @@ import {
   PremiumTradingShell,
 } from "@/features/trading/PremiumTradingLayout";
 import { LivePricePreview } from "@/features/trading/LivePricePreview";
+import { GridLevelVisualization } from "@/features/trading/components/GridLevelVisualization";
 
 interface Trade {
   id: string;
@@ -595,6 +596,28 @@ export function BotDetailView({ session: initialSession, trades, locale }: BotDe
           </div>
         </dl>
       </PremiumPanel>
+      {/* Grid-visualisering for nybegynnere — viser nivåene boten handler på */}
+      {(() => {
+        const sc = session.strategy_config as Record<string, unknown> | undefined;
+        const lower = sc?.lowerPrice as number | undefined;
+        const upper = sc?.upperPrice as number | undefined;
+        const levels = sc?.gridLevelsCount as number | undefined;
+        if (!lower || !upper || !levels) return null;
+        // Hent nåværende pris fra siste trade eller session
+        const currentPrice = trades[0]?.price ?? (lower + upper) / 2;
+        return (
+          <div className="mt-6">
+            <GridLevelVisualization
+              lowerPrice={lower}
+              upperPrice={upper}
+              currentPrice={currentPrice}
+              gridLevels={levels}
+              formatNOK={formatNOK}
+              locale={locale === "no" ? "no" : "en"}
+            />
+          </div>
+        );
+      })()}
     </PremiumTradingShell>
   );
 }
