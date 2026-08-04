@@ -1286,7 +1286,17 @@
     "howToWinDesc": "Høyest prosentvis avkastning (ROI) vinner. Vi justerer for risiko ved å se på Sharpe-ratio.",
     "whatIsCopying": "Hva er kopiering?",
     "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem.",
-    "emptyCta": "Start trading"
+    "emptyCta": "Start trading",
+    "nicknameTitle": "Velg kallenavn for konkurransen",
+    "nicknameDesc": "Ledertavlen er offentlig — kallenavnet ditt er det eneste som vises. Fullt navn og e-post forblir private, alltid.",
+    "nicknameLabel": "Kallenavn",
+    "nicknameHint": "2–30 tegn. Bokstaver, tall, mellomrom, bindestrek og understrek.",
+    "nicknameSuggest": "Foreslå",
+    "nicknameSave": "Lagre kallenavn",
+    "nicknameLater": "Senere",
+    "nicknameTaken": "Kallenavnet er allerede i bruk",
+    "nicknameInvalid": "Ugyldig kallenavn",
+    "nicknameSaved": "Kallenavn lagret — lykke til på ledertavlen!"
   },
   "help": {
     "metadata": {

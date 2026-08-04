@@ -14,6 +14,7 @@ export interface UserData {
   username: string | null;
   email: string;
   full_name: string | null;
+  display_name: string | null;
   role: string;
   subscription_tier: string;
   subscription_status: string;

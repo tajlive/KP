@@ -25,6 +25,16 @@ import TopThree from '@/features/leaderboard/TopThree'
 import { TraderBadges, getBadges } from '@/features/leaderboard/Badges'
 import { TraderProgress } from '@/features/leaderboard/ProgressBar'
 import { TraderInsight } from '@/features/leaderboard/TraderInsight'
+import { NicknameModal } from '@/features/leaderboard/NicknameModal'
+
+/** Kallenavn som regnes som "ikke valgt" — generisk placeholder eller fullt navn. */
+function needsRealNickname(name: string | null | undefined): boolean {
+    if (!name) return true
+    const n = name.trim()
+    if (n.length < 2) return true
+    if (n.toLowerCase() === 'trader') return true
+    return false
+}
 
 export default function CompetitionClient({
     params
@@ -44,6 +54,8 @@ export default function CompetitionClient({
     const [error, setError] = useState<string | null>(null)
     const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'all_time'>('weekly')
     const [expandedTrader, setExpandedTrader] = useState<string | null>(null)
+    const [showNicknameModal, setShowNicknameModal] = useState(false)
+    const [nicknameSuggestion, setNicknameSuggestion] = useState('')
     const mountedRef = useRef(true)
     const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -78,6 +90,21 @@ export default function CompetitionClient({
                 }).catch(() => {
                     // Silently fail — data is already shown
                 })
+
+                // Kallenavn-onboarding: vis modal hvis brukeren mangler
+                // reelt kallenavn (generisk «Trader»/fullt navn/null).
+                fetch('/api/user/display-name', { cache: 'no-store' })
+                    .then(res => (res.ok ? res.json() : null))
+                    .then((data: { display_name?: string | null; suggestion?: string } | null) => {
+                        if (!mountedRef.current || !data) return
+                        if (needsRealNickname(data.display_name)) {
+                            setNicknameSuggestion(data.suggestion ?? '')
+                            setShowNicknameModal(true)
+                        }
+                    })
+                    .catch(() => {
+                        // Modal er nice-to-have — leaderboard fungerer uten
+                    })
             }
 
         } catch (error) {
@@ -120,6 +147,17 @@ export default function CompetitionClient({
 
     return (
         <div className="min-h-screen bg-[#0A0B0D] py-12 px-4">
+            {showNicknameModal && (
+                <NicknameModal
+                    initialSuggestion={nicknameSuggestion}
+                    onSaved={() => {
+                        setShowNicknameModal(false)
+                        // Reload så brukerens egen rad viser nye kallenavnet
+                        void loadData()
+                    }}
+                    onDismiss={() => setShowNicknameModal(false)}
+                />
+            )}
             <div className="max-w-6xl mx-auto space-y-8">
 
                 {/* Header */}
