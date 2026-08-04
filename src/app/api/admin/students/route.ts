@@ -53,8 +53,10 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  // Whitelist av roller — ingen fritekst
-  const ALLOWED_ROLES = ["student", "admin", "instructor", "user"];
+  // Whitelist av roller — ingen fritekst.
+  // Dekker UI-rollene i /admin/users (user/beta/premium/master/phd/professor/admin)
+  // + legacy student/instructor.
+  const ALLOWED_ROLES = ["student", "admin", "instructor", "user", "beta", "premium", "master", "phd", "professor"];
   if (!ALLOWED_ROLES.includes(body.role)) {
     return NextResponse.json(
       { ok: false, error: `Ugyldig rolle (tillatt: ${ALLOWED_ROLES.join(", ")})` },

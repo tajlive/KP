@@ -4,7 +4,6 @@ src/app/[locale]/(admin)/admin/campaign/ClientCampaign.tsx
 src/app/[locale]/(admin)/admin/layout.tsx
 src/app/[locale]/(admin)/admin/sync-status/ClientSyncStatus.tsx
 src/app/[locale]/(admin)/admin/system/ClientAdminSystem.tsx
-src/app/[locale]/(admin)/admin/users/ClientAdminUsers.tsx
 src/app/[locale]/(admin)/admin/v2/ClientAdminV2.tsx
 src/features/account/profile/ProfileTab.tsx
 src/features/account/settings/BinanceAPISettings.tsx
