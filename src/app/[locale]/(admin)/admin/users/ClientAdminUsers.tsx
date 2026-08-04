@@ -10,6 +10,7 @@ import {
   Crown,
   Eye,
   GraduationCap,
+  Pencil,
   RefreshCw,
   Search,
   Shield,
@@ -45,6 +46,11 @@ export default function ClientAdminUsers() {
   const [paperSyncSessions, setPaperSyncSessions] = useState(true);
   const [paperResetBaseline, setPaperResetBaseline] = useState(false);
   const [savingPaper, setSavingPaper] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editUser, setEditUser] = useState<UserData | null>(null);
+  const [editFullName, setEditFullName] = useState("");
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
   const [reportUser, setReportUser] = useState<UserData | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportJobId, setReportJobId] = useState<string | null>(null);
@@ -219,6 +225,43 @@ export default function ClientAdminUsers() {
       toast.error(t("usersPage.paperError"));
     } finally {
       setSavingPaper(false);
+    }
+  };
+
+  const saveEditProfile = async () => {
+    if (!editUser) return;
+    const displayName = editDisplayName.trim();
+    if (displayName.length > 0 && (displayName.length < 2 || displayName.length > 30)) {
+      toast.error("Kallenavn må være 2–30 tegn (eller tomt)");
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      const res = await fetch("/api/admin/user-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: editUser.id,
+          full_name: editFullName.trim() || null,
+          display_name: displayName || null,
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(
+          typeof body.error === "string" ? body.error : "Kunne ikke lagre",
+        );
+        return;
+      }
+      toast.success("Profil oppdatert");
+      setShowEditModal(false);
+      setEditUser(null);
+      await fetchUsers();
+    } catch (e) {
+      console.error(e);
+      toast.error("Kunne ikke lagre");
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -578,6 +621,11 @@ export default function ClientAdminUsers() {
                           {user.full_name}
                         </p>
                       )}
+                      {user.display_name && (
+                        <p className="text-xs text-[#6FA3FF]">
+                          🏆 {user.display_name}
+                        </p>
+                      )}
                     </div>
                   </td>
                   <td className={TABLE.cell}>
@@ -640,6 +688,19 @@ export default function ClientAdminUsers() {
                   </td>
                   <td className={TABLE.cell}>
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditUser(user);
+                          setEditFullName(user.full_name ?? "");
+                          setEditDisplayName(user.display_name ?? "");
+                          setShowEditModal(true);
+                        }}
+                        aria-label={`Rediger: ${user.email || user.id}`}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors text-xs font-medium"
+                      >
+                        <Pencil className="w-3 h-3" />
+                        Rediger
+                      </button>
                       <button
                         onClick={() => {
                           setSelectedUser(user);
@@ -751,6 +812,78 @@ export default function ClientAdminUsers() {
                 className="px-4 py-2 bg-[#0052FF] text-white rounded-lg font-medium disabled:opacity-50"
               >
                 {savingPaper ? "…" : t("usersPage.savePaper")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rediger profil-modal (navn + kallenavn) */}
+      {showEditModal && editUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4">
+            <h3 className="text-lg font-semibold text-white">
+              Rediger bruker
+            </h3>
+            <p className="text-sm text-slate-300">
+              {editUser.email || editUser.id}
+            </p>
+            <div>
+              <label
+                htmlFor="admin-edit-full-name"
+                className="text-xs text-slate-500 uppercase tracking-wide"
+              >
+                Fullt navn (internt)
+              </label>
+              <input
+                id="admin-edit-full-name"
+                type="text"
+                value={editFullName}
+                onChange={(e) => setEditFullName(e.target.value)}
+                maxLength={100}
+                className="mt-1 w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="admin-edit-display-name"
+                className="text-xs text-slate-500 uppercase tracking-wide"
+              >
+                Kallenavn (offentlig — leaderboard/konkurranse)
+              </label>
+              <input
+                id="admin-edit-display-name"
+                type="text"
+                value={editDisplayName}
+                onChange={(e) => setEditDisplayName(e.target.value)}
+                maxLength={30}
+                placeholder="f.eks. NordlysWolf"
+                className="mt-1 w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                2–30 tegn, må være unikt. Dette er det eneste navnet som vises
+                på den offentlige ledertavlen.
+              </p>
+            </div>
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditUser(null);
+                }}
+                className="px-4 py-2 text-slate-400 hover:text-white"
+                disabled={savingEdit}
+              >
+                Avbryt
+              </button>
+              <button
+                type="button"
+                onClick={() => void saveEditProfile()}
+                disabled={savingEdit}
+                className="px-4 py-2 bg-[#0052FF] text-white rounded-lg font-medium disabled:opacity-50"
+              >
+                {savingEdit ? "…" : "Lagre"}
               </button>
             </div>
           </div>

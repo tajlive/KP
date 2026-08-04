@@ -1274,7 +1274,17 @@
     "whatIsCopying": "什么是抄袭？",
     "whatIsCopyingDesc": "当您跟单交易者时，您会启动一个与他们具有相同风险状况和策略的机器人。",
     "winRate": "胜率",
-    "yourPosition": "你的立场"
+    "yourPosition": "你的立场",
+    "nicknameTitle": "为比赛选择一个昵称",
+    "nicknameDesc": "排行榜是公开的——您的昵称是唯一显示的内容。全名和电子邮件将永远保持私密。",
+    "nicknameLabel": "昵称",
+    "nicknameHint": "2–30个字符。字母、数字、空格、连字符和下划线。",
+    "nicknameSuggest": "建议",
+    "nicknameSave": "保存昵称",
+    "nicknameLater": "稍后",
+    "nicknameTaken": "该昵称已被使用",
+    "nicknameInvalid": "昵称无效",
+    "nicknameSaved": "昵称已保存——祝您在排行榜上好运！"
   },
   "contact": {
     "title": "联系我们",

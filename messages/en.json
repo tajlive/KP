@@ -1286,7 +1286,17 @@
     "howToWinDesc": "Highest percentage return (ROI) wins. We adjust for risk by looking at Sharpe ratio.",
     "whatIsCopying": "What is copying?",
     "whatIsCopyingDesc": "When you copy a trader, you start a bot with the same risk profile and strategy as them.",
-    "emptyCta": "Start trading"
+    "emptyCta": "Start trading",
+    "nicknameTitle": "Choose a nickname for the competition",
+    "nicknameDesc": "The leaderboard is public — your nickname is the only thing shown. Full name and email stay private, always.",
+    "nicknameLabel": "Nickname",
+    "nicknameHint": "2–30 characters. Letters, numbers, spaces, hyphens and underscores.",
+    "nicknameSuggest": "Suggest",
+    "nicknameSave": "Save nickname",
+    "nicknameLater": "Later",
+    "nicknameTaken": "That nickname is already taken",
+    "nicknameInvalid": "Invalid nickname",
+    "nicknameSaved": "Nickname saved — good luck on the leaderboard!"
   },
   "help": {
     "metadata": {
