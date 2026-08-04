@@ -67,7 +67,7 @@ async function upsertCandles(symbol, klines) {
     close_time: new Date(k[6]).toISOString(),
   }));
 
-  const url = `${supaUrl}/rest/v1/price_candles`;
+  const url = `${supaUrl}/rest/v1/price_candles?on_conflict=symbol,open_time`;
   const res = await fetch(url, {
     method: "POST",
     headers: {
