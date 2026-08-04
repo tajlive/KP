@@ -330,3 +330,4 @@ tmp/
 .superpowers/
 .kimi/archive/
 .tmp-e2e/
+dogfood-output/
