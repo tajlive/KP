@@ -25,18 +25,20 @@ describe("buildTradeExplanation", () => {
       expect(result.learnMoreKey).toBe("dca_smart");
     });
 
-    it("forklarer grid-trading korrekt", () => {
+    it("forklarer grid-trading for nybegynnere (uten jargong)", () => {
       const trade: TradeForExplanation = {
         side: "buy",
         mode: "live",
         realized_pnl: null,
         strategy_signal: { strategy_type: "grid_bot" },
       };
-      
+
       const result = buildTradeExplanation(trade, null, "no");
-      
-      expect(result.whyBuy).toContain("grid");
-      expect(result.whyBuy).toContain("kjøper automatisk");
+
+      // Nybegynner-tekst: ingen "grid"-jargong, forklarer med metafor
+      expect(result.whyBuy).toContain("forhåndsbestemte kjøpsnivåer");
+      expect(result.whyBuy).toContain("automatisk");
+      expect(result.whyBuy).toContain("gevinst");
       expect(result.learnMoreKey).toBe("grid_trading");
     });
 
@@ -144,6 +146,22 @@ describe("buildTradeExplanation", () => {
       
       expect(result.whySell).toContain("manuelt");
       expect(result.whySell).toContain("full kontroll");
+    });
+
+    it("forklarer grid-salg for nybegynnere (sellType=grid)", () => {
+      const trade: TradeForExplanation = {
+        side: "sell",
+        mode: "paper",
+        realized_pnl: 150,
+        price: 605000,
+        strategy_signal: { sellType: "grid" },
+      };
+
+      const result = buildTradeExplanation(trade, null, "no");
+
+      expect(result.whySell).toContain("neste nivå");
+      expect(result.whySell).toContain("gevinsten automatisk");
+      expect(result.whySell).toMatch(/150/);
     });
 
     it("viser gevinstbeløp ved positiv PnL uten spesifikk exit-reason", () => {

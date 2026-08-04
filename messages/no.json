@@ -769,8 +769,8 @@
         "description": "RSI + momentum på 4h"
       },
       "grid_bot": {
-        "name": "Grid Bot",
-        "description": "Automatisk grid trading"
+        "name": "Kjøp lavt, selg høyt",
+        "description": "Kjøper i små trinn når prisen faller og selger når den stiger — helt automatisk."
       },
       "ai_copy": {
         "name": "AI Copy",
@@ -1283,7 +1283,7 @@
     "risk": "Risiko",
     "trades": "handler",
     "howToWin": "Hvordan vinne?",
-    "howToWinDesc": "Høyest prosentvis avkastning (ROI) vinner. Vi justerer for risiko ved å se på Sharpe-ratio.",
+    "howToWinDesc": "Høyest prosentvis avkastning vinner. Vi tar også hensyn til risiko, så store sjanser alene ikke vinner.",
     "whatIsCopying": "Hva er kopiering?",
     "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem.",
     "emptyCta": "Start trading",
@@ -1999,7 +1999,7 @@
       "cached": "(cachet)",
       "metrics": {
         "winRate": "Win rate",
-        "drawdown": "Drawdown",
+        "drawdown": "Maks tap",
         "streak": "Streak"
       },
       "disclaimer": "Dette er utdanning, ikke finansiell rådgivning."
@@ -4485,8 +4485,8 @@
         "description": "RSI + MACD + Bollinger gir hyppigere handler."
       },
       "grid_bot": {
-        "name": "Grid Bot",
-        "description": "Kjøper lavt, selger høyt i prisgitter."
+        "name": "Kjøp lavt, selg høyt",
+        "description": "Kjøper i små trinn når prisen faller, og selger i trinn når den stiger."
       },
       "ai_copy": {
         "name": "AI Copy",
@@ -4665,7 +4665,7 @@
       "riskBanner": {
         "crashed": "Crashed",
         "dailyLossLimit": "Daily tap limit",
-        "maxDrawdown": "Maks drawdown",
+        "maxDrawdown": "Maks tap",
         "title": "Tittel"
       },
       "marketData": {
@@ -4827,7 +4827,7 @@
           "totalPnl": "Totalt p/l",
           "totalFees": "Totalt fees",
           "profitFactor": "Profitt factor",
-          "maxDrawdown": "Maks drawdown",
+          "maxDrawdown": "Maks tap",
           "bestPair": "Best par",
           "worstPair": "Worst par",
           "bestSession": "Best økt",
@@ -5089,7 +5089,7 @@
       "needsDailyReturnSeries": "Needs daily return series",
       "goodRiskAdjustedReturns": "Good risiko adjusted returns",
       "belowOptimal": "Below optimal",
-      "maxDrawdown": "Maks drawdown",
+      "maxDrawdown": "Maks tap",
       "needsEquityCurve": "Needs equity curve",
       "lowRisk": "Lav risiko",
       "higherRisk": "Higher risiko",
@@ -5106,25 +5106,25 @@
       "smartTradingInsights": "Smart trading insights"
     },
     "advancedStats": {
-      "errorRunBacktest": "Feil run backtest",
-      "backtestFailed": "Backtest failed",
-      "backtestUnavailable": "Backtest unavailable",
-      "tabOverview": "Tab oversikt",
-      "tabPerformance": "Tab resultat",
-      "tabHistory": "Tab historikk",
+      "errorRunBacktest": "Kunne ikke kjøre den historiske testen",
+      "backtestFailed": "Historisk test feilet",
+      "backtestUnavailable": "Historisk test er ikke tilgjengelig",
+      "tabOverview": "Oversikt",
+      "tabPerformance": "Resultater",
+      "tabHistory": "Historikk",
       "statTotalTrades": "Stat totalt handler",
-      "statWinRate": "Stat vinn rate",
-      "statProfitFactor": "Stat profitt factor",
-      "statMaxDrawdown": "Stat max drawdown",
-      "sectionTradeStats": "Section handel statistikk",
-      "labelWinningTrades": "Etikett winning handler",
-      "labelLosingTrades": "Etikett losing handler",
-      "labelBestTrade": "Etikett best handel",
-      "labelWorstTrade": "Etikett worst handel",
-      "monthlyPnLTitle": "Monthly pn l tittel",
-      "emptySignals": "Ingen data signals",
+      "statWinRate": "Vinnandel",
+      "statProfitFactor": "Gevinstfaktor",
+      "statMaxDrawdown": "Maks tap",
+      "sectionTradeStats": "Handelsstatistikk",
+      "labelWinningTrades": "Vinnende handler",
+      "labelLosingTrades": "Tapende handler",
+      "labelBestTrade": "Beste handel",
+      "labelWorstTrade": "Dårligste handel",
+      "monthlyPnLTitle": "Månedlig resultat",
+      "emptySignals": "Ingen signaler ennå",
       "labelWinRate": "Etikett vinn rate",
-      "emptyBacktests": "Ingen data backtests"
+      "emptyBacktests": "Ingen historiske tester ennå"
     },
     "aggressivitySlider": {
       "levels": {
@@ -5223,7 +5223,7 @@
       "statPnl": "Stat p/l",
       "statWinRate": "Stat vinn rate",
       "statTrades": "Stat handler",
-      "statMaxDrawdown": "Stat max drawdown",
+      "statMaxDrawdown": "Maks tap",
       "currentPrice": "Current pris",
       "botLogTitle": "Bot log tittel",
       "waitingForSignals": "Waiting for signals"
@@ -5307,7 +5307,7 @@
       "bestDay": "Beste dag",
       "worstDay": "Verste dag",
       "avgTrade": "Gj.snitt handel",
-      "maxDrawdown": "Maks drawdown",
+      "maxDrawdown": "Maks tap",
       "dailyHeatmap": "Daily heatmap",
       "loss": "Tap",
       "profit": "Profitt"

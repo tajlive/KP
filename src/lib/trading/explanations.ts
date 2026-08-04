@@ -132,19 +132,24 @@ function getStrategyKey(trade: TradeForExplanation): StrategyKey {
 }
 
 function getExitReason(trade: TradeForExplanation): ExitReason {
+  // Grid-salg: strategy_signal.sellType === "grid" (eller reason_code GRID_SELL)
+  const signal = trade.strategy_signal as Record<string, unknown> | null | undefined;
+  if (signal?.sellType === "grid" || signal?.sell_type === "grid") return "grid_sell";
+
   if (trade.exit_reason) {
     const reason = trade.exit_reason.toLowerCase();
     if (reason.includes("stoploss") || reason.includes("stop_loss")) return "stoploss";
     if (reason.includes("takeprofit") || reason.includes("take_profit")) return "take_profit";
     if (reason.includes("manual")) return "manual";
     if (reason.includes("reverse") || reason.includes("signal")) return "signal_reverse";
+    if (reason.includes("grid")) return "grid_sell";
     return reason;
   }
-  
+
   if (trade.side === "sell" && trade.realized_pnl !== null && trade.realized_pnl < 0) {
     return "stoploss";
   }
-  
+
   return "signal";
 }
 
@@ -204,7 +209,7 @@ function buildBuyExplanation(
       return `Vi kjøpte${size}${price} fordi Smart DCA-strategien indikerte at det var en god kjøpsfase${indicatorCtx}. Ved å kjøpe litt og litt når prisen er gunstig, bygger du posisjon gradvis uten å prøve å time markedet perfekt.`;
     
     case "grid_trading":
-      return `Vi kjøpte${size}${price} fordi prisen falt til et lavere nivå i vårt grid${indicatorCtx}. Grid-strategien kjøper automatisk når prisen går ned og selger når den går opp – perfekt for sideveis marked.`;
+      return `Vi kjøpte${size}${price} fordi prisen falt ned til et av våre forhåndsbestemte kjøpsnivåer${indicatorCtx}. Tenk på det som å legge ut støvsugere på forskjellige prisnivåer – hver gang prisen treffer en, kjøper vi litt. Når prisen stiger igjen, selger vi med gevinst. Du trenger ikke gjøre noe – det skjer automatisk, døgnet rundt.`;
     
     case "sma_crossover":
       return `Vi kjøpte${size}${price} fordi korttids-trenden krysset over langtids-trenden${indicatorCtx}. Dette «golden cross»-signalet indikerer at momentum snur til det positive.`;
@@ -243,7 +248,7 @@ function buildBuyExplanationEn(trade: TradeForExplanation, decision: AiDecision 
     case "dca_smart":
       return `We bought${size}${price} because the Smart DCA strategy indicated a good buying phase${indicatorCtx}. By purchasing gradually when prices are favorable, you build your position without trying to perfectly time the market.`;
     case "grid_trading":
-      return `We bought${size}${price} because the price dropped to a lower level in our grid${indicatorCtx}. The grid strategy automatically buys when price goes down and sells when it goes up.`;
+      return `We bought${size}${price} because the price dropped to one of our preset buy levels${indicatorCtx}. Think of it like placing nets at different price levels — each time the price hits one, we buy a little. When it rises again, we sell for a profit. It happens automatically, around the clock.`;
     case "sma_crossover":
       return `We bought${size}${price} because the short-term trend crossed above the long-term trend${indicatorCtx}. This 'golden cross' signal indicates momentum may be turning positive.`;
     case "trend_following":
@@ -272,8 +277,10 @@ function buildSellExplanation(
   const pnlStr = formatNOK(pnl, locale);
   const price = trade.price ? ` til ${Math.round(trade.price).toLocaleString("nb-NO")} kr` : "";
   const indicatorCtx = getIndicatorContext(trade.strategy_signal, locale);
-  
+
   switch (exitReason) {
+    case "grid_sell":
+      return `Vi solgte${price} fordi prisen steg opp til neste nivå i vårt nett${indicatorCtx}. Hver gang prisen stiger fra et kjøpsnivå til salgsnivået over, sikrer vi gevinsten automatisk. Resultat: ${pnlStr}.`;
     case "stoploss":
       if (pnl < -500) {
         return `Vi solgte${price} fordi prisen falt under stoploss-grensen. Risikostyring i praksis: Vi aksepterte et tap på ${pnlStr} for å unngå større fall. Selv gode strategier har tapende trades – det viktige er at tapene er små mens gevinstene er større.`;
@@ -305,8 +312,10 @@ function buildSellExplanationEn(trade: TradeForExplanation, decision: AiDecision
   const pnlStr = formatNOK(pnl, "en");
   const price = trade.price ? ` at ${Math.round(trade.price).toLocaleString("en-US")}` : "";
   const indicatorCtx = getIndicatorContext(trade.strategy_signal, "en");
-  
+
   switch (exitReason) {
+    case "grid_sell":
+      return `We sold${price} because the price rose to the next level in our net${indicatorCtx}. Each time the price climbs from a buy level to the sell level above, we secure the profit automatically. Result: ${pnlStr}.`;
     case "stoploss":
       if (pnl < -500) {
         return `We sold${price} because the price fell below the stop-loss limit. Risk management in practice: We accepted a loss of ${pnlStr} to avoid larger drops. Even good strategies have losing trades – what matters is that losses are small while gains are larger.`;

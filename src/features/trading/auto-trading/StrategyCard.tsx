@@ -42,23 +42,23 @@ interface StrategyCardProps {
 const STRATEGY_LABELS: Record<string, { name: string; description: string }> = {
   dca_trygg: {
     name: "DCA Trygg",
-    description: "Ukentlig dollar-cost averaging",
+    description: "Kjøper litt hver uke, uansett pris. Bygger posisjon gradvis uten å time markedet.",
   },
   trend_balansert: {
     name: "Trend Balansert",
-    description: "MA-crossover med RSI-filter",
+    description: "Følger trenden opp og ned. Kjøper når trenden snur opp, selger når den snur ned.",
   },
   multisignal_aktiv: {
     name: "Multi-Signal",
-    description: "RSI + momentum på 4h",
+    description: "Bruker flere indikatorer samtidig (RSI, momentum). Kjøper når flere signaler peker samme vei.",
   },
   grid_bot: {
     name: "Grid Bot",
-    description: "Automatisk grid trading",
+    description: "Plasserer kjøps- og salgsordre på mange prisnivåer samtidig. Kjøper når prisen faller, selger når den stiger. Du tjener på svingninger, ikke retning.",
   },
   ai_copy: {
     name: "AI Copy",
-    description: "Kopier AI-genererte signaler",
+    description: "Kopierer hva vår AI gjør. AI-en analyserer markedet og velger kjøp/salg – du følger med automatisk.",
   },
 };
 
