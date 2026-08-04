@@ -1311,7 +1311,8 @@
     "joinedBadge": "Du er med!",
     "joinSuccess": "Du er påmeldt — lykke til! 🏆",
     "joinError": "Kunne ikke melde deg på. Prøv igjen.",
-    "participationPrize": "Alle med minst {count} handler er med i trekningen om 1 måned Pro."
+    "participationPrize": "Alle med minst {count} handler er med i trekningen om 1 måned Pro.",
+    "emptyDesc": "Ingen tradere har resultater ennå. Start trading for å komme på lista!"
   },
   "help": {
     "metadata": {

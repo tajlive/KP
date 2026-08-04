@@ -404,7 +404,7 @@ export default function CompetitionClient({
                                 <EmptyState
                                     variant="trophy"
                                     title={tComp('noActive')}
-                                    description="Ingen tradere har resultater ennå. Start trading for å komme på lista!"
+                                    description={tComp('emptyDesc')}
                                     action={{ label: tComp('emptyCta'), href: `/${params.locale}/trade` }}
                                 />
                             </div>
