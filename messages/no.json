@@ -1423,7 +1423,12 @@
     "ctaButton": "Start gratis",
     "ctaSubtext": "Ingen kredittkort · 2 minutter å komme i gang",
     "ctaButtonLoggedIn": "Gå til dashboard",
-    "ctaSubtextLoggedIn": "Fortsett din læringsreise"
+    "ctaSubtextLoggedIn": "Fortsett din læringsreise",
+    "step4": {
+      "title": "Automate with bot",
+      "description": "Let AI trade for you when you're ready. You decide when.",
+      "badge": "Optional · Pro feature"
+    }
   },
   "coursePreview": {
     "sectionTitle": "Kom i gang på under én time",
@@ -5407,7 +5412,8 @@
       "minError": "Minimumsbeløp er 50 kr",
       "exitToFull": "Gå til full terminal",
       "seeResult": "Se handelen din"
-    }
+    },
+    "accountPnl": "Account P&L"
   },
   "wallet": {
     "title": "Lommebok",

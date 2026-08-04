@@ -38,7 +38,7 @@ export default async function PriserPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "pricingGrid" });
+  const t = await getTranslations({ locale, namespace: "meta.pricingGrid" });
 
   return (
     <div className="min-h-screen bg-[#0A0B0D]" style={{ fontFamily: "system-ui, sans-serif" }}>
