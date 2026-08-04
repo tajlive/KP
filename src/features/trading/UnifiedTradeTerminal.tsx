@@ -419,9 +419,9 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
     <div className="space-y-3">
       {/* Symbol selector */}
       <div>
-        <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1 block">
+        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1 block">
           Valuta
-        </label>
+        </span>
         <div className="flex rounded-lg bg-[#0A0D12] border border-[#1E2530] p-0.5 overflow-x-auto">
           {SYMBOLS.map((s) => (
             <button

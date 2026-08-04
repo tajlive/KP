@@ -842,12 +842,11 @@ async function processSession(
         | Record<string, number>
         | undefined;
       const gridLevels = gridCfg?.levels ?? 10;
-      // Grid needs at least 2 trades per level (buy + sell) per day
+      // Grid needs at least 2 trades per level (buy + sell) per day.
+      // Risk-profiles (5/10/day) are tuned for signal-trading, not grid —
+      // always raise to gridMin without warning noise (expected, not anomalous).
       const gridMinTrades = gridLevels * 2;
       if (riskConfig.maxDailyTrades < gridMinTrades) {
-        console.warn(
-          `[Grid] Session ${session.id}: maxDailyTrades (${riskConfig.maxDailyTrades}) < gridMinTrades (${gridMinTrades}). Raising limit.`,
-        );
         riskConfig = { ...riskConfig, maxDailyTrades: gridMinTrades };
       }
     }
@@ -2393,21 +2392,15 @@ export async function GET(req: NextRequest) {
     );
     const results: TickResult[] = [];
 
-    for (const session of sessionsWithAuto) {
-      // Skip manual sessions — these are user-driven and not processed by auto-trading cron
+    // Parallelliser tick: sekvensiell prosessering av 300+ sesjoner overskrider
+    // Cloudflares 60s CPU-grense (HTTP 000 fra klient). Batches av 25 kjører
+    // samtidig — hvert batch har egen timeout-guard. Manuell-sesjoner og
+    // heartbeat-on-error er beholdt likt.
+    const TICK_BATCH_SIZE = 25;
+    const processOne = async (session: (typeof sessionsWithAuto)[number]): Promise<TickResult> => {
       if (session.strategy_id === "manual") {
-        results.push({ session_id: session.id, action: "heartbeat" });
-        continue;
+        return { session_id: session.id, action: "heartbeat" };
       }
-
-      // Timeout protection
-      if (Date.now() - startTime > 55_000) {
-        console.warn(
-          `Cron tick timeout approaching, processed ${results.length}/${sessionsWithAuto.length}`,
-        );
-        break;
-      }
-
       try {
         const symbolKey = session.trading_pair?.replace("/", "") || "BTCUSDT";
         const result = await processSession(
@@ -2422,9 +2415,8 @@ export async function GET(req: NextRequest) {
           lastSellCache,
           edgeCache,
         );
-        results.push(result);
 
-        // If this was a real trade (not hold/heartbeat), mirror to copy sessions
+        // Mirror real trades to copy sessions
         if (
           (result.action === "buy" || result.action === "sell") &&
           result.trade_id
@@ -2439,12 +2431,13 @@ export async function GET(req: NextRequest) {
             await mirrorTradeToFollowers(db, session.id, trade);
           }
         }
+        return result;
       } catch (err) {
         const errorMessage = (err as Error).message;
         console.error(`Error processing session ${session.id}:`, errorMessage);
 
-        // Update heartbeat even on processing errors so that transient failures
-        // (e.g. Binance 403) do not cause the session to be marked as crashed.
+        // Update heartbeat even on processing errors so transient failures
+        // (e.g. Binance 403) do not mark the session as crashed.
         try {
           await db
             .from("trading_sessions")
@@ -2460,12 +2453,25 @@ export async function GET(req: NextRequest) {
           );
         }
 
-        results.push({
+        return {
           session_id: session.id,
           action: "error",
           error: errorMessage,
-        });
+        };
       }
+    };
+
+    for (let i = 0; i < sessionsWithAuto.length; i += TICK_BATCH_SIZE) {
+      // Timeout protection — stop starting new batches near the CPU limit
+      if (Date.now() - startTime > 55_000) {
+        console.warn(
+          `Cron tick timeout approaching, processed ${results.length}/${sessionsWithAuto.length}`,
+        );
+        break;
+      }
+      const batch = sessionsWithAuto.slice(i, i + TICK_BATCH_SIZE);
+      const batchResults = await Promise.all(batch.map(processOne));
+      results.push(...batchResults);
     }
 
     // Sync paper_accounts for alle berørte brukere
