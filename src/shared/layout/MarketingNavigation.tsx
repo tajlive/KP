@@ -41,7 +41,7 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
             <span className="text-xl font-bold text-kp-text-primary truncate hidden sm:inline">
               Klarpakke
             </span>
-            <span className="text-xl font-bold text-kp-text-primary sm:hidden truncate">
+            <span className="text-lg font-bold text-kp-text-primary sm:hidden whitespace-nowrap">
               Klarpakke
             </span>
             <span className="ml-1.5 text-sm font-medium text-kp-text-muted truncate hidden xl:inline shrink-0">
