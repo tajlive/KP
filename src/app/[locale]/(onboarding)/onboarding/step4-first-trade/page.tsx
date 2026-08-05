@@ -23,7 +23,9 @@ import {
   TrendingUp,
   ArrowRight,
   Wallet,
+  Zap,
 } from "lucide-react";
+import { KrakenConnect } from "@/features/onboarding/KrakenConnect";
 
 export const dynamic = "force-dynamic";
 
@@ -108,6 +110,8 @@ export default function OnboardingStep4FirstTrade() {
   const [success, setSuccess] = useState(false);
   const [tradeResult, setTradeResult] = useState<TradeResult | null>(null);
   const [showTooltip, setShowTooltip] = useState<"price" | "balance" | "trade" | null>("balance");
+  const [showKrakenConnect, setShowKrakenConnect] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Check status
   useEffect(() => {
@@ -144,6 +148,7 @@ export default function OnboardingStep4FirstTrade() {
 
         if (mounted) {
           setPaperBalance(Number(profile?.paper_balance) || 100000);
+          setUserId(profile?.user_id || null);
           setChecking(false);
         }
       } catch {
@@ -239,6 +244,16 @@ export default function OnboardingStep4FirstTrade() {
     router.push(`/${locale}/dashboard`);
   };
 
+  const handleKrakenSuccess = () => {
+    setShowKrakenConnect(false);
+    // Refresh onboarding state
+    window.location.reload();
+  };
+
+  const handleKrakenError = (error: string) => {
+    console.error("Kraken connect error:", error);
+  };
+
   if (checking) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -325,6 +340,31 @@ export default function OnboardingStep4FirstTrade() {
             </div>
           </motion.div>
 
+          {/* Kraken connect button */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="w-full"
+          >
+            <button
+              onClick={() => setShowKrakenConnect(true)}
+              className="w-full rounded-2xl border border-[#F59E0B]/30 bg-gradient-to-r from-[#F59E0B]/10 to-[#FCD34D]/5 p-4 text-left hover:border-[#F59E0B]/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-[#F59E0B]" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[#F9FAFB]">Koble til Kraken</p>
+                  <p className="text-xs text-[#9CA3AF] mt-0.5">
+                    For ekte penger — automatisk trading
+                  </p>
+                </div>
+              </div>
+            </button>
+          </motion.div>
+
           {/* What's next */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -355,6 +395,25 @@ export default function OnboardingStep4FirstTrade() {
             </Button>
           </OnboardingStickyFooter>
         </div>
+
+        {/* Kraken Connect Modal */}
+        {showKrakenConnect && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="relative max-w-md w-full max-h-[90vh] overflow-y-auto rounded-2xl bg-[#0A0B0D] border border-[#2A2D35]">
+              <button
+                onClick={() => setShowKrakenConnect(false)}
+                className="absolute top-4 right-4 text-[#9CA3AF] hover:text-[#F9FAFB] z-10"
+              >
+                ✕
+              </button>
+              <KrakenConnect
+                userId={userId || ""}
+                onSuccess={handleKrakenSuccess}
+                onError={handleKrakenError}
+              />
+            </div>
+          </div>
+        )}
       </TooltipProvider>
     );
   }
