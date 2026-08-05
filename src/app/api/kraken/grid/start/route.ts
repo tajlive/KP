@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 import { KrakenGridTrader } from "@/lib/trading/kraken-grid";
 
 const supabase = createClient(
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Hent brukerens Kraken-nøkler
     const { data: keys, error } = await supabase
       .from("user_kraken_keys")
-      .select("api_key, api_secret")
+      .select("api_key_encrypted, api_secret_encrypted")
       .eq("user_id", userId)
       .eq("is_active", true)
       .single();
@@ -46,7 +47,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const client = new KrakenClient(keys.api_key, keys.api_secret);
+    // Dekrypter nøkler
+    const krakenKey = await decryptApiKey(keys.api_key_encrypted);
+    const krakenSecret = await decryptApiKey(keys.api_secret_encrypted);
+    const client = new KrakenClient(krakenKey, krakenSecret);
 
     // Hent nåværende pris
     const ticker = await client.getTicker(symbol);

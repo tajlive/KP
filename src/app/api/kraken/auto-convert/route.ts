@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,8 +15,8 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     // Verifiser API-nøkkel
-    const apiKey = request.headers.get("x-api-key");
-    if (apiKey !== process.env.CRON_SECRET) {
+    const authKey = request.headers.get("x-api-key");
+    if (authKey !== process.env.CRON_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     // Hent brukerens Kraken-nøkler
     const { data: keys, error } = await supabase
       .from("user_kraken_keys")
-      .select("api_key, api_secret")
+      .select("api_key_encrypted, api_secret_encrypted")
       .eq("user_id", userId)
       .eq("is_active", true)
       .single();
@@ -44,7 +45,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const client = new KrakenClient(keys.api_key, keys.api_secret);
+    // Dekrypter nøkler
+    const apiKey = await decryptApiKey(keys.api_key_encrypted);
+    const apiSecret = await decryptApiKey(keys.api_secret_encrypted);
+    const client = new KrakenClient(apiKey, apiSecret);
 
     // Sjekk nåværende balanse
     const balance = await client.getBalance();
