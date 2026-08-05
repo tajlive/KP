@@ -26,7 +26,9 @@ const IDLE_THRESHOLD = 25; // USDC idle over dette → nytt nivå
 const MIN_LEVEL_USDC = 8; // minste nye nivå
 const MAX_OPEN_ORDERS = 20; // beskyttelse mot ordre-spam (15 standard + margin)
 const DRAWDOWN_KILL_PCT = 0.15; // auto-kill: total verdi falt >15% fra start
-const INITIAL_EQUITY = 138.66; // startkapital USDC (verifisert 2026-08-05)
+// Total start-equity (verifisert 2026-08-05): 138.66 USDC + 0.00022872 XBT × 64612 = 153.44.
+// INKLUDERER XBT-beholdningen — ellers slår kill inn ved 23% ekte tap, ikke 15%.
+const INITIAL_EQUITY = 153.44;
 const API_URL = "https://api.kraken.com";
 
 // ---------- env ----------
