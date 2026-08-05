@@ -20,33 +20,51 @@ export async function GET() {
     );
   }
 
-  // Hent ALLE brukere: auth.users (kilde) LEFT JOIN user_profiles (detaljer).
-  // 11 brukere manglet fordi de aldri fikk user_profiles-rad (signup-trigger feilet).
-  const { data: authUsers, error: authError } = await auth.supabase
-    .from("auth.users")
-    .select("id, email, created_at, last_sign_in_at")
-    .order("created_at", { ascending: false });
-
-  if (authError) {
-    return NextResponse.json({ ok: false, error: authError.message }, { status: 500 });
-  }
-
+  // Hent ALLE brukere: user_profiles (40) + auth.users via admin API (51).
+  // Supabase tillater ikke from("auth.users") via PostgREST — bruk admin API.
   const { data: profiles, error: profileError } = await auth.supabase
     .from("user_profiles")
-    .select("*");
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (profileError) {
     return NextResponse.json({ ok: false, error: profileError.message }, { status: 500 });
   }
 
+  // Hent auth-users via Supabase Admin API (ikke PostgREST)
+  const authAdmin = auth.supabase.auth.admin;
+  const { data: authData, error: authError } = await authAdmin.listUsers();
+
+  if (authError) {
+    // Fallback: kun user_profiles hvis admin API feiler
+    console.error("[Admin] listUsers feilet:", authError);
+    return NextResponse.json({
+      ok: true,
+      users: (profiles ?? []).map((p) => ({
+        id: p.id,
+        email: p.email ?? "",
+        created_at: p.created_at,
+        last_sign_in_at: null,
+        display_name: p.display_name ?? "",
+        full_name: p.full_name ?? "",
+        role: p.role ?? "user",
+        tier: p.tier ?? "free",
+        paper_balance: p.paper_balance ?? 100000,
+        avatar_url: p.avatar_url ?? null,
+        onboarding_completed_at: p.onboarding_completed_at ?? null,
+        has_profile: true,
+      })),
+    });
+  }
+
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
 
-  // Slå sammen: auth.users er master, user_profiles beriker.
-  const users = (authUsers ?? []).map((u) => {
+  // Slå sammen: auth.users er master (51), user_profiles beriker (40).
+  const users = (authData?.users ?? []).map((u) => {
     const p = profileMap.get(u.id);
     return {
       id: u.id,
-      email: u.email,
+      email: u.email ?? "",
       created_at: u.created_at,
       last_sign_in_at: u.last_sign_in_at,
       display_name: p?.display_name ?? "",
