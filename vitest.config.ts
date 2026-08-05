@@ -23,7 +23,7 @@ export default defineConfig({
     maxConcurrency: 8,
     
     // Inkluder kun unit/component-tester – Playwright e2e kjøres separat
-    include: ["src/**/*.{test,spec}.{ts,tsx,js,jsx}", "scripts/**/*.{test,spec}.ts"],
+    include: ["src/**/*.{test,spec}.{ts,tsx,js,jsx,mjs}", "scripts/**/*.{test,spec}.ts"],
     exclude: [
       "node_modules/**", 
       "tests/e2e/**", 
