@@ -62,10 +62,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Konverter til USDT (market order)
-    // Kraken bruker Z-prefiks for fiat
-    const krakenFromAsset = fromAsset.startsWith("Z") ? fromAsset : `Z${fromAsset}`;
-    const krakenToAsset = toAsset === "USDT" ? "USDT" : toAsset;
-    const pair = `${krakenToAsset}${krakenFromAsset}`;
+    const FIAT_TO_USDT_PAIR: Record<string, string> = {
+      USD: "USDTUSD",
+      ZUSD: "USDTUSD",
+      EUR: "USDTEUR",
+      ZEUR: "USDTEUR",
+    };
+    const pair =
+      FIAT_TO_USDT_PAIR[fromAsset] ??
+      FIAT_TO_USDT_PAIR[fromAsset.replace(/^Z/, "")];
+
+    if (!pair) {
+      return NextResponse.json(
+        { error: "Unsupported fiat currency" },
+        { status: 400 },
+      );
+    }
+
+    if (parseFloat(amount) < 5) {
+      return NextResponse.json(
+        { error: "Minimum 5 USD/EUR for conversion" },
+        { status: 400 },
+      );
+    }
 
     // Beregn volum (beløp i fromAsset)
     const volume = amount;
