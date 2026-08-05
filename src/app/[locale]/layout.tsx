@@ -320,6 +320,19 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 })();`,
           }}
         />
+        {/* Impact.com affiliate tracking */}
+        <Script
+          id="impact-tag"
+          strategy="afterInteractive"
+          src="https://utt.impactcdn.com/P-A7568938-2a3b-49f5-9a5d-0abfefc5b2771.js"
+        />
+        <Script id="impact-init" strategy="afterInteractive">
+          {`
+            if (typeof impactStat !== 'undefined') {
+              impactStat('trackImpression');
+            }
+          `}
+        </Script>
         {/* Resource Hints for External APIs */}
         {/* Preload critical above-fold assets */}
         <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
