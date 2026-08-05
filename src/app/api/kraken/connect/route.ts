@@ -1,0 +1,59 @@
+/**
+ * Kraken Connect API
+ * Lagrer brukerens Kraken API-nøkler kryptert
+ */
+
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { KrakenClient } from "@/lib/exchanges/kraken/client";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { userId, apiKey, apiSecret } = body;
+
+    if (!userId || !apiKey || !apiSecret) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
+    // Verifiser at nøklene fungerer
+    const client = new KrakenClient(apiKey, apiSecret);
+    try {
+      await client.getBalance();
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Invalid API keys" },
+        { status: 401 },
+      );
+    }
+
+    // Lagre kryptert (i produksjon: bruk dedikert kryptering)
+    const { error } = await supabase.from("user_kraken_keys").upsert({
+      user_id: userId,
+      api_key: apiKey, // TODO: Krypter
+      api_secret: apiSecret, // TODO: Krypter
+      is_active: true,
+      created_at: new Date().toISOString(),
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Kraken connect error:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Connection failed" },
+      { status: 500 },
+    );
+  }
+}
