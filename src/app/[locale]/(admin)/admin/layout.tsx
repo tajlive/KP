@@ -53,8 +53,8 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkAdmin = async (retryCount = 0) => {
-      const MAX_RETRIES = 3;
-      const RETRY_DELAY = 500; // ms
+      const MAX_RETRIES = 5;
+      const RETRY_DELAY = 800; // ms
 
       try {
         const supabase = createClient();
@@ -98,7 +98,15 @@ export default function AdminLayout({
         // Fallback allowlist (synk med server: env ADMIN_EMAIL_ALLOWLIST + verify-admin-access)
         const isWhitelisted = isEmailInAdminFallbackList(user.email);
 
-        // Check role in public.profiles
+        // Whitelist gir umiddelbar tilgang — unngår RLS-problemer på klienten.
+        // Server-sider (requireAdmin) verifiserer uansett på nytt med service-role.
+        if (isWhitelisted) {
+          setIsAdmin(true);
+          setLoading(false);
+          return;
+        }
+
+        // Check role in public.profiles — kun for ikke-whitelistede brukere
         const { data: userData, error } = await supabase
           .from("user_profiles")
           .select("role")
@@ -108,20 +116,12 @@ export default function AdminLayout({
         if (error) {
           console.error("[Admin Layout] Profile fetch error:", error);
         }
-        // Allow access if either role is admin OR email is whitelisted
-        const hasAdminAccess = userData?.role === "admin" || isWhitelisted;
+        // Allow access if role is admin
+        const hasAdminAccess = userData?.role === "admin";
 
         if (!hasAdminAccess) {
           router.push(`/${locale}/dashboard?error=not_admin`);
           return;
-        }
-
-        // If whitelisted but role is not admin, try to update it
-        if (isWhitelisted && userData?.role !== "admin") {
-          await supabase
-            .from("user_profiles")
-            .update({ role: "admin", updated_at: new Date().toISOString() })
-            .eq("id", user.id);
         }
         setIsAdmin(true);
         setLoading(false);
