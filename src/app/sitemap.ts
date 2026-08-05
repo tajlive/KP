@@ -8,7 +8,36 @@ import { groq } from "next-sanity";
 export const dynamic = "force-dynamic";
 
 const baseUrl = "https://www.klarpakke.no";
-const appDir = join(process.cwd(), "src/app/[locale]");
+
+// Cloudflare Workers: process.cwd() er /, ikke prosjektrot.
+// Derfor bruker vi hardkodede ruter i stedet for filesystem-discovery.
+const HARDCODED_ROUTES: SitemapEntry[] = [
+  // Marketing
+  { path: "", priority: 1.0, changeFrequency: "daily" },
+  { path: "priser", priority: 0.9, changeFrequency: "weekly" },
+  { path: "om-oss", priority: 0.8, changeFrequency: "weekly" },
+  { path: "hjelp", priority: 0.7, changeFrequency: "weekly" },
+  { path: "kontakt", priority: 0.7, changeFrequency: "weekly" },
+  { path: "binance-guide", priority: 0.6, changeFrequency: "monthly" },
+  { path: "kalkulator", priority: 0.5, changeFrequency: "monthly" },
+  
+  // Academy
+  { path: "kurs", priority: 0.8, changeFrequency: "weekly" },
+  { path: "akademi", priority: 0.7, changeFrequency: "weekly" },
+  
+  // Social
+  { path: "leaderboard", priority: 0.7, changeFrequency: "weekly" },
+  { path: "copy-trading", priority: 0.7, changeFrequency: "weekly" },
+  
+  // Auth
+  { path: "login", priority: 0.5, changeFrequency: "monthly" },
+  { path: "register", priority: 0.5, changeFrequency: "monthly" },
+  
+  // Legal
+  { path: "personvern", priority: 0.3, changeFrequency: "monthly" },
+  { path: "vilkar", priority: 0.3, changeFrequency: "monthly" },
+  { path: "cookies", priority: 0.3, changeFrequency: "monthly" },
+];
 
 // Route groups that are PRIVATE (auth required) — NEVER include in sitemap
 const EXCLUDED_GROUPS = [
@@ -210,8 +239,8 @@ async function fetchSanityPages(): Promise<SitemapEntry[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  // 1. Discover filesystem routes
-  const fileSystemRoutes = discoverRoutes(appDir);
+  // 1. Bruk hardkodede ruter (Cloudflare Workers kan ikke lese filesystem)
+  const fileSystemRoutes = HARDCODED_ROUTES;
 
   // 2. Fetch dynamic Sanity pages
   const sanityRoutes = await fetchSanityPages();
