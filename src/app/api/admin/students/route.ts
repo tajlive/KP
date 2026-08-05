@@ -20,15 +20,47 @@ export async function GET() {
     );
   }
 
-  const { data, error } = await auth.supabase
-    .from("user_profiles")
-    .select("*")
+  // Hent ALLE brukere: auth.users (kilde) LEFT JOIN user_profiles (detaljer).
+  // 11 brukere manglet fordi de aldri fikk user_profiles-rad (signup-trigger feilet).
+  const { data: authUsers, error: authError } = await auth.supabase
+    .from("auth.users")
+    .select("id, email, created_at, last_sign_in_at")
     .order("created_at", { ascending: false });
 
-  if (error) {
-    return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  if (authError) {
+    return NextResponse.json({ ok: false, error: authError.message }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, users: data ?? [] });
+
+  const { data: profiles, error: profileError } = await auth.supabase
+    .from("user_profiles")
+    .select("*");
+
+  if (profileError) {
+    return NextResponse.json({ ok: false, error: profileError.message }, { status: 500 });
+  }
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+
+  // Slå sammen: auth.users er master, user_profiles beriker.
+  const users = (authUsers ?? []).map((u) => {
+    const p = profileMap.get(u.id);
+    return {
+      id: u.id,
+      email: u.email,
+      created_at: u.created_at,
+      last_sign_in_at: u.last_sign_in_at,
+      display_name: p?.display_name ?? "",
+      full_name: p?.full_name ?? "",
+      role: p?.role ?? "user",
+      tier: p?.tier ?? "free",
+      paper_balance: p?.paper_balance ?? 100000,
+      avatar_url: p?.avatar_url ?? null,
+      onboarding_completed_at: p?.onboarding_completed_at ?? null,
+      has_profile: Boolean(p),
+    };
+  });
+
+  return NextResponse.json({ ok: true, users });
 }
 
 export async function PATCH(request: NextRequest) {

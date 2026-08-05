@@ -9,6 +9,7 @@ import {
   Crown,
   Eye,
   GraduationCap,
+  Mail,
   Pencil,
   RefreshCw,
   Search,
@@ -61,10 +62,44 @@ export default function ClientAdminUsers() {
   const [reportLoading, setReportLoading] = useState(false);
   const reportTimeoutRef = useRef<number | null>(null);
 
+  // E-post-modal
+  const [emailUser, setEmailUser] = useState<UserData | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
+
   const clearReportTimeout = () => {
     if (reportTimeoutRef.current) {
       clearTimeout(reportTimeoutRef.current);
       reportTimeoutRef.current = null;
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!emailUser?.email || !emailSubject.trim() || !emailMessage.trim()) return;
+    setSendingEmail(true);
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: emailUser.email,
+          subject: emailSubject,
+          html: emailMessage.replace(/\n/g, "<br>"),
+        }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Feil ved sending");
+      toast.success(`E-post sendt til ${emailUser.email}`);
+      setShowEmailModal(false);
+      setEmailSubject("");
+      setEmailMessage("");
+      setEmailUser(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Kunne ikke sende e-post");
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -729,6 +764,17 @@ export default function ClientAdminUsers() {
                         <Eye className="w-3 h-3" />
                         {t("usersPage.impersonate")}
                       </a>
+                      <button
+                        onClick={() => {
+                          setEmailUser(user);
+                          setShowEmailModal(true);
+                        }}
+                        aria-label={`Send e-post: ${user.email || user.id}`}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-xs font-medium"
+                      >
+                        <Mail className="w-3 h-3" />
+                        E-post
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -1019,6 +1065,76 @@ export default function ClientAdminUsers() {
           </div>
         </div>
       )}
+      {/* E-post-modal */}
+      {showEmailModal && emailUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-lg w-full space-y-4">
+            <h3 className="text-lg font-semibold text-white">
+              Send e-post til {emailUser.email || emailUser.id}
+            </h3>
+
+            <div className="block">
+              <label
+                htmlFor="email-subject"
+                className="text-xs text-slate-500 uppercase tracking-wide"
+              >
+                Emne
+              </label>
+              <input
+                id="email-subject"
+                type="text"
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="Viktig melding fra Klarpakke"
+                className="mt-1 w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white"
+              />
+            </div>
+
+            <div className="block">
+              <label
+                htmlFor="email-message"
+                className="text-xs text-slate-500 uppercase tracking-wide"
+              >
+                Melding
+              </label>
+              <textarea
+                id="email-message"
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+                placeholder="Skriv din melding her..."
+                rows={6}
+                className="mt-1 w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white resize-y"
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEmailModal(false);
+                  setEmailUser(null);
+                  setEmailSubject("");
+                  setEmailMessage("");
+                }}
+                className="px-4 py-2 text-slate-400 hover:text-white"
+                disabled={sendingEmail}
+              >
+                Avbryt
+              </button>
+              <button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={sendingEmail || !emailSubject.trim() || !emailMessage.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50 flex items-center gap-2"
+              >
+                <Mail className="w-4 h-4" />
+                {sendingEmail ? "Sender..." : "Send e-post"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
