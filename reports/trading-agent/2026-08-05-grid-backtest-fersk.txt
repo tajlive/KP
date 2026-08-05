@@ -1,0 +1,18 @@
+GRID (stateful, 4h × 1000 candles) — 70/30 walk-forward
+symbol    | full-periode                                          | IS (70%)                                                | OOS (30%)
+----------|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------
+BTCUSDT  | trades= 20 wins= 16 winRate= 80.0% pnl=     636 exp%=  0.318 PF= 6.15 maxDD=  0.9% ret=   6.4% | trades= 20 wins= 16 winRate= 80.0% pnl=     636 exp%=  0.318 PF= 6.15 maxDD=  0.9% ret=   6.4% | trades= 11 wins=  9 winRate= 81.8% pnl=     447 exp%=  0.407 PF= 8.30 maxDD=  0.6% ret=   4.5%
+ETHUSDT  | trades= 49 wins= 37 winRate= 75.5% pnl=    1280 exp%=  0.261 PF= 4.27 maxDD=  1.1% ret=  12.8% | trades= 45 wins= 34 winRate= 75.6% pnl=    1304 exp%=  0.290 PF= 4.93 maxDD=  1.1% ret=  13.0% | trades= 15 wins= 13 winRate= 86.7% pnl=     500 exp%=  0.333 PF= 9.91 maxDD=  0.3% ret=   5.0%
+SOLUSDT  | trades= 20 wins= 16 winRate= 80.0% pnl=     694 exp%=  0.347 PF= 6.48 maxDD=  0.8% ret=   6.9% | trades= 20 wins= 16 winRate= 80.0% pnl=     694 exp%=  0.347 PF= 6.48 maxDD=  0.8% ret=   6.9% | trades= 17 wins= 14 winRate= 82.4% pnl=     480 exp%=  0.282 PF= 6.61 maxDD=  0.3% ret=   4.8%
+ADAUSDT  | trades= 28 wins= 14 winRate= 50.0% pnl=     433 exp%=  0.155 PF= 1.75 maxDD=  3.9% ret=   4.3% | trades= 27 wins= 13 winRate= 48.1% pnl=     410 exp%=  0.152 PF= 1.71 maxDD=  3.9% ret=   4.1% | trades= 17 wins= 12 winRate= 70.6% pnl=     437 exp%=  0.257 PF= 4.49 maxDD=  0.9% ret=   4.4%
+AVAXUSDT | trades= 33 wins= 26 winRate= 78.8% pnl=    1301 exp%=  0.394 PF= 6.23 maxDD=  1.4% ret=  13.0% | trades= 33 wins= 26 winRate= 78.8% pnl=    1348 exp%=  0.409 PF= 7.68 maxDD=  1.4% ret=  13.5% | trades= 11 wins=  7 winRate= 63.6% pnl=     303 exp%=  0.275 PF= 3.03 maxDD=  1.5% ret=   3.0%
+DOTUSDT  | trades= 61 wins= 54 winRate= 88.5% pnl=    2960 exp%=  0.485 PF=14.38 maxDD=  0.7% ret=  29.6% | trades= 46 wins= 41 winRate= 89.1% pnl=    2263 exp%=  0.492 PF=14.88 maxDD=  0.7% ret=  22.6% | trades= 11 wins=  8 winRate= 72.7% pnl=     366 exp%=  0.333 PF= 4.55 maxDD=  1.0% ret=   3.7%
+LINKUSDT | trades= 49 wins= 39 winRate= 79.6% pnl=    1561 exp%=  0.319 PF= 6.15 maxDD=  0.8% ret=  15.6% | trades= 47 wins= 39 winRate= 83.0% pnl=    1629 exp%=  0.347 PF= 8.16 maxDD=  0.8% ret=  16.3% | trades= 13 wins= 10 winRate= 76.9% pnl=     383 exp%=  0.295 PF= 5.39 maxDD=  0.7% ret=   3.8%
+DOGEUSDT | trades= 36 wins= 32 winRate= 88.9% pnl=    1487 exp%=  0.413 PF=12.84 maxDD=  0.7% ret=  14.9% | trades= 19 wins= 16 winRate= 84.2% pnl=     680 exp%=  0.358 PF= 8.48 maxDD=  0.7% ret=   6.8% | trades= 10 wins=  8 winRate= 80.0% pnl=     428 exp%=  0.428 PF= 7.86 maxDD=  0.6% ret=   4.3%
+UNIUSDT  | trades= 79 wins= 72 winRate= 91.1% pnl=    3867 exp%=  0.490 PF=19.03 maxDD=  1.2% ret=  38.7% | trades= 52 wins= 48 winRate= 92.3% pnl=    3147 exp%=  0.605 PF=26.99 maxDD=  1.2% ret=  31.5% | trades= 31 wins= 21 winRate= 67.7% pnl=     520 exp%=  0.168 PF= 2.43 maxDD=  1.3% ret=   5.2%
+POLUSDT  | trades= 34 wins= 29 winRate= 85.3% pnl=    1695 exp%=  0.499 PF=12.82 maxDD=  0.9% ret=  17.0% | trades= 30 wins= 28 winRate= 93.3% pnl=    1773 exp%=  0.591 PF=32.37 maxDD=  0.6% ret=  17.7% | trades= 15 wins= 14 winRate= 93.3% pnl=     614 exp%=  0.409 PF=22.14 maxDD=  0.3% ret=   6.1%
+
+── Univers-sammenligning ──
+HELE universet (10): trades=409 pnl=15914 exp%=0.3891 PF=7.42 winRate=81.9% maxDD=3.9%
+SMALT univers (OOS PF≥1.1, n=10): BTCUSDT,ETHUSDT,SOLUSDT,ADAUSDT,AVAXUSDT,DOTUSDT,LINKUSDT,DOGEUSDT,UNIUSDT,POLUSDT
+  trades=151 pnl=4478 exp%=0.2966 PF=4.98 winRate=76.8% maxDD=2.0%
