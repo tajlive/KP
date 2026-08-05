@@ -21,7 +21,8 @@ const COIN_NAMES: { [key: string]: string } = {
   AVAXUSDT: "Avalanche",
   DOTUSDT: "Polkadot",
   LINKUSDT: "Chainlink",
-  MATICUSDT: "Polygon",
+  UNIUSDT: "Uniswap",
+  POLUSDT: "Polygon",
 };
 
 const POLL_MS = 15_000; // Keep polling conservative to reduce runtime/API load.
