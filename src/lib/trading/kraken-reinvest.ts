@@ -8,6 +8,35 @@ import { KrakenClient } from "@/lib/exchanges/kraken/client";
 const REINVEST_THRESHOLD = 10; // $10 minimum for reinvestering
 const REINVEST_PERCENTAGE = 0.8; // 80% av gevinst reinvesteres
 
+/**
+ * Ren funksjon (Task B3 — autopilot-reinvestering).
+ * Beregner om gevinst skal reinvesteres og hvor mye.
+ *
+ * @param realizedProfitUsdc total realisert gevinst (USDC)
+ * @returns {{ shouldReinvest: boolean; amount: number; kept: number }}
+ *   - shouldReinvest: gevinst > REINVEST_THRESHOLD → true
+ *   - amount: 80 % av gevinsten (roundet til 2 desimaler), ellers 0
+ *   - kept: gevinst — amount (brukers beholdning)
+ *
+ * Regel: 20% av gevinst beholdes (brukerens compound-buffer).
+ * 80% reinvesteres som nye grid-nivåer.
+ */
+export function computeReinvest(realizedProfitUsdc: number): {
+  shouldReinvest: boolean;
+  amount: number;
+  kept: number;
+} {
+  if (realizedProfitUsdc <= REINVEST_THRESHOLD) {
+    return { shouldReinvest: false, amount: 0, kept: realizedProfitUsdc };
+  }
+  const amount = Math.round(realizedProfitUsdc * REINVEST_PERCENTAGE * 100) / 100;
+  return {
+    shouldReinvest: true,
+    amount,
+    kept: realizedProfitUsdc - amount,
+  };
+}
+
 export interface GridProfit {
   totalInvested: number;
   currentValue: number;
