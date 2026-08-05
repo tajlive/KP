@@ -1833,6 +1833,48 @@ export type Database = {
         }
         Relationships: []
       }
+      autopilot_state: {
+        Row: {
+          activated: boolean
+          created_at: string
+          current_equity_usdc: number
+          drawdown_kill: boolean
+          five_pair_activated: boolean
+          grid_levels: Json
+          initial_equity_usdc: number
+          last_run: string | null
+          realized_profit_usdc: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated?: boolean
+          created_at?: string
+          current_equity_usdc?: number
+          drawdown_kill?: boolean
+          five_pair_activated?: boolean
+          grid_levels?: Json
+          initial_equity_usdc?: number
+          last_run?: string | null
+          realized_profit_usdc?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated?: boolean
+          created_at?: string
+          current_equity_usdc?: number
+          drawdown_kill?: boolean
+          five_pair_activated?: boolean
+          grid_levels?: Json
+          initial_equity_usdc?: number
+          last_run?: string | null
+          realized_profit_usdc?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       backtest_results: {
         Row: {
           created_at: string | null
