@@ -64,6 +64,22 @@ else
   echo -e "${GREEN}✅ CRON_SECRET finnes i Worker${NC}"
 fi
 
+# ─── 2c. ENCRYPTION_KEY-post-deploy-guard ───
+echo -e "${CYAN}🔑 Sjekker ENCRYPTION_KEY i Worker...${NC}"
+EXISTING_ENCRYPTION=$(npx wrangler secret list 2>/dev/null | grep -o "ENCRYPTION_KEY" || true)
+if [ -z "$EXISTING_ENCRYPTION" ]; then
+  echo -e "${YELLOW}⚠️  ENCRYPTION_KEY manglet i Worker — setter fra .env.local${NC}"
+  ENCRYPTION_KEY=$(grep "^ENCRYPTION_KEY=" .env.local | cut -d'=' -f2)
+  if [ -n "$ENCRYPTION_KEY" ]; then
+    echo -n "$ENCRYPTION_KEY" | npx wrangler secret put ENCRYPTION_KEY >/dev/null 2>&1
+    [ $? -eq 0 ] && echo -e "${GREEN}✅ ENCRYPTION_KEY satt${NC}" || echo -e "${RED}❌ Kunne ikke sette ENCRYPTION_KEY${NC}"
+  else
+    echo -e "${RED}❌ ENCRYPTION_KEY ikke funnet i .env.local${NC}"
+  fi
+else
+  echo -e "${GREEN}✅ ENCRYPTION_KEY finnes i Worker${NC}"
+fi
+
 # Verifiser cron-endepunktet
 echo -e "${CYAN}🧪 Tester cron/tick...${NC}"
 CRON_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
