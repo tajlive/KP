@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: "Invalid API keys" },
-        { status: 401 },
+        { status: 400 },
       );
     }
 
@@ -40,15 +40,19 @@ export async function POST(request: NextRequest) {
     const encryptedKey = await encryptApiKey(apiKey);
     const encryptedSecret = await encryptApiKey(apiSecret);
 
-    // Lagre kryptert
-    const { error } = await supabase.from("user_kraken_keys").upsert({
-      user_id: userId,
-      api_key_encrypted: encryptedKey,
-      api_secret_encrypted: encryptedSecret,
-      is_active: true,
-      last_validated_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-    });
+    // Lagre kryptert — onConflict: user_id slik at ny tilkobling for samme
+    // bruker oppdaterer eksisterende rad i stedet for å feile på UNIQUE(user_id)
+    const { error } = await supabase.from("user_kraken_keys").upsert(
+      {
+        user_id: userId,
+        api_key_encrypted: encryptedKey,
+        api_secret_encrypted: encryptedSecret,
+        is_active: true,
+        last_validated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
 
     if (error) {
       throw error;
