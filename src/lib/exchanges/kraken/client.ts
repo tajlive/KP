@@ -175,6 +175,19 @@ export class KrakenClient {
   }
 
   /**
+   * Selger med limit-ordre
+   */
+  async limitSell(pair: string, volume: string, price: string): Promise<KrakenOrder> {
+    return this.request("AddOrder", {
+      pair,
+      type: "sell",
+      ordertype: "limit",
+      volume,
+      price,
+    });
+  }
+
+  /**
    * Selger med market-ordre
    */
   async marketSell(pair: string, volume: string): Promise<KrakenOrder> {
