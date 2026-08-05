@@ -37,14 +37,14 @@ const GUIDES: Record<TradeMode, { icon: typeof Lightbulb; title: string; steps: 
   },
   pilot: {
     icon: Zap,
-    title: "Slik bruker du Pilot (AI-styrt)",
+    title: "Slik bruker du Pilot (automatisk)",
     steps: [
       "1. Piloten overvåker 10 markeder: BTC, ETH, SOL og flere",
-      "2. AI-en analyserer RSI, trender og volatilitet for å finne kjøps- og salgsmuligheter",
+      "2. Den kjøper automatisk når prisen faller til våre nivåer, og selger når den stiger",
       "3. Handler utføres automatisk — du trenger ikke gjøre noe",
-      "4. Følg med på historikken for å se hva AI-en handler",
+      "4. Følg med på historikken for å se hva boten handler",
     ],
-    tip: "💡 Pilot er for deg med lite tid. Len deg tilbake og la AI-en jobbe. Alle handler skjer med lekepenger.",
+    tip: "💡 Pilot er for deg med lite tid. Len deg tilbake og la boten jobbe. Alle handler skjer med lekepenger.",
   },
 };
 
