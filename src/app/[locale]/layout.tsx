@@ -320,6 +320,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 })();`,
           }}
         />
+        {/* Impact.com site verification */}
+        <meta name="impact-site-verification" content="3dbae131-ebfd-43e2-83c6-efd65a77af99" />
         {/* Impact.com affiliate tracking */}
         <Script
           id="impact-tag"
