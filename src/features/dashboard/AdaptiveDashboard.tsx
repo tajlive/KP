@@ -14,6 +14,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { OnboardingChecklist } from "./OnboardingChecklist";
 import { useOnboardingFlags } from "@/hooks/useOnboardingState";
 import { DashboardPro } from "./DashboardPro";
+import { PilotExplanation } from "./PilotExplanation";
 import type { DashboardCmsData } from "./DashboardContent";
 import {
   PaperTradingList,
@@ -331,18 +332,21 @@ export function AdaptiveDashboard({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <ActiveTraderView
-            userId={userId}
-            userName={userName}
-            preferredTradingMode={preferredTradingMode}
-            stats={stats}
-            isLoading={isLoading}
-            isError={isError}
-            errorMessage={errorMessage}
-            onRetry={onRetry}
-            cmsData={cmsData}
-            isPriority={isPriority}
-          />
+          <div className="space-y-4">
+            <PilotExplanation />
+            <ActiveTraderView
+              userId={userId}
+              userName={userName}
+              preferredTradingMode={preferredTradingMode}
+              stats={stats}
+              isLoading={isLoading}
+              isError={isError}
+              errorMessage={errorMessage}
+              onRetry={onRetry}
+              cmsData={cmsData}
+              isPriority={isPriority}
+            />
+          </div>
         </m.div>
       )}
 

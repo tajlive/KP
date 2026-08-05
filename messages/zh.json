@@ -2216,7 +2216,20 @@
       "switchedToLive": "切换至实时交易",
       "switchedToPaper": "切换至模拟交易"
     },
-    "winRate": "胜率"
+    "winRate": "胜率",
+    "pilotExplanation": {
+      "title": "How Pilot works",
+      "subtitle": "Simple explanation — no jargon",
+      "step1Title": "The bot buys and sells automatically",
+      "step1Desc": "Think of it like placing nets at different price levels. Every time the price drops to a level, the bot buys a little. When the price rises again, it sells with a profit. You don't need to do anything — it happens automatically, around the clock.",
+      "step2Title": "How does it know what to do?",
+      "step2Desc": "We tested 32 different settings against 1 year of historical prices. The settings that gave the best results (without being overfitted) are now in use. Every week we test again with fresh data.",
+      "step3Title": "Your money is safe",
+      "step3Desc": "This is practice money — you cannot lose real money. The bot also has an automatic safety stop if the market drops sharply. Max 5% loss per trade.",
+      "step4Title": "When does it happen?",
+      "step4Desc": "The bot checks prices every minute, around the clock. It buys when the price falls to one of our levels, and sells when it rises to the next level. You can see all trades in the history.",
+      "summary": "In short: The bot buys low and sells high, automatically, with settings tested against 1 year of data. You can follow the results — everything is practice money, zero risk."
+    }
   },
   "footer": {
     "product": "产品",
