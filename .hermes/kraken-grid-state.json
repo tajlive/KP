@@ -1,0 +1,111 @@
+{
+  "orders": {
+    "OTR2G7-DLJLV-TS2MGL": {
+      "side": "buy",
+      "pair": "SOLUSDC",
+      "price": 70.11,
+      "volume": "0.11866496",
+      "status": "open"
+    },
+    "OVNEVO-BOWLP-3W4XPJ": {
+      "side": "buy",
+      "pair": "SOLUSDC",
+      "price": 71.01,
+      "volume": "0.11716096",
+      "status": "open"
+    },
+    "OTGVLO-R2KBV-CKH7BI": {
+      "side": "buy",
+      "pair": "SOLUSDC",
+      "price": 71.9,
+      "volume": "0.11571071",
+      "status": "open"
+    },
+    "ORGA4R-VZ2L3-T66GNL": {
+      "side": "buy",
+      "pair": "SOLUSDC",
+      "price": 72.8,
+      "volume": "0.11428022",
+      "status": "open"
+    },
+    "ORIPWU-MXHED-WGQXU5": {
+      "side": "buy",
+      "pair": "SOLUSDC",
+      "price": 73.69,
+      "volume": "0.11289999",
+      "status": "open"
+    },
+    "OPE2L3-64FM6-DWXZIZ": {
+      "side": "buy",
+      "pair": "ETHUSDC",
+      "price": 1821.35,
+      "volume": "0.00487234",
+      "status": "open"
+    },
+    "OE7WLS-QBPUU-QUXGB2": {
+      "side": "buy",
+      "pair": "ETHUSDC",
+      "price": 1840.52,
+      "volume": "0.00482159",
+      "status": "open"
+    },
+    "OAUW5Z-L7O3A-ZC7D3D": {
+      "side": "buy",
+      "pair": "ETHUSDC",
+      "price": 1859.69,
+      "volume": "0.00477189",
+      "status": "open"
+    },
+    "O5FWTP-CZR6M-KCHIYY": {
+      "side": "buy",
+      "pair": "ETHUSDC",
+      "price": 1878.87,
+      "volume": "0.00472318",
+      "status": "open"
+    },
+    "ORPC4H-BI72U-LIEJBZ": {
+      "side": "buy",
+      "pair": "ETHUSDC",
+      "price": 1898.04,
+      "volume": "0.00467548",
+      "status": "open"
+    },
+    "O2ZLQ6-CMIQR-XHT3BA": {
+      "side": "buy",
+      "pair": "XBTUSDC",
+      "price": 62143.2,
+      "volume": "0.00016958",
+      "status": "open"
+    },
+    "OUIXWR-U3T5R-JIYFUX": {
+      "side": "buy",
+      "pair": "XBTUSDC",
+      "price": 62661.1,
+      "volume": "0.00016818",
+      "status": "open"
+    },
+    "OCG2SO-UFBG2-A7AQRS": {
+      "side": "buy",
+      "pair": "XBTUSDC",
+      "price": 63179,
+      "volume": "0.00016680",
+      "status": "open"
+    },
+    "OHBL4F-N37CP-QCNM2J": {
+      "side": "buy",
+      "pair": "XBTUSDC",
+      "price": 63696.8,
+      "volume": "0.00016544",
+      "status": "open"
+    },
+    "OS3OLC-M5J4W-52RX4K": {
+      "side": "buy",
+      "pair": "XBTUSDC",
+      "price": 64214.7,
+      "volume": "0.00016411",
+      "status": "open"
+    }
+  },
+  "realized_profit": 0,
+  "lastRun": "2026-08-05T18:45:30.566Z"
+}
