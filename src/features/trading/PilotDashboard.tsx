@@ -6,7 +6,7 @@ export function PilotDashboard() {
   const [status, setStatus] = React.useState<"idle" | "starting" | "active" | "error">("idle");
   const [message, setMessage] = React.useState("");
   const [checked, setChecked] = React.useState(false);
-  const [symbols, setSymbols] = React.useState<string[]>(["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "MATICUSDT"]);
+  const [symbols, setSymbols] = React.useState<string[]>(["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "UNIUSDT", "POLUSDT"]);
   const [capitalNok, setCapitalNok] = React.useState(10000);
 
   // Hent kapital fra paper-API (server-side auth — browser-supabase er anon)

@@ -36,7 +36,8 @@ const SYMBOLS: SymbolMeta[] = [
   { symbol: "DOTUSDT", base: "DOT", icon: "●", name: "Polkadot" },
   { symbol: "LINKUSDT", base: "LINK", icon: "⛓", name: "Chainlink" },
   { symbol: "DOGEUSDT", base: "DOGE", icon: "Ð", name: "Dogecoin" },
-  { symbol: "MATICUSDT", base: "MATIC", icon: "◆", name: "Polygon" },
+  { symbol: "UNIUSDT", base: "UNI", icon: "🦄", name: "Uniswap" },
+  { symbol: "POLUSDT", base: "POL", icon: "◆", name: "Polygon" },
 ];
 
 const DEFAULT_SELECTED = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
