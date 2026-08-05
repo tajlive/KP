@@ -125,7 +125,8 @@ if (drawdownKill) {
       }
     }
     const equity = parseFloat(bal.USDC ?? "0") + coinValueUsdc;
-    const drawdown = 1 - equity / INITIAL_EQUITY;
+    // Samme regler som src/lib/trading/kraken-kill-switch.ts (TDD-testet)
+    const drawdown = Math.max(0, 1 - equity / INITIAL_EQUITY);
     if (drawdown > DRAWDOWN_KILL_PCT) {
       const cancelIds = Object.keys(open);
       for (const id of cancelIds) {
