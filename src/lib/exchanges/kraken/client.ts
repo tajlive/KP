@@ -3,8 +3,6 @@
  * Dokumentasjon: https://docs.kraken.com/api/
  */
 
-import crypto from "crypto";
-
 const KRAKEN_API_URL = "https://api.kraken.com";
 const KRAKEN_API_VERSION = "0";
 
@@ -51,20 +49,32 @@ export class KrakenClient {
     return Date.now().toString();
   }
 
-  private signRequest(path: string, params: Record<string, string>): string {
+  private async signRequest(path: string, params: Record<string, string>): Promise<string> {
     const nonce = this.getNonce();
     const postData = new URLSearchParams({ nonce, ...params }).toString();
-    
-    const hash = crypto.createHash("sha256")
-      .update(nonce + postData)
-      .digest();
-    
-    const hmac = crypto.createHmac("sha512", Buffer.from(this.apiSecret, "base64"))
-      .update(path)
-      .update(hash)
-      .digest("base64");
-    
-    return hmac;
+    const encoder = new TextEncoder();
+
+    // Web Crypto API (edge-compatible — Cloudflare Workers)
+    const keyData = Uint8Array.from(atob(this.apiSecret), (c) => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "HMAC", hash: "SHA-512" },
+      false,
+      ["sign"],
+    );
+
+    const sha256Hash = await crypto.subtle.digest(
+      "SHA-256",
+      encoder.encode(nonce + postData),
+    );
+    const message = new Uint8Array([
+      ...encoder.encode(path),
+      ...new Uint8Array(sha256Hash),
+    ]);
+
+    const signature = await crypto.subtle.sign("HMAC", key, message);
+    return btoa(String.fromCharCode(...new Uint8Array(signature)));
   }
 
   private async request<T>(
@@ -98,7 +108,7 @@ export class KrakenClient {
       throw new Error("Max retries exceeded");
     } else {
       const nonce = this.getNonce();
-      const signature = this.signRequest(path, params);
+      const signature = await this.signRequest(path, params);
       
       headers["API-Key"] = this.apiKey;
       headers["API-Sign"] = signature;
