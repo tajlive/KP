@@ -44,13 +44,17 @@ describe("KrakenClient", () => {
   });
 
   it("should handle API errors", async () => {
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        error: ["EAPI:Invalid key"],
-        result: null,
-      }),
-    });
+    // Mock 3 failed attempts (retries = 3)
+    (global.fetch as any)
+      .mockRejectedValueOnce(new Error("Network error"))
+      .mockRejectedValueOnce(new Error("Network error"))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          error: ["EAPI:Invalid key"],
+          result: null,
+        }),
+      });
 
     await expect(client.getBalance()).rejects.toThrow("EAPI:Invalid key");
   });

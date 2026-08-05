@@ -71,6 +71,7 @@ export class KrakenClient {
     endpoint: string,
     params: Record<string, string> = {},
     isPublic: boolean = false,
+    retries: number = 3,
   ): Promise<T> {
     const path = `/${KRAKEN_API_VERSION}/${isPublic ? "public" : "private"}/${endpoint}`;
     const url = `${KRAKEN_API_URL}${path}`;
@@ -84,8 +85,17 @@ export class KrakenClient {
     if (isPublic) {
       const query = new URLSearchParams(params).toString();
       const fullUrl = query ? `${url}?${query}` : url;
-      const response = await fetch(fullUrl, { headers });
-      return this.handleResponse<T>(response);
+      
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const response = await fetch(fullUrl, { headers });
+          return await this.handleResponse<T>(response);
+        } catch (error) {
+          if (attempt === retries - 1) throw error;
+          await this.backoff(attempt);
+        }
+      }
+      throw new Error("Max retries exceeded");
     } else {
       const nonce = this.getNonce();
       const signature = this.signRequest(path, params);
@@ -95,13 +105,27 @@ export class KrakenClient {
       
       body = new URLSearchParams({ nonce, ...params }).toString();
       
-      const response = await fetch(url, {
-        method: "POST",
-        headers,
-        body,
-      });
-      return this.handleResponse<T>(response);
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body,
+          });
+          return await this.handleResponse<T>(response);
+        } catch (error) {
+          if (attempt === retries - 1) throw error;
+          await this.backoff(attempt);
+        }
+      }
+      throw new Error("Max retries exceeded");
     }
+  }
+
+  private async backoff(attempt: number): Promise<void> {
+    // Exponential backoff: 1s, 2s, 4s
+    const delay = Math.pow(2, attempt) * 1000;
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
