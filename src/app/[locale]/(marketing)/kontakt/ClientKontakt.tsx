@@ -181,10 +181,10 @@ export default function ClientKontakt() {
                 </h3>
                 <p className="text-blue-100 mb-6">{t("info.emailResponse")}</p>
                 <a
-                  href="mailto:support@klarpakke.no"
-                  className="inline-flex items-center gap-2 font-bold text-lg hover:underline"
-                >
-                  support@klarpakke.no <ArrowRight className="w-5 h-5" />
+                  href="mailto:post@klarpakke.no"
+                  className="inline-flex items-center gap-2 text-[#0052FF] font-medium hover:underline"
+                  >
+                  post@klarpakke.no <ArrowRight className="w-5 h-5" />
                 </a>
               </div>
               {/* Decoration */}
@@ -205,7 +205,7 @@ export default function ClientKontakt() {
                   <Button 
                     variant="outline" 
                     className="rounded-full"
-                    onClick={() => window.open('mailto:support@klarpakke.no', '_blank')}
+                    onClick={() => window.open('mailto:post@klarpakke.no', '_blank')}
                   >
                     {t("info.startChat")}
                   </Button>

@@ -3131,9 +3131,9 @@
     "transcript": "视频摘要",
     "transcriptText": "嗨！我是 Tom Arne，Klarpakke 的创始人。 \n\n 我们非常高兴您的旅程。我们的目标是让加密货币交易对每个人来说都可以理解并有利可图，而无需通常的“炒作”。 \n\n 您现在可以使用我们的模拟交易模拟器，其中包含 100,000 挪威克朗的虚拟资金，因此您可以在进行真实交易之前完全无风险地进行练习。祝你好运！",
     "trustBar": {
-      "bankid": "班克德",
-      "encrypted": "加密的",
-      "regulated": "受监管"
+      "paperMoney": "100,000 kr practice money",
+      "noRealMoney": "No real money",
+      "learnRiskFree": "Learn risk-free"
     },
     "video": "欢迎视频",
     "virtualCapital": "包含 100,000 挪威克朗虚拟资本",

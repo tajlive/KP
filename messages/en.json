@@ -3345,9 +3345,9 @@
       "skip": "Skip"
     },
     "trustBar": {
-      "bankid": "Bankid",
-      "encrypted": "Encrypted",
-      "regulated": "Regulated"
+      "paperMoney": "100,000 kr practice money",
+      "noRealMoney": "No real money",
+      "learnRiskFree": "Learn risk-free"
     },
     "mobile": {
       "step3": {
