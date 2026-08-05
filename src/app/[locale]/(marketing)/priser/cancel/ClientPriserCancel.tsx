@@ -61,8 +61,8 @@ export default function ClientPriserCancel() {
 
         <p className="mt-8 text-gray-400 text-sm">
           {t('needHelp')}{' '}
-          <a href="mailto:tom@klarpakke.no" className="text-blue-400 hover:text-blue-300">
-            tom@klarpakke.no
+          <a href="mailto:post@klarpakke.no" className="text-blue-400 hover:text-blue-300">
+            post@klarpakke.no
           </a>
         </p>
     </div>

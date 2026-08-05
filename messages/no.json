@@ -3345,9 +3345,9 @@
       "skip": "Skip"
     },
     "trustBar": {
-      "bankid": "Bankid",
-      "encrypted": "Encrypted",
-      "regulated": "Regulated"
+      "paperMoney": "100 000 kr lekepenger",
+      "noRealMoney": "Ingen ekte penger",
+      "learnRiskFree": "Lær uten risiko"
     },
     "mobile": {
       "step3": {

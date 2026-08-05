@@ -9,37 +9,33 @@ export function HelpClient() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const t = useTranslations('helpPage');
+  const tFaq = useTranslations('FAQ.fallbacks');
 
   const faqs = [
     {
-      q: t('faqs.0.q'),
-      a: t('faqs.0.a'),
+      q: tFaq('f1.q'),
+      a: tFaq('f1.a'),
       icon: BookOpen,
     },
     {
-      q: t('faqs.1.q'),
-      a: t('faqs.1.a'),
+      q: tFaq('f2.q'),
+      a: tFaq('f2.a'),
       icon: CreditCard,
     },
     {
-      q: t('faqs.2.q'),
-      a: t('faqs.2.a'),
+      q: tFaq('f3.q'),
+      a: tFaq('f3.a'),
       icon: Shield,
     },
     {
-      q: t('faqs.3.q'),
-      a: t('faqs.3.a'),
+      q: tFaq('f4.q'),
+      a: tFaq('f4.a'),
       icon: XCircle,
     },
     {
-      q: t('faqs.4.q'),
-      a: t('faqs.4.a'),
+      q: tFaq('f5.q'),
+      a: tFaq('f5.a'),
       icon: MessageCircle,
-    },
-    {
-      q: t('faqs.5.q'),
-      a: t('faqs.5.a'),
-      icon: BookOpen,
     },
   ];
 

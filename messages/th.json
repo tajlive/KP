@@ -1498,6 +1498,11 @@
         "step2": "เริ่มเทรดเสมือนครั้งแรก",
         "step3": "ทำหลักสูตร 'เทรดเสมือนครั้งแรกของคุณ'"
       }
+    },
+    "trustBar": {
+      "paperMoney": "100,000 kr practice money",
+      "noRealMoney": "No real money",
+      "learnRiskFree": "Learn risk-free"
     }
   },
   "orderHistory": {

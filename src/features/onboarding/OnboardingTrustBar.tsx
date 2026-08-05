@@ -7,9 +7,9 @@ export function OnboardingTrustBar() {
   const t = useTranslations("onboarding.trustBar");
 
   const items = [
-    { icon: ShieldCheck, label: t("bankid") },
-    { icon: Lock, label: t("encrypted") },
-    { icon: Landmark, label: t("regulated") },
+    { icon: ShieldCheck, label: t("paperMoney") },
+    { icon: Lock, label: t("noRealMoney") },
+    { icon: Landmark, label: t("learnRiskFree") },
   ];
 
   return (

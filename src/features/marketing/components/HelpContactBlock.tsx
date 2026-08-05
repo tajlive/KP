@@ -20,10 +20,10 @@ export function HelpContactBlock() {
           {t('contact.emailDesc')}
         </p>
         <a
-          href="mailto:tom@klarpakke.no"
+          href="mailto:post@klarpakke.no"
           className="inline-flex items-center gap-2 text-blue-600 font-medium hover:underline"
         >
-          tom@klarpakke.no
+          post@klarpakke.no
         </a>
       </div>
 

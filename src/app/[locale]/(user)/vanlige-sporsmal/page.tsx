@@ -117,8 +117,8 @@ export default function VanligeSporsmalPage() {
         {/* Footer */}
         <p className="text-xs text-kp-text-muted/50 mt-8 text-center">
           {l === "no"
-            ? "Fant du ikke svaret? Kontakt oss på support@klarpakke.no"
-            : "Didn't find your answer? Contact us at support@klarpakke.no"}
+            ? "Fant du ikke svaret? Kontakt oss på post@klarpakke.no"
+            : "Didn't find your answer? Contact us at post@klarpakke.no"}
         </p>
       </div>
     </div>
