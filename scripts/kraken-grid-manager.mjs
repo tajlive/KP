@@ -24,6 +24,9 @@ const STATE_PATH = join(ROOT, ".hermes", "kraken-grid-state.json");
 const TRAIL_SELL_PCT = 1.02; // +2% — dekker 0.52% round-trip fee × 3.8
 const IDLE_THRESHOLD = 25; // USDC idle over dette → nytt nivå
 const MIN_LEVEL_USDC = 8; // minste nye nivå
+const MAX_OPEN_ORDERS = 20; // beskyttelse mot ordre-spam (15 standard + margin)
+const DRAWDOWN_KILL_PCT = 0.15; // auto-kill: total verdi falt >15% fra start
+const INITIAL_EQUITY = 138.66; // startkapital USDC (verifisert 2026-08-05)
 const API_URL = "https://api.kraken.com";
 
 // ---------- env ----------
@@ -96,12 +99,59 @@ const PAIR_CFG = {
 const changes = [];
 const state = loadState();
 
+// ── 0) KILL-SWITCH: drawdown-beskyttelse (bruker-beskyttelse, Task 6) ──
+// Total verdi = ledig USDC + markedsverdi av alle posisjoner.
+// Hvis verdi faller > DRAWDOWN_KILL_PCT fra INITIAL_EQUITY → kanseller ALLE
+// åpne ordre og sett drawdown_kill=true. Da slutter manageren å legge nye
+// ordre (fill-rekjøp og idle-nivåer skippes) inntil manuell reset.
+const drawdownKill = state.drawdown_kill === true;
+
+if (drawdownKill) {
+  changes.push("🔴 KILL-SWITCH AKTIV (drawdown) — nye ordre stoppet. Nullstill state.drawdown_kill manuelt etter vurdering.");
+} else {
+  try {
+    const [bal, tick] = await Promise.all([
+      kraken("Balance"),
+      krakenPublic("Ticker", { pair: Object.keys(PAIR_CFG).join(",") }),
+    ]);
+    // Equity = USDC-kontant + markedsverdi av krypto-beholdning (XBT/ETH/SOL)
+    let coinValueUsdc = 0;
+    for (const [pair, cfg] of Object.entries(PAIR_CFG)) {
+      const base = pair.replace("USDC", "");
+      const qty = parseFloat(bal[base] ?? "0");
+      if (qty > 0) {
+        const price = parseFloat(tick[pair]?.c?.[0] ?? "0");
+        coinValueUsdc += qty * price;
+      }
+    }
+    const equity = parseFloat(bal.USDC ?? "0") + coinValueUsdc;
+    const drawdown = 1 - equity / INITIAL_EQUITY;
+    if (drawdown > DRAWDOWN_KILL_PCT) {
+      const cancelIds = Object.keys(open);
+      for (const id of cancelIds) {
+        try {
+          await kraken("CancelOrder", { txid: id });
+        } catch (e) {
+          changes.push(`FEIL kansellering ${id}: ${e.message}`);
+        }
+        await sleep(200);
+      }
+      state.drawdown_kill = true;
+      changes.push(
+        `🔴 AUTO-KILL: drawdown ${(drawdown * 100).toFixed(1)}% > ${(DRAWDOWN_KILL_PCT * 100).toFixed(0)}% — kansellerte ${cancelIds.length} ordre. Equity ${equity.toFixed(2)} USDC (start ${INITIAL_EQUITY}). Trading stoppet — vurder situasjonen før reset.`,
+      );
+    }
+  } catch (e) {
+    changes.push(`KILL-SJEKK feilet (ikke utløst): ${e.message}`);
+  }
+}
+
 const open = (await kraken("OpenOrders")).open ?? {};
 const openTxids = new Set(Object.keys(open));
 
-// 1) FILLED kjøpsordre → legg salgsordre (+2%)
+// 1) FILLED kjøpsordre → legg salgsordre (+2%) — SKIPPES ved drawdown-kill
 for (const [txid, info] of Object.entries(state.orders)) {
-  if (info.side === "buy" && info.status === "open" && !openTxids.has(txid)) {
+  if (!drawdownKill && info.side === "buy" && info.status === "open" && !openTxids.has(txid)) {
     const cfg = PAIR_CFG[info.pair];
     const sellPrice = (info.price * TRAIL_SELL_PCT).toFixed(cfg.dec);
     try {
@@ -122,8 +172,8 @@ for (const [txid, info] of Object.entries(state.orders)) {
     }
   }
 
-  // 2) FILLED salgsordre → gevinst + ny kjøpsordre på samme nivå
-  if (info.side === "sell" && info.status === "open" && !openTxids.has(txid)) {
+  // 2) FILLED salgsordre → gevinst + ny kjøpsordre på samme nivå — SKIPPES ved drawdown-kill
+  if (!drawdownKill && info.side === "sell" && info.status === "open" && !openTxids.has(txid)) {
     const profit = (info.price - info.buyPrice) * parseFloat(info.volume);
     const fee = (info.price * parseFloat(info.volume) + info.buyPrice * parseFloat(info.volume)) * 0.0026;
     state.realized_profit = (state.realized_profit ?? 0) + profit - fee;
@@ -156,6 +206,7 @@ for (const [txid, o] of Object.entries(open)) {
 }
 
 // 4) Idle USDC > terskel → ekstra nivå på par med størst gap (pris høyest over laveste nivå)
+// SKIPPES ved drawdown-kill. Ordre-limit: aldri over MAX_OPEN_ORDERS.
 // NB: Balance viser TOTAL (inkl. låst i åpne ordre) — trekk fra låst volum for ekte ledig
 const bal = await kraken("Balance");
 const totalUsdc = parseFloat(bal.USDC ?? "0");
@@ -164,7 +215,7 @@ const lockedUsdc = Object.values(open)
   .reduce((s, o) => s + (parseFloat(o.vol) - parseFloat(o.vol_exec ?? "0")) * parseFloat(o.descr.price), 0);
 const freeUsdc = Math.max(0, totalUsdc - lockedUsdc);
 
-if (freeUsdc > IDLE_THRESHOLD) {
+if (!drawdownKill && freeUsdc > IDLE_THRESHOLD && openTxids.size < MAX_OPEN_ORDERS) {
   const tick = await krakenPublic("Ticker", { pair: Object.keys(PAIR_CFG).join(",") });
   let best = null;
   for (const [pair, cfg] of Object.entries(PAIR_CFG)) {
