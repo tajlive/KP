@@ -13,7 +13,6 @@ export const CANONICAL_REDIRECTS: Record<string, string> = {
   "/dashboard/autopilot": "/dashboard/auto-trade",
   "/bots": "/dashboard/auto-trade",
   "/dashboard/innstillinger": "/profile?tab=settings",
-  "/handel": "/handel",
   "/auto-trading": "/dashboard/auto-trade",
   "/auto-trading-ai": "/dashboard/auto-trade",
   "/innlogging": "/login",
