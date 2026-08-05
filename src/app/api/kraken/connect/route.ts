@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { encryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,19 +29,24 @@ export async function POST(request: NextRequest) {
     const client = new KrakenClient(apiKey, apiSecret);
     try {
       await client.getBalance();
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: "Invalid API keys" },
         { status: 401 },
       );
     }
 
-    // Lagre kryptert (i produksjon: bruk dedikert kryptering)
+    // Krypter nøklene
+    const encryptedKey = await encryptApiKey(apiKey);
+    const encryptedSecret = await encryptApiKey(apiSecret);
+
+    // Lagre kryptert
     const { error } = await supabase.from("user_kraken_keys").upsert({
       user_id: userId,
-      api_key: apiKey, // TODO: Krypter
-      api_secret: apiSecret, // TODO: Krypter
+      api_key_encrypted: encryptedKey,
+      api_secret_encrypted: encryptedSecret,
       is_active: true,
+      last_validated_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
     });
 

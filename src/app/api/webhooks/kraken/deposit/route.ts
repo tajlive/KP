@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     // Hent alle brukere med Kraken-tilkobling
     const { data: users, error } = await supabase
       .from("user_kraken_keys")
-      .select("user_id, api_key, api_secret")
+      .select("user_id, api_key_encrypted, api_secret_encrypted")
       .eq("is_active", true);
 
     if (error) {
@@ -41,7 +42,11 @@ export async function POST(request: NextRequest) {
 
     for (const user of users || []) {
       try {
-        const client = new KrakenClient(user.api_key, user.api_secret);
+        // Dekrypter nøkler
+        const apiKey = await decryptApiKey(user.api_key_encrypted);
+        const apiSecret = await decryptApiKey(user.api_secret_encrypted);
+        
+        const client = new KrakenClient(apiKey, apiSecret);
         const deposits = await client.getDepositHistory();
 
         // Filtrer nye deposits (siste 24 timer)
