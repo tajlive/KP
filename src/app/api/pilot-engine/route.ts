@@ -46,12 +46,12 @@ const MAX_POSITION_PCT = 10;
 const BASE_POSITION_PCT = 5;
 const TOP_SYMBOLS = [
   "BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT",
-  "LINKUSDT", "ADAUSDT", "DOTUSDT", "UNIUSDT", "POLUSDT",
+  "LINKUSDT", "ADAUSDT", "DOTUSDT", "POLUSDT",
 ];
 
 const FALLBACK_PRICES: Record<string, number> = {
-  BTCUSDT: 60000, ETHUSDT: 2500, SOLUSDT: 140, AVAXUSDT: 18, DOGEUSDT: 0.12,
-  LINKUSDT: 12, ADAUSDT: 0.45, DOTUSDT: 5.5, UNIUSDT: 7.5, POLUSDT: 0.25,
+  BTCUSDT: 65000, ETHUSDT: 3500, SOLUSDT: 150, AVAXUSDT: 28, DOGEUSDT: 0.12,
+  LINKUSDT: 12, ADAUSDT: 0.45, DOTUSDT: 5.5, POLUSDT: 0.25,
 };
 
 /** Persistert grid-state — lagres i strategy_config per sesjon */
@@ -665,12 +665,15 @@ async function processUser(
     await db.from("trading_sessions").update({ last_heartbeat: new Date().toISOString() } as never).eq("id", session.id);
 
     // 5. Sjekk exits — grid bruker katastrofe-SL (25 %), ingen TP (trailing håndterer)
+    // FIKS (2026-08-05): For grid-sesjoner skal AUTO-EXIT IKKE kjøre TP/SL.
+    // Grid-strategien håndterer salg selv via evaluateGridSignal (trailing + fast sell).
+    // checkExits kjører kun katastrofe-SL (25 %) for grid — ingenting annet.
     const isGrid = strategyType === "grid";
     const { takeProfitPct, stopLossPct } = dynamicExits(market.volatility, market.rsi, signal.confidence);
     const effectiveTP = isGrid ? Number.POSITIVE_INFINITY : takeProfitPct;
     const effectiveSL = isGrid ? Math.max(stopLossPct, 25) : stopLossPct;
     const priceMap = new Map([[symbol, price]]);
-    const exitsExecuted = await checkExits(db, userId, session.id, priceMap, effectiveTP, effectiveSL);
+    const exitsExecuted = isGrid ? 0 : await checkExits(db, userId, session.id, priceMap, effectiveTP, effectiveSL);
     totalExits += exitsExecuted;
 
     // Grid-state-synk: frigjør kjøpt nivå som ble solgt av auto-exit
