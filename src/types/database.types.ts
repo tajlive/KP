@@ -1893,6 +1893,72 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_capital_20260803: {
+        Row: {
+          backed_up_at: string | null
+          balance: number | null
+          capital_nok: number | null
+          pair: string | null
+          row_id: string | null
+          source: string | null
+          status: Database["public"]["Enums"]["session_status"] | null
+          user_id: string | null
+        }
+        Insert: {
+          backed_up_at?: string | null
+          balance?: number | null
+          capital_nok?: number | null
+          pair?: string | null
+          row_id?: string | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+          user_id?: string | null
+        }
+        Update: {
+          backed_up_at?: string | null
+          balance?: number | null
+          capital_nok?: number | null
+          pair?: string | null
+          row_id?: string | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      backup_capital_20260804: {
+        Row: {
+          backed_up_at: string | null
+          balance: number | null
+          capital_nok: number | null
+          pair: string | null
+          row_id: string | null
+          source: string | null
+          status: Database["public"]["Enums"]["session_status"] | null
+          user_id: string | null
+        }
+        Insert: {
+          backed_up_at?: string | null
+          balance?: number | null
+          capital_nok?: number | null
+          pair?: string | null
+          row_id?: string | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+          user_id?: string | null
+        }
+        Update: {
+          backed_up_at?: string | null
+          balance?: number | null
+          capital_nok?: number | null
+          pair?: string | null
+          row_id?: string | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           condition_type: string
@@ -2611,6 +2677,27 @@ export type Database = {
         }
         Relationships: []
       }
+      competition_entries: {
+        Row: {
+          competition_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          competition_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          competition_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       conditional_orders: {
         Row: {
           created_at: string | null
@@ -2670,6 +2757,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "conditional_orders_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "conditional_orders_session_id_fkey"
             columns: ["session_id"]
@@ -2875,6 +2969,13 @@ export type Database = {
             columns: ["follow_id"]
             isOneToOne: false
             referencedRelation: "copy_trading_external_follows"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copy_trading_mirror_trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
             referencedColumns: ["id"]
           },
           {
@@ -3116,6 +3217,42 @@ export type Database = {
           job_name?: string
           response_body?: string | null
           status?: string | null
+        }
+        Relationships: []
+      }
+      cron_health_events: {
+        Row: {
+          created: string | null
+          detected_at: string
+          error_detail: string | null
+          id: number
+          job_name: string | null
+          response_id: number | null
+          source: string
+          status_code: number | null
+          timed_out: boolean | null
+        }
+        Insert: {
+          created?: string | null
+          detected_at?: string
+          error_detail?: string | null
+          id?: never
+          job_name?: string | null
+          response_id?: number | null
+          source: string
+          status_code?: number | null
+          timed_out?: boolean | null
+        }
+        Update: {
+          created?: string | null
+          detected_at?: string
+          error_detail?: string | null
+          id?: never
+          job_name?: string | null
+          response_id?: number | null
+          source?: string
+          status_code?: number | null
+          timed_out?: boolean | null
         }
         Relationships: []
       }
@@ -3902,6 +4039,117 @@ export type Database = {
           total_spent?: number
           updated_at?: string | null
           userid?: string
+        }
+        Relationships: []
+      }
+      kraken_conversions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          error: string | null
+          from_asset: string
+          id: string
+          order_id: string | null
+          received_amount: number | null
+          status: string | null
+          to_asset: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          error?: string | null
+          from_asset: string
+          id?: string
+          order_id?: string | null
+          received_amount?: number | null
+          status?: string | null
+          to_asset?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          error?: string | null
+          from_asset?: string
+          id?: string
+          order_id?: string | null
+          received_amount?: number | null
+          status?: string | null
+          to_asset?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kraken_grid_levels: {
+        Row: {
+          buy_price: number
+          level: number
+          order_id: string | null
+          pair: string
+          sell_price: number | null
+          status: string
+          updated_at: string | null
+          user_id: string
+          volume: string
+        }
+        Insert: {
+          buy_price: number
+          level: number
+          order_id?: string | null
+          pair: string
+          sell_price?: number | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+          volume: string
+        }
+        Update: {
+          buy_price?: number
+          level?: number
+          order_id?: string | null
+          pair?: string
+          sell_price?: number | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+          volume?: string
+        }
+        Relationships: []
+      }
+      kraken_live_state: {
+        Row: {
+          base_holdings: Json
+          open_buy_orders: number
+          open_orders: number
+          open_sell_orders: number
+          realized_profit_usdc: number
+          snapshot: Json
+          total_usdc: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_holdings?: Json
+          open_buy_orders?: number
+          open_orders?: number
+          open_sell_orders?: number
+          realized_profit_usdc?: number
+          snapshot?: Json
+          total_usdc?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_holdings?: Json
+          open_buy_orders?: number
+          open_orders?: number
+          open_sell_orders?: number
+          realized_profit_usdc?: number
+          snapshot?: Json
+          total_usdc?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -4696,6 +4944,48 @@ export type Database = {
         }
         Relationships: []
       }
+      news_events: {
+        Row: {
+          body: string | null
+          category: string | null
+          created_at: string | null
+          id: string
+          impact: string | null
+          published_at: string
+          sentiment: number | null
+          source: string
+          symbols: string[] | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          body?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          impact?: string | null
+          published_at: string
+          sentiment?: number | null
+          source: string
+          symbols?: string[] | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          body?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          impact?: string | null
+          published_at?: string
+          sentiment?: number | null
+          source?: string
+          symbols?: string[] | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           beta_updates: boolean | null
@@ -5370,6 +5660,39 @@ export type Database = {
           },
         ]
       }
+      pilot_guard_log: {
+        Row: {
+          action_taken: string | null
+          checked_at: string
+          details: Json
+          id: number
+          issue_type: string
+          session_id: string | null
+          severity: string
+          user_id: string | null
+        }
+        Insert: {
+          action_taken?: string | null
+          checked_at?: string
+          details?: Json
+          id?: never
+          issue_type: string
+          session_id?: string | null
+          severity: string
+          user_id?: string | null
+        }
+        Update: {
+          action_taken?: string | null
+          checked_at?: string
+          details?: Json
+          id?: never
+          issue_type?: string
+          session_id?: string | null
+          severity?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       portfolio_history: {
         Row: {
           best_trade_nok: number | null
@@ -5856,6 +6179,13 @@ export type Database = {
             foreignKeyName: "positions_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "positions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
             referencedRelation: "trading_sessions"
             referencedColumns: ["id"]
           },
@@ -5904,6 +6234,45 @@ export type Database = {
           triggered_count?: number | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      price_candles: {
+        Row: {
+          close: number
+          close_time: string
+          created_at: string | null
+          high: number
+          id: string
+          low: number
+          open: number
+          open_time: string
+          symbol: string
+          volume: number
+        }
+        Insert: {
+          close: number
+          close_time: string
+          created_at?: string | null
+          high: number
+          id?: string
+          low: number
+          open: number
+          open_time: string
+          symbol: string
+          volume: number
+        }
+        Update: {
+          close?: number
+          close_time?: string
+          created_at?: string | null
+          high?: number
+          id?: string
+          low?: number
+          open?: number
+          open_time?: string
+          symbol?: string
+          volume?: number
         }
         Relationships: []
       }
@@ -6626,6 +6995,13 @@ export type Database = {
             foreignKeyName: "smart_trader_log_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_trader_log_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
             referencedRelation: "trading_sessions"
             referencedColumns: ["id"]
           },
@@ -6722,27 +7098,6 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           win_rate?: number | null
-        }
-        Relationships: []
-      }
-      system_flags: {
-        Row: {
-          description: string | null
-          key: string
-          updated_at: string | null
-          value: Record<string, unknown> | null
-        }
-        Insert: {
-          description?: string | null
-          key: string
-          updated_at?: string | null
-          value?: Record<string, unknown> | null
-        }
-        Update: {
-          description?: string | null
-          key?: string
-          updated_at?: string | null
-          value?: Record<string, unknown> | null
         }
         Relationships: []
       }
@@ -7076,6 +7431,27 @@ export type Database = {
         }
         Relationships: []
       }
+      system_flags: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       system_health_logs: {
         Row: {
           binance_status: string
@@ -7230,6 +7606,13 @@ export type Database = {
             foreignKeyName: "trade_decisions_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_decisions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
             referencedRelation: "trading_sessions"
             referencedColumns: ["id"]
           },
@@ -7277,6 +7660,81 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      trade_mistakes: {
+        Row: {
+          agent_id: string
+          category: string
+          created_at: string | null
+          entry_price: number
+          exit_price: number
+          exit_reason: string | null
+          healing_action: Json | null
+          healing_applied: boolean | null
+          id: string
+          pnl: number
+          pnl_pct: number
+          regime_at_entry: string | null
+          rsi_at_entry: number | null
+          symbol: string
+          trade_id: string | null
+          user_id: string | null
+          volatility_at_entry: number | null
+        }
+        Insert: {
+          agent_id: string
+          category: string
+          created_at?: string | null
+          entry_price: number
+          exit_price: number
+          exit_reason?: string | null
+          healing_action?: Json | null
+          healing_applied?: boolean | null
+          id?: string
+          pnl: number
+          pnl_pct: number
+          regime_at_entry?: string | null
+          rsi_at_entry?: number | null
+          symbol: string
+          trade_id?: string | null
+          user_id?: string | null
+          volatility_at_entry?: number | null
+        }
+        Update: {
+          agent_id?: string
+          category?: string
+          created_at?: string | null
+          entry_price?: number
+          exit_price?: number
+          exit_reason?: string | null
+          healing_action?: Json | null
+          healing_applied?: boolean | null
+          id?: string
+          pnl?: number
+          pnl_pct?: number
+          regime_at_entry?: string | null
+          rsi_at_entry?: number | null
+          symbol?: string
+          trade_id?: string | null
+          user_id?: string | null
+          volatility_at_entry?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_mistakes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_onboarding_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_mistakes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trade_notes: {
         Row: {
@@ -7484,6 +7942,13 @@ export type Database = {
             foreignKeyName: "trade_rejections_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_rejections_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
             referencedRelation: "trading_sessions"
             referencedColumns: ["id"]
           },
@@ -7678,13 +8143,13 @@ export type Database = {
           indicator_snapshot: Json | null
           is_copy: boolean
           is_mock: boolean
-          pilot_explanation: string | null
-          pilot_trade: boolean | null
           latency_ms: number | null
           leader_trade_id: string | null
           metadata: Json | null
           mode: Database["public"]["Enums"]["trading_mode"]
           order_type: Database["public"]["Enums"]["order_type"]
+          pilot_explanation: string | null
+          pilot_trade: boolean | null
           post_trade_price_1min: number | null
           post_trade_price_5min: number | null
           price: number
@@ -7717,13 +8182,13 @@ export type Database = {
           indicator_snapshot?: Json | null
           is_copy?: boolean
           is_mock?: boolean
-          pilot_explanation?: string | null
-          pilot_trade?: boolean | null
           latency_ms?: number | null
           leader_trade_id?: string | null
           metadata?: Json | null
           mode: Database["public"]["Enums"]["trading_mode"]
           order_type?: Database["public"]["Enums"]["order_type"]
+          pilot_explanation?: string | null
+          pilot_trade?: boolean | null
           post_trade_price_1min?: number | null
           post_trade_price_5min?: number | null
           price: number
@@ -7756,13 +8221,13 @@ export type Database = {
           indicator_snapshot?: Json | null
           is_copy?: boolean
           is_mock?: boolean
-          pilot_explanation?: string | null
-          pilot_trade?: boolean | null
           latency_ms?: number | null
           leader_trade_id?: string | null
           metadata?: Json | null
           mode?: Database["public"]["Enums"]["trading_mode"]
           order_type?: Database["public"]["Enums"]["order_type"]
+          pilot_explanation?: string | null
+          pilot_trade?: boolean | null
           post_trade_price_1min?: number | null
           post_trade_price_5min?: number | null
           price?: number
@@ -7795,6 +8260,13 @@ export type Database = {
             columns: ["leader_trade_id"]
             isOneToOne: false
             referencedRelation: "trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
             referencedColumns: ["id"]
           },
           {
@@ -8112,6 +8584,13 @@ export type Database = {
             columns: ["copied_from_listing_id"]
             isOneToOne: false
             referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trading_sessions_copy_source_session_id_fkey"
+            columns: ["copy_source_session_id"]
+            isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
             referencedColumns: ["id"]
           },
           {
@@ -8758,6 +9237,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_kraken_keys: {
+        Row: {
+          api_key_encrypted: string
+          api_secret_encrypted: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_validated_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          api_key_encrypted: string
+          api_secret_encrypted: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_validated_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          api_key_encrypted?: string
+          api_secret_encrypted?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_validated_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_lesson_progress: {
         Row: {
           completed_at: string | null
@@ -9352,6 +9864,42 @@ export type Database = {
         }
         Relationships: []
       }
+      whale_movements: {
+        Row: {
+          amount: number
+          detected_at: string | null
+          from_address: string | null
+          id: string
+          interpretation: string | null
+          symbol: string
+          to_address: string | null
+          tx_hash: string
+          usd_value: number | null
+        }
+        Insert: {
+          amount: number
+          detected_at?: string | null
+          from_address?: string | null
+          id?: string
+          interpretation?: string | null
+          symbol: string
+          to_address?: string | null
+          tx_hash: string
+          usd_value?: number | null
+        }
+        Update: {
+          amount?: number
+          detected_at?: string | null
+          from_address?: string | null
+          id?: string
+          interpretation?: string | null
+          symbol?: string
+          to_address?: string | null
+          tx_hash?: string
+          usd_value?: number | null
+        }
+        Relationships: []
+      }
       xp_transactions: {
         Row: {
           action: string
@@ -9532,6 +10080,69 @@ export type Database = {
         }
         Relationships: []
       }
+      jokertrade_monitor: {
+        Row: {
+          capital_change_pct: number | null
+          current_capital_nok: number | null
+          error_message: string | null
+          has_position: boolean | null
+          id: string | null
+          last_heartbeat: string | null
+          losing_trades: number | null
+          pnl_pct: number | null
+          position_entry_price: number | null
+          position_symbol: string | null
+          smart_trader_enabled: boolean | null
+          starting_capital_nok: number | null
+          total_pnl: number | null
+          total_trades: number | null
+          trading_pair: string | null
+          updated_at: string | null
+          user_id: string | null
+          winning_trades: number | null
+        }
+        Insert: {
+          capital_change_pct?: never
+          current_capital_nok?: number | null
+          error_message?: string | null
+          has_position?: never
+          id?: string | null
+          last_heartbeat?: string | null
+          losing_trades?: number | null
+          pnl_pct?: never
+          position_entry_price?: never
+          position_symbol?: never
+          smart_trader_enabled?: boolean | null
+          starting_capital_nok?: number | null
+          total_pnl?: number | null
+          total_trades?: number | null
+          trading_pair?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          winning_trades?: number | null
+        }
+        Update: {
+          capital_change_pct?: never
+          current_capital_nok?: number | null
+          error_message?: string | null
+          has_position?: never
+          id?: string | null
+          last_heartbeat?: string | null
+          losing_trades?: number | null
+          pnl_pct?: never
+          position_entry_price?: never
+          position_symbol?: never
+          smart_trader_enabled?: boolean | null
+          starting_capital_nok?: number | null
+          total_pnl?: number | null
+          total_trades?: number | null
+          trading_pair?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          winning_trades?: number | null
+        }
+        Relationships: []
+      }
       klarpakke_cron_failures: {
         Row: {
           jobname: string | null
@@ -9652,6 +10263,13 @@ export type Database = {
             foreignKeyName: "trades_session_id_fkey"
             columns: ["simulation_id"]
             isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_session_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
             referencedRelation: "trading_sessions"
             referencedColumns: ["id"]
           },
@@ -9692,6 +10310,47 @@ export type Database = {
           win_rate: number | null
         }
         Relationships: []
+      }
+      session_health: {
+        Row: {
+          count: number | null
+          newest_heartbeat: string | null
+          oldest_heartbeat: string | null
+          stalled: number | null
+          status: Database["public"]["Enums"]["session_status"] | null
+        }
+        Relationships: []
+      }
+      session_position_flows: {
+        Row: {
+          bought_qty: number | null
+          session_id: string | null
+          sold_qty: number | null
+          trading_pair: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "jokertrade_monitor"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "trading_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "unified_trading_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       signup_funnel_stats: {
         Row: {
@@ -9969,6 +10628,7 @@ export type Database = {
         Args: { p_admin_id: string; p_new_tier: string; p_user_id: string }
         Returns: Json
       }
+      alert_stalled_sessions: { Args: never; Returns: number }
       allocate_founder_tokens: {
         Args: { p_user_id: string }
         Returns: {
@@ -10106,6 +10766,10 @@ export type Database = {
         }
         Returns: Json
       }
+      competition_participant_count: {
+        Args: { p_competition_id: string }
+        Returns: number
+      }
       complete_referral: {
         Args: { p_referral_code: string; p_referred_user_id: string }
         Returns: boolean
@@ -10145,6 +10809,11 @@ export type Database = {
           p_table_name: string
         }
         Returns: undefined
+      }
+      ensure_active_sessions_for_all: { Args: never; Returns: number }
+      ensure_auto_trading_configs_for_new_users: {
+        Args: never
+        Returns: number
       }
       exec_sql: { Args: { query: string }; Returns: Json }
       exec_sql_query: {
@@ -10487,6 +11156,7 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: string
       }
+      heal_stale_sessions: { Args: never; Returns: number }
       increment: { Args: { x: number }; Returns: number }
       increment_capital: {
         Args: { p_amount: number; p_session_id: string; p_user_id: string }
@@ -10508,6 +11178,7 @@ export type Database = {
       is_bot_healthy: { Args: { p_bot_id: string }; Returns: boolean }
       is_service_role: { Args: never; Returns: boolean }
       is_trading_allowed: { Args: never; Returns: boolean }
+      klarpakke_daily_integrity_check: { Args: never; Returns: undefined }
       klarpakke_hourly_autopilot_health: { Args: never; Returns: undefined }
       klarpakke_hourly_balance_sync: { Args: never; Returns: undefined }
       klarpakke_hourly_consistency_check: { Args: never; Returns: undefined }
@@ -10538,6 +11209,7 @@ export type Database = {
         }
         Returns: string
       }
+      log_cron_health_failures: { Args: never; Returns: number }
       log_user_action: {
         Args: {
           p_action: string
@@ -10558,6 +11230,9 @@ export type Database = {
         }
         Returns: string
       }
+      pilot_emergency_stop: { Args: { p_reason?: string }; Returns: Json }
+      pilot_health_guard: { Args: never; Returns: Json }
+      pilot_resume: { Args: { p_reason?: string }; Returns: Json }
       place_paper_trade_with_slippage: {
         Args: {
           p_amount: number
@@ -10635,6 +11310,7 @@ export type Database = {
         }
         Returns: number
       }
+      session_maintenance: { Args: never; Returns: Json }
       set_subscription_tier: {
         Args: { p_status?: string; p_tier: string; p_user_id: string }
         Returns: boolean

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/DashboardContent";
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
+import KrakenLiveCard from "@/features/kraken/KrakenLiveCard";
 
 interface DashboardClientProps {
   locale: string;
@@ -124,6 +125,7 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
   return (
     <div data-testid="dashboard-page">
+      <KrakenLiveCard />
       <DashboardContent
         userId={state.userId}
         preferredTradingMode={state.preferredTradingMode}
