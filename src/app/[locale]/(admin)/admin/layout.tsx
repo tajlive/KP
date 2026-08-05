@@ -160,21 +160,6 @@ export default function AdminLayout({
           label: t("nav.analytics"),
           icon: BarChart3,
         },
-        {
-          href: `/${locale}/admin/campaign`,
-          label: t("nav.campaign"),
-          icon: Megaphone,
-        },
-        {
-          href: `/${locale}/admin/monetization`,
-          label: t("nav.monetization"),
-          icon: DollarSign,
-        },
-        {
-          href: `/${locale}/admin/experiments`,
-          label: "Eksperimenter",
-          icon: FlaskConical,
-        },
       ],
     },
     {
@@ -186,9 +171,9 @@ export default function AdminLayout({
           icon: UserCog,
         },
         {
-          href: `/${locale}/admin/students`,
-          label: t("students"),
-          icon: Users,
+          href: `/${locale}/admin/support/impersonate`,
+          label: t("nav.impersonate"),
+          icon: HeadsetIcon,
         },
       ],
     },
@@ -196,29 +181,9 @@ export default function AdminLayout({
       title: t("nav.sectionProduct"),
       items: [
         {
-          href: `/${locale}/admin/ab-tests`,
-          label: t("nav.abTests"),
-          icon: FlaskConical,
-        },
-        {
           href: `/${locale}/admin/auto-trading`,
           label: t("nav.autoTrading"),
           icon: Bot,
-        },
-        {
-          href: `/${locale}/admin/auto-trading/sessions`,
-          label: t("nav.tradingSessions"),
-          icon: Activity,
-        },
-        {
-          href: `/${locale}/admin/sync-status`,
-          label: t("tradeSync"),
-          icon: RefreshCw,
-        },
-        {
-          href: `/${locale}/admin/trade-health`,
-          label: t("nav.tradeHealth"),
-          icon: HeartPulse,
         },
       ],
     },
@@ -234,21 +199,6 @@ export default function AdminLayout({
           href: `/${locale}/admin/settings`,
           label: t("settings"),
           icon: Settings,
-        },
-        {
-          href: `/${locale}/admin/v2`,
-          label: t("nav.adminV2"),
-          icon: Sparkles,
-        },
-      ],
-    },
-    {
-      title: t("nav.sectionSupport"),
-      items: [
-        {
-          href: `/${locale}/admin/support/impersonate`,
-          label: t("nav.impersonate"),
-          icon: HeadsetIcon,
         },
       ],
     },
