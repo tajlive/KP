@@ -12,6 +12,31 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
+/** Logger konvertering til DB og returnerer standard respons */
+async function logAndRespond(
+  userId: string,
+  fromAsset: string,
+  toAsset: string,
+  amount: string,
+  order: { txid: string[] },
+) {
+  await supabase.from("kraken_conversions").insert({
+    user_id: userId,
+    from_asset: fromAsset,
+    to_asset: toAsset,
+    amount: parseFloat(amount),
+    order_id: order.txid[0],
+    status: "completed",
+  });
+
+  return NextResponse.json({
+    success: true,
+    orderId: order.txid[0],
+    from: { asset: fromAsset, amount },
+    to: { asset: toAsset, estimated: amount }, // ~1:1 for stablecoin/fiat
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Verifiser API-nøkkel
@@ -62,52 +87,51 @@ export async function POST(request: NextRequest) {
     }
 
     // Konverter til USDT (market order)
-    const FIAT_TO_USDT_PAIR: Record<string, string> = {
+    // Par hvor fromAsset er QUOTE-valutaen (vi oppgir volum i fromAsset)
+    const QUOTE_PAIRS: Record<string, string> = {
       USD: "USDTUSD",
       ZUSD: "USDTUSD",
       EUR: "USDTEUR",
       ZEUR: "USDTEUR",
     };
-    const pair =
-      FIAT_TO_USDT_PAIR[fromAsset] ??
-      FIAT_TO_USDT_PAIR[fromAsset.replace(/^Z/, "")];
+    // Par hvor USDT er quote og fromAsset er base — her må vi konvertere
+    // beløpet til base-enhet via nåpris (viqc-flagget fungerer ikke da
+    // fromAsset != quote)
+    const BASE_PAIRS: Record<string, string> = {
+      USDC: "USDCUSDT",
+    };
 
-    if (!pair) {
-      return NextResponse.json(
-        { error: "Unsupported fiat currency" },
-        { status: 400 },
-      );
+    const amountNum = parseFloat(amount);
+
+    if (QUOTE_PAIRS[fromAsset]) {
+      if (amountNum < 5) {
+        return NextResponse.json(
+          { error: "Minimum 5 USD/EUR for conversion" },
+          { status: 400 },
+        );
+      }
+      // Volum i quote (fromAsset) — krever oflag=viqc
+      const order = await client.marketBuyQuote(QUOTE_PAIRS[fromAsset], amount);
+      return await logAndRespond(userId, fromAsset, toAsset, amount, order);
     }
 
-    if (parseFloat(amount) < 5) {
-      return NextResponse.json(
-        { error: "Minimum 5 USD/EUR for conversion" },
-        { status: 400 },
-      );
+    if (BASE_PAIRS[fromAsset]) {
+      if (amountNum < 5) {
+        return NextResponse.json(
+          { error: "Minimum 5 for conversion" },
+          { status: 400 },
+        );
+      }
+      // fromAsset ER base — vi SELGER base for å få USDT (quote).
+      // Volum oppgis i base-enhet (f.eks. 60 USDC).
+      const order = await client.marketSell(BASE_PAIRS[fromAsset], amount);
+      return await logAndRespond(userId, fromAsset, toAsset, amount, order);
     }
 
-    // Beregn volum (beløp i fromAsset)
-    const volume = amount;
-
-    // Utfør market buy
-    const order = await client.marketBuy(pair, volume);
-
-    // Logg konvertering
-    await supabase.from("kraken_conversions").insert({
-      user_id: userId,
-      from_asset: fromAsset,
-      to_asset: toAsset,
-      amount: parseFloat(amount),
-      order_id: order.txid[0],
-      status: "completed",
-    });
-
-    return NextResponse.json({
-      success: true,
-      orderId: order.txid[0],
-      from: { asset: fromAsset, amount },
-      to: { asset: toAsset, estimated: amount }, // 1:1 for stablecoins
-    });
+    return NextResponse.json(
+      { error: "Unsupported currency for conversion" },
+      { status: 400 },
+    );
   } catch (error) {
     console.error("Auto-convert error:", error);
     return NextResponse.json(

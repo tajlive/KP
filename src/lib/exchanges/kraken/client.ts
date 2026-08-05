@@ -184,6 +184,20 @@ export class KrakenClient {
   }
 
   /**
+   * Plasserer market-ordre med volum oppgitt i QUOTE-valuta
+   * (f.eks. "kjøp USDT for 60 EUR" på USDTEUR — oflag=viqc)
+   */
+  async marketBuyQuote(pair: string, quoteVolume: string): Promise<KrakenOrder> {
+    return this.request("AddOrder", {
+      pair,
+      type: "buy",
+      ordertype: "market",
+      volume: quoteVolume,
+      oflag: "viqc",
+    });
+  }
+
+  /**
    * Plasserer market-ordre
    */
   async marketBuy(pair: string, volume: string): Promise<KrakenOrder> {
