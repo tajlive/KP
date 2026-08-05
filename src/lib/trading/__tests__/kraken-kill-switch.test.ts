@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { evaluateDrawdownKill } from "../kraken-kill-switch";
+import {
+  evaluateDrawdownKill,
+  evaluateProgressiveDrawdown,
+  shouldActivateFivePair,
+  REDUCE_THRESHOLD_PCT,
+  REDUCED_SIZE_MULTIPLIER,
+} from "../kraken-kill-switch";
 
 describe("evaluateDrawdownKill", () => {
   it("skal IKKE kill ved ingen drawdown (equity = start)", () => {
@@ -55,5 +61,95 @@ describe("evaluateDrawdownKill", () => {
     expect(r.shouldKill).toBe(false);
     expect(r.drawdown).toBe(0); // clamps at 0 — ingen negativ drawdown
     expect(r.remainingPct).toBeGreaterThan(100);
+  });
+});
+
+describe("evaluateProgressiveDrawdown (Task 4b — Basso: reduser 2x drawdown)", () => {
+  const START = 138.66;
+
+  it("normal nivå ved drawdown <= 7% — full størrelse", () => {
+    // 131.73 = 5% drawdown
+    const r = evaluateProgressiveDrawdown({ equityUsdc: 131.73, initialEquityUsdc: START });
+    expect(r.level).toBe("normal");
+    expect(r.levelSizeMultiplier).toBe(1);
+    expect(r.shouldKill).toBe(false);
+  });
+
+  it("normal nøyaktig ved 7%-grensen (7% er IKKE halvering ennå)", () => {
+    // 129.0 = 6.97% drawdown — under 7%-grensen
+    const r = evaluateProgressiveDrawdown({ equityUsdc: 129, initialEquityUsdc: START });
+    expect(r.level).toBe("normal");
+    expect(r.levelSizeMultiplier).toBe(1);
+  });
+
+  it("reduced ved drawdown mellom 7% og 15% — halverte nivåstørrelser", () => {
+    // 125 = 9.85% drawdown
+    const r = evaluateProgressiveDrawdown({ equityUsdc: 125, initialEquityUsdc: START });
+    expect(r.level).toBe("reduced");
+    expect(r.levelSizeMultiplier).toBe(REDUCED_SIZE_MULTIPLIER);
+    expect(r.levelSizeMultiplier).toBe(0.5);
+    expect(r.shouldKill).toBe(false);
+  });
+
+  it("kill ved drawdown > 15% — full stopp, ingen nye nivåer", () => {
+    // 116.47 = 16% drawdown
+    const r = evaluateProgressiveDrawdown({ equityUsdc: 116.47, initialEquityUsdc: START });
+    expect(r.level).toBe("kill");
+    expect(r.levelSizeMultiplier).toBe(0);
+    expect(r.shouldKill).toBe(true);
+  });
+
+  it("kill-terskelen er fortsatt konfigurerbar", () => {
+    const r = evaluateProgressiveDrawdown({
+      equityUsdc: 125,
+      initialEquityUsdc: START,
+      killThresholdPct: 0.1, // 9.85% > 10%? nei — 9.85 < 10 → reduced, ikke kill
+    });
+    expect(r.level).toBe("reduced");
+    const r2 = evaluateProgressiveDrawdown({
+      equityUsdc: 123,
+      initialEquityUsdc: START,
+      killThresholdPct: 0.1, // 11.3% > 10% → kill
+    });
+    expect(r2.level).toBe("kill");
+  });
+
+  it("uenighet med ugyldig startkapital → normal (aldri falsk kill)", () => {
+    const r = evaluateProgressiveDrawdown({ equityUsdc: 10, initialEquityUsdc: 0 });
+    expect(r.level).toBe("normal");
+    expect(r.levelSizeMultiplier).toBe(1);
+    expect(r.shouldKill).toBe(false);
+  });
+
+  it("drawdown-rapport følger med i resultatet", () => {
+    const r = evaluateProgressiveDrawdown({ equityUsdc: 125, initialEquityUsdc: START });
+    expect(r.drawdownPct).toBeGreaterThan(9);
+    expect(r.drawdownPct).toBeLessThan(10);
+    expect(r.remainingPct).toBeGreaterThan(90);
+    expect(REDUCE_THRESHOLD_PCT).toBe(0.07);
+    expect(REDUCED_SIZE_MULTIPLIER).toBe(0.5);
+  });
+});
+
+describe("shouldActivateFivePair (Task 6 — 5-par-utvidelse ved 250 USDC)", () => {
+  it("aktiverer IKKE under terskelen", () => {
+    expect(shouldActivateFivePair(249, false)).toBe(false);
+  });
+
+  it("aktiverer nøyaktig ved terskelen", () => {
+    expect(shouldActivateFivePair(250, false)).toBe(true);
+  });
+
+  it("aktiverer over terskelen", () => {
+    expect(shouldActivateFivePair(300, false)).toBe(true);
+  });
+
+  it("er idempotent — aldri re-aktivering", () => {
+    expect(shouldActivateFivePair(300, true)).toBe(false);
+  });
+
+  it("støtter custom terskel (for testing)", () => {
+    expect(shouldActivateFivePair(1, false, 1)).toBe(true);
+    expect(shouldActivateFivePair(153, false, 250)).toBe(false);
   });
 });

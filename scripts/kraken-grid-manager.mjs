@@ -17,14 +17,18 @@ import { createHmac, createHash } from "crypto";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import {
+  PAIR_CFG,
+  ACTIVE_PAIRS,
+  TRAIL_SELL_PCT,
+  MIN_LEVEL_USDC,
+  MAX_OPEN_ORDERS,
+  IDLE_THRESHOLD,
+} from "../src/lib/trading/kraken-grid-config.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const STATE_PATH = join(ROOT, ".hermes", "kraken-grid-state.json");
-const TRAIL_SELL_PCT = 1.02; // +2% — dekker 0.52% round-trip fee × 3.8
-const IDLE_THRESHOLD = 25; // USDC idle over dette → nytt nivå
-const MIN_LEVEL_USDC = 8; // minste nye nivå
-const MAX_OPEN_ORDERS = 20; // beskyttelse mot ordre-spam (15 standard + margin)
 const DRAWDOWN_KILL_PCT = 0.15; // auto-kill: total verdi falt >15% fra start
 // Total start-equity (verifisert 2026-08-05): 138.66 USDC + 0.00022872 XBT × 64612 = 153.44.
 // INKLUDERER XBT-beholdningen — ellers slår kill inn ved 23% ekte tap, ikke 15%.
@@ -90,16 +94,16 @@ function saveState(s) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ---------- config per par ----------
-const PAIR_CFG = {
-  XBTUSDC: { dec: 1, ordremin: 0.00005, spacing: 0.008 },
-  ETHUSDC: { dec: 2, ordremin: 0.001, spacing: 0.010 },
-  SOLUSDC: { dec: 2, ordremin: 0.06, spacing: 0.012 },
-};
-
 // ---------- main ----------
 const changes = [];
 const state = loadState();
+
+// Åpne ordre hentes FØR kill-sjekken (den trenger dem for kansellering).
+// NB: deklareres her — tidligere lå den etter kill-seksjonen og kastet
+// ReferenceError (TDZ) når kill faktisk utløste → auto-kill kunne aldri
+// kansellere ordre (kritisk bug funnet 2026-08-05, Task 6).
+const open = (await kraken("OpenOrders")).open ?? {};
+const openTxids = new Set(Object.keys(open));
 
 // ── 0) KILL-SWITCH: drawdown-beskyttelse (bruker-beskyttelse, Task 6) ──
 // Total verdi = ledig USDC + markedsverdi av alle posisjoner.
@@ -107,6 +111,11 @@ const state = loadState();
 // åpne ordre og sett drawdown_kill=true. Da slutter manageren å legge nye
 // ordre (fill-rekjøp og idle-nivåer skippes) inntil manuell reset.
 const drawdownKill = state.drawdown_kill === true;
+// Task 4b: progressiv drawdown — 1.0 normal, 0.5 ved 7-15% drawdown, 0 ved kill
+// (settes av kill-sjekken; default 1 hvis sjekken feiler eller er skippet)
+let levelSizeMultiplier = 1;
+// Task 6: equity-mål for 5-par-utvidelse (samme logikk som shouldActivateFivePair)
+let equityUsdc = 0;
 
 if (drawdownKill) {
   changes.push("🔴 KILL-SWITCH AKTIV (drawdown) — nye ordre stoppet. Nullstill state.drawdown_kill manuelt etter vurdering.");
@@ -114,21 +123,28 @@ if (drawdownKill) {
   try {
     const [bal, tick] = await Promise.all([
       kraken("Balance"),
-      krakenPublic("Ticker", { pair: Object.keys(PAIR_CFG).join(",") }),
+      krakenPublic("Ticker", { pair: ACTIVE_PAIRS().join(",") }),
     ]);
-    // Equity = USDC-kontant + markedsverdi av krypto-beholdning (XBT/ETH/SOL)
+    // Equity = USDC-kontant + markedsverdi av krypto-beholdning (kun aktive par)
+    // NB: bruk cfg.asset (XXBT/XETH) — bal["XBT"] finnes ikke (legacy-prefiks)
     let coinValueUsdc = 0;
-    for (const [pair, cfg] of Object.entries(PAIR_CFG)) {
-      const base = pair.replace("USDC", "");
-      const qty = parseFloat(bal[base] ?? "0");
+    for (const pair of ACTIVE_PAIRS()) {
+      const cfg = PAIR_CFG[pair];
+      const qty = parseFloat(bal[cfg.asset] ?? "0");
       if (qty > 0) {
         const price = parseFloat(tick[pair]?.c?.[0] ?? "0");
         coinValueUsdc += qty * price;
       }
     }
     const equity = parseFloat(bal.USDC ?? "0") + coinValueUsdc;
+    equityUsdc = equity;
     // Samme regler som src/lib/trading/kraken-kill-switch.ts (TDD-testet)
+    // Task 4b: progressiv drawdown — 7% → halverte nivåer, 15% → full kill
     const drawdown = Math.max(0, 1 - equity / INITIAL_EQUITY);
+    levelSizeMultiplier = drawdown > DRAWDOWN_KILL_PCT ? 0 : drawdown > 0.07 ? 0.5 : 1;
+    if (levelSizeMultiplier < 1 && levelSizeMultiplier > 0) {
+      changes.push(`🟠 REDUSERT EKSPONERING: drawdown ${(drawdown * 100).toFixed(1)}% — nye nivåer halveres (${levelSizeMultiplier * 100}%).`);
+    }
     if (drawdown > DRAWDOWN_KILL_PCT) {
       const cancelIds = Object.keys(open);
       for (const id of cancelIds) {
@@ -149,8 +165,87 @@ if (drawdownKill) {
   }
 }
 
-const open = (await kraken("OpenOrders")).open ?? {};
-const openTxids = new Set(Object.keys(open));
+// ── 0.5) 5-PAR-AKTIVERING ved equity >= 250 USDC (Task 6, plan 2026-08-05) ──
+// Samme logikk som src/lib/trading/kraken-kill-switch.ts shouldActivateFivePair
+// (TDD-testet). Aktiverer ADA/AVAX i PAIR_CFG og legger 5 kjøpsnivåer per nytt
+// par, 1.2% under nåpris — da utvider grid-et seg når kapitalen vokser.
+// Idempotent: state.five_pair_activated hindrer re-aktivering.
+const FIVE_PAIR_TARGET = 250;
+const FIVE_PAIR_LEVELS = 5;
+const FIVE_PAIR_SPACING_STEP = 0.012;
+
+if (
+  !drawdownKill &&
+  !state.five_pair_activated &&
+  equityUsdc >= FIVE_PAIR_TARGET
+) {
+  try {
+    const tick = await krakenPublic("Ticker", { pair: Object.keys(PAIR_CFG).join(",") });
+    let placed = 0;
+    for (const pair of Object.keys(PAIR_CFG)) {
+      if (PAIR_CFG[pair].active) continue; // allerede aktive par røres ikke
+      const cfg = PAIR_CFG[pair];
+      const priceNow = parseFloat(tick[pair]?.c?.[0] ?? "0");
+      if (!priceNow) continue;
+      const levelUsdc = Math.max(MIN_LEVEL_USDC, 9);
+      for (let i = 1; i <= FIVE_PAIR_LEVELS; i++) {
+        const price = +(priceNow * (1 - FIVE_PAIR_SPACING_STEP * i)).toFixed(cfg.dec);
+        const volume = (levelUsdc / price).toFixed(8).replace(/\.?0+$/, "");
+        if (parseFloat(volume) < cfg.ordremin * 1.1) continue;
+        try {
+          const res = await kraken("AddOrder", {
+            pair, type: "buy", ordertype: "limit",
+            price: price.toString(), volume,
+          });
+          state.orders[res.txid[0]] = {
+            side: "buy", pair, price,
+            volume, status: "open", extra: true, fivePair: true,
+          };
+          placed++;
+          changes.push(`✅ 5-PAR ${pair}: kjøpsnivå ${i}/5 @ ${price} (${volume} ${pair.replace("USDC", "")})`);
+          await sleep(300);
+        } catch (e) {
+          changes.push(`FEIL 5-par-nivå ${pair} @ ${price}: ${e.message}`);
+        }
+      }
+      PAIR_CFG[pair].active = true; // aktivert — kill/equity dekker det fra nå
+    }
+    state.five_pair_activated = true;
+    if (placed) {
+      changes.push(`🎯 5-PAR-AKTIVERING: equity ${equityUsdc.toFixed(1)} USDC >= ${FIVE_PAIR_TARGET} — la ${placed} nye kjøpsnivåer (ADA/AVAX).`);
+    }
+  } catch (e) {
+    changes.push(`5-PAR-AKTIVERING feilet: ${e.message}`);
+  }
+}
+
+// ── 0.6) REGIME-GUARD (Task 6b, plan 2026-08-05 — r/algotrading: «size for the regime») ──
+// Grid er en SIDEWAYS-strategi. Ved sterk trend (24h-endring > ±5% OG volatilitet
+// > 8%) legger vi IKKE nye idle-nivåer — grid kjører kun i sitt regime.
+// Fylte celler selges fortsatt (trailing); kun NY eksponering stoppes.
+// Beregnes fra Kraken Ticker: o=24h-open (string), h[1]/l[1]=24h high/low.
+let regimeTrending = false;
+let regimeInfo = "";
+try {
+  const tick = await krakenPublic("Ticker", { pair: ACTIVE_PAIRS().join(",") });
+  const first = tick[ACTIVE_PAIRS()[0]];
+  const open24h = parseFloat(Array.isArray(first.o) ? first.o[1] : first.o);
+  const last = parseFloat(first.c[0]);
+  const high24h = parseFloat(first.h[1] ?? first.h);
+  const low24h = parseFloat(first.l[1] ?? first.l);
+  if (open24h > 0 && high24h > 0 && low24h > 0) {
+    const change24h = ((last - open24h) / open24h) * 100;
+    const volatility24h = ((high24h - low24h) / low24h) * 100;
+    // Samme terskler som detectMarketRegime i src/lib/trading/grid-strategy.ts
+    regimeTrending = Math.abs(change24h) > 5 && volatility24h > 8;
+    regimeInfo = `24h ${change24h.toFixed(1)}% / vol ${volatility24h.toFixed(1)}%`;
+  }
+} catch (e) {
+  changes.push(`REGIME-SJEKK feilet (behandler som sideways): ${e.message}`);
+}
+if (regimeTrending) {
+  changes.push(`⏸️ REGIME-TREND: ${regimeInfo} — nye idle-nivåer pause (grid kjører kun sideways). Fylte celler selges fortsatt.`);
+}
 
 // 1) FILLED kjøpsordre → legg salgsordre (+2%) — SKIPPES ved drawdown-kill
 for (const [txid, info] of Object.entries(state.orders)) {
@@ -218,10 +313,11 @@ const lockedUsdc = Object.values(open)
   .reduce((s, o) => s + (parseFloat(o.vol) - parseFloat(o.vol_exec ?? "0")) * parseFloat(o.descr.price), 0);
 const freeUsdc = Math.max(0, totalUsdc - lockedUsdc);
 
-if (!drawdownKill && freeUsdc > IDLE_THRESHOLD && openTxids.size < MAX_OPEN_ORDERS) {
-  const tick = await krakenPublic("Ticker", { pair: Object.keys(PAIR_CFG).join(",") });
+if (!drawdownKill && !regimeTrending && freeUsdc > IDLE_THRESHOLD && openTxids.size < MAX_OPEN_ORDERS) {
+  const tick = await krakenPublic("Ticker", { pair: ACTIVE_PAIRS().join(",") });
   let best = null;
-  for (const [pair, cfg] of Object.entries(PAIR_CFG)) {
+  for (const pair of ACTIVE_PAIRS()) {
+    const cfg = PAIR_CFG[pair];
     const priceNow = parseFloat(tick[pair].c[0]);
     const pairBuys = Object.values(state.orders)
       .filter((o) => o.pair === pair && o.side === "buy" && o.status === "open")
@@ -232,7 +328,8 @@ if (!drawdownKill && freeUsdc > IDLE_THRESHOLD && openTxids.size < MAX_OPEN_ORDE
   }
   if (best) {
     const newPrice = +(best.lowest * (1 - best.cfg.spacing)).toFixed(best.cfg.dec);
-    const volume = Math.min(freeUsdc - 1, Math.max(MIN_LEVEL_USDC, freeUsdc * 0.5)) / newPrice;
+    // Task 4b: progressiv drawdown — halverte nivåstørrelser ved 7-15% drawdown
+    const volume = Math.min(freeUsdc - 1, Math.max(MIN_LEVEL_USDC * levelSizeMultiplier, freeUsdc * 0.5 * levelSizeMultiplier)) / newPrice;
     if (volume >= best.cfg.ordremin * 1.1) {
       try {
         const res = await kraken("AddOrder", {

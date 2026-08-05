@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient, createServerClient } from "@/lib/supabase/server";
+import {
+  isGridDefaultRouting,
+  resolveAutoConfigStrategy,
+  resolveDefaultStrategyId,
+} from "@/lib/trading/routing-default";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,6 +51,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { mode, live, symbols, capital: requestedCapital } = parsed.data;
+
+    // Feature-flag: grid som default-strategi for nye auto/pilot-sesjoner.
+    // GRID_DEFAULT_ROUTING="off" = gammel oppførsel (multi_signal/cryptopilot).
+    // Default (udefinert) = grid (eneste strategi med positiv backtest,
+    // PF 7.42 OOS — trading-agent-forslag 2026-08-05).
+    const gridDefault = isGridDefaultRouting();
 
     // Live-krav: Binance-kobling (exchange_connections | user_binance_keys | legacy) + kvalifisert tier
     if (live) {
@@ -172,7 +183,7 @@ export async function POST(request: NextRequest) {
         .insert({
           user_id: user.id,
           mode: sessionMode,
-          strategy_id: mode === "auto" ? "multi_signal" : "cryptopilot",
+          strategy_id: resolveDefaultStrategyId(mode, gridDefault),
           status: "active",
           trading_pair: pair,
           starting_capital_nok: capitalPerSymbol,
@@ -209,7 +220,7 @@ export async function POST(request: NextRequest) {
       await db.from("auto_trading_configs").upsert({
         user_id: user.id,
         is_enabled: true,
-        strategy: mode === "pilot" ? "grid" : "multi_signal",
+        strategy: resolveAutoConfigStrategy(mode, gridDefault),
       }, { onConflict: "user_id" });
     } catch { /* best effort */ }
 
