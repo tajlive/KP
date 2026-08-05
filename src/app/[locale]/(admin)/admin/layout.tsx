@@ -89,7 +89,7 @@ export default function AdminLayout({
             ? locale
             : "no";
           router.push(
-            `/${safeLocale}/innlogging?error=admin_auth_required&next=${encodeURIComponent(pathname ?? "/")}`,
+            `/${safeLocale}/login?error=admin_auth_required&next=${encodeURIComponent(pathname ?? "/")}`,
           );
           return;
         }
@@ -131,7 +131,7 @@ export default function AdminLayout({
           setTimeout(() => checkAdmin(retryCount + 1), RETRY_DELAY);
           return;
         }
-        router.push(`/${locale}/innlogging?error=admin_error`);
+        router.push(`/${locale}/login?error=admin_error`);
       }
     };
 
