@@ -136,7 +136,7 @@ export class KrakenClient {
   /**
    * Henter alle tilgjengelige asset-par
    */
-  async getAssetPairs(): Promise<Record<string, any>> {
+  async getAssetPairs(): Promise<Record<string, unknown>> {
     return this.request("AssetPairs", {}, true);
   }
 
@@ -189,28 +189,28 @@ export class KrakenClient {
   /**
    * Henter åpne ordrer
    */
-  async getOpenOrders(): Promise<any> {
+  async getOpenOrders(): Promise<Record<string, unknown>> {
     return this.request("OpenOrders");
   }
 
   /**
    * Kansellerer ordre
    */
-  async cancelOrder(txid: string): Promise<any> {
+  async cancelOrder(txid: string): Promise<Record<string, unknown>> {
     return this.request("CancelOrder", { txid });
   }
 
   /**
    * Henter trade-historikk
    */
-  async getTradeHistory(): Promise<any> {
+  async getTradeHistory(): Promise<Record<string, unknown>> {
     return this.request("TradesHistory");
   }
 
   /**
    * Henter deposit-historikk
    */
-  async getDepositHistory(): Promise<any> {
+  async getDepositHistory(): Promise<Record<string, unknown>> {
     return this.request("DepositStatus");
   }
 }
