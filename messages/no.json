@@ -1644,7 +1644,7 @@
       "subtitle": "Oversikt over dine aktive eiendeler.",
       "totalAssets": "TOTALT: {count} EIENDELER",
       "mainHolding": "Hovedbeholdning",
-      "balance": "Balanse",
+      "balance": "Ledig saldo",
       "sinceStart": "siden start",
       "goToTrade": "Gå til handel",
       "statsTrades": "Handler",
@@ -2068,7 +2068,7 @@
         "winRate": "Vinnrate",
         "winRateSub": "{totalTrades} handler totalt",
         "winRateHelp": "Andel profitable trades av alle lukkede trades.",
-        "balance": "Kontobalanse",
+        "balance": "Total verdi",
         "balanceSub": "Tilgjengelig kapital",
         "balanceHelp": "Gjeldende kapital = startkapital + realisert PnL. Åpne posisjoner er ikke inkludert."
       },
@@ -3437,7 +3437,7 @@
     },
     "modePaper": "Lekepenger",
     "modeLive": "Live",
-    "balance": "Saldo",
+    "balance": "Lekepenger igjen",
     "newSession": "Ny øving",
     "tradingPair": "Handelspar",
     "startCapital": "Startkapital",
@@ -4497,7 +4497,7 @@
         "description": "Kombinerer flere AI-modeller for å ta de beste beslutningene basert på markedsdata, sentiment og teknisk analyse."
       }
     },
-    "balance": "Saldo",
+    "balance": "Tilgjengelig",
     "available": "Tilgjengelig",
     "buy": "Kjøp",
     "sell": "Selg",

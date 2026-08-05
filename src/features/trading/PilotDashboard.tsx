@@ -153,11 +153,11 @@ export function PilotDashboard() {
           <div>
             <div className="text-violet-400 font-medium mb-1">📊 {symbols.length} markeder overvåkes</div>
             <p>{symbols.map(s => s.replace("USDT","")).join(" · ")}</p>
-            <p className="text-slate-500 mt-0.5">Flere markeder = flere muligheter. AI-en velger de beste signalene, uansett hvilket marked de kommer fra.</p>
+            <p className="text-slate-500 mt-0.5">Flere markeder = flere muligheter. Boten kjøper og selger automatisk på alle samtidig.</p>
           </div>
           <div>
-            <div className="text-amber-400 font-medium mb-1">🔍 Hva AI-en ser etter</div>
-            <p>RSI (overkjøpt/underkjøpt) · SMA-crossover (trendskifter) · Volum (bekreftelse) · Markedssentiment · Volatilitet</p>
+            <div className="text-amber-400 font-medium mb-1">🎯 Hvordan den tjener penger</div>
+            <p>Plasserer kjøps- og salgsordre på mange prisnivåer samtidig. Kjøper når prisen faller, selger når den stiger. Du tjener på svingninger, ikke retning.</p>
           </div>
           <div>
             <div className="text-emerald-400 font-medium mb-1">🛡️ Risikostyring</div>
@@ -165,7 +165,7 @@ export function PilotDashboard() {
           </div>
           <div>
             <div className="text-blue-400 font-medium mb-1">⏱️ Når handles det?</div>
-            <p>AI-en sjekker signaler fortløpende. Når et signal er sterkt nok (høy konfidens), plasseres en handel automatisk. Du ser alle handler i historikken.</p>
+            <p>Boten handler automatisk døgnet rundt. Hver gang prisen treffer et av våre nivåer, kjøper eller selger den. Du ser alle handler i historikken.</p>
           </div>
         </div>
       </details>
@@ -182,8 +182,8 @@ export function PilotDashboard() {
               <span className="text-[11px] font-medium text-violet-400 uppercase tracking-wider">Hva skjer nå?</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              AI-en overvåker {symbols.length} markeder: {symbols.map(s => s.replace("USDT","")).join(", ")}.{' '}
-              Den analyserer RSI, SMA-crossover, volum og markedssentiment for å finne de beste kjøps- og salgsmulighetene. Du trenger ikke gjøre noe — AI-en handler automatisk.
+              Boten overvåker {symbols.length} markeder: {symbols.map(s => s.replace("USDT","")).join(", ")}.{' '}
+              Den kjøper automatisk når prisen faller til våre nivåer, og selger når den stiger igjen. Du trenger ikke gjøre noe — det skjer automatisk, døgnet rundt.
             </p>
           </div>
 
