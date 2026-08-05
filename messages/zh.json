@@ -6295,5 +6295,29 @@
     "liveMarkets": "实时市场",
     "updateInterval": "每15秒更新"
   },
-  "nav": {}
+  "nav": {},
+  "interactive": {
+    "step1": {
+      "title1": "Welcome to Klarpakke",
+      "title2": "Your AI pilot for crypto",
+      "description": "We help you earn money on cryptocurrency — automatically, without needing to know anything about trading.",
+      "howItWorksTitle": "How it works:",
+      "list1": "You get 100,000 NOK in practice money",
+      "list2": "The bot buys when price falls, sells when it rises",
+      "list3": "You see results live — no risk, just learning",
+      "cta": "Get started"
+    },
+    "step2": {
+      "title": "Choose your strategy",
+      "subtitle": "What suits you best?",
+      "templates": {
+        "safe": "Safe — small steps, low risk",
+        "balanced": "Balanced — steady growth",
+        "aggressive": "Aggressive — higher risk, higher potential"
+      }
+    },
+    "error": {
+      "finish": "Something went wrong. Please try again."
+    }
+  }
 }

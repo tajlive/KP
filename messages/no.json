@@ -2028,7 +2028,7 @@
     },
     "aiTip": {
       "default": {
-        "message": "Start din første paper-trade for å se AI-innsikt her."
+        "message": "Start din første Lekepenger-trade for å se AI-innsikt her."
       },
       "winRateLow": {
         "message": "Win rate på {winRate}% er under bransjesnittet (55%). Gjennomgå tapende trades for å finne mønstre.",
@@ -2209,7 +2209,7 @@
     },
     "modeBar": {
       "live": "Live",
-      "paper": "Papir",
+      "paper": "Lekepenger",
       "noSessionDesc": "Ingen aktiv sesjon",
       "liveDesc": "Handel med ekte penger",
       "paperDesc": "Handel med lekepenger"
@@ -2612,7 +2612,7 @@
       "unknown": "Uten resultat"
     },
     "mode": {
-      "paper": "Papir",
+      "paper": "Lekepenger",
       "live": "Live",
       "unknown": "Ukjent"
     },
@@ -4307,7 +4307,7 @@
     "pnl": "P&L",
     "pnlPct": "P&L %",
     "mode": "Modus",
-    "paper": "Papir",
+    "paper": "Lekepenger",
     "live": "Live",
     "strategy": "Strategi",
     "status": "Status",
@@ -4373,10 +4373,10 @@
   },
   "trading": {
     "paperMode": "Lekepenger",
-    "paperModeShort": "Paper",
+    "paperModeShort": "Leke",
     "liveMode": "Live Trading",
     "liveModeShort": "Live",
-    "recentTradesMixedModesHint": "Inkl. paper og live — porteføljen over følger valgt modus.",
+    "recentTradesMixedModesHint": "Inkl. Lekepenger og live — porteføljen over følger valgt modus.",
     "paperModeDescription": "Øv med lekepenger",
     "liveModeDescription": "Handel med ekte penger",
     "switchToLiveTitle": "Bytt til Live Trading?",
@@ -4463,7 +4463,7 @@
       "checkpoint4": "Disiplin (Avg Hold Time)",
       "recommendation": "Anbefalt strategi:",
       "step1": "Start med SMÅ beløp (50-100 kr per trade)",
-      "step2": "Fortsett å trade i paper samtidig",
+      "step2": "Fortsett å trade i Lekepenger samtidig",
       "step3": "Øk gradvis når du føler deg komfortabel",
       "step4": "Forvent at emosjonene vil være forskjellige"
     },
@@ -4643,7 +4643,7 @@
     "decisionReject": "Decision reject",
     "decisionModify": "Decision modify",
     "live": "Live",
-    "paper": "Papir",
+    "paper": "Lekepenger",
     "retry": "Retry",
     "noTradesFiltered": "No handler filtered",
     "noTradesFilteredHint": "No handler filtered tips",
@@ -4684,7 +4684,7 @@
       },
       "mode": {
         "live": "Live",
-        "paper": "Papir",
+        "paper": "Lekepenger",
         "paperShort": "Papir short",
         "lockedTooltip": "Locked tooltip",
         "liveShort": "Live short",
@@ -4847,7 +4847,7 @@
       },
       "modeBanner": {
         "live": "Live",
-        "paper": "Papir"
+        "paper": "Lekepenger"
       },
       "mySessions": "My økter",
       "workspaceHeader": {
@@ -5046,7 +5046,7 @@
       "strategies": {
         "empty": "Ingen data"
       },
-      "paper": "Papir",
+      "paper": "Lekepenger",
       "plTotal": "Pl totalt",
       "recentTrades": "Recent handler",
       "seeAll": "Se alle",
@@ -5389,7 +5389,7 @@
       "notFound": "Not Found",
       "close": "Close",
       "live": "Live",
-      "paper": "Paper",
+      "paper": "Lekepenger",
       "result": "Result",
       "overview": "Overview",
       "type": "Type",
@@ -5625,7 +5625,7 @@
       },
       "f7": {
         "q": "Fungerer dette på mobil?",
-        "a": "Ja, hele plattformen er mobil-optimalisert. Du kan ta kurs, gjøre paper trades, og chatte med læringsassistenten fra telefonen din. Lær hvor som helst, når som helst."
+        "a": "Ja, hele plattformen er mobil-optimalisert. Du kan ta kurs, gjøre Lekepenger trades, og chatte med læringsassistenten fra telefonen din. Lær hvor som helst, når som helst."
       },
       "f8": {
         "q": "Hva om jeg har spørsmål underveis?",
@@ -5742,7 +5742,7 @@
       "sizingFixed": "Fast beløp",
       "recentCopies": "Nylige kopieringer",
       "emptyTitle": "Ingen tradere ennå",
-      "emptyBody": "Utforsk kuraterte paper-leadere for å starte trygt — eller vent mens fellesskapet vokser.",
+      "emptyBody": "Utforsk kuraterte Lekepenger-leadere for å starte trygt — eller vent mens fellesskapet vokser.",
       "discoverCta": "Oppdag ledere",
       "settingsAria": "Innstillinger for {name}",
       "maxAlloc": "Maks {amount}",
@@ -5794,7 +5794,7 @@
       "discover": "Oppdag"
     },
     "profile": {
-      "trustPaper": "Dette er en Klarpakke paper/demo-profil. Tidligere resultater garanterer ikke fremtidig avkastning.",
+      "trustPaper": "Dette er en Klarpakke Lekepenger/demo-profil. Tidligere resultater garanterer ikke fremtidig avkastning.",
       "trustRisk": "Risikoetiketter er forenklede og erstatter ikke din egen research.",
       "id": "Id",
       "copyRequiresSubscription": "Copy Requires Subscription",
@@ -5827,7 +5827,7 @@
       "scaleFactorLabel": "Skaleringsfaktor",
       "scaleFactorHint": "1.0x = samme størrelse som traderen. Høyere = større posisjoner.",
       "allocationLabel": "Kapital-allokering",
-      "allocationHint": "Prosent av din paper-kapital som brukes per trade.",
+      "allocationHint": "Prosent av din Lekepenger-kapital som brukes per trade.",
       "maxAmountLabel": "Maks beløp per trade",
       "maxAmountPlaceholder": "Ingen grense",
       "maxAmountHint": "Valgfri. Minimum {min} NOK.",
@@ -6094,5 +6094,29 @@
   "liveTicker": {
     "liveMarkets": "Live markeder",
     "updateInterval": "Oppdateres hvert 15. sekund"
+  },
+  "interactive": {
+    "step1": {
+      "title1": "Velkommen til Klarpakke",
+      "title2": "Din AI-pilot for krypto",
+      "description": "Vi hjelper deg med å tjene penger på kryptovaluta — automatisk, uten at du trenger å vite noe om trading.",
+      "howItWorksTitle": "Slik fungerer det:",
+      "list1": "Du får 100 000 kr lekepenger å øve med",
+      "list2": "Boten kjøper når prisen faller, selger når den stiger",
+      "list3": "Du ser resultatene live — ingen risiko, bare læring",
+      "cta": "Kom i gang"
+    },
+    "step2": {
+      "title": "Velg din strategi",
+      "subtitle": "Hva passer deg best?",
+      "templates": {
+        "safe": "Trygg — små steg, lav risiko",
+        "balanced": "Balansert — jevn vekst",
+        "aggressive": "Offensiv — høyere risiko, høyere potensial"
+      }
+    },
+    "error": {
+      "finish": "Noe gikk galt. Prøv igjen."
+    }
   }
 }
