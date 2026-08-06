@@ -117,9 +117,23 @@ export default async function SanityHeroSection({
           </h1>
 
           {/* Subtitle — Sanity overrides, otherwise i18n fallback */}
-          <p className="text-lg sm:text-xl text-kp-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
+          <p className="text-lg sm:text-xl text-kp-text-secondary max-w-2xl mx-auto mb-6 leading-relaxed">
             {subtitle}
           </p>
+
+          {/* Trust signals — synlig over CTA uten scroll */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              {t("trustPlayMoney")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300">
+              🪙 {t("trustKlt")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
+              {t("trustAgents")}
+            </span>
+          </div>
 
           {/* CTA Buttons — Sanity CTA overrides primary; secondary is fixed i18n value */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

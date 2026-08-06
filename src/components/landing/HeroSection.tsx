@@ -50,6 +50,16 @@ export default function HeroSection({ rightColumn }: Props) {
               {t("hero.subtitle")}
             </p>
 
+            {/* Trust badges — synlig over CTA, ingen scroll */}
+            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+              <span className="inline-flex items-center gap-1 rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
+                ✓ {t("hero.trustPlayMoney")}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
+                {t("hero.trustAgents")}
+              </span>
+            </div>
+
             {/* CTA-hierarki: én primær handling + stille sekundær lenke */}
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-center lg:justify-start">
               <Link
