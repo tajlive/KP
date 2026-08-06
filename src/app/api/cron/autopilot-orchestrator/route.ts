@@ -18,6 +18,10 @@
  *   5. Upsert autopilot_state: equity, allokeringer, drawdown-kill-latch,
  *      five_pair_activated, last_run
  *
+ * TODO(2026-08-06): Rewire til processAutopilotUser() fra
+ * src/lib/trading/autopilot/orchestrator.ts når C1 er stabil.
+ * Da fjernes inline-pipelinen og grid-manageren fases ut.
+ *
  * Batch-parallellisering som tick-motoren: 25 brukere per batch via
  * Promise.all, 55s timeout-guard per run. Feil for én bruker stopper IKKE
  * de andre — hver bruker logges separat i error_details.
