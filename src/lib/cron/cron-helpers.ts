@@ -16,8 +16,7 @@ export async function captureCronSuccess(
       status: "success",
       started_at: startedAt.toISOString(),
       finished_at: finishedAt.toISOString(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    });
   } catch (err) {
     console.warn(`[captureCronSuccess] Failed to log success for ${jobName}:`, err);
   }

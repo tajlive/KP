@@ -11,6 +11,9 @@ import { detectRegime, REGIME_STRATEGY_MAP, RegimeResult } from '@/services/regi
 import { getMarketSentiment } from '@/lib/ai/sonar/marketSentiment';
 import { createServerClient } from '@/lib/supabase/server';
 import type { MarketSentimentResult } from '@/lib/ai/sonar/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { OHLCV } from '@/services/indicators';
+import type { Database, Json } from '@/types/database.types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -119,8 +122,10 @@ export async function GET(request: NextRequest) {
 /**
  * Get cached regime or compute new
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function getOrComputeRegime(symbol: string, supabase: any): Promise<RegimeResult> {
+async function getOrComputeRegime(
+  symbol: string,
+  supabase: SupabaseClient<Database>
+): Promise<RegimeResult> {
   // Check cache
   const { data: cached } = await supabase
     .from('regime_cache')
@@ -129,7 +134,7 @@ async function getOrComputeRegime(symbol: string, supabase: any): Promise<Regime
     .single();
 
   if (cached && isRegimeCacheValid(cached.created_at)) {
-    return cached.regime_data as RegimeResult;
+    return cached.regime_data as unknown as RegimeResult;
   }
 
   // Fetch OHLCV data
@@ -141,7 +146,7 @@ async function getOrComputeRegime(symbol: string, supabase: any): Promise<Regime
   // Cache result
   await supabase.from('regime_cache').upsert({
     symbol,
-    regime_data: regime,
+    regime_data: regime as unknown as Json,
     created_at: new Date().toISOString(),
   }, { onConflict: 'symbol' });
 
@@ -152,9 +157,8 @@ async function getOrComputeRegime(symbol: string, supabase: any): Promise<Regime
  * Get cached sentiment or compute new
  */
 async function getOrComputeSentiment(
-  symbol: string, 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any
+  symbol: string,
+  supabase: SupabaseClient<Database>
 ): Promise<MarketSentimentResult> {
   // Check cache
   const { data: cached } = await supabase
@@ -164,7 +168,7 @@ async function getOrComputeSentiment(
     .single();
 
   if (cached && isSentimentCacheValid(cached.created_at)) {
-    return cached.sentiment_data as MarketSentimentResult;
+    return cached.sentiment_data as unknown as MarketSentimentResult;
   }
 
   // Fetch fresh sentiment
@@ -176,15 +180,10 @@ async function getOrComputeSentiment(
 /**
  * Fetch OHLCV from cache or database
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function fetchOHLCV(supabase: any, symbol: string): Promise<Array<{
-  timestamp: number;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}>> {
+async function fetchOHLCV(
+  supabase: SupabaseClient<Database>,
+  symbol: string
+): Promise<OHLCV[]> {
   // Try market cache first
   const { data: cached } = await supabase
     .from('market_ohlcv_cache')
@@ -193,7 +192,8 @@ async function fetchOHLCV(supabase: any, symbol: string): Promise<Array<{
     .single();
 
   if (cached?.ohlcv_data && Array.isArray(cached.ohlcv_data)) {
-    return cached.ohlcv_data;
+    // Stored as jsonb in market_ohlcv_cache; shape validated as array above
+    return cached.ohlcv_data as unknown as OHLCV[];
   }
 
   // Try to fetch from market_data table
@@ -205,8 +205,7 @@ async function fetchOHLCV(supabase: any, symbol: string): Promise<Array<{
     .limit(500);
 
   if (marketData && marketData.length >= 200) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return marketData.map((d: any) => ({
+    return marketData.map((d) => ({
       timestamp: new Date(d.timestamp).getTime(),
       open: d.open,
       high: d.high,
@@ -237,7 +236,8 @@ function mapRecommendationToType(
 /**
  * Check if regime cache is valid (4 hours)
  */
-function isRegimeCacheValid(createdAt: string): boolean {
+function isRegimeCacheValid(createdAt: string | null): boolean {
+  if (!createdAt) return false;
   const age = Date.now() - new Date(createdAt).getTime();
   return age < REGIME_CACHE_TTL_MS;
 }

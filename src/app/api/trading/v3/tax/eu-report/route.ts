@@ -6,7 +6,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { createServerClient } from "@/lib/supabase/server";
+import type { Database } from '@/types/database.types';
 import type { EuropeanJurisdiction } from '@/lib/trading/white-label/european-tax';
 
 // Interfaces for tax report data
@@ -30,14 +32,32 @@ interface TaxReport {
   tax_year: number;
   report_format: 'XML' | 'CSV' | 'PDF';
   report_data: TaxReportData;
-  total_gains?: number;
-  total_losses?: number;
-  net_taxable?: number;
-  estimated_tax?: number;
+  total_gains?: number | null;
+  total_losses?: number | null;
+  net_taxable?: number | null;
+  estimated_tax?: number | null;
   tax_currency: string;
   calculation_method: string;
   generated_at: string;
 }
+
+// `european_tax_reports` finnes ikke i genererte Database-typer (database.types.ts),
+// så skjemaet utvides lokalt — samme mønster som lib/admin/log-admin-audit.ts (DbWithAdminAudit).
+type EuropeanTaxReportRow = TaxReport & { user_id: string };
+type EuropeanTaxReportInsert = Omit<EuropeanTaxReportRow, 'id'> & { id?: string };
+
+type DbWithEuropeanTaxReports = Database & {
+  public: Database['public'] & {
+    Tables: Database['public']['Tables'] & {
+      european_tax_reports: {
+        Row: EuropeanTaxReportRow;
+        Insert: EuropeanTaxReportInsert;
+        Update: Partial<EuropeanTaxReportInsert>;
+        Relationships: [];
+      };
+    };
+  };
+};
 
 const VALID_JURISDICTIONS: EuropeanJurisdiction[] = ['DE', 'FR', 'IT', 'ES', 'NL', 'AT', 'CH', 'NO'];
 
@@ -105,28 +125,30 @@ export async function POST(request: NextRequest) {
       currency: 'USD'
     }));
     
-    // Store tax report - table not in generated types, use any cast
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // european_tax_reports: tabell utenfor genererte Database-typer. Forsøk på DbWithEuropeanTaxReports
+    // type-extension (DbWithEuropeanTaxReports) feiler mot SupabaseClient-komplekse generics.
+    // Eneste stabile løsning er as any inntil tabellen legges i database.types.ts.
     const { data: report, error: reportError } = await (supabase as any)
       .from('european_tax_reports')
-      .upsert({
-        user_id: user.id,
-        jurisdiction,
-        tax_year: taxYear,
-        report_format: format,
-        report_data: { trades: tradeRecords },
-        total_gains: 0,
-        total_losses: 0,
-        net_taxable: 0,
-        estimated_tax: 0,
-        tax_currency: getCurrencyForJurisdiction(jurisdiction),
-        calculation_method: getMethodForJurisdiction(jurisdiction),
-        generated_at: new Date().toISOString()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any, {
-        onConflict: 'user_id,jurisdiction,tax_year'
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)
+      .upsert(
+        {
+          user_id: user.id,
+          jurisdiction,
+          tax_year: taxYear,
+          report_format: format,
+          report_data: { trades: tradeRecords },
+          total_gains: 0,
+          total_losses: 0,
+          net_taxable: 0,
+          estimated_tax: 0,
+          tax_currency: getCurrencyForJurisdiction(jurisdiction),
+          calculation_method: getMethodForJurisdiction(jurisdiction),
+          generated_at: new Date().toISOString()
+        },
+        {
+          onConflict: 'user_id,jurisdiction,tax_year'
+        }
+      )
       .select()
       .single();
     
@@ -187,8 +209,7 @@ export async function GET(
       );
     }
     
-    // Fetch existing report - table not in generated types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // Fetch existing report — european_tax_reports mangler i genererte Database-typer
     const { data: report, error } = await (supabase as any)
       .from('european_tax_reports')
       .select('*')
@@ -205,8 +226,7 @@ export async function GET(
     }
     
     // Generate export based on format
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const format = (report as any).report_format as 'XML' | 'CSV' | 'PDF';
+    const format = report.report_format;
     const content = generateExport(report, format);
     
     const contentType = format === 'XML' ? 'application/xml' :

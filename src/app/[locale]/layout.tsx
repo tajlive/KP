@@ -351,7 +351,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       >
         <RootProviders
           locale={locale}
-          messages={messages}
+          messages={messages as import("next-intl").AbstractIntlMessages}
           showVippsMarket={showVippsMarket}
           marketingNav={marketingNav}
           flags={flags}

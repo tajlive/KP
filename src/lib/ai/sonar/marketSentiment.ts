@@ -153,11 +153,11 @@ async function cacheSentiment(
     const { createServerClient } = await import('@/lib/supabase/server');
     const supabase = await createServerClient();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // 'sonar_sentiment_cache' tabell utenfor genererte Database-typer
     await (supabase.from('sonar_sentiment_cache') as any).upsert(
       {
         symbol: symbol.toUpperCase(),
-        sentiment_data: sentiment,
+        sentiment_data: sentiment as unknown as import('@/types/database.types').Json,
         recommendation: sentiment.recommendation,
         confidence: sentiment.confidence,
         created_at: new Date().toISOString(),
@@ -309,7 +309,7 @@ export async function getMarketSentimentForEdgeFunction(
   const parsed = parseSentimentResponse(content, symbol);
 
   // Cache resultatet
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // 'sonar_sentiment_cache' tabell utenfor genererte Database-typer
   await (supabase.from('sonar_sentiment_cache') as any).upsert(
     {
       symbol: symbol.toUpperCase(),

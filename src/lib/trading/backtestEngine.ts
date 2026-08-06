@@ -1090,7 +1090,7 @@ class BacktestCache {
       
       // Lagre i minne-cache for neste gang
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = (data as any).result_data as BacktestResult;
+      const result = (data as { result_data: BacktestResult }).result_data;
       this.setInMemory(key, result);
       return result;
     } catch {
@@ -1124,7 +1124,7 @@ class BacktestCache {
         volatility: result.metrics.volatility,
       };
       
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // 'backtest_cache' tabell utenfor genererte Database-typer
       await (this.supabase.from('backtest_cache') as any).upsert({
         symbol,
         strategy_id: strategyId,
