@@ -1,5 +1,7 @@
 import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient as createServiceClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
 import {
   classifyCurrency,
   fetchPriceRefs,
@@ -23,7 +25,7 @@ export async function GET() {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = createServiceClient() as any;
+    const db = createServiceClient() as SupabaseClient<Database>;
 
     let ref: PriceRef = {};
     let priceSource = "coingecko";

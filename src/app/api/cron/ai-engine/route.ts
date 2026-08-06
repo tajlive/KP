@@ -152,8 +152,7 @@ export async function GET(req: NextRequest) {
               : null,
           } as unknown as import('@/types/database.types').Json,
           source: 'binance_spot',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any;
+        };
         const { error: featErr } = await db.from('ai_feature_store').insert(featuresPayload);
         if (featErr) {
           console.warn(`[Cron AI-Engine] feature_store insert warning for ${symbol}:`, featErr.message);
@@ -203,8 +202,7 @@ export async function GET(req: NextRequest) {
           explanation: consensus.reasoning,
           idempotency_key: `ai-engine-${symbol}-${asOf}`,
           idempotency_scope: 'ai-decision',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+        });
 
         if (insertError) {
           // Observability er best-effort — logg og fortsett (aldri blokkér trading_signals)
@@ -228,8 +226,7 @@ export async function GET(req: NextRequest) {
               model_version: 'ensemble-v2',
               feature_version: '1h-basic',
               agent_meta: ar.signal.meta as unknown as import('@/types/database.types').Json,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
+            });
             if (agentSignalErr) {
               console.error(`[Cron AI-Engine] agent signal insert error for ${symbol}:`, agentSignalErr);
             }
@@ -251,8 +248,7 @@ export async function GET(req: NextRequest) {
             agent_weight: 1.0,
             model_version: 'ensemble-v2',
             feature_version: '1h-basic',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any);
+          });
           if (masterSignalErr) {
             console.error(`[Cron AI-Engine] master signal insert error for ${symbol}:`, masterSignalErr);
           }
