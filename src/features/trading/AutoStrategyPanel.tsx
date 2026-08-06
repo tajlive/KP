@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrices } from "@/hooks/usePrices";
@@ -14,6 +15,15 @@ const RISK_MAP = {
 } as const;
 
 type RiskKey = keyof typeof RISK_MAP;
+
+// Wizard-steg i Auto-flyten (Fase 3 D11)
+const WIZARD_STEPS = [
+  { id: 1, label: "Velg strategi" },
+  { id: 2, label: "Konfigurer" },
+  { id: 3, label: "Start" },
+] as const;
+
+type WizardStep = (typeof WIZARD_STEPS)[number]["id"];
 
 interface SymbolMeta {
   /** Binance-pair (nøkkel i WS-tickers) */
@@ -49,6 +59,100 @@ interface PriceRow {
   price_change_percent_24h?: number | null;
 }
 
+// ─── Brødsmulesti: Handel > Auto > [steg] ────────────────────────────────────
+// På mobil er den KUN visuell (rene <span>, ingen href/onClick).
+// På desktop er «Handel» og «Auto» klikkbare.
+function AutoBreadcrumb({ currentStepLabel }: { currentStepLabel: string }) {
+  const crumbs = [
+    { label: "Handel", href: "/handel" },
+    { label: "Auto", href: "/handel?tab=auto" },
+  ];
+
+  return (
+    <nav aria-label="Brødsmuler" className="flex flex-wrap items-center gap-1.5 px-1 text-[11px]">
+      {crumbs.map((crumb) => (
+        <React.Fragment key={crumb.href}>
+          {/* Mobil: ren visuell dekor — ikke klikkbar */}
+          <span className="text-slate-500 sm:hidden">{crumb.label}</span>
+          {/* Desktop: klikkbar */}
+          <Link
+            href={crumb.href}
+            className="hidden text-slate-400 transition-colors hover:text-white sm:inline"
+          >
+            {crumb.label}
+          </Link>
+          <span aria-hidden="true" className="select-none text-slate-600">
+            ›
+          </span>
+        </React.Fragment>
+      ))}
+      <span className="font-medium text-brand-500">{currentStepLabel}</span>
+    </nav>
+  );
+}
+
+// ─── Steg-indikator «1 av 3» ─────────────────────────────────────────────────
+// Aktivt steg: brand-500 · Inaktive steg: slate-700
+function StepIndicator({ step }: { step: WizardStep }) {
+  const currentLabel = WIZARD_STEPS[step - 1].label;
+
+  return (
+    <div className="rounded-xl border border-[#1E2530] bg-[#0A0D12] p-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="font-mono text-[11px] font-semibold text-white">
+          Steg {step} av {WIZARD_STEPS.length}
+        </span>
+        <span className="truncate text-[11px] text-slate-500">{currentLabel}</span>
+      </div>
+
+      {/* Progress-bar */}
+      <div className="mb-3 h-1 overflow-hidden rounded-full bg-slate-700/60">
+        <motion.div
+          className="h-full rounded-full bg-brand-500"
+          initial={false}
+          animate={{ width: `${(step / WIZARD_STEPS.length) * 100}%` }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        />
+      </div>
+
+      {/* Steg-segmenter */}
+      <div className="grid grid-cols-3 gap-1.5">
+        {WIZARD_STEPS.map((s) => {
+          const isActive = s.id === step;
+          return (
+            <div
+              key={s.id}
+              className={cn(
+                "rounded-lg border px-2 py-1.5 text-center transition-colors",
+                isActive
+                  ? "border-brand-500/60 bg-brand-500/10"
+                  : "border-slate-700/50 bg-[#0B0F19]",
+              )}
+            >
+              <div
+                className={cn(
+                  "font-mono text-[10px] font-bold",
+                  isActive ? "text-brand-500" : "text-slate-700",
+                )}
+              >
+                0{s.id}
+              </div>
+              <div
+                className={cn(
+                  "truncate text-[10px] font-medium",
+                  isActive ? "text-white" : "text-slate-600",
+                )}
+              >
+                {s.label}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Komponent ───────────────────────────────────────────────────────────────
 
 export function AutoStrategyPanel() {
@@ -63,7 +167,13 @@ export function AutoStrategyPanel() {
   const [liveMode, setLiveMode] = React.useState(false);
   const [binanceConnected, setBinanceConnected] = React.useState<boolean | null>(null);
   const [binanceTradingPerm, setBinanceTradingPerm] = React.useState(false);
+  const [step, setStep] = React.useState<WizardStep>(1);
   const activeSessionIdsRef = React.useRef<string[]>([]);
+
+  // Fører brukeren fremover i wizard-flyten (aldri bakover):
+  // valg av valutaer = steg 1 · konfigurasjon = steg 2 · start = steg 3
+  const advanceTo = (target: WizardStep) =>
+    setStep((prev) => Math.max(prev, target) as WizardStep);
 
   // 24h endring fra usePrices() — tåler både DB-nøkkel (BTC) og WS-nøkkel (BTCUSDT)
   const changeOf = (meta: SymbolMeta): number | null => {
@@ -128,6 +238,22 @@ export function AutoStrategyPanel() {
     setSelected((prev) =>
       prev.includes(symbol) ? prev.filter((s) => s !== symbol) : [...prev, symbol],
     );
+    advanceTo(1);
+  };
+
+  const handleRiskChange = (key: RiskKey) => {
+    setRisk(key);
+    advanceTo(2);
+  };
+
+  const handleCapitalChange = (value: string) => {
+    setCapital(value);
+    advanceTo(2);
+  };
+
+  const handleLiveModeChange = (live: boolean) => {
+    setLiveMode(live);
+    advanceTo(2);
   };
 
   const startAutoTrade = async () => {
@@ -137,6 +263,7 @@ export function AutoStrategyPanel() {
       return;
     }
     setStatus("starting");
+    setStep(3);
     setMessage(liveMode ? "Starter live-handel (ekte penger via Binance)..." : "Starter auto-handel...");
     try {
       const res = await fetch("/api/pilot", {
@@ -200,6 +327,7 @@ export function AutoStrategyPanel() {
         activeSessionIdsRef.current = [];
         setStatus("idle");
         setMessage("Auto-handel stoppet.");
+        advanceTo(2);
       } else {
         setStatus("error");
         setMessage("Kunne ikke stoppe sesjonen — prøv igjen");
@@ -233,15 +361,18 @@ export function AutoStrategyPanel() {
   }
 
   const controlsLocked = status === "active" || stopping;
+  const currentStepLabel = WIZARD_STEPS[step - 1].label;
 
   return (
     <div className="space-y-3">
-      <div className="text-xs font-medium text-slate-500 uppercase tracking-wider px-1">
-        Auto-handel — strategi
-      </div>
+      {/* Brødsmulesti: «Handel > Auto > [steg]» — kun visuell på mobil */}
+      <AutoBreadcrumb currentStepLabel={currentStepLabel} />
+
+      {/* Steg-indikator «1 av 3» */}
+      <StepIndicator step={step} />
 
       <div className="space-y-4 bg-[#0A0D12] border border-[#1E2530] rounded-xl p-4">
-        {/* 1. Symbol multi-select */}
+        {/* 1. Symbol multi-select (steg 1 — Velg strategi) */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
@@ -323,7 +454,7 @@ export function AutoStrategyPanel() {
           )}
         </div>
 
-        {/* 2. Risikonivå — segmentert (eksisterende design) */}
+        {/* 2. Risikonivå — segmentert (steg 2 — Konfigurer) */}
         <div>
           <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
             Risikonivå
@@ -338,7 +469,7 @@ export function AutoStrategyPanel() {
             ).map((r) => (
               <button
                 key={r.key}
-                onClick={() => setRisk(r.key)}
+                onClick={() => handleRiskChange(r.key)}
                 disabled={controlsLocked}
                 className={cn(
                   "flex-1 py-2 text-xs rounded-md transition-all border border-transparent",
@@ -353,7 +484,7 @@ export function AutoStrategyPanel() {
           </div>
         </div>
 
-        {/* 3. Startkapital — eksisterende */}
+        {/* 3. Startkapital — eksisterende (steg 2 — Konfigurer) */}
         <div>
           <label htmlFor="auto-capital" className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
             Startkapital (NOK)
@@ -362,13 +493,13 @@ export function AutoStrategyPanel() {
             id="auto-capital"
             type="number"
             value={capital}
-            onChange={(e) => setCapital(e.target.value)}
+            onChange={(e) => handleCapitalChange(e.target.value)}
             disabled={controlsLocked}
             className="w-full bg-[#0B0F19] border border-[#1E2530] rounded-lg px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-amber-500 transition-colors disabled:opacity-50"
           />
         </div>
 
-        {/* 4. Modus: Paper vs Live (BYO Binance) */}
+        {/* 4. Modus: Paper vs Live (BYO Binance) (steg 2 — Konfigurer) */}
         <div>
           <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
             Handelsmodus
@@ -376,7 +507,7 @@ export function AutoStrategyPanel() {
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"
-              onClick={() => setLiveMode(false)}
+              onClick={() => handleLiveModeChange(false)}
               disabled={controlsLocked}
               className={cn(
                 "rounded-lg border px-3 py-2 text-left transition-colors",
@@ -391,7 +522,7 @@ export function AutoStrategyPanel() {
             </button>
             <button
               type="button"
-              onClick={() => setLiveMode(true)}
+              onClick={() => handleLiveModeChange(true)}
               disabled={controlsLocked}
               className={cn(
                 "rounded-lg border px-3 py-2 text-left transition-colors",
@@ -426,67 +557,6 @@ export function AutoStrategyPanel() {
             </div>
           )}
         </div>
-
-        {/* 5. Start / Stopp */}
-        <div className="space-y-2">
-          <AnimatePresence mode="wait" initial={false}>
-            {status === "active" ? (
-              <motion.div
-                key="running"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18 }}
-                className="space-y-2"
-              >
-                <div className="flex items-center justify-center gap-2 text-xs text-emerald-400 font-medium py-1">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  Auto-handel kjører — {RISK_MAP[risk].label} risiko
-                </div>
-                <button
-                  onClick={stopAutoTrade}
-                  disabled={stopping}
-                  className="w-full py-3 rounded-xl text-sm font-bold bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-all disabled:opacity-50"
-                >
-                  {stopping ? "⏳ Stopper..." : "⏹ Stopp Auto-handel"}
-                </button>
-              </motion.div>
-            ) : (
-              <motion.button
-                key="start"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18 }}
-                onClick={startAutoTrade}
-                disabled={status === "starting" || selected.length === 0}
-                className="w-full py-3 rounded-xl text-sm font-bold bg-amber-500 text-black hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
-              >
-                {status === "starting" ? "⏳ Starter..." : "🤖 Start Auto-handel"}
-              </motion.button>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {message && (
-          <AnimatePresence initial={false}>
-            <motion.p
-              key={message}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={cn(
-                "text-xs text-center",
-                status === "error" ? "text-red-400" : "text-emerald-400",
-              )}
-            >
-              {message}
-            </motion.p>
-          </AnimatePresence>
-        )}
 
         <p className="text-[11px] text-slate-500 text-center leading-relaxed">
           AI-en analyserer markedet og plasserer handler basert på din risikoprofil og strategi. Du kan stoppe når som helst.
@@ -545,6 +615,67 @@ export function AutoStrategyPanel() {
           </div>
         </>
       )}
+
+      {/* 6. Festet CTA i bunnen (Fase 3 D11) — alltid synlig uten å scrolle */}
+      <div className="sticky bottom-0 z-10 border-t border-[#1E2530] bg-[#0A0D12] px-3 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <AnimatePresence mode="wait" initial={false}>
+          {status === "active" ? (
+            <motion.div
+              key="running"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              className="space-y-2"
+            >
+              <div className="flex items-center justify-center gap-2 text-xs text-emerald-400 font-medium py-1">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Auto-handel kjører — {RISK_MAP[risk].label} risiko
+              </div>
+              <button
+                onClick={stopAutoTrade}
+                disabled={stopping}
+                className="w-full py-3 rounded-xl text-sm font-bold bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-all disabled:opacity-50"
+              >
+                {stopping ? "⏳ Stopper..." : "⏹ Stopp Auto-handel"}
+              </button>
+            </motion.div>
+          ) : (
+            <motion.button
+              key="start"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              onClick={startAutoTrade}
+              disabled={status === "starting" || selected.length === 0}
+              className="w-full py-3 rounded-xl text-sm font-bold bg-amber-500 text-black hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
+            >
+              {status === "starting" ? "⏳ Starter..." : "🤖 Start Auto-handel"}
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        {message && (
+          <AnimatePresence initial={false}>
+            <motion.p
+              key={message}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={cn(
+                "text-xs text-center pt-2",
+                status === "error" ? "text-red-400" : "text-emerald-400",
+              )}
+            >
+              {message}
+            </motion.p>
+          </AnimatePresence>
+        )}
+      </div>
     </div>
   );
 }
