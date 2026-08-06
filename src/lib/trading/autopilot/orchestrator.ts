@@ -28,7 +28,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+import type { Database, Json } from "@/types/database.types";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import {
@@ -38,10 +38,7 @@ import {
   MAX_OPEN_ORDERS,
   IDLE_THRESHOLD,
 } from "../kraken-grid-config.mjs";
-import {
-  runGridTick,
-  type PersistedGridOrder,
-} from "../kraken-grid";
+import { runGridTick, type PersistedGridOrder } from "../kraken-grid";
 import { scanPortfolio, type Portfolio } from "./scanner";
 import { allocateCapital, type Allocation } from "./allocator";
 import {
@@ -54,7 +51,14 @@ import { computeReinvest } from "../kraken-reinvest";
 /** PAIR_CFG er JS (.mjs) med infererte literale nøkler — indekser via Record. */
 const PAIR_CFG_LOOKUP = PAIR_CFG as unknown as Record<
   string,
-  { dec: number; ordremin: number; spacing: number; active: boolean; asset: string } | undefined
+  | {
+      dec: number;
+      ordremin: number;
+      spacing: number;
+      active: boolean;
+      asset: string;
+    }
+  | undefined
 >;
 
 /** Par som aktiveres ved equity ≥ 250 USDC (Task 6 — shouldActivateFivePair). */
@@ -136,13 +140,22 @@ export function createAutopilotDb(supabase: SupabaseLike): AutopilotDb {
       if (!data) return null;
       return {
         ...data,
-        grid_levels: (data.grid_levels ?? {}) as unknown as Record<string, PersistedGridOrder[]>,
+        grid_levels: (data.grid_levels ?? {}) as unknown as Record<
+          string,
+          PersistedGridOrder[]
+        >,
       } as AutopilotStateRow;
     },
 
     async saveAutopilotState(userId, patch) {
+      // grid_levels er Record<> i domenet, Json i DB-schemaet — cast kun feltet
       const { error } = await supabase.from("autopilot_state").upsert(
-        { user_id: userId, ...patch, updated_at: new Date().toISOString() } as any,
+        {
+          user_id: userId,
+          ...patch,
+          grid_levels: patch.grid_levels as unknown as Json,
+          updated_at: new Date().toISOString(),
+        },
         { onConflict: "user_id" },
       );
       if (error) throw error;
@@ -227,18 +240,29 @@ export function buildInitialBuyLevels(opts: {
   minLevelUsdc: number;
   levelSizeMultiplier: number;
 }): InitialLevel[] {
-  const { pair, currentPrice, capitalUsdc, levels, minLevelUsdc, levelSizeMultiplier } = opts;
+  const {
+    pair,
+    currentPrice,
+    capitalUsdc,
+    levels,
+    minLevelUsdc,
+    levelSizeMultiplier,
+  } = opts;
   const cfg = PAIR_CFG_LOOKUP[pair];
   if (!cfg || currentPrice <= 0 || capitalUsdc <= 0 || levels <= 0) return [];
 
   const spacing = cfg.spacing;
   const dec = cfg.dec;
   const capitalPerLevel = capitalUsdc / levels;
-  const levelUsdc = Math.max(minLevelUsdc, capitalPerLevel) * levelSizeMultiplier;
+  const levelUsdc =
+    Math.max(minLevelUsdc, capitalPerLevel) * levelSizeMultiplier;
   // Kapp antall nivåer hvis kapitalen ikke dekker alle (aldri over-alloker)
   const count = Math.min(
     levels,
-    Math.max(1, Math.floor(capitalUsdc / Math.max(minLevelUsdc, capitalPerLevel))),
+    Math.max(
+      1,
+      Math.floor(capitalUsdc / Math.max(minLevelUsdc, capitalPerLevel)),
+    ),
   );
 
   const out: InitialLevel[] = [];
@@ -272,7 +296,9 @@ export function pickIdlePair(
     const buys = (gridLevels[pair] ?? []).filter(
       (o) => o.side === "buy" && o.status === "open",
     );
-    const lowest = buys.length ? Math.min(...buys.map((o) => o.price)) : priceNow;
+    const lowest = buys.length
+      ? Math.min(...buys.map((o) => o.price))
+      : priceNow;
     const gap = (priceNow - lowest) / priceNow;
     if (!best || gap < best.gap) best = { pair, lowest, gap };
   }
@@ -308,7 +334,8 @@ export async function processAutopilotUser(
   const idleThresholdUsdc = opts.idleThresholdUsdc ?? IDLE_THRESHOLD;
   const minLevelUsdc = opts.minLevelUsdc ?? MIN_LEVEL_USDC;
   const maxOpenOrders = opts.maxOpenOrders ?? MAX_OPEN_ORDERS;
-  const initialLevelsPerPair = opts.initialLevelsPerPair ?? DEFAULT_INITIAL_LEVELS_PER_PAIR;
+  const initialLevelsPerPair =
+    opts.initialLevelsPerPair ?? DEFAULT_INITIAL_LEVELS_PER_PAIR;
 
   try {
     // 1) Nøkler: hent + dekrypter (AES-256-GCM via ENCRYPTION_KEY)
@@ -322,7 +349,8 @@ export async function processAutopilotUser(
     // 2) Eksisterende autopilot-state (grid-levels er SSoT for ordre-lista)
     const state = await db.fetchAutopilotState(userId);
     const firstRun = !state;
-    const gridLevels: Record<string, PersistedGridOrder[]> = state?.grid_levels ?? {};
+    const gridLevels: Record<string, PersistedGridOrder[]> =
+      state?.grid_levels ?? {};
     const priorInitialEquity = state?.initial_equity_usdc ?? 0;
     const priorFivePair = state?.five_pair_activated ?? false;
 
@@ -335,7 +363,8 @@ export async function processAutopilotUser(
 
     // 5) Kill-switch FØR grid — progresiv drawdown (7 % → halvert, 15 % → kill)
     //    Første kjøring: initial_equity seedes til dagens equity → drawdown 0.
-    const seededInitialEquity = priorInitialEquity > 0 ? priorInitialEquity : equityUsdc;
+    const seededInitialEquity =
+      priorInitialEquity > 0 ? priorInitialEquity : equityUsdc;
     const drawdown = evaluateProgressiveDrawdown({
       equityUsdc,
       initialEquityUsdc: seededInitialEquity,
@@ -357,7 +386,10 @@ export async function processAutopilotUser(
             await client.cancelOrder(txid);
             cancelledOrders++;
           } catch (error) {
-            console.error(`Autopilot kill: kansellering ${txid} feilet:`, error);
+            console.error(
+              `Autopilot kill: kansellering ${txid} feilet:`,
+              error,
+            );
           }
         }
       }
@@ -393,12 +425,16 @@ export async function processAutopilotUser(
     }
 
     // 6) 5-par-aktivering ved equity ≥ 250 (idempotent)
-    const fivePairActivated = priorFivePair || shouldActivateFivePair(equityUsdc, priorFivePair);
+    const fivePairActivated =
+      priorFivePair || shouldActivateFivePair(equityUsdc, priorFivePair);
 
     // Par å operere: allokerte par + par med eksisterende ordrer (posisjoner
     // må betjenes selv om de ikke lenger er allokert). Kun par med PAIR_CFG.
     const operatePairs = [
-      ...new Set([...allocation.map((a) => a.pair), ...Object.keys(gridLevels)]),
+      ...new Set([
+        ...allocation.map((a) => a.pair),
+        ...Object.keys(gridLevels),
+      ]),
     ].filter((p) => PAIR_CFG_LOOKUP[p] !== undefined);
 
     // 7) Per par: grid-tick (fills → trailing-salg / re-kjøp) eller første
@@ -423,7 +459,8 @@ export async function processAutopilotUser(
       if (persisted.length === 0) {
         // Første kjøring for paret: legg kjøpsnivåer under nåpris (allokert kapital)
         const alloc = allocation.find((a) => a.pair === pair);
-        const capitalUsdc = alloc?.capitalUsdc ?? minLevelUsdc * initialLevelsPerPair;
+        const capitalUsdc =
+          alloc?.capitalUsdc ?? minLevelUsdc * initialLevelsPerPair;
         const levels = buildInitialBuyLevels({
           pair,
           currentPrice,
@@ -436,7 +473,11 @@ export async function processAutopilotUser(
         for (const lv of levels) {
           if (openTxids.size + newOrdersPlaced >= maxOpenOrders) break;
           try {
-            const res = await client.limitBuy(pair, lv.volume, lv.price.toFixed(cfg.dec));
+            const res = await client.limitBuy(
+              pair,
+              lv.volume,
+              lv.price.toFixed(cfg.dec),
+            );
             gridLevels[pair] = [
               ...(gridLevels[pair] ?? []),
               {
@@ -451,7 +492,10 @@ export async function processAutopilotUser(
             ];
             newOrdersPlaced++;
           } catch (error) {
-            console.error(`Autopilot init-nivå ${pair} @ ${lv.price} feilet:`, error);
+            console.error(
+              `Autopilot init-nivå ${pair} @ ${lv.price} feilet:`,
+              error,
+            );
           }
         }
         continue;
@@ -477,17 +521,26 @@ export async function processAutopilotUser(
       .flat()
       .filter(
         (o) =>
-          o.side === "buy" && o.status === "open" && o.txid && openTxids.has(o.txid),
+          o.side === "buy" &&
+          o.status === "open" &&
+          o.txid &&
+          openTxids.has(o.txid),
       )
       .reduce((sum, o) => sum + o.price * (parseFloat(o.volume) || 0), 0);
-    const freeForLevels = Math.max(0, portfolio.freeUsdc - lockedUsdc) + reinvestedUsdc;
+    const freeForLevels =
+      Math.max(0, portfolio.freeUsdc - lockedUsdc) + reinvestedUsdc;
 
     // 9) Idle-kapital > terskel → nytt kjøpsnivå på par med minst gap
-    if (freeForLevels > idleThresholdUsdc && openTxids.size + newOrdersPlaced < maxOpenOrders) {
+    if (
+      freeForLevels > idleThresholdUsdc &&
+      openTxids.size + newOrdersPlaced < maxOpenOrders
+    ) {
       const idlePick = pickIdlePair(operatePairs, gridLevels, prices);
       if (idlePick) {
         const cfg = PAIR_CFG_LOOKUP[idlePick.pair]!;
-        const newPrice = +(idlePick.lowest * (1 - cfg.spacing)).toFixed(cfg.dec);
+        const newPrice = +(idlePick.lowest * (1 - cfg.spacing)).toFixed(
+          cfg.dec,
+        );
         const pool = Math.max(0, freeForLevels - 1);
         // Task 4b: progressiv drawdown halverer nye nivåer ved 7–15 % drawdown
         const levelUsdc = Math.min(
@@ -501,7 +554,11 @@ export async function processAutopilotUser(
 
         if (levelUsdc > 0 && parseFloat(volume) >= cfg.ordremin * 1.1) {
           try {
-            const res = await client.limitBuy(idlePick.pair, volume, newPrice.toFixed(cfg.dec));
+            const res = await client.limitBuy(
+              idlePick.pair,
+              volume,
+              newPrice.toFixed(cfg.dec),
+            );
             gridLevels[idlePick.pair] = [
               ...(gridLevels[idlePick.pair] ?? []),
               {
@@ -517,14 +574,18 @@ export async function processAutopilotUser(
             idleLevelsPlaced++;
             newOrdersPlaced++;
           } catch (error) {
-            console.error(`Autopilot idle-nivå ${idlePick.pair} feilet:`, error);
+            console.error(
+              `Autopilot idle-nivå ${idlePick.pair} feilet:`,
+              error,
+            );
           }
         }
       }
     }
 
     // 10) UPSERT autopilot_state (service-role)
-    const realizedTotal = (state?.realized_profit_usdc ?? 0) + realizedProfitUsdc;
+    const realizedTotal =
+      (state?.realized_profit_usdc ?? 0) + realizedProfitUsdc;
     await db.saveAutopilotState(userId, {
       activated: true,
       current_equity_usdc: equityUsdc,

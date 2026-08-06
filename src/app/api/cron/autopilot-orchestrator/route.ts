@@ -9,18 +9,18 @@
  *     AND EXISTS (SELECT 1 FROM autopilot_state
  *                 WHERE user_id = user_kraken_keys.user_id AND activated = true);
  *
- * Per bruker (processAutopilotUser — inline, Task C1 er ikke ferdig ennå):
- *   1. Dekrypter Kraken-nøkler → KrakenClient
+ * Per bruker (processAutopilotUser — Task C1, src/lib/trading/autopilot/orchestrator.ts):
+ *   1. Hent + dekrypter Kraken-nøkler → KrakenClient
  *   2. scanPortfolio (B1) → equity, fri USDC, posisjoner
  *   3. allocateCapital (B2) → kapitalallokering per par
- *   4. Reinvesteringsbeslutning (B3) — kun beslutning; ordreplassering
- *      håndteres av grid-manageren (denne ruten plasserer ALDRI ordre)
- *   5. Upsert autopilot_state: equity, allokeringer, drawdown-kill-latch,
- *      five_pair_activated, last_run
+ *   4. Grid-tick per par (fills → trailing-salg / re-kjøp) + 5-par-aktivering
+ *   5. Progresiv drawdown-kill (7 % → halverte nivåer, 15 % → kill)
+ *   6. Reinvesteringsbeslutning (B3) + idle-nivåer
+ *   7. Upsert autopilot_state (service-role via createAutopilotDb)
  *
- * TODO(2026-08-06): Rewire til processAutopilotUser() fra
- * src/lib/trading/autopilot/orchestrator.ts når C1 er stabil.
- * Da fjernes inline-pipelinen og grid-manageren fases ut.
+ * Ruten plasserer ALDRI ordre selv — all trading-logikk ligger i
+ * orchestrator-modulen. Ruten: velg brukere → batch-parallelliser
+ * processAutopilotUser → aggreger { processed, errors, error_details }.
  *
  * Batch-parallellisering som tick-motoren: 25 brukere per batch via
  * Promise.all, 55s timeout-guard per run. Feil for én bruker stopper IKKE
@@ -41,23 +41,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database, Json } from "@/types/database.types";
+import type { Database } from "@/types/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { validateCronSecret } from "@/lib/auth/cron";
+import { captureCronError, captureCronSuccess } from "@/lib/cron/cron-helpers";
 import {
-  captureCronError,
-  captureCronSuccess,
-} from "@/lib/cron/cron-helpers";
-import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
-import { KrakenClient } from "@/lib/exchanges/kraken/client";
-import { scanPortfolio } from "@/lib/trading/autopilot/scanner";
-import {
-  allocateCapital,
-  validateAllocations,
-  type Allocation,
-} from "@/lib/trading/autopilot/allocator";
-import { computeReinvest } from "@/lib/trading/kraken-reinvest";
-import { ACTIVE_PAIRS } from "@/lib/trading/kraken-grid-config.mjs";
+  processAutopilotUser,
+  createAutopilotDb,
+} from "@/lib/trading/autopilot/orchestrator";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -66,10 +57,6 @@ export const dynamic = "force-dynamic";
 const BATCH_SIZE = 25;
 /** Timeout-guard: ikke start nye batcher nær Cloudflares 60s CPU-grense. */
 const BATCH_TIMEOUT_MS = 55_000;
-/** Equity-terskel for 5-par-modus (ADA/DOT aktiveres ved >= 250 USDC). */
-const FIVE_PAIR_EQUITY_USDC = 250;
-/** Drawdown-kill: equity under 85% av initial → stopp nye ordrer (latch). */
-const DRAWDOWN_KILL_PCT = 0.15;
 
 export interface AutopilotUser {
   user_id: string;
@@ -81,7 +68,6 @@ export interface AutopilotUserResult {
   user_id: string;
   ok: boolean;
   equity_usdc?: number;
-  allocations?: Allocation[];
   error?: string;
 }
 
@@ -99,10 +85,7 @@ export async function fetchAutopilotUsers(
       .from("user_kraken_keys")
       .select("user_id, api_key_encrypted, api_secret_encrypted")
       .eq("is_active", true),
-    db
-      .from("autopilot_state")
-      .select("user_id")
-      .eq("activated", true),
+    db.from("autopilot_state").select("user_id").eq("activated", true),
   ]);
 
   if (keysRes.error) {
@@ -116,116 +99,17 @@ export async function fetchAutopilotUsers(
   return (keysRes.data ?? []).filter((u) => activated.has(u.user_id));
 }
 
-/**
- * Prosesser ÉN autopilot-bruker (Task C1 — processAutopilotUser, inline).
- * Kast ALDRI utover funksjonen: alle feil fanges og returneres som
- * { ok: false, error } så orkestratoren kan fortsette med neste bruker.
- */
-export async function processAutopilotUser(
-  db: SupabaseClient<Database>,
-  user: AutopilotUser,
-): Promise<AutopilotUserResult> {
-  try {
-    // 1. Nøkler → KrakenClient
-    const [apiKey, apiSecret] = await Promise.all([
-      decryptApiKey(user.api_key_encrypted),
-      decryptApiKey(user.api_secret_encrypted),
-    ]);
-    const client = new KrakenClient(apiKey, apiSecret);
-
-    // 2. Scan portefølje (B1)
-    const portfolio = await scanPortfolio(client, ACTIVE_PAIRS());
-
-    // 3. Alloker kapital (B2) + valider allokeringen
-    const allocations = allocateCapital(portfolio.equityUsdc);
-    const validation = validateAllocations(allocations, portfolio.equityUsdc);
-    if (!validation.valid) {
-      throw new Error(`Allokering ugyldig: ${validation.reason}`);
-    }
-
-    // 4. Eksisterende state (initial equity, realized profit, drawdown-latch)
-    const { data: prev } = await db
-      .from("autopilot_state")
-      .select(
-        "initial_equity_usdc, realized_profit_usdc, current_equity_usdc, drawdown_kill",
-      )
-      .eq("user_id", user.user_id)
-      .maybeSingle();
-
-    const initialEquity =
-      prev?.initial_equity_usdc && Number(prev.initial_equity_usdc) > 0
-        ? Number(prev.initial_equity_usdc)
-        : portfolio.equityUsdc;
-
-    // 5. Reinvesteringsbeslutning (B3) — beslutningen logges; selve
-    //    ordreplasseringen gjøres av grid-manageren (money-safe).
-    const realizedProfit = Number(prev?.realized_profit_usdc ?? 0);
-    const reinvest = computeReinvest(realizedProfit);
-
-    // 6. Drawdown-kill: latchet — én gang under terskelen, forblir kill
-    //    til en bruker manuelt resettes (aldri auto-reaktiver trading).
-    const drawdownKill =
-      prev?.drawdown_kill === true ||
-      portfolio.equityUsdc < initialEquity * (1 - DRAWDOWN_KILL_PCT);
-
-    if (drawdownKill) {
-      console.warn(
-        `[Autopilot] DRAWDOWN-KILL for ${user.user_id}: equity ${portfolio.equityUsdc} < 85% av initial ${initialEquity}`,
-      );
-    }
-
-    const now = new Date().toISOString();
-    const { error: upsertErr } = await db.from("autopilot_state").upsert(
-      {
-        user_id: user.user_id,
-        initial_equity_usdc: initialEquity,
-        current_equity_usdc: portfolio.equityUsdc,
-        realized_profit_usdc: realizedProfit,
-        grid_levels: allocations as unknown as Json,
-        five_pair_activated: portfolio.equityUsdc >= FIVE_PAIR_EQUITY_USDC,
-        drawdown_kill: drawdownKill,
-        last_run: now,
-        updated_at: now,
-      },
-      { onConflict: "user_id" },
-    );
-
-    if (upsertErr) {
-      throw new Error(`Upsert autopilot_state: ${upsertErr.message}`);
-    }
-
-    if (reinvest.shouldReinvest) {
-      console.info(
-        `[Autopilot] ${user.user_id}: reinvesteringsbeslutning — ${reinvest.amount} USDC (kept ${reinvest.kept})`,
-      );
-    }
-
-    return {
-      user_id: user.user_id,
-      ok: true,
-      equity_usdc: portfolio.equityUsdc,
-      allocations,
-    };
-  } catch (err) {
-    return {
-      user_id: user.user_id,
-      ok: false,
-      error: err instanceof Error ? err.message : String(err),
-    };
-  }
-}
-
 export async function POST(req: NextRequest) {
-  // Auth — samme mønster som tick: Authorization: Bearer <CRON_SECRET>
+  // Auth — samme mønster som tick: Authorization: Bearer ***
   if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const startTime = Date.now();
-  const db = (await createClient()) as SupabaseClient<Database>;
+  const supabase = (await createClient()) as SupabaseClient<Database>;
 
   try {
-    const users = await fetchAutopilotUsers(db);
+    const users = await fetchAutopilotUsers(supabase);
 
     if (users.length === 0) {
       return NextResponse.json({
@@ -238,6 +122,10 @@ export async function POST(req: NextRequest) {
 
     // Batch-parallellisering (tick-mønster): 25 brukere samtidig per batch,
     // timeout-guard bryter ut nær 55s så run aldri sprenger CPU-grensen.
+    // All per-bruker-logikk lever i orchestrator-modulen (C1) — ruten velger
+    // kun brukere og aggregerer resultatet. Kill-utløsning regnes som «feil»
+    // i responsen (synlig i error_details); state er lagret og ordrer
+    // kansellert av pipelinen.
     const results: AutopilotUserResult[] = [];
     for (let i = 0; i < users.length; i += BATCH_SIZE) {
       if (Date.now() - startTime > BATCH_TIMEOUT_MS) {
@@ -248,7 +136,30 @@ export async function POST(req: NextRequest) {
       }
       const batch = users.slice(i, i + BATCH_SIZE);
       const batchResults = await Promise.all(
-        batch.map((u) => processAutopilotUser(db, u)),
+        batch.map(async (user) => {
+          try {
+            const autopilotDb = createAutopilotDb(supabase);
+            const result = await processAutopilotUser(
+              autopilotDb,
+              user.user_id,
+            );
+            if (result.ok) {
+              return {
+                user_id: user.user_id,
+                ok: !result.killTriggered,
+                equity_usdc: result.portfolio.equityUsdc,
+                error: result.killed ? "drawdown-kill aktiv" : undefined,
+              };
+            }
+            return { user_id: user.user_id, ok: false, error: result.error };
+          } catch (err) {
+            return {
+              user_id: user.user_id,
+              ok: false,
+              error: err instanceof Error ? err.message : String(err),
+            };
+          }
+        }),
       );
       results.push(...batchResults);
     }
@@ -257,7 +168,11 @@ export async function POST(req: NextRequest) {
       .filter((r) => !r.ok)
       .map((r) => ({ user_id: r.user_id, error: r.error ?? "unknown" }));
 
-    await captureCronSuccess("autopilot-orchestrator", new Date(startTime), new Date());
+    await captureCronSuccess(
+      "autopilot-orchestrator",
+      new Date(startTime),
+      new Date(),
+    );
 
     return NextResponse.json({
       processed: results.filter((r) => r.ok).length,
