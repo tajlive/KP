@@ -1,5 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
+import type { AbstractIntlMessages } from "next-intl";
 import { ThemeProvider } from "@/shared/theme";
 import { NextIntlClientProvider } from "next-intl";
 import { CdsProvider } from "@/app/providers/CdsProvider";
@@ -19,8 +20,7 @@ const loadFeatures = () =>
 
 interface RootProvidersProps {
   locale: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  messages: any;
+  messages: AbstractIntlMessages;
   showVippsMarket: boolean;
   marketingNav: ReactNode;
   flags: Partial<FeatureFlags>;

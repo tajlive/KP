@@ -28,6 +28,19 @@ export type TradeWithAiDetails = {
   exitReason?: string;
 };
 
+type TradesRow = Database["public"]["Tables"]["trades"]["Row"];
+
+interface TradeWithAi extends TradesRow {
+  ai_decision?: {
+    sentiment_reasoning?: string;
+    sentiment_confidence?: number;
+    sentiment_recommendation?: string;
+  } | null;
+  stop_loss?: number | null;
+  take_profit?: number | null;
+  exit_reason?: string | null;
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ tradeId: string }> },
@@ -67,13 +80,7 @@ export async function GET(
     }
 
     // Type assertion for joined data
-    const tradeWithAi = trade as Database["public"]["Tables"]["trades"]["Row"] & {
-      ai_decision?: {
-        sentiment_reasoning?: string;
-        sentiment_confidence?: number;
-        sentiment_recommendation?: string;
-      } | null;
-    };
+    const tradeWithAi = trade as TradeWithAi;
 
     // Beregn utgangspris hvis det er et salg
     const signal = tradeWithAi.strategy_signal as Record<string, unknown> | undefined;
@@ -95,12 +102,9 @@ export async function GET(
       ai_decision: tradeWithAi.ai_decision || null,
       entryPrice: tradeWithAi.price,
       exitPrice: signal?.exit_price as number | undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      stopLoss: (tradeWithAi as any).stop_loss ?? (signal?.stop_loss as number | undefined),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      takeProfit: (tradeWithAi as any).take_profit ?? (signal?.take_profit as number | undefined),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      exitReason: (tradeWithAi as any).exit_reason ?? (signal?.exit_reason as string | undefined),
+      stopLoss: tradeWithAi.stop_loss ?? (signal?.stop_loss as number | undefined),
+      takeProfit: tradeWithAi.take_profit ?? (signal?.take_profit as number | undefined),
+      exitReason: tradeWithAi.exit_reason ?? (signal?.exit_reason as string | undefined),
     };
 
     return NextResponse.json(response);

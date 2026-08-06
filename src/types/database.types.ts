@@ -4592,6 +4592,36 @@ export type Database = {
         }
         Relationships: []
       }
+      market_data: {
+        Row: {
+          close: number
+          high: number
+          low: number
+          open: number
+          symbol: string
+          timestamp: string
+          volume: number | null
+        }
+        Insert: {
+          close: number
+          high: number
+          low: number
+          open: number
+          symbol: string
+          timestamp: string
+          volume?: number | null
+        }
+        Update: {
+          close?: number
+          high?: number
+          low?: number
+          open?: number
+          symbol?: string
+          timestamp?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
       market_intelligence: {
         Row: {
           action: string | null
@@ -4628,6 +4658,27 @@ export type Database = {
           sentiment_score?: number | null
           source?: string
           title?: string | null
+        }
+        Relationships: []
+      }
+      market_ohlcv_cache: {
+        Row: {
+          created_at: string | null
+          ohlcv_data: Json
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          ohlcv_data: Json
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          ohlcv_data?: Json
+          symbol?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -6758,6 +6809,24 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      regime_cache: {
+        Row: {
+          created_at: string | null
+          regime_data: Json
+          symbol: string
+        }
+        Insert: {
+          created_at?: string | null
+          regime_data: Json
+          symbol: string
+        }
+        Update: {
+          created_at?: string | null
+          regime_data?: Json
+          symbol?: string
         }
         Relationships: []
       }

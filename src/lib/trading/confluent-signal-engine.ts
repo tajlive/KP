@@ -337,8 +337,7 @@ async function persistSignalToLog(
 
     const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
-    // Mapping til faktiske kolonner i ai_decision_log:
-    // decision_type, symbol, sentiment_score (0-100), analysis_data (jsonb), decision_reason, user_id, executed_at
+    // 'ai_decision_log' genererte typer matcher ikke faktiske kolonner
     await supabase.from('ai_decision_log').insert({
       symbol,
       decision_type: signal.action,           // BUY/SELL/HOLD

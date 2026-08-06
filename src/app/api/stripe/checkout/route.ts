@@ -98,8 +98,6 @@ export async function POST(request: NextRequest) {
       } : undefined,
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
-      // Vipps krever aktivering i Stripe Dashboard → https://dashboard.stripe.com/settings/payment_methods
-      // Når aktivert: payment_method_types: ['card', 'vipps'] as any,
       payment_method_types: ['card'],
       customer_update: {
         address: 'auto',

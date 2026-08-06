@@ -78,11 +78,12 @@ export function initGlobalErrorHandling() {
       }
       
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Network errors (offline, DNS, etc.)
+      const err = error instanceof Error ? error : new Error(String(error));
       reportError({
         errorType: 'network',
-        errorMessage: error?.message || 'Network request failed',
+        errorMessage: err.message || 'Network request failed',
         severity: 'warning',
         metadata: {
           endpoint: args[0],
