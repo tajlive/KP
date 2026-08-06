@@ -1,185 +1,129 @@
 name: Pre-Merge Gates
 
-# ⚠️ 2026-07-31: DEAKTIVERT auto-trigger — alle jobs kjører på self-hosted
-# runner som er OFFLINE (startup_failure), noe som blokkerte PR-merges.
-# Kvalitetsgater dekkes av lokal pre-commit-pipeline (8 steg).
-# KUN manuell trigger.
+# 2026-08-06: Re-aktivert med GitHub-hosted runner (0 kr).
+# Self-hosted runner var offline (startup_failure) — byttet til ubuntu-latest.
+# La til: vitest unit-tester, CodeQL SAST, bygg-verifisering.
 on:
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
-# ============================================================
-# FORK / OUTSIDE COLLABORATOR GUARD
-# ============================================================
-# Self-hosted runners are in use. PRs from forks or outside
-# collaborators must be approved before workflows can run.
-# This prevents untrusted code from executing on self-hosted runners.
-# ============================================================
-
 jobs:
-  # --- FORK GUARD: Check if PR is from fork or outside collaborator ---
-  fork-guard:
-    if: github.event_name == 'pull_request'
-    runs-on: self-hosted
-    timeout-minutes: 2
-    outputs:
-      approved: ${{ steps.check.outputs.approved }}
-    steps:
-      - name: Check fork status
-        id: check
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
-          BASE_REPO="${{ github.event.pull_request.base.repo.full_name }}"
-          AUTHOR="${{ github.event.pull_request.user.login }}"
-
-          echo "PR #$PR_NUMBER | Head: $HEAD_REPO | Base: $BASE_REPO | Author: $AUTHOR"
-
-          # Is this a fork?
-          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
-            echo "PR is from a FORK ($HEAD_REPO -> $BASE_REPO)"
-
-            # Check if PR has approval label
-            HAS_LABEL=$(gh api "/repos/$BASE_REPO/issues/$PR_NUMBER/labels" --jq 'map(.name) | any(. == "safe-to-run" or . == "safe-to-test")' 2>/dev/null || echo "false")
-
-            if [ "$HAS_LABEL" = "true" ]; then
-              echo "PR is labeled as safe (safe-to-run / safe-to-test) — allowing execution"
-              echo "approved=true" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            # Check if author is a known collaborator
-            IS_COLLAB=$(gh api "/repos/$BASE_REPO/collaborators/$AUTHOR" --jq '.permissions.push' 2>/dev/null || echo "false")
-
-            if [ "$IS_COLLAB" = "true" ]; then
-              echo "$AUTHOR is a collaborator — allowing execution"
-              echo "approved=true" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            # Blocked — requires manual approval
-            echo "PR from fork by unknown user — blocked until approved"
-            echo "A maintainer must add label 'safe-to-run' to approve"
-            echo "approved=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-
-          # Not a fork — check if author is collaborator
-          IS_COLLAB=$(gh api "/repos/$BASE_REPO/collaborators/$AUTHOR" --jq '.permissions.push' 2>/dev/null || echo "false")
-
-          if [ "$IS_COLLAB" = "true" ]; then
-            echo "$AUTHOR is a collaborator — allowing execution"
-            echo "approved=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "$AUTHOR is not a collaborator — requires manual approval"
-            echo "A maintainer must add label 'safe-to-run' to approve"
-            echo "approved=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-
-  lint-check:
-    needs: fork-guard
-    if: needs.fork-guard.outputs.approved == 'true'
-    timeout-minutes: 10
-    runs-on: self-hosted
+  # ============ TYPE SAFETY ============
+  type-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npx tsc --noEmit
-      - run: npm run lint -- --max-warnings 0 || echo "Lint warnings (approved)"
 
-  e2e-smoke:
-    needs: fork-guard
-    if: needs.fork-guard.outputs.approved == 'true'
+  # ============ LINT ============
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx eslint . --max-warnings 0
+
+  # ============ UNIT TESTS (vitest) ============
+  unit-tests:
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: |
-          PLAYWRIGHT_TEST_BASE_URL="https://staging.klarpakke.no" \
-          BASE_URL="https://staging.klarpakke.no" \
-          npx playwright test --config=playwright.allure.config.ts --project=chromium --grep "health|critical|smoke" 2>&1 | tail -10
+      - run: npx vitest run --reporter=verbose
 
-  e2e-golden-path:
-    needs: fork-guard
-    if: needs.fork-guard.outputs.approved == 'true'
-    timeout-minutes: 15
-    runs-on: self-hosted
+  # ============ BUILD VERIFICATION ============
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: SKIP_LINT_IN_BUILD=true npx next build
+
+  # ============ E2E SMOKE (staging) ============
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
           PLAYWRIGHT_TEST_BASE_URL="https://staging.klarpakke.no" \
           BASE_URL="https://staging.klarpakke.no" \
-          E2E_TEST_EMAIL="${{ secrets.E2E_TEST_EMAIL }}" \
-          E2E_TEST_PASSWORD="${{ secrets.E2E_TEST_PASSWORD }}" \
+          npx playwright test --config=playwright.allure.config.ts --project=chromium --grep "health|critical|smoke"
+
+  # ============ E2E GOLDEN PATH (staging) ============
+  e2e-golden-path:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          PLAYWRIGHT_TEST_BASE_URL="https://staging.klarpakke.no" \
+          BASE_URL="https://staging.klarpakke.no" \
           npx playwright test --config=playwright.allure.config.ts --project=chromium e2e/golden-path-auth.spec.ts
 
+  # ============ LIGHTHOUSE QA ============
   lighthouse:
-    needs: fork-guard
-    if: needs.fork-guard.outputs.approved == 'true'
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+        with: { node-version: 22 }
       - run: npm install -g @lhci/cli
       - run: lhci autorun --config=.lighthouserc.json --url=https://staging.klarpakke.no
 
-  # Block merge if any gate fails
-  gate-status:
-    needs: [fork-guard, lint-check, e2e-smoke, e2e-golden-path, lighthouse]
-    if: always()
-    runs-on: self-hosted
+  # ============ SAST (CodeQL — 0 kr, GitHub Free tier) ============
+  codeql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      security-events: write
     steps:
-      - name: Check fork-guard
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with: { languages: javascript-typescript }
+      - uses: github/codeql-action/analyze@v3
+
+  # ============ FINAL GATE ============
+  gate:
+    needs: [type-check, lint, unit-tests, build, e2e-smoke, e2e-golden-path, lighthouse, codeql]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: All gates must pass
         run: |
-          if [ "${{ needs.fork-guard.result }}" != "success" ]; then
-            echo "Fork guard blocked — PR from outside collaborator without approval"
-            echo "A maintainer must add label 'safe-to-run' to approve"
-            exit 1
-          fi
-          echo "Fork guard passed"
-      - name: Check lint
-        run: |
-          if [ "${{ needs.lint-check.result }}" != "success" ]; then
-            echo "Lint failed — merge blocked"
-            exit 1
-          fi
-      - name: Check e2e-smoke
-        run: |
-          if [ "${{ needs.e2e-smoke.result }}" != "success" ]; then
-            echo "E2E smoke failed — merge blocked"
-            exit 1
-          fi
-      - name: Check e2e-golden-path
-        run: |
-          if [ "${{ needs.e2e-golden-path.result }}" != "success" ]; then
-            echo "Golden path E2E failed — merge blocked"
-            exit 1
-          fi
-      - name: Check lighthouse
-        run: |
-          if [ "${{ needs.lighthouse.result }}" != "success" ]; then
-            echo "Lighthouse QA failed — merge blocked"
-            exit 1
-          fi
-      - run: echo "All gates green — merge allowed"
+          echo "Gate results:"
+          for job in type-check lint unit-tests build e2e-smoke e2e-golden-path lighthouse codeql; do
+            result="${{ needs[env.job].result }}" # not possible in bash — use explicit checks
+          done
+          if [ "${{ needs.type-check.result }}" != "success" ]; then echo "FAIL: type-check"; exit 1; fi
+          if [ "${{ needs.lint.result }}" != "success" ]; then echo "FAIL: lint"; exit 1; fi
+          if [ "${{ needs.unit-tests.result }}" != "success" ]; then echo "FAIL: unit-tests"; exit 1; fi
+          if [ "${{ needs.build.result }}" != "success" ]; then echo "FAIL: build"; exit 1; fi
+          if [ "${{ needs.e2e-smoke.result }}" != "success" ]; then echo "FAIL: e2e-smoke"; exit 1; fi
+          if [ "${{ needs.e2e-golden-path.result }}" != "success" ]; then echo "FAIL: e2e-golden-path"; exit 1; fi
+          if [ "${{ needs.lighthouse.result }}" != "success" ]; then echo "FAIL: lighthouse"; exit 1; fi
+          if [ "${{ needs.codeql.result }}" != "success" ]; then echo "FAIL: codeql"; exit 1; fi
+          echo "ALL GATES GREEN — merge allowed"
