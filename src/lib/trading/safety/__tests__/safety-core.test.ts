@@ -447,6 +447,18 @@ describe("KLA-137 Trading Safety Core", () => {
             }),
           };
         }
+        if (table === "auto_trade_settings") {
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: () => ({
+                  data: { daily_loss_limit_percent: 5 },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
         return { eq: () => ({ single: () => ({ data: null }) }) };
       });
 
@@ -653,7 +665,10 @@ describe("KLA-137 Trading Safety Core", () => {
           tradingMode: "paper",
         };
 
-        const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
+        const result = await validateTradeAgainstRiskProfile(
+          mockSupabase,
+          trade,
+        );
 
         expect(result.allowed).toBe(false);
       } finally {
