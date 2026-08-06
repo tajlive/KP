@@ -70,7 +70,7 @@ export const BrandedTemplates = {
         <li>Bli med i vår lukkede Telegram-kanal.</li>
       </ul>
     </div>
-    <a href="https://www.klarpakke.no/no/dashboard/auto-trade" class="button">Start din første bot</a>
+    <a href="https://www.klarpakke.no/no/trade?tab=auto" class="button">Start din første bot</a>
   `,
       `Velkommen som ${tier}-student hos Klarpakke!`,
     ),
