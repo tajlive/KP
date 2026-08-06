@@ -1,10 +1,11 @@
 #!/bin/bash
 cd /Users/taj/klarpakke
+set -euo pipefail
 
 SUPABASE_URL="https://pskhryjzkobytnfwucrb.supabase.co"
 ANON=$(grep NEXT_PUBLIC_SUPABASE_ANON_KEY .env.local | cut -d= -f2)
 
-RESPONSE=$(curl -s -X POST "$SUPABASE_URL/auth/v1/token?grant_type=password" \
+RESPONSE=$(curl --connect-timeout 10 --max-time 20 -fsS -X POST "$SUPABASE_URL/auth/v1/token?grant_type=password" \
   -H "apikey: $ANON" \
   -H "Content-Type: application/json" \
   -d '{"email":"test+tricky+123@klarpakke.no","password":"TestTest123!"}')
@@ -58,7 +59,7 @@ PATHS=(
 )
 
 for path in "${PATHS[@]}"; do
-  CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+  CODE=$(curl --connect-timeout 10 --max-time 20 -fsS -o /dev/null -w "%{http_code}" \
     -H "Cookie: $AUTH_COOKIE=$SESSION_JSON; $REFRESH_COOKIE=$REFRESH" \
     "https://www.klarpakke.no$path")
   echo "$CODE $path"
@@ -75,7 +76,7 @@ APIS=(
 )
 
 for api in "${APIS[@]}"; do
-  CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+  CODE=$(curl --connect-timeout 10 --max-time 20 -fsS -o /dev/null -w "%{http_code}" \
     -H "Cookie: $AUTH_COOKIE=$SESSION_JSON; $REFRESH_COOKIE=$REFRESH" \
     "https://www.klarpakke.no$api")
   echo "$CODE $api"
@@ -85,7 +86,7 @@ echo ""
 echo "=== INNHOLDS-SJEKK ==="
 for path in "/no/dashboard" "/no/handel" "/no/profile" "/no/copy-trading"; do
   echo "--- $path ---"
-  curl -s \
+  curl --connect-timeout 10 --max-time 20 -fsS \
     -H "Cookie: $AUTH_COOKIE=$SESSION_JSON; $REFRESH_COOKIE=$REFRESH" \
     "https://www.klarpakke.no$path" | grep -o "<title>[^<]*</title>" | head -1
 done
