@@ -305,9 +305,7 @@ function isEnsembleFallbackOnCooldown(sessionId: string): boolean {
  * Live-fiks 2026-08-01: live-sesjoner ble holdt på ordrer på 75 USDT
  * (innenfor Binance-minste på 10 USDT) fordi NOK-terskelen ble brukt.
  */
-export function minOrderValueForMode(
-  mode: string | null | undefined,
-): number {
+export function minOrderValueForMode(mode: string | null | undefined): number {
   return mode === "live" ? 10 : 100;
 }
 
@@ -649,7 +647,8 @@ async function processSession(
         });
       }
       const highest =
-        (session.open_position.highest_price && session.open_position.highest_price > 0)
+        session.open_position.highest_price &&
+        session.open_position.highest_price > 0
           ? session.open_position.highest_price
           : entryPrice;
 
@@ -704,13 +703,19 @@ async function processSession(
                     : session.open_position.entry_price,
                 highest_price: newHighest * rate,
                 lots: Array.isArray(session.open_position.lots)
-                  ? session.open_position.lots.map((lot: { quantity?: number; entryPrice?: number; timestamp?: string }) => ({
-                      ...lot,
-                      entryPrice:
-                        typeof lot?.entryPrice === "number"
-                          ? lot.entryPrice * rate
-                          : lot?.entryPrice,
-                    }))
+                  ? session.open_position.lots.map(
+                      (lot: {
+                        quantity?: number;
+                        entryPrice?: number;
+                        timestamp?: string;
+                      }) => ({
+                        ...lot,
+                        entryPrice:
+                          typeof lot?.entryPrice === "number"
+                            ? lot.entryPrice * rate
+                            : lot?.entryPrice,
+                      }),
+                    )
                   : session.open_position.lots,
               }
             : { ...session.open_position, highest_price: newHighest };
@@ -742,9 +747,10 @@ async function processSession(
       }
 
       // Partial Take-Profit: Sell portions at predefined targets
-      const pnlPct = Number.isNaN(entryPrice) || entryPrice === 0
-        ? 0
-        : ((currentPrice - entryPrice) / entryPrice) * 100;
+      const pnlPct =
+        Number.isNaN(entryPrice) || entryPrice === 0
+          ? 0
+          : ((currentPrice - entryPrice) / entryPrice) * 100;
       const partialLevels = (session.strategy_config as Record<string, unknown>)
         ?.partial_tp_levels as
         | Array<{ target_pct: number; sell_pct: number }>
@@ -856,7 +862,9 @@ async function processSession(
               has_open_position: !!session.open_position,
             } as never,
           } as never);
-        } catch { /* non-critical */ }
+        } catch {
+          /* non-critical */
+        }
       }
       return { session_id: session.id, action: "heartbeat" };
     }
@@ -915,32 +923,32 @@ async function processSession(
           `[PositionSize] Session ${session.id}: grid-size bevart (${(positionSize * 100).toFixed(2)}% — dynamic sizing hoppet over)`,
         );
       } else {
-      try {
-        const dynamicSize = await calculateDynamicPositionSize(db, {
-          userId: session.user_id,
-          sessionId: session.id,
-          strategyId: session.strategy_id,
-          currentCapital: session.current_capital,
-          initialCapital: session.initial_capital,
-          candles,
-          regime,
-          signalAction: signal.action,
-          basePositionSize: positionSize,
-          riskProfile: "balanced",
-        });
-        positionSize = dynamicSize.positionSize;
-        positionSizeReason = dynamicSize.reason;
-        kellyFraction = dynamicSize.kellyFraction;
-        dynamicExpectancy = dynamicSize.expectancy;
-        logger.debug(
-          `[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`,
-        );
-      } catch (err) {
-        logger.warn(
-          `[PositionSize] Failed for session ${session.id}, using fallback:`,
-          (err as Error).message,
-        );
-      }
+        try {
+          const dynamicSize = await calculateDynamicPositionSize(db, {
+            userId: session.user_id,
+            sessionId: session.id,
+            strategyId: session.strategy_id,
+            currentCapital: session.current_capital,
+            initialCapital: session.initial_capital,
+            candles,
+            regime,
+            signalAction: signal.action,
+            basePositionSize: positionSize,
+            riskProfile: "balanced",
+          });
+          positionSize = dynamicSize.positionSize;
+          positionSizeReason = dynamicSize.reason;
+          kellyFraction = dynamicSize.kellyFraction;
+          dynamicExpectancy = dynamicSize.expectancy;
+          logger.debug(
+            `[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`,
+          );
+        } catch (err) {
+          logger.warn(
+            `[PositionSize] Failed for session ${session.id}, using fallback:`,
+            (err as Error).message,
+          );
+        }
       }
     }
 
@@ -1001,7 +1009,7 @@ async function processSession(
       const peakPrice =
         typeof pos.highest_price === "number" && pos.highest_price > 0
           ? pos.highest_price
-          : entryPrice ?? currentPrice;
+          : (entryPrice ?? currentPrice);
 
       if (entryPrice !== null) {
         const trail = evaluateTrailingExit({
@@ -1016,7 +1024,10 @@ async function processSession(
             await db
               .from("trading_sessions")
               .update({
-                open_position: { ...(pos as unknown as Record<string, unknown>), highest_price: trail.newPeak } as never,
+                open_position: {
+                  ...(pos as unknown as Record<string, unknown>),
+                  highest_price: trail.newPeak,
+                } as never,
               })
               .eq("id", session.id);
           } catch {
@@ -1053,20 +1064,33 @@ async function processSession(
       if (!regimeGate.allowed) {
         // Grid-unntak (2026-08-02): grid har egen 25% katastrofe-SL + DCA.
         // Mekaniske nivå-kjøp skal ikke stoppes av SMA-regime — men vi logger det.
-        const isGrid = (signal.reason ?? "").includes("Grid buy") || (signal.reason ?? "").includes("DCA buy");
+        const isGrid =
+          (signal.reason ?? "").includes("Grid buy") ||
+          (signal.reason ?? "").includes("DCA buy");
         if (!isGrid) {
           try {
             await db.from("trading_logs").insert({
               session_id: session.id,
               user_id: session.user_id,
               action: "regime_gate_blocked",
-              details: { reason: regimeGate.reason, regime: regimeGate.regime, signal_reason: signal.reason ?? null, strategy_id: session.strategy_id } as never,
+              details: {
+                reason: regimeGate.reason,
+                regime: regimeGate.regime,
+                signal_reason: signal.reason ?? null,
+                strategy_id: session.strategy_id,
+              } as never,
             } as never);
-          } catch { /* non-critical */ }
+          } catch {
+            /* non-critical */
+          }
           console.info(
             `[Tick] Fase2 regime-gate: ${regimeGate.reason} (session ${session.id})`,
           );
-          return { session_id: session.id, action: "hold", reason: regimeGate.reason };
+          return {
+            session_id: session.id,
+            action: "hold",
+            reason: regimeGate.reason,
+          };
         }
       }
       signal.indicators = { ...signal.indicators, regime: regimeGate.regime };
@@ -1086,7 +1110,11 @@ async function processSession(
             console.info(
               `[Tick] Fase2 anti-whipsaw: ${whipsaw.reason} (session ${session.id})`,
             );
-            return { session_id: session.id, action: "hold", reason: whipsaw.reason };
+            return {
+              session_id: session.id,
+              action: "hold",
+              reason: whipsaw.reason,
+            };
           }
         }
       }
@@ -1102,7 +1130,8 @@ async function processSession(
         profitFactor: null,
       };
       const edgeFactor = symbolEdgeWeight(edgeStats);
-      positionSize = Math.round(positionSize * jitterFactor * edgeFactor * 10000) / 10000;
+      positionSize =
+        Math.round(positionSize * jitterFactor * edgeFactor * 10000) / 10000;
     }
 
     // FIKS (2026-07-30): tradeAmount er NOK for paper (current_capital er
@@ -1123,9 +1152,17 @@ async function processSession(
             session_id: session.id,
             user_id: session.user_id,
             action: "grid_below_min_order",
-            details: { trade_amount: tradeAmount, min_order: minOrderValueForMode(session.mode), position_size: positionSize, capital: session.current_capital, signal_reason: signal.reason ?? null } as never,
+            details: {
+              trade_amount: tradeAmount,
+              min_order: minOrderValueForMode(session.mode),
+              position_size: positionSize,
+              capital: session.current_capital,
+              signal_reason: signal.reason ?? null,
+            } as never,
           } as never);
-        } catch { /* non-critical */ }
+        } catch {
+          /* non-critical */
+        }
       }
       return { session_id: session.id, action: "hold" };
     }
@@ -1367,13 +1404,21 @@ async function processSession(
       if (resolvedEngine === "grid" && result.success) {
         try {
           const stratCfg = session.strategy_config as Record<string, unknown>;
-          const gridLevels = (stratCfg.grid_levels as Array<Record<string, unknown>> | undefined) ?? [];
-          const signalLevel = signal.indicators?.grid_level as number | undefined;
+          const gridLevels =
+            (stratCfg.grid_levels as
+              | Array<Record<string, unknown>>
+              | undefined) ?? [];
+          const signalLevel = signal.indicators?.grid_level as
+            | number
+            | undefined;
           const dcaLevel = signal.indicators?.dca_level as number | undefined;
 
           if (signalLevel !== undefined) {
             const updatedLevels = gridLevels.map((l) => {
-              if (l.level === signalLevel && (dcaLevel === undefined || l.dcaLevel === dcaLevel)) {
+              if (
+                l.level === signalLevel &&
+                (dcaLevel === undefined || l.dcaLevel === dcaLevel)
+              ) {
                 return {
                   ...l,
                   status: signal.action === "buy" ? "bought" : "empty",
@@ -1393,7 +1438,10 @@ async function processSession(
               .eq("id", session.id);
           }
         } catch (gridErr) {
-          console.error(`[Tick] Failed to persist grid state for ${session.id}:`, gridErr);
+          console.error(
+            `[Tick] Failed to persist grid state for ${session.id}:`,
+            gridErr,
+          );
         }
       }
 
@@ -1461,11 +1509,13 @@ async function processSession(
       // ── AI-forklaring (2026-08-03): generer brukervennlig forklaring ──────
       // Kalles ETTER executeTrade — feil skal ALDRI stoppe trading.
       // Lagres i trades.pilot_explanation slik at UI kan vise den.
-      if (result.tradeId && (signal.action === "buy" || signal.action === "sell")) {
+      if (
+        result.tradeId &&
+        (signal.action === "buy" || signal.action === "sell")
+      ) {
         try {
-          const { generateTradeExplanation } = await import(
-            "@/lib/trading/ai-explanations"
-          );
+          const { generateTradeExplanation } =
+            await import("@/lib/trading/ai-explanations");
           const rate = getUsdtToNokRate();
           const execPrice = result.executedPrice ?? currentPrice;
           const execQty = result.executedQuantity ?? quantity;
@@ -1477,14 +1527,16 @@ async function processSession(
             strategy: resolvedEngine,
             reason: signal.reason,
             indicators: {
-              rsi: (signal.indicators?.rsi as number | undefined),
-              regime: (signal.indicators?.regime as string | undefined),
-              grid_level: (signal.indicators?.grid_level as number | undefined),
-              buy_price: (signal.indicators?.buy_price as number | undefined),
-              sell_price: (signal.indicators?.sell_price as number | undefined),
-              profit_pct: (signal.indicators?.profit_pct as number | undefined),
-              confidence: (signal.indicators?.confidence as number | undefined),
-              ensemble_score: (signal.indicators?.ensembleScore as number | undefined),
+              rsi: signal.indicators?.rsi as number | undefined,
+              regime: signal.indicators?.regime as string | undefined,
+              grid_level: signal.indicators?.grid_level as number | undefined,
+              buy_price: signal.indicators?.buy_price as number | undefined,
+              sell_price: signal.indicators?.sell_price as number | undefined,
+              profit_pct: signal.indicators?.profit_pct as number | undefined,
+              confidence: signal.indicators?.confidence as number | undefined,
+              ensemble_score: signal.indicators?.ensembleScore as
+                | number
+                | undefined,
             },
           });
 
@@ -1495,7 +1547,10 @@ async function processSession(
             .eq("id", result.tradeId);
         } catch (explErr) {
           // Non-critical: AI-forklaring er nice-to-have, ikke kritisk
-          console.warn(`[Tick] AI-forklaring feilet for ${result.tradeId}:`, (explErr as Error).message);
+          console.warn(
+            `[Tick] AI-forklaring feilet for ${result.tradeId}:`,
+            (explErr as Error).message,
+          );
         }
       }
 
@@ -1577,10 +1632,13 @@ async function processSession(
           const rawEntryPrice = session.open_position?.entry_price;
           const entryPrice = Number(rawEntryPrice);
           if (Number.isNaN(entryPrice)) {
-            console.warn("tick: missing entry_price in open_position for fallback P&L", {
-              session: session.id,
-              entry_price: rawEntryPrice,
-            });
+            console.warn(
+              "tick: missing entry_price in open_position for fallback P&L",
+              {
+                session: session.id,
+                entry_price: rawEntryPrice,
+              },
+            );
           }
           realizedPnl = Number.isNaN(entryPrice)
             ? 0
@@ -1698,7 +1756,8 @@ async function processSession(
             open_position: {
               ...legacyPos,
               highest_price:
-                (session.open_position?.highest_price && session.open_position.highest_price > 0)
+                session.open_position?.highest_price &&
+                session.open_position.highest_price > 0
                   ? session.open_position.highest_price
                   : entryPriceForLot,
             },
@@ -1715,7 +1774,8 @@ async function processSession(
             ? {
                 ...legacyPos,
                 highest_price:
-                  (session.open_position?.highest_price && session.open_position.highest_price > 0)
+                  session.open_position?.highest_price &&
+                  session.open_position.highest_price > 0
                     ? session.open_position.highest_price
                     : legacyPos.entry_price,
               }
@@ -1967,7 +2027,11 @@ async function ensureAutoTradingSessions(
         .select("*")
         .maybeSingle();
       if (reactivateError) {
-        console.warn("[Tick] Reaktivering feilet for", uid, reactivateError.message);
+        console.warn(
+          "[Tick] Reaktivering feilet for",
+          uid,
+          reactivateError.message,
+        );
         continue;
       }
       if (reactivatedRow) {
@@ -1976,7 +2040,9 @@ async function ensureAutoTradingSessions(
       }
     }
     if (reactivated.length > 0) {
-      console.info(`[Tick] Reaktiverte ${reactivated.length} sesjoner i stedet for å opprette nye`);
+      console.info(
+        `[Tick] Reaktiverte ${reactivated.length} sesjoner i stedet for å opprette nye`,
+      );
       sessions.push(...reactivated);
     }
   }
@@ -1997,7 +2063,10 @@ async function ensureAutoTradingSessions(
     winning_trades: 0,
     losing_trades: 0,
     total_pnl: 0,
-    strategy_config: clampDCAConfig({ position_size: undefined, interval_minutes: undefined }),
+    strategy_config: clampDCAConfig({
+      position_size: undefined,
+      interval_minutes: undefined,
+    }),
     started_at: now,
     last_heartbeat: now,
     last_tick_at: now,
@@ -2071,12 +2140,45 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // P0-2-fiks (2026-08-06): Emergency stop fra global_settings (admin-dashboard
+  // / MCP panic_close_all → activateEmergencyStop). Tidligere hadde denne
+  // bremsen 0 kallere — nødstoppet stoppet IKKE tick.
+  try {
+    const { data: emergencyRow, error: emergencyError } = await db
+      .from("global_settings")
+      .select("emergency_stop, emergency_reason, emergency_triggered_at")
+      .maybeSingle();
+
+    if (!emergencyError && emergencyRow?.emergency_stop) {
+      console.warn("[Tick] EMERGENCY STOP ACTIVE — all trading halted.", {
+        reason: emergencyRow.emergency_reason ?? null,
+        triggeredAt: emergencyRow.emergency_triggered_at,
+      });
+      await captureCronError("tick", new Error("EMERGENCY_STOP_ACTIVE"), {
+        reason: emergencyRow.emergency_reason ?? "admin_panic",
+      });
+      return NextResponse.json(
+        { error: "Trading halted", reason: "Emergency stop active" },
+        { status: 503 },
+      );
+    }
+  } catch (emergencyErr) {
+    // Best effort: lesefeil må IKKE stoppe tick. Logg og fortsett —
+    // signalEngineKillSwitch er fortsatt første forsvarslinje.
+    console.error(
+      "[Tick] Failed to read global_settings.emergency_stop:",
+      emergencyErr,
+    );
+  }
+
   // ============================================================
   // AUTO-RECOVERY: Gjenopprett stalled sessions (paused + crashed)
   // ============================================================
   try {
     await db.rpc("heal_stale_sessions" as never);
-  } catch { /* ignore — best effort */ }
+  } catch {
+    /* ignore — best effort */
+  }
 
   const darkFleetBaseConfig: DarkFleetConfig | undefined =
     flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
@@ -2186,7 +2288,10 @@ export async function GET(req: NextRequest) {
         .select("session_id, trading_pair, price, executed_at")
         .eq("side", "sell")
         .in("session_id", sessionIds.length > 0 ? sessionIds : ["__none__"])
-        .gt("executed_at", new Date(Date.now() - 24 * 3600 * 1000).toISOString())
+        .gt(
+          "executed_at",
+          new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+        )
         .order("executed_at", { ascending: false });
 
       for (const sell of recentSells ?? []) {
@@ -2199,7 +2304,10 @@ export async function GET(req: NextRequest) {
         }
       }
     } catch (err) {
-      console.warn("[Tick] Fase2 last-sell pre-fetch failed (non-critical):", (err as Error).message);
+      console.warn(
+        "[Tick] Fase2 last-sell pre-fetch failed (non-critical):",
+        (err as Error).message,
+      );
     }
 
     // Hent per-symbol edge-statistikk (global, siste 30 dager)
@@ -2210,7 +2318,10 @@ export async function GET(req: NextRequest) {
         .select("trading_pair, realized_pnl, price, quantity")
         .eq("side", "sell")
         .not("realized_pnl", "is", null)
-        .gt("executed_at", new Date(Date.now() - 30 * 86400 * 1000).toISOString());
+        .gt(
+          "executed_at",
+          new Date(Date.now() - 30 * 86400 * 1000).toISOString(),
+        );
 
       const perSymbol = new Map<string, { pnlPcts: number[] }>();
       for (const row of edgeRows ?? []) {
@@ -2225,13 +2336,18 @@ export async function GET(req: NextRequest) {
       }
 
       for (const [sym, data] of perSymbol) {
-        const avgPnl = data.pnlPcts.length > 0
-          ? data.pnlPcts.reduce((a, b) => a + b, 0) / data.pnlPcts.length
-          : null;
+        const avgPnl =
+          data.pnlPcts.length > 0
+            ? data.pnlPcts.reduce((a, b) => a + b, 0) / data.pnlPcts.length
+            : null;
         // Profit factor: positive sum / |negative sum|
-        const wins = data.pnlPcts.filter((p) => p > 0).reduce((a, b) => a + b, 0);
-        const losses = Math.abs(data.pnlPcts.filter((p) => p < 0).reduce((a, b) => a + b, 0));
-        const pf = losses > 0 ? wins / losses : (wins > 0 ? 99 : null);
+        const wins = data.pnlPcts
+          .filter((p) => p > 0)
+          .reduce((a, b) => a + b, 0);
+        const losses = Math.abs(
+          data.pnlPcts.filter((p) => p < 0).reduce((a, b) => a + b, 0),
+        );
+        const pf = losses > 0 ? wins / losses : wins > 0 ? 99 : null;
         edgeCache.set(sym, {
           trades: data.pnlPcts.length,
           expectancyPct: avgPnl,
@@ -2239,7 +2355,10 @@ export async function GET(req: NextRequest) {
         });
       }
     } catch (err) {
-      console.warn("[Tick] Fase2 edge pre-fetch failed (non-critical):", (err as Error).message);
+      console.warn(
+        "[Tick] Fase2 edge pre-fetch failed (non-critical):",
+        (err as Error).message,
+      );
     }
 
     // Portfolio-level circuit breaker: stop ALL trading if user's equity
@@ -2252,13 +2371,23 @@ export async function GET(req: NextRequest) {
 
     const pairPriceMap = new Map<string, number>();
     await Promise.all(
-      [...new Set(sessionsWithAuto.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))].map(async (symbol) => {
+      [
+        ...new Set(
+          sessionsWithAuto.map(
+            (s) => s.trading_pair?.replace("/", "") || "BTCUSDT",
+          ),
+        ),
+      ].map(async (symbol) => {
         try {
           const candles = await fetchCandles(symbol, "1h", 1);
-          const price = candles.length > 0 ? candles[candles.length - 1].close : 0;
+          const price =
+            candles.length > 0 ? candles[candles.length - 1].close : 0;
           pairPriceMap.set(symbol, price);
         } catch (err) {
-          console.error(`[PortfolioStop] Failed to fetch price for ${symbol}:`, err);
+          console.error(
+            `[PortfolioStop] Failed to fetch price for ${symbol}:`,
+            err,
+          );
           pairPriceMap.set(symbol, 0);
         }
       }),
@@ -2462,9 +2591,7 @@ export async function GET(req: NextRequest) {
     const krakenSymbols = [
       ...new Set(
         sessionsWithAuto
-          .filter(
-            (s) => pickPriceSource(s.user_id, krakenUserIds) === "kraken",
-          )
+          .filter((s) => pickPriceSource(s.user_id, krakenUserIds) === "kraken")
           .map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"),
       ),
     ];
@@ -2492,7 +2619,9 @@ export async function GET(req: NextRequest) {
     // samtidig — hvert batch har egen timeout-guard. Manuell-sesjoner og
     // heartbeat-on-error er beholdt likt.
     const TICK_BATCH_SIZE = 25;
-    const processOne = async (session: (typeof sessionsWithAuto)[number]): Promise<TickResult> => {
+    const processOne = async (
+      session: (typeof sessionsWithAuto)[number],
+    ): Promise<TickResult> => {
       if (session.strategy_id === "manual") {
         return { session_id: session.id, action: "heartbeat" };
       }
