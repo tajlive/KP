@@ -1932,15 +1932,7 @@
       "title": "Daglig P&L Heatmap",
       "loss": "Tap",
       "win": "Gevinst",
-      "dayLabels": [
-        "Man",
-        "Tir",
-        "Ons",
-        "Tor",
-        "Fre",
-        "Lør",
-        "Søn"
-      ],
+      "dayLabels": ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
       "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
     },
@@ -4700,6 +4692,7 @@
         "title": "Tittel"
       },
       "mode": {
+        "label": "Modus: {mode}",
         "live": "Live",
         "paper": "Lekepenger",
         "paperShort": "Papir short",
@@ -4728,6 +4721,12 @@
         "sessionsDescription": "Økter beskrivelse"
       },
       "sessions": {
+        "status": {
+          "active": "Aktiv",
+          "paused": "Pauset",
+          "stopped": "Stoppet",
+          "crashed": "Krasjet"
+        },
         "columns": {
           "startingCapital": "Starting kapital",
           "currentCapital": "Current kapital",
