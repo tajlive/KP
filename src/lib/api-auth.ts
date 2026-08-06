@@ -70,7 +70,6 @@ async function getRequestUser(
       user: {
         id: user.id,
         email: user.email,
-        role: user.user_metadata?.role || user.app_metadata?.role,
       },
       cookieSidecar: null,
     };
@@ -91,7 +90,6 @@ async function getRequestUser(
     user: {
       id: user.id,
       email: user.email,
-      role: user.user_metadata?.role || user.app_metadata?.role,
     },
     cookieSidecar,
   };
@@ -148,6 +146,11 @@ export function withAuth(handler: AuthenticatedHandler) {
 /**
  * Higher-order function to protect API routes with role-based access control
  *
+ * P0-5-fiks (2026-08-06): Rollen verifiseres fra DB (user_profiles.role),
+ * ALDRI fra JWT-metadata. `user_metadata` er klient-skrivbar via
+ * `supabase.auth.updateUser({data:{role:"admin"}})` — en lavprivilegert bruker
+ * kunne selv-promotere seg til admin på ruter beskyttet med `withRole`.
+ *
  * @param allowedRoles - Array of allowed roles
  * @param handler - The API route handler
  * @returns Protected API route handler with RBAC
@@ -157,14 +160,32 @@ export function withRole(
   handler: AuthenticatedHandler,
 ) {
   return withAuth(async (request, { user }) => {
-    if (!user.role || !allowedRoles.includes(user.role)) {
+    // Rollen hentes fra DB, ikke fra user_metadata (klient-skrivbar) eller
+    // app_metadata (kan være utdatert). Fail-closed: DB-feil → 403.
+    let dbRole: string | null = null;
+    try {
+      const db = getServiceRoleClient();
+      const { data: profile, error } = await db
+        .from("user_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!error && profile) {
+        dbRole = profile.role;
+      }
+    } catch {
+      dbRole = null;
+    }
+
+    if (!dbRole || !allowedRoles.includes(dbRole)) {
       return NextResponse.json(
         { error: "Forbidden. Insufficient permissions." },
         { status: 403 },
       );
     }
 
-    return handler(request, { user });
+    return handler(request, { user: { ...user, role: dbRole } });
   });
 }
 
