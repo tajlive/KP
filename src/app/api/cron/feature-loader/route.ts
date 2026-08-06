@@ -102,8 +102,7 @@ export async function GET(req: NextRequest) {
             features: features as unknown as import('@/types/database.types').Json,
             source: 'binance_spot',
             checksum: `${symbol}-1h-${asOf}`,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any);
+          });
 
           if (error) {
             results.push({ symbol, status: 'db_error', error: error.message });

@@ -1,6 +1,8 @@
 import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { logAdminAudit } from "@/lib/admin/log-admin-audit";
 import { createClient as createServiceClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
 import { NextResponse } from "next/server";
 import {
   classifyCurrency,
@@ -31,8 +33,7 @@ export async function POST() {
   const warnings: string[] = [];
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = createServiceClient() as any;
+    const db = createServiceClient() as SupabaseClient<Database>;
 
     // 1. Mock-rader
     const { data: mockRows } = await db.from("trades").select("id").eq("is_mock", true);
@@ -59,8 +60,7 @@ export async function POST() {
         if (kind !== "full" && kind !== "mixed") continue;
         const rate = Number(t.usdt_nok_rate) > 0 ? Number(t.usdt_nok_rate) : FALLBACK_RATE;
         const price = Number(t.price);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const upd: Record<string, any> = {
+        const upd: Partial<Database["public"]["Tables"]["trades"]["Update"]> = {
           price: Math.round(price * rate * 1e8) / 1e8,
           usdt_nok_rate: rate,
         };

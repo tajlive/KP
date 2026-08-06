@@ -31,8 +31,7 @@ export async function grantFounderStatus(userId: string) {
     // 3. Update role
     const { error: updateError } = await supabase
       .from("user_profiles")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .update({ role: "founder", is_founder: true } as any)
+      .update({ role: "founder" })
       .eq("id", userId);
 
     if (updateError) throw updateError;
