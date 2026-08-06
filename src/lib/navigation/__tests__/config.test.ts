@@ -42,9 +42,7 @@ describe("FALLBACK_NAVIGATION", () => {
 
 describe("GUEST_NAV_CONFIG", () => {
   it("skal inneholde forventede sider", () => {
-    const paths: string[] = GUEST_NAV_CONFIG.map(
-      (l: NavItem) => l.href,
-    );
+    const paths: string[] = GUEST_NAV_CONFIG.map((l: NavItem) => l.href);
     expect(paths).toContain("/");
     expect(paths).toContain("/kurs");
     expect(paths).toContain("/priser");
@@ -92,9 +90,7 @@ describe("AUTH_NAV_CONFIG", () => {
 
 describe("ADMIN_NAV_CONFIG", () => {
   it("skal ha admin-dashboard og users", () => {
-    const paths: string[] = ADMIN_NAV_CONFIG.map(
-      (l: NavItem) => l.href,
-    );
+    const paths: string[] = ADMIN_NAV_CONFIG.map((l: NavItem) => l.href);
     expect(paths).toContain("/admin");
     expect(paths).toContain("/admin/users");
     expect(paths).toContain("/admin/campaign");
@@ -103,9 +99,7 @@ describe("ADMIN_NAV_CONFIG", () => {
 
 describe("MOBILE_BOTTOM_TABS", () => {
   it("skal ha home, portfolio, trade og history — i den rekkefølgen", () => {
-    const keys: string[] = MOBILE_BOTTOM_TABS.map(
-      (l: NavItem) => l.key,
-    );
+    const keys: string[] = MOBILE_BOTTOM_TABS.map((l: NavItem) => l.key);
     expect(keys).toEqual(["home", "portfolio", "trade", "history"]);
   });
 
@@ -186,35 +180,22 @@ describe("isAppShellPath", () => {
 
 describe("DASHBOARD_MAIN_NAV", () => {
   it("skal ha home og learn", () => {
-    const keys: string[] = DASHBOARD_MAIN_NAV.map(
-      (l) => l.labelKey,
-    );
+    const keys: string[] = DASHBOARD_MAIN_NAV.map((l) => l.labelKey);
     expect(keys).toEqual(["home", "learn"]);
   });
 });
 
 describe("DASHBOARD_TRADING_NAV", () => {
   it("skal ha trade, autoTrade, history, results", () => {
-    const keys: string[] = DASHBOARD_TRADING_NAV.map(
-      (l) => l.labelKey,
-    );
-    expect(keys).toEqual([
-      "trade",
-      "autoTrade",
-      "history",
-      "results",
-    ]);
+    const keys: string[] = DASHBOARD_TRADING_NAV.map((l) => l.labelKey);
+    expect(keys).toEqual(["trade", "autoTrade", "history", "results"]);
   });
 });
 
 describe("DASHBOARD_COINBASE_TOP_NAV", () => {
   it("skal være kort og IKKE inneholde auto-trade (fjernet 2026-08-01, Tom)", () => {
     const hrefs = DASHBOARD_COINBASE_TOP_NAV.map((l) => l.href);
-    expect(hrefs).toEqual([
-      "/dashboard",
-      "/dashboard/portfolio",
-      "/trade",
-    ]);
+    expect(hrefs).toEqual(["/dashboard", "/dashboard/portfolio", "/trade"]);
     expect(hrefs).not.toContain("/dashboard/auto-trade");
     expect(hrefs).not.toContain("/dashboard/autopilot");
   });
@@ -234,13 +215,10 @@ describe("DASHBOARD_COINBASE_BOTTOM_NAV", () => {
 
 describe("DASHBOARD_USER_MENU_NAV", () => {
   it("skal samle sekundære sider i brukermenyen (uten konto-duplikater)", () => {
-    const keys: string[] = DASHBOARD_USER_MENU_NAV.map(
-      (l) => l.labelKey,
-    );
+    const keys: string[] = DASHBOARD_USER_MENU_NAV.map((l) => l.labelKey);
     expect(keys).toEqual([
       "history",
       "results",
-      "analysis",
       "market",
       "learn",
       "pilot",
