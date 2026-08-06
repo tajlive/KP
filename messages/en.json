@@ -2633,6 +2633,7 @@
       "unknown": "Unknown"
     },
     "charts": {
+      "title": "Charts",
       "cumulativeTitle": "Cumulative Result",
       "cumulativeHint": "Performance over time",
       "cumulativeSeries": "Cumulative P/L",
