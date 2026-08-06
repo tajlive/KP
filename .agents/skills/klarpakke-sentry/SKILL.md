@@ -15,6 +15,8 @@ metadata:
     - debugging
     - error-tracking
 disableModelInvocation: true
+whenToUse: Når bruker ber om oppsett eller debugging av Sentry/GlitchTip error tracking.
+  IKKE for vanlig feilsøking.
 ---
 
 # Klarpakke Sentry

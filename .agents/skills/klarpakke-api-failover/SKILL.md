@@ -6,6 +6,8 @@ version: 1.0.0
 author: Hermes Agent
 license: MIT
 disableModelInvocation: true
+whenToUse: Når bruker ber om failover/fallback for Binance geo-block eller API-ruting.
+  IKKE for vanlig API-debugging.
 ---
 
 # Klarpakke API Failover & Workers Debugging

@@ -3,6 +3,8 @@ name: klarpakke-supabase-ops
 description: Bruk ved Supabase RLS-audit eller DB-endringer.
 version: 1.0.0
 disableModelInvocation: true
+whenToUse: Når bruker ber om RLS-audit, DB-migrasjon eller Supabase-skjema-endringer.
+  IKKE for vanlige queries.
 ---
 
 # Klarpakke Supabase Ops
