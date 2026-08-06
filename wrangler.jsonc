@@ -46,11 +46,11 @@
   "observability": {
     "enabled": true,
     "logs": {
-      "head_sampling_rate": 1
+      "head_sampling_rate": 0.05
     },
     "traces": {
       "enabled": true,
-      "head_sampling_rate": 0.01
+      "head_sampling_rate": 0.005
     }
   },
   "kv_namespaces": [
@@ -81,11 +81,11 @@
       "observability": {
         "enabled": true,
         "logs": {
-          "head_sampling_rate": 1
+          "head_sampling_rate": 0.01
         },
         "traces": {
           "enabled": true,
-          "head_sampling_rate": 0.01
+          "head_sampling_rate": 0.001
         }
       },
       "kv_namespaces": [
