@@ -1677,15 +1677,7 @@
       "welcome": "嗨！我可以帮助您了解您的交易数据。"
     },
     "winLossHeatmap": {
-      "dayLabels": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-      ],
+      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       "subtitle": "{winningDays, plural, one {# 个绿色} other {# 个绿色}} · {losingDays, plural, one {# 个红色} other {# 个红色}} · {winRate}% 胜率",
       "infoTooltip": "每种颜色代表您一天的损益。深绿色=大赢，深红色=大输。用它来识别模式（例如，周一的损失）。",
       "loss": "损失",
@@ -4569,7 +4561,8 @@
         "lockedTooltip": "锁定的工具提示",
         "paper": "纸",
         "paperShort": "纸短",
-        "upgrade": "升级"
+        "upgrade": "升级",
+        "label": "模式：{mode}"
       },
       "quickActions": {
         "error": "错误",
@@ -4598,6 +4591,12 @@
         },
         "loadMore": "加载更多",
         "loading": "加载中",
+        "status": {
+          "active": "活跃",
+          "paused": "已暂停",
+          "stopped": "已停止",
+          "crashed": "已崩溃"
+        },
         "title": "标题"
       },
       "statusLog": {
@@ -5367,6 +5366,7 @@
   "pilotTradeCta": "启动 Pilot",
   "tradingResults": {
     "charts": {
+      "title": "图表",
       "modeTrades": "{count, plural, one {# 笔交易} other {# 笔交易}}",
       "cumulativeHint": "随着时间的推移表现",
       "cumulativeSeries": "累计盈亏",
