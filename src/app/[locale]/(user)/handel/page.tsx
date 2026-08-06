@@ -4,6 +4,7 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { getCockpitInitialData } from "@/features/trading-cockpit/server/getCockpitInitialData";
 import { CockpitProvider } from "@/features/trading-cockpit/hooks/useCockpit";
 import { TradingCockpit } from "@/features/trading-cockpit/components/TradingCockpit";
+import { AutopilotDashboard } from "@/features/autopilot/AutopilotDashboard";
 import { InstallPrompt } from "@/shared/pwa/InstallPrompt";
 import { CockpitQueryProvider } from "@/features/trading-cockpit/components/CockpitQueryProvider";
 
@@ -42,6 +43,9 @@ export default async function TradingPage({
           locale={locale}
         >
           <TradingCockpit installPrompt={<InstallPrompt />} />
+          <div className="mt-4">
+            <AutopilotDashboard userId={user.id} />
+          </div>
         </CockpitProvider>
       </CockpitQueryProvider>
     </Suspense>
