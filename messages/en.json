@@ -1932,15 +1932,7 @@
       "title": "Daily P&L Heatmap",
       "loss": "Loss",
       "win": "Win",
-      "dayLabels": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-      ],
+      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       "subtitle": "{winningDays, plural, one {# green} other {# green}} · {losingDays, plural, one {# red} other {# red}} · {winRate}% win rate",
       "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
     },
@@ -4701,6 +4693,7 @@
         "title": "Title"
       },
       "mode": {
+        "label": "Mode: {mode}",
         "live": "Live",
         "paper": "Paper",
         "paperShort": "Paper Short",
@@ -4729,6 +4722,12 @@
         "sessionsDescription": "Sessions Description"
       },
       "sessions": {
+        "status": {
+          "active": "Active",
+          "paused": "Paused",
+          "stopped": "Stopped",
+          "crashed": "Crashed"
+        },
         "columns": {
           "startingCapital": "Starting Capital",
           "currentCapital": "Current Capital",
