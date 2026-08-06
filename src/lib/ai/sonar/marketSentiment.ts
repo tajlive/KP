@@ -154,7 +154,7 @@ async function cacheSentiment(
     const supabase = await createServerClient();
 
     // 'sonar_sentiment_cache' tabell utenfor genererte Database-typer
-    await (supabase.from('sonar_sentiment_cache') as any).upsert(
+    await supabase.from('sonar_sentiment_cache').upsert(
       {
         symbol: symbol.toUpperCase(),
         sentiment_data: sentiment as unknown as import('@/types/database.types').Json,
@@ -266,6 +266,10 @@ export async function getMarketSentimentForEdgeFunction(
           limit: (n: number) => Promise<{ data: Array<{ sentiment_data: MarketSentimentResult; created_at: string }> | null; error?: Error }>;
         };
       };
+      upsert: (
+        values: Record<string, unknown>,
+        options?: { onConflict: string }
+      ) => Promise<{ error?: Error }>;
     };
   },
   perplexityApiKey: string
@@ -310,7 +314,7 @@ export async function getMarketSentimentForEdgeFunction(
 
   // Cache resultatet
   // 'sonar_sentiment_cache' tabell utenfor genererte Database-typer
-  await (supabase.from('sonar_sentiment_cache') as any).upsert(
+  await supabase.from('sonar_sentiment_cache').upsert(
     {
       symbol: symbol.toUpperCase(),
       sentiment_data: parsed,

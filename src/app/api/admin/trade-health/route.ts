@@ -24,7 +24,6 @@ export async function GET() {
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = createServiceClient() as SupabaseClient<Database>;
 
     let ref: PriceRef = {};
