@@ -1,20 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { SEMANTIC_COLORS } from "../tokens";
+import { BRAND, CDS_THEME_MAP, MOBILE, MOTION, RADIUS, SHADOW } from "../tokens";
 
-describe("SEMANTIC_COLORS", () => {
-  it("exports the Phase 1 Nordic Trust + Live Accents palette", () => {
-    expect(SEMANTIC_COLORS.backgroundDark).toBe("#0b1220");
-    expect(SEMANTIC_COLORS.backgroundDarkElevated).toBe("#111827");
-    expect(SEMANTIC_COLORS.backgroundLight).toBe("#f8fafc");
-    expect(SEMANTIC_COLORS.backgroundLightElevated).toBe("#e2e8f0");
-    expect(SEMANTIC_COLORS.positive).toBe("#22c55e");
-    expect(SEMANTIC_COLORS.negative).toBe("#ef4444");
-    expect(SEMANTIC_COLORS.ai).toBe("#3b82f6");
-    expect(SEMANTIC_COLORS.live).toBe("#f59e0b");
-    expect(SEMANTIC_COLORS.learning).toBe("#a855f7");
-    expect(SEMANTIC_COLORS.textDarkPrimary).toBe("#f8fafc");
-    expect(SEMANTIC_COLORS.textDarkSecondary).toBe("#94a3b8");
-    expect(SEMANTIC_COLORS.textLightPrimary).toBe("#0f172a");
-    expect(SEMANTIC_COLORS.textLightSecondary).toBe("#64748b");
+describe("design tokens", () => {
+  it("BRAND exposes Tailwind utility mappings", () => {
+    expect(BRAND.primary).toBe("bg-brand-500 hover:bg-brand-600 text-white");
+    expect(BRAND.danger).toContain("bg-red-600");
+  });
+
+  it("RADIUS provides consistent rounding", () => {
+    expect(RADIUS.button).toBe("rounded-xl");
+    expect(RADIUS.card).toBe("rounded-2xl");
+    expect(RADIUS.input).toBe("rounded-lg");
+    expect(RADIUS.badge).toBe("rounded-full");
+  });
+
+  it("SHADOW provides elevation utilities", () => {
+    expect(SHADOW.cardBrand).toBe("shadow-lg shadow-brand-500/10");
+    expect(SHADOW.modal).toBe("shadow-2xl");
+  });
+
+  it("MOTION provides easing curves", () => {
+    expect(MOTION.easeOut).toEqual([0.25, 0.46, 0.45, 0.94]);
+    expect(MOTION.pageDuration).toBe(0.35);
+  });
+
+  it("MOBILE enforces WCAG touch targets", () => {
+    expect(MOBILE.touchTarget).toBe("min-h-[44px] min-w-[44px]");
+  });
+
+  it("CDS_THEME_MAP binds CDS components to CSS variables", () => {
+    expect(CDS_THEME_MAP.primary).toBe("var(--cds-colors-interactive)");
   });
 });

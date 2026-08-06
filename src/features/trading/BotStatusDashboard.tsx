@@ -48,7 +48,6 @@ import { getStrategyIconComponent } from "@/lib/trading/strategy-icons";
 import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/features/ai/AIDecisionPanel";
 import EnsembleAIDashboard from "@/features/trading/EnsembleAIDashboard";
-import { TABLE } from "@/lib/design/tokens";
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import {
   PremiumStatusBanner,

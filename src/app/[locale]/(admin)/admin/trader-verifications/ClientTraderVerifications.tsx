@@ -2,7 +2,6 @@
 
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { TABLE } from "@/lib/design/tokens";
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -190,19 +189,19 @@ export default function ClientTraderVerifications() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-800">
-                  <th className={TABLE.header}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {t("traderVerifications.trader") || "Trader"}
                   </th>
-                  <th className={TABLE.header}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {t("traderVerifications.statusColumn") || "Status"}
                   </th>
-                  <th className={TABLE.header}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {t("traderVerifications.date") || "Dato"}
                   </th>
-                  <th className={TABLE.header}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {t("traderVerifications.reason") || "Grunn"}
                   </th>
-                  <th className={TABLE.header}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {t("traderVerifications.actions") || "Handlinger"}
                   </th>
                 </tr>
@@ -226,28 +225,28 @@ export default function ClientTraderVerifications() {
                     const traderName =
                       profile?.display_name || v.trader_profile_id;
                     return (
-                      <tr key={v.id} className={TABLE.row}>
-                        <td className={TABLE.cell}>
+                      <tr key={v.id} className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors duration-150">
+                        <td className="px-4 py-3 text-sm">
                           <span className="text-sm font-medium text-white">
                             {traderName}
                           </span>
                         </td>
-                        <td className={TABLE.cell}>
+                        <td className="px-4 py-3 text-sm">
                           <span className={getStatusBadge(v.status)}>
                             {v.status}
                           </span>
                         </td>
-                        <td className={TABLE.cell}>
+                        <td className="px-4 py-3 text-sm">
                           <span className="text-sm text-slate-400">
                             {formatDate(v.created_at)}
                           </span>
                         </td>
-                        <td className={TABLE.cell}>
+                        <td className="px-4 py-3 text-sm">
                           <span className="text-sm text-slate-400 max-w-xs truncate block">
                             {v.reason || "—"}
                           </span>
                         </td>
-                        <td className={TABLE.cell}>
+                        <td className="px-4 py-3 text-sm">
                           <div className="flex items-center gap-2">
                             <Button
                               variant="positive"

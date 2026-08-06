@@ -17,7 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CARD, BRAND } from "@/lib/design/tokens";
+import { BRAND } from "@/lib/design/tokens";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
@@ -179,8 +179,8 @@ function periodCutoff(period: PnlPeriod): Date | null {
   return new Date(Date.now() - ms);
 }
 
-/** Kort med skygge og 200ms overgang (tokens CARD.hover med p-5) */
-const cardBase = `${CARD.hover.replace("p-6", "p-5")}`;
+/** Kort med skygge og 200ms overgang (p-5 variant) */
+const cardBase = "bg-[#161719] rounded-2xl border border-white/[0.08] shadow-sm hover:shadow-md hover:border-white/[0.12] transition-all duration-200 p-5";
 
 export default function PortfolioDashboard({
   userId,

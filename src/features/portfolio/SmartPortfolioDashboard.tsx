@@ -7,7 +7,7 @@ type ChartValue = number | string | readonly (number | string)[] | undefined;
 import { useTranslations } from "next-intl";
 import { AnimatePresence, m } from "framer-motion";
 import { Wallet, ShieldCheck, Zap, History, TrendingUp, Info, AlertCircle, CheckCircle2, Activity, ArrowRight, RefreshCcw, BarChart3 } from "lucide-react";
-import { SURFACE, BRAND, RADIUS, BRAND_COLOR } from "@/lib/design/tokens";
+import { BRAND, RADIUS } from "@/lib/design/tokens";
 import { useRealtimeStore } from "@/store/realtime-store";
 import { useClientOnly } from "@/lib/hooks/useClientOnly";
 import { PriceAggregator } from "@/lib/realtime";
@@ -188,7 +188,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
 
   if (loading) {
     return (
-      <div className={`${SURFACE.BG_CARD} ${RADIUS.card} ${SURFACE.BORDER} p-12 text-center flex flex-col items-center justify-center animate-pulse`}>
+      <div className={`bg-[#161719] ${RADIUS.card} border border-white/[0.08] p-12 text-center flex flex-col items-center justify-center animate-pulse`}>
         <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-gray-400">Initialiserer Smart Index...</p>
       </div>
@@ -199,7 +199,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
     <m.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`${SURFACE.BG_CARD} ${RADIUS.card} border ${SURFACE.BORDER} shadow-xl overflow-hidden`}
+      className={`bg-[#161719] ${RADIUS.card} border border-white/[0.08] shadow-xl overflow-hidden`}
     >
       {/* Header Section */}
       <div className="p-6 border-b border-white/[0.05] bg-gradient-to-r from-brand-500/10 to-transparent">
