@@ -1,6 +1,4 @@
 "use client";
-
-import { TABLE } from "@/lib/design/tokens";
 import {
   ArrowUpCircle,
   Award,
@@ -591,7 +589,7 @@ export default function ClientAdminUsers() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-800">
-                <th className={TABLE.header}>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     aria-label={t("usersPage.ariaSelectAllUsers")}
@@ -605,20 +603,20 @@ export default function ClientAdminUsers() {
                     }}
                   />
                 </th>
-                <th className={TABLE.header}>#</th>
-                <th className={TABLE.header}>Bruker</th>
-                <th className={TABLE.header}>Rolle</th>
-                <th className={TABLE.header}>Nivå</th>
-                <th className={TABLE.header}>{t("usersPage.paperBalance")}</th>
-                <th className={TABLE.header}>Kilde</th>
-                <th className={TABLE.header}>Registrert</th>
-                <th className={TABLE.header}>Handlinger</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">#</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Bruker</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Rolle</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Nivå</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">{t("usersPage.paperBalance")}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Kilde</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Registrert</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Handlinger</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className={TABLE.row}>
-                  <td className={TABLE.cell}>
+                <tr key={user.id} className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors duration-150">
+                  <td className="px-4 py-3 text-sm">
                     <input
                       type="checkbox"
                       aria-label={`Velg ${user.email || user.id}`}
@@ -635,12 +633,12 @@ export default function ClientAdminUsers() {
                       }}
                     />
                   </td>
-                  <td className={TABLE.cellNumeric}>
+                  <td className="px-4 py-3 text-sm tabular-nums text-right">
                     <span className="text-slate-500 font-mono text-sm tabular-nums">
                       KP-{user.user_number}
                     </span>
                   </td>
-                  <td className={TABLE.cell}>
+                  <td className="px-4 py-3 text-sm">
                     <div>
                       <p className="text-sm font-medium text-white">
                         {user.username || "Ukjent"}
@@ -663,7 +661,7 @@ export default function ClientAdminUsers() {
                       )}
                     </div>
                   </td>
-                  <td className={TABLE.cell}>
+                  <td className="px-4 py-3 text-sm">
                     <select
                       value={user.role}
                       onChange={(e) =>
@@ -682,7 +680,7 @@ export default function ClientAdminUsers() {
                   <td className="px-4 py-4">
                     {getTierBadge(user.subscription_tier)}
                   </td>
-                  <td className={TABLE.cell}>
+                  <td className="px-4 py-3 text-sm">
                     <div className="flex flex-col gap-1">
                       <span className="text-sm text-white tabular-nums">
                         {new Intl.NumberFormat("no-NO", {
@@ -716,12 +714,12 @@ export default function ClientAdminUsers() {
                         : user.source}
                     </span>
                   </td>
-                  <td className={TABLE.cellNumeric}>
+                  <td className="px-4 py-3 text-sm tabular-nums text-right">
                     <span className="text-slate-400 tabular-nums">
                       {formatDate(user.created_at)}
                     </span>
                   </td>
-                  <td className={TABLE.cell}>
+                  <td className="px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => {

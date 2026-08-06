@@ -13,7 +13,7 @@ import {
   Target,
   TrendingUp,
 } from "lucide-react";
-import { CARD, RADIUS, SHADOW, SURFACE, TABLE } from "@/lib/design/tokens";
+import { RADIUS, SHADOW } from "@/lib/design/tokens";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -176,10 +176,10 @@ export function ClientPricingPage() {
   };
 
   return (
-    <div className={`min-h-screen ${SURFACE.BG} font-sans ${SURFACE.TEXT}`}>
+    <div className={`min-h-screen bg-[#0a0b0d] font-sans text-white`}>
       {/* HERO - samme stil som landing: merke #0052FF */}
       <section
-        className={`relative pt-24 pb-20 px-4 overflow-hidden ${SURFACE.BG} border-b ${SURFACE.BORDER}`}
+        className={`relative pt-24 pb-20 px-4 overflow-hidden bg-[#0a0b0d] border-b border-white/[0.08]`}
       >
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#0052FF]/10 rounded-full blur-3xl opacity-60" />
@@ -196,7 +196,7 @@ export function ClientPricingPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
             {t("sectionTitle")}
           </h1>
-          <p className={`text-xl ${SURFACE.TEXT_MUTED} max-w-2xl mx-auto`}>
+          <p className={`text-xl text-gray-500 max-w-2xl mx-auto`}>
             {t("description")}
           </p>
         </div>
@@ -215,10 +215,10 @@ export function ClientPricingPage() {
                 <div
                   key={index}
                   className={cn(
-                    `relative ${RADIUS.card} p-8 flex flex-col h-full ${SURFACE.BG_ELEVATED} border transition-all duration-200`,
+                    `relative ${RADIUS.card} p-8 flex flex-col h-full bg-[#1f2128] border transition-all duration-200`,
                     plan.popular
                       ? `border-2 border-[#0052FF] ${SHADOW.cardBrand} scale-105 z-10`
-                      : `${SURFACE.BORDER} hover:border-[#0052FF]/50`,
+                      : `border-white/[0.08] hover:border-[#0052FF]/50`,
                   )}
                 >
                   {plan.popular && (
@@ -231,7 +231,7 @@ export function ClientPricingPage() {
 
                   <div className="mb-8">
                     <div
-                      className={`w-12 h-12 ${RADIUS.button} ${SURFACE.BG} flex items-center justify-center mb-6 border ${SURFACE.BORDER}`}
+                      className={`w-12 h-12 ${RADIUS.button} bg-[#0a0b0d] flex items-center justify-center mb-6 border border-white/[0.08]`}
                     >
                       {plan.icon}
                     </div>
@@ -250,7 +250,7 @@ export function ClientPricingPage() {
                       </span>
                     </div>
                     <p
-                      className={`${SURFACE.TEXT_SUBTLE} text-sm border-b ${SURFACE.BORDER} pb-6`}
+                      className={`text-gray-600 text-sm border-b border-white/[0.08] pb-6`}
                     >
                       {plan.description}
                     </p>
@@ -309,7 +309,7 @@ export function ClientPricingPage() {
           )}
 
           {/* Disclaimer */}
-          <p className={`text-center text-sm ${SURFACE.TEXT_MUTED} mt-8`}>
+          <p className={`text-center text-sm text-gray-500 mt-8`}>
             {t("disclaimer")}
           </p>
         </div>
