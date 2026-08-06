@@ -2633,6 +2633,7 @@
       "unknown": "Ukjent"
     },
     "charts": {
+      "title": "Grafer",
       "cumulativeTitle": "Akkumulert resultat",
       "cumulativeHint": "Utvikling over tid",
       "cumulativeSeries": "Akkumulert P/L",

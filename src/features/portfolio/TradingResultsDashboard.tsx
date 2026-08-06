@@ -14,6 +14,8 @@ import {
   RefreshCw,
   BarChart3,
   AlertCircle,
+  ChevronDown,
+  Table2,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -100,6 +102,7 @@ export default function TradingResultsDashboard() {
   // FIKS 4: Konto-P/L fra paper_accounts (source of truth)
   const [accountPnl, setAccountPnl] = useState<number | null>(null);
   const [accountBalance, setAccountBalance] = useState<number | null>(null);
+  const [chartsExpanded, setChartsExpanded] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -381,13 +384,35 @@ export default function TradingResultsDashboard() {
               t={t}
             />
 
-            <TradingResultsCharts
-              data={data}
-              cumChart={cumChart}
-              dailyTail={dailyTail}
-              pairsChartDesc={pairsChartDesc}
-              formatDisplay={formatDisplay}
-            />
+            {/* Lenke til detaljert handelshistorikk (Kraken-tabellmønster) */}
+            <div className="flex items-center gap-4 pt-2">
+              <Link
+                href={hrefWithLocale(locale, "/dashboard/historikk")}
+                className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-all hover:border-[#0052FF]/40 hover:bg-slate-800 ${BRAND.focusRing}`}
+              >
+                <Table2 className="h-4 w-4" />
+                {t("openHistory")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => setChartsExpanded(!chartsExpanded)}
+                className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-all hover:border-slate-500 ${BRAND.focusRing}`}
+              >
+                <BarChart3 className="h-4 w-4" />
+                {t("charts.title")}
+                <ChevronDown className={`h-4 w-4 transition-transform ${chartsExpanded ? "rotate-180" : ""}`} />
+              </button>
+            </div>
+
+            {chartsExpanded && (
+              <TradingResultsCharts
+                data={data}
+                cumChart={cumChart}
+                dailyTail={dailyTail}
+                pairsChartDesc={pairsChartDesc}
+                formatDisplay={formatDisplay}
+              />
+            )}
           </>
         ) : null}
       </div>
