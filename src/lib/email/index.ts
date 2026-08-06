@@ -298,7 +298,7 @@ const templates = {
           <li>Eksklusiv Discord/Telegram tilgang</li>
         </ul>
       </div>
-      <a href="https://www.klarpakke.no/no/dashboard/auto-trade" class="button">Start Din Første Bot</a>
+      <a href="https://www.klarpakke.no/no/trade?tab=auto" class="button">Start Din Første Bot</a>
     `,
       `Velkommen som ${tier}-student - Ditt abonnement er aktivt!`,
     ),

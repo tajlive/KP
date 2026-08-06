@@ -56,7 +56,7 @@ const wrapEmail = (content: string, title: string): { html: string; text: string
   <div class="content">
     ${content}
     <p style="margin-top: 30px;">
-      <a href="https://www.klarpakke.no/dashboard/auto-trade" class="button">Åpne Auto Trade Dashboard</a>
+      <a href="https://www.klarpakke.no/no/trade?tab=auto" class="button">Åpne Auto Trade Dashboard</a>
     </p>
   </div>
   <div class="footer">
@@ -76,7 +76,7 @@ ${'='.repeat(title.length)}
 ${content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()}
 
 Åpne Auto Trade Dashboard:
-https://www.klarpakke.no/dashboard/auto-trade
+https://www.klarpakke.no/no/trade?tab=auto
 
 ---
 Du mottar denne e-posten fordi du har aktivert Auto Trading på Klarpakke.
