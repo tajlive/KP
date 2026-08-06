@@ -1,4 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="1f1f9363-ac7c-c999-2c2a-868a7807ffaa")}catch(e){}}();
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,720867,e=>{"use strict";var t=e.i(843476),i=e.i(500932),r=e.i(749082);e.s(["default",0,function(e){let c,n=(0,i.c)(5),{language:o,value:u}=e;if(!(0,r.hasLanguage)(o)){let e;return n[0]!==u?(e=(0,t.jsx)("code",{children:u}),n[0]=u,n[1]=e):e=n[1],e}return n[2]!==o||n[3]!==u?(c=(0,t.jsx)(r.Refractor,{inline:!0,language:o,value:u}),n[2]=o,n[3]=u,n[4]=c):c=n[4],c}])}]);
-
-//# debugId=1f1f9363-ac7c-c999-2c2a-868a7807ffaa

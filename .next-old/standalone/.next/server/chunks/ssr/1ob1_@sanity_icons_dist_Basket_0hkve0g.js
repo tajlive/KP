@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="07af8924-169e-a4c2-4132-83a679c5b8a9")}catch(e){}}();
-module.exports=[641846,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"basket",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M8.5 10.5H5L6.5 19.5H18.5L20 10.5H16.5M8.5 10.5L10.2721 5.18377C10.4082 4.77543 10.7903 4.5 11.2208 4.5H13.7792C14.2097 4.5 14.5918 4.77543 14.7279 5.18377L16.5 10.5M8.5 10.5H16.5M8.5 10.5L9.5 19.5M16.5 10.5L15.5 19.5M12.5 10.5V19.5M19.5 13.5H5.5M19 16.5H6",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["BasketIcon",0,d,"default",0,d])}];
-
-//# debugId=07af8924-169e-a4c2-4132-83a679c5b8a9
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Basket_0hkve0g.js.map

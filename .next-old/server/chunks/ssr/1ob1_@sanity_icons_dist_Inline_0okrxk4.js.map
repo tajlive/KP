@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "debugId": "c36e3021-d8cf-9062-bc98-ee46818429d0",
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../node_modules/sanity/node_modules/%40sanity/icons/src/exports/Inline.tsx"],"sourcesContent":["/* THIS FILE IS AUTO-GENERATED – DO NOT EDIT */\n\nimport {forwardRef, type ForwardRefExoticComponent, type RefAttributes, type SVGProps} from 'react'\n\n/**\n * @public\n */\nexport const InlineIcon: ForwardRefExoticComponent<\n  Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>\n> = /* @__PURE__ */ forwardRef(function InlineIcon(props, ref) {\n  return (\n    <svg\n      data-sanity-icon=\"inline\"\n      width=\"1em\"\n      height=\"1em\"\n      viewBox=\"0 0 25 25\"\n      fill=\"none\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n      {...props}\n      ref={ref}\n    >\n      <path\n        d=\"M12.5 6.5H19.5V18.5H12.5M12.5 6.5H5.5V18.5H12.5M12.5 6.5V18.5\"\n        stroke=\"currentColor\"\n        strokeWidth={1.2}\n        strokeLinejoin=\"round\"\n      />\n    </svg>\n  )\n})\n\nexport {InlineIcon as default}\n"],"names":[],"mappings":"wEAOA,IAAa,EAEO,CAAA,EAAA,EAAA,MAAA,IAAA,EAAW,OAAX,EAA+B,CAAA,CAAO,CAAA,EACxD,AAD6D,MAE3D,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,EAAA,CACE,mBAAiB,SACjB,MAAM,MACN,OAAO,MACP,QAAQ,YACR,KAAK,OACL,MAAM,6BACN,GAAI,CAAA,KACC,EAEL,SAAA,CAAA,EAAA,EAAA,GAAA,EAAC,IAAD,GAAA,CACE,EAAE,gEACF,OAAO,eACP,YAAa,IACb,eAAe,OAChB,CAAA,CACE,CAAA,CAET,CAAC"}}]
-}

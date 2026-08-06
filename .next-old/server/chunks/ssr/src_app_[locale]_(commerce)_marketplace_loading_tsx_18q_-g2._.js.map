@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "debugId": "54f95d62-fef2-1b30-ccb6-380733bed5a4",
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../src/app/%5Blocale%5D/%28commerce%29/marketplace/loading.tsx"],"sourcesContent":["\nexport default function MarketplaceLoading() {\n  return (\n    <div className=\"min-h-screen p-4 pt-6 space-y-6 animate-pulse\">\n      {/* Search bar */}\n      <div className=\"h-12 bg-gray-200 dark:bg-gray-800 rounded-xl\" />\n\n      {/* Filter chips */}\n      <div className=\"flex gap-2 overflow-hidden\">\n        {[1, 2, 3, 4].map((i) => (\n          <div\n            key={i}\n            className=\"h-8 w-20 bg-gray-200 dark:bg-gray-800 rounded-full shrink-0\"\n          />\n        ))}\n      </div>\n\n      {/* Strategy cards */}\n      <div className=\"space-y-4\">\n        {[1, 2, 3, 4].map((i) => (\n          <div\n            key={i}\n            className=\"h-32 bg-gray-200 dark:bg-gray-800 rounded-2xl\"\n          />\n        ))}\n      </div>\n    </div>\n  );\n}\n"],"names":["MarketplaceLoading","className","map","i"],"mappings":"2EACe,SAASA,EACtB,MACE,CAAA,EAAA,EAAA,IAAA,EAAC,MAAA,CAAIC,UAAU,0DAEb,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIA,UAAU,iDAGf,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIA,UAAU,sCACZ,CAAC,EAAG,EAAG,EAAG,EAAE,CAACC,GAAG,CAAC,AAACC,GACjB,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAECF,UAAU,+DADLE,MAOX,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIF,UAAU,qBACZ,CAAC,EAAG,EAAG,EAAG,EAAE,CAACC,GAAG,CAAC,AAACC,GACjB,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAECF,UAAU,iDADLE,QAOjB"}}]
-}

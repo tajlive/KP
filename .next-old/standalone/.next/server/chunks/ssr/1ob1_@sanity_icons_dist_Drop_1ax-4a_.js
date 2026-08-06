@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="e94dffa9-02a8-647d-c231-5c25ddb0dc76")}catch(e){}}();
-module.exports=[286489,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"drop",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M18.5 14.5C18.5 18 16 20.5 12.5 20.5C9 20.5 6.5 18 6.5 14.5C6.5 11 9.5 7.50001 12.5 4.5C15.5 7.5 18.5 11 18.5 14.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["DropIcon",0,d,"default",0,d])}];
-
-//# debugId=e94dffa9-02a8-647d-c231-5c25ddb0dc76
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Drop_1ax-4a_.js.map

@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="9abf5ca7-3e5f-5ba0-cfb2-993b26eb7ba5")}catch(e){}}();
-module.exports=[193695,(a,b,c)=>{b.exports=a.x("next/dist/shared/lib/no-fallback-error.external.js",()=>require("next/dist/shared/lib/no-fallback-error.external.js"))},318839,a=>{a.n(a.i(109875))},110585,a=>{a.v("/_next/static/media/favicon.1gl3w77xp5s5h.ico"+(globalThis.NEXT_CLIENT_ASSET_SUFFIX||""))},68611,a=>{"use strict";let b={src:a.i(110585).default,width:1024,height:1024};a.s(["default",0,b])}];
-
-//# debugId=9abf5ca7-3e5f-5ba0-cfb2-993b26eb7ba5
-//# sourceMappingURL=%5Broot-of-the-server%5D__00-x1z7._.js.map

@@ -1,3 +1,0 @@
-{
-  "/api/cron/balance-drift-check/route": "app/api/cron/balance-drift-check/route.js"
-}

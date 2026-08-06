@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="98a2548b-7fba-c68b-15b5-c386d3fbb5b9")}catch(e){}}();
-module.exports=[173784,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"projects",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M21 17.5H14M17.5 14V21M5.5 14.5H10.5V19.5H5.5V14.5ZM14.5 5.5H19.5V10.5H14.5V5.5ZM5.5 5.5H10.5V10.5H5.5V5.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["ProjectsIcon",0,d,"default",0,d])}];
-
-//# debugId=98a2548b-7fba-c68b-15b5-c386d3fbb5b9
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Projects_003ys4p.js.map

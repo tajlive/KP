@@ -1,4 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="588ae765-666e-f72a-4f87-668382fe1308")}catch(e){}}();
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,37761,t=>{"use strict";var e=t.i(271645),o=t.i(843476);let r=(0,e.forwardRef)(function(t,e){return(0,o.jsx)("svg",{"data-sanity-icon":"projects",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...t,ref:e,children:(0,o.jsx)("path",{d:"M21 17.5H14M17.5 14V21M5.5 14.5H10.5V19.5H5.5V14.5ZM14.5 5.5H19.5V10.5H14.5V5.5ZM5.5 5.5H10.5V10.5H5.5V5.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});t.s(["ProjectsIcon",0,r,"default",0,r])}]);
-
-//# debugId=588ae765-666e-f72a-4f87-668382fe1308

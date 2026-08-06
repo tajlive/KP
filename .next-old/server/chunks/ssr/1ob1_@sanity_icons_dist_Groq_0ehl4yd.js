@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="ffdbfe8e-acf3-ecf2-0432-a74a3e93f78b")}catch(e){}}();
-module.exports=[498110,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"groq",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M13 13H21L13 21L13 13Z",fill:"currentColor"}),(0,c.jsx)("path",{d:"M12 12V4L4 12H12Z",fill:"currentColor"}),(0,c.jsx)("path",{d:"M12 13H4L12 21V13Z",fill:"currentColor"})]})});a.s(["GroqIcon",0,d,"default",0,d])}];
-
-//# debugId=ffdbfe8e-acf3-ecf2-0432-a74a3e93f78b
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Groq_0ehl4yd.js.map

@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="3505d7ca-bc14-bd99-981a-e29d6f3a7736")}catch(e){}}();
-module.exports=[969029,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"document-zip",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M11.5 4.5V9.5H6.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M15 4.5L13.5 5L15.5 6L13.5 7L15.5 8L13.5 9L15.5 10L13.5 11L14.5 11.5V13M11.5 4.5H18.5V20.5H6.5V9.5L11.5 4.5ZM13.5 13H15.5L16 17H13L13.5 13Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["DocumentZipIcon",0,d,"default",0,d])}];
-
-//# debugId=3505d7ca-bc14-bd99-981a-e29d6f3a7736
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_DocumentZip_0m8lzh4.js.map

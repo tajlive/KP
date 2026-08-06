@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="0f3b43af-4fdf-71b7-1d03-825e522e8ad2")}catch(e){}}();
-module.exports=[445055,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"truncate",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M5 12.5H20M8.5 19.5L12.5 15.5L16.5 19.5M16.5 5.5L12.5 9.5L8.5 5.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["TruncateIcon",0,d,"default",0,d])}];
-
-//# debugId=0f3b43af-4fdf-71b7-1d03-825e522e8ad2
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Truncate_161n0v7.js.map

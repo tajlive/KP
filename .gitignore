@@ -41,6 +41,7 @@ lighthouse-*.report.html
 # NEXT.JS BUILD OUTPUT
 # =============================================================================
 /.next/
+/.next-old/
 /.next/cache/
 /.next/standalone/
 /out/
@@ -291,6 +292,7 @@ config/perplexity-local-mcp.json
 
 # ── Cloudflare ──
 .open-next/
+.open-next-old/
 .cloudflare/
 .wrangler/
 .dev.vars

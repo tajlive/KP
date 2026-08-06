@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "debugId": "cf586398-69af-5e31-f524-16e293b68a76",
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../src/app/loading.tsx"],"sourcesContent":["/**\n * Root loading state\n * Shows while page content is loading\n */\n\nexport default function RootLoading() {\n  return (\n    <div className=\"min-h-screen bg-[#0a0b0d] flex items-center justify-center\">\n      <div className=\"w-10 h-10 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin\" />\n    </div>\n  );\n}\n"],"names":["RootLoading","className"],"mappings":"wCAGC,IAAA,EAAA,EAAA,CAAA,CAAA,yBAEc,SAASA,EACtB,MACE,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIC,UAAU,sEACb,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIA,UAAU,uFAGrB"}}]
-}
