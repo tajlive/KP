@@ -141,10 +141,11 @@ export async function POST(request: NextRequest) {
       currency: 'USD'
     }));
     
-    // european_tax_reports: tabell utenfor genererte Database-typer. Forsøk på DbWithEuropeanTaxReports
-    // type-extension (DbWithEuropeanTaxReports) feiler mot SupabaseClient-komplekse generics.
-    // Eneste stabile løsning er as any inntil tabellen legges i database.types.ts.
-    const { data: report, error: reportError } = await (supabase as any)
+    // european_tax_reports mangler i genererte Database-typer — skjemaet utvides lokalt
+    // via DbWithEuropeanTaxReports (mønster: log-admin-audit.ts / klt.ts)
+    const { data: report, error: reportError } = await (
+      supabase as unknown as SupabaseClient<DbWithEuropeanTaxReports>
+    )
       .from('european_tax_reports')
       .upsert(
         {
@@ -226,7 +227,9 @@ export async function GET(
     }
     
     // Fetch existing report — european_tax_reports mangler i genererte Database-typer
-    const { data: report, error } = await (supabase as any)
+    const { data: report, error } = await (
+      supabase as unknown as SupabaseClient<DbWithEuropeanTaxReports>
+    )
       .from('european_tax_reports')
       .select('*')
       .eq('user_id', user.id)
