@@ -1089,7 +1089,6 @@ class BacktestCache {
       if (error || !data) return null;
       
       // Lagre i minne-cache for neste gang
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = (data as { result_data: BacktestResult }).result_data;
       this.setInMemory(key, result);
       return result;
@@ -1124,7 +1123,8 @@ class BacktestCache {
         volatility: result.metrics.volatility,
       };
       
-      // 'backtest_cache' tabell utenfor genererte Database-typer
+      // 'backtest_cache' tabell finnes IKKE i genererte Database-typer (2026-08-06).
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- regenerer typer etter migrasjon
       await (this.supabase.from('backtest_cache') as any).upsert({
         symbol,
         strategy_id: strategyId,

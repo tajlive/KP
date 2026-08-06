@@ -1,23 +1,26 @@
 #!/usr/bin/env bash
-# Klarpakke Pre-Push — enterprise gate
-# Type-check kjøres i CI (for tungt lokalt). Kun raske sjekker her.
-set -e
+# Klarpakke Pre-Push — QA gate (2026-08-06)
+# Raske sjekker. Tung type-check og full test suite kjøres i CI.
+set -euo pipefail
 
 echo "🔒 Klarpakke Pre-Push"
 
-# 1. Lint (rask)
+# 1. ESLint på endrede filer (rask)
 echo "  eslint..."
-npx next lint --quiet 2>&1 | tail -1
+CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' | tr '\n' ' ' || true)
+if [ -n "$CHANGED_FILES" ]; then
+  npx eslint --no-cache --quiet $CHANGED_FILES
+fi
 echo "  ✅ lint OK"
 
-# 2. Unit tests (bare endrede filer)
-echo "  vitest..."
-npx vitest related --run --reporter=verbose $(git diff --name-only HEAD origin/main...HEAD 2>/dev/null || echo "src/") 2>&1 | tail -2
-echo "  ✅ tests OK"
-
-# 3. Build check (turbopack dry-run)
-echo "  next build --dry-run..."
-npx next build --dry-run 2>&1 | tail -1
-echo "  ✅ build dry-run OK"
+# 2. TypeScript (kun hvis >5 endrede filer — ellers for tregt)
+CHANGED_COUNT=$(echo "$CHANGED_FILES" | wc -w | tr -d ' ')
+if [ "$CHANGED_COUNT" -gt 5 ]; then
+  echo "  tsc (${CHANGED_COUNT} endrede filer)..."
+  npx tsc --noEmit
+  echo "  ✅ type-check OK"
+else
+  echo "  ⏭️  type-check skipped (${CHANGED_COUNT} filer — kjører i CI)"
+fi
 
 echo "✅ Pre-push passed — pushing"
