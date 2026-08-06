@@ -2622,7 +2622,7 @@
       "win": "Vunnet",
       "loss": "Tap",
       "breakeven": "Break-even",
-      "unknown": "Uten resultat"
+      "unknown": "Åpne handler"
     },
     "mode": {
       "paper": "Lekepenger",
