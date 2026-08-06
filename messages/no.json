@@ -2433,7 +2433,10 @@
       "trustNote": "Beta • Kun Norge • Live trading kommer • Ingen kredittkort",
       "livePrices": "Live markedsdata",
       "liveUpdates": "Oppdateres live",
-      "mockupAlt": "Klarpakkes trade-side: kjøp Bitcoin med lekepenger — ekte produktbilde"
+      "mockupAlt": "Klarpakkes trade-side: kjøp Bitcoin med lekepenger — ekte produktbilde",
+      "trustPlayMoney": "100 000 kr i lekepenger",
+      "trustKlt": "5000 KLT til de 100 første",
+      "trustAgents": "Autonome AI-agenter"
     },
     "modes": {
       "title": "En konto — tre måter å trade på",

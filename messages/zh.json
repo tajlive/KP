@@ -2378,7 +2378,10 @@
       "liveUpdates": "Updated live",
       "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money",
       "badge": "🔬 Beta - 仅限挪威。前 100 名 5,000 KLT",
-      "trustNote": "测试版 • 仅限挪威 • 即将推出实时交易 • 没有信用卡"
+      "trustNote": "测试版 • 仅限挪威 • 即将推出实时交易 • 没有信用卡",
+      "trustPlayMoney": "100,000 挪威克朗模拟资金",
+      "trustKlt": "前 100 名用户获 5,000 KLT",
+      "trustAgents": "自主 AI 代理"
     },
     "modes": {
       "title": "One account — three ways to trade",

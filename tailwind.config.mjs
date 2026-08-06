@@ -95,6 +95,7 @@ const config = {
         sans: ['var(--font-inter)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         serif: ['var(--font-instrument-serif)', 'Instrument Serif', 'Georgia', 'serif'],
         display: ['var(--font-instrument-serif)', 'Instrument Serif', 'Georgia', 'serif'],
+        mono: ['var(--kp-font-mono)', 'JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },
       
       fontSize: {

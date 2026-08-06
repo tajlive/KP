@@ -26,6 +26,7 @@ export type CleanTrade = {
   side: string;
   realized_pnl: number | null;
   quantity: number | null;
+  price: number | null;
   mode: string | null;
   created_at: string;
   executed_at: string | null;
@@ -41,6 +42,7 @@ type TradesSelect = Pick<
   | "side"
   | "realized_pnl"
   | "quantity"
+  | "price"
   | "mode"
   | "created_at"
   | "executed_at"
@@ -57,7 +59,7 @@ export type GetCleanTradesOptions = {
 };
 
 const TRADE_COLUMNS =
-  "id, session_id, trading_pair, side, realized_pnl, quantity, mode, created_at, executed_at, total_value";
+  "id, session_id, trading_pair, side, realized_pnl, quantity, price, mode, created_at, executed_at, total_value";
 
 // NUMERIC-kolonner kommer som JSON-strenger fra supabase-js — kast til Number.
 function toNullableNumber(v: number | string | null | undefined): number | null {
@@ -74,6 +76,7 @@ function normalizeRow(row: TradesSelect): CleanTrade {
     side: row.side,
     realized_pnl: toNullableNumber(row.realized_pnl),
     quantity: toNullableNumber(row.quantity),
+    price: toNullableNumber(row.price),
     mode: row.mode,
     created_at: row.created_at,
     executed_at: row.executed_at ?? null,
