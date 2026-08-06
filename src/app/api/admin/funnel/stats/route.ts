@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin/require-admin";
 
 type SignupFunnelRow = {
   event_type: string;
@@ -10,26 +10,15 @@ type SignupFunnelRow = {
   } | null;
 };
 
-function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "";
-
-  if (!key) return null;
-  return createClient(url, key);
-}
-
 export async function GET() {
-  const supabase = getSupabaseClient();
-
-  if (!supabase) {
-    return NextResponse.json(
-      { error: "No database connection" },
-      { status: 503 },
-    );
+  // P0-fiks (2026-08-06): ruten var ubeskyttet — signup_funnel med session_id
+  // og metadata eksponert anonymt. requireAdmin verifiserer cookie-sesjon +
+  // admin-allowlist før data-tilgang.
+  const auth = await requireAdmin();
+  if (!auth.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: auth.status });
   }
+  const supabase = auth.supabase;
 
   try {
     // Get funnel stats for last 7 days
