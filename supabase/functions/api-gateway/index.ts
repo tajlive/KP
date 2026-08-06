@@ -67,10 +67,6 @@ serve(async (req) => {
       return await handleFileRead(filePath);
     }
 
-    // 5. Build Trigger (Vercel)
-    if (path === "/build") {
-      return await handleBuildTrigger();
-    }
 
     return new Response(JSON.stringify({ error: "Not Found", path }), {
       status: 404,
@@ -133,15 +129,4 @@ async function handleFileRead(filePath: string) {
   );
 }
 
-async function handleBuildTrigger() {
-  // Trigger Vercel Deploy Hook if configured
-  // const deployUrl = Deno.env.get("VERCEL_DEPLOY_HOOK");
-  // if (deployUrl) await fetch(deployUrl, { method: "POST" });
-  return new Response(
-    JSON.stringify({
-      status: "Build Triggered",
-      provider: "Vercel",
-    }),
-    { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-  );
-}
+
