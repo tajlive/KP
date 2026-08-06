@@ -2622,7 +2622,7 @@
       "win": "Won",
       "loss": "Loss",
       "breakeven": "Break-even",
-      "unknown": "No outcome"
+      "unknown": "Open trades"
     },
     "mode": {
       "paper": "Paper",

@@ -126,39 +126,44 @@ export async function GET(request: NextRequest) {
       }))
       .sort((a, b) => b.qty * b.avgBuyPrice - a.qty * a.avgBuyPrice);
 
-    // Beregn balance fra trading_sessions (SSoT — paper_accounts kan være stale).
-    // PROMPT #15 A3: sanity-cap 3× initial (samme som leaderboard) — uten cap
-    // gir arvet inflasjon fra oversell-bug-perioden urealistisk høy balance.
-    const { data: balanceSessions } = await supabase
-      .from("trading_sessions")
-      .select("current_capital_nok, starting_capital_nok")
-      .eq("user_id", user.id)
-      .eq("mode", "paper")
-      .in("status", ["active", "paused", "stopped"]);
-
-    const sessionsSum = balanceSessions?.reduce(
-      (sum, s) => sum + Number(s.current_capital_nok ?? 0),
-      0,
-    ) ?? null;
-    const sessionsInitial = balanceSessions?.reduce(
-      (sum, s) => sum + Number(s.starting_capital_nok ?? 0),
-      0,
-    ) ?? 0;
-    const fallbackBalance =
+    // Balance: paper_accounts.current_balance er source of truth (R1).
+    // Sessions-sum er PRINTET kapital — brukes KUN som fallback når
+    // paper_accounts mangler, og da med sanity-cap 3× initial.
+    const accountBalance =
       accountRes.data?.current_balance != null
         ? Number(accountRes.data.current_balance)
         : null;
-    // Sanity-cap: sessions-sum > 3× initial = arvet inflasjon → fallback
-    const useSessionsBalance =
-      sessionsSum != null &&
-      sessionsSum > 0 &&
-      (sessionsInitial <= 0 || sessionsSum <= sessionsInitial * 3);
-    const balance = useSessionsBalance ? sessionsSum : fallbackBalance;
-    const initialBalance = useSessionsBalance
-      ? sessionsInitial
-      : accountRes.data?.initial_balance != null
+    const accountInitial =
+      accountRes.data?.initial_balance != null
         ? Number(accountRes.data.initial_balance)
         : null;
+
+    let balance: number | null = accountBalance;
+    let initialBalance: number | null = accountInitial;
+
+    // Fallback: sessions-sum (kun hvis paper_accounts mangler helt)
+    if (balance == null) {
+      const { data: balanceSessions } = await supabase
+        .from("trading_sessions")
+        .select("current_capital_nok, starting_capital_nok")
+        .eq("user_id", user.id)
+        .eq("mode", "paper")
+        .in("status", ["active", "paused", "stopped"]);
+
+      const sessionsSum = balanceSessions?.reduce(
+        (sum, s) => sum + Number(s.current_capital_nok ?? 0),
+        0,
+      ) ?? 0;
+      const sessionsInitial = balanceSessions?.reduce(
+        (sum, s) => sum + Number(s.starting_capital_nok ?? 0),
+        0,
+      ) ?? 0;
+      // Sanity-cap: sessions-sum > 3× initial = arvet inflasjon
+      if (sessionsSum > 0 && (sessionsInitial <= 0 || sessionsSum <= sessionsInitial * 3)) {
+        balance = sessionsSum;
+        initialBalance = sessionsInitial;
+      }
+    }
 
     return NextResponse.json({
       balance,

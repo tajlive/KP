@@ -97,15 +97,47 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
  * 1. PRIMARY: PostgreSQL RPC `get_dashboard_metrics` — single query, O(1) network.
  * 2. FALLBACK: TypeScript aggregation if RPC is unavailable (e.g. local dev without migration).
  */
-/** Kontobalanse: sessions.current_capital_nok (mer pålitelig enn paper_accounts som kan være stale). */
+/**
+ * Kontobalanse: paper_accounts.current_balance er source of truth (R1).
+ * Sessions-basert sum er PRINTET kapital per sesjon og forvrenger totalen —
+ * brukes KUN som nød-fallback når paper_accounts mangler helt.
+ */
 async function getAccountBalance(
   supabaseClient: SupabaseClient<Database>,
   userId: string,
 ): Promise<{ available: number; invested: number; positionCount: number; updated_at: string | null } | null> {
-  // Hent alle aktive paper-sesjoner med open_position
+  // 1. PRIMÆR: paper_accounts (source of truth per AGENTS.md arkitektur-sannhet #1)
+  const { data: paperAccount, error: paError } = await supabaseClient
+    .from("paper_accounts")
+    .select("current_balance, updated_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!paError && paperAccount && typeof paperAccount.current_balance === "number") {
+    const available = paperAccount.current_balance;
+    // Hent posisjonsdata (invested + positionCount) fra aktive sesjoner
+    const { data: positions } = await supabaseClient
+      .from("trading_sessions")
+      .select("open_position")
+      .eq("user_id", userId)
+      .eq("mode", "paper")
+      .in("status", ["active", "paused"]);
+    let invested = 0;
+    let positionCount = 0;
+    for (const s of positions ?? []) {
+      const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
+      if (pos?.quantity && pos?.entry_price) {
+        invested += pos.quantity * pos.entry_price;
+        positionCount++;
+      }
+    }
+    return { available, invested, positionCount, updated_at: paperAccount.updated_at ?? null };
+  }
+
+  // 2. FALLBACK: Kun hvis paper_accounts mangler helt — summer sessions
   const { data: sessions, error: sessionError } = await supabaseClient
     .from("trading_sessions")
-    .select("current_capital_nok, open_position, trading_pair")
+    .select("current_capital_nok, open_position")
     .eq("user_id", userId)
     .eq("mode", "paper")
     .in("status", ["active", "paused", "stopped"]);
@@ -123,25 +155,11 @@ async function getAccountBalance(
       }
     }
     if (Number.isFinite(available + invested) && (available + invested) > 0) {
-      return { available, invested, positionCount, updated_at: null }; // Sessions har ingen updated_at
+      return { available, invested, positionCount, updated_at: null };
     }
   }
 
-  // Fallback: paper_accounts (kan være stale hvis sync ikke har kjørt)
-  const { data, error } = await supabaseClient
-    .from("paper_accounts")
-    .select("current_balance, updated_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (error) {
-    console.warn("[getUserDashboardMetrics] account balance fetch failed:", error.message);
-    return null;
-  }
-  const dataSingle = data as unknown as { current_balance?: number; updated_at?: string };
-  return typeof dataSingle?.current_balance === "number" 
-    ? { available: dataSingle.current_balance, invested: 0, positionCount: 0, updated_at: dataSingle.updated_at ?? null } 
-    : null;
+  return null;
 }
 
 /** Komplement til getAccountBalance — FIKS 6. */
