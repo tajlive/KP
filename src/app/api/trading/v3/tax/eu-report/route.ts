@@ -43,7 +43,23 @@ interface TaxReport {
 
 // `european_tax_reports` finnes ikke i genererte Database-typer (database.types.ts),
 // så skjemaet utvides lokalt — samme mønster som lib/admin/log-admin-audit.ts (DbWithAdminAudit).
-type EuropeanTaxReportRow = TaxReport & { user_id: string };
+// Viktig: Row må være flat type-alias (ikke interface-intersection) for å tilfredsstille
+// Supabase's GenericTable-constraint (implicit index signature).
+type EuropeanTaxReportRow = {
+  id: string;
+  user_id: string;
+  jurisdiction: string;
+  tax_year: number;
+  report_format: 'XML' | 'CSV' | 'PDF';
+  report_data: TaxReportData;
+  total_gains?: number | null;
+  total_losses?: number | null;
+  net_taxable?: number | null;
+  estimated_tax?: number | null;
+  tax_currency: string;
+  calculation_method: string;
+  generated_at: string;
+};
 type EuropeanTaxReportInsert = Omit<EuropeanTaxReportRow, 'id'> & { id?: string };
 
 type DbWithEuropeanTaxReports = Database & {
@@ -152,7 +168,7 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
     
-    if (reportError) {
+    if (reportError || !report) {
       console.error('Report store error:', reportError);
       return NextResponse.json(
         { error: 'Failed to store tax report' },
