@@ -304,13 +304,13 @@ function PriceCard({ className }: { className?: string }) {
   const priceUsdt = nokPriceToUsdt(priceNok);
 
   return (
-    <div className={cn("relative w-full rounded-xl bg-[#0A0D12] border border-[#1E2530] p-4 sm:p-6 flex flex-col", className)}>
+    <div className={cn("relative w-full rounded-xl bg-[#0A0D12] border border-[#1E2530] p-3 sm:p-4 flex flex-col", className)}>
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
         <div className="min-w-0">
           <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">
             BTC / NOK
           </div>
-          <div className="text-white text-2xl sm:text-3xl font-bold font-mono">
+          <div className="text-white text-xl sm:text-2xl font-bold font-mono">
             {formatNOK(priceNok, { locale: "nb-NO", fractionDigits: 0 })}
           </div>
           <div className={cn(
@@ -328,8 +328,8 @@ function PriceCard({ className }: { className?: string }) {
           <div className="text-[11px] text-slate-500 mt-1">1 USD ≈ {getDisplayUsdtToNokRate()} NOK</div>
         </div>
       </div>
-      <PriceSparkline className="flex-1 mt-4" />
-      <div className="text-xs text-slate-500 mt-2">BTC/NOK · siste 10 timer · Kilde: Binance</div>
+      <PriceSparkline className="flex-1 mt-2.5 min-h-0" />
+      <div className="text-xs text-slate-500 mt-1.5">BTC/NOK · siste 10 timer · Kilde: Binance</div>
     </div>
   );
 }
@@ -491,8 +491,8 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
 
       {/* Price display */}
       <div className="flex justify-between text-xs text-slate-500">
-        <span>1 {selectedMeta.base} = {priceNok.toLocaleString("no")} kr</span>
-        <span>Spread: 0.02%</span>
+        <span className="font-mono">1 {selectedMeta.base} = {priceNok.toLocaleString("no")} kr</span>
+        <span className="font-mono text-slate-400">Spread: 0.02%</span>
       </div>
 
       {/* Action button */}
@@ -815,7 +815,7 @@ export function UnifiedTradeTerminal() {
       {/* Live Ticker */}
       <LiveTicker />
 
-      <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-3">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-2">
         {/* Header row — wrapper på mobil: faner får egen rad under tittel */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-3">
           <div className="flex items-center gap-3">
@@ -834,7 +834,7 @@ export function UnifiedTradeTerminal() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-3">
           {/* Chart column */}
           <div className="space-y-3">
-            <PriceCard className="h-[280px] sm:h-[380px]" />
+            <PriceCard className="h-[210px] sm:h-[260px]" />
 
             {/* Mode description bar */}
             <motion.div
@@ -862,8 +862,8 @@ export function UnifiedTradeTerminal() {
             )}
           </div>
 
-          {/* Side panel: Mode-spesifikt innhold */}
-          <div className="space-y-3">
+          {/* Side panel: Mode-spesifikt innhold — høyere prioritet: først på mobil, sticky på desktop */}
+          <div className="space-y-3 order-first lg:order-none lg:sticky lg:top-2">
             {mode === "manual" && (
               <>
                 <OrderPanel mode={mode} />

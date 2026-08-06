@@ -2433,7 +2433,10 @@
       "trustNote": "Beta • Norway only • Live trading coming • No credit card",
       "livePrices": "Live market data",
       "liveUpdates": "Updated live",
-      "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money"
+      "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money",
+      "trustPlayMoney": "100,000 kr in play money",
+      "trustKlt": "5,000 KLT for the first 100",
+      "trustAgents": "Autonomous AI agents"
     },
     "modes": {
       "title": "One account — three ways to trade",
