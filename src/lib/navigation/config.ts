@@ -290,7 +290,6 @@ export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
 export const DASHBOARD_USER_MENU_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard/historikk", labelKey: "history" },
   { href: "/dashboard/resultater", labelKey: "results" },
-  { href: "/dashboard/analysis", labelKey: "analysis" },
   { href: "/marked", labelKey: "market" },
   { href: "/kurs", labelKey: "learn" },
   { href: "/pilot", labelKey: "pilot" },

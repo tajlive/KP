@@ -42,6 +42,11 @@ const TradingResultsCharts = dynamic(
   }
 );
 
+const AdvancedAnalyticsSection = dynamic(
+  () => import("@/features/dashboard/AdvancedAnalyticsSection").then((m) => ({ default: m.AdvancedAnalyticsSection })),
+  { ssr: false }
+);
+
 const REFRESH_MS = 45 * 1000;
 const MAX_CUMULATIVE_POINTS = 180;
 
@@ -416,6 +421,11 @@ export default function TradingResultsDashboard() {
           </>
         ) : null}
       </div>
+
+      {/* Avansert analyse (tidl. egen /dashboard/analysis-side — Fase 3 D12) */}
+      {data && data.tradeCount > 0 && (
+        <AdvancedAnalyticsSection accountBalance={accountBalance ?? undefined} />
+      )}
     </PremiumTradingShell>
   );
 }
