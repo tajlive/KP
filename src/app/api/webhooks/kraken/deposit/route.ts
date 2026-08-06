@@ -13,11 +13,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
-// Polling-intervall (5 minutter)
-const POLL_INTERVAL_MS = 5 * 60 * 1000;
-
-// Siste kjente deposit-ID per bruker (for å unngå duplikater)
-const lastDepositIds = new Map<string, string>();
+// Antall minutter vi ser tilbake for nye deposits (ett autopilot-tick = 5 min)
+const DEPOSIT_WINDOW_MS = 30 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,19 +46,19 @@ export async function POST(request: NextRequest) {
         const client = new KrakenClient(apiKey, apiSecret);
         const deposits = await client.getDepositHistory();
 
-        // Filtrer nye deposits (siste 24 timer)
+        // Filtrer nye deposits (siste 24 timer, kun Success)
         const newDeposits = Object.values(deposits).filter(
           (d: unknown) => {
             const deposit = d as {
               status: string;
               time: number;
               assetid: string;
+              amount: string;
             };
             return (
               deposit.status === "Success" &&
               new Date(deposit.time * 1000) >
-                new Date(Date.now() - 24 * 60 * 60 * 1000) &&
-              deposit.assetid !== lastDepositIds.get(user.user_id)
+                new Date(Date.now() - 24 * 60 * 60 * 1000)
             );
           },
         ) as Array<{
@@ -71,19 +68,27 @@ export async function POST(request: NextRequest) {
           amount: string;
         }>;
 
-        for (const deposit of newDeposits) {
-          // Trigger auto-konvertering
-          await triggerAutoConvert(user.user_id, deposit.assetid, deposit.amount);
+        if (newDeposits.length > 0) {
+          // Task D1: Aktiver autopilot for brukeren hvis ikke allerede aktivert
+          await supabase.from("autopilot_state").upsert(
+            {
+              user_id: user.user_id,
+              activated: true,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
 
-          // Oppdater siste deposit-ID
-          lastDepositIds.set(user.user_id, deposit.assetid);
+          for (const deposit of newDeposits) {
+            await triggerAutoConvert(user.user_id, deposit.assetid, deposit.amount);
 
-          results.push({
-            userId: user.user_id,
-            asset: deposit.assetid,
-            amount: deposit.amount,
-            status: "converted",
-          });
+            results.push({
+              userId: user.user_id,
+              asset: deposit.assetid,
+              amount: deposit.amount,
+              status: "autopilot_activated",
+            });
+          }
         }
       } catch (err) {
         console.error(`Failed to process user ${user.user_id}:`, err);
@@ -113,7 +118,7 @@ async function triggerAutoConvert(
   asset: string,
   amount: string,
 ): Promise<void> {
-  // Bare konverter EUR/USD til USDT
+  // Bare konverter fiat (EUR/USD) til USDC (USDT blokkert for norske brukere — MiCA)
   if (!["ZEUR", "ZUSD", "EUR", "USD"].includes(asset)) {
     return;
   }
@@ -130,7 +135,7 @@ async function triggerAutoConvert(
         userId,
         fromAsset: asset,
         amount,
-        toAsset: "USDT",
+        toAsset: "USDC",
       }),
     },
   );
