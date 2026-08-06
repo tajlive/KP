@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 interface AutopilotState {
   activated: boolean;
@@ -26,16 +27,61 @@ function formatPct(current: number, initial: number): string {
 export function AutopilotDashboard({ userId }: { userId: string }) {
   const [state, setState] = useState<AutopilotState | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/kraken/autopilot-state")
-      .then((r) => r.json())
-      .then((d) => { setState(d); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((d) => {
+        if (d.error) throw new Error(d.error);
+        setState(d);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
   }, []);
 
-  if (loading) return null;
-  if (!state?.activated) return null;
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-[#1E293B] bg-[#0F172A]/80 p-5 backdrop-blur">
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Laster Kraken-tilkobling...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-[#1E293B] bg-[#0F172A]/80 p-5 backdrop-blur">
+        <div className="flex items-center gap-2 text-sm text-amber-400">
+          <XCircle className="h-4 w-4" />
+          Kunne ikke hente Kraken-status
+        </div>
+        <div className="mt-1 text-xs text-gray-500">{error}</div>
+      </div>
+    );
+  }
+
+  if (!state?.activated) {
+    return (
+      <div className="rounded-2xl border border-[#1E293B] bg-[#0F172A]/80 p-5 backdrop-blur">
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <XCircle className="h-4 w-4" />
+          Ingen Kraken-tilkobling
+        </div>
+        <div className="mt-1 text-xs text-gray-500">
+          Koble Kraken for å starte autopilot. Gå til innstillinger → Koble børs.
+        </div>
+      </div>
+    );
+  }
 
   const eq = state.current_equity_usdc ?? 0;
   const initial = state.initial_equity_usdc ?? eq;
@@ -46,7 +92,10 @@ export function AutopilotDashboard({ userId }: { userId: string }) {
   return (
     <div className="rounded-2xl border border-[#1E293B] bg-[#0F172A]/80 p-5 backdrop-blur">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-blue-400">🤖 Kraken Autopilot</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-blue-400">🤖 Kraken Autopilot</h3>
+          <CheckCircle2 className="h-4 w-4 text-green-400" />
+        </div>
         <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${kill ? "bg-red-900/50 text-red-400" : "bg-green-900/50 text-green-400"}`}>
           {kill ? "STOPPET" : "AKTIV"}
         </span>
@@ -75,7 +124,7 @@ export function AutopilotDashboard({ userId }: { userId: string }) {
       {/* Kill-switch advarsel */}
       {kill && (
         <div className="mb-3 rounded-lg border border-red-800/50 bg-red-950/30 p-3 text-xs text-red-400">
-          ⛔ Drawdown-kill utløst — all handel stoppet. Kontakt support for manuell reset.
+          ⛔ Drawdown-kill utløst — all handel stoppet.
         </div>
       )}
 
