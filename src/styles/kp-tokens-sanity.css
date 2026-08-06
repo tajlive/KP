@@ -14,12 +14,12 @@
      Disse overstyres av Sanity hvis aktivert
      ═══════════════════════════════════════════════════════════════ */
 
-  /* Brand Colors */
-  --kp-brand: #3b82f6;
-  --kp-brand-hover: #2563eb;
-  --kp-brand-light: #60a5fa;
-  --kp-brand-dark: #1d4ed8;
-  --kp-brand-glow: rgba(59, 130, 246, 0.3);
+  /* Brand Colors — korrekt merke-farge #0052FF (Coinbase-blå) */
+  --kp-brand: #0052ff;
+  --kp-brand-hover: #0047e0;
+  --kp-brand-light: #3d7aff;
+  --kp-brand-dark: #003ecb;
+  --kp-brand-glow: rgba(0, 82, 255, 0.3);
 
   /* Semantic Colors */
   --kp-success: #22c55e;
