@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="df304399-dc1d-df83-8d48-e11f5176a308")}catch(e){}}();
-module.exports=[455204,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"unarchive",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M12.5 10.5V18M20.5 7.5V20.5H4.5V7.5L7.5 4.5H17.5L20.5 7.5Z",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M4.5 7.5H20.5M16 14L12.5 10.5L9 14",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["UnarchiveIcon",0,d,"default",0,d])}];
-
-//# debugId=df304399-dc1d-df83-8d48-e11f5176a308
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Unarchive_14n1og5.js.map

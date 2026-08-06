@@ -1,3 +1,0 @@
-{
-  "/api/cron/binance-sync/route": "app/api/cron/binance-sync/route.js"
-}

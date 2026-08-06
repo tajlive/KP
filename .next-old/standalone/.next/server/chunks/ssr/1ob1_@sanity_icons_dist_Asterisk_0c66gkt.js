@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="c9ec2f07-d3a5-9e91-3a2f-901aaf1ceebe")}catch(e){}}();
-module.exports=[803457,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"asterisk",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M12.5 4V21M16.75 5.13879L8.25 19.8612M19.8612 8.25L5.13878 16.75M4.00002 12.5H21M5.13881 8.25L19.8612 16.75M8.25002 5.13879L16.75 19.8612",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});a.s(["AsteriskIcon",0,d,"default",0,d])}];
-
-//# debugId=c9ec2f07-d3a5-9e91-3a2f-901aaf1ceebe
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Asterisk_0c66gkt.js.map

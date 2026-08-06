@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="f019f6d2-7aee-93dd-6114-8afba19e11b0")}catch(e){}}();
-module.exports=[45117,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"generate",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M9 5.30423C6.33576 6.60253 4.5 9.33688 4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5V14.5",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M16 11L12.5 14.5L9 11",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["GenerateIcon",0,d,"default",0,d])}];
-
-//# debugId=f019f6d2-7aee-93dd-6114-8afba19e11b0
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Generate_099u12n.js.map

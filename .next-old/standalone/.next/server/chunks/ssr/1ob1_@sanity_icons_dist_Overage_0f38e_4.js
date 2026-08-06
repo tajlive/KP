@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="444e0441-782f-5748-a7ee-812c29226927")}catch(e){}}();
-module.exports=[604572,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsxs)("svg",{"data-sanity-icon":"overage",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:[(0,c.jsx)("path",{d:"M18.5 11V6.5H14",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"}),(0,c.jsx)("path",{d:"M6.5 18.5L9 16L12 13L18.5 6.5M3 13.5H22",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})]})});a.s(["OverageIcon",0,d,"default",0,d])}];
-
-//# debugId=444e0441-782f-5748-a7ee-812c29226927
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Overage_0f38e_4.js.map

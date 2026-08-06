@@ -1,5 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="40d1787c-6ed1-bb4e-aa0b-595648dd9fd8")}catch(e){}}();
-module.exports=[817412,a=>{"use strict";var b=a.i(572131),c=a.i(187924);let d=(0,b.forwardRef)(function(a,b){return(0,c.jsx)("svg",{"data-sanity-icon":"diamond",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...a,ref:b,children:(0,c.jsx)("path",{d:"M21 10.5L12.5 21M21 10.5L18 5.5H11M21 10.5H16M12.5 21L4 10.5M12.5 21L9 10.5M12.5 21L16 10.5M4 10.5L7 5.5H11M4 10.5H9M9 10.5H12.5H16M9 10.5L11 5.5M16 10.5L14.5 5.5H11",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round",strokeLinecap:"round"})})});a.s(["DiamondIcon",0,d,"default",0,d])}];
-
-//# debugId=40d1787c-6ed1-bb4e-aa0b-595648dd9fd8
-//# sourceMappingURL=1ob1_%40sanity_icons_dist_Diamond_1izgk4_.js.map

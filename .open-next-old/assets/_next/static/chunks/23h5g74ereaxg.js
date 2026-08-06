@@ -1,4 +1,0 @@
-;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="4c661f6c-dccd-64c2-7a6a-9a2488821bb7")}catch(e){}}();
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,897295,e=>{"use strict";var t=e.i(271645),o=e.i(843476);let r=(0,t.forwardRef)(function(e,t){return(0,o.jsx)("svg",{"data-sanity-icon":"double-chevron-left",width:"1em",height:"1em",viewBox:"0 0 25 25",fill:"none",xmlns:"http://www.w3.org/2000/svg",...e,ref:t,children:(0,o.jsx)("path",{d:"M12.5 17L8 12.5L12.5 8M17.5 17L13 12.5L17.5 8",stroke:"currentColor",strokeWidth:1.2,strokeLinejoin:"round"})})});e.s(["DoubleChevronLeftIcon",0,r,"default",0,r])}]);
-
-//# debugId=4c661f6c-dccd-64c2-7a6a-9a2488821bb7

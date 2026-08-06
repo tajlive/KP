@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "debugId": "99a3106f-50aa-c104-cdb8-850747c0402b",
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../../src/app/%5Blocale%5D/%28onboarding%29/onboarding/loading.tsx"],"sourcesContent":["\nexport default function OnboardingLoading() {\n  return (\n    <div className=\"fixed inset-0 flex items-center justify-center bg-kp-bg-primary\">\n      <div className=\"flex flex-col items-center gap-4 animate-pulse\">\n        <div className=\"w-16 h-16 bg-kp-brand rounded-2xl\" />\n        <div className=\"h-6 w-40 bg-kp-bg-tertiary rounded-lg\" />\n        <div className=\"h-4 w-56 bg-kp-bg-tertiary rounded-lg\" />\n      </div>\n    </div>\n  );\n}\n"],"names":["OnboardingLoading","className"],"mappings":"0EACe,SAASA,EACtB,MACE,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIC,UAAU,2EACb,CAAA,EAAA,EAAA,IAAA,EAAC,MAAA,CAAIA,UAAU,2DACb,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIA,UAAU,sCACf,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIA,UAAU,0CACf,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIA,UAAU,8CAIvB"}}]
-}

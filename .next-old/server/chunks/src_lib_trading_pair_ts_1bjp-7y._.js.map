@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "debugId": "975c4a78-48f4-075a-5fcf-6006e9e8b045",
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["../../../src/lib/trading/pair.ts"],"sourcesContent":["/**\n * Kanonisk par-normalisering.\n *\n * ÉN sannhet: \"BTCUSDT\" (uten slash, uppercase) — samme format Binance\n * bruker. Tidligere sameksisterte \"BTCUSDT\" og \"BTC/USDT\" i\n * trading_sessions, som brøt den unike delindeksen\n * idx_unique_active_session og all gruppering per par.\n */\nexport function normalizePair(pair: string): string {\n  return pair.replace(/[\\s/]+/g, \"\").toUpperCase();\n}\n"],"names":["normalizePair","pair","replace","toUpperCase"],"mappings":"+DAQO,SAASA,AAAcC,CAAY,EACxC,OAAOA,EAAKC,OAAO,CAAC,UAAW,IAAIC,WAAW,EAChD"}}]
-}
