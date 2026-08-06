@@ -1,77 +1,45 @@
-
-
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database.types';
-import { NextResponse } from 'next/server';
-import { getErrorMessage } from '@/lib/utils/error';
-
-function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pskhryjzkobytnfwucrb.supabase.co';
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  
-  if (!key) {
-    return null;
-  }
-  
-  return createClient<Database>(url, key);
-}
+import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin/require-admin";
+import { getErrorMessage } from "@/lib/utils/error";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
-
-  const supabase = getSupabaseClient();
-  
-  if (!supabase) {
-    return NextResponse.json({
-      users: [
-        { id: '1', name: 'Ola Nordmann', email: 'ola@example.com', source: 'linkedin', time_ago: 'nå nettopp' },
-        { id: '2', name: 'Kari Hansen', email: 'kari@example.com', source: 'facebook', time_ago: '5 min siden' },
-        { id: '3', name: 'Per Jensen', email: 'per@example.com', source: 'email', time_ago: '12 min siden' },
-      ],
-      is_fallback: true,
-    });
+  // P0-fiks (2026-08-06): ruten var helt ubeskyttet — service-role-klient
+  // eksponerte user_profiles (epost/navn) anonymt. requireAdmin verifiserer
+  // cookie-sesjon + admin-allowlist, og returnerer service-role-klient.
+  const auth = await requireAdmin();
+  if (!auth.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: auth.status });
   }
+  const supabase = auth.supabase;
+
+  const { searchParams } = new URL(request.url);
+  const limit = Math.min(Math.max(parseInt(searchParams.get("limit") || "10", 10), 1), 100);
 
   try {
     const { data: recentUsers, error } = await supabase
-      .from('user_profiles')
-      .select('id, email, full_name, display_name, created_at')
-      .order('created_at', { ascending: false })
+      .from("user_profiles")
+      .select("id, email, full_name, display_name, created_at")
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw error;
 
-    // If no users found, return fallback
     if (!recentUsers || recentUsers.length === 0) {
-      return NextResponse.json({
-        users: [
-          { id: '1', name: 'Ingen registreringer ennå', email: 'venter på første bruker...', source: 'direct', time_ago: '-' },
-        ],
-        is_fallback: true,
-      });
+      return NextResponse.json({ users: [], is_fallback: false });
     }
 
-    const formatted = recentUsers.map(user => ({
+    const formatted = recentUsers.map((user) => ({
       id: user.id,
-      name: user.full_name || user.display_name || 'Anonym',
+      name: user.full_name || user.display_name || "Anonym",
       email: user.email,
-      source: 'direct',
+      source: "direct",
       time_ago: getTimeAgo(new Date(user.created_at)),
     }));
 
     return NextResponse.json({ users: formatted, is_fallback: false });
-
   } catch (error) {
-    console.error('Recent users error:', getErrorMessage(error));
-    return NextResponse.json({
-      users: [
-        { id: '1', name: 'Ola Nordmann', email: 'ola@example.com', source: 'linkedin', time_ago: 'nå nettopp' },
-        { id: '2', name: 'Kari Hansen', email: 'kari@example.com', source: 'facebook', time_ago: '5 min siden' },
-      ],
-      is_fallback: true,
-      error: 'Database connection failed',
-    });
+    console.error("Recent users error:", getErrorMessage(error));
+    return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
   }
 }
 
@@ -83,9 +51,9 @@ function getTimeAgo(date: Date): string {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return 'nå nettopp';
+  if (seconds < 60) return "nå nettopp";
   if (minutes < 60) return `${minutes} min siden`;
   if (hours < 24) return `${hours} t siden`;
   if (days < 7) return `${days} dager siden`;
-  return date.toLocaleDateString('no-NO');
+  return date.toLocaleDateString("no-NO");
 }
