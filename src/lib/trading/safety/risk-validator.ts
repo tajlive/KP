@@ -132,6 +132,29 @@ export async function validateTradeAgainstRiskProfile(
         }
       : null;
 
+    // P0-3-fiks (2026-08-06): Uten aktiv risk-profil faller paper til
+    // demo-default 100 % daily loss — aldri trigges. Brukerens egen
+    // konfigurerte grense (auto_trade_settings.daily_loss_limit_percent)
+    // skal gjelde. Prod-data: 22/24 brukere har grense=5 satt, men ingen
+    // aktiv profil → valideringen må lese auto_trade_settings.
+    let dailyLossPctOverride: number | undefined;
+    if (!riskProfile && trade.tradingMode === "paper") {
+      const { data: autoSetting } = await supabase
+        .from("auto_trade_settings")
+        .select("daily_loss_limit_percent")
+        .eq("user_id", trade.userId)
+        .maybeSingle();
+
+      const limitPct = autoSetting?.daily_loss_limit_percent;
+      if (
+        typeof limitPct === "number" &&
+        Number.isFinite(limitPct) &&
+        limitPct > 0
+      ) {
+        dailyLossPctOverride = limitPct;
+      }
+    }
+
     // 3. Valutakonvertering for paper (kapital er NOK, priser fra Binance er USDT)
     const usdtNokRate =
       trade.tradingMode === "paper"
@@ -160,7 +183,10 @@ export async function validateTradeAgainstRiskProfile(
       riskRequest,
       sessionInfo,
       rawProfile,
-      { convertValue },
+      {
+        convertValue,
+        dailyLossPctOverride,
+      },
     );
 
     return {

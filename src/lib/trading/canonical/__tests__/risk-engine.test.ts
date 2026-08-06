@@ -9,17 +9,23 @@ import { describe, it, expect, vi } from "vitest";
 import { checkTradeRisk } from "@/lib/trading/canonical/risk/risk-engine";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-function createMockSupabase(overrides: {
-  positions?: Array<{ symbol: string; quantity: number; avg_entry_price: number }>;
-  dailyLoss?: number | null;
-  dailyLossError?: { message: string } | null;
-  botHealth?: {
-    status: string;
-    last_heartbeat?: string;
-    consecutive_errors?: number;
-    max_consecutive_errors?: number;
-  } | null;
-} = {}): SupabaseClient {
+function createMockSupabase(
+  overrides: {
+    positions?: Array<{
+      symbol: string;
+      quantity: number;
+      avg_entry_price: number;
+    }>;
+    dailyLoss?: number | null;
+    dailyLossError?: { message: string } | null;
+    botHealth?: {
+      status: string;
+      last_heartbeat?: string;
+      consecutive_errors?: number;
+      max_consecutive_errors?: number;
+    } | null;
+  } = {},
+): SupabaseClient {
   const {
     positions = [],
     dailyLoss = 0,
@@ -29,12 +35,16 @@ function createMockSupabase(overrides: {
 
   const buildChain = (result: unknown) => ({
     eq: vi.fn().mockReturnValue({
-      eq: vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue(result) }),
+      eq: vi
+        .fn()
+        .mockReturnValue({ single: vi.fn().mockResolvedValue(result) }),
       single: vi.fn().mockResolvedValue(result),
     }),
     select: vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue(result) }),
+        eq: vi
+          .fn()
+          .mockReturnValue({ single: vi.fn().mockResolvedValue(result) }),
         single: vi.fn().mockResolvedValue(result),
       }),
       single: vi.fn().mockResolvedValue(result),
@@ -192,7 +202,12 @@ describe("canonical risk-engine", () => {
       allowed_pairs: ["BTCUSDT"],
       leverage_allowed: false,
     };
-    const result = await checkTradeRisk(supabase, baseTrade, baseSession, profile);
+    const result = await checkTradeRisk(
+      supabase,
+      baseTrade,
+      baseSession,
+      profile,
+    );
     expect(result.allowed).toBe(false);
     expect(result.rejectionReason).toBe("DAILY_LOSS_LIMIT_EXCEEDED");
   });
@@ -204,6 +219,42 @@ describe("canonical risk-engine", () => {
     const result = await checkTradeRisk(supabase, baseTrade, baseSession, null);
     expect(result.allowed).toBe(false);
     expect(result.rejectionReason).toBe("DAILY_LOSS_CHECK_FAILED");
+  });
+
+  it("P0-3: dailyLossPctOverride senker grensen for paper uten profil (demo-default 100% → brukerens 5%)", async () => {
+    // Uten override: 25k tap mot 100% av 1M = 1 000k grense → tillatt.
+    const supabaseAllow = createMockSupabase({ dailyLoss: 25_000 });
+    const allowedResult = await checkTradeRisk(
+      supabaseAllow,
+      baseTrade,
+      baseSession,
+      null,
+    );
+    expect(allowedResult.allowed).toBe(true);
+
+    // Med override=5 (auto_trade_settings.daily_loss_limit_percent):
+    // 25k > 5% av 1M (50k)? Nei — 25k < 50k, fortsatt tillatt.
+    const supabaseBelow = createMockSupabase({ dailyLoss: 25_000 });
+    const belowResult = await checkTradeRisk(
+      supabaseBelow,
+      baseTrade,
+      baseSession,
+      null,
+      { dailyLossPctOverride: 5 },
+    );
+    expect(belowResult.allowed).toBe(true);
+
+    // Tap 60k > 5% av 1M (50k) → DAILY_LOSS_LIMIT_EXCEEDED.
+    const supabaseTrigger = createMockSupabase({ dailyLoss: 60_000 });
+    const triggerResult = await checkTradeRisk(
+      supabaseTrigger,
+      baseTrade,
+      baseSession,
+      null,
+      { dailyLossPctOverride: 5 },
+    );
+    expect(triggerResult.allowed).toBe(false);
+    expect(triggerResult.rejectionReason).toBe("DAILY_LOSS_LIMIT_EXCEEDED");
   });
 
   it("rejects when bot is unhealthy", async () => {
@@ -229,9 +280,15 @@ describe("canonical risk-engine", () => {
     const supabase = createMockSupabase();
     // 0.1 BTC @ $50k = $5k. With converter 1 USDT = 11 NOK -> 55k NOK.
     // Capital is 1M NOK, so well within limits.
-    const result = await checkTradeRisk(supabase, baseTrade, baseSession, null, {
-      convertValue: (usdt) => usdt * 11,
-    });
+    const result = await checkTradeRisk(
+      supabase,
+      baseTrade,
+      baseSession,
+      null,
+      {
+        convertValue: (usdt) => usdt * 11,
+      },
+    );
     expect(result.allowed).toBe(true);
   });
 
@@ -263,9 +320,17 @@ describe("canonical risk-engine", () => {
     );
 
     expect(paperResult.allowed).toBe(liveResult.allowed);
-    expect(paperResult.preTradePositionPct).toBe(liveResult.preTradePositionPct);
-    expect(paperResult.postTradePositionPct).toBe(liveResult.postTradePositionPct);
-    expect(paperResult.preTradeExposurePct).toBe(liveResult.preTradeExposurePct);
-    expect(paperResult.postTradeExposurePct).toBe(liveResult.postTradeExposurePct);
+    expect(paperResult.preTradePositionPct).toBe(
+      liveResult.preTradePositionPct,
+    );
+    expect(paperResult.postTradePositionPct).toBe(
+      liveResult.postTradePositionPct,
+    );
+    expect(paperResult.preTradeExposurePct).toBe(
+      liveResult.preTradeExposurePct,
+    );
+    expect(paperResult.postTradeExposurePct).toBe(
+      liveResult.postTradeExposurePct,
+    );
   });
 });

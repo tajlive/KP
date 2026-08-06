@@ -75,6 +75,13 @@ export interface RiskEngineOptions {
    * For live er dette typisk identitet; for paper USDT→NOK.
    */
   convertValue?: (usdtAmount: number) => number;
+  /**
+   * P0-3-fiks (2026-08-06): overstyrer daily-loss-grensen fra limits.
+   * Sett av adapteren (risk-validator) når brukeren har
+   * `auto_trade_settings.daily_loss_limit_percent` men ingen aktiv
+   * risk-profil — ellers faller paper til demo-default 100 % (aldri trigges).
+   */
+  dailyLossPctOverride?: number;
 }
 
 const DEFAULT_HEARTBEAT_STALE_MS = 5 * 60 * 1000;
@@ -191,7 +198,8 @@ export async function checkTradeRisk(
     (p) => normalizeSymbol(p.symbol ?? "") === normalizedSymbol,
   );
   const existingPositionValueUsdt = existingPosition
-    ? Number(existingPosition.quantity) * Number(existingPosition.avg_entry_price)
+    ? Number(existingPosition.quantity) *
+      Number(existingPosition.avg_entry_price)
     : 0;
   const existingPositionValue = convert(existingPositionValueUsdt);
 
@@ -207,10 +215,14 @@ export async function checkTradeRisk(
       ? currentExposure + orderValue
       : currentExposure - Math.min(orderValue, existingPositionValue);
 
-  const preTradePositionPct = currentCapital > 0 ? (existingPositionValue / currentCapital) * 100 : 0;
-  const postTradePositionPct = currentCapital > 0 ? (postTradePositionValue / currentCapital) * 100 : 0;
-  const preTradeExposurePct = currentCapital > 0 ? (currentExposure / currentCapital) * 100 : 0;
-  const postTradeExposurePct = currentCapital > 0 ? (postTradeExposure / currentCapital) * 100 : 0;
+  const preTradePositionPct =
+    currentCapital > 0 ? (existingPositionValue / currentCapital) * 100 : 0;
+  const postTradePositionPct =
+    currentCapital > 0 ? (postTradePositionValue / currentCapital) * 100 : 0;
+  const preTradeExposurePct =
+    currentCapital > 0 ? (currentExposure / currentCapital) * 100 : 0;
+  const postTradeExposurePct =
+    currentCapital > 0 ? (postTradeExposure / currentCapital) * 100 : 0;
 
   // 8. Sjekk position limit (alltid, med resolved limits)
   if (postTradePositionPct > limits.maxPositionPct) {
@@ -244,13 +256,15 @@ export async function checkTradeRisk(
   }
 
   // 10. Sjekk daily loss limit
+  const dailyLossLimitPct =
+    options.dailyLossPctOverride ?? limits.maxDailyLossPct;
   const dailyLossCheck = await checkDailyLoss(
     supabase,
     trade.userId,
     trade.sessionId,
     currentCapital,
     trade.estimatedCost ?? 0,
-    limits.maxDailyLossPct,
+    dailyLossLimitPct,
   );
   if (!dailyLossCheck.allowed) {
     return {
@@ -298,7 +312,9 @@ async function checkBotHealth(
 ): Promise<RiskCheckResult> {
   const { data: botHealth } = await supabase
     .from("bot_health")
-    .select("status, last_heartbeat, consecutive_errors, max_consecutive_errors")
+    .select(
+      "status, last_heartbeat, consecutive_errors, max_consecutive_errors",
+    )
     .eq("id", botId)
     .single();
 
@@ -358,7 +374,12 @@ async function checkDailyLoss(
   currentCapital: number,
   estimatedCost: number,
   maxDailyLossPct: number,
-): Promise<{ allowed: boolean; rejectionReason?: RejectionReason; rejectionDetails?: Record<string, unknown>; dailyLossPct?: number }> {
+): Promise<{
+  allowed: boolean;
+  rejectionReason?: RejectionReason;
+  rejectionDetails?: Record<string, unknown>;
+  dailyLossPct?: number;
+}> {
   const { data: dailyLossResult, error: dailyLossError } = await supabase.rpc(
     "calculate_daily_loss",
     {
@@ -368,7 +389,10 @@ async function checkDailyLoss(
   );
 
   if (dailyLossError) {
-    console.error("[RiskEngine] calculate_daily_loss RPC failed:", dailyLossError);
+    console.error(
+      "[RiskEngine] calculate_daily_loss RPC failed:",
+      dailyLossError,
+    );
     const errMsg =
       dailyLossError &&
       typeof dailyLossError === "object" &&
@@ -413,16 +437,19 @@ async function checkDailyLoss(
       allowed: false,
       rejectionReason: "DAILY_LOSS_CHECK_FAILED",
       rejectionDetails: {
-        message: "Daily loss calculation unavailable - trade blocked for safety",
+        message:
+          "Daily loss calculation unavailable - trade blocked for safety",
       },
     };
   }
 
   const dailyLoss = Number(dailyLossResult);
-  const dailyLossPct = currentCapital > 0 ? (dailyLoss / currentCapital) * 100 : 0;
-  const projectedDailyLossPct = currentCapital > 0
-    ? ((dailyLoss + estimatedCost) / currentCapital) * 100
-    : 0;
+  const dailyLossPct =
+    currentCapital > 0 ? (dailyLoss / currentCapital) * 100 : 0;
+  const projectedDailyLossPct =
+    currentCapital > 0
+      ? ((dailyLoss + estimatedCost) / currentCapital) * 100
+      : 0;
 
   if (projectedDailyLossPct > maxDailyLossPct) {
     return {
