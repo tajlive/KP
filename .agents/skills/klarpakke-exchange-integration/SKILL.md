@@ -1,0 +1,95 @@
+---
+name: klarpakke-exchange-integration
+description: Use when integrating a crypto exchange in Klarpakke.
+whenToUse: Når bruker ber om integrasjon av ny kryptobørs i Klarpakke. IKKE for eksisterende
+  børs-feilsøking.
+---
+
+# Klarpakke Exchange Integration
+
+Covers adding a new exchange (Kraken current, Coinbase, Binance legacy) or migrating between exchanges.
+
+## Exchange evaluation (before integrating)
+
+Check in order — Tom decides business terms, you supply facts:
+
+1. **MiCA/EU license** — required for Norwegian users (EØS). As of 2026: Kraken ✅, Coinbase ✅, Bitstamp ✅, Binance ❌ (risk of losing EU license per Reuters June 2026; USDT delisted from EØS spot).
+2. **Referral economics** — Kraken: up to 50% rev share, lifetime, negotiable (Impact.com track for platforms, in-house for creators). Coinbase: 50% but only 3 months. Bitstamp: NO referral program — disqualified for Klarpakke's revenue model.
+3. **API quality for automation** — Kraken: best for grid (taker fees 0.40%→0.08% by volume, 15-20 req/s). Coinbase: best docs. Bitstamp: fixed 0.50% — bad for grid.
+4. **Fiat rails** — all support SEPA (EUR); none support NOK directly.
+
+Kraken comparison tables + affiliate details: `references/kraken-api-notes.md`.
+Live-activation facts (USDT blocked for NO, verified ordermins, nonce-window, quote-lock): `references/kraken-live-activation.md`.
+
+## Integration pattern (proven with Kraken, reuse for others)
+
+1. **API client** at `src/lib/exchanges/<exchange>/client.ts` — REST client with request signing. Kraken: HMAC-SHA512 over `path + sha256(nonce + postData)`, secret **base64-decoded** before HMAC. Exact recipe: `references/kraken-api-notes.md`.
+2. **Symbol mapping** at `src/lib/exchanges/<exchange>/symbols.ts` — bidirectional. Kraken quirks: BTC = `XBT`, fiat prefixed `Z` (`ZUSD`, `ZEUR`); most alts unchanged.
+3. **Encrypted key storage** — REUSE `src/lib/crypto/encrypt-api-keys.ts` (AES-GCM, Web Crypto, edge-compatible). Do NOT write new encryption. Table: `user_<exchange>_keys` with `api_key_encrypted`/`api_secret_encrypted` + RLS (user reads own, service_role full). `ENCRYPTION_KEY` must be a Wrangler secret — deploy.sh has a post-deploy guard that re-uploads it from `.env.local` (same pattern as CRON_SECRET guard).
+4. **Deposit detection** — exchanges rarely offer deposit webhooks; poll. Pattern: cron route (`src/app/api/cron/<exchange>-deposit-poll/`) → internal webhook route → per-user deposit-history call → filter last 24h, dedupe by last-seen txid → trigger auto-convert.
+5. **Auto-convert fiat/stablecoin→base currency** — market buy with quote-quantity; Kraken pairs are `USDTZUSD` (USD) and `USDTEUR` (EUR) — note the EUR pair has NO `Z` (USDTZEUR does not exist). Never build pair names by string-concatenating `Z`-prefixed balance assets; use an explicit mapping table. Log to `<exchange>_conversions` table. **⚠️ For Norwegian accounts the target is USDC, not USDT — see USDT-block pitfall below.**
+6. **Grid trading** — exchange-specific trader class wrapping the client; convert internal symbols (BTCUSDT) to exchange format at the boundary only, never inside strategy logic.
+
+## Public market-data provider (MarketDataProvider interface, no auth) — 2026-08-05
+
+Tick/price feeds implement the canonical `MarketDataProvider` interface (`src/lib/trading/canonical/market-data/types.ts`) — same contract for Binance and Kraken, provider swapped per session. The Kraken impl (`kraken-provider.ts`) uses ONLY public REST — no API key, no signing:
+
+- Endpoints: `GET /0/public/Ticker?pair=X` → `result[pair].c[0]` = last price; `GET /0/public/OHLC?pair=X&interval=<min>` → candles; `GET /0/public/Depth?pair=X&count=N` → `result[pair].bids/asks` = `[price, qty][]`.
+- Envelope is ALWAYS `{ error: string[], result: {...} }` — throw on non-empty `error` before reading `result`.
+- **OHLC quirks:** result has a `last` key beside the pair — read `result[pair]` only; candle time is UNIX **seconds** (×1000 → ms, same unit as Binance); `since` param is **seconds** too (divide startTime ms by 1000 — passing ms silently returns the wrong window); max 720 candles per call and **no `limit` param** — `slice(-limit)` client-side (order is oldest→newest).
+- **get24hChange: compute from 24×1h klines** (`(close[-1] − close[-24]) / close[-24] * 100`) — ticker's `o[0]` open field is unreliable (observed returning "6").
+- **USDC-quote mapping** (USDT blocked for NO): BTCUSDT→XBTUSDC, ETHUSDT→ETHUSDC, SOLUSDT→SOLUSDC, AVAXUSDT→AVAXUSDC, DOGEUSDT→XDGUSDC, LINKUSDT→LINKUSDC, ADAUSDT→ADAUSDC, DOTUSDT→DOTUSDC, POLUSDT→POLUSD (POLUSDC finnes ikke). Unknown symbol → throw `KRAKEN_PAIR_UNAVAILABLE: <SYM>` so the tick route can fall back to Binance.
+- Interval map: `"15m"→15, "1h"→60, "4h"→240` (minutter); unknown → throw.
+- Pair keys in `result` can be normalized by Kraken — match exact key first, then case-insensitive, before failing.
+- Price cache TTL 10s per symbol (same pattern as binance-provider); 10s AbortController timeout per call.
+
+Full endpoint shapes, implementation pattern and mocking pitfalls: `references/kraken-public-market-data.md`.
+
+## Per-user price source selection in the tick route (2026-08-05)
+
+When a user is Kraken-connected (`user_kraken_keys.is_active=true`), their PAPER sessions should see Kraken prices — one source, one truth (paper ticker == live grid card). Everyone else keeps Binance. **The choice is per-USER, not per-symbol** — other users trading the same pair must be unaffected.
+
+- `pickPriceSource(userId, krakenUserIds: Set<string>)` → `"kraken" | "binance"` and `priceCacheKey(source, symbol)` → `${source}:${symbol}` live in `src/lib/trading/price-source.ts` (pure, unit-tested).
+- Tick route (`src/app/api/cron/tick/route.ts`): query `user_kraken_keys.user_id WHERE is_active=true` ONCE per tick (failure → empty set = everyone uses Binance, non-critical). Pre-fetch candles into `Map<priceCacheKey, Candle[]>` — one symbol can need BOTH sources in the same tick (Tom + a plain user both trading BTCUSDT). Pass `source` + `candleCache` as OPTIONAL params to `processSession` so other callers keep the safe Binance default.
+- **The tick NEVER dies on a price source:** Kraken fetch failure → `console.warn` + fall through to the Binance provider; if both fail, `processSession`'s direct-fetch fallback still runs. Kraken provider throws `KRAKEN_PAIR_UNAVAILABLE` for unsupported symbols (e.g. UNIUSDT) — that is the designed fallback trigger, not an error to "fix".
+- Verified live: 363 sessions, 0 errors; per-symbol price diff Kraken vs Binance < 0.3% (well under grid spacing 0.8–1.2%).
+
+## Changing the symbol universe (add/remove a pair) — 2026-08-05
+
+**File:** `src/lib/exchanges/kraken/symbols.ts` has THREE structures with different roles — know which you're editing:
+
+- `KRAKEN_SYMBOL_MAP` (Binance→Kraken, consumed by `toKrakenSymbol()` in `kraken-grid.ts`) — **this defines the tradeable universe.** Removing a pair here means it can no longer be traded on Kraken.
+- `KRAKEN_MIN_ORDER` — remove the pair's min-order entry here too.
+- `KRAKEN_REVERSE_MAP` (Kraken→Binance, consumed by `fromKrakenSymbol()` to normalize balances/trades read back) — **data normalization, NOT a trading universe.** Keeping `POLUSD: "POLUSDT"` there is CORRECT: POLUSD is the real Kraken pair and its data should normalize to the canonical POLUSDT name. Never delete reverse-map entries for the *real* Kraken pair when de-listing a Binance-style name.
+
+**Shared universes stay untouched:** POLUSDT is valid on Binance, so excluding it from Kraken only means NOT touching `SYMBOL_UNIVERSE` (`src/lib/trading/edge-allocation.ts`), `TOP_SYMBOLS` (ai-engine / decision-engine / pilot-engine routes), `lot-sizes.ts`, `paper-ui-symbols.ts`, or `TICKER_SYMBOLS` (`UnifiedTradeTerminal.tsx`). Grep the whole `src/` for the symbol and classify every hit as Kraken-specific vs shared/Binance BEFORE editing.
+
+**Verify after any symbol-universe edit:** `npx tsc --noEmit` + `npx vitest run src/lib/exchanges/kraken/` + `npx eslint <endrede filer>` — all green.
+
+## Pitfalls
+
+- **Verify pair data against live AssetPairs before live trading — hardcoded tables rot (2026-08-05 audit).** Klarpakkes `KRAKEN_MIN_ORDER` var feil på 7/9 par (ADA 1 vs faktisk 20, DOT 0.1 vs 3.9, LINK 0.1 vs 0.55), auto-convert bygde `USDTZEUR` (finnes ikke — pair er `USDTEUR`), DOGE het `DOGEUSDT` i koden men er `XDGUSDT` hos Kraken, og `POLUSDT` finnes ikke i det hele tatt (kun POLUSD ordermin 70 / POLEUR). Alle ville feilet ved første live-ordre. **Regel: kjør audit mot `GET /0/public/AssetPairs` (trekk ut `altname`, `ordermin`, `pair_decimals`, `status=='online'`) og diff mot symbols.ts + TOP_SYMBOLS FØR hver live-aktivering eller symbol-univers-endring.** Verifisert tabell + rerunbar audit-oppskrift: `references/kraken-verified-pair-data.md`.
+- **Aldri bygg Kraken pair-navn ved template-string fra balanse-assets.** `ZUSD`/`ZEUR` er balanse-navn; pair-navn følger eget mønster (`USDTZUSD`-internal/`USDTUSD`-altname for USD, `USDTEUR` for EUR — ingen `Z`). Bruk eksplisitt mapping, ikke `` `${to}Z${from}` ``. Kraken har fire navneformer per par: objekt-nøkkel, `altname`, `wsname` (`XBT/USDT`), og balanse-asset (`XXBT`/`ZUSD`) — map alle fire.
+- **NEVER bulk-rename one exchange to another across the repo.** A global `sed` Binance→Kraken over ~190 files broke tsc instantly (imports, Supabase generated types, table names) and needed full rollback — twice. Correct approach: build the new exchange IN PARALLEL (new directories), migrate call sites one at a time, delete the old exchange only after the new one is proven in prod.
+- **Binance TRD_GRP_031**: unrestricted-IP Binance keys CANNOT trade (error -2015) — Binance policy, not a bug. CIDR ranges rejected by Binance IP whitelist; only single IPs work, impractical for Cloudflare Workers. Fiat conversion via API also impossible (Convert API has no fiat pairs, spot blocked) — manual UI only. These three blocks are why Klarpakke migrated to Kraken.
+- **Kraken balance assets ≠ pair symbols**: balances report `XXBT`/`ZUSD`, pairs are `XBTUSDT`. Handle both in mapping.
+- **Decouple auth variable names**: don't name a request-header credential `apiKey` if the handler later decrypts a user's `apiKey` — TS redeclare error. Use `authKey` for the header.
+- Kraken affiliate for platforms goes through **Impact.com** (fiat payout to bank); creator track pays USDC. Site verification = meta tag in `<head>` + publisher tag script (`afterInteractive` in Next.js layout).
+- **KrakenClient uses Web Crypto (`crypto.subtle` HMAC-SHA512, async `signRequest`)** for edge/Workers compatibility — never reintroduce Node `crypto`/`Buffer`.
+- **Market-order direction + volume unit depends on which side of the pair your asset sits (2026-08-05):** fiat→USDT = BUY on `USDTUSD`/`USDTEUR` (fiat is quote) and MUST send `oflag:"viqc"` — otherwise Kraken reads `volume` as USDT base-amount (wrong order size). Implemented as `client.marketBuyQuote(pair, quoteVolume)`. USDC→USDT = SELL on `USDCUSDT` (USDC is base) via `marketSell` with volume in USDC — a user who "bought USDC" SELLS it to get USDT, never buy. `auto-convert/route.ts` splits these into QUOTE_PAIRS (buy+viqc) vs BASE_PAIRS (sell). USDT isn't always card-purchasable directly; USDC is — the USDC→USDT path closes that gap. Min 5 for all conversions (ordremin 5 on all three pairs).
+- **Grid economics floor (2026-08-05):** grid-spacing must exceed 0.52% per cell (2× taker fee 0.26%) or round-trips are net-negative. Small balances: 200 kr ≈ 1 BTC-grid with max 5 levels (~$4.43/level vs 0.00005 BTC ordermin); ~$100 needed for a meaningful 3-pair setup. Allocation logic must scale pair-count DOWN for small balances instead of failing on ordermin.
+- **Pair-count vs balance: the binding constraint is LEVELS-PER-PAIR, not ordermin (2026-08-05 live check):** at 138 USDC all candidate pairs had ordermin of only 1.9–4.5 USDC (XBT 3.24, ETH 1.92, SOL 4.47, ADA 3.81, AVAX 3.35, LINK 4.51, DOT 3.31, DOGE 3.52) — so ordermin was NOT what limited pair count. Splitting 138 USDC across 8 pairs gives ~2 levels/pair, which is **not a grid — it's scattered limit orders**: first fill → sell → re-buy on the same level, no downward chain to fill, pairs without a level-2 below price sit idle for days. Rule: keep ≥3 levels/pair (5 preferred); scale pair count to `balance / (levels_per_pair × level_size)`. 3 pairs × 5 levels ≈ right for 138 USDC; expand to 5 pairs only at ~250+ USDC, using the **Task-3 par-kandidat filter** (2026-08-05): OOS PF ≥ 1.1 (backtest walk-forward) AND 24h-range ≥ 2.5 % AND ordremin×pris×1.1 ≤ 8 USDC. Ren funksjon `velgParKandidater` i `src/lib/trading/par-kandidater.ts` (TDD). **Fasit 2026-08-05: ADA + DOT kvalifiserte (ADA OOS PF 4.49 / range 5.2 % — høyest volatilitet; DOT PF 4.55 / range 2.9 %); AVAX (PF 3.03, range nøyaktig 2.5 %) er reserve; LINK/DOGE avvist på range (2.0/1.8 %), UNI/POL på ordremin (20.02/15.84 USDC).** Rapport: `reports/trading-agent/2026-08-05-par-univers.md`. Config-SSoT: `src/lib/trading/kraken-grid-config.mjs` (PAIR_CFG med dec/ordremin/spacing/active/asset — manager + watchdog importerer den; aldri hardkodet i scripts).
+- **USDT trading is BLOCKED for Norwegian Kraken accounts (2026-08-05, live-verified):** `EAccount:Invalid permissions:USDT trading restricted for NO.` — applies to ALL USDT pairs including conversions (USDC→USDT fails too). MiCA/Tether regime, same driver as Binance's EØS USDT delisting. **The Klarpakke-on-Kraken base currency is USDC, not USDT.** Verified open for NO accounts (via `AddOrder validate=true`): XBTUSDC, ETHUSDC, SOLUSDC, XBTUSD, SOLEUR. **Probe technique: `AddOrder` with `validate=true` checks permissions/ordremin WITHOUT placing an order — use it before any new pair or account config.** First live activation pivoted mid-flight: no conversion needed (user already held USDC), BTC sold on XBTUSDC instead.
+- **Kraken quote-locks per open limit-buy — dimension grids to FREE balance, not planned capital (2026-08-05):** a 15-order grid sized to 102 USDC planned capital failed on levels 3–5 with `EOrder:Insufficient funds` when actual balance was 87.45 — the first orders had already reserved their quote. Expect partial placement on tight balances; refill remaining levels when profits free up funds.
+- **API-key recipe for a Workers-hosted bot (2026-08-05):** ON = Query Funds, Query Open/Closed Orders & Trades, Query Ledger, Modify Orders, Cancel/Close Orders. **OFF = Withdraw (a leaked key can then trade but never steal — no kill switch stops a withdrawal already sent) and Earn/staking (unneeded surface).** IP-whitelist OFF (Workers = dynamic IPs, whitelist kills everything — same trap as Binance TRD_GRP_031). **Custom nonce window: 10000 — the field is MILLISECONDS (10s), not seconds; retrying clients (1s/2s/4s backoff) hit "Invalid nonce" without it.** WebSocket interface: leave off until actually used (REST suffices for grid polling).
+- **Verify API keys with a raw Kraken Balance call, not the app's connect route (2026-08-05):** `/api/kraken/connect` returned "Invalid API keys" for a valid key due to its own `upsert`-without-`onConflict` bug (`user_kraken_keys` has no unique constraint on user_id — same trap as `auto_trading_configs`). A raw signed `Balance` call proved the key instantly. When the app rejects credentials, trust the raw exchange call for diagnosis.
+- **`Balance` returns TOTAL including quote locked in open orders — never "free" (2026-08-05):** a grid-manager treating raw `Balance.USDC` as available placed oversized orders → `EOrder:Insufficient funds` on live. Free = `total − Σ (vol − vol_exec) × price` over open limit-buys in that quote. **Balance asset keys: legacy coins have an X-prefix (`XXBT`, `XETH`, `XXDG`); newer coins are plain (`SOL`, `ADA`, `AVAX`, `DOT`, `LINK`, `UNI`, `POL`) — verified 2026-08-05 via `GET /0/public/Assets` (altname field). NEVER derive the balance key from the pair name: `bal["XBT"]` is undefined → the coin silently counts as 0 → kill-switch/equity under-protects (this exact bug meant XBT+ETH were invisible in the live kill-check; it also explains why `XSOL` in earlier notes was wrong).** Map explicitly per pair: XXBT→XBTUSDC, XETH→ETHUSDC, SOL→SOLUSDC, ADA→ADAUSDC, DOT→DOTUSDC. `pair.replace("USDC","")` is only safe for non-legacy coins.
+- **Grid start: re-center TIGHT around current price, or get 0 fills in an uptrend (2026-08-05):** first live grid (spacing 1.2–1.8%, nearest buy 4–7.5% below) sat empty for hours; re-centered grid (0.8% BTC / 1.0% ETH / 1.2% SOL spacing, first buy ~1% below) catches normal intraday volatility. Live grid management (fills→trailing +2% sell→re-buy, state-diff pattern, idle>25 USDC → new level) + DB-sync to the app (`kraken_live_state`, `/api/cron/kraken-balance-sync`, `KrakenLiveCard`): `references/kraken-live-activation.md`. **Kraken+ subscription gives NO API fee benefit** (0% fee tier is web/app only — API/Pro pays full fee).\n- **Watchdogs: every check with `2>/dev/null || fallback` must have a proof-it-fires test (2026-08-05):** the grid watchdog's balance check was silently dead for days — Python-urllib signing failed with `EAPI:Invalid key` and the `2>/dev/null` fallback swallowed it. Signing in watchdog scripts must use the SAME node code as the grid manager (proven working), never a second Python copy. Test one-shot alerts by lowering the threshold (`sed 's/EQUITY_TARGET=250/EQUITY_TARGET=1/'`), run twice (fires once, then silent), keep the threshold as ONE shared variable (bash+python copies drift apart). Bash/node/python orchestration: node output → temp file → python reads file; never interpolate JSON into python via bash strings.
+- **Drawdown-kill baseline = mark value of ALL holdings, not just quote currency (2026-08-05 live find):** a kill-switch baseline set to quote-only (138.66 USDC) silently under-protects when the account also holds coins (0.00022872 XBT ≈ 14.78 USDC at start → true start 153.44). Kill then fires at 23.2% real drawdown instead of the intended 15%. Compute baseline as `Σ asset_qty × price` over every holding at grid setup, and cross-check against the live ticker whenever the constant changes. Same trap applies to ANY equity-based circuit breaker (auto-kill, trailing stop on portfolio value).
+
+## Verification
+
+- `npx tsc --noEmit` = 0, `npm run lint` = 0, `npm run test` green before every deploy.
+- Test new keys with a raw `Balance` call before storing (connect route must reject invalid keys with 401).
+- After DB migration: verify with `psql "$POSTGRES_URL_NON_POOLING" -c "\dt <table>"` (direct db.*.supabase.co may be unreachable — use the pooler URL from `.env.local`).
+- **Live-grid helse-sjekk:** kopier `scripts/kraken-live-probe.mjs` (fra denne skillens scripts/) til repoet og kjør `node scripts/kraken-live-probe.mjs` — balanse, åpne ordre per par, priser, equity vs start (153.44), drawdown %, kill-flag og state-alder i ett kall. Bruker samme node-signering som grid-manageren (virker alltid; Python-urllib på macOS 3.14 feiler på SSL + lett-signering gir `EAPI:Invalid key`).
