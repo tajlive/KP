@@ -38,7 +38,14 @@ jobs:
 
       - name: Deploy to Cloudflare Workers
         run: |
-          VERSION_ID=$(npx wrangler versions upload --env "" 2>&1 | grep "Version ID" | awk '{print $NF}')
+          UPLOAD_OUTPUT=$(npx wrangler versions upload --env "" 2>&1)
+          echo "$UPLOAD_OUTPUT" | grep -E "Uploaded|Version"
+          VERSION_ID=$(echo "$UPLOAD_OUTPUT" | grep -oE "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" | head -1)
+          if [ -z "$VERSION_ID" ]; then
+            echo "::error::Could not extract Version ID from upload output"
+            echo "$UPLOAD_OUTPUT"
+            exit 1
+          fi
           echo "Uploaded version: $VERSION_ID"
           npx wrangler versions deploy --version-id "$VERSION_ID" --yes --message "CI deploy: ${GITHUB_SHA::7}"
         env:
