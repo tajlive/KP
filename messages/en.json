@@ -2031,7 +2031,7 @@
         "message": "Start your first paper trade to see AI insights here."
       },
       "winRateLow": {
-        "message": "Win rate of {winRate}% is below industry average (55%). Review losing trades to find patterns.",
+        "message": "Your win rate of {winRate}% is low. Review losing trades to find patterns.",
         "action": "Go to trade history"
       },
       "drawdownHigh": {
