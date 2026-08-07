@@ -32,6 +32,22 @@
       "service": "klarpakke"
     }
   ],
+  "queues": {
+    "producers": [
+      {
+        "queue": "klarpakke-tasks",
+        "binding": "KLARPAKKE_TASKS"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "klarpakke-tasks"
+      }
+    ]
+  },
+  "ai": {
+    "binding": "AI"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -97,7 +113,48 @@
           "binding": "KV_KLARPAKKE_STAGING",
           "id": "707c647acb86464f8df2f949564734fc"
         }
-      ]
+      ],
+      "d1_databases": [
+        {
+          "binding": "NEXT_TAG_CACHE_D1",
+          "database_name": "klarpakke-tag-cache",
+          "database_id": "f6ec4afc-03fc-4e5f-a87f-ee52fc0320c3"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "NEXT_INC_CACHE_R2_BUCKET",
+          "bucket_name": "next-inc-cache"
+        }
+      ],
+      "services": [
+        {
+          "binding": "WORKER_SELF_REFERENCE",
+          "service": "klarpakke-staging"
+        }
+      ],
+      "queues": {
+        "producers": [
+          {
+            "queue": "klarpakke-tasks",
+            "binding": "KLARPAKKE_TASKS"
+          }
+        ],
+        "consumers": [
+          {
+            "queue": "klarpakke-tasks"
+          }
+        ]
+      },
+      "ai": {
+        "binding": "AI"
+      },
+      "vars": {
+        "NEXT_PUBLIC_STRIPE_PRICE_BACHELOR": "price_1T4QVJCGsVawsLofgt9uuOcU",
+        "NEXT_PUBLIC_STRIPE_PRICE_MASTER": "price_1T4QVKCGsVawsLofr8NPcL6g",
+        "NEXT_PUBLIC_STRIPE_PRICE_PHD": "price_1T4QVKCGsVawsLofz1US0uVZ",
+        "NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR": "price_1T4QVLCGsVawsLofgMEbOBJA"
+      }
     }
   }
 }
