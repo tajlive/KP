@@ -13,7 +13,12 @@ export const KRAKEN_SYMBOL_MAP: Record<string, string> = {
   LINKUSDT: "LINKUSDT",
   ADAUSDT: "ADAUSDT",
   DOTUSDT: "DOTUSDT",
-  
+
+  // Grid-par (USDC): BTCUSDC er gammel konvensjon — Kraken bruker XBTUSDC
+  BTCUSDC: "XBTUSDC",
+  ETHUSDC: "ETHUSDC",
+  SOLUSDC: "SOLUSDC",
+
   // Fiat
   USD: "ZUSD",
   EUR: "ZEUR",
