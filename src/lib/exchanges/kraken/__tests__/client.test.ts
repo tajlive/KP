@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { KrakenClient, KrakenLockoutError } from "@/lib/exchanges/kraken/client";
 import {
   toKrakenSymbol,
   fromKrakenSymbol,
@@ -81,6 +81,78 @@ describe("KrakenClient", () => {
     expect(tickers.SOLUSDC.c[0]).toBe("71.9");
     // Hvert par er en egen nøkkel — IKKE slått opp med komma-separert streng
     expect(tickers["XBTUSDC,ETHUSDC,SOLUSDC"]).toBeUndefined();
+  });
+
+  it("should classify Temporary lockout as KrakenLockoutError", async () => {
+    const fastClient = new KrakenClient("test-key", "dGVzdC1zZWNyZXQ=", {
+      lockoutBackoffMs: [0, 0, 0],
+    });
+    // Retry-logikk = 3 forsøk — alle må svare lockout
+    for (let i = 0; i < 3; i++) {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          error: ["EGeneral:Temporary lockout"],
+          result: null,
+        }),
+      });
+    }
+
+    await expect(fastClient.getBalance()).rejects.toThrow(KrakenLockoutError);
+  });
+
+  it("should classify EService:Unavailable as KrakenLockoutError", async () => {
+    const fastClient = new KrakenClient("test-key", "dGVzdC1zZWNyZXQ=", {
+      lockoutBackoffMs: [0, 0, 0],
+    });
+    for (let i = 0; i < 3; i++) {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          error: ["EService:Unavailable"],
+          result: null,
+        }),
+      });
+    }
+
+    await expect(fastClient.getBalance()).rejects.toThrow(KrakenLockoutError);
+  });
+
+  it("should NOT classify EOrder:Insufficient funds as lockout", async () => {
+    const fastClient = new KrakenClient("test-key", "dGVzdC1zZWNyZXQ=", {
+      lockoutBackoffMs: [0, 0, 0],
+    });
+    for (let i = 0; i < 3; i++) {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          error: ["EOrder:Insufficient funds"],
+          result: null,
+        }),
+      });
+    }
+
+    const err = await fastClient.getBalance().catch((e: unknown) => e);
+    expect(err).not.toBeInstanceOf(KrakenLockoutError);
+    expect(err instanceof Error ? err.message : String(err)).toContain(
+      "Insufficient funds",
+    );
+  });
+
+  it("should pace private calls (min spacing)", async () => {
+    // Testen måler pacing på SUCCESS-path: to raske kall bak hverandre spres.
+    const pacedClient = new KrakenClient("test-key", "dGVzdC1zZWNyZXQ=", {
+      privateSpacingMs: 200,
+    });
+    const t0 = Date.now();
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => ({ error: [], result: {} }),
+    });
+    await pacedClient.getBalance();
+    await pacedClient.getBalance();
+    const elapsed = Date.now() - t0;
+    expect(elapsed).toBeGreaterThanOrEqual(200);
   });
 });
 
