@@ -35,7 +35,8 @@ function formatPct(current: number, initial: number): string {
 }
 
 export function AutopilotDashboard({ userId }: { userId: string }) {
-  const { state: realtimeState, isLive, error } = useAutopilotRealtime(userId);
+  const { state: realtimeState, isLive, error, hasLoaded } =
+    useAutopilotRealtime(userId);
 
   // Map Realtime state to component state
   const state: AutopilotState | null = realtimeState
@@ -55,7 +56,7 @@ export function AutopilotDashboard({ userId }: { userId: string }) {
       }
     : null;
 
-  const loading = !state && !error;
+  const loading = !hasLoaded;
 
   if (loading) {
     return (
