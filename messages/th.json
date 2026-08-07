@@ -2304,7 +2304,7 @@
     },
     "welcome": {
       "title": "Welcome to Pilot!",
-      "description": "Your AI trader is ready. Press the JOKER button and the AI will find the best trade opportunity right now."
+      "description": "Your AI trader is ready. Press the Pilot button and the AI will find the best trade opportunity right now."
     },
     "dashboard": {
       "title": "Pilot",
@@ -2332,7 +2332,7 @@
     }
   },
   "joker": {
-    "button": "JOKER",
+    "button": "Pilot",
     "loading": "Analyzing...",
     "analysing": "🎭 Analyzing market..."
   },
