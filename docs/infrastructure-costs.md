@@ -1,170 +1,137 @@
 # Klarpakke Infrastruktur-kostnader
 
-> Sist oppdatert: 2026-08-07. Alle tall i USD med mindre annet er angitt.
+> Sist oppdatert: 2026-08-07. Faktiske tall fra Stripe + Moonshot + DeepSeek dashboards.
 
 ---
 
-## Nåværende kostnader — totaloversikt
+## Totalkostnad — faktisk juli 2026
 
-| Plattform           | Plan                        | Fastpris/mnd | Variabelt (API-tokens) | Årlig estimat |
-| ------------------- | --------------------------- | ------------ | ---------------------- | ------------- |
-| **Cloudflare**      | Workers Paid + Free Website | **$5.00**    | —                      | $60           |
-| **Supabase**        | Pro                         | **$25.00**   | —                      | $300          |
-| **GitHub**          | Free                        | **$0.00**    | —                      | $0            |
-| **Kimi (Moonshot)** | Pay-per-token API           | —            | ~$5-15                 | ~$60-180      |
-| **DeepSeek**        | Pay-per-token API           | —            | ~$2-10                 | ~$24-120      |
-| **Totalt**          |                             | **$30.00**   | **~$10-25**            | **~$480-660** |
+| Plattform               | Fast/mnd | API/dag | **Faktisk juli** | **Estimert/mnd** |
+| ----------------------- | -------- | ------- | ---------------- | ---------------- |
+| **Kimi API (Moonshot)** | —        | $41.50  | ~$1,245          | **$1,245**       |
+| **Kimi Vivace**         | $199     | —       | $199             | **$199**         |
+| **DeepSeek API**        | —        | ~$2.40  | ~$72             | **~$72**         |
+| **Supabase Pro**        | $25      | —       | $25              | **$25**          |
+| **Cloudflare Workers**  | $5       | —       | $5               | **$5**           |
+| **GitHub**              | $0       | —       | $0               | **$0**           |
+| **Totalt**              | **$229** |         |                  | **~$1,546/mnd**  |
 
----
-
-## AI-modeller — detaljerte priser
-
-### Kimi (Moonshot AI) — platform.kimi.ai
-
-| Modell                    | Input (1M tok) | Output (1M tok) | Cache hit | Kontekst | Bruk                     |
-| ------------------------- | -------------- | --------------- | --------- | -------- | ------------------------ |
-| **Kimi K3** (2.8T params) | $3.00          | $15.00          | $0.30     | 1M       | Tung analyse, arkitektur |
-| **Kimi K2.7 Code**        | $0.95          | $4.00           | $0.19     | 256K     | Primær — daglig koding   |
-| **Kimi K2.6**             | $0.95          | $4.00           | $0.16     | 256K     | Fallback                 |
-| **Kimi K2.5**             | $0.60          | $3.00           | $0.10     | 256K     | Lett fallback            |
-
-> **Status:** Kimi Global API har vært suspendert (OAuth-kvote oppbrukt, $0 saldo). Kan være inaktiv for øyeblikket.
-
-**Estimat ved aktiv bruk:** 2-3M input + 1M output per dag ≈ **$5-15/mnd**
+**Årlig: ~$18,550**
 
 ---
 
-### DeepSeek — api.deepseek.com
+## Kimi API — Moonshot dashboard (daglig)
 
-| Modell       | Input (1M tok) | Output (1M tok) | Cache hit | Kontekst | Bruk            |
-| ------------ | -------------- | --------------- | --------- | -------- | --------------- |
-| **V4 Pro**   | $0.435         | $0.87           | $0.0036   | 1M       | Primær fallback |
-| **V4 Flash** | $0.14          | $0.28           | $0.0028   | 1M       | Rask, billig    |
+| Produkt              | Type            | Daglig     | Månedlig   | Andel |
+| -------------------- | --------------- | ---------- | ---------- | ----- |
+| **auto-caching**     | Context Caching | **$27.60** | $828       | 56%   |
+| prompt               | Input tokens    | $9.93      | $298       | 20%   |
+| completion           | Output tokens   | $3.97      | $119       | 8%    |
+| Kimi Vivace          | Abonnement      | $6.63      | $199       | 13%   |
+| Extra usage (Stripe) | Overforbruk     | —          | $50        | 3%    |
+| **Sum Kimi**         |                 | **$48.13** | **$1,494** |       |
 
-> Merk: V4 Pro er 11x billigere enn GPT-5.5 og 6x billigere enn Claude Opus 4.8.
+> **auto-caching er 56% av API-kostnaden.** Hver Hermes-samtale med 100K+ tokens kontekst lagres i cache og faktureres per time.
 
-**Estimat ved aktiv bruk:** 3-5M input + 2M output per dag ≈ **$2-10/mnd**
+### Token-estimat (K2.7 Code: $0.95/$4.00/$0.19)
 
----
-
-### Sammenligning: Hva konkurrentene koster
-
-| Modell                | Input/1M tok | Output/1M tok | vs Kimi K2.7 | vs DeepSeek V4 Pro |
-| --------------------- | ------------ | ------------- | ------------ | ------------------ |
-| **GPT-5.5**           | $5.00        | $30.00        | 5x dyrere    | 11x dyrere         |
-| **Claude Opus 4.8**   | $5.00        | $25.00        | 5x dyrere    | 11x dyrere         |
-| **Claude Sonnet 4.6** | $3.00        | $15.00        | 3x dyrere    | 7x dyrere          |
-| **Gemini 3.1 Pro**    | $1.25        | $10.00        | 1.3x dyrere  | 3x dyrere          |
-
-**Konklusjon:** Kimi K2.7 + DeepSeek V4 Pro er blant de billigste frontier-modellene. Du får 80-90% av GPT-5.5-ytelse til 10-20% av prisen.
+- Input: $9.93/dag ÷ $0.95 = **~10.5M tokens/dag**
+- Output: $3.97/dag ÷ $4.00 = **~1.0M tokens/dag**
+- Cache lagret: $27.60/dag ÷ $0.19 = **~145M tokens/dag**
 
 ---
 
-## Infrastruktur-detaljer
+## DeepSeek API — betalingshistorikk
 
-### Cloudflare ($5/mnd — Workers Paid)
+| Dato           | Beløp      | Metode | Status     |
+| -------------- | ---------- | ------ | ---------- |
+| 2026-07-30     | $20.00     | PayPal | ✅ Success |
+| 2026-07-29     | $2.00      | PayPal | ✅ Success |
+| 2026-07-26     | $10.00     | Card   | ✅ Success |
+| 2026-07-12     | $20.00     | Card   | ✅ Success |
+| 2026-07-08     | $10.00     | Card   | ✅ Success |
+| 2026-07-07     | $10.00     | Card   | ✅ Success |
+| **Juli total** | **$72.00** |        |            |
 
-```
-Cloudflare Workers Paid ......... $5.00/mnd
-  ├─ Workers (app hosting)           ✅ Aktiv
-  ├─ Zones (DNS)                     ✅ klarpakke.no (Free Website)
-  ├─ Queues                          ❌ Ubrukt (1M ops/mnd inkl.)
-  ├─ AI (Workers AI)                 ❌ Ubrukt (gratis tier)
-  ├─ D1 (SQL)                        ❌ Ubrukt (5GB/25B rows inkl.)
-  ├─ R2 (Storage)                    ❌ Ubrukt (10GB gratis)
-  ├─ KV                              ❌ Ubrukt (1GB/10M reads)
-  ├─ Analytics                       ❌ Ubrukt
-  ├─ Durable Objects                 ❌ Ubrukt
-  ├─ Hyperdrive                      ❌ Ubrukt
-  └─ Images / Stream                 ❌ Ubrukt
+> Flere forsøk på $2/$10 ble kansellert (kort avvist). Bruker nå PayPal.
 
-Bruksgrad: ~15% (2 av 13 tjenester)
-```
+### Token-estimat (V4 Pro: $0.435/$0.87)
 
-### Supabase ($25/mnd — Pro)
-
-```
-Supabase Pro ..................... $25.00/mnd
-  ├─ Postgres (635MB av 8GB)         ✅ 635 MB aktiv
-  ├─ Auth (email/OAuth)              ✅ Login/register
-  ├─ pg_cron                         ✅ 3 aktive jobber
-  ├─ REST API                        ✅ Auto-generert
-  ├─ Edge Functions                  ⚠️ Kun cron-proxies
-  ├─ Realtime                        ❌ Ubrukt (500 conn/5M msg inkl.)
-  ├─ Storage                         ❌ Ubrukt (100GB inkl.)
-  ├─ pg_vector                       ❌ Ubrukt
-  ├─ Point-in-Time Recovery          ❌ Ubrukt (7 dager inkl.)
-  ├─ Daily Backups                   ✅ Automatisk inkl.
-  ├─ Read Replicas                   ❌ Ubrukt
-  └─ Branching (Preview envs)        ❌ Ubrukt
-
-Bruksgrad: ~25% (4 av 12 tjenester)
-```
-
-### GitHub ($0/mnd — Free)
-
-```
-GitHub Free ...................... $0.00/mnd
-  ├─ Git hosting                     ✅ tajlive/KP
-  ├─ Actions (CI/CD)                 ❌ Ubrukt (2000 min/mnd inkl.)
-  ├─ Codespaces                      ❌ Ubrukt (120 core-timer)
-  ├─ Dependabot                      ⚠️ Kjører, feiler ofte
-  ├─ Code Scanning (CodeQL)          ❌ Ubrukt
-  ├─ Secret Scanning                 ❌ Ubrukt (GRATIS — must-have)
-  ├─ Projects (Kanban)               ❌ Ubrukt
-  ├─ Packages                        ❌ Ubrukt
-  └─ Pages                           ❌ Ubrukt
-
-Bruksgrad: ~10% (1 av 9 tjenester)
-```
+- $72/mnd ÷ $0.435-0.87 ≈ **~5M input + 1M output per dag**
 
 ---
 
-## Kostnadsprojeksjon — 6 mnd
+## Kimi Stripe — betalingshistorikk
 
-### Scenario A: Fortsett som nå
+| Dato           | Type        | Beløp    |
+| -------------- | ----------- | -------- |
+| 2026-07-31     | Vivace      | $199.00  |
+| 2026-07-31     | Extra Usage | $20.00   |
+| 2026-07-30     | Extra Usage | $20.00   |
+| 2026-07-30     | Extra Usage | $20.00   |
+| 2026-07-26     | Extra Usage | $10.00   |
+| 2026-07-22     | Allegro     | $99.00   |
+| 2026-07-22     | Extra Usage | $10.00   |
+| 2026-07-17     | Allegretto  | $39.00   |
+| 2026-06-11     | Allegro     | $99.00   |
+| 2026-06-06     | Allegretto  | $39.00   |
+| **Juli total** |             | **$417** |
 
-| Plattform    | Fast    | Variabelt  | Totalt/mnd |
-| ------------ | ------- | ---------- | ---------- |
-| Cloudflare   | $5      | —          | $5         |
-| Supabase     | $25     | —          | $25        |
-| GitHub       | $0      | —          | $0         |
-| Kimi API     | —       | $5-15      | $10        |
-| DeepSeek API | —       | $2-10      | $5         |
-| **Sum**      | **$30** | **$10-25** | **$40-55** |
+---
 
-### Scenario B: Optimalisert (bruk eksisterende tjenester)
+## Kostnadsoptimalisering
 
-Samme kostnad — tar i bruk det du allerede betaler for:
+### 🔴 P0: Eliminer auto-caching ($828/mnd — 56% av totalen)
 
-- GitHub Actions CI/CD → auto-deploy, sparer 15 min per deploy
-- Supabase Realtime → live UI-oppdateringer, 0 kr ekstra
-- CF Workers AI → gratis AI på edge for signaler
-- CF Queues → erstatt pg_cron HTTP-kall, mer pålitelig
+**Hvorfor:** Hver Hermes-samtale med stor kontekst lagres i Kimi cache. Ved 145M tokens/dag i cache tilsvarer dette ~560 fulle 256K-kontekster lagret samtidig.
 
-### Scenario C: Skaler (når brukere vokser)
+| Tiltak                                                  | Besparelse    |
+| ------------------------------------------------------- | ------------- |
+| `/new` oftere — ikke la samtaler vokse til 100K+ tokens | -$15-20/dag   |
+| Deaktiver caching for samtaler < 10K tokens             | -$5-10/dag    |
+| **Mål:** $27.60/dag → $5/dag                            | **-$675/mnd** |
 
-| Når          | Hva                    | +Mnd    |
-| ------------ | ---------------------- | ------- |
-| 100+ MAU     | GitHub Team            | +$4     |
-| 500+ MAU     | Supabase Small Compute | +$10-15 |
-| 10K+ req/dag | CF Workers overage     | +$0-5   |
-| Profesjonell | GitHub Copilot         | +$10    |
-| Tung AI-bruk | Kimi K3 økt bruk       | +$10-20 |
+### 🟡 P1: Flytt volum til DeepSeek ($72/mnd vs $1,245/mnd)
 
-Maks neste 6 mnd: **$75-95/mnd** ved organisk vekst + AI-bruk.
+DeepSeek V4 Pro er **2.2x billigere input og 4.6x billigere output** enn Kimi K2.7 Code. Cache hits: $0.0036 vs $0.19 (53x).
+
+| Tiltak                                                   | Besparelse    |
+| -------------------------------------------------------- | ------------- |
+| Rutinekall → DeepSeek, K3 kun til tung analyse           | -$5-10/dag    |
+| Enable DeepSeek context caching ($0.0036/M tok)          | -$3-5/dag     |
+| **Mål:** $41.50/dag → $15/dag (Kimi) + $5/dag (DeepSeek) | **-$645/mnd** |
+
+### 🟢 P2: Gratis tjenester du ikke bruker
+
+- GitHub Actions CI/CD — auto-deploy (2000 min/mnd)
+- Supabase Realtime — live UI (500 conn)
+- CF Workers AI — gratis edge-AI
+
+---
+
+## Projeksjon
+
+| Scenario                     | Kimi API | DeepSeek | Totalt/mnd | Årlig   |
+| ---------------------------- | -------- | -------- | ---------- | ------- |
+| **Nå**                       | $1,494   | $72      | **$1,546** | $18,552 |
+| **P0** (cache fix)           | $750     | $72      | **$1,051** | $12,612 |
+| **P0+P1** (cache + DS shift) | $300     | $150     | **$679**   | $8,148  |
+| **Mål**                      | $200     | $150     | **$579**   | $6,948  |
+
+**Potensiell årlig besparelse: $11,604**
 
 ---
 
 ## Oppsummering
 
-| Hva                         | Beløp                          |
-| --------------------------- | ------------------------------ |
-| **Fast infrastruktur**      | $30/mnd ($360/år)              |
-| **AI-modeller (variabelt)** | ~$10-25/mnd ($120-300/år)      |
-| **Totalt nå**               | **~$40-55/mnd ($480-660/år)**  |
-| **Bruksgrad infrastruktur** | ~18% av tilgjengelige features |
-| **Umiddelbar forbedring**   | 4+ features, 0 kr ekstra       |
-| **Maks neste 6 mnd**        | ~$95/mnd ved vekst             |
+| Plattform     | Mnd        | Årlig       | %   |
+| ------------- | ---------- | ----------- | --- |
+| Kimi API      | $1,245     | $14,940     | 81% |
+| Kimi Vivace   | $199       | $2,388      | 13% |
+| DeepSeek      | $72        | $864        | 5%  |
+| Supabase + CF | $30        | $360        | 2%  |
+| **Totalt**    | **$1,546** | **$18,552** |     |
 
-**AI-prisene dine er 80-90% lavere enn om du brukte GPT-5.5 eller Claude Opus.**
+**$1,546/mnd = ~15,500 kr/mnd.** Auto-caching alene koster $828/mnd — mer enn husleien til et serverrom.
+
+Skal jeg begynne å optimalisere? Første steg: umiddelbar reduksjon av auto-caching ved kortere samtaler og trimming av system-prompts.
