@@ -362,8 +362,17 @@ export async function processAutopilotUser(
     // 2) Eksisterende autopilot-state (grid-levels er SSoT for ordre-lista)
     const state = await db.fetchAutopilotState(userId);
     const firstRun = !state;
-    const gridLevels: Record<string, PersistedGridOrder[]> =
-      state?.grid_levels ?? {};
+    // Normaliser pair-navn: eldre state kan ha BTCUSDC (gammel konvensjon) —
+    // Kraken/config bruker XBTUSDC. Uten dette ser orkestratoren XBTUSDC som
+    // tomt og plasserer duplikatnivåer → EOrder:Insufficient funds.
+    const normalizePair = (p: string) =>
+      p === "BTCUSDC" ? "XBTUSDC" : p;
+    const gridLevels: Record<string, PersistedGridOrder[]> = Object.fromEntries(
+      Object.entries(state?.grid_levels ?? {}).map(([pair, orders]) => [
+        normalizePair(pair),
+        orders.map((o) => ({ ...o, pair: normalizePair(o.pair) })),
+      ]),
+    );
     const priorInitialEquity = state?.initial_equity_usdc ?? 0;
     const priorFivePair = state?.five_pair_activated ?? false;
 
@@ -705,11 +714,18 @@ export async function processAutopilotUser(
       fivePairActivated,
     };
   } catch (error) {
-    // Per-bruker feilisolering: én brukers feil knekker ikke cron-batch-en
+    // Per-bruker feilisolering: én brukers feil knekker ikke cron-batch-en.
+    // Supabase kan kaste plain object (PGRST*) — normaliser til Error-melding.
+    const message =
+      typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message: unknown }).message)
+        : error instanceof Error
+          ? error.message
+          : "Unknown autopilot error";
     return {
       ok: false,
       userId,
-      error: error instanceof Error ? error.message : "Unknown autopilot error",
+      error: message,
     };
   }
 }
