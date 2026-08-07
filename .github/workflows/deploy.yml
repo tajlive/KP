@@ -1,0 +1,52 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build (Next.js → Cloudflare Workers)
+        run: npm run cf:build
+        env:
+          SKIP_LINT_IN_BUILD: 'true'
+          NEXT_TELEMETRY_DISABLED: '1'
+          NODE_OPTIONS: '--max-old-space-size=4096'
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SITE_URL: 'https://www.klarpakke.no'
+          NEXT_PUBLIC_STRIPE_PRICE_BACHELOR: ${{ secrets.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR }}
+          NEXT_PUBLIC_STRIPE_PRICE_MASTER: ${{ secrets.NEXT_PUBLIC_STRIPE_PRICE_MASTER }}
+          NEXT_PUBLIC_STRIPE_PRICE_PHD: ${{ secrets.NEXT_PUBLIC_STRIPE_PRICE_PHD }}
+          NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR: ${{ secrets.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR }}
+
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Purge CDN cache
+        run: |
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/328d7de7e8e48308fd4f9d760da57946/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"purge_everything":true}'
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -sf https://www.klarpakke.no/api/health | python3 -m json.tool
