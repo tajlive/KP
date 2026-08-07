@@ -1,5 +1,13 @@
 # Klarpakke 2026 Modernisering — Arkitektur-forslag
 
+> **Statusoppdatering 2026-08-07 (ettermiddag):** PPR/cacheComponents vurdert og **droppet**.
+> Fakta: 159 ruter har `force-dynamic` (ikke 21). cacheComponents tvinger Turbopack og
+> feiler på alle (`Route segment config "dynamic" is not compatible`). Turbopack-bygg
+> blokkeres lokalt av CF-auth (code 10000, edge-preview). Å fjerne force-dynamic fra
+> 159 ruter som håndterer live-penger = for høy risiko mot gevinsten. Alternativet
+> (Suspense-splitting på /handel) er implementert i stedet — samme streaming-effekt,
+> null bygg-risiko.
+
 > **For Hermes:** Plan-only. Inspiser, ikke implementer. Bruk `plan` skill.
 
 **Goal:** Modernisere Klarpakke til en 2026-fremtidsrettet arkitektur uten å øke kostnader.
