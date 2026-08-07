@@ -224,8 +224,10 @@ const nextConfig = {
 
   // Experimental optimizations
   experimental: {
-    // Partial Prerendering - Experimental feature for faster loads
-    // ppr: true, // Enable when ready to test
+    // Partial Prerendering — instant page loads with static shell + dynamic streaming
+    ppr: true,
+    // View Transitions — smooth page transitions (Next.js 16 built-in)
+    viewTransition: true,
     // Turbopack disabled - using webpack for better compatibility
     // turbo: {},
     // Reduce memory usage by limiting workers based on available memory
