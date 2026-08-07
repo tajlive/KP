@@ -98,7 +98,7 @@ function pushLocal(token) {
 }
 
 function pushProd(token) {
-  const r = spawnSync('npx', ['wrangler', 'secret', 'put', SECRET_NAME], {
+  const r = spawnSync('npx', ['wrangler', 'versions', 'secret', 'put', SECRET_NAME], {
     input: token,
     cwd: REPO_ROOT,
     encoding: 'utf8',
