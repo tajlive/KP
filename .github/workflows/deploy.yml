@@ -37,9 +37,11 @@ jobs:
           NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR: ${{ secrets.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR }}
 
       - name: Deploy to Cloudflare Workers
-        run: npx wrangler deploy
+        run: npx wrangler deploy --yes
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CI: 'true'
+          WRANGLER_LOG: error
 
       - name: Purge CDN cache
         run: |
