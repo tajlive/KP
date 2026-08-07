@@ -224,8 +224,9 @@ const nextConfig = {
 
   // Experimental optimizations
   experimental: {
-    // Partial Prerendering — instant page loads with static shell + dynamic streaming
-    cacheComponents: true,
+    // cacheComponents — PPR. Må fjerne alle force-dynamic fra ruter (inkompatibelt).
+    // Aktiveres når API-rutene er migrert til lazy supabase init.
+    // cacheComponents: true,
     // View Transitions — smooth page transitions (Next.js 16 built-in)
     viewTransition: true,
     // Turbopack disabled - using webpack for better compatibility
