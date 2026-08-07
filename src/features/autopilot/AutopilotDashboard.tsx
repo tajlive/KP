@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { useAutopilotRealtime } from "@/lib/realtime/autopilot-channel";
 
 interface GridLevelEntry {
   txid?: string;
@@ -35,26 +35,27 @@ function formatPct(current: number, initial: number): string {
 }
 
 export function AutopilotDashboard({ userId }: { userId: string }) {
-  const [state, setState] = useState<AutopilotState | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { state: realtimeState, isLive, error } = useAutopilotRealtime(userId);
 
-  useEffect(() => {
-    fetch("/api/kraken/autopilot-state")
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((d) => {
-        if (d.error) throw new Error(d.error);
-        setState(d);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  // Map Realtime state to component state
+  const state: AutopilotState | null = realtimeState
+    ? {
+        activated: realtimeState.activated,
+        initial_equity_usdc: realtimeState.initial_equity_usdc,
+        current_equity_usdc: realtimeState.current_equity_usdc,
+        realized_profit_usdc: realtimeState.realized_profit_usdc,
+        grid_levels: realtimeState.grid_levels as unknown as Record<
+          string,
+          GridLevelEntry[]
+        >,
+        drawdown_kill: realtimeState.drawdown_kill,
+        five_pair_activated: realtimeState.five_pair_activated,
+        updated_at: realtimeState.updated_at,
+        last_run: realtimeState.last_run ?? undefined,
+      }
+    : null;
+
+  const loading = !state && !error;
 
   if (loading) {
     return (
@@ -110,7 +111,13 @@ export function AutopilotDashboard({ userId }: { userId: string }) {
           <h3 className="text-sm font-semibold text-blue-400">
             🤖 Kraken Autopilot
           </h3>
-          <CheckCircle2 className="h-4 w-4 text-green-400" />
+          {isLive ? (
+            <span className="text-[10px] text-green-400 animate-pulse">
+              ● LIVE
+            </span>
+          ) : (
+            <CheckCircle2 className="h-4 w-4 text-green-400" />
+          )}
         </div>
         <span
           className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${kill ? "bg-red-900/50 text-red-400" : "bg-green-900/50 text-green-400"}`}
