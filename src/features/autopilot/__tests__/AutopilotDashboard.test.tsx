@@ -70,6 +70,6 @@ describe("AutopilotDashboard", () => {
     });
     render(<AutopilotDashboard userId="u1" />);
     expect(screen.getByText("$153.43")).toBeTruthy();
-    expect(screen.getByText("+53.43%")).toBeTruthy();
+    expect(screen.getByText(/\+53\.43% siden start/)).toBeTruthy();
   });
 });

@@ -108,7 +108,7 @@ if (existsSync(STATE_PATH)) {
 // Equity + drawdown
 const usdc = parseFloat(bal.USDC ?? "0");
 let coinVal = 0;
-for (const [asset, pair] of [["XXBT", "XBTUSDC"], ["XETH", "ETHUSDC"], ["XSOL", "SOLUSDC"]]) {
+for (const [asset, pair] of [["XXBT", "XBTUSDC"], ["XETH", "ETHUSDC"], ["SOL", "SOLUSDC"]]) {
   const qty = parseFloat(bal[asset] ?? "0");
   if (qty > 0) {
     const p = parseFloat(tick[pair].c[0]);

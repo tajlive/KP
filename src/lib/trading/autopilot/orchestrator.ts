@@ -39,6 +39,7 @@ import {
   IDLE_THRESHOLD,
 } from "../kraken-grid-config.mjs";
 import { runGridTick, type PersistedGridOrder } from "../kraken-grid";
+import { toKrakenSymbol } from "@/lib/exchanges/kraken/symbols";
 import { computeDynamicSpacing } from "../dynamic-spacing";
 import {
   shouldFallbackToDCA,
@@ -483,6 +484,42 @@ export async function processAutopilotUser(
         unknown
       >) ?? {};
     const openTxids = new Set(Object.keys(openOrdersMap));
+
+    // 6b) Reconciliation: Kraken-ordrer som ikke finnes i state (f.eks. plassert
+    //     av tidligere grid-manager) legges inn — ellers viser UI feil antall
+    //     nivåer (state 11 vs Kraken 13) og fills på dem aldri overvåkes.
+    //     Kun par som ALLEREDE er i gridLevels (botens par) — aldri plukk opp
+    //     ordrer på fremmede par.
+    for (const [txid, rawOrder] of Object.entries(openOrdersMap)) {
+      const order = rawOrder as {
+        descr?: { pair?: string; type?: string; price?: string };
+        vol?: string;
+      };
+      const krakenPair = order.descr?.pair ?? "";
+      const side = order.descr?.type === "sell" ? "sell" : "buy";
+      // Finn par-nøkkelen i state (Kraken bruker XBTUSDC; state kan ha begge)
+      const statePair = Object.keys(gridLevels).find(
+        (p) => toKrakenSymbol(p) === krakenPair,
+      );
+      if (!statePair) continue; // ikke botens par
+      const alreadyTracked = gridLevels[statePair].some((o) => o.txid === txid);
+      if (alreadyTracked) continue;
+      const price = parseFloat(order.descr?.price ?? "0") || 0;
+      const volume = order.vol ?? "0";
+      if (price <= 0) continue;
+      gridLevels[statePair] = [
+        ...gridLevels[statePair],
+        {
+          txid,
+          side,
+          pair: statePair,
+          price,
+          volume,
+          status: "open",
+          placedAt: new Date().toISOString(),
+        },
+      ];
+    }
 
     for (const pair of operatePairs) {
       const cfg = PAIR_CFG_LOOKUP[pair]!;
