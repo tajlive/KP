@@ -225,7 +225,7 @@ const nextConfig = {
   // Experimental optimizations
   experimental: {
     // Partial Prerendering — instant page loads with static shell + dynamic streaming
-    ppr: true,
+    cacheComponents: true,
     // View Transitions — smooth page transitions (Next.js 16 built-in)
     viewTransition: true,
     // Turbopack disabled - using webpack for better compatibility
