@@ -60,10 +60,10 @@ function getTip(
     };
   }
 
-  if (totalPnl > 0 && winRate >= 55) {
+  if (totalPnl > 0 && winRate >= 0.55) {
     return {
       type: "doingGreat",
-      message: t("doingGreat.message", { winRate }),
+      message: t("doingGreat.message", { winRate: Math.round(winRate * 100) }),
       severity: "success",
     };
   }

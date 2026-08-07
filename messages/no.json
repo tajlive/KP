@@ -2031,7 +2031,7 @@
         "message": "Start din første Lekepenger-trade for å se AI-innsikt her."
       },
       "winRateLow": {
-        "message": "Win rate på {winRate}% er under bransjesnittet (55%). Gjennomgå tapende trades for å finne mønstre.",
+        "message": "Win rate på {winRate}% er lav. Gjennomgå tapende trades for å finne mønstre.",
         "action": "Gå til trade-historikk"
       },
       "drawdownHigh": {
