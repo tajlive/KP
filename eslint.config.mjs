@@ -175,6 +175,8 @@ const eslintConfig = [
       // — en 35 MB minifisert handler.mjs der OOMet eslint (2026-08-04)
       "**/.next*/**",
       "**/.open-next*/**",
+      "**/.wrangler/**", // genererte deploy-bundles (35 MB minifisert worker.js)
+      "**/.sanity/**",
       "**/out/",
       "**/.cache/**",
       "design-audit/**",
