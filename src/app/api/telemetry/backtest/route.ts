@@ -1,15 +1,17 @@
 /**
  * API route for backtest telemetry
- * 
+ *
  * Mottar anonymisert bruk av backtest-kalkulatoren og lagrer i
  * backtest_telemetry tabellen for analyse og konverteringssporing.
- * 
+ *
  * @api {post} /api/telemetry/backtest Logg backtest-bruk
  * @api {post} /api/telemetry/backtest/convert Marker konvertering
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+export const dynamic = "force-dynamic";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -22,10 +24,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 export async function POST(request: NextRequest) {
   // Sjekk om dette er en "convert" request
   const pathname = request.nextUrl.pathname;
-  if (pathname.endsWith('/convert')) {
+  if (pathname.endsWith("/convert")) {
     return handleConvert(request);
   }
-  
+
   try {
     const body = await request.json();
     const {
@@ -41,23 +43,20 @@ export async function POST(request: NextRequest) {
     // Valider påkrevde felter
     if (!sessionId || !strategyId || !periodMonths || !initialCapitalNOK) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
+        { error: "Missing required fields" },
+        { status: 400 },
       );
     }
 
     // Valider metrics
-    if (!metrics || typeof metrics !== 'object') {
-      return NextResponse.json(
-        { error: 'Invalid metrics' },
-        { status: 400 }
-      );
+    if (!metrics || typeof metrics !== "object") {
+      return NextResponse.json({ error: "Invalid metrics" }, { status: 400 });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Bruk RPC for å logge til databasen
-    const { error } = await supabase.rpc('log_backtest_telemetry', {
+    const { error } = await supabase.rpc("log_backtest_telemetry", {
       p_session_id: sessionId,
       p_strategy_id: strategyId,
       p_period_months: periodMonths,
@@ -66,24 +65,24 @@ export async function POST(request: NextRequest) {
       p_cache_hit: cacheHit ?? false,
       p_cache_age_ms: cacheAgeMs ?? null,
       p_anonymous_id: null, // Kan utvides senere
-      p_user_agent: request.headers.get('user-agent') ?? null,
-      p_referrer: request.headers.get('referer') ?? null,
+      p_user_agent: request.headers.get("user-agent") ?? null,
+      p_referrer: request.headers.get("referer") ?? null,
     });
 
     if (error) {
-      console.error('Failed to log telemetry:', error);
+      console.error("Failed to log telemetry:", error);
       return NextResponse.json(
-        { error: 'Failed to log telemetry' },
-        { status: 500 }
+        { error: "Failed to log telemetry" },
+        { status: 500 },
       );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Telemetry error:', error);
+    console.error("Telemetry error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -97,32 +96,29 @@ async function handleConvert(request: NextRequest) {
     const { sessionId } = body;
 
     if (!sessionId) {
-      return NextResponse.json(
-        { error: 'Missing sessionId' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { error } = await supabase.rpc('mark_backtest_converted', {
+    const { error } = await supabase.rpc("mark_backtest_converted", {
       p_session_id: sessionId,
     });
 
     if (error) {
-      console.error('Failed to mark conversion:', error);
+      console.error("Failed to mark conversion:", error);
       return NextResponse.json(
-        { error: 'Failed to mark conversion' },
-        { status: 500 }
+        { error: "Failed to mark conversion" },
+        { status: 500 },
       );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Convert error:', error);
+    console.error("Convert error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }

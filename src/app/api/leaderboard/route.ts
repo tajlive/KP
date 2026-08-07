@@ -25,12 +25,43 @@ export const dynamic = "force-dynamic";
 // Svarteliste — AI-genererte bot-navn (FACT-AUDIT 2.1, BRIEF 3.3)
 // ---------------------------------------------------------------------------
 const BOT_DISPLAY_NAMES = new Set([
-  "Anne Mo", "Ingrid Sol", "Lars Vik", "Kari Aas", "Marte Hav",
-  "Per Berg", "Bjørn Fjell", "Trond Dal", "Silje Lund", "Ola Nordmann",
+  "Anne Mo",
+  "Ingrid Sol",
+  "Lars Vik",
+  "Kari Aas",
+  "Marte Hav",
+  "Per Berg",
+  "Bjørn Fjell",
+  "Trond Dal",
+  "Silje Lund",
+  "Ola Nordmann",
 ]);
 
+// ---------------------------------------------------------------------------
+// Testbruker-mønstre — anonymiseres, beholder tall (FACT-AUDIT 2.5)
+// ---------------------------------------------------------------------------
+const TEST_USER_PATTERNS = [
+  /^tom\+/, // tom+sim..., tom+verify...
+  /^tom$/, // "tom" (lowercase, @klarpakke.no)
+  /^Gudrun\s+Myhre$/, // testpersona
+  /^Viking[_ ]/, // Viking_NO, Viking Trader...
+  /^Direct\s+Test$/, // test.direct@klarpakke.test
+  /^Test\s+User$/, // test@klarpakke.com
+];
+
+function isTestUser(name: string): boolean {
+  return TEST_USER_PATTERNS.some((p) => p.test(name));
+}
+
+let testUserCounter = 0;
+function anonymizeTestUser(): string {
+  testUserCounter++;
+  return `Trader ${testUserCounter}`;
+}
+
 // Emoji / spesialtegn — skal ikke i display_name
-const HAS_EMOJI_OR_SYMBOL = /[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B06}]/u;
+const HAS_EMOJI_OR_SYMBOL =
+  /[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B06}]/u;
 
 // ---------------------------------------------------------------------------
 // Valider display_name — ingen HTML, quotes, eller kontrolltegn
@@ -38,19 +69,28 @@ const HAS_EMOJI_OR_SYMBOL = /[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23
 function sanitizeDisplayName(name: string | null | undefined): string | null {
   if (!name || typeof name !== "string") return null;
   let cleaned = name
-    .replace(/<[^>]*>/g, "")      // strip HTML tags
+    .replace(/<[^>]*>/g, "") // strip HTML tags
     .replace(/[""''«»]/g, "'") // normalize quotes
     .trim();
   // Fjern kontrolltegn
-  cleaned = cleaned.split("").filter((c) => {
-    const code = c.charCodeAt(0);
-    return code > 31 && code !== 127;
-  }).join("");
+  cleaned = cleaned
+    .split("")
+    .filter((c) => {
+      const code = c.charCodeAt(0);
+      return code > 31 && code !== 127;
+    })
+    .join("");
   // Avvis emoji og spesialtegn
   if (HAS_EMOJI_OR_SYMBOL.test(cleaned)) return null;
   // Avvis etter rens hvis fortsatt mistenkelig
   if (!cleaned || cleaned.length < 2 || cleaned.length > 50) return null;
-  if (cleaned.includes("<") || cleaned.includes(">") || cleaned.includes("{") || cleaned.includes("}")) return null;
+  if (
+    cleaned.includes("<") ||
+    cleaned.includes(">") ||
+    cleaned.includes("{") ||
+    cleaned.includes("}")
+  )
+    return null;
   return cleaned;
 }
 
@@ -77,7 +117,10 @@ export async function GET(req: Request) {
 
     if (!accounts || accounts.length === 0) {
       const response = NextResponse.json([]);
-      response.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
+      response.headers.set(
+        "Cache-Control",
+        "public, max-age=60, s-maxage=60, stale-while-revalidate=300",
+      );
       return response;
     }
 
@@ -112,7 +155,8 @@ export async function GET(req: Request) {
       if (!s.user_id) continue;
       sessionBalanceMap.set(
         s.user_id,
-        (sessionBalanceMap.get(s.user_id) ?? 0) + Number(s.current_capital_nok ?? 0)
+        (sessionBalanceMap.get(s.user_id) ?? 0) +
+          Number(s.current_capital_nok ?? 0),
       );
     }
 
@@ -143,14 +187,29 @@ export async function GET(req: Request) {
       // --- FILTRERING ---
       // 1. Bot-navn
       if (BOT_DISPLAY_NAMES.has(rawName)) continue;
-      // 2. Valider/saniter
-      const safeName = sanitizeDisplayName(rawName);
-      if (!safeName) continue;
+      // 1b. Testbruker → anonymiser (beholder tall)
+      let safeName: string | null;
+      if (isTestUser(rawName)) {
+        safeName = anonymizeTestUser();
+      } else {
+        // 2. Valider/saniter
+        safeName = sanitizeDisplayName(rawName);
+        if (!safeName) continue;
+      }
 
       // 4. Må ha minst 1 ekte trade for å vises på leaderboard
       const stat = statsMap.get(uid);
       const totalTrades = stat?.total_trades ?? 0;
       if (totalTrades < 1) continue;
+
+      // Prekalkuler win_rate for sanity-sjekk
+      const winningTrades = stat?.winning_trades ?? 0;
+      const preWinRate =
+        totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+
+      // 4b. Sanity-filter: umulige kombinasjoner (FACT-AUDIT)
+      // Win rate < 5% med >500% avkastning og >10 trades = matematisk umulig
+      if (totalTrades > 10 && preWinRate < 5) continue;
 
       const balance = Number(acc.current_balance ?? 0);
       // Avkastning må måles mot brukerens FAKTISKE startkapital —
@@ -164,15 +223,14 @@ export async function GET(req: Request) {
       const sessionsSum = sessionBalanceMap.get(uid) ?? 0;
       const maxPlausible = startBalance * 3;
       const effectiveBalance =
-        sessionsSum > 0 && sessionsSum <= maxPlausible
-          ? sessionsSum
-          : balance;
-      const returnPct = ((effectiveBalance - startBalance) / startBalance) * 100;
+        sessionsSum > 0 && sessionsSum <= maxPlausible ? sessionsSum : balance;
+      const returnPct =
+        ((effectiveBalance - startBalance) / startBalance) * 100;
 
-      const winningTrades = stat?.winning_trades ?? 0;
-      const winRate = totalTrades > 0
-        ? Math.round((winningTrades / totalTrades) * 1000) / 10
-        : 0;
+      const winRate =
+        totalTrades > 0
+          ? Math.round((winningTrades / totalTrades) * 1000) / 10
+          : 0;
 
       leaderboard.push({
         user_id: uid,
@@ -189,10 +247,15 @@ export async function GET(req: Request) {
     }
 
     leaderboard.sort((a, b) => b.return_pct - a.return_pct);
-    leaderboard.forEach((row, i) => { row.rank = i + 1; });
+    leaderboard.forEach((row, i) => {
+      row.rank = i + 1;
+    });
 
     const response = NextResponse.json(leaderboard);
-    response.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=60, s-maxage=60, stale-while-revalidate=300",
+    );
     return response;
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
