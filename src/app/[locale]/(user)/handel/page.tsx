@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { getCockpitInitialData } from "@/features/trading-cockpit/server/getCockpitInitialData";
@@ -10,6 +10,35 @@ import { CockpitQueryProvider } from "@/features/trading-cockpit/components/Cock
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+function CockpitSkeleton() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-blue-500" />
+    </div>
+  );
+}
+
+async function CockpitSection({
+  userId,
+  locale,
+  mode,
+  tab,
+  installPrompt,
+}: {
+  userId: string;
+  locale: string;
+  mode: string | null;
+  tab: string | null;
+  installPrompt: ReactNode;
+}) {
+  const initialData = await getCockpitInitialData(userId, mode, tab);
+  return (
+    <CockpitProvider initialData={initialData} userId={userId} locale={locale}>
+      <TradingCockpit installPrompt={installPrompt} />
+    </CockpitProvider>
+  );
+}
 
 export default async function TradingPage({
   params,
@@ -26,28 +55,23 @@ export default async function TradingPage({
     return <LoginRequired next={`/${locale}/handel`} />;
   }
 
-  const initialData = await getCockpitInitialData(user.id, mode ?? null, tab ?? null);
-
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-blue-500" />
-        </div>
-      }
-    >
-      <CockpitQueryProvider>
-        <CockpitProvider
-          initialData={initialData}
+    <CockpitQueryProvider>
+      <Suspense fallback={<CockpitSkeleton />}>
+        <CockpitSection
           userId={user.id}
           locale={locale}
-        >
-          <TradingCockpit installPrompt={<InstallPrompt />} />
-          <div className="mt-4">
-            <AutopilotDashboard userId={user.id} />
-          </div>
-        </CockpitProvider>
-      </CockpitQueryProvider>
-    </Suspense>
+          mode={mode ?? null}
+          tab={tab ?? null}
+          installPrompt={<InstallPrompt />}
+        />
+      </Suspense>
+      {/* Autopilot er uavhengig av cockpit-data — streamer umiddelbart med egen loading-state */}
+      <div className="mt-4">
+        <Suspense fallback={null}>
+          <AutopilotDashboard userId={user.id} />
+        </Suspense>
+      </div>
+    </CockpitQueryProvider>
   );
 }
