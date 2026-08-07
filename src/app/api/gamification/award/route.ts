@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { trackCriticalAction } from "@/lib/sentry";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 // XP awards configuration
 const XP_AWARDS: { [key: string]: number } = {
   login: 50,
@@ -41,12 +43,15 @@ export async function POST(request: NextRequest) {
     // Timeout guard for createServerClient (can hang in Workers)
     const clientPromise = createServerClient(request, response);
     const timeout = 3000;
-    const supabaseAuth = await Promise.race([
+    const supabaseAuth = (await Promise.race([
       clientPromise,
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Supabase server client timeout")), timeout)
+        setTimeout(
+          () => reject(new Error("Supabase server client timeout")),
+          timeout,
+        ),
       ),
-    ]) as Awaited<ReturnType<typeof createServerClient>>;
+    ])) as Awaited<ReturnType<typeof createServerClient>>;
     const {
       data: { user },
       error: authError,

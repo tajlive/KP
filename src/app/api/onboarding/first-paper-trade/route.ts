@@ -10,6 +10,8 @@ import {
 import { FIRST_TRADE_SYMBOL } from "@/lib/onboarding/constants";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   amount: z.number().positive().max(100_000),
 });
@@ -48,10 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (profile.onboarding_completed === true) {
-    return conflict(
-      "Onboarding er allerede fullført",
-      "ALREADY_COMPLETED",
-    );
+    return conflict("Onboarding er allerede fullført", "ALREADY_COMPLETED");
   }
 
   if (profile.onboarding_step !== 3) {
@@ -59,10 +58,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (amount > (profile.paper_balance ?? 0)) {
-    return badRequest(
-      "Beløp overstiger paper-saldo",
-      "INSUFFICIENT_BALANCE",
-    );
+    return badRequest("Beløp overstiger paper-saldo", "INSUFFICIENT_BALANCE");
   }
 
   const binanceRes = await fetch(

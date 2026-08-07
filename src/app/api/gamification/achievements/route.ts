@@ -1,6 +1,8 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/gamification/achievements
  * Returns all achievements for the current user
@@ -72,7 +74,7 @@ export async function POST(_request: NextRequest) {
       console.error("Fetch achievements error:", error);
       return NextResponse.json(
         { awarded: [], achievements: [] },
-        { status: 200 }
+        { status: 200 },
       );
     }
 

@@ -8,6 +8,8 @@ import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
+export const dynamic = "force-dynamic";
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -42,26 +44,24 @@ export async function POST(request: NextRequest) {
         // Dekrypter nøkler
         const apiKey = await decryptApiKey(user.api_key_encrypted);
         const apiSecret = await decryptApiKey(user.api_secret_encrypted);
-        
+
         const client = new KrakenClient(apiKey, apiSecret);
         const deposits = await client.getDepositHistory();
 
         // Filtrer nye deposits (siste 24 timer, kun Success)
-        const newDeposits = Object.values(deposits).filter(
-          (d: unknown) => {
-            const deposit = d as {
-              status: string;
-              time: number;
-              assetid: string;
-              amount: string;
-            };
-            return (
-              deposit.status === "Success" &&
-              new Date(deposit.time * 1000) >
-                new Date(Date.now() - 24 * 60 * 60 * 1000)
-            );
-          },
-        ) as Array<{
+        const newDeposits = Object.values(deposits).filter((d: unknown) => {
+          const deposit = d as {
+            status: string;
+            time: number;
+            assetid: string;
+            amount: string;
+          };
+          return (
+            deposit.status === "Success" &&
+            new Date(deposit.time * 1000) >
+              new Date(Date.now() - 24 * 60 * 60 * 1000)
+          );
+        }) as Array<{
           status: string;
           time: number;
           assetid: string;
@@ -80,7 +80,11 @@ export async function POST(request: NextRequest) {
           );
 
           for (const deposit of newDeposits) {
-            await triggerAutoConvert(user.user_id, deposit.assetid, deposit.amount);
+            await triggerAutoConvert(
+              user.user_id,
+              deposit.assetid,
+              deposit.amount,
+            );
 
             results.push({
               userId: user.user_id,

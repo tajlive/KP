@@ -9,6 +9,8 @@ import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 import { KrakenGridTrader } from "@/lib/trading/kraken-grid";
 
+export const dynamic = "force-dynamic";
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -104,7 +106,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Grid start error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to start grid" },
+      {
+        error: error instanceof Error ? error.message : "Failed to start grid",
+      },
       { status: 500 },
     );
   }
