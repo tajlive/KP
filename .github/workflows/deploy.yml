@@ -38,19 +38,16 @@ jobs:
 
       - name: Deploy to Cloudflare Workers
         run: |
+          DEPLOY_TAG="ci-${GITHUB_SHA::7}"
           set +e
-          UPLOAD_OUTPUT=$(npx wrangler versions upload --env "" 2>&1)
-          UPLOAD_EXIT=$?
+          npx wrangler versions upload --env "" --tag "$DEPLOY_TAG" --message "CI: ${GITHUB_SHA::7}" 2>&1 | tail -20
+          UPLOAD_EXIT=${PIPESTATUS[0]}
           set -e
-          echo "=== versions upload (exit $UPLOAD_EXIT) ==="
-          echo "$UPLOAD_OUTPUT"
-          VERSION_ID=$(echo "$UPLOAD_OUTPUT" | grep -oE "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" | head -1)
-          if [ -z "$VERSION_ID" ]; then
-            echo "::error::Could not extract Version ID from upload output"
+          if [ "$UPLOAD_EXIT" -ne 0 ]; then
+            echo "::error::versions upload failed (exit $UPLOAD_EXIT)"
             exit 1
           fi
-          echo "Uploaded version: $VERSION_ID"
-          npx wrangler versions deploy --version-id "$VERSION_ID" --yes --message "CI deploy: ${GITHUB_SHA::7}"
+          npx wrangler versions deploy --version-tag "$DEPLOY_TAG" --yes --message "CI deploy: ${GITHUB_SHA::7}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
