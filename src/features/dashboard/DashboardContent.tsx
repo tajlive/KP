@@ -87,10 +87,9 @@ export function DashboardContent({
 
   const totalReturn = useMemo(() => {
     if (!data || data.startingCapital <= 0) return undefined;
-    // FIKS 6: Avkastning fra KONTO (paper_accounts), ikke sesjons-sum.
-    // totalCapital er sum på tvers av sesjoner og forvrenges av krasjede sesjoner.
-    const current = data.accountBalance ?? data.totalCapital;
-    return ((current - data.startingCapital) / data.startingCapital) * 100;
+    // FIKS 8: Avkastning fra EKTE trading-P&L (totalPnl), ikke konto-differanse.
+    // Konto-balansen inkluderer manuelle justeringer — konto-differansen lyver som «avkastning».
+    return (data.totalPnl / data.startingCapital) * 100;
   }, [data]);
 
   const userState = computeUserState({
@@ -112,6 +111,8 @@ export function DashboardContent({
         sessionCount: data.sessionCount,
         // FIKS 6: KONTO-balanse (paper_accounts) — source of truth for hero
         accountBalance: data.accountBalance,
+        // FIKS 8: investedCapital (åpne posisjoner) — «Total verdi» = ledig + investert overalt
+        investedCapital: data.investedCapital ?? 0,
         // DB-rader → PaperTradingList sin TradingSession-type (narrowing + null-guards)
         recentSessions: (data.recentSessions ?? []).map((s) => ({
           id: s.id,

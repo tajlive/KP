@@ -2064,13 +2064,13 @@
       "stats": {
         "totalReturn": "Total avkastning",
         "totalReturnSub": "Akkumulert profitt",
-        "totalReturnHelp": "Startkapital → Gjeldende kapital → PnL. Viser realisert gevinst/tap fra lukkede trades.",
+        "totalReturnHelp": "Viser realisert gevinst/tap fra lukkede trades.",
         "winRate": "Vinnrate",
         "winRateSub": "{totalTrades} handler totalt",
         "winRateHelp": "Andel profitable trades av alle lukkede trades.",
         "balance": "Total verdi",
-        "balanceSub": "Tilgjengelig kapital",
-        "balanceHelp": "Gjeldende kapital = startkapital + realisert PnL. Åpne posisjoner er ikke inkludert."
+        "balanceSub": "Ledig + investert",
+        "balanceHelp": "Alt du har: ledig kapital + verdien av åpne posisjoner."
       },
       "scopeLabel": "Basert på aktive og fullførte sesjoner",
       "chart": {
