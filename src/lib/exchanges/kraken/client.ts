@@ -46,7 +46,9 @@ export class KrakenClient {
   }
 
   private getNonce(): string {
-    return Date.now().toString();
+    // μs-nonce: API-nøkkelen er konfigurert med 10000ms nonce-window for μs.
+    // ms-nonce gir EAPI:Invalid nonce (samme fix som kraken-grid-manager 2026-08-07).
+    return (Date.now() * 1000).toString();
   }
 
   private async signRequest(
