@@ -178,7 +178,7 @@ Svarformat: Én kort paragraph. Maks 3 setninger.`;
 
 OPPGAVE: Oppsummer ytelsen siste 30 dager.
 Fokuser på: win rate, total P&L, beste/verste dag, trend.
-Sammenligne med bransjesnitt for win rate (ca. 55%) hvis relevant.
+Ikke sammenlign med udokumenterte bransjesnitt-tall (Alltid-fakta-regelen).
 
 Svarformat: Én kort paragraph. Maks 3 setninger.`;
 
@@ -245,7 +245,7 @@ function ruleBasedInsight(
         ? metrics.totalTrades - metrics.totalDecided 
         : 0;
       return {
-        insight: `${metrics.winRate}% av ${metrics.totalDecided} avgjorte handler var lønnsomme (bransjesnitt win rate: ~55%). ${metrics.totalTrades} handler totalt, ${breakeven > 0 ? breakeven + ' gikk i null, ' : ''}total P&L: ${metrics.totalPnl > 0 ? "+" : ""}${metrics.totalPnl.toLocaleString()} kr.` ,
+        insight: `${metrics.winRate}% av ${metrics.totalDecided} avgjorte handler var lønnsomme. ${metrics.totalTrades} handler totalt, ${breakeven > 0 ? breakeven + ' gikk i null, ' : ''}total P&L: ${metrics.totalPnl > 0 ? "+" : ""}${metrics.totalPnl.toLocaleString()} kr.` ,
         confidence: metrics.totalTrades >= 10 ? "high" : "low",
       };
     }

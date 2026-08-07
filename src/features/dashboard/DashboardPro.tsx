@@ -53,6 +53,8 @@ interface UserStats {
   sessionCount?: number;
   /** FIKS 6: KONTO-balanse (paper_accounts) — source of truth, ikke sesjons-sum */
   accountBalance?: number | null;
+  /** FIKS 8: Verdi i åpne posisjoner — «Total verdi» = ledig + investert */
+  investedCapital?: number;
   /** Timestamp for siste balance-justering (fra paper_accounts.updated_at) */
   accountBalanceUpdatedAt?: string | null;
   recentSessions?: TradingSession[];
@@ -173,12 +175,18 @@ export function DashboardPro({
   const formatWinRateOrDash = (value: number | null | undefined) =>
     value == null ? "—" : `${Math.round(value * 100)}%`;
 
-  // FIKS 6: Beregn avkastning fra KONTO (paper_accounts), ikke sesjons-sum
-  const heroBalance = effectiveStats.accountBalance ?? effectiveStats.currentCapital;
-  const totalReturn = effectiveStats.accountBalance != null && effectiveStats.startingCapital != null && effectiveStats.startingCapital > 0
-    ? ((effectiveStats.accountBalance - effectiveStats.startingCapital) / effectiveStats.startingCapital) * 100
-    : effectiveStats.startingCapital != null && effectiveStats.currentCapital != null && effectiveStats.startingCapital > 0
-      ? ((effectiveStats.currentCapital - effectiveStats.startingCapital) / effectiveStats.startingCapital) * 100
+  // FIKS 8: Avkastning fra EKTE trading-P&L (totalPnl), ikke konto-differanse.
+  // Konto-balansen inkluderer manuelle justeringer (bonuser/reparasjoner) som ikke er handelsresultat —
+  // konto-differansen lyver som «avkastning» (observert: konto +138 210 kr men trades −830 kr).
+  // «Total verdi» = ledig (accountBalance) + investert (investedCapital) — samme som DashboardTopBar.
+  const heroBalance =
+    (effectiveStats.accountBalance ?? effectiveStats.currentCapital ?? 0) +
+    (effectiveStats.investedCapital ?? 0);
+  const totalReturn =
+    effectiveStats.totalPnl != null &&
+    effectiveStats.startingCapital != null &&
+    effectiveStats.startingCapital > 0
+      ? (effectiveStats.totalPnl / effectiveStats.startingCapital) * 100
       : undefined;
 
   // Adaptive user state — konsolidert til én maskin (NyBruker / Onboarded / AktivTrader / PowerUser)
@@ -237,9 +245,7 @@ export function DashboardPro({
           {/* Personalized Greeting — Enterprise 2026 */}
           <PersonalizedGreeting
             userName={userName}
-            totalPnl={effectiveStats.accountBalance != null
-              ? effectiveStats.accountBalance - (effectiveStats.startingCapital ?? 0)
-              : effectiveStats.totalPnl}
+            totalPnl={effectiveStats.totalPnl}
             isPriority={isPriority}
           />
 
