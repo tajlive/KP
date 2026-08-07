@@ -1932,7 +1932,15 @@
       "title": "Daily P&L Heatmap",
       "loss": "Loss",
       "win": "Win",
-      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "subtitle": "{winningDays, plural, one {# green} other {# green}} · {losingDays, plural, one {# red} other {# red}} · {winRate}% win rate",
       "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
     },
@@ -4679,7 +4687,10 @@
         "title": "Title"
       },
       "marketData": {
-        "aria": "Market data"
+        "aria": "Market data",
+        "ok": "Up to date",
+        "delayed": "Delayed",
+        "stale": "Outdated"
       },
       "error": {
         "description": "Description",
@@ -4688,7 +4699,7 @@
         "analyticsFailed": "Analytics Failed"
       },
       "header": {
-        "title": "Title"
+        "title": "Trade"
       },
       "mode": {
         "label": "Mode: {mode}",
@@ -4763,7 +4774,8 @@
       "quickActions": {
         "pauseAll": "Pause all",
         "startRobot": "Start robot",
-        "viewHistory": "History"
+        "viewHistory": "History",
+        "error": "Could not perform action"
       },
       "trades": {
         "side": {
@@ -4856,7 +4868,7 @@
         "analysis": "Analysis"
       }
     },
-    "toggleAria": "Toggle Aria",
+    "toggleAria": "Switch between paper and live trading",
     "paperTrading": {
       "card": {
         "loading": "Loading",

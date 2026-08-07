@@ -43,15 +43,23 @@ export function useAutopilotRealtime(
     if (!userId) return;
     try {
       const supabase = createClient();
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("autopilot_state")
         .select("*")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        setError(error.message);
+        return;
+      }
 
       if (data) {
         setState(coerceState(data));
         setLastUpdate(new Date());
+      } else {
+        // Ingen rad ennå — normal tilstand for brukere uten aktiv autopilot.
+        setState(null);
       }
     } catch (err) {
       setError(

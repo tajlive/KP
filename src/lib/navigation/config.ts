@@ -66,7 +66,7 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
   },
   {
     key: "trade",
-    href: "/trade",
+    href: "/handel",
     labelKey: "dashboard.sidebar.trade",
     icon: "TrendingUp",
     roles: ["auth"],
@@ -168,7 +168,7 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
   },
   {
     key: "trade",
-    href: "/trade",
+    href: "/handel",
     labelKey: "navigation.trade",
     icon: "TrendingUp",
     roles: ["auth"],
@@ -257,7 +257,7 @@ export const DASHBOARD_MAIN_NAV: readonly DashboardMainNavItem[] = [
 ];
 
 export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
-  { href: "/trade", labelKey: "trade" },
+  { href: "/handel", labelKey: "trade" },
   {
     href: "/dashboard/auto-trade",
     labelKey: "autoTrade",
@@ -270,7 +270,7 @@ export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
 export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
-  { href: "/trade", labelKey: "trade" },
+  { href: "/handel", labelKey: "trade" },
   // Auto-trade fjernet fra toppmeny 2026-08-01 (Tom): nås via Mer → Pilot / sidebar.
 ];
 
@@ -278,7 +278,7 @@ export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
 export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
   { href: "/dashboard", labelKey: "home", exact: true },
   { href: "/dashboard/portfolio", labelKey: "portfolio" },
-  { href: "/trade", labelKey: "trade" },
+  { href: "/handel", labelKey: "trade" },
   { href: "/dashboard/historikk", labelKey: "history" },
 ];
 
@@ -361,7 +361,7 @@ export const FALLBACK_NAVIGATION: NavigationData = {
   loggedInLinks: [
     { label: "Hjem", path: "/dashboard", order: 0 },
     { label: "Portefølje", path: "/dashboard/portfolio", order: 1 },
-    { label: "Handel", path: "/trade", order: 2 },
+    { label: "Handel", path: "/handel", order: 2 },
     { label: "Konto", path: "/profile", order: 3 },
   ],
 };
@@ -383,7 +383,7 @@ export const APP_SHELL_PATHS: readonly string[] = [
   "/onboarding",
   "/akademi",
   "/konto",
-  "/trade",
+  "/handel",
   "/pilot",
   "/marked",
   "/leagues",

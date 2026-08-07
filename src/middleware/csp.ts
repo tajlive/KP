@@ -88,6 +88,10 @@ export const cspMiddleware: MiddlewareFn = (
       "https://pskhryjzkobytnfwucrb.supabase.co",
       "https://*.tradingview.com",
       "https://plausible.io",
+      "https://utt.impactcdn.com",
+      "https://www.googletagmanager.com",
+      "https://www.google-analytics.com",
+      "https://challenges.cloudflare.com",
     ],
     "style-src": [
       "'self'",

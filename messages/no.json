@@ -1932,7 +1932,15 @@
       "title": "Daglig P&L Heatmap",
       "loss": "Tap",
       "win": "Gevinst",
-      "dayLabels": ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
+      "dayLabels": [
+        "Man",
+        "Tir",
+        "Ons",
+        "Tor",
+        "Fre",
+        "Lør",
+        "Søn"
+      ],
       "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
     },
@@ -4678,7 +4686,10 @@
         "title": "Tittel"
       },
       "marketData": {
-        "aria": "Markedsdata"
+        "aria": "Markedsdata",
+        "ok": "Oppdatert",
+        "delayed": "Forsinket",
+        "stale": "Utdatert"
       },
       "error": {
         "description": "Beskrivelse",
@@ -4687,7 +4698,7 @@
         "analyticsFailed": "Analytics failed"
       },
       "header": {
-        "title": "Tittel"
+        "title": "Handel"
       },
       "mode": {
         "label": "Modus: {mode}",
@@ -4762,7 +4773,8 @@
       "quickActions": {
         "pauseAll": "Pause alle",
         "startRobot": "Start robot",
-        "viewHistory": "Historikk"
+        "viewHistory": "Historikk",
+        "error": "Kunne ikke utføre handlingen"
       },
       "trades": {
         "side": {
@@ -4855,7 +4867,7 @@
         "analysis": "Analyse"
       }
     },
-    "toggleAria": "Toggle aria",
+    "toggleAria": "Bytt mellom lekepenger og live",
     "paperTrading": {
       "card": {
         "loading": "Laster...",
