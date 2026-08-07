@@ -3,7 +3,7 @@
  * Kjører grid-strategi på Kraken med USDT-par
  */
 
-import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { KrakenClient, KrakenLockoutError } from "@/lib/exchanges/kraken/client";
 import { toKrakenSymbol, KRAKEN_FEE } from "@/lib/exchanges/kraken/symbols";
 import { PAIR_CFG, TRAIL_SELL_PCT } from "./kraken-grid-config.mjs";
 
@@ -339,6 +339,7 @@ export async function runGridTick(
         });
         result.sellOrdersPlaced++;
       } catch (error) {
+        if (error instanceof KrakenLockoutError) throw error;
         console.error(`runGridTick: feil salgsordre for ${order.txid}:`, error);
       }
     } else {
@@ -364,6 +365,7 @@ export async function runGridTick(
         });
         result.rebuysPlaced++;
       } catch (error) {
+        if (error instanceof KrakenLockoutError) throw error;
         console.error(`runGridTick: feil re-kjøp for ${order.txid}:`, error);
       }
     }

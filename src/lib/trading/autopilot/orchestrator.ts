@@ -30,7 +30,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/types/database.types";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
-import { KrakenClient } from "@/lib/exchanges/kraken/client";
+import { KrakenClient, KrakenLockoutError } from "@/lib/exchanges/kraken/client";
 import {
   PAIR_CFG,
   ACTIVE_PAIRS,
@@ -413,6 +413,7 @@ export async function processAutopilotUser(
             await client.cancelOrder(txid);
             cancelledOrders++;
           } catch (error) {
+            if (error instanceof KrakenLockoutError) throw error;
             console.error(
               `Autopilot kill: kansellering ${txid} feilet:`,
               error,
@@ -538,6 +539,8 @@ export async function processAutopilotUser(
             ];
             newOrdersPlaced++;
           } catch (error) {
+            // Lockout: stopp HELE tiken — hvert kall under lockout forlenger den.
+            if (error instanceof KrakenLockoutError) throw error;
             console.error(
               `Autopilot init-nivå ${pair} @ ${lv.price} feilet:`,
               error,
@@ -596,6 +599,7 @@ export async function processAutopilotUser(
               dcaAmount = dcaOrder.amountUsdc;
               newOrdersPlaced++;
             } catch (error) {
+              if (error instanceof KrakenLockoutError) throw error;
               console.error(`Autopilot DCA ${dcaPair} feilet:`, error);
             }
           }
@@ -669,6 +673,7 @@ export async function processAutopilotUser(
             idleLevelsPlaced++;
             newOrdersPlaced++;
           } catch (error) {
+            if (error instanceof KrakenLockoutError) throw error;
             console.error(
               `Autopilot idle-nivå ${idlePick.pair} feilet:`,
               error,

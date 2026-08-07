@@ -6,6 +6,21 @@
 const KRAKEN_API_URL = "https://api.kraken.com";
 const KRAKEN_API_VERSION = "0";
 
+/**
+ * Kraken rate-limit-lockout (EGeneral:Temporary lockout / EService:Unavailable).
+ * Skilles fra vanlige feil så kallere kan stoppe tidlig i stedet for å hamre
+ * videre (hvert kall under lockout forlenger den).
+ */
+export class KrakenLockoutError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "KrakenLockoutError";
+  }
+}
+
+/** Jitter (0–20 %) unngår thundering-herd når flere workers rammes samtidig. */
+const jitter = (ms: number) => ms * (1 + Math.random() * 0.2);
+
 export interface KrakenBalance {
   [asset: string]: string;
 }
@@ -39,10 +54,28 @@ export interface KrakenTicker {
 export class KrakenClient {
   private apiKey: string;
   private apiSecret: string;
+  /** Minste intervall mellom private kall (Kraken: ~1 req/s per IP/nøkkel). */
+  private readonly privateSpacingMs: number;
+  /** Lockout-backoff: lockout varer typisk 30–120s — retries må overleve det. */
+  private readonly lockoutBackoffMs: number[];
+  private lastPrivateCallAt = 0;
 
-  constructor(apiKey: string, apiSecret: string) {
+  constructor(
+    apiKey: string,
+    apiSecret: string,
+    opts: { privateSpacingMs?: number; lockoutBackoffMs?: number[] } = {},
+  ) {
     this.apiKey = apiKey;
     this.apiSecret = apiSecret;
+    this.privateSpacingMs = opts.privateSpacingMs ?? 1100;
+    this.lockoutBackoffMs = opts.lockoutBackoffMs ?? [15_000, 30_000, 60_000];
+  }
+
+  /** Pacing: minst `privateSpacingMs` mellom private kall (per instans). */
+  private async pacePrivateCall(): Promise<void> {
+    const wait = this.lastPrivateCallAt + this.privateSpacingMs - Date.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    this.lastPrivateCallAt = Date.now();
   }
 
   private getNonce(): string {
@@ -124,6 +157,7 @@ export class KrakenClient {
 
       for (let attempt = 0; attempt < retries; attempt++) {
         try {
+          await this.pacePrivateCall();
           const response = await fetch(url, {
             method: "POST",
             headers,
@@ -132,16 +166,19 @@ export class KrakenClient {
           return await this.handleResponse<T>(response);
         } catch (error) {
           if (attempt === retries - 1) throw error;
-          await this.backoff(attempt);
+          await this.backoff(attempt, error);
         }
       }
       throw new Error("Max retries exceeded");
     }
   }
 
-  private async backoff(attempt: number): Promise<void> {
-    // Exponential backoff: 1s, 2s, 4s
-    const delay = Math.pow(2, attempt) * 1000;
+  private async backoff(attempt: number, error?: unknown): Promise<void> {
+    // Lockout krever mye lengre venting enn vanlige feil (1s/2s/4s holder ikke).
+    const delay =
+      error instanceof KrakenLockoutError
+        ? jitter(this.lockoutBackoffMs[Math.min(attempt, this.lockoutBackoffMs.length - 1)])
+        : Math.pow(2, attempt) * 1000;
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
@@ -154,7 +191,19 @@ export class KrakenClient {
     const data = await response.json();
 
     if (data.error && data.error.length > 0) {
-      throw new Error(`Kraken API error: ${data.error.join(", ")}`);
+      const errors: string[] = data.error;
+      const joined = errors.join(", ");
+      if (
+        errors.some(
+          (e) =>
+            e.includes("Temporary lockout") ||
+            e.includes("EService:Unavailable") ||
+            e.includes("Rate limit exceeded"),
+        )
+      ) {
+        throw new KrakenLockoutError(`Kraken API error: ${joined}`);
+      }
+      throw new Error(`Kraken API error: ${joined}`);
     }
 
     return data.result as T;
