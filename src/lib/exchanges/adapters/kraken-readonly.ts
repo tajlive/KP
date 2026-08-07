@@ -28,7 +28,7 @@ async function krakenPrivateRequest<T>(
   apiSecret: string,
   body: URLSearchParams,
 ): Promise<T> {
-  const nonce = Date.now().toString();
+  const nonce = (Date.now() * 1000).toString(); // μs-nonce (API-nøkkel med 10000ms window)
   body.set("nonce", nonce);
   const signature = signKrakenRequest(path, nonce, body.toString(), apiSecret);
 

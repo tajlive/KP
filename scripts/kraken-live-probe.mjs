@@ -38,7 +38,7 @@ const ENV = loadEnv();
 
 async function kraken(endpoint, params = {}, isPublic = false) {
   const path = `/0/${isPublic ? "public" : "private"}/${endpoint}`;
-  const nonce = Date.now().toString();
+  const nonce = (Date.now() * 1000).toString(); // μs-nonce — API-nøkkel har 10000ms nonce-window
   const body = new URLSearchParams({ nonce, ...params }).toString();
   const sha256 = createHash("sha256").update(nonce + body).digest();
   const sig = createHmac("sha512", Buffer.from(ENV.KRAKEN_API_SECRET, "base64"))
