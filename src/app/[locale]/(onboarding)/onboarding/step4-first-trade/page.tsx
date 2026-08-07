@@ -349,6 +349,7 @@ export default function OnboardingStep4FirstTrade() {
           >
             <button
               onClick={() => setShowKrakenConnect(true)}
+              aria-label="Koble til Kraken"
               className="w-full rounded-2xl border border-[#F59E0B]/30 bg-gradient-to-r from-[#F59E0B]/10 to-[#FCD34D]/5 p-4 text-left hover:border-[#F59E0B]/50 transition-colors"
             >
               <div className="flex items-center gap-3">
