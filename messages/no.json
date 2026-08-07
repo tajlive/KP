@@ -1142,7 +1142,7 @@
         "list1": "List",
         "list2": "List",
         "list3": "List",
-        "cta": "Cta"
+        "cta": "Start her"
       },
       "step2": {
         "title": "Tittel",
@@ -1161,7 +1161,7 @@
         "status": "Status",
         "statusValue": "Status verdi",
         "initializing": "Initializing",
-        "startBot": "Start bot"
+        "startBot": "Start boten"
       },
       "step4": {
         "title": "Tittel",
@@ -1205,7 +1205,7 @@
     "binanceNotConnectedDesc": "Binance Not Connected Desc",
     "liveNotAllowedDesc": "Live Not Allowed Desc",
     "stepStart": "Step Start",
-    "startBotTitle": "Start Bot Title",
+    "startBotTitle": "Start auto-handel",
     "stepAmount": "Step Amount",
     "stepStrategy": "Step Strategy",
     "modeLabel": "Mode Label",
@@ -1222,7 +1222,7 @@
     "botConfigStrategy": "Bot Config Strategy",
     "botStrategyMulti": "Bot Strategy Multi",
     "strategyDca": "Strategy Dca",
-    "connectBinanceCta": "Connect Binance Cta",
+    "connectBinanceCta": "Koble til Binance",
     "strategyAi": "Strategy Ai",
     "botStrategyGrid": "Bot Strategy Grid",
     "botStrategyAiDesc": "Bot Strategy Ai Desc",
@@ -1230,7 +1230,7 @@
     "botStrategyTrendDesc": "Bot Strategy Trend Desc",
     "strategyTrend": "Strategy Trend",
     "upgradeToStartLive": "Upgrade To Start Live",
-    "upgradeCta": "Upgrade Cta",
+    "upgradeCta": "Oppgrader",
     "liveWarningTitle": "Live Warning Title",
     "liveWarningDesc": "Live Warning Desc",
     "upgradeNotice": "Upgrade Notice",
@@ -1249,7 +1249,7 @@
     "liveConfirmWarning": "Bekreft live-start",
     "starting": "Starter",
     "startLiveBotAction": "Start live bot",
-    "startBotAction": "Start bot"
+    "startBotAction": "Start boten"
   },
   "competition": {
     "title": "Trading Konkurranse",
@@ -3310,7 +3310,7 @@
       "currencySuffix": "Valuta suffix",
       "whatIs": "What is",
       "tooltip": "Tooltip",
-      "cta": "Cta"
+      "cta": "Fortsett"
     },
     "step4": {
       "error": "Feil",
@@ -3329,16 +3329,16 @@
         "placeholder": "Lim inn API-hemmeligheten"
       },
       "connecting": "Connecting",
-      "cta": "Cta",
-      "skipping": "Skipping",
-      "skip": "Skip"
+      "cta": "Fullfør oppsett",
+      "skipping": "Hopper over…",
+      "skip": "Hopp over"
     },
     "aiMapping": {
       "coachName": "Coach navn",
       "subtitle": "Undertittel",
       "title": "Tittel",
-      "cta": "Cta",
-      "skip": "Skip"
+      "cta": "Start nå",
+      "skip": "Hopp over"
     },
     "trustBar": {
       "paperMoney": "100 000 kr lekepenger",
@@ -3351,7 +3351,7 @@
         "description": "Beskrivelse",
         "selectedStrategy": "Selected strategi",
         "loading": "Laster...",
-        "cta": "Cta"
+        "cta": "Aktiver bot"
       },
       "step1": {
         "title": "Tittel",
@@ -3362,8 +3362,8 @@
           "finanstilsynet": "Finanstilsynet",
           "noHiddenFees": "No hidden fees"
         },
-        "cta": "Cta",
-        "skip": "Skip"
+        "cta": "Kom i gang",
+        "skip": "Hopp over"
       },
       "step2": {
         "subtitle": "Subtitle",
@@ -3377,14 +3377,14 @@
         "finish": "Finish"
       },
       "step1": {
-        "title1": "Title 1",
-        "title2": "Title 2",
+        "title1": "Velkommen til Klarpakke",
+        "title2": "La oss sette opp kontoen din",
         "description": "Description",
         "howItWorksTitle": "How It Works Title",
         "list1": "List 1",
         "list2": "List 2",
         "list3": "List 3",
-        "cta": "Cta"
+        "cta": "Kom i gang"
       },
       "step2": {
         "title": "Title",
@@ -3401,7 +3401,7 @@
         "currencySuffix": "Currency Suffix",
         "tradingModeValue": "Trading Mode Value",
         "initializing": "Initializing",
-        "startBot": "Start Bot",
+        "startBot": "Start boten",
         "status": "Status",
         "statusValue": "Status Value"
       },
@@ -4678,9 +4678,7 @@
         "title": "Tittel"
       },
       "marketData": {
-        "stale": "Stale",
-        "delayed": "Delayed",
-        "ok": "Ok"
+        "aria": "Markedsdata"
       },
       "error": {
         "description": "Beskrivelse",
@@ -4762,9 +4760,9 @@
         }
       },
       "quickActions": {
-        "error": "Feil",
+        "pauseAll": "Pause alle",
         "startRobot": "Start robot",
-        "viewHistory": "Vis historikk"
+        "viewHistory": "Historikk"
       },
       "trades": {
         "side": {
@@ -4849,6 +4847,12 @@
           "bestSession": "Best økt",
           "worstSession": "Worst økt"
         }
+      },
+      "tab": {
+        "overview": "Oversikt",
+        "trades": "Handler",
+        "sessions": "Økter",
+        "analysis": "Analyse"
       }
     },
     "toggleAria": "Toggle aria",
@@ -5715,7 +5719,7 @@
     "waitingForSignal": "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt.",
     "kellyNotice": "🛡️ Boten bruker Kelly-kriteriet til å tilpasse posisjonsstørrelsen etter hvordan det går. Det reduserer risikoen, men fjerner den ikke — du kan fortsatt tape penger.",
     "starting": "Starter...",
-    "startBotAction": "Start bot",
+    "startBotAction": "Start auto-handel",
     "startLiveBotAction": "Start live-bot",
     "back": "Tilbake",
     "next": "Neste",

@@ -33,7 +33,7 @@ export interface KrakenTicker {
   t: number[]; // Number of trades
   l: string[]; // Low
   h: string[]; // High
-  o: string;   // Open
+  o: string; // Open
 }
 
 export class KrakenClient {
@@ -49,13 +49,18 @@ export class KrakenClient {
     return Date.now().toString();
   }
 
-  private async signRequest(path: string, params: Record<string, string>): Promise<string> {
+  private async signRequest(
+    path: string,
+    params: Record<string, string>,
+  ): Promise<string> {
     const nonce = this.getNonce();
     const postData = new URLSearchParams({ nonce, ...params }).toString();
     const encoder = new TextEncoder();
 
     // Web Crypto API (edge-compatible — Cloudflare Workers)
-    const keyData = Uint8Array.from(atob(this.apiSecret), (c) => c.charCodeAt(0));
+    const keyData = Uint8Array.from(atob(this.apiSecret), (c) =>
+      c.charCodeAt(0),
+    );
     const key = await crypto.subtle.importKey(
       "raw",
       keyData,
@@ -95,7 +100,7 @@ export class KrakenClient {
     if (isPublic) {
       const query = new URLSearchParams(params).toString();
       const fullUrl = query ? `${url}?${query}` : url;
-      
+
       for (let attempt = 0; attempt < retries; attempt++) {
         try {
           const response = await fetch(fullUrl, { headers });
@@ -109,12 +114,12 @@ export class KrakenClient {
     } else {
       const nonce = this.getNonce();
       const signature = await this.signRequest(path, params);
-      
+
       headers["API-Key"] = this.apiKey;
       headers["API-Sign"] = signature;
-      
+
       body = new URLSearchParams({ nonce, ...params }).toString();
-      
+
       for (let attempt = 0; attempt < retries; attempt++) {
         try {
           const response = await fetch(url, {
@@ -135,7 +140,7 @@ export class KrakenClient {
   private async backoff(attempt: number): Promise<void> {
     // Exponential backoff: 1s, 2s, 4s
     const delay = Math.pow(2, attempt) * 1000;
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -143,20 +148,21 @@ export class KrakenClient {
       const error = await response.text();
       throw new Error(`Kraken API error: ${response.status} - ${error}`);
     }
-    
+
     const data = await response.json();
-    
+
     if (data.error && data.error.length > 0) {
       throw new Error(`Kraken API error: ${data.error.join(", ")}`);
     }
-    
+
     return data.result as T;
   }
 
   // ==================== PUBLIC METHODS ====================
 
   /**
-   * Henter ticker-info for et par
+   * Henter ticker-info for ett eller flere par (kommaseparert).
+   * Returnerer Record<par, KrakenTicker> — alltid full resultat.
    */
   async getTicker(pair: string): Promise<KrakenTicker> {
     const result = await this.request<Record<string, KrakenTicker>>(
@@ -165,6 +171,17 @@ export class KrakenClient {
       true,
     );
     return result[pair];
+  }
+
+  /**
+   * Henter ticker for flere par — returnerer hele resultatet direkte.
+   */
+  async getTickers(pairs: string[]): Promise<Record<string, KrakenTicker>> {
+    return this.request<Record<string, KrakenTicker>>(
+      "Ticker",
+      { pair: pairs.join(",") },
+      true,
+    );
   }
 
   /**
@@ -187,7 +204,10 @@ export class KrakenClient {
    * Plasserer market-ordre med volum oppgitt i QUOTE-valuta
    * (f.eks. "kjøp USDT for 60 EUR" på USDTEUR — oflag=viqc)
    */
-  async marketBuyQuote(pair: string, quoteVolume: string): Promise<KrakenOrder> {
+  async marketBuyQuote(
+    pair: string,
+    quoteVolume: string,
+  ): Promise<KrakenOrder> {
     return this.request("AddOrder", {
       pair,
       type: "buy",
@@ -212,7 +232,11 @@ export class KrakenClient {
   /**
    * Plasserer limit-ordre
    */
-  async limitBuy(pair: string, volume: string, price: string): Promise<KrakenOrder> {
+  async limitBuy(
+    pair: string,
+    volume: string,
+    price: string,
+  ): Promise<KrakenOrder> {
     return this.request("AddOrder", {
       pair,
       type: "buy",
@@ -225,7 +249,11 @@ export class KrakenClient {
   /**
    * Selger med limit-ordre
    */
-  async limitSell(pair: string, volume: string, price: string): Promise<KrakenOrder> {
+  async limitSell(
+    pair: string,
+    volume: string,
+    price: string,
+  ): Promise<KrakenOrder> {
     return this.request("AddOrder", {
       pair,
       type: "sell",
@@ -283,14 +311,14 @@ export function getKrakenClient(): KrakenClient {
   if (!defaultClient) {
     const apiKey = process.env.KRAKEN_API_KEY;
     const apiSecret = process.env.KRAKEN_API_SECRET;
-    
+
     if (!apiKey || !apiSecret) {
       throw new Error("KRAKEN_API_KEY and KRAKEN_API_SECRET must be set");
     }
-    
+
     defaultClient = new KrakenClient(apiKey, apiSecret);
   }
-  
+
   return defaultClient;
 }
 

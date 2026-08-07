@@ -146,7 +146,7 @@ beforeEach(() => {
   getTickerMock.mockImplementation(async (pair: string) =>
     ticker(PRICES[pair] ?? "100"),
   );
-  getOpenOrdersMock.mockResolvedValue({});
+  getOpenOrdersMock.mockResolvedValue({ open: {} });
   limitBuyMock.mockImplementation(async () => ({
     txid: [`buy-${++orderSeq}`],
   }));
@@ -248,7 +248,7 @@ describe("processAutopilotUser — eksisterende posisjoner", () => {
     const { db, saveAutopilotState } = makeDb({ keys: await keysRow(), state });
     // ETH-posisjon (0.04 × 3000 = 120) + 30 USDC → equity 150 (ingen kill)
     getBalanceMock.mockResolvedValue({ USDC: "30", XETH: "0.04" });
-    getOpenOrdersMock.mockResolvedValue({}); // B1 er borte → FILLED
+    getOpenOrdersMock.mockResolvedValue({ open: {} }); // B1 er borte → FILLED
 
     const result = await processAutopilotUser(db, "u1");
 
@@ -306,7 +306,7 @@ describe("processAutopilotUser — eksisterende posisjoner", () => {
     });
     const { db, saveAutopilotState } = makeDb({ keys: await keysRow(), state });
     getBalanceMock.mockResolvedValue({ USDC: "10", XXBT: "0.0015" }); // equity 145
-    getOpenOrdersMock.mockResolvedValue({}); // S1 er borte → FILLED
+    getOpenOrdersMock.mockResolvedValue({ open: {} }); // S1 er borte → FILLED
 
     const result = await processAutopilotUser(db, "u1");
 
@@ -358,8 +358,10 @@ describe("processAutopilotUser — kill-switch (drawdown > 15 %)", () => {
     const { db, saveAutopilotState } = makeDb({ keys: await keysRow(), state });
     getBalanceMock.mockResolvedValue({ USDC: "100" }); // equity 100 vs 150 → 33 % drawdown
     getOpenOrdersMock.mockResolvedValue({
-      O1: { descr: {} },
-      O2: { descr: {} },
+      open: {
+        O1: { descr: {} },
+        O2: { descr: {} },
+      },
     });
 
     const result = await processAutopilotUser(db, "u1");
@@ -388,7 +390,7 @@ describe("processAutopilotUser — kill-switch (drawdown > 15 %)", () => {
     const state = stateRow({ drawdown_kill: true });
     const { db } = makeDb({ keys: await keysRow(), state });
     getBalanceMock.mockResolvedValue({ USDC: "120" });
-    getOpenOrdersMock.mockResolvedValue({ O1: { descr: {} } });
+    getOpenOrdersMock.mockResolvedValue({ open: { O1: { descr: {} } } });
 
     const result = await processAutopilotUser(db, "u1");
 
@@ -433,7 +435,7 @@ describe("processAutopilotUser — redusert modus (7–15 % drawdown)", () => {
     expect(result.newOrdersPlaced).toBeGreaterThan(0);
     const [, patch] = lastSaveCall(saveAutopilotState);
     expect(patch.drawdown_kill).toBe(false);
-    expect((patch.grid_levels.XBTUSDC ?? []).length).toBe(5);
+    expect((patch.grid_levels.XBTUSDC ?? []).length).toBe(6); // 5 init + 1 idle (alle par gap=0, XBT kommer først)
   });
 });
 
@@ -446,7 +448,7 @@ describe("processAutopilotUser — per-bruker-isolasjon", () => {
       state: stateRow({ user_id: "a", initial_equity_usdc: 150 }),
     });
     getBalanceMock.mockResolvedValue({ USDC: "100" }); // 33 % drawdown
-    getOpenOrdersMock.mockResolvedValue({ OA: { descr: {} } });
+    getOpenOrdersMock.mockResolvedValue({ open: { OA: { descr: {} } } });
 
     const a = await processAutopilotUser(dbA.db, "a");
 
@@ -465,7 +467,7 @@ describe("processAutopilotUser — per-bruker-isolasjon", () => {
     // Bruker B: frisk konto → første kjøring legger nivåer, helt upåvirket av A
     const dbB = makeDb({ keys: await keysRow() });
     getBalanceMock.mockResolvedValue({ USDC: "150" });
-    getOpenOrdersMock.mockResolvedValue({});
+    getOpenOrdersMock.mockResolvedValue({ open: {} });
 
     const b = await processAutopilotUser(dbB.db, "b");
 
