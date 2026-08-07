@@ -26,14 +26,18 @@
       "pair": "SOLUSDC",
       "price": 72.8,
       "volume": "0.11428022",
-      "status": "open"
+      "status": "open",
+      "pendingSell": true,
+      "lastSellError": "Kraken AddOrder: EOrder:Insufficient funds"
     },
     "ORIPWU-MXHED-WGQXU5": {
       "side": "buy",
       "pair": "SOLUSDC",
       "price": 73.69,
       "volume": "0.11289999",
-      "status": "open"
+      "status": "open",
+      "pendingSell": true,
+      "lastSellError": "Kraken AddOrder: EOrder:Insufficient funds"
     },
     "OPE2L3-64FM6-DWXZIZ": {
       "side": "buy",
@@ -68,7 +72,9 @@
       "pair": "ETHUSDC",
       "price": 1898.04,
       "volume": "0.00467548",
-      "status": "open"
+      "status": "open",
+      "pendingSell": true,
+      "lastSellError": "Kraken AddOrder: EOrder:Insufficient funds"
     },
     "O2ZLQ6-CMIQR-XHT3BA": {
       "side": "buy",
@@ -103,9 +109,18 @@
       "pair": "XBTUSDC",
       "price": 64214.7,
       "volume": "0.00016411",
-      "status": "open"
+      "status": "filled"
+    },
+    "OPKIOP-UUSBX-XV2MIB": {
+      "side": "sell",
+      "pair": "XBTUSDC",
+      "price": 65499,
+      "volume": "0.00016411",
+      "status": "open",
+      "refBuyTxid": "OS3OLC-M5J4W-52RX4K",
+      "buyPrice": 64214.7
     }
   },
   "realized_profit": 0,
-  "lastRun": "2026-08-06T06:20:24.857Z"
+  "lastRun": "2026-08-07T05:09:12.907Z"
 }
