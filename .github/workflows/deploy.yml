@@ -26,6 +26,7 @@ jobs:
           SKIP_LINT_IN_BUILD: 'true'
           NEXT_TELEMETRY_DISABLED: '1'
           NODE_OPTIONS: '--max-old-space-size=4096'
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: 'https://www.klarpakke.no'
