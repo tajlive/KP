@@ -2,6 +2,8 @@ import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const auth = await verifyAdminAccess();
@@ -35,13 +37,18 @@ export async function GET() {
       );
     }
 
-    const sessionsWithComputedPnl = (sessions || []).map((s: Record<string, unknown>) => ({
-      ...s,
-      total_pnl:
-        (Number(s.current_capital_nok ?? s.current_capital ?? 0) -
-          Number(s.starting_capital_nok ?? s.initial_capital ?? 0)),
-    }));
-    return NextResponse.json({ sessions: sessionsWithComputedPnl, success: true });
+    const sessionsWithComputedPnl = (sessions || []).map(
+      (s: Record<string, unknown>) => ({
+        ...s,
+        total_pnl:
+          Number(s.current_capital_nok ?? s.current_capital ?? 0) -
+          Number(s.starting_capital_nok ?? s.initial_capital ?? 0),
+      }),
+    );
+    return NextResponse.json({
+      sessions: sessionsWithComputedPnl,
+      success: true,
+    });
   } catch (error) {
     console.error("Admin sessions error:", error);
     return NextResponse.json(
@@ -70,14 +77,20 @@ export async function POST(request: NextRequest) {
 
     const updates: Record<string, unknown> =
       action === "stop"
-        ? { status: "stopped", stopped_at: new Date().toISOString(), archived: true, archived_at: new Date().toISOString() }
+        ? {
+            status: "stopped",
+            stopped_at: new Date().toISOString(),
+            archived: true,
+            archived_at: new Date().toISOString(),
+          }
         : action === "pause"
           ? { status: "paused" }
           : { status: "active" };
 
     const { error } = await serviceClient
       .from("trading_sessions")
-      .update(updates).eq("id", sessionId);
+      .update(updates)
+      .eq("id", sessionId);
 
     if (error) throw error;
 

@@ -9,6 +9,9 @@ import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
