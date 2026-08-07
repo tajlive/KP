@@ -55,7 +55,10 @@ if (!API_KEY || !API_SECRET) {
 // ---------- Kraken signing ----------
 async function kraken(endpoint, params = {}, isPublic = false) {
   const path = `/0/${isPublic ? "public" : "private"}/${endpoint}`;
-  const nonce = Date.now().toString();
+  // Nonce i mikrosekunder (Date.now()*1000) — API-nøkkelen har custom nonce-window
+  // 10000 ms konfigurert for retry-klienter; ms-nonce kolliderer med cron-jobbens
+  // høyere nonce og gir EAPI:Invalid nonce (verifisert 2026-08-07).
+  const nonce = (Date.now() * 1000).toString();
   const body = new URLSearchParams({ nonce, ...params }).toString();
   const sha256 = createHash("sha256").update(nonce + body).digest();
   const sig = createHmac("sha512", Buffer.from(API_SECRET, "base64"))
@@ -250,6 +253,21 @@ if (regimeTrending) {
 // 1) FILLED kjøpsordre → legg salgsordre (+2%) — SKIPPES ved drawdown-kill
 for (const [txid, info] of Object.entries(state.orders)) {
   if (!drawdownKill && info.side === "buy" && info.status === "open" && !openTxids.has(txid)) {
+    // pendingSell (2026-08-07): salgsplassering feilet forrige kjøring (f.eks.
+    // Insufficient funds pga. quote-lock). Sjekk om vi ALLEREDE har en åpen sell
+    // som refererer dette kjøpet — da er kjeden intakt og vi bare markerer filled.
+    if (info.pendingSell) {
+      const existingSell = Object.entries(state.orders).find(
+        ([, o]) => o.side === "sell" && o.refBuyTxid === txid && o.status === "open",
+      );
+      if (existingSell) {
+        state.orders[txid] = { ...info, status: "filled" };
+        delete state.orders[txid].pendingSell;
+        delete state.orders[txid].lastSellError;
+        changes.push(`SYNC ${info.pair}: kjøp ${txid} var allerede dekket av salg ${existingSell[0]} — markerer filled (ingen ny ordre).`);
+        continue;
+      }
+    }
     const cfg = PAIR_CFG[info.pair];
     const sellPrice = (info.price * TRAIL_SELL_PCT).toFixed(cfg.dec);
     try {
@@ -266,7 +284,13 @@ for (const [txid, info] of Object.entries(state.orders)) {
       changes.push(`FILL-KJØP ${info.pair} @ ${info.price} → salgsordre @ ${sellPrice} (${sellTxid})`);
       await sleep(300);
     } catch (e) {
-      changes.push(`FEIL salgsordre for ${txid}: ${e.message}`);
+      // VIKTIG (2026-08-07): behold status "open" i state slik at vi prøver salget
+      // på nytt neste kjøring — men da kan Kraken ha fylt/re-synket ordren, så vi
+      // må kunne gjenkjenne at kjøpet er borte OG at salg allerede finnes.
+      // Marker med pendingSell slik at fill-deteksjon ikke behandler det som
+      // nytt fill neste gang (unngår dobbel-registrering).
+      state.orders[txid] = { ...info, status: "open", pendingSell: true, lastSellError: e.message };
+      changes.push(`FEIL salgsordre for ${txid}: ${e.message} — prøver igjen neste kjøring (pendingSell)`);
     }
   }
 
