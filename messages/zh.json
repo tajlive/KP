@@ -1677,7 +1677,15 @@
       "welcome": "嗨！我可以帮助您了解您的交易数据。"
     },
     "winLossHeatmap": {
-      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "subtitle": "{winningDays, plural, one {# 个绿色} other {# 个绿色}} · {losingDays, plural, one {# 个红色} other {# 个红色}} · {winRate}% 胜率",
       "infoTooltip": "每种颜色代表您一天的损益。深绿色=大赢，深红色=大输。用它来识别模式（例如，周一的损失）。",
       "loss": "损失",
@@ -4553,7 +4561,8 @@
       "marketData": {
         "delayed": "延误",
         "ok": "好的",
-        "stale": "陈旧的"
+        "stale": "陈旧的",
+        "aria": "市场数据"
       },
       "mode": {
         "live": "直播",
@@ -4567,7 +4576,8 @@
       "quickActions": {
         "error": "错误",
         "startRobot": "启动机器人",
-        "viewHistory": "查看历史记录"
+        "viewHistory": "查看历史记录",
+        "pauseAll": "全部暂停"
       },
       "realtime": {
         "newTrade": {
@@ -4662,6 +4672,12 @@
           "sell": "出售"
         },
         "title": "标题"
+      },
+      "tab": {
+        "overview": "概览",
+        "trades": "交易",
+        "sessions": "会话",
+        "analysis": "分析"
       }
     },
     "confidence": "信心",
