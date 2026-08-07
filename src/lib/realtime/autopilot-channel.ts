@@ -21,6 +21,7 @@ interface RealtimeState {
   isLive: boolean;
   lastUpdate: Date | null;
   error: string | null;
+  hasLoaded: boolean;
 }
 
 /** Konverter Supabase JSON-rad til AutopilotStateRow */
@@ -38,6 +39,7 @@ export function useAutopilotRealtime(
   const [isLive, setIsLive] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const fetchInitial = useCallback(async () => {
     if (!userId) return;
@@ -65,6 +67,10 @@ export function useAutopilotRealtime(
       setError(
         err instanceof Error ? err.message : "Kunne ikke hente autopilot state",
       );
+    } finally {
+      // Skiller «laster» fra «lastet, men ingen rad» — komponenten trenger
+      // dette for å vise «Ingen Kraken-tilkobling» i stedet for evig spinner.
+      setHasLoaded(true);
     }
   }, [userId]);
 
@@ -107,5 +113,5 @@ export function useAutopilotRealtime(
     };
   }, [userId, fetchInitial]);
 
-  return { state, isLive, lastUpdate, error };
+  return { state, isLive, lastUpdate, error, hasLoaded };
 }
