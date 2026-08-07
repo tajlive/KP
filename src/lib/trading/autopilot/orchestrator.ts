@@ -39,6 +39,12 @@ import {
   IDLE_THRESHOLD,
 } from "../kraken-grid-config.mjs";
 import { runGridTick, type PersistedGridOrder } from "../kraken-grid";
+import { computeDynamicSpacing } from "../dynamic-spacing";
+import {
+  shouldFallbackToDCA,
+  pickDcaPair,
+  computeDcaOrder,
+} from "../strategy-fallback";
 import { scanPortfolio, type Portfolio } from "./scanner";
 import { allocateCapital, type Allocation } from "./allocator";
 import {
@@ -84,6 +90,8 @@ export interface AutopilotStateRow {
   grid_levels: Record<string, PersistedGridOrder[]>;
   initial_equity_usdc: number;
   realized_profit_usdc: number;
+  total_fills: number;
+  last_fill_at: string | null;
   last_run: string | null;
   updated_at: string;
   created_at: string;
@@ -97,6 +105,8 @@ export interface AutopilotStatePatch {
   grid_levels: Record<string, PersistedGridOrder[]>;
   initial_equity_usdc: number;
   realized_profit_usdc: number;
+  total_fills?: number;
+  last_fill_at?: string | null;
   last_run: string;
 }
 
@@ -149,15 +159,16 @@ export function createAutopilotDb(supabase: SupabaseLike): AutopilotDb {
 
     async saveAutopilotState(userId, patch) {
       // grid_levels er Record<> i domenet, Json i DB-schemaet — cast kun feltet
-      const { error } = await supabase.from("autopilot_state").upsert(
-        {
-          user_id: userId,
-          ...patch,
-          grid_levels: patch.grid_levels as unknown as Json,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id" },
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const row: any = {
+        user_id: userId,
+        ...patch,
+        grid_levels: patch.grid_levels as unknown as Json,
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await supabase
+        .from("autopilot_state")
+        .upsert(row, { onConflict: "user_id" });
       if (error) throw error;
     },
   };
@@ -206,6 +217,7 @@ export interface AutopilotSuccess {
   reinvestedUsdc: number;
   idleLevelsPlaced: number;
   newOrdersPlaced: number;
+  dcaAmount?: number;
   fivePairActivated: boolean;
 }
 
@@ -239,6 +251,7 @@ export function buildInitialBuyLevels(opts: {
   levels: number;
   minLevelUsdc: number;
   levelSizeMultiplier: number;
+  spacing?: number;
 }): InitialLevel[] {
   const {
     pair,
@@ -251,7 +264,7 @@ export function buildInitialBuyLevels(opts: {
   const cfg = PAIR_CFG_LOOKUP[pair];
   if (!cfg || currentPrice <= 0 || capitalUsdc <= 0 || levels <= 0) return [];
 
-  const spacing = cfg.spacing;
+  const spacing = opts.spacing ?? cfg.spacing;
   const dec = cfg.dec;
   const capitalPerLevel = capitalUsdc / levels;
   const levelUsdc =
@@ -380,8 +393,13 @@ export async function processAutopilotUser(
       // kanselleringen kun én gang (ordrene er borte).
       let cancelledOrders = 0;
       if (killTriggered) {
-        const open = await client.getOpenOrders();
-        for (const txid of Object.keys(open as Record<string, unknown>)) {
+        const openKill = await client.getOpenOrders();
+        const killOrders =
+          ((openKill as Record<string, unknown>)?.open as Record<
+            string,
+            unknown
+          >) ?? {};
+        for (const txid of Object.keys(killOrders)) {
           try {
             await client.cancelOrder(txid);
             cancelledOrders++;
@@ -402,6 +420,8 @@ export async function processAutopilotUser(
         grid_levels: gridLevels,
         initial_equity_usdc: seededInitialEquity,
         realized_profit_usdc: state?.realized_profit_usdc ?? 0,
+        total_fills: state?.total_fills ?? 0,
+        last_fill_at: state?.last_fill_at ?? null,
         last_run: new Date().toISOString(),
       });
 
@@ -440,19 +460,35 @@ export async function processAutopilotUser(
     // 7) Per par: grid-tick (fills → trailing-salg / re-kjøp) eller første
     //    kjørings-nivåer under nåpris
     const prices: Record<string, number> = {};
+    const pairSpacing: Record<string, number> = {};
     let fills = 0;
     let realizedProfitUsdc = 0;
     let newOrdersPlaced = 0;
     let idleLevelsPlaced = 0;
 
-    const open = await client.getOpenOrders();
-    const openTxids = new Set(Object.keys(open as Record<string, unknown>));
+    const openOrdersResp = await client.getOpenOrders();
+    const openOrdersMap =
+      ((openOrdersResp as Record<string, unknown>)?.open as Record<
+        string,
+        unknown
+      >) ?? {};
+    const openTxids = new Set(Object.keys(openOrdersMap));
 
     for (const pair of operatePairs) {
       const cfg = PAIR_CFG_LOOKUP[pair]!;
       const ticker = await client.getTicker(pair);
       const currentPrice = parseFloat(ticker?.c?.[0] ?? "0") || 0;
+      const high24h = parseFloat(ticker?.h?.[1] ?? "0") || 0;
+      const low24h = parseFloat(ticker?.l?.[1] ?? "0") || 0;
       prices[pair] = currentPrice;
+
+      // Dynamisk spacing basert på 24h-volatilitet
+      const dynamicSpacing = computeDynamicSpacing({
+        baseSpacing: cfg.spacing,
+        high24h,
+        low24h,
+      });
+      pairSpacing[pair] = dynamicSpacing;
 
       const persisted = gridLevels[pair] ?? [];
 
@@ -465,6 +501,7 @@ export async function processAutopilotUser(
           pair,
           currentPrice,
           capitalUsdc,
+          spacing: dynamicSpacing,
           levels: initialLevelsPerPair,
           minLevelUsdc,
           levelSizeMultiplier: drawdown.levelSizeMultiplier,
@@ -509,6 +546,54 @@ export async function processAutopilotUser(
       newOrdersPlaced += result.sellOrdersPlaced + result.rebuysPlaced;
     }
 
+    // 7b) DCA-fallback: hvis grid ikke produserer fills, gjør ett DCA-kjøp
+    //      per tick så kontoen alltid akkumulerer posisjoner.
+    let dcaAmount = 0;
+    if (fills === 0 && !firstRun) {
+      const needsDca = shouldFallbackToDCA({
+        lastFillAt: state?.last_fill_at ?? null,
+        totalFills: state?.total_fills ?? 0,
+        firstRunAt: state?.created_at ?? null,
+      });
+
+      if (needsDca) {
+        const dcaPair = pickDcaPair(operatePairs, gridLevels, prices);
+        if (dcaPair) {
+          const dcaOrder = computeDcaOrder(
+            dcaPair,
+            prices[dcaPair] ?? 0,
+            portfolio.freeUsdc,
+          );
+          if (dcaOrder && openTxids.size + newOrdersPlaced < maxOpenOrders) {
+            try {
+              const cfg = PAIR_CFG_LOOKUP[dcaPair]!;
+              const res = await client.limitBuy(
+                dcaPair,
+                dcaOrder.volume,
+                prices[dcaPair].toFixed(cfg.dec),
+              );
+              gridLevels[dcaPair] = [
+                ...(gridLevels[dcaPair] ?? []),
+                {
+                  txid: res.txid[0],
+                  side: "buy",
+                  pair: dcaPair,
+                  price: prices[dcaPair],
+                  volume: dcaOrder.volume,
+                  status: "open",
+                  placedAt: new Date().toISOString(),
+                },
+              ];
+              dcaAmount = dcaOrder.amountUsdc;
+              newOrdersPlaced++;
+            } catch (error) {
+              console.error(`Autopilot DCA ${dcaPair} feilet:`, error);
+            }
+          }
+        }
+      }
+    }
+
     // 8) Reinvestering: 80 % av denne kjøringens gevinst > 10 USDC → ny
     //    idle-kapital (B3-regelen; per-kjørings-delta, aldri re-compound av
     //    gammel gevinst). Beløpet er allerede USDC på kontoen — legges til
@@ -538,9 +623,10 @@ export async function processAutopilotUser(
       const idlePick = pickIdlePair(operatePairs, gridLevels, prices);
       if (idlePick) {
         const cfg = PAIR_CFG_LOOKUP[idlePick.pair]!;
-        const newPrice = +(idlePick.lowest * (1 - cfg.spacing)).toFixed(
-          cfg.dec,
-        );
+        const newPrice = +(
+          idlePick.lowest *
+          (1 - (pairSpacing[idlePick.pair] ?? cfg.spacing))
+        ).toFixed(cfg.dec);
         const pool = Math.max(0, freeForLevels - 1);
         // Task 4b: progressiv drawdown halverer nye nivåer ved 7–15 % drawdown
         const levelUsdc = Math.min(
@@ -594,6 +680,9 @@ export async function processAutopilotUser(
       grid_levels: gridLevels,
       initial_equity_usdc: seededInitialEquity,
       realized_profit_usdc: realizedTotal,
+      total_fills: (state?.total_fills ?? 0) + fills,
+      last_fill_at:
+        fills > 0 ? new Date().toISOString() : (state?.last_fill_at ?? null),
       last_run: new Date().toISOString(),
     });
 
@@ -612,6 +701,7 @@ export async function processAutopilotUser(
       reinvestedUsdc,
       idleLevelsPlaced,
       newOrdersPlaced,
+      dcaAmount,
       fivePairActivated,
     };
   } catch (error) {

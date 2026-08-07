@@ -4,7 +4,7 @@
  * Cache-strategi: Network first, fallback til cache
  */
 
-const CACHE_VERSION = "7"; // Bumped 2026-07-14 21:30: Tving refresh av JS-filer med ny Supabase-key
+const CACHE_VERSION = "8"; // Bumped 2026-08-07: SW timeout 3s→10s for CF Workers cold starts
 const CACHE_NAME = `klarpakke-v${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -126,9 +126,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // API-kall: Network-first med timeout, fallback til cache
+  // API-kall: Network-first med timeout (10s for CF Workers cold starts), fallback til cache
   if (isApiRequest(url)) {
-    event.respondWith(networkFirstWithTimeout(request, 3000));
+    event.respondWith(networkFirstWithTimeout(request, 10000));
     return;
   }
 

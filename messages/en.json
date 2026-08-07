@@ -4679,9 +4679,7 @@
         "title": "Title"
       },
       "marketData": {
-        "stale": "Stale",
-        "delayed": "Delayed",
-        "ok": "Ok"
+        "aria": "Market data"
       },
       "error": {
         "description": "Description",
@@ -4763,9 +4761,9 @@
         }
       },
       "quickActions": {
-        "error": "Error",
-        "startRobot": "Start Robot",
-        "viewHistory": "View History"
+        "pauseAll": "Pause all",
+        "startRobot": "Start robot",
+        "viewHistory": "History"
       },
       "trades": {
         "side": {
@@ -4850,6 +4848,12 @@
           "bestSession": "Best Session",
           "worstSession": "Worst Session"
         }
+      },
+      "tab": {
+        "overview": "Overview",
+        "trades": "Trades",
+        "sessions": "Sessions",
+        "analysis": "Analysis"
       }
     },
     "toggleAria": "Toggle Aria",

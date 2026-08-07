@@ -117,12 +117,13 @@ export class KrakenGridTrader {
    * Sjekker og håndterer fylte ordrer
    */
   async checkFills(): Promise<void> {
-    const openOrders = await this.client.getOpenOrders();
-    const openTxids = new Set(
-      Object.values(openOrders).map(
-        (o: unknown) => (o as { txid: string }).txid,
-      ),
-    );
+    const openOrdersResp = await this.client.getOpenOrders();
+    const openOrdersMap =
+      ((openOrdersResp as Record<string, unknown>)?.open as Record<
+        string,
+        unknown
+      >) ?? {};
+    const openTxids = new Set(Object.keys(openOrdersMap));
 
     for (const [level, order] of this.orders) {
       if (order.orderId && !openTxids.has(order.orderId)) {
@@ -285,8 +286,13 @@ export async function runGridTick(
   const cfg = PAIR_CFG_LOOKUP[pair];
   const dec = cfg?.dec ?? 2;
 
-  const open = await client.getOpenOrders();
-  const openTxids = new Set(Object.keys(open as Record<string, unknown>));
+  const openOrdersResp = await client.getOpenOrders();
+  const openOrdersMap =
+    ((openOrdersResp as Record<string, unknown>)?.open as Record<
+      string,
+      unknown
+    >) ?? {};
+  const openTxids = new Set(Object.keys(openOrdersMap));
 
   // Snapshot (deep) — vi muterer resultatet mens vi prosesserer, og kalleren
   // skal aldri få sine state-objekter mutert (ren funksjon). NB: iterer INPUT

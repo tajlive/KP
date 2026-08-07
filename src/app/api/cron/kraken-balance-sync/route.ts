@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
   // Verifiser cron — støtter både x-api-key (vår) og Authorization: Bearer (klarpakke_trigger_cron)
   const authKey = request.headers.get("x-api-key");
   const bearer = request.headers.get("authorization")?.replace("Bearer ", "");
-  const valid = authKey === process.env.CRON_SECRET || bearer === process.env.CRON_SECRET;
+  const valid =
+    authKey === process.env.CRON_SECRET || bearer === process.env.CRON_SECRET;
   if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -55,7 +56,9 @@ export async function POST(request: NextRequest) {
         // Priser for ikke-USDC-assets (XXBT, XETH, XSOL, ZEUR...)
         const tickerPairs: string[] = [];
         const assetToPair: Record<string, string> = {};
-        const assets = Object.entries(balance).filter(([, v]) => parseFloat(v) > 0);
+        const assets = Object.entries(balance).filter(
+          ([, v]) => parseFloat(v) > 0,
+        );
         for (const [asset] of assets) {
           const map: Record<string, string> = {
             XXBT: "XBTUSDC",
@@ -73,8 +76,9 @@ export async function POST(request: NextRequest) {
         let prices: Record<string, { c: string[] }> = {};
         if (tickerPairs.length) {
           try {
-            const t = await client.getTicker(tickerPairs.join(","));
-            prices = t as unknown as Record<string, { c: string[] }>;
+            prices = (await client.getTickers(
+              tickerPairs,
+            )) as unknown as Record<string, { c: string[] }>;
           } catch {
             prices = {};
           }
@@ -82,7 +86,8 @@ export async function POST(request: NextRequest) {
 
         // Totalverdi i USDC
         let totalUsdc = 0;
-        const holdings: Record<string, { amount: string; usdcValue: number }> = {};
+        const holdings: Record<string, { amount: string; usdcValue: number }> =
+          {};
         for (const [asset, amount] of assets) {
           const amt = parseFloat(amount);
           if (asset === "USDC") {
@@ -90,17 +95,26 @@ export async function POST(request: NextRequest) {
             holdings[asset] = { amount, usdcValue: amt };
           } else {
             const pair = assetToPair[asset];
-            const price = pair && prices[pair] ? parseFloat(prices[pair].c[0]) : 0;
+            const price =
+              pair && prices[pair] ? parseFloat(prices[pair].c[0]) : 0;
             const usdcValue = amt * price;
             totalUsdc += usdcValue;
-            holdings[asset] = { amount, usdcValue: Math.round(usdcValue * 100) / 100 };
+            holdings[asset] = {
+              amount,
+              usdcValue: Math.round(usdcValue * 100) / 100,
+            };
           }
         }
 
         // Åpne ordrer
         const open = (openOrders as Record<string, unknown>).open ?? {};
         const orderList = Object.entries(open).map(([txid, o]) => {
-          const ord = o as { descr: { pair: string; type: string; price: string }; vol: string; vol_exec: string; status: string };
+          const ord = o as {
+            descr: { pair: string; type: string; price: string };
+            vol: string;
+            vol_exec: string;
+            status: string;
+          };
           return {
             txid,
             pair: PAIR_DISPLAY[ord.descr.pair] ?? ord.descr.pair,
@@ -134,29 +148,42 @@ export async function POST(request: NextRequest) {
           fetchedAt: new Date().toISOString(),
         };
 
-        const { error: upsertErr } = await supabase.from("kraken_live_state").upsert(
-          {
-            user_id: user.user_id,
-            snapshot,
-            total_usdc: Math.round(totalUsdc * 100) / 100,
-            open_orders: orderList.length,
-            open_buy_orders: openBuy,
-            open_sell_orders: openSell,
-            realized_profit_usdc: realized,
-            base_holdings: holdings,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id" },
-        );
+        const { error: upsertErr } = await supabase
+          .from("kraken_live_state")
+          .upsert(
+            {
+              user_id: user.user_id,
+              snapshot,
+              total_usdc: Math.round(totalUsdc * 100) / 100,
+              open_orders: orderList.length,
+              open_buy_orders: openBuy,
+              open_sell_orders: openSell,
+              realized_profit_usdc: realized,
+              base_holdings: holdings,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
 
         if (upsertErr) throw new Error(`Upsert: ${upsertErr.message}`);
-        results.push({ userId: user.user_id, totalUsdc: Math.round(totalUsdc * 100) / 100, orders: orderList.length });
+        results.push({
+          userId: user.user_id,
+          totalUsdc: Math.round(totalUsdc * 100) / 100,
+          orders: orderList.length,
+        });
       } catch (e) {
-        results.push({ userId: user.user_id, error: e instanceof Error ? e.message : "unknown" });
+        results.push({
+          userId: user.user_id,
+          error: e instanceof Error ? e.message : "unknown",
+        });
       }
     }
 
-    return NextResponse.json({ success: true, synced: results.length, results });
+    return NextResponse.json({
+      success: true,
+      synced: results.length,
+      results,
+    });
   } catch (error) {
     console.error("Kraken balance sync error:", error);
     return NextResponse.json(

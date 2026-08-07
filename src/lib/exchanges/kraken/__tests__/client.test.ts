@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
-import { toKrakenSymbol, fromKrakenSymbol } from "@/lib/exchanges/kraken/symbols";
+import {
+  toKrakenSymbol,
+  fromKrakenSymbol,
+} from "@/lib/exchanges/kraken/symbols";
 
 // Mock fetch
 global.fetch = vi.fn();
@@ -57,6 +60,27 @@ describe("KrakenClient", () => {
       });
 
     await expect(client.getBalance()).rejects.toThrow("EAPI:Invalid key");
+  });
+
+  it("should fetch tickers for multiple pairs", async () => {
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        error: [],
+        result: {
+          XBTUSDC: { c: ["62143.2", "0.001"] },
+          ETHUSDC: { c: ["1859.7", "0.01"] },
+          SOLUSDC: { c: ["71.9", "0.1"] },
+        },
+      }),
+    });
+
+    const tickers = await client.getTickers(["XBTUSDC", "ETHUSDC", "SOLUSDC"]);
+    expect(tickers.XBTUSDC.c[0]).toBe("62143.2");
+    expect(tickers.ETHUSDC.c[0]).toBe("1859.7");
+    expect(tickers.SOLUSDC.c[0]).toBe("71.9");
+    // Hvert par er en egen nøkkel — IKKE slått opp med komma-separert streng
+    expect(tickers["XBTUSDC,ETHUSDC,SOLUSDC"]).toBeUndefined();
   });
 });
 
