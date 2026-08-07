@@ -9,7 +9,7 @@ import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
-export const runtime = "edge";
+export const runtime = "nodejs"; // Buffer i encrypt-api-keys krever node-runtime — edge krasjer (500 siden 04:45)
 export const dynamic = "force-dynamic";
 
 const supabase = createClient(
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
           const map: Record<string, string> = {
             XXBT: "XBTUSDC",
             XETH: "ETHUSDC",
-            XSOL: "SOLUSDC",
+            SOL: "SOLUSDC", // Kraken bruker SOL uten prefiks (aldri XSOL)
             USDC: "USDCUSDC",
           };
           const pair = map[asset];
