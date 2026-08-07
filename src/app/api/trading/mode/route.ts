@@ -10,6 +10,8 @@ import { verifyLiveEntitlement } from "@/lib/auth/live-trading";
 import type { Json } from "@/types/database.types";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 const tradingModeSchema = z.object({
   mode: z.enum(["paper", "live"]),
   rememberDefault: z.boolean().optional().default(true),
@@ -155,7 +157,8 @@ export async function POST(request: NextRequest) {
         .update({
           preferred_trading_mode: mode,
           updated_at: new Date().toISOString(),
-        } as { preferred_trading_mode: string; updated_at: string }).eq("id", user.id);
+        } as { preferred_trading_mode: string; updated_at: string })
+        .eq("id", user.id);
 
       if (error) {
         console.error("Error updating trading mode:", error);

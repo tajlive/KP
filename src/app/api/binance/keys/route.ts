@@ -9,6 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { getErrorMessage } from "@/lib/utils/error";
 
+export const dynamic = "force-dynamic";
+
 function getAuthUser(request: NextRequest) {
   const response = NextResponse.next();
   const supabase = createServerClient(request, response);
@@ -142,7 +144,10 @@ export async function POST(request: NextRequest) {
       rpc: (
         fn: string,
         args: Record<string, unknown>,
-      ) => Promise<{ data: { ok: boolean; error?: string } | null; error: { message: string } | null }>;
+      ) => Promise<{
+        data: { ok: boolean; error?: string } | null;
+        error: { message: string } | null;
+      }>;
     };
 
     const { data: storeResult, error: storeError } = await sb.rpc(

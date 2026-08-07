@@ -6,6 +6,8 @@ import { getDailySummaryEmail } from "@/lib/email/templates";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
+export const dynamic = "force-dynamic";
+
 interface UserForSummary {
   id: string;
   email: string | null;

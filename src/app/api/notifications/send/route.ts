@@ -2,19 +2,26 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import webpush from "web-push";
 
+export const dynamic = "force-dynamic";
+
 // VAPID configuration (lazy initialization)
 let vapidConfigured = false;
 
 function configureVapid() {
   if (vapidConfigured) return true;
-  
+
   const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
-  const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:admin@klarpakke.no";
-  
+  const VAPID_SUBJECT =
+    process.env.VAPID_SUBJECT || "mailto:admin@klarpakke.no";
+
   if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
     try {
-      webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+      webpush.setVapidDetails(
+        VAPID_SUBJECT,
+        VAPID_PUBLIC_KEY,
+        VAPID_PRIVATE_KEY,
+      );
       vapidConfigured = true;
       return true;
     } catch (error) {
@@ -45,7 +52,7 @@ interface SendRequest {
 /**
  * POST /api/notifications/send
  * Send push notifications to users
- * 
+ *
  * Body: {
  *   userIds?: string[],      // Specific users (optional if broadcast)
  *   broadcast?: boolean,     // Send to all subscribers
@@ -66,24 +73,21 @@ export async function POST(request: NextRequest) {
     // Verify admin/internal access (using CRON_SECRET or service role)
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    
+
     // Allow service role or CRON_SECRET
-    const isAuthorized = 
+    const isAuthorized =
       (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
       (process.env.NODE_ENV === "development" && authHeader === "Bearer dev");
 
     if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Validate VAPID configuration
     if (!configureVapid()) {
       return NextResponse.json(
         { error: "Push notifications not configured" },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -93,14 +97,14 @@ export async function POST(request: NextRequest) {
     if (!notification?.title || !notification?.body) {
       return NextResponse.json(
         { error: "Missing notification title or body" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!broadcast && (!userIds || userIds.length === 0)) {
       return NextResponse.json(
         { error: "Must specify userIds or broadcast" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -108,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // Build query for subscriptions
     let query = supabase.from("push_subscriptions").select("*");
-    
+
     if (!broadcast && userIds) {
       query = query.in("user_id", userIds);
     }
@@ -119,7 +123,7 @@ export async function POST(request: NextRequest) {
       console.error("Error fetching subscriptions:", fetchError);
       return NextResponse.json(
         { error: "Failed to fetch subscriptions" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -162,33 +166,36 @@ export async function POST(request: NextRequest) {
         } catch (error) {
           // If subscription is expired/invalid, delete it
           const webPushError = error as { statusCode?: number };
-          if (webPushError.statusCode === 410 || webPushError.statusCode === 404) {
+          if (
+            webPushError.statusCode === 410 ||
+            webPushError.statusCode === 404
+          ) {
             await supabase
               .from("push_subscriptions")
               .delete()
               .eq("endpoint", sub.endpoint);
-            return { 
-              success: false, 
-              endpoint: sub.endpoint, 
+            return {
+              success: false,
+              endpoint: sub.endpoint,
               reason: "subscription_expired",
-              deleted: true 
+              deleted: true,
             };
           }
           throw error;
         }
-      })
+      }),
     );
 
     // Analyze results
     const succeeded = results.filter(
-      (r) => r.status === "fulfilled" && r.value.success
+      (r) => r.status === "fulfilled" && r.value.success,
     ).length;
     const failed = results.filter((r) => r.status === "rejected").length;
     const expired = results.filter(
-      (r) => 
-        r.status === "fulfilled" && 
-        !r.value.success && 
-        r.value.reason === "subscription_expired"
+      (r) =>
+        r.status === "fulfilled" &&
+        !r.value.success &&
+        r.value.reason === "subscription_expired",
     ).length;
 
     return NextResponse.json({
@@ -198,12 +205,11 @@ export async function POST(request: NextRequest) {
       expired,
       total: subscriptions.length,
     });
-
   } catch (error) {
     console.error("Send notification error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -217,16 +223,13 @@ export async function GET(request: NextRequest) {
     // Verify admin access
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    
-    const isAuthorized = 
+
+    const isAuthorized =
       (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
       (process.env.NODE_ENV === "development" && authHeader === "Bearer dev");
 
     if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const supabase = createClient();
@@ -243,7 +246,7 @@ export async function GET(request: NextRequest) {
     if (subError || userError) {
       return NextResponse.json(
         { error: "Failed to fetch statistics" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -252,12 +255,11 @@ export async function GET(request: NextRequest) {
       uniqueUsers: uniqueUsers || 0,
       vapidConfigured: configureVapid(),
     });
-
   } catch (error) {
     console.error("Stats error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -15,6 +15,8 @@ import {
 } from "@/lib/api-request-context";
 import { trackCriticalAction } from "@/lib/sentry";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   const requestId = getOrCreateRequestId(request);
   try {

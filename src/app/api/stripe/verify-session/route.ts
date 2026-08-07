@@ -3,6 +3,8 @@ import { getErrorMessage } from "@/lib/utils/error";
 import { stripe } from "@/lib/stripe/config";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const { sessionId } = await request.json();
