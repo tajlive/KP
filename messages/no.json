@@ -6062,7 +6062,7 @@
     "deleteProfile": "Slett profil"
   },
   "joker": {
-    "button": "JOKER",
+    "button": "Pilot",
     "loading": "Analyserer...",
     "analysing": "🎭 Analyserer markedet..."
   },
@@ -6081,7 +6081,7 @@
     },
     "welcome": {
       "title": "Velkommen til Pilot!",
-      "description": "Din AI-trader er klar. Trykk på JOKER-knappen så finner AI-en den beste trade-opportuniteten akkurat nå."
+      "description": "Din AI-trader er klar. Trykk på Pilot-knappen så finner AI-en den beste trade-opportuniteten akkurat nå."
     },
     "dashboard": {
       "title": "Pilot",
