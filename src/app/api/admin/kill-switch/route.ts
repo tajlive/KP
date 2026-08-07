@@ -8,10 +8,15 @@ import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 interface KillSwitchResult {
   userId: string;
@@ -21,6 +26,7 @@ interface KillSwitchResult {
 }
 
 export async function POST(request: NextRequest) {
+  const supabase = getSupabaseAdmin();
   // Verifiser admin-tilgang
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -115,8 +121,14 @@ export async function POST(request: NextRequest) {
       success: true,
       reason,
       usersAffected: results.length,
-      totalOrdersCancelled: results.reduce((sum, r) => sum + r.ordersCancelled, 0),
-      totalSessionsStopped: results.reduce((sum, r) => sum + r.sessionsStopped, 0),
+      totalOrdersCancelled: results.reduce(
+        (sum, r) => sum + r.ordersCancelled,
+        0,
+      ),
+      totalSessionsStopped: results.reduce(
+        (sum, r) => sum + r.sessionsStopped,
+        0,
+      ),
       results,
     });
   } catch (error) {
@@ -133,6 +145,7 @@ export async function POST(request: NextRequest) {
 
 // GET: Sjekk kill switch status
 export async function GET(request: NextRequest) {
+  const supabase = getSupabaseAdmin();
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
