@@ -229,8 +229,7 @@ const nextConfig = {
     // cacheComponents: true,
     // View Transitions — smooth page transitions (Next.js 16 built-in)
     viewTransition: true,
-    // Turbopack disabled - using webpack for better compatibility
-    // turbo: {},
+    // TODO: Migrer til Turbopack når Supabase SSR er kompatibel
     // Reduce memory usage by limiting workers based on available memory
     memoryBasedWorkersCount: true,
     // Optimize package imports
