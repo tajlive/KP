@@ -51,37 +51,17 @@ async function resolveUserId(page: Page): Promise<string> {
 
 /**
  * Hent DB-sannheten for hero-P&L %:
- * balanse = SUM(current_capital_nok) over aktive paper-sesjoner (fallback:
- * paper_accounts.current_balance), startkapital = paper_accounts.initial_balance.
- * Replikerer getAccountBalance/getAccountInitial i getUserDashboardMetrics.
+ * FIKS 8 (2026-08-07): hero-% = totalPnl / startingCapital × 100 — EKTE trading-P&L.
+ * Tidligere: (accountBalance − initialBalance)/initialBalance — konto-differansen
+ * inkluderer manuelle justeringer og lyver som «avkastning» (observert: konto
+ * +138 210 kr men trades −830 kr). total_pnl hentes fra RPC get_dashboard_metrics
+ * (samme kilde som appen bruker), startkapital = paper_accounts.initial_balance.
  */
 async function fetchAccountPnl(
   supabase: ReturnType<typeof createClient>,
   userId: string,
-): Promise<{ accountBalance: number; initialBalance: number; dbPnlPct: number }> {
-  const { data: activeSessions } = await supabase
-    .from("trading_sessions")
-    .select("current_capital_nok, open_position")
-    .eq("user_id", userId)
-    .eq("mode", "paper")
-    .eq("status", "active");
-
-  let accountBalance = 0;
-  let invested = 0;
-  for (const s of activeSessions ?? []) {
-    accountBalance += Number(s.current_capital_nok ?? 0);
-    const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
-    if (pos?.quantity && pos?.entry_price) invested += pos.quantity * pos.entry_price;
-  }
-  if (!(Number.isFinite(accountBalance + invested) && accountBalance + invested > 0)) {
-    const { data: pa } = await supabase
-      .from("paper_accounts")
-      .select("current_balance")
-      .eq("user_id", userId)
-      .maybeSingle();
-    accountBalance = Number(pa?.current_balance ?? 0);
-  }
-
+  totalPnlDb: number,
+): Promise<{ initialBalance: number; dbPnlPct: number }> {
   const { data: pa } = await supabase
     .from("paper_accounts")
     .select("initial_balance")
@@ -92,9 +72,8 @@ async function fetchAccountPnl(
   expect(initialBalance, `initial_balance mangler/ugyldig for ${TEST_EMAIL}`).toBeGreaterThan(0);
 
   return {
-    accountBalance,
     initialBalance,
-    dbPnlPct: ((accountBalance - initialBalance) / initialBalance) * 100,
+    dbPnlPct: (totalPnlDb / initialBalance) * 100,
   };
 }
 
@@ -141,9 +120,9 @@ test.describe("P&L-korrekthet — Dashboard P&L stemmer med DB", () => {
     expect(rpcError, `RPC get_dashboard_metrics feilet: ${rpcError?.message}`).toBeNull();
     const totalPnlDb = Number(rpcRows?.[0]?.total_pnl ?? 0);
 
-    // 3b) Konto-sannhet for hero-%-en
-    const { accountBalance, initialBalance, dbPnlPct } = await fetchAccountPnl(supabase, userId);
-    expect(Number.isFinite(dbPnlPct), `Kunne ikke beregne DB-P&L (balanse=${accountBalance})`).toBe(true);
+    // 3b) Konto-sannhet for hero-%-en (FIKS 8: ekte P&L, ikke konto-differanse)
+    const { initialBalance, dbPnlPct } = await fetchAccountPnl(supabase, userId, totalPnlDb);
+    expect(Number.isFinite(dbPnlPct), `Kunne ikke beregne DB-P&L (start=${initialBalance})`).toBe(true);
 
     // 3c) UI "Total avkastning"-kortet (realisert P&L i NOK)
     const totalReturnCard = page.getByText("Total avkastning").locator("..").first();
@@ -164,7 +143,7 @@ test.describe("P&L-korrekthet — Dashboard P&L stemmer med DB", () => {
     expect(
       heroDiff,
       `Hero-P&L %: UI viser ${uiPnlPct}% — DB sier ${dbPnlPct.toFixed(2)}% ` +
-        `(balanse ${accountBalance} kr, start ${initialBalance} kr; avvik ${heroDiff.toFixed(2)} pp)`,
+        `(start ${initialBalance} kr; avvik ${heroDiff.toFixed(2)} pp)`,
     ).toBeLessThanOrEqual(heroMargin);
 
     const pnlDiff = Math.abs(uiTotalPnl - totalPnlDb);
