@@ -11,14 +11,16 @@ type MockUser = { id: string; email?: string };
 
 function createMockSupabase(overrides: {
   user?: MockUser | null;
-  profile?: { tier: string; binance_connected?: boolean } | null;
+  profile?: { tier: string } | null;
+  krakenKeys?: { id: string } | null;
   activeCount?: number | null;
   existingSession?: { id: string } | null;
   insertedSession?: { id: string } | null;
 } = {}) {
   const {
     user = { id: "user-1" },
-    profile = { tier: "student", binance_connected: false },
+    profile = { tier: "student" },
+    krakenKeys = null,
     activeCount = 0,
     existingSession = null,
     insertedSession = { id: "session-1" },
@@ -32,20 +34,13 @@ function createMockSupabase(overrides: {
           return {
             eq: vi.fn(() => ({
               maybeSingle: async () => ({ data: profile, error: null }),
-            })),
-          };
-        }
-        if (table === "user_profiles" && columns === "tier, binance_connected") {
-          return {
-            eq: vi.fn(() => ({
-              maybeSingle: async () => ({ data: profile, error: null }),
               single: async () => ({ data: profile, error: null }),
             })),
           };
         }
         // Nye tabeller spurt av ExecutorFactory.canTradeLive — tomme som default
-        if (table === "exchange_connections" || table === "user_binance_keys" || table === "api_keys") {
-          const emptyRow = async () => ({ data: null, error: null });
+        if (table === "user_kraken_keys") {
+          const emptyRow = async () => ({ data: krakenKeys, error: null });
           const limiter = { maybeSingle: emptyRow };
           const withIs = { ...limiter, limit: vi.fn(() => limiter) };
           const withEq = {
@@ -175,7 +170,7 @@ describe("startTrading", () => {
     vi.mocked(createServerClient).mockResolvedValue(
       createMockSupabase({
         user: { id: "user-1" },
-        profile: { tier: "student", binance_connected: false },
+        profile: { tier: "student" },
         activeCount: 0,
         existingSession: null,
         insertedSession: { id: "paper-session-1" },
@@ -199,7 +194,7 @@ describe("startTrading", () => {
     vi.mocked(createServerClient).mockResolvedValue(
       createMockSupabase({
         user: { id: "user-1" },
-        profile: { tier: "student", binance_connected: false },
+        profile: { tier: "student" },
       }) as never
     );
 
@@ -214,11 +209,12 @@ describe("startTrading", () => {
     expect(result.code).toBe("LIVE_NOT_ALLOWED");
   });
 
-  it("returns BINANCE_NOT_CONNECTED for bachelor tier without Binance connection", async () => {
+  it("returns KRAKEN_NOT_CONNECTED for bachelor tier without Kraken keys", async () => {
     vi.mocked(createServerClient).mockResolvedValue(
       createMockSupabase({
         user: { id: "user-1" },
-        profile: { tier: "bachelor", binance_connected: false },
+        profile: { tier: "bachelor" },
+        krakenKeys: null,
       }) as never
     );
 
@@ -230,14 +226,15 @@ describe("startTrading", () => {
     });
 
     expect(result.ok).toBe(false);
-    expect(result.code).toBe("BINANCE_NOT_CONNECTED");
+    expect(result.code).toBe("KRAKEN_NOT_CONNECTED");
   });
 
-  it("starts a live bot successfully for bachelor+ tier with Binance connected", async () => {
+  it("starts a live bot successfully for bachelor+ tier with Kraken keys", async () => {
     vi.mocked(createServerClient).mockResolvedValue(
       createMockSupabase({
         user: { id: "user-1" },
-        profile: { tier: "bachelor", binance_connected: true },
+        profile: { tier: "bachelor" },
+        krakenKeys: { id: "kraken-key-1" },
         activeCount: 0,
         existingSession: null,
         insertedSession: { id: "live-session-1" },
@@ -261,7 +258,7 @@ describe("startTrading", () => {
     vi.mocked(createServerClient).mockResolvedValue(
       createMockSupabase({
         user: { id: "user-1" },
-        profile: { tier: "student", binance_connected: false },
+        profile: { tier: "student" },
         activeCount: 0,
         existingSession: null,
         insertedSession: { id: "alias-session-1" },

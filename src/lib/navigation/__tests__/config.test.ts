@@ -33,7 +33,7 @@ describe("FALLBACK_NAVIGATION", () => {
     expect(paths).toEqual([
       "/dashboard",
       "/dashboard/portfolio",
-      "/trade",
+      "/handel",
       "/profile",
     ]);
     expect(paths).not.toContain("/dashboard/auto-trade");
@@ -69,7 +69,7 @@ describe("AUTH_NAV_CONFIG", () => {
   it("skal ha nøkkelfunksjoner: portfolio, handel, historikk, profil", () => {
     const paths: string[] = AUTH_NAV_CONFIG.map((l: NavItem) => l.href);
     expect(paths).toContain("/dashboard/portfolio");
-    expect(paths).toContain("/trade");
+    expect(paths).toContain("/handel");
     expect(paths).toContain("/dashboard/historikk");
     expect(paths).toContain("/profile");
     expect(paths).toContain("/dashboard/auto-trade");
@@ -79,7 +79,7 @@ describe("AUTH_NAV_CONFIG", () => {
     const hrefs = AUTH_NAV_CONFIG.map((l) => l.href);
     expect(hrefs.slice(0, 4)).toEqual([
       "/dashboard/portfolio",
-      "/trade",
+      "/handel",
       "/dashboard/auto-trade",
       "/profile",
     ]);
@@ -156,7 +156,7 @@ describe("getMobileTabs", () => {
 describe("isAppShellPath", () => {
   it("skal returnere true for kjente app-shell-stier", () => {
     expect(isAppShellPath("/dashboard")).toBe(true);
-    expect(isAppShellPath("/trade")).toBe(true);
+    expect(isAppShellPath("/handel")).toBe(true);
     expect(isAppShellPath("/marked")).toBe(true);
     expect(isAppShellPath("/pilot")).toBe(true);
     expect(isAppShellPath("/admin")).toBe(true);
@@ -195,7 +195,7 @@ describe("DASHBOARD_TRADING_NAV", () => {
 describe("DASHBOARD_COINBASE_TOP_NAV", () => {
   it("skal være kort og IKKE inneholde auto-trade (fjernet 2026-08-01, Tom)", () => {
     const hrefs = DASHBOARD_COINBASE_TOP_NAV.map((l) => l.href);
-    expect(hrefs).toEqual(["/dashboard", "/dashboard/portfolio", "/trade"]);
+    expect(hrefs).toEqual(["/dashboard", "/dashboard/portfolio", "/handel"]);
     expect(hrefs).not.toContain("/dashboard/auto-trade");
     expect(hrefs).not.toContain("/dashboard/autopilot");
   });
@@ -207,7 +207,7 @@ describe("DASHBOARD_COINBASE_BOTTOM_NAV", () => {
     expect(hrefs).toEqual([
       "/dashboard",
       "/dashboard/portfolio",
-      "/trade",
+      "/handel",
       "/dashboard/historikk",
     ]);
   });

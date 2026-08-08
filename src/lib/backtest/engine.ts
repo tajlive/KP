@@ -113,7 +113,7 @@ import {
   type StrategyInput,
 } from '@/lib/trading/strategies';
 import type { StrategyEngine } from '@/lib/trading/strategies';
-import { createBinanceMarketDataProvider } from '@/lib/trading/canonical/market-data';
+import { createKrakenMarketDataProvider } from '@/lib/trading/canonical/market-data';
 import { getUsdtToNokRate } from '@/lib/trading/currency';
 import { computeFill } from '@/lib/trading/canonical/execution/fill-model';
 import { FILL_CONSTANTS } from '@/lib/trading/canonical/execution/fill-constants';
@@ -228,7 +228,7 @@ const FEE_RATE = FILL_CONSTANTS.feeRate;
 const MARKET_SLIPPAGE_RATE = FILL_CONSTANTS.marketSlippageRate;
 const MIN_ORDER_VALUE_USDT = FILL_CONSTANTS.minOrderValue;
 
-const marketDataProvider = createBinanceMarketDataProvider();
+const marketDataProvider = createKrakenMarketDataProvider();
 
 interface RunBacktestOptions {
   smaFast?: number;
