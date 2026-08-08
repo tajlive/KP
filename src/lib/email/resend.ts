@@ -69,7 +69,7 @@ export const emailTemplates = {
             \u003cp\u003e\u003cstrong\u003eHva kan du gjøre nå?\u003c/strong\u003e\u003c/p\u003e
             \u003cul\u003e
               \u003cli\u003eFullføre ditt første kurs\u003c/li\u003e
-              \u003cli\u003eKoble til Binance for live trading\u003c/li\u003e
+              \u003cli\u003eKoble til Kraken for live trading\u003c/li\u003e
               \u003cli\u003eUtforske paper trading\u003c/li\u003e
               \u003cli\u003eDelta i community\u003c/li\u003e
             \u003c/ul\u003e

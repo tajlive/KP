@@ -66,8 +66,8 @@ export function EmptyPortfolio({
 
       <p className="text-slate-400 max-w-md mb-2 leading-relaxed">
         {isNorwegian
-          ? "Porteføljen din er tom. Start med lekepenger for å øve uten risiko, eller koble til Binance for ekte trading."
-          : "Your portfolio is empty. Start with paper trading to practice risk-free, or connect Binance for live trading."}
+          ? "Porteføljen din er tom. Start med lekepenger for å øve uten risiko, eller koble til Kraken for ekte trading."
+          : "Your portfolio is empty. Start with paper trading to practice risk-free, or connect Kraken for live trading."}
       </p>
 
       {/* Benefits list */}
@@ -107,7 +107,7 @@ export function EmptyPortfolio({
             asChild
           >
             <Link href={`/${locale}/dashboard`}>
-              {isNorwegian ? "Koble til Binance" : "Connect Binance"}
+              {isNorwegian ? "Koble til Kraken" : "Connect Kraken"}
             </Link>
           </Button>
         )}
@@ -118,8 +118,8 @@ export function EmptyPortfolio({
         <span className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
           {isNorwegian
-            ? "Real-time data fra Binance"
-            : "Real-time data from Binance"}
+            ? "Real-time data fra Kraken"
+            : "Real-time data from Kraken"}
         </span>
         <span className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />

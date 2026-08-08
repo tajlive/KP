@@ -26,7 +26,7 @@ const WIZARD_STEPS = [
 type WizardStep = (typeof WIZARD_STEPS)[number]["id"];
 
 interface SymbolMeta {
-  /** Binance-pair (nøkkel i WS-tickers) */
+  /** Kraken-pair (nøkkel i WS-tickers) */
   symbol: string;
   /** Basis-valuta (nøkkel i coin_prices DB) */
   base: string;
@@ -34,7 +34,7 @@ interface SymbolMeta {
   name: string;
 }
 
-// Alle 11 tradable symboler (coin_prices DB + Binance WS)
+// Alle 11 tradable symboler (coin_prices DB + Kraken WS)
 const SYMBOLS: SymbolMeta[] = [
   { symbol: "BTCUSDT", base: "BTC", icon: "₿", name: "Bitcoin" },
   { symbol: "ETHUSDT", base: "ETH", icon: "⟠", name: "Ethereum" },
@@ -165,8 +165,8 @@ export function AutoStrategyPanel() {
   const [stopping, setStopping] = React.useState(false);
   const [selected, setSelected] = React.useState<string[]>(DEFAULT_SELECTED);
   const [liveMode, setLiveMode] = React.useState(false);
-  const [binanceConnected, setBinanceConnected] = React.useState<boolean | null>(null);
-  const [binanceTradingPerm, setBinanceTradingPerm] = React.useState(false);
+  const [krakenConnected, setKrakenConnected] = React.useState<boolean | null>(null);
+  const [krakenTradingPerm, setKrakenTradingPerm] = React.useState(false);
   const [step, setStep] = React.useState<WizardStep>(1);
   const activeSessionIdsRef = React.useRef<string[]>([]);
 
@@ -216,7 +216,7 @@ export function AutoStrategyPanel() {
     async function checkKraken() {
       try {
         const res = await fetch("/api/exchanges/connections");
-        if (!res.ok) { if (!cancelled) setBinanceConnected(false); return; }
+        if (!res.ok) { if (!cancelled) setKrakenConnected(false); return; }
         const data = await res.json();
         const conns: Array<{ exchange: string; isActive: boolean; permissions: string[] }> =
           data?.connections ?? [];
@@ -224,10 +224,10 @@ export function AutoStrategyPanel() {
           (c) => c.exchange === "kraken" && c.isActive,
         );
         if (cancelled) return;
-        setBinanceConnected(Boolean(kraken));
-        setBinanceTradingPerm(Boolean(kraken?.permissions?.includes("trading")));
+        setKrakenConnected(Boolean(kraken));
+        setKrakenTradingPerm(Boolean(kraken?.permissions?.includes("trading")));
       } catch {
-        if (!cancelled) setBinanceConnected(false);
+        if (!cancelled) setKrakenConnected(false);
       }
     }
     checkKraken();
@@ -257,7 +257,7 @@ export function AutoStrategyPanel() {
   };
 
   const startAutoTrade = async () => {
-    if (liveMode && !binanceTradingPerm) {
+    if (liveMode && !krakenTradingPerm) {
       setStatus("error");
       setMessage("Koble Kraken med trading-tillatelse i Innstillinger → Børser først");
       return;
@@ -499,7 +499,7 @@ export function AutoStrategyPanel() {
           />
         </div>
 
-        {/* 4. Modus: Paper vs Live (BYO Binance) (steg 2 — Konfigurer) */}
+        {/* 4. Modus: Paper vs Live (BYO Kraken) (steg 2 — Konfigurer) */}
         <div>
           <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block mb-1.5">
             Handelsmodus
@@ -539,9 +539,9 @@ export function AutoStrategyPanel() {
 
           {liveMode && (
             <div className="mt-1.5 rounded-lg border border-[#1E2530] bg-[#0B0F19] px-3 py-2">
-              {binanceConnected === null ? (
+              {krakenConnected === null ? (
                 <p className="text-[10px] text-slate-500">Sjekker Kraken-tilkobling...</p>
-              ) : binanceTradingPerm ? (
+              ) : krakenTradingPerm ? (
                 <p className="text-[10px] text-emerald-400">
                   ✅ Kraken tilkoblet med trading-tillatelse — klar for live-handel
                 </p>

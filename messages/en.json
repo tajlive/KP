@@ -64,8 +64,7 @@
       "partners": {
         "title": "Our Partners",
         "supabase": "Supabase - Database and authentication",
-        "cloudflare": "Cloudflare - Infrastructure and security",
-        "binance": "Binance - Liquidity and market access"
+        "cloudflare": "Cloudflare - Infrastructure and security"
       }
     },
     "contact": {
@@ -725,8 +724,6 @@
       "liveTrading": "Live trading",
       "activeTrial": "Active Trial",
       "upgradeSubscription": "Upgrade subscription",
-      "binanceSettings": "Binance API Settings",
-      "binanceDescription": "Manage your Binance API keys for auto trading",
       "configureApiKeys": "Configure API Keys",
       "createNewStrategy": "Create New Strategy",
       "strategyType": "Strategy Type",
@@ -736,15 +733,12 @@
       "locked": "Locked",
       "symbol": "Symbol",
       "capital": "Capital (USDT)",
-      "connectBinance": "Connect to Binance",
       "apiSecurityNote": "API keys are encrypted before storage. We never store keys in plain text.",
       "apiKey": "API Key",
       "apiSecret": "API Secret",
       "useTestnet": "Use Testnet (paper money)",
       "liveRequiresBachelor": "Live trading requires Bachelor tier or higher",
       "saveAndConnect": "Save and connect",
-      "binanceAccountLink": "You can create API keys in your",
-      "binanceAccount": "Binance account",
       "strategyUpdated": "Strategy updated",
       "strategyDeleted": "Strategy deleted",
       "apiKeysSaved": "API keys saved!",
@@ -941,8 +935,7 @@
     "applicationError": "An error occurred. Please try again.",
     "betaDashboard": "Beta Dashboard",
     "noExchangeConnected": "No Exchange Connected",
-    "connectBinance": "Connect Binance",
-    "exchangeConnectDesc": "To start live trading, you need to connect your Binance account.",
+    "exchangeConnectDesc": "To start live trading, you need to connect your Kraken account.",
     "trades": "Trades",
     "todayStats": "Today",
     "profit": "Profit",
@@ -966,23 +959,6 @@
     "maxTradeSize": "Max Trade Size",
     "maxDailyTrades": "Max Daily Trades",
     "maxDailyLoss": "Max Daily Loss"
-  },
-  "binanceGuide": {
-    "metadata": {
-      "title": "How to get started with Binance - Klarpakke University",
-      "description": "Complete guide to creating a Binance account via Klarpakke. Get lower fees and support our work."
-    },
-    "title": "Binance Guide",
-    "description": "Guide for Binance",
-    "subtitle": "Binance is the world's largest crypto exchange. We guide you through registration step by step.",
-    "startSmall": "Start with a small amount (e.g. 50 USD) via bank transfer. You can always deposit more later. Never start with more than you can afford to lose.",
-    "timeEstimate": "Registration takes about 5 minutes • KYC verification takes up to 24 hours",
-    "steps": "Steps",
-    "guide": "Guide",
-    "register": "Register account",
-    "verify": "Verify identity",
-    "deposit": "Deposit funds",
-    "startTrading": "Start trading"
   },
   "calculator": {
     "metadata": {
@@ -1196,8 +1172,6 @@
     "duplicateSessionDesc": "Duplicate Session Desc",
     "liveNotAllowedTitle": "Live Not Allowed Title",
     "startFailedTitle": "Start Failed Title",
-    "binanceNotConnectedTitle": "Binance Not Connected Title",
-    "binanceNotConnectedDesc": "Binance Not Connected Desc",
     "liveNotAllowedDesc": "Live Not Allowed Desc",
     "stepStart": "Step Start",
     "startBotTitle": "Start Bot Title",
@@ -1210,14 +1184,12 @@
     "botStrategyDcaDesc": "Bot Strategy Dca Desc",
     "liveModeLabel": "Live Mode Label",
     "strategyGrid": "Strategy Grid",
-    "connectBinanceToStart": "Connect Binance To Start",
     "botStrategyAi": "Bot Strategy Ai",
     "botStrategyMultiDesc": "Bot Strategy Multi Desc",
     "paperModeLabel": "Paper Mode Label",
     "botConfigStrategy": "Bot Config Strategy",
     "botStrategyMulti": "Bot Strategy Multi",
     "strategyDca": "Strategy Dca",
-    "connectBinanceCta": "Connect Binance Cta",
     "strategyAi": "Strategy Ai",
     "botStrategyGrid": "Bot Strategy Grid",
     "botStrategyAiDesc": "Bot Strategy Ai Desc",
@@ -1613,15 +1585,9 @@
       "title": "Title",
       "viewAll": "View All"
     },
-    "noTrades": "No trades yet. Click \"Sync Binance\" to load your Binance trades.",
+    "noTrades": "No trades yet. Click \"Sync Kraken\" to load your Kraken trades.",
     "bought": "Bought",
     "sold": "Sold",
-    "binanceCard": {
-      "title": "Binance API",
-      "subtitle": "Connect your Binance account",
-      "description": "Connect to Binance via API for live trading and portfolio overview. We only require read-only access.",
-      "button": "Connect Binance"
-    },
     "adminCard": {
       "title": "Admin Panel",
       "subtitle": "System Administration",
@@ -1808,7 +1774,6 @@
       "referral": "Referral",
       "trading": "Trading",
       "liveTrading": "Live Trading",
-      "binanceApi": "Binance API",
       "activity": "Activity",
       "taxReport": "Tax Report",
       "settings": "Settings",
@@ -2058,7 +2023,7 @@
       "retry": "Try again",
       "emptyState": "No trades yet for the selected mode. Start a new session to see statistics.",
       "emptyStatePaper": "No trades yet. Start a paper trade from /handel to see trades here.",
-      "emptyStateLive": "No live trades yet. Connect Binance and start live trading from /handel.",
+      "emptyStateLive": "No live trades yet. Connect Kraken and start live trading from /handel.",
       "showingPaper": "Showing paper trades",
       "showingLive": "Showing live trades",
       "stats": {
@@ -2463,7 +2428,7 @@
       "tradeCount": "trades",
       "returnLabel": "return",
       "playMoney": "Play money",
-      "realRates": "Real Binance rates",
+      "realRates": "Real Kraken rates",
       "realtime": "Real-time",
       "tagline": "We never show numbers we can't verify. Start with 100,000 kr in play money — completely risk-free."
     },
@@ -2479,7 +2444,7 @@
       "subtitle": "Norway's only AI-powered paper trading platform on real market data",
       "realData": {
         "title": "Real market data",
-        "desc": "Direct from Binance — real-time prices on BTC, ETH, SOL and more"
+        "desc": "Direct from Kraken — real-time prices on BTC, ETH, SOL and more"
       },
       "aiAgents": {
         "title": "AI agents",
@@ -2550,8 +2515,8 @@
         "answer": "Auto-trading lets a bot trade for you based on strategies you choose. You decide the risk and capital."
       },
       "q3": {
-        "question": "Do I need a Binance account?",
-        "answer": "Not for paper trading. If you want to use live trading, you need a Binance account with API keys."
+        "question": "Do I need a Kraken account?",
+        "answer": "Not for paper trading. If you want to use live trading, you need a Kraken account with API keys."
       }
     },
     "leaderboard": {
@@ -2874,8 +2839,7 @@
       "enterAmount": "Please enter an amount",
       "priceData": "Could not fetch price data",
       "loginRequired": "You must be logged in to trade",
-      "tradeFailed": "Trade failed. Please try again.",
-      "checkBinance": "Check your Binance connection"
+      "tradeFailed": "Trade failed. Please try again."
     },
     "security": {
       "title": "Your security is our priority",
@@ -2884,12 +2848,12 @@
       "fullControl": "You have full control",
       "fullControlDesc": "Your API key is encrypted and stored securely.",
       "transparency": "Full transparency",
-      "transparencyDesc": "All trades are traceable directly in your Binance account."
+      "transparencyDesc": "All trades are traceable directly in your Kraken account."
     },
     "info": {
       "title": "Important information",
       "usdtRequirement": "USDT required",
-      "usdtRequirementDesc": "You need USDT in your Binance account to trade.",
+      "usdtRequirementDesc": "You need USDT in your Kraken account to trade.",
       "realtimeData": "Real-time data",
       "realtimeDataDesc": "Prices update in real time via WebSocket.",
       "minimumAmount": "Minimum amount",
@@ -3160,8 +3124,6 @@
     "identityConfirmed": "Identity verified via BankID",
     "firstSignal": "Your First Signal",
     "firstSignalDesc": "We will send you a notification when the 300 tested algorithms find an opportunity",
-    "connectBinance": "Connect Binance",
-    "connectBinanceDesc": "You can connect your own exchange when you are ready for live trading",
     "setRiskProfile": "Set Risk Profile",
     "setRiskProfileDesc": "Choose between conservative, balanced, or offensive strategy",
     "goToDashboard": "Go to Dashboard",
@@ -3471,7 +3433,7 @@
     "subtitle": "Practice trading with {amount} virtual currency",
     "contextBanner": "Practice trading with 100,000 NOK in play money",
     "help": {
-      "text": "Paper trading lets you practice trading without risking real money. You start with 100,000 NOK and can buy and sell cryptocurrency with real market prices from Binance.",
+      "text": "Paper trading lets you practice trading without risking real money. You start with 100,000 NOK and can buy and sell cryptocurrency with real market prices from Kraken.",
       "close": "Close"
     },
     "stats": {
@@ -3511,7 +3473,7 @@
     },
     "disclaimer": {
       "important": "Important:",
-      "text": "This is a simulation with play money. Prices are fetched live from Binance API. No real money is involved. Trading with real money involves risk."
+      "text": "This is a simulation with play money. Prices are fetched live from Kraken API. No real money is involved. Trading with real money involves risk."
     },
     "leaderboard": {
       "title": "Leaderboard",
@@ -3542,7 +3504,7 @@
     "startFirst": "Start First Session",
     "lastUpdated": "Last updated",
     "refreshList": "Refresh",
-    "binanceUpdateInfo": "Prices are updated from Binance in real time",
+    "krakenUpdateInfo": "Prices are updated from Kraken in real time",
     "trades": "Trades",
     "now": "Now",
     "confirmResetAll": "Reset all paper trading sessions? All trades will be deleted and balance reset to 100 000 kr.",
@@ -3933,55 +3895,9 @@
     "api": {
       "title": "API Settings",
       "description": "Connect to trading platforms for automated trading",
-      "binance": {
-        "title": "Binance API",
-        "description": "Connect to your Binance account for automated trading",
-        "addNew": "Add new API key",
-        "label": "Label",
-        "labelPlaceholder": "E.g. Main account, Test account",
-        "apiKey": "API Key",
-        "apiKeyPlaceholder": "Enter your Binance API key",
-        "apiSecret": "API Secret",
-        "apiSecretPlaceholder": "Enter your Binance API Secret",
-        "testnet": "Use Binance Testnet (for testing)",
-        "testConnection": "Test Connection",
-        "saveKey": "Save API Key",
-        "testing": "Testing...",
-        "saving": "Saving...",
-        "success": "✅ API key saved!",
-        "testSuccess": "✅ Connection successful!",
-        "testFailed": "❌ Connection failed",
-        "error": "Error saving",
-        "deleteConfirm": "Are you sure you want to delete this API key?",
-        "showSecret": "Show secret",
-        "hideSecret": "Hide secret",
-        "yourKeys": "Your API Keys",
-        "noKeys": "No API keys added",
-        "noKeysDesc": "Add your first API key to get started",
-        "lastTested": "Last tested",
-        "status": {
-          "active": "Active",
-          "inactive": "Inaktiv",
-          "success": "Success",
-          "failed": "Failed",
-          "pending": "Pending"
-        },
-        "howToGet": {
-          "title": "How to get Binance API keys",
-          "intro": "Follow these steps to get your API keys:",
-          "step1": "1. Log in to your Binance account",
-          "step2": "2. Go to Profile → API Management",
-          "step3": "3. Create a new API key (give it a name)",
-          "step4": "4. Complete 2FA verification",
-          "step5": "5. Copy both API Key and Secret Key",
-          "step6": "6. Enable 'Enable Spot & Margin Trading' permission",
-          "step7": "7. Paste above and test the connection",
-          "warning": "⚠️ Never share your API keys with anyone. Keep them secure."
-        }
-      },
       "labelPlaceholder": "E.g. Main Account",
-      "apiKeyPlaceholder": "Enter your Binance API key",
-      "apiSecretPlaceholder": "Enter your Binance API Secret",
+      "apiKeyPlaceholder": "Enter your Kraken API key",
+      "apiSecretPlaceholder": "Enter your Kraken API Secret",
       "deleteError": "Error during deletion",
       "loadError": "Could not load API keys",
       "saveSuccess": "API key saved!",
@@ -4206,7 +4122,7 @@
         "features": [
           "Everything in Bachelor",
           "Automated Trading (3 strategies)",
-          "Live Trading on Binance",
+          "Live Trading on Kraken",
           "Copy top traders",
           "Bachelor certificate upon exam completion",
           "2,500 KLT tokens/mo"
@@ -4400,7 +4316,7 @@
     "switchToLiveWarning": "You are about to switch to live trading with real money.",
     "switchToPaperTitle": "Switch to Paper Trading?",
     "switchToPaperWarning": "You are switching back to paper trading.",
-    "switchToPaperNote": "Open live positions remain active on Binance. You can switch back to live mode at any time.",
+    "switchToPaperNote": "Open live positions remain active on Kraken. You can switch back to live mode at any time.",
     "connectNow": "Connect Now",
     "apiKeySecurity": "Secure Storage",
     "apiKeySecurityDesc": "API keys are encrypted and stored securely. We never have access to withdraw funds.",
@@ -4412,7 +4328,7 @@
     "confirmSwitchToPaper": "Switch to Paper",
     "liveWarningRealMoney": "You are now trading with REAL money",
     "liveWarningLosses": "Losses are real, not simulated",
-    "liveWarningFees": "Trading fees will be deducted from your Binance account",
+    "liveWarningFees": "Trading fees will be deducted from your Kraken account",
     "liveWarningSwitchBack": "You can switch back to paper mode at any time",
     "slippageSimulated": "Slippage simulated: ${{amount}} ({{bps}} bps)",
     "slippage": "Slippage",
@@ -4447,7 +4363,7 @@
     "paperTradingInfo": "Paper Trading Mode",
     "paperTradingDescription": "You are trading with virtual capital. Slippage and fees are simulated for realistic practice.",
     "liveTradingInfo": "Live Trading Mode",
-    "liveTradingDescription": "You are trading with real money on Binance. All trades are real.",
+    "liveTradingDescription": "You are trading with real money on Kraken. All trades are real.",
     "balance": "Balance",
     "available": "Available",
     "buy": "Buy",
@@ -4880,7 +4796,7 @@
       "noSessions": "No Sessions",
       "description": "Description",
       "refreshList": "Refresh List",
-      "binanceUpdateInfo": "Binance Update Info",
+      "krakenUpdateInfo": "Prices are updated from Kraken in real time",
       "tradingPair": "Trading Pair",
       "startCapital": "Start Capital",
       "cancel": "Cancel",
@@ -5456,7 +5372,6 @@
       "step4Withdrawals": "❌ Enable withdrawals (MUST stay off)",
       "step5": "Copy and paste your API key and Secret below",
       "continue": "I understand, continue",
-      "goToBinance": "Go to Kraken API Management",
       "apiKeyLabel": "API key",
       "apiSecretLabel": "API Secret",
       "apiKeyPlaceholder": "Paste your API key here...",
@@ -5481,12 +5396,12 @@
     "updatedNow": "Updated now",
     "selectExchange": "Select exchange",
     "addExchange": "Add exchange",
-    "exchangeHelp": "If you don't have an exchange account yet, we recommend Binance. You can later connect your account here to see everything in one place.",
+    "exchangeHelp": "If you don't have an exchange account yet, we recommend Kraken. You can later connect your account here to see everything in one place.",
     "security": {
       "title": "Security first",
       "readOnly": "We only request <strong>read-only</strong> API keys. This means we can read balances and transactions, but <strong>NEVER</strong> execute trades or withdrawals.",
       "warning": "Never share API keys with write access (write/trade/withdraw).",
-      "commission": "We receive a small commission from Binance at no extra cost to you. This helps us keep the service free."
+      "commission": "We receive a small commission from Kraken at no extra cost to you. This helps us keep the service free."
     },
     "balances": {
       "title": "Your balances",
@@ -5697,11 +5612,9 @@
     "paperModeLabel": "Paper",
     "liveModeLabel": "Live",
     "liveWarningTitle": "Real money",
-    "liveWarningDesc": "This bot will trade with real funds from your Binance account. Losses are real.",
+    "liveWarningDesc": "This bot will trade with real funds from your Kraken account. Losses are real.",
     "liveConfirmWarning": "Confirm: You are about to start a live bot with real money.",
-    "connectBinanceToStart": "Connect Binance to start live trading.",
     "upgradeToStartLive": "Upgrade to Bachelor or higher to start live trading.",
-    "connectBinanceCta": "Connect Binance",
     "upgradeCta": "See plans",
     "stepStrategy": "Strategy",
     "stepAmount": "Amount & coins",
@@ -5721,8 +5634,8 @@
     "startingCapital": "Starting capital (paper)",
     "startingCapitalDesc": "Amount the bot trades with in paper mode.",
     "liveStartingCapital": "Starting capital (real money)",
-    "liveStartingCapitalDesc": "Amount the bot trades with from your Binance account.",
-    "liveBalanceUnknownWarning": "We don't know your Binance balance. Make sure this amount is available before starting.",
+    "liveStartingCapitalDesc": "Amount the bot trades with from your Kraken account.",
+    "liveBalanceUnknownWarning": "We don't know your Kraken balance. Make sure this amount is available before starting.",
     "liveCapitalHighWarning": "Large amount. Consider starting with less capital to limit risk.",
     "customAmount": "Custom amount:",
     "selectCoins": "Select coins",
@@ -5745,9 +5658,7 @@
     "duplicateSessionTitle": "Duplicate session",
     "duplicateSessionDesc": "You already have an active bot for this pair — stop it first or choose another pair.",
     "liveNotAllowedTitle": "Live trading not enabled",
-    "liveNotAllowedDesc": "Live trading requires Bachelor tier or higher and a connected Binance account.",
-    "binanceNotConnectedTitle": "Binance not connected",
-    "binanceNotConnectedDesc": "Connect your Binance API keys in settings to start live trading.",
+    "liveNotAllowedDesc": "Live trading requires Bachelor tier or higher and a connected Kraken account.",
     "startedTitle": "Bot started",
     "startedDesc": "Your trading bot is now running",
     "liveStartedTitle": "Live bot started",
@@ -5853,7 +5764,7 @@
       "disclaimer": "Copy trading involves risk. Past performance is not indicative of future returns."
     },
     "externalFollow": {
-      "title": "Copy Binance Trader",
+      "title": "Copy Kraken Trader",
       "subtitle": "Configure copying of {name}",
       "sheetAriaLabel": "Copy {name}",
       "scaleFactorLabel": "Scale factor",

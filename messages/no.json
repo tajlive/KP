@@ -64,8 +64,7 @@
       "partners": {
         "title": "Våre partnere",
         "supabase": "Supabase - Database og autentisering",
-        "cloudflare": "Cloudflare - Infrastruktur og sikkerhet",
-        "binance": "Binance - Likviditet og markedstilgang"
+        "cloudflare": "Cloudflare - Infrastruktur og sikkerhet"
       }
     },
     "contact": {
@@ -725,8 +724,6 @@
       "liveTrading": "Live trading",
       "activeTrial": "Aktiv Trial",
       "upgradeSubscription": "Oppgrader abonnement",
-      "binanceSettings": "Binance API-innstillinger",
-      "binanceDescription": "Administrer dine Binance API-nøkler for auto trading",
       "configureApiKeys": "Konfigurer API-nøkler",
       "createNewStrategy": "Opprett Ny Strategi",
       "strategyType": "Strategi Type",
@@ -736,15 +733,12 @@
       "locked": "Låst",
       "symbol": "Symbol",
       "capital": "Kapital (USDT)",
-      "connectBinance": "Koble til Binance",
       "apiSecurityNote": "API-nøklene krypteres før lagring. Vi lagrer aldri nøklene i klartekst.",
       "apiKey": "API Key",
       "apiSecret": "API Secret",
       "useTestnet": "Bruk Testnet (lekepenger)",
       "liveRequiresBachelor": "Live trading krever Bachelor-tier eller høyere",
       "saveAndConnect": "Lagre og koble til",
-      "binanceAccountLink": "Du kan opprette API-nøkler i din",
-      "binanceAccount": "Binance-konto",
       "strategyUpdated": "Strategi oppdatert",
       "strategyDeleted": "Strategi slettet",
       "apiKeysSaved": "API-nøkler lagret!",
@@ -941,8 +935,7 @@
     "applicationError": "En feil oppstod. Vennligvis prøv igjen.",
     "betaDashboard": "Beta Dashboard",
     "noExchangeConnected": "Ingen børs tilkoblet",
-    "connectBinance": "Koble til Binance",
-    "exchangeConnectDesc": "For å starte live trading må du koble til Binance-kontoen din.",
+    "exchangeConnectDesc": "For å starte live trading må du koble til Kraken-kontoen din.",
     "trades": "Handler",
     "todayStats": "I dag",
     "profit": "Profit",
@@ -966,23 +959,6 @@
     "maxTradeSize": "Maks handelsstørrelse",
     "maxDailyTrades": "Maks daglige handler",
     "maxDailyLoss": "Maks daglig tap"
-  },
-  "binanceGuide": {
-    "metadata": {
-      "title": "Slik kommer du i gang med Binance - Klarpakke",
-      "description": "Komplett guide for å opprette Binance-konto via Klarpakke. Få lavere gebyrer og støtt vårt arbeid."
-    },
-    "title": "Binance Guide",
-    "description": "Guide for Binance",
-    "subtitle": "Binance er verdens største kryptobørs. Vi guider deg gjennom registrering steg for steg.",
-    "startSmall": "Start med et lite beløp (f.eks. 500 kr) via bankoverføring. Du kan alltid sette inn mer senere. Start aldri med mer enn du har råd til å tape.",
-    "timeEstimate": "Registrering tar ca. 5 minutter • KYC-verifisering tar opptil 24 timer",
-    "steps": "Steg",
-    "guide": "Guide",
-    "register": "Registrer konto",
-    "verify": "Verifiser identitet",
-    "deposit": "Sett inn midler",
-    "startTrading": "Begynn å handle"
   },
   "calculator": {
     "metadata": {
@@ -1201,8 +1177,6 @@
     "duplicateSessionDesc": "Duplicate Session Desc",
     "liveNotAllowedTitle": "Live Not Allowed Title",
     "startFailedTitle": "Start Failed Title",
-    "binanceNotConnectedTitle": "Binance Not Connected Title",
-    "binanceNotConnectedDesc": "Binance Not Connected Desc",
     "liveNotAllowedDesc": "Live Not Allowed Desc",
     "stepStart": "Step Start",
     "startBotTitle": "Start auto-handel",
@@ -1215,14 +1189,12 @@
     "botStrategyDcaDesc": "Bot Strategy Dca Desc",
     "liveModeLabel": "Live Mode Label",
     "strategyGrid": "Strategy Grid",
-    "connectBinanceToStart": "Connect Binance To Start",
     "botStrategyAi": "Bot Strategy Ai",
     "botStrategyMultiDesc": "Bot Strategy Multi Desc",
     "paperModeLabel": "Paper Mode Label",
     "botConfigStrategy": "Bot Config Strategy",
     "botStrategyMulti": "Bot Strategy Multi",
     "strategyDca": "Strategy Dca",
-    "connectBinanceCta": "Koble til Binance",
     "strategyAi": "Strategy Ai",
     "botStrategyGrid": "Bot Strategy Grid",
     "botStrategyAiDesc": "Bot Strategy Ai Desc",
@@ -1620,15 +1592,9 @@
       "title": "Tittel",
       "viewAll": "Vis alle"
     },
-    "noTrades": "Ingen handler ennå. Trykk «Sync Binance» for å laste dine Binance-handler.",
+    "noTrades": "Ingen handler ennå. Trykk «Sync Kraken» for å laste dine Kraken-handler.",
     "bought": "Kjøpte",
     "sold": "Solgte",
-    "binanceCard": {
-      "title": "Binance API",
-      "subtitle": "Koble til din Binance-konto",
-      "description": "Koble til Binance via API for live trading og porteføljeoversikt. Vi krever kun read-only tilgang.",
-      "button": "Koble til Binance"
-    },
     "adminCard": {
       "title": "Admin Panel",
       "subtitle": "Systemadministrasjon",
@@ -1716,7 +1682,6 @@
       "referral": "Verveprogram",
       "trading": "Handel",
       "liveTrading": "Live-handel",
-      "binanceApi": "Binance API",
       "activity": "Aktivitet",
       "taxReport": "Skatterapport",
       "settings": "Innstillinger",
@@ -2058,7 +2023,7 @@
       "retry": "Prøv igjen",
       "emptyState": "Ingen handler ennå for valgt modus. Start en ny økt for å se statistikk.",
       "emptyStatePaper": "Ingen handler ennå. Start en lekepenger-handel fra /trade for å se handler her.",
-      "emptyStateLive": "Ingen live-handler ennå. Koble til Binance og start live-handel fra /trade.",
+      "emptyStateLive": "Ingen live-handler ennå. Koble til Kraken og start live-handel fra /handel.",
       "showingPaper": "Viser lekepenger",
       "showingLive": "Viser live-handler",
       "stats": {
@@ -2463,7 +2428,7 @@
       "tradeCount": "handler",
       "returnLabel": "avkastning",
       "playMoney": "Lekepenger",
-      "realRates": "Ekte Binance-kurser",
+      "realRates": "Ekte Kraken-kurser",
       "realtime": "Sanntid",
       "tagline": "Vi viser aldri tall vi ikke kan verifisere. Start med 100 000 kr i lekepenger — helt risikofritt."
     },
@@ -2479,7 +2444,7 @@
       "subtitle": "Norges eneste plattform for AI-drevet papirhandel på ekte markedsdata",
       "realData": {
         "title": "Ekte markedsdata",
-        "desc": "Direkte fra Binance — sanntidspriser på BTC, ETH, SOL og flere"
+        "desc": "Direkte fra Kraken — sanntidspriser på BTC, ETH, SOL og flere"
       },
       "aiAgents": {
         "title": "AI-agenter",
@@ -2550,8 +2515,8 @@
         "answer": "Auto-trading lar en bot handle for deg basert på strategier du velger. Du bestemmer risiko og kapital."
       },
       "q3": {
-        "question": "Trenger jeg Binance-konto?",
-        "answer": "Ikke for lekepenger. Hvis du vil bruke live trading, trenger du en Binance-konto med API-nøkler."
+        "question": "Trenger jeg Kraken-konto?",
+        "answer": "Ikke for lekepenger. Hvis du vil bruke live trading, trenger du en Kraken-konto med API-nøkler."
       }
     },
     "leaderboard": {
@@ -2874,8 +2839,7 @@
       "enterAmount": "Vennligst angi et beløp",
       "priceData": "Kunne ikke hente prisdata",
       "loginRequired": "Du må logge inn for å handle",
-      "tradeFailed": "Handel mislyktes. Prøv igjen.",
-      "checkBinance": "Sjekk Binance-tilkoblingen din"
+      "tradeFailed": "Handel mislyktes. Prøv igjen."
     },
     "security": {
       "title": "Din sikkerhet er vår prioritet",
@@ -2884,12 +2848,12 @@
       "fullControl": "Du har full kontroll",
       "fullControlDesc": "API-nøkkelen din er kryptert og lagret sikkert.",
       "transparency": "Full åpenhet",
-      "transparencyDesc": "Alle handler er sporbare direkte i din Binance-konto."
+      "transparencyDesc": "Alle handler er sporbare direkte i din Kraken-konto."
     },
     "info": {
       "title": "Viktig informasjon",
       "usdtRequirement": "USDT kreves",
-      "usdtRequirementDesc": "Du trenger USDT på Binance-kontoen din for å handle.",
+      "usdtRequirementDesc": "Du trenger USDT på Kraken-kontoen din for å handle.",
       "realtimeData": "Sanntidsdata",
       "realtimeDataDesc": "Prisene oppdateres i sanntid via WebSocket.",
       "minimumAmount": "Minimumsbeløp",
@@ -3160,8 +3124,6 @@
     "identityConfirmed": "Identitet er verifisert via BankID",
     "firstSignal": "Ditt Første Signal",
     "firstSignalDesc": "Vi sender deg et varsel når de 300 testede algoritmene finner en mulighet",
-    "connectBinance": "Koble til Binance",
-    "connectBinanceDesc": "Du kan koble til din egen børs når du er klar for live trading",
     "setRiskProfile": "Sett Risikoprofil",
     "setRiskProfileDesc": "Velg mellom konservativ, balansert eller offensiv strategi",
     "goToDashboard": "Gå til Dashboard",
@@ -3471,7 +3433,7 @@
     "subtitle": "Øv deg på trading med {amount} lekepenger",
     "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
     "help": {
-      "text": "Lekepenger lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Lekepenger lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Kraken.",
       "close": "Lukk"
     },
     "stats": {
@@ -3511,7 +3473,7 @@
     },
     "disclaimer": {
       "important": "Viktig:",
-      "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Binance API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
+      "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Kraken API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
     },
     "leaderboard": {
       "title": "Toppliste",
@@ -3542,7 +3504,7 @@
     "startFirst": "Start første øving",
     "lastUpdated": "Sist oppdatert",
     "refreshList": "Oppdater",
-    "binanceUpdateInfo": "Priser oppdateres fra Binance i sanntid",
+    "krakenUpdateInfo": "Priser oppdateres fra Kraken i sanntid",
     "trades": "Handler",
     "now": "Nå",
     "confirmResetAll": "Nullstill alle øvingssesjoner? Alle handler slettes og saldo tilbakestilles til 100 000 kr.",
@@ -3933,55 +3895,9 @@
     "api": {
       "title": "API Innstillinger",
       "description": "Koble til handelsplattformer for automatisk trading",
-      "binance": {
-        "title": "Binance API",
-        "description": "Koble til din Binance-konto for automatisk trading",
-        "addNew": "Legg til ny API-nøkkel",
-        "label": "Merkelapp",
-        "labelPlaceholder": "F.eks. Hovedkonto, Testkonto",
-        "apiKey": "API-nøkkel",
-        "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
-        "apiSecret": "API Secret",
-        "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
-        "testnet": "Bruk Binance Testnet (for testing)",
-        "testConnection": "Test Tilkobling",
-        "saveKey": "Lagre API-nøkkel",
-        "testing": "Tester...",
-        "saving": "Lagrer...",
-        "success": "✅ API-nøkkel lagret!",
-        "testSuccess": "✅ Tilkobling vellykket!",
-        "testFailed": "❌ Tilkobling feilet",
-        "error": "Feil ved lagring",
-        "deleteConfirm": "Er du sikker på at du vil slette denne API-nøkkelen?",
-        "showSecret": "Vis secret",
-        "hideSecret": "Skjul secret",
-        "yourKeys": "Dine API-nøkler",
-        "noKeys": "Ingen API-nøkler lagt til",
-        "noKeysDesc": "Legg til din første API-nøkkel for å komme i gang",
-        "lastTested": "Sist testet",
-        "status": {
-          "active": "Aktiv",
-          "inactive": "Inaktiv",
-          "success": "Vellykket",
-          "failed": "Feilet",
-          "pending": "Venter"
-        },
-        "howToGet": {
-          "title": "Hvordan få Binance API-nøkler",
-          "intro": "Følg disse stegene for å få dine API-nøkler:",
-          "step1": "1. Logg inn på din Binance-konto",
-          "step2": "2. Gå til Profil → API Management",
-          "step3": "3. Opprett en ny API-nøkkel (gi den et navn)",
-          "step4": "4. Fullfør 2FA-verifisering",
-          "step5": "5. Kopier både API Key og Secret Key",
-          "step6": "6. Aktiver 'Enable Spot & Margin Trading' tillatelse",
-          "step7": "7. Lim inn over og test tilkoblingen",
-          "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
-        }
-      },
       "labelPlaceholder": "F.eks. Hovedkonto",
-      "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
-      "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
+      "apiKeyPlaceholder": "Skriv inn din Kraken API-nøkkel",
+      "apiSecretPlaceholder": "Skriv inn din Kraken API Secret",
       "deleteError": "Feil ved sletting",
       "loadError": "Kunne ikke laste API-nøkler",
       "saveSuccess": "API-nøkkel lagret!",
@@ -4206,7 +4122,7 @@
         "features": [
           "Alt i Bachelor",
           "Automatisk Trading (3 strategier)",
-          "Live Trading på Binance",
+          "Live Trading på Kraken",
           "Kopiering av topp-tradere",
           "Bachelor-sertifikat ved bestått eksamen",
           "2 500 KLT tokens/mnd"
@@ -4400,7 +4316,7 @@
     "switchToLiveWarning": "Du er i ferd med å bytte til live trading med ekte penger.",
     "switchToPaperTitle": "Bytt til lekepenger?",
     "switchToPaperWarning": "Du bytter tilbake til lekepenger.",
-    "switchToPaperNote": "Åpne live posisjoner forblir aktive på Binance. Du kan bytte tilbake til live mode når som helst.",
+    "switchToPaperNote": "Åpne live posisjoner forblir aktive på Kraken. Du kan bytte tilbake til live mode når som helst.",
     "connectNow": "Koble til nå",
     "apiKeySecurity": "Sikker lagring",
     "apiKeySecurityDesc": "API-nøkler krypteres og lagres sikkert. Vi har aldri tilgang til å ta ut penger.",
@@ -4412,7 +4328,7 @@
     "confirmSwitchToPaper": "Bytt til Paper",
     "liveWarningRealMoney": "Du handler nå med EKTE penger",
     "liveWarningLosses": "Tap er reelle, ikke simulerte",
-    "liveWarningFees": "Handelsgebyrer trekkes fra din Binance-konto",
+    "liveWarningFees": "Handelsgebyrer trekkes fra din Kraken-konto",
     "liveWarningSwitchBack": "Du kan bytte tilbake til lekepenger når som helst",
     "slippageSimulated": "Slippage simulert: {{amount}} kr ({{bps}} bps)",
     "slippage": "Slippage",
@@ -4447,7 +4363,7 @@
     "paperTradingInfo": "Lekepenger-modus",
     "paperTradingDescription": "Du handler med lekepenger. Slippage og gebyrer er simulert for realistisk øving.",
     "liveTradingInfo": "Live Trading Mode",
-    "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
+    "liveTradingDescription": "Du handler med ekte penger på Kraken. Alle trades er reelle.",
     "strategies": {
       "dca_trygg": {
         "name": "DCA Trygg",
@@ -4879,7 +4795,7 @@
       "noSessions": "Ingen økter",
       "description": "Beskrivelse",
       "refreshList": "Oppdater list",
-      "binanceUpdateInfo": "Binance update info",
+      "krakenUpdateInfo": "Priser oppdateres fra Kraken i sanntid",
       "tradingPair": "Trading par",
       "startCapital": "Start kapital",
       "cancel": "Avbryt",
@@ -5456,7 +5372,6 @@
       "step4Withdrawals": "❌ Aktiver uttak (MÅ være deaktivert)",
       "step5": "Kopier og lim inn din API-nøkkel og Secret nedenfor",
       "continue": "Jeg forstår, fortsett",
-      "goToBinance": "Gå til Kraken API Management",
       "apiKeyLabel": "API-nøkkel",
       "apiSecretLabel": "API Secret",
       "apiKeyPlaceholder": "Lim inn din API-nøkkel her...",
@@ -5481,12 +5396,12 @@
     "updatedNow": "Oppdatert nå",
     "selectExchange": "Velg børs",
     "addExchange": "Legg til børs",
-    "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
+    "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Kraken. Du kan senere koble kontoen din hit for å se alt på ett sted.",
     "security": {
       "title": "Sikkerhet først",
       "readOnly": "Vi ber kun om <strong>read-only</strong> API-nøkler. Dette betyr at vi kan lese saldo og transaksjoner, men <strong>ALDRI</strong> gjøre kjøp/salg eller uttak.",
       "warning": "Aldri del API-nøkler med skrivetilgang (write/trade/withdraw).",
-      "commission": "Vi mottar en liten provisjon fra Binance uten ekstra kostnad for deg. Dette hjelper oss å holde tjenesten gratis."
+      "commission": "Vi mottar en liten provisjon fra Kraken uten ekstra kostnad for deg. Dette hjelper oss å holde tjenesten gratis."
     },
     "balances": {
       "title": "Dine saldoer",
@@ -5697,11 +5612,9 @@
     "paperModeLabel": "Lekepenger",
     "liveModeLabel": "Live",
     "liveWarningTitle": "Ekte penger",
-    "liveWarningDesc": "Denne boten vil handle med ekte midler fra din Binance-konto. Tap er reelle.",
+    "liveWarningDesc": "Denne boten vil handle med ekte midler fra din Kraken-konto. Tap er reelle.",
     "liveConfirmWarning": "Bekreft: Du er i ferd med å starte en live-bot med ekte penger.",
-    "connectBinanceToStart": "Koble til Binance for å starte live-handel.",
     "upgradeToStartLive": "Oppgrader til Bachelor eller høyere for å starte live-handel.",
-    "connectBinanceCta": "Koble Binance",
     "upgradeCta": "Se planer",
     "stepStrategy": "Strategi",
     "stepAmount": "Beløp & valuta",
@@ -5721,8 +5634,8 @@
     "startingCapital": "Startkapital (lekepenger)",
     "startingCapitalDesc": "Beløpet boten handler med i papirmodus.",
     "liveStartingCapital": "Startkapital (ekte penger)",
-    "liveStartingCapitalDesc": "Beløpet boten handler med fra din Binance-konto.",
-    "liveBalanceUnknownWarning": "Vi kjenner ikke din Binance-saldo. Sjekk at beløpet er tilgjengelig før du starter.",
+    "liveStartingCapitalDesc": "Beløpet boten handler med fra din Kraken-konto.",
+    "liveBalanceUnknownWarning": "Vi kjenner ikke din Kraken-saldo. Sjekk at beløpet er tilgjengelig før du starter.",
     "liveCapitalHighWarning": "Stort beløp. Vurder å starte med mindre kapital for å begrense risiko.",
     "customAmount": "Eget beløp:",
     "selectCoins": "Velg kryptovaluta",
@@ -5745,9 +5658,7 @@
     "duplicateSessionTitle": "Duplikat sesjon",
     "duplicateSessionDesc": "Du har allerede en aktiv bot for dette paret — stopp den først eller velg et annet par.",
     "liveNotAllowedTitle": "Live-handel ikke aktivert",
-    "liveNotAllowedDesc": "Live-handel krever Bachelor-nivå eller høyere og tilkoblet Binance-konto.",
-    "binanceNotConnectedTitle": "Binance ikke tilkoblet",
-    "binanceNotConnectedDesc": "Koble til Binance API-nøkler i innstillinger for å starte live-handel.",
+    "liveNotAllowedDesc": "Live-handel krever Bachelor-nivå eller høyere og tilkoblet Kinance-konto.",
     "startedTitle": "Bot startet",
     "startedDesc": "Din trading-bot kjører nå",
     "liveStartedTitle": "Live-bot startet",
@@ -5853,7 +5764,7 @@
       "disclaimer": "Kopiering av tradere innebærer risiko. Tidligere ytelse er ikke en indikasjon på fremtidig avkastning."
     },
     "externalFollow": {
-      "title": "Kopier Binance-trader",
+      "title": "Kopier Kraken-trader",
       "subtitle": "Konfigurer kopiering av {name}",
       "sheetAriaLabel": "Kopier {name}",
       "scaleFactorLabel": "Skaleringsfaktor",

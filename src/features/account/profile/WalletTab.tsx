@@ -30,7 +30,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-type SupportedExchange = "binance" | "kraken";
+type SupportedExchange = "kraken";
 
 type Connection = {
   id: string;
@@ -47,7 +47,7 @@ type WalletBalance = {
 };
 
 type UsdtNokResponse = { rate: number };
-type BinancePricesResponse = { prices: Array<{ symbol: string; price: number }> };
+type PricesResponse = { prices: Array<{ symbol: string; price: number }> };
 
 type EnrichedBalance = WalletBalance & {
   valueUsdt: number | null;
@@ -61,7 +61,6 @@ const SUPPORTED_EXCHANGES: Array<{
   logo: string;
   color: string;
 }> = [
-  { id: "binance", name: "Binance", logo: "B", color: "bg-yellow-500" },
   { id: "kraken", name: "Kraken", logo: "K", color: "bg-emerald-500" },
 ];
 
@@ -105,14 +104,14 @@ export function WalletTab() {
     setUsdtNokRate(json.rate);
   }
 
-  async function loadBinancePrices(symbols: string[]) {
+  async function loadPrices(symbols: string[]) {
     const unique = Array.from(new Set(symbols)).filter(Boolean);
     if (unique.length === 0) return;
 
     const res = await fetch(`/api/market/binance-prices?symbols=${unique.join(",")}`, {
       cache: "no-store",
     });
-    const json = (await res.json()) as Partial<BinancePricesResponse> & { error?: string };
+    const json = (await res.json()) as Partial<PricesResponse> & { error?: string };
     if (!res.ok) throw new Error(json.error ?? "Failed to load prices");
 
     const map: { [key: string]: number } = {};
@@ -186,7 +185,7 @@ export function WalletTab() {
       .map((c) => `${c}USDT`);
     void (async () => {
       try {
-        if (symbols.length > 0) await loadBinancePrices(symbols);
+        if (symbols.length > 0) await loadPrices(symbols);
       } catch {
         // Price failures should not block wallet balances.
       }
@@ -455,7 +454,7 @@ export function WalletTab() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center font-bold text-white">
-                    {conn.exchange === "binance" ? "B" : "K"}
+                    K
                   </div>
                   <div>
                     <CardTitle className="text-white capitalize">{conn.exchange}</CardTitle>
