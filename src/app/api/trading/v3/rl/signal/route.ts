@@ -11,6 +11,16 @@ import { PPOAgent, ACTIONS } from '@/lib/trading/rl/ppo-agent';
 import { calculateSentimentSignal } from '@/lib/trading/rl/sentiment-reward';
 
 export async function POST(request: NextRequest) {
+  // RL_ENABLED=false som standard — utrent PPO-agent (Xavier-init, Math.random
+  // vekter, "simplified training") skal ALDRI påvirke en ekte handel.
+  // Aktivering krever Tom-beslutning + walk-forward-bevis (Task 6 i agentic-planen).
+  if (process.env.RL_ENABLED !== "true") {
+    return NextResponse.json(
+      { error: "RL-agent deaktivert (utrent PPO — feature-flagg RL_ENABLED=false)" },
+      { status: 503 },
+    );
+  }
+
   try {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
