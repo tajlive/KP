@@ -8,7 +8,7 @@ import { encryptExchangeSecret } from "@/lib/exchanges/secret-crypto";
 import type { ExchangeConnectionView, ExchangePermission } from "@/lib/exchanges/types";
 
 const connectionSchema = z.object({
-  exchange: z.enum(["binance", "kraken"]),
+  exchange: z.literal("kraken"),
   apiKey: z.string().min(8),
   apiSecret: z.string().min(8),
   isTestnet: z.boolean().optional().default(false),
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
   const connections: ExchangeConnectionView[] = (data ?? []).map((row) => ({
     id: row.id,
-    exchange: row.exchange as "binance" | "kraken",
+    exchange: "kraken" as const,
     isActive: Boolean(row.is_active),
     isTestnet: Boolean(row.is_testnet),
     permissions: Object.entries((row.permissions ?? {}) as Record<string, boolean>)
@@ -90,21 +90,13 @@ export async function POST(request: NextRequest) {
   const { exchange, apiKey, apiSecret, isTestnet, permissions } = parsed.data;
 
   try {
-    if (exchange === "kraken") {
-      if (permissions.includes("trading")) {
-        return NextResponse.json(
-          { error: "Kraken is read-only in this phase" },
-          { status: 400 },
-        );
-      }
-      await validateKrakenReadOnlyKeys(apiKey, apiSecret);
-    } else {
-      // EU/EØS (2026): Binance er geo-blokkert (MiCA). Kraken er eneste børs.
+    if (permissions.includes("trading")) {
       return NextResponse.json(
-        { error: "Unsupported exchange: only Kraken is available" },
+        { error: "Kraken is read-only in this phase" },
         { status: 400 },
       );
     }
+    await validateKrakenReadOnlyKeys(apiKey, apiSecret);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Validation failed";
     return NextResponse.json({ error: message }, { status: 400 });
@@ -149,7 +141,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   const exchange = request.nextUrl.searchParams.get("exchange");
-  if (!exchange || !["binance", "kraken"].includes(exchange)) {
+  if (exchange !== "kraken") {
     return NextResponse.json({ error: "Missing exchange" }, { status: 400 });
   }
 

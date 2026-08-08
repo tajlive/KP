@@ -272,7 +272,7 @@ const templates = {
           <li>Fullfør onboarding-modulen</li>
           <li>Utforsk Trading Skolen</li>
           <li>Prøv Paper Trading (risikofritt!)</li>
-          <li>Koble til Binance når du er klar</li>
+          <li>Koble til Kraken når du er klar</li>
         </ol>
       </div>
       <a href="https://www.klarpakke.no/no/dashboard" class="button">Gå til Dashboard</a>
@@ -294,7 +294,7 @@ const templates = {
           <li>Full tilgang til alle trading-kurs</li>
           <li>AI-drevne trading-signaler</li>
           <li>Automatisk paper trading</li>
-          <li>Live trading (når du kobler til Binance)</li>
+          <li>Live trading (når du kobler til Kraken)</li>
           <li>Eksklusiv Discord/Telegram tilgang</li>
         </ul>
       </div>

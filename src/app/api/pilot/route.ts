@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 // - mode "auto"  → Auto-strategi (tick kjører strategi-gates)
 // - mode "pilot" → PilotTrade (ensemble-signaler)
 // - live=false (default) → paper-sesjon (lekepenger)
-// - live=true → ekte Binance-handel via brukerens egne API-nøkler
+// - live=true → ekte Kraken-handel via brukerens egne API-nøkler
 //   (krever aktiv exchange_connection med trading-tillatelse + tier)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -58,49 +58,29 @@ export async function POST(request: NextRequest) {
     // PF 7.42 OOS — trading-agent-forslag 2026-08-05).
     const gridDefault = isGridDefaultRouting();
 
-    // Live-krav: Binance-kobling (exchange_connections | user_binance_keys | legacy) + kvalifisert tier
+    // Live-krav: Kraken-kobling (user_kraken_keys — EU/EØS 2026) + kvalifisert tier
     if (live) {
-      const { data: connection } = await db
-        .from("exchange_connections")
-        .select("id, permissions")
+      const { data: krakenKeysRow } = await db
+        .from("user_kraken_keys")
+        .select("api_key_encrypted, api_secret_encrypted")
         .eq("user_id", user.id)
-        .eq("exchange", "binance")
-        .eq("is_active", true)
-        .is("revoked_at", null)
-        .maybeSingle();
-
-      const { data: ubkRow } = await db
-        .from("user_binance_keys")
-        .select("api_key_id, api_secret_id")
-        .eq("user_id", user.id)
-        .eq("is_active", true)
-        .limit(1)
-        .maybeSingle();
-
-      const { data: apiKeyRow } = await db
-        .from("api_keys")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("exchange", "binance")
-        .eq("is_active", true)
         .limit(1)
         .maybeSingle();
 
       const { data: profileRow } = await db
         .from("user_profiles")
-        .select("tier, binance_connected")
+        .select("tier")
         .eq("id", user.id)
         .single();
 
-      const perms = (connection?.permissions ?? {}) as Record<string, boolean>;
-      const hasKeys =
-        Boolean(connection) || Boolean(ubkRow?.api_key_id && ubkRow.api_secret_id) ||
-        Boolean(apiKeyRow) || Boolean(profileRow?.binance_connected);
+      const hasKeys = Boolean(
+        krakenKeysRow?.api_key_encrypted && krakenKeysRow.api_secret_encrypted,
+      );
 
-      if (!hasKeys || (connection && !perms.trading)) {
+      if (!hasKeys) {
         return NextResponse.json(
           {
-            error: "Koble Binance i Innstillinger → Binance API før live-handel (trading-tillatelse kreves)",
+            error: "Koble Kraken i Innstillinger → Kraken API før live-handel (trading-tillatelse kreves)",
             requiresConnection: true,
           },
           { status: 400 },
@@ -232,7 +212,7 @@ export async function POST(request: NextRequest) {
       sessionIds: createdIds,
       sessionCount: createdIds.length,
       message: live
-        ? `Auto-handel aktiv — ekte penger via Binance (${createdIds.length} ${createdIds.length === 1 ? "valuta" : "valutaer"}). AI-en overvåker og handler.`
+        ? `Auto-handel aktiv — ekte penger via Kraken (${createdIds.length} ${createdIds.length === 1 ? "valuta" : "valutaer"}). AI-en overvåker og handler.`
         : `${mode === "auto" ? "Auto-handel" : "PilotTrade"} aktiv! AI-en overvåker ${createdIds.length} ${createdIds.length === 1 ? "valuta" : "valutaer"}.`,
     });
   } catch (err) {

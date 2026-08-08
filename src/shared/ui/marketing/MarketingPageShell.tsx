@@ -10,7 +10,6 @@ export type MarketingNamespace =
   | "contact"
   | "calculator"
   | "help"
-  | "binanceGuide"
   | "metadata";
 
 export interface MarketingPageShellProps {

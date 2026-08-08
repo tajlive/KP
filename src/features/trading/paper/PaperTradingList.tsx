@@ -431,10 +431,10 @@ export function PaperTradingList({
       <PremiumStatusBanner>
         <p
           className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
-          title={t("binanceUpdateInfo")}
+          title={t("krakenUpdateInfo")}
         >
           <Info className="w-3.5 h-3.5 shrink-0" aria-hidden />
-          {t("binanceUpdateInfo")}
+          {t("krakenUpdateInfo")}
         </p>
       </PremiumStatusBanner>
 

@@ -7,14 +7,14 @@ type Status = 'operational' | 'degraded' | 'down';
 
 interface SystemHealth {
   supabase: Status;
-  binance: Status;
+  kraken: Status;
   email: Status;
 }
 
 export default function SystemStatus() {
   const [health, setHealth] = useState<SystemHealth>({
     supabase: 'operational',
-    binance: 'operational',
+    kraken: 'operational',
     email: 'operational',
   });
   const [loading, setLoading] = useState(true);
@@ -27,14 +27,14 @@ export default function SystemStatus() {
         const { error } = await supabase.from('user_profiles').select('id', { count: 'exact', head: true });
         setHealth({
           supabase: error ? 'degraded' : 'operational',
-          binance: 'operational',
+          kraken: 'operational',
           email: 'operational',
         });
       } catch (error) {
         console.error('Health check failed:', error);
         setHealth({
           supabase: 'degraded',
-          binance: 'operational',
+          kraken: 'operational',
           email: 'operational',
         });
       } finally {

@@ -313,14 +313,7 @@ async function checkHangingSessions(): Promise<CheckResult> {
   }
 }
 
-async function checkBinanceProxy(): Promise<CheckResult> {
-  // EU/EØS (2026): Binance-proxyen er slettet. Kraken-connectivity dekker
-  // priskilde-helsen — se checkKrakenConnectivity.
-  return {
-    status: "ok",
-    message: "Binance-proxy fjernet (Kraken er eneste kilde)",
-  };
-}
+
 
 async function checkSanity(): Promise<CheckResult> {
   const start = Date.now();
@@ -531,7 +524,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment, krakenConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading, executeEndpoint, errorRate, tradesPerMinute, stripeApi, resendApi] =
+  const [database, tradingSignals, kv, environment, krakenConnectivity, leaderboard, hangingSessions, sanity, paperTrading, executeEndpoint, errorRate, tradesPerMinute, stripeApi, resendApi] =
     await Promise.all([
       withTimeout(checkDatabase(), 3000, {
         status: "error" as const,
@@ -557,10 +550,6 @@ export async function GET(request: NextRequest) {
       withTimeout(checkHangingSessions(), 3000, {
         status: "error" as const,
         message: "Check timed out after 3000ms",
-      }),
-      withTimeout(checkBinanceProxy(), 10000, {
-        status: "error" as const,
-        message: "Check timed out after 10000ms",
       }),
       withTimeout(checkSanity(), 5000, {
         status: "warning" as const,
@@ -602,7 +591,6 @@ export async function GET(request: NextRequest) {
     krakenConnectivity,
     leaderboard,
     hangingSessions,
-    binanceProxy,
     sanity,
     paperTrading,
     executeEndpoint,
@@ -659,7 +647,7 @@ export async function GET(request: NextRequest) {
 }
 /**
  * POST /api/health - deep verification (CI pre-deploy)
- * Verifies: Auth middleware + Binance proxy + Leaderboard data
+ * Verifies: Auth middleware + Kraken connectivity + Leaderboard data
  */
 export async function POST(request: NextRequest) {
   const supabase = createSupabaseClient(

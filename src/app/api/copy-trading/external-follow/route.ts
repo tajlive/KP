@@ -38,7 +38,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
           {
             follower_id: user.id,
             external_leader_id: encrypted_uid,
-            leader_source: "binance",
+            leader_source: "kraken",
             scale_factor: scale_factor ?? 1.0,
             allocation_percent: allocation_percent ?? 10,
             max_trade_amount: max_trade_amount ?? null,

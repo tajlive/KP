@@ -66,7 +66,7 @@ export const BrandedTemplates = {
       <h3 style="margin-bottom: 12px;">Dine neste steg:</h3>
       <ul style="padding-left: 20px; margin: 0;">
         <li>Fullfør Masterclass-modulen for ${tier}.</li>
-        <li>Koble til Binance API for automatisk trading.</li>
+        <li>Koble til Kraken API for automatisk trading.</li>
         <li>Bli med i vår lukkede Telegram-kanal.</li>
       </ul>
     </div>
