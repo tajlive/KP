@@ -2,16 +2,20 @@ import { test, expect } from "@playwright/test";
 
 const PAGES = [
   "/",
-  "/trade",
-  "/dashboard",
-  "/dashboard/portfolio",
-  "/dashboard/historikk",
-  "/priser",
-  "/kurs",
+  "/no",
+  "/no/handel",
+  "/no/handel?tab=analysis",
+  "/no/handel?tab=sessions",
+  "/no/dashboard",
+  "/no/dashboard/portfolio",
+  "/no/priser",
+  "/no/kurs",
 ];
 
-// Rå i18n-nøkkel = "namespace.section.key" der namespace er et kjent toppnivå
-const RAW_KEY_PATTERN = /\b(dashboard|trading|common|portfolio)\.[a-z]+\.[a-zA-Z]+\b/g;
+// Rå i18n-nøkkel = "namespace.section.key" der namespace er et kjent toppnivå.
+// Case-insensitiv: CSS text-transform gjør nøklene STORE (TRADING.COCKPIT…).
+const RAW_KEY_PATTERN =
+  /\b(dashboard|trading|common|portfolio|admin|onboarding|navigation|wallet|legal)\.[a-z]+\.[a-zA-Z]+\b/gi;
 
 test.describe("i18n — ingen rå nøkler", () => {
   for (const path of PAGES) {

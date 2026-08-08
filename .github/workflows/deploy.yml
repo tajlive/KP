@@ -6,7 +6,35 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ============ TEST-GATE (2026-08-08): alt som deployes må først passere
+  # tsc + eslint + full vitest-suite. Før denne jobben fantes, kjørte deploy
+  # NULL tester (pre-merge-gates kjører kun på PR — vi committer til main).
+  test-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint . --max-warnings 0
+
+      - name: Unit + component tests (vitest)
+        run: npx vitest run --reporter=verbose
+        env:
+          CI: 'true'
+
   deploy:
+    needs: [test-gate]
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -65,3 +93,37 @@ jobs:
         run: |
           sleep 5
           curl -sf https://www.klarpakke.no/api/health | python3 -m json.tool
+
+  # ============ POST-DEPLOY E2E-SMOKE (2026-08-08): verifiserer prod med
+  # ekte nettleser etter hver deploy — uautentiserte, stabile tester:
+  # health (API), landing-smoke (side laster) og i18n-keys (ingen rå
+  # nøkkelstier — fanger trading.cockpit-regresjonen automatisk).
+  e2e-smoke-prod:
+    needs: [deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E smoke mot prod (health + landing + i18n-keys)
+        run: |
+          npx playwright test \
+            --config=playwright.allure.config.ts \
+            --project=chromium \
+            e2e/smoke/health.spec.ts e2e/smoke/landing-smoke.spec.ts e2e/smoke/i18n-keys.spec.ts
+        env:
+          CI: 'true'
+          E2E_BASE_URL: 'https://www.klarpakke.no'
+          PLAYWRIGHT_TEST_BASE_URL: 'https://www.klarpakke.no'
+          BASE_URL: 'https://www.klarpakke.no'
