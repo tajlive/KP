@@ -9,6 +9,8 @@
 **Testbruker:** `tomarnejensen@gmail.com` / `TestTest123!`
 
 > Hermes-spesifikk kontekst (modellparametere, provider-konfig) ligger i `.hermes.md` (auto-loades). Denne filen er for alle agenter — Hermes, Claude Code, Codex, og manuelle utviklere.
+>
+> **Rollefordeling (vedtatt 2026-08-08):** Hermes er hovedarkitekt — se `ARCHITECT.md` for mandat, Trello-flyt og ansvarsgrenser. Trello-tavle: https://trello.com/b/urwAkqku/klarpakke-drift
 
 ---
 

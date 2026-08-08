@@ -91,11 +91,11 @@ export function DashboardContent({
     if (!data || data.startingCapital <= 0) return undefined;
     // FIKS 8: Avkastning fra EKTE trading-P&L (totalPnl), ikke konto-differanse.
     // Konto-balansen inkluderer manuelle justeringer — konto-differansen lyver som «avkastning».
-    // For live: totalPnl er kun REALISERT P&L (0 hvis ingen salg). Legg til
-    // urealisert P&L (current - starting) slik at brukeren ser faktisk tap/gevinst.
+    // For live: totalPnl er kun REALISERT P&L (0 hvis ingen salg). Bruk
+    // totalCapital (nåverdi) minus startingCapital for å få urealisert P&L.
     const realizedPnl = data.totalPnl;
-    const unrealizedPnl = mode === "live" && data.accountBalance != null
-      ? (data.accountBalance + (data.investedCapital ?? 0)) - data.startingCapital
+    const unrealizedPnl = mode === "live"
+      ? (data.totalCapital ?? 0) - data.startingCapital
       : 0;
     const totalPnl = realizedPnl + unrealizedPnl;
     return (totalPnl / data.startingCapital) * 100;
