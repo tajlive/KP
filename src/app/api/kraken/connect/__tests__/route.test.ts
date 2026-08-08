@@ -14,10 +14,11 @@ import { config as loadEnv } from "dotenv";
 
 // Last inn .env.local slik at ENCRYPTION_KEY (32-byte hex) er tilgjengelig for AES-GCM-kryptering.
 loadEnv({ path: ".env.local" });
-// CI har ikke .env.local — fallback til en deterministisk testnøkkel (32 byte).
-// AES-GCM krever bare en gyldig 32-byte-nøkkel; kryptografisk styrke er ikke
-// testens formål. Prod bruker alltid den ekte ENCRYPTION_KEY-secreten.
+// CI har ikke .env.local — deterministiske fallbacks. AES-GCM krever bare en
+// gyldig 32-byte-nøkkel; Supabase-env brukes kun av route-ens guard før mock.
 process.env.ENCRYPTION_KEY ??= "0".repeat(64);
+process.env.NEXT_PUBLIC_SUPABASE_URL ??= "https://test.supabase.co";
+process.env.SUPABASE_SERVICE_ROLE_KEY ??= "test-key";
 
 const upsertMock = vi.hoisted(() => vi.fn());
 
