@@ -392,7 +392,11 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
         setFeedback({ ok: true, msg: `${side === "buy" ? "Kjøpte" : "Solgte"} ${qty} ${selectedMeta.base} · ${formatNOK(Number(amount), { locale: "nb-NO" })}` });
         // Progressiv avsløring: lås opp Auto/Pilot i denne sesjonen
         window.dispatchEvent(new Event("kp:trade-executed"));
-        // Send confirmation email
+        // Send confirmation email — API-en returnerer {success, trade_id,
+        // session_id, new_balance} (INGEN trade-objekt). P0-fiks 2026-08-08:
+        // data.trade.price kastet TypeError INNI try → catch overstyrte
+        // suksessmeldingen med «Handelen kunne ikke gjennomføres» selv om
+        // handelen var utført (bekreftet: trade b2828a44… status=filled).
         fetch("/api/email/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -401,7 +405,7 @@ function OrderPanel({ mode }: { mode: TradeMode }) {
             symbol,
             side,
             amount: Number(amount),
-            price: data.trade.price,
+            price: data.trade?.price ?? priceNok,
           }),
         }).catch(() => {});
       } else {
