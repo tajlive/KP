@@ -11,7 +11,7 @@
  */
 
 import { createClient } from "@/lib/utils";
-import { BinanceExecutor } from "@/lib/trading/binance-executor";
+import { KrakenExecutor } from "@/lib/trading/kraken-executor";
 
 export interface EmergencyStatus {
   isActive: boolean;
@@ -23,22 +23,19 @@ export interface EmergencyStatus {
 }
 
 /**
- * Hjelper for å lage en BinanceExecutor fra miljøvariabler.
+ * Hjelper for å lage en KrakenExecutor fra miljøvariabler (kill switch).
+ * EU/EØS (2026): Kun Kraken — Binance er geo-blokkert for norske brukere.
  */
-export function getEnvBinanceExecutor(): BinanceExecutor {
-  const apiKey = process.env.BINANCE_API_KEY || "";
-  const apiSecret = process.env.BINANCE_API_SECRET || "";
+export function getEnvKrakenExecutor(): KrakenExecutor {
+  const apiKey = process.env.KRAKEN_API_KEY || "";
+  const apiSecret = process.env.KRAKEN_API_SECRET || "";
   if (!apiKey || !apiSecret) {
     throw new Error(
-      "Binance API keys not configured. " +
-        "Set BINANCE_API_KEY and BINANCE_API_SECRET in .env.local",
+      "Kraken API keys not configured. " +
+        "Set KRAKEN_API_KEY and KRAKEN_API_SECRET in .env.local",
     );
   }
-  return new BinanceExecutor({
-    apiKey,
-    apiSecret,
-    testnet: process.env.BINANCE_USE_TESTNET === "true",
-  });
+  return new KrakenExecutor({ apiKey, apiSecret });
 }
 
 /**
@@ -193,7 +190,7 @@ export async function panicCloseAllPositions(): Promise<number> {
       return 0;
     }
 
-    const executor = getEnvBinanceExecutor();
+    const executor = getEnvKrakenExecutor();
 
     // Lukk hver posisjon med MARKET order (session row: trading_pair, open_position)
     for (const row of openPositions) {

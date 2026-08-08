@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient, createServerClient } from "@/lib/supabase/server";
 import { decryptExchangeSecret } from "@/lib/exchanges/secret-crypto";
-import { BinanceExecutor } from "@/lib/trading/binance-executor";
 import {
   fetchKrakenBalances,
   fetchKrakenTradeHistory,
 } from "@/lib/exchanges/adapters/kraken-readonly";
 
 const syncSchema = z.object({
-  exchange: z.enum(["binance", "kraken"]),
+  exchange: z.enum(["kraken"]),
 });
 
 export async function POST(request: NextRequest) {
@@ -56,11 +55,8 @@ export async function POST(request: NextRequest) {
     const balances =
       exchange === "kraken"
         ? await fetchKrakenBalances(apiKey, apiSecret)
-        : await new BinanceExecutor({
-            apiKey,
-            apiSecret,
-            testnet: Boolean(connection.is_testnet),
-          }).fetchBalances();
+        : // EU/EØS (2026): Binance geo-blokkert (MiCA) — kun Kraken støttes.
+          [];
 
     // Keep wallets as current source for dashboard totals.
     if (balances.length > 0) {

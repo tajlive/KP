@@ -10,6 +10,7 @@ import {
   isDashboardSidebarLinkActive,
 } from "@/lib/navigation/config";
 import { UserMenu } from "./UserMenu";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useActiveTraderSessions } from "./use-active-trader-sessions";
 
 function TopNavLink({
@@ -79,7 +80,42 @@ export function TopNav() {
   const locale = useLocale();
   const pathname = usePathname() ?? "/";
   const t = useTranslations("dashboard.sidebar");
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
+  // Unauthenticated: minimal header with Klarpakke logo + login CTA
+  if (!isAuthenticated) {
+    return (
+      <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
+          <Link
+            href={hrefWithLocale(locale, "/")}
+            className="shrink-0"
+          >
+            <span className="text-lg font-bold text-kp-text-primary sm:text-xl">
+              Klarpakke
+            </span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href={hrefWithLocale(locale, "/login")}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary transition-colors"
+            >
+              {locale === "en" ? "Log in" : "Logg inn"}
+            </Link>
+            <Link
+              href={hrefWithLocale(locale, "/register")}
+              className="rounded-lg bg-kp-brand px-4 py-2 text-sm font-semibold text-white hover:bg-kp-brand/90 transition-colors"
+            >
+              {locale === "en" ? "Start free" : "Start gratis"}
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // Authenticated: full app shell header
   return (
     <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">

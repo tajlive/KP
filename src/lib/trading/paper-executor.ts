@@ -1,10 +1,10 @@
 /**
  * Paper Trading Executor
  *
- * Simulates order execution using real market prices from Binance.
+ * Simulates order execution using real market prices from Kraken.
  * Provides realistic simulation including:
- * - Real-time market prices
- * - Trading fees (0.1%)
+ * - Real-time market prices (Kraken — EU/EØS-sannhet, MiCA-regulert)
+ * - Trading fees (0.8% — Kraken spot taker fee, Tier 1)
  * - Slippage estimation
  * - Balance management
  *
@@ -21,12 +21,12 @@ import type {
   Position,
   OrderBookSnapshot,
 } from "./order-executor";
-import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { createKrakenMarketDataProvider } from "./canonical/market-data";
 import { computeFill } from "./canonical/execution/fill-model";
 import { FILL_CONSTANTS } from "./canonical/execution/fill-constants";
 import { getUsdtToNokRateAsync, getUsdtToNokRate, usdtToNok } from "./currency";
 
-const marketDataProvider = createBinanceMarketDataProvider();
+const marketDataProvider = createKrakenMarketDataProvider();
 
 /** Paper-adapter parametere – re-eksportert fra canonical FILL_CONSTANTS. */
 export const PAPER_PARAMS = FILL_CONSTANTS;

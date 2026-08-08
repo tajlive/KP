@@ -1,16 +1,18 @@
 /**
  * OrderExecutor contract parity test (C5 parity test plan, Task 3).
  *
- * Verifies that `PaperExecutor` and `BinanceExecutor` both honour the shared
+ * Verifies that `PaperExecutor` and `KrakenExecutor` both honour the shared
  * `OrderExecutor` interface: identical method signatures, the same result
  * shapes, and consistent failure/success semantics.
+ *
+ * EU/EØS (2026): Binance er fjernet — Kraken er Klarpakkes eneste live-børs.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { PaperExecutor } from "@/lib/trading/paper-executor";
-import { BinanceExecutor } from "@/lib/trading/binance-executor";
+import { KrakenExecutor } from "@/lib/trading/kraken-executor";
 import type {
   OrderExecutor,
   OrderParams,
@@ -19,143 +21,113 @@ import type {
   Position,
   OrderBookSnapshot,
 } from "@/lib/trading/order-executor";
-import {
-  binanceCircuitBreaker,
-  resetAllCircuitBreakers,
-} from "@/lib/trading/circuit-breaker";
 
 const { FIXED_PRICE, FIXED_RATE } = vi.hoisted(() => ({
   FIXED_PRICE: 50_000,
   FIXED_RATE: 10.92,
 }));
 
+// Mock KrakenClient — vi trenger ikke ekte signaturer for kontrakttesten.
+vi.mock("@/lib/exchanges/kraken/client", () => {
+  const KrakenLockoutError = class extends Error {};
+  class MockKrakenClient {
+    marketBuy = vi.fn();
+    marketSell = vi.fn();
+    limitBuy = vi.fn();
+    limitSell = vi.fn();
+    getTradeHistory = vi.fn();
+    getTicker = vi.fn();
+    getBalance = vi.fn();
+  }
+  return { KrakenClient: MockKrakenClient, KrakenLockoutError };
+});
+
+// Mock priskilde: PaperExecutor henter nå priser fra KrakenProvider.
+// Vi stuber den til en fast pris slik at kontrakttesten er deterministisk.
+vi.mock("@/lib/trading/canonical/market-data", () => ({
+  createKrakenMarketDataProvider: () => ({
+    getPrice: vi.fn(async () => FIXED_PRICE),
+    getKlines: vi.fn(async () => []),
+    getDepth: vi.fn(async () => ({
+      bids: [{ price: FIXED_PRICE * 0.999, quantity: 1 }],
+      asks: [{ price: FIXED_PRICE * 1.001, quantity: 1 }],
+      timestamp: new Date(),
+    })),
+  }),
+  createBinanceMarketDataProvider: () => {
+    throw new Error("Binance er fjernet — bruk Kraken");
+  },
+  KrakenMarketDataProvider: class {},
+  BinanceMarketDataProvider: class {},
+}));
+
 vi.mock("@/lib/trading/currency", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@/lib/trading/currency")>();
+  const actual = await importOriginal<typeof import("@/lib/trading/currency")>();
   return {
     ...actual,
-    getUsdtToNokRateAsync: vi.fn().mockResolvedValue(FIXED_RATE),
-    getUsdtToNokRate: vi.fn().mockReturnValue(FIXED_RATE),
-    usdtToNok: vi.fn(
-      (amount: number, rate?: number) => amount * (rate ?? FIXED_RATE),
-    ),
+    getUsdtToNokRateAsync: vi.fn(async () => FIXED_RATE),
+    getUsdtToNokRate: vi.fn(() => FIXED_RATE),
   };
 });
 
-function createMockSupabase(): SupabaseClient<Database> {
-  const position = {
-    quantity: 0.01,
-    entry_price: 49_000,
-    entry_time: Date.now() - 60_000,
-  };
+import { KrakenClient } from "@/lib/exchanges/kraken/client";
 
-  const session = {
-    id: "paper-session-1",
-    user_id: "user-1",
-    current_capital_nok: 10_000_000,
-    current_capital: 10_000_000,
-    status: "active",
-    mode: "paper",
-    open_position: position,
-    trading_pair: "BTCUSDT",
-  };
-
-  const chain = {
+function createMockSupabase() {
+  const noopQuery = {
     select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
+    is: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
-    maybeSingle: vi.fn().mockResolvedValue({ data: session, error: null }),
-    single: vi.fn().mockResolvedValue({ data: session, error: null }),
+    order: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({
+      data: {
+        id: "sess-paper-1",
+        current_capital_nok: 1_000_000,
+        open_position: null,
+      },
+      error: null,
+    }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
   };
-
   return {
-    from: vi.fn().mockReturnValue(chain),
+    from: vi.fn(() => noopQuery),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
   } as unknown as SupabaseClient<Database>;
 }
 
-function mockBinanceFetch() {
-  return vi.fn(async (input: string | URL) => {
-    const url = input.toString();
-
-    if (url.includes("/api/v3/order")) {
-      return new Response(
-        JSON.stringify({
-          orderId: 12345,
-          clientOrderId: "client-1",
-          transactTime: Date.now(),
-          price: "0",
-          origQty: "0.01",
-          executedQty: "0.01",
-          cummulativeQuoteQty: "500",
-          status: "FILLED",
-          type: "MARKET",
-          side: "BUY",
-          fills: [
-            {
-              price: FIXED_PRICE.toString(),
-              qty: "0.01",
-              commission: "0.5",
-              commissionAsset: "USDT",
-            },
-          ],
-        }),
-        { status: 200, headers: { "content-type": "application/json" } },
-      );
-    }
-
-    if (url.includes("/api/v3/account")) {
-      return new Response(
-        JSON.stringify({
-          balances: [
-            { asset: "USDT", free: "100000", locked: "0" },
-            { asset: "BTC", free: "0.01", locked: "0" },
-          ],
-        }),
-        { status: 200, headers: { "content-type": "application/json" } },
-      );
-    }
-
-    if (url.includes("/api/v3/openOrders")) {
-      return new Response(
-        JSON.stringify([
-          {
-            orderId: 1,
-            symbol: "BTCUSDT",
-            side: "BUY",
-            price: FIXED_PRICE.toString(),
-            origQty: "0.01",
-            executedQty: "0.01",
-            status: "FILLED",
-            time: Date.now(),
-          },
-        ]),
-        { status: 200, headers: { "content-type": "application/json" } },
-      );
-    }
-
-    if (url.includes("/api/v3/ticker/price")) {
-      return new Response(
-        JSON.stringify({ symbol: "BTCUSDT", price: FIXED_PRICE.toString() }),
-        { status: 200, headers: { "content-type": "application/json" } },
-      );
-    }
-
-    if (url.includes("/api/v3/depth")) {
-      return new Response(
-        JSON.stringify({
-          bids: [[(FIXED_PRICE * 0.999).toString(), "1"]],
-          asks: [[(FIXED_PRICE * 1.001).toString(), "1"]],
-        }),
-        { status: 200, headers: { "content-type": "application/json" } },
-      );
-    }
-
-    throw new Error(`Unexpected fetch in parity test: ${url}`);
-  });
+function mockKrakenClient() {
+  const client = new KrakenClient("k", "s") as InstanceType<
+    typeof KrakenClient
+  >;
+  vi.mocked(client.marketBuy).mockResolvedValue({
+    txid: ["TX-PARITY"],
+    descr: { pair: "XBTUSDC", type: "buy", ordertype: "market" },
+  } as never);
+  vi.mocked(client.marketSell).mockResolvedValue({
+    txid: ["TX-PARITY"],
+    descr: { pair: "XBTUSDC", type: "sell", ordertype: "market" },
+  } as never);
+  vi.mocked(client.getTradeHistory).mockResolvedValue({
+    trades: {
+      T1: {
+        ordertxid: "TX-PARITY",
+        price: FIXED_PRICE.toString(),
+        vol: "0.01",
+        fee: "4",
+        time: Date.now() / 1000,
+      },
+    },
+  } as never);
+  vi.mocked(client.getBalance).mockResolvedValue({
+    result: { USDC: "100000", XBT: "0.01" },
+  } as never);
+  vi.mocked(client.getTicker).mockResolvedValue({
+    c: [FIXED_PRICE.toString(), "1"],
+    b: [(FIXED_PRICE * 0.999).toString(), "1"],
+    a: [(FIXED_PRICE * 1.001).toString(), "1"],
+  } as never);
+  return client;
 }
 
 function assertOrderResultShape(result: OrderResult) {
@@ -208,17 +180,12 @@ function assertOrderBookShape(book: OrderBookSnapshot) {
 describe("OrderExecutor contract parity", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resetAllCircuitBreakers();
   });
 
-  it("PaperExecutor and BinanceExecutor both satisfy the OrderExecutor interface", () => {
+  it("PaperExecutor and KrakenExecutor both satisfy the OrderExecutor interface", () => {
     const supabase = createMockSupabase();
     const paper = new PaperExecutor(supabase, "user-1");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
+    const live = new KrakenExecutor(mockKrakenClient() as never);
 
     // Compile-time contract check: both must be assignable to OrderExecutor.
     const _paper: OrderExecutor = paper;
@@ -228,8 +195,6 @@ describe("OrderExecutor contract parity", () => {
   });
 
   it("executeOrder returns the same OrderResult shape for a successful market buy", async () => {
-    globalThis.fetch = mockBinanceFetch();
-
     const params: OrderParams = {
       symbol: "BTCUSDT",
       side: "buy",
@@ -239,11 +204,7 @@ describe("OrderExecutor contract parity", () => {
 
     const supabase = createMockSupabase();
     const paper = new PaperExecutor(supabase, "user-1");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
+    const live = new KrakenExecutor(mockKrakenClient() as never);
 
     const paperResult = await paper.executeOrder(params);
     const liveResult = await live.executeOrder(params);
@@ -285,20 +246,9 @@ describe("OrderExecutor contract parity", () => {
     expect(paperFailure.executedQuantity).toBe(0);
     expect(paperFailure.executedPrice).toBe(0);
 
-    // Live mode failure path is the circuit-breaker-open path, which also
-    // returns a structured OrderResult rather than throwing.
-    binanceCircuitBreaker.forceState("OPEN");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
-    const liveFailure = await live.executeOrder({
-      symbol: "BTCUSDT",
-      side: "buy",
-      quantity: 0.01,
-      orderType: "market",
-    });
+    // Live failure path: ugyldig kvantum → strukturert OrderResult, ikke throw.
+    const live = new KrakenExecutor(mockKrakenClient() as never);
+    const liveFailure = await live.executeOrder(invalidParams);
 
     assertOrderResultShape(liveFailure);
     expect(liveFailure.success).toBe(false);
@@ -308,15 +258,9 @@ describe("OrderExecutor contract parity", () => {
   });
 
   it("getBalance returns a BalanceInfo shape from both executors", async () => {
-    globalThis.fetch = mockBinanceFetch();
-
     const supabase = createMockSupabase();
     const paper = new PaperExecutor(supabase, "user-1");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
+    const live = new KrakenExecutor(mockKrakenClient() as never);
 
     const paperBalance = await paper.getBalance();
     const liveBalance = await live.getBalance();
@@ -326,15 +270,9 @@ describe("OrderExecutor contract parity", () => {
   });
 
   it("getPosition returns a Position shape or null from both executors", async () => {
-    globalThis.fetch = mockBinanceFetch();
-
     const supabase = createMockSupabase();
     const paper = new PaperExecutor(supabase, "user-1");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
+    const live = new KrakenExecutor(mockKrakenClient() as never);
 
     const paperPosition = await paper.getPosition("BTCUSDT");
     const livePosition = await live.getPosition("BTCUSDT");
@@ -344,30 +282,18 @@ describe("OrderExecutor contract parity", () => {
   });
 
   it("validateApiKeys returns a boolean from both executors", async () => {
-    globalThis.fetch = mockBinanceFetch();
-
     const supabase = createMockSupabase();
     const paper = new PaperExecutor(supabase, "user-1");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
+    const live = new KrakenExecutor(mockKrakenClient() as never);
 
     expect(await paper.validateApiKeys()).toBe(true);
     expect(await live.validateApiKeys()).toBe(true);
   });
 
   it("getMarketPrice and fetchOrderBook return the same types from both executors", async () => {
-    globalThis.fetch = mockBinanceFetch();
-
     const supabase = createMockSupabase();
     const paper = new PaperExecutor(supabase, "user-1");
-    const live = new BinanceExecutor({
-      apiKey: "dummy-key",
-      apiSecret: "dummy-secret",
-      testnet: true,
-    });
+    const live = new KrakenExecutor(mockKrakenClient() as never);
 
     const paperPrice = await paper.getMarketPrice("BTCUSDT");
     const livePrice = await live.getMarketPrice("BTCUSDT");
