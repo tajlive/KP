@@ -83,11 +83,16 @@ export function useCurrency() {
       if (mode === "paper") {
         return formatFromNOK(amount, currency);
       }
+      // VALUTA-KONTRAKT (§45): alle saldo/posisjons-tall lagres i NOK — også
+      // for live. USDT er kun et internt normaliseringsformat per tick og skal
+      // ALDRI vises i UI. Før denne fiksen viste live-balanse «9 492,46 USDT»
+      // for et tall som var NOK (current_capital_nok) — feil valuta + feil
+      // enhet.
       return new Intl.NumberFormat(isNorwegian ? "nb-NO" : "en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "NOK",
         maximumFractionDigits: 2,
-      }).format(amount).replace("USD", "USDT");
+      }).format(amount);
     },
     [currency, isNorwegian],
   );
