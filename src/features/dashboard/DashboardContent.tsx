@@ -55,11 +55,13 @@ export function DashboardContent({
   isPriority = false,
 }: DashboardContentProps) {
   const t = useTranslations("dashboard");
-  const { mode, setMode } = useTradingMode();
+  const { mode, setMode, userSwitched } = useTradingMode();
 
-  // Keep server metrics only until the user actively switches mode; after that,
-  // fetch client-side data for the newly selected mode.
-  const hasSwitched = mode !== preferredTradingMode;
+  // Keep server metrics only until the user ACTIVELY switches mode (klikk på
+  // toggle); automatisk synk fra profilen er ikke et bytte. Før denne fiksen
+  // ble server-metrics kastet hver gang layout-default (paper) avvek fra
+  // profilens modus (live) → «Ingen data» for live-brukere.
+  const hasSwitched = userSwitched;
 
   const handleModeChange = useCallback(
     (newMode: DashboardMode) => {
