@@ -114,7 +114,7 @@ describe("ExecutorFactory", () => {
     it("throws when no Kraken keys exist for live mode", async () => {
       const db = makeSupabaseMock();
       await expect(ExecutorFactory.create(db, "user-1", "live")).rejects.toThrow(
-        "Kraken API keys not configured",
+        "No exchange keys configured. Please connect your exchange first.",
       );
     });
   });
