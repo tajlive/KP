@@ -165,6 +165,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // FIKS 8: investert kapital = kostnadsgrunnlag i åpne posisjoner
+    // (samme definisjon som getAccountBalance — quantity × entry_price).
+    const investedCapital = positions.reduce(
+      (sum, p) => sum + p.qty * p.avgBuyPrice,
+      0,
+    );
+
     return NextResponse.json({
       balance,
       initialBalance,
@@ -172,6 +179,7 @@ export async function GET(request: NextRequest) {
       closedTrades: stats.closedCount,
       winRate: stats.winRate,
       totalPnl: stats.totalPnl,
+      investedCapital,
       positions,
     });
   } catch (err) {

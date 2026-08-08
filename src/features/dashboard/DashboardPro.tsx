@@ -325,7 +325,7 @@ export function DashboardPro({
                   />
                   {(effectiveStats.sessionCount || 0) > 5 && (
                     <Link 
-                      href={`/${locale}/trade?view=sessions`} 
+                      href={`/${locale}/handel?view=sessions`} 
                       className="text-sm text-emerald-600 hover:text-emerald-500 font-medium transition-colors"
                     >
                       {t("seeAll")}

@@ -96,7 +96,7 @@ export default function FirstTradeCard({
                 : "Congratulations! You now own Bitcoin!"}
             </p>
             <a
-              href={`/${locale}/trade?mode=paper`}
+              href={`/${locale}/handel?mode=paper`}
               className={`${BRAND.link} text-sm font-medium mt-2 inline-block hover:underline`}
             >
               {no ? "Utforsk flere coins →" : "Explore more coins →"}

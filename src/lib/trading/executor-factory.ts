@@ -15,6 +15,7 @@ import { BinanceExecutor } from "./binance-executor";
 import { BinanceProxyExecutor } from "./binance-proxy-executor";
 import type { OrderExecutor } from "./order-executor";
 import { PaperExecutor } from "./paper-executor";
+import { KrakenExecutor } from "./kraken-executor";
 import { decryptExchangeSecret } from "@/lib/exchanges/secret-crypto";
 import { decrypt } from "@/lib/crypto";
 
@@ -37,7 +38,15 @@ export class ExecutorFactory {
       return new PaperExecutor(supabase, userId, sessionId);
     }
 
-    // Live mode: fetch and decrypt Binance API keys
+    // Live mode — EU/EØS-fakta (2026): Binance er geo-blokkert for norske
+    // brukere (MiCA). Kraken er MiCA-regulert og Klarpakkes SANNE live-vei.
+    // Prioritet: 1) Kraken-nøkler (user_kraken_keys), 2) Binance (legacy).
+    const krakenExecutor = await KrakenExecutor.fromUser(supabase, userId);
+    if (krakenExecutor) {
+      return krakenExecutor;
+    }
+
+    // Binance fallback (kun legacy-brukere uten Kraken-tilkobling)
     // Kilde-prioritet: 1) exchange_connections (ny kanonisk, BYO-UI),
     //                  2) user_profiles.binance_api_key_id (legacy)
 

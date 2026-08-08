@@ -2063,7 +2063,7 @@
       "showingLive": "Viser live-handler",
       "stats": {
         "totalReturn": "Total avkastning",
-        "totalReturnSub": "Akkumulert profitt",
+        "totalReturnSub": "Sum fra lukkede handler",
         "totalReturnHelp": "Viser realisert gevinst/tap fra lukkede trades.",
         "winRate": "Vinnrate",
         "winRateSub": "{totalTrades} handler totalt",

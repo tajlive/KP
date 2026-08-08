@@ -43,13 +43,7 @@ function ActiveTraderPill({ locale }: { locale: string }) {
 
   const hasLive = sessions.some((session) => session.mode === "live");
   const label =
-    locale === "en"
-      ? hasLive
-        ? "Live trader running"
-        : "Trader running"
-      : hasLive
-        ? "Live-trader kjører"
-        : "Trader kjører";
+    locale === "en" ? "Auto-trading active" : "Auto-handel aktiv";
   const countLabel = activeCount > 1 ? ` (${activeCount})` : "";
 
   return (

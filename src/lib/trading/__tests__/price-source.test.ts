@@ -1,8 +1,9 @@
 /**
- * Test: price-source.ts — per-bruker valg av priskilde i tick-motoren (Task 2).
+ * Test: price-source.ts — priskilde i tick-motoren (Task 2 + EU/EØS 2026).
  *
- * Kraken-tilkoblede brukere (rad i user_kraken_keys med is_active=true) får
- * lekepenger-priser fra Kraken; alle andre beholder Binance.
+ * EU/EØS-fakta (2026): Binance er geo-blokkert for norske brukere (MiCA).
+ * Kraken er MiCA-regulert → ALLE brukere får Kraken-priser (fallback til
+ * Binance skjer i fetchCandles ved Kraken-feil/par-mangel).
  * priceCacheKey gir unike cache-nøkler per (kilde, symbol) slik at ett symbol
  * kan ha både kraken- og binance-lys i samme tick.
  */
@@ -17,19 +18,19 @@ describe("pickPriceSource", () => {
     expect(pickPriceSource("user-kraken-2", krakenUserIds)).toBe("kraken");
   });
 
-  it("returnerer binance for ikke-tilkoblede brukere", () => {
-    expect(pickPriceSource("user-normal", krakenUserIds)).toBe("binance");
+  it("returnerer kraken også for ikke-tilkoblede brukere (EU-sannhet: Kraken default)", () => {
+    expect(pickPriceSource("user-normal", krakenUserIds)).toBe("kraken");
   });
 
-  it("returnerer binance når settet er tomt", () => {
-    expect(pickPriceSource("user-x", new Set<string>())).toBe("binance");
+  it("returnerer kraken når settet er tomt", () => {
+    expect(pickPriceSource("user-x", new Set<string>())).toBe("kraken");
   });
 
-  it("returnerer binance for ukjent/ubestemt userId", () => {
-    expect(pickPriceSource("", krakenUserIds)).toBe("binance");
+  it("returnerer kraken for ukjent/ubestemt userId", () => {
+    expect(pickPriceSource("", krakenUserIds)).toBe("kraken");
     expect(
       pickPriceSource(undefined as unknown as string, krakenUserIds),
-    ).toBe("binance");
+    ).toBe("kraken");
   });
 });
 

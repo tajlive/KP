@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     let sessionQuery = supabase
       .from("trading_sessions")
-      .select("id, starting_capital_nok, current_capital_nok, started_at")
+      .select("id, starting_capital_nok, current_capital_nok, open_position, started_at")
       .eq("user_id", user.id);
 
     if (sessionId) {
@@ -74,8 +74,12 @@ export async function GET(request: NextRequest) {
 
     // Anker startkapital til paper_accounts (source of truth for saldo).
     // FIKS 3: Inkluderer current_balance for overskrifts-KPI.
+    // FIKS 8: investedCapital beregnes fra åpne posisjoner (samme logikk som
+    // getAccountBalance) — «Total verdi» = ledig + investert overalt, og
+    // avkastnings-% = EKTE trading-P&L (totalPnl), ikke konto-differansen.
     let accountStart: number | null = null;
     let accountBalance: number | null = null;
+    let investedCapital = 0;
     if (mode === "paper" && !sessionId) {
       const { data: account } = await supabase
         .from("paper_accounts")
@@ -86,6 +90,14 @@ export async function GET(request: NextRequest) {
         account?.initial_balance != null ? Number(account.initial_balance) : null;
       accountBalance =
         account?.current_balance != null ? Number(account.current_balance) : null;
+    }
+    if (mode === "paper" && !sessionId && sessions && sessions.length > 0) {
+      for (const s of sessions) {
+        const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
+        if (pos?.quantity && pos?.entry_price) {
+          investedCapital += pos.quantity * pos.entry_price;
+        }
+      }
     }
 
     const startDate = new Date();
@@ -122,7 +134,31 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ sessions, trades: allTrades, accountStart, accountBalance });
+    // FIKS 8: EKTE trading-P&L = SUM(realized_pnl) over ALLE trades (all-time),
+    // uavhengig av valgt graf-periode — header-en sier «siden start» og må matche
+    // «Total avkastning»-kortet (RPC get_dashboard_metrics). Konto-differansen
+    // (current_balance − initial_balance) inkluderer manuelle justeringer og
+    // lyver som «avkastning» — aldri bruk den som P&L.
+    let totalPnl = 0;
+    for (let i = 0; i < sessionIds.length; i += CHUNK_SIZE) {
+      const chunk = sessionIds.slice(i, i + CHUNK_SIZE);
+      const { data: pnlRows } = await supabase
+        .from("trades")
+        .select("realized_pnl")
+        .in("session_id", chunk);
+      for (const row of pnlRows ?? []) {
+        if (typeof row.realized_pnl === "number") totalPnl += row.realized_pnl;
+      }
+    }
+
+    return NextResponse.json({
+      sessions,
+      trades: allTrades,
+      accountStart,
+      accountBalance,
+      investedCapital,
+      totalPnl,
+    });
   } catch (err) {
     console.error("[GET /api/portfolio/chart] Unhandled error:", err);
     return NextResponse.json(

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { m } from "framer-motion";
-import { TrendingUp, TrendingDown, Minus, Info } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Info, Wallet } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -30,7 +30,7 @@ export function DashboardTopBar({
   const t = useTranslations("dashboard.topBar");
   const { formatByMode } = useCurrency();
   const isPaper = mode === "paper";
-  const href = ctaLink ?? `/${locale}/trade?mode=${mode}`;
+  const href = ctaLink ?? `/${locale}/handel?mode=${mode}`;
 
   // Guard against NaN / Infinity / -Infinity
   const safeChangePct =
@@ -112,9 +112,11 @@ export function DashboardTopBar({
             {/* Forklaring: vis ledig + investert */}
             {isPaper && (balance != null || investedCapital > 0) && (
               <div className="text-[11px] text-kp-text-secondary mt-0.5 flex items-center gap-1.5">
-                <span>💳 {formatByMode(balance ?? 0, mode)} ledig</span>
+                <Wallet className="w-3.5 h-3.5 text-kp-text-muted" />
+                <span>{formatByMode(balance ?? 0, mode)} ledig</span>
                 <span className="text-kp-border">·</span>
-                <span>📈 {formatByMode(investedCapital, mode)} investert</span>
+                <TrendingUp className="w-3.5 h-3.5 text-kp-text-muted" />
+                <span>{formatByMode(investedCapital, mode)} investert</span>
                 {positionCount > 0 && (
                   <span className="text-kp-text-muted">
                     · {positionCount} posisjon{positionCount !== 1 ? "er" : ""}

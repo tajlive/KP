@@ -2063,7 +2063,7 @@
       "showingLive": "Showing live trades",
       "stats": {
         "totalReturn": "Total Return",
-        "totalReturnSub": "Accumulated profit",
+        "totalReturnSub": "Sum from closed trades",
         "totalReturnHelp": "Shows realized profit/loss from closed trades.",
         "winRate": "Win rate",
         "winRateSub": "{totalTrades} trades total",

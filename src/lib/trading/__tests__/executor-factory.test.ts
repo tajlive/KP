@@ -30,11 +30,19 @@ vi.mock("../binance-executor", () => ({
   }),
 }));
 
+const mockKrakenExecutorInstance = { executeOrder: vi.fn() };
+vi.mock("../kraken-executor", () => ({
+  KrakenExecutor: {
+    fromUser: vi.fn(),
+  },
+}));
+
 // Must import after mocks are set up
 const { ExecutorFactory } = await import("../executor-factory");
 const { PaperExecutor } = await import("../paper-executor");
 const { BinanceProxyExecutor } = await import("../binance-proxy-executor");
 const { BinanceExecutor } = await import("../binance-executor");
+const { KrakenExecutor } = await import("../kraken-executor");
 
 type Supa = SupabaseClient<Database>;
 
@@ -107,6 +115,8 @@ describe("ExecutorFactory", () => {
     vi.clearAllMocks();
     // Default BINANCE_PROXY_ENABLED to "1"
     vi.stubEnv("BINANCE_PROXY_ENABLED", "1");
+    // Default: ingen Kraken-nøkler → eksisterende tester faller til Binance
+    vi.mocked(KrakenExecutor.fromUser).mockResolvedValue(null);
   });
 
   describe("create", () => {
@@ -262,6 +272,29 @@ describe("ExecutorFactory", () => {
       await expect(ExecutorFactory.create(db, "user-1", "live")).rejects.toThrow(
         "Failed to retrieve API keys",
       );
+    });
+
+    it("prefers KrakenExecutor for live mode when Kraken keys exist (EU/EØS-sannhet)", async () => {
+      vi.mocked(KrakenExecutor.fromUser).mockResolvedValue(
+        mockKrakenExecutorInstance as never,
+      );
+      const db = makeSupabaseMock();
+      const executor = await ExecutorFactory.create(db, "user-1", "live");
+
+      expect(KrakenExecutor.fromUser).toHaveBeenCalledWith(db, "user-1");
+      expect(executor).toBe(mockKrakenExecutorInstance);
+      // Binance må ALDRI brukes når Kraken-nøkler finnes
+      expect(BinanceProxyExecutor).not.toHaveBeenCalled();
+      expect(BinanceExecutor).not.toHaveBeenCalled();
+    });
+
+    it("falls back to Binance when no Kraken keys exist", async () => {
+      const db = makeSupabaseMock();
+      const executor = await ExecutorFactory.create(db, "user-1", "live");
+
+      expect(KrakenExecutor.fromUser).toHaveBeenCalledWith(db, "user-1");
+      expect(BinanceProxyExecutor).toHaveBeenCalled();
+      expect(executor).toBe(mockBinanceProxyExecutorInstance);
     });
   });
 
