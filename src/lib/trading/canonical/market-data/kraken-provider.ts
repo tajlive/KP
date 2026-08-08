@@ -41,6 +41,7 @@ const INTERVAL_MAP: Record<string, number> = {
   "15m": 15,
   "1h": 60,
   "4h": 240,
+  "1d": 1440,
 };
 
 const API_BASE = "https://api.kraken.com/0/public";

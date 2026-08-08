@@ -326,8 +326,8 @@ describe("KrakenMarketDataProvider", () => {
       const mockFetch = vi.fn();
       vi.stubGlobal("fetch", mockFetch);
 
-      await expect(provider.getKlines("BTCUSDT", "1d", 100)).rejects.toThrow(
-        "KRAKEN_INTERVAL_UNAVAILABLE: 1d",
+      await expect(provider.getKlines("BTCUSDT", "2d", 100)).rejects.toThrow(
+        "KRAKEN_INTERVAL_UNAVAILABLE: 2d",
       );
       expect(mockFetch).not.toHaveBeenCalled();
     });
