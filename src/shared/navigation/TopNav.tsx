@@ -80,10 +80,30 @@ export function TopNav() {
   const locale = useLocale();
   const pathname = usePathname() ?? "/";
   const t = useTranslations("dashboard.sidebar");
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const isAuthenticated = !!user;
 
-  // Unauthenticated: minimal header with Klarpakke logo + login CTA
+  // (user)-gruppen er beskyttet av requireAuth server-side — en bruker som
+  // ser denne headeren ER innlogget per definisjon. Mens AuthContext loader
+  // (HttpOnly-cookie-sesjon resolver asynkront) viser vi app-headeren, ALDRI
+  // guest-CTA-er. Før denne fiksen viste headeren «Logg inn / Start gratis»
+  // til innloggede brukere i prod fordi AuthContext.user var null i første
+  // render (flash of wrong state).
+  if (!isAuthenticated && authLoading) {
+    return (
+      <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
+          <Link href={hrefWithLocale(locale, "/dashboard")} className="shrink-0">
+            <span className="text-lg font-bold text-kp-text-primary sm:text-xl">
+              Klarpakke
+            </span>
+          </Link>
+        </div>
+      </header>
+    );
+  }
+
+  // Unauthenticated (auth-resolved, faktisk utlogget): minimal header med login CTA
   if (!isAuthenticated) {
     return (
       <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
