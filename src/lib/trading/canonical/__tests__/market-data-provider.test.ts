@@ -1,6 +1,6 @@
 /**
  * Tester for kanonisk markedsdata-provider (Kraken implementasjon).
- * EU/EØS (2026): Kraken er eneste tallkilde — Binance er fjernet.
+ * EU/EØS (2026): Kraken er eneste tallkilde.
  */
 
 import {

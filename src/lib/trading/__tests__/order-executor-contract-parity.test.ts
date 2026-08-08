@@ -5,7 +5,7 @@
  * `OrderExecutor` interface: identical method signatures, the same result
  * shapes, and consistent failure/success semantics.
  *
- * EU/EØS (2026): Binance er fjernet — Kraken er Klarpakkes eneste live-børs.
+ * EU/EØS (2026): Kraken er Klarpakkes eneste live-børs.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -54,11 +54,7 @@ vi.mock("@/lib/trading/canonical/market-data", () => ({
       timestamp: new Date(),
     })),
   }),
-  createBinanceMarketDataProvider: () => {
-    throw new Error("Binance er fjernet — bruk Kraken");
-  },
   KrakenMarketDataProvider: class {},
-  BinanceMarketDataProvider: class {},
 }));
 
 vi.mock("@/lib/trading/currency", async (importOriginal) => {

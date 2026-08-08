@@ -7,7 +7,7 @@ import {
 describe("lot-sizes — statisk symboltabell", () => {
   it("har gyldige verdier for alle Klarpakke-symboler (live-fiks 2026-08-01)", () => {
     // Regresjon: kun BTC/ETH var definert; ADA/DOGE etc. falt tilbake til
-    // BTC-presisjon → Binance LOT_SIZE-reject (prod-bevis: 400 Filter failure).
+    // BTC-presisjon → LOT_SIZE-reject (prod-bevis: 400 Filter failure).
     const cases: Record<string, { stepSize: number; minQty: number }> = {
       BTCUSDT: { stepSize: 0.00001, minQty: 0.00001 },
       ETHUSDT: { stepSize: 0.0001, minQty: 0.0001 },

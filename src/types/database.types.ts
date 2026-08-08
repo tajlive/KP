@@ -1490,7 +1490,6 @@ export type Database = {
         Row: {
           allocated_in_open_trades_nok: number | null
           available_auto_budget_nok: number | null
-          binance_balance_nok: number | null
           created_at: string | null
           error_message: string | null
           execution_time_ms: number | null
@@ -1508,7 +1507,6 @@ export type Database = {
         Insert: {
           allocated_in_open_trades_nok?: number | null
           available_auto_budget_nok?: number | null
-          binance_balance_nok?: number | null
           created_at?: string | null
           error_message?: string | null
           execution_time_ms?: number | null
@@ -1526,7 +1524,6 @@ export type Database = {
         Update: {
           allocated_in_open_trades_nok?: number | null
           available_auto_budget_nok?: number | null
-          binance_balance_nok?: number | null
           created_at?: string | null
           error_message?: string | null
           execution_time_ms?: number | null
@@ -1842,8 +1839,10 @@ export type Database = {
           five_pair_activated: boolean
           grid_levels: Json
           initial_equity_usdc: number
+          last_fill_at: string | null
           last_run: string | null
           realized_profit_usdc: number
+          total_fills: number
           updated_at: string
           user_id: string
         }
@@ -1855,8 +1854,10 @@ export type Database = {
           five_pair_activated?: boolean
           grid_levels?: Json
           initial_equity_usdc?: number
+          last_fill_at?: string | null
           last_run?: string | null
           realized_profit_usdc?: number
+          total_fills?: number
           updated_at?: string
           user_id: string
         }
@@ -1868,8 +1869,10 @@ export type Database = {
           five_pair_activated?: boolean
           grid_levels?: Json
           initial_equity_usdc?: number
+          last_fill_at?: string | null
           last_run?: string | null
           realized_profit_usdc?: number
+          total_fills?: number
           updated_at?: string
           user_id?: string
         }
@@ -2211,265 +2214,6 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           to_tier?: string | null
           user_id?: string
-        }
-        Relationships: []
-      }
-      binance_balances: {
-        Row: {
-          asset: string
-          connection_id: string | null
-          free: number | null
-          id: string
-          locked: number | null
-          nok_value: number | null
-          total: number | null
-          updated_at: string | null
-          usd_value: number | null
-          user_id: string | null
-        }
-        Insert: {
-          asset: string
-          connection_id?: string | null
-          free?: number | null
-          id?: string
-          locked?: number | null
-          nok_value?: number | null
-          total?: number | null
-          updated_at?: string | null
-          usd_value?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          asset?: string
-          connection_id?: string | null
-          free?: number | null
-          id?: string
-          locked?: number | null
-          nok_value?: number | null
-          total?: number | null
-          updated_at?: string | null
-          usd_value?: number | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "binance_balances_connection_id_fkey"
-            columns: ["connection_id"]
-            isOneToOne: false
-            referencedRelation: "binance_connections"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      binance_connections: {
-        Row: {
-          api_key_id: string
-          api_secret_id: string
-          created_at: string | null
-          id: string
-          is_connected: boolean | null
-          is_testnet: boolean | null
-          last_verified: string | null
-          permissions: string[] | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          api_key_id: string
-          api_secret_id: string
-          created_at?: string | null
-          id?: string
-          is_connected?: boolean | null
-          is_testnet?: boolean | null
-          last_verified?: string | null
-          permissions?: string[] | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          api_key_id?: string
-          api_secret_id?: string
-          created_at?: string | null
-          id?: string
-          is_connected?: boolean | null
-          is_testnet?: boolean | null
-          last_verified?: string | null
-          permissions?: string[] | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      binance_key_access_log: {
-        Row: {
-          action: string
-          created_at: string
-          error_message: string | null
-          id: string
-          ip_address: string | null
-          success: boolean
-          user_agent: string | null
-          user_id: string
-        }
-        Insert: {
-          action: string
-          created_at?: string
-          error_message?: string | null
-          id?: string
-          ip_address?: string | null
-          success: boolean
-          user_agent?: string | null
-          user_id: string
-        }
-        Update: {
-          action?: string
-          created_at?: string
-          error_message?: string | null
-          id?: string
-          ip_address?: string | null
-          success?: boolean
-          user_agent?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      binance_sync_log: {
-        Row: {
-          balances_synced: number | null
-          completed_at: string | null
-          created_at: string | null
-          error_details: string | null
-          id: string
-          message: string | null
-          positions_synced: number | null
-          started_at: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          balances_synced?: number | null
-          completed_at?: string | null
-          created_at?: string | null
-          error_details?: string | null
-          id?: string
-          message?: string | null
-          positions_synced?: number | null
-          started_at?: string | null
-          status: string
-          user_id: string
-        }
-        Update: {
-          balances_synced?: number | null
-          completed_at?: string | null
-          created_at?: string | null
-          error_details?: string | null
-          id?: string
-          message?: string | null
-          positions_synced?: number | null
-          started_at?: string | null
-          status?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      binance_trader_positions: {
-        Row: {
-          encrypted_uid: string
-          entry_price: number | null
-          id: string
-          leverage: number | null
-          mark_price: number | null
-          pnl: number | null
-          quantity: number | null
-          roe: number | null
-          side: string
-          symbol: string
-          synced_at: string | null
-        }
-        Insert: {
-          encrypted_uid: string
-          entry_price?: number | null
-          id?: string
-          leverage?: number | null
-          mark_price?: number | null
-          pnl?: number | null
-          quantity?: number | null
-          roe?: number | null
-          side: string
-          symbol: string
-          synced_at?: string | null
-        }
-        Update: {
-          encrypted_uid?: string
-          entry_price?: number | null
-          id?: string
-          leverage?: number | null
-          mark_price?: number | null
-          pnl?: number | null
-          quantity?: number | null
-          roe?: number | null
-          side?: string
-          symbol?: string
-          synced_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "binance_trader_positions_encrypted_uid_fkey"
-            columns: ["encrypted_uid"]
-            isOneToOne: false
-            referencedRelation: "binance_traders"
-            referencedColumns: ["encrypted_uid"]
-          },
-        ]
-      }
-      binance_traders: {
-        Row: {
-          avatar: string | null
-          days_since_created: number | null
-          encrypted_uid: string
-          follower_count: number | null
-          max_drawdown: number | null
-          nick_name: string
-          rank: number | null
-          risk_level: string | null
-          risk_score: number | null
-          sharpe_ratio: number | null
-          synced_at: string | null
-          total_return: number | null
-          trade_count: number | null
-          win_rate: number | null
-        }
-        Insert: {
-          avatar?: string | null
-          days_since_created?: number | null
-          encrypted_uid: string
-          follower_count?: number | null
-          max_drawdown?: number | null
-          nick_name?: string
-          rank?: number | null
-          risk_level?: string | null
-          risk_score?: number | null
-          sharpe_ratio?: number | null
-          synced_at?: string | null
-          total_return?: number | null
-          trade_count?: number | null
-          win_rate?: number | null
-        }
-        Update: {
-          avatar?: string | null
-          days_since_created?: number | null
-          encrypted_uid?: string
-          follower_count?: number | null
-          max_drawdown?: number | null
-          nick_name?: string
-          rank?: number | null
-          risk_level?: string | null
-          risk_score?: number | null
-          sharpe_ratio?: number | null
-          synced_at?: string | null
-          total_return?: number | null
-          trade_count?: number | null
-          win_rate?: number | null
         }
         Relationships: []
       }
@@ -2910,15 +2654,7 @@ export type Database = {
           scale_factor?: number
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "copy_trading_external_follows_external_leader_id_fkey"
-            columns: ["external_leader_id"]
-            isOneToOne: false
-            referencedRelation: "binance_traders"
-            referencedColumns: ["encrypted_uid"]
-          },
-        ]
+        Relationships: []
       }
       copy_trading_follows: {
         Row: {
@@ -3647,7 +3383,6 @@ export type Database = {
         Row: {
           ask_price: number | null
           bid_price: number | null
-          binance_price: number
           created_at: string | null
           executed_price: number
           execution_time_ms: number
@@ -3667,7 +3402,6 @@ export type Database = {
         Insert: {
           ask_price?: number | null
           bid_price?: number | null
-          binance_price: number
           created_at?: string | null
           executed_price: number
           execution_time_ms: number
@@ -3687,7 +3421,6 @@ export type Database = {
         Update: {
           ask_price?: number | null
           bid_price?: number | null
-          binance_price?: number
           created_at?: string | null
           executed_price?: number
           execution_time_ms?: number
@@ -4594,28 +4327,31 @@ export type Database = {
       }
       market_data: {
         Row: {
-          close: number
-          high: number
-          low: number
-          open: number
+          close: number | null
+          high: number | null
+          low: number | null
+          open: number | null
+          price: number | null
           symbol: string
           timestamp: string
           volume: number | null
         }
         Insert: {
-          close: number
-          high: number
-          low: number
-          open: number
+          close?: number | null
+          high?: number | null
+          low?: number | null
+          open?: number | null
+          price?: number | null
           symbol: string
           timestamp: string
           volume?: number | null
         }
         Update: {
-          close?: number
-          high?: number
-          low?: number
-          open?: number
+          close?: number | null
+          high?: number | null
+          low?: number | null
+          open?: number | null
+          price?: number | null
           symbol?: string
           timestamp?: string
           volume?: number | null
@@ -4664,19 +4400,19 @@ export type Database = {
       market_ohlcv_cache: {
         Row: {
           created_at: string | null
-          ohlcv_data: Json
+          ohlcv_data: Json | null
           symbol: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
-          ohlcv_data: Json
+          ohlcv_data?: Json | null
           symbol: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
-          ohlcv_data?: Json
+          ohlcv_data?: Json | null
           symbol?: string
           updated_at?: string | null
         }
@@ -6375,9 +6111,6 @@ export type Database = {
           bankid_verified: boolean | null
           bankid_verified_at: string | null
           beta_approved: boolean | null
-          binance_api_key_encrypted: string | null
-          binance_api_secret_encrypted: string | null
-          binance_connected_at: string | null
           bio: string | null
           consent_paper_trading_public: boolean | null
           created_at: string
@@ -6430,9 +6163,6 @@ export type Database = {
           bankid_verified?: boolean | null
           bankid_verified_at?: string | null
           beta_approved?: boolean | null
-          binance_api_key_encrypted?: string | null
-          binance_api_secret_encrypted?: string | null
-          binance_connected_at?: string | null
           bio?: string | null
           consent_paper_trading_public?: boolean | null
           created_at?: string
@@ -6485,9 +6215,6 @@ export type Database = {
           bankid_verified?: boolean | null
           bankid_verified_at?: string | null
           beta_approved?: boolean | null
-          binance_api_key_encrypted?: string | null
-          binance_api_secret_encrypted?: string | null
-          binance_connected_at?: string | null
           bio?: string | null
           consent_paper_trading_public?: boolean | null
           created_at?: string
@@ -7565,7 +7292,6 @@ export type Database = {
       }
       system_health_logs: {
         Row: {
-          binance_status: string
           checked_at: string | null
           email_status: string
           id: string
@@ -7574,7 +7300,6 @@ export type Database = {
           supabase_status: string
         }
         Insert: {
-          binance_status: string
           checked_at?: string | null
           email_status: string
           id?: string
@@ -7583,7 +7308,6 @@ export type Database = {
           supabase_status: string
         }
         Update: {
-          binance_status?: string
           checked_at?: string | null
           email_status?: string
           id?: string
@@ -9073,45 +8797,6 @@ export type Database = {
           },
         ]
       }
-      user_binance_keys: {
-        Row: {
-          api_key_id: string | null
-          api_secret_id: string | null
-          created_at: string
-          id: string
-          is_active: boolean | null
-          is_testnet: boolean | null
-          last_error: string | null
-          last_validated_at: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          api_key_id?: string | null
-          api_secret_id?: string | null
-          created_at?: string
-          id?: string
-          is_active?: boolean | null
-          is_testnet?: boolean | null
-          last_error?: string | null
-          last_validated_at?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          api_key_id?: string | null
-          api_secret_id?: string | null
-          created_at?: string
-          id?: string
-          is_active?: boolean | null
-          is_testnet?: boolean | null
-          last_error?: string | null
-          last_validated_at?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_course_progress: {
         Row: {
           completed_at: string | null
@@ -9527,11 +9212,6 @@ export type Database = {
       user_profiles: {
         Row: {
           avatar_url: string | null
-          binance_api_key_encrypted: string | null
-          binance_api_key_id: string | null
-          binance_api_secret_encrypted: string | null
-          binance_api_secret_id: string | null
-          binance_connected: boolean
           created_at: string
           default_risk_level: Database["public"]["Enums"]["risk_level"] | null
           dismissed_get_started_card: boolean
@@ -9578,11 +9258,6 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
-          binance_api_key_encrypted?: string | null
-          binance_api_key_id?: string | null
-          binance_api_secret_encrypted?: string | null
-          binance_api_secret_id?: string | null
-          binance_connected?: boolean
           created_at?: string
           default_risk_level?: Database["public"]["Enums"]["risk_level"] | null
           dismissed_get_started_card?: boolean
@@ -9629,11 +9304,6 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
-          binance_api_key_encrypted?: string | null
-          binance_api_key_id?: string | null
-          binance_api_secret_encrypted?: string | null
-          binance_api_secret_id?: string | null
-          binance_connected?: boolean
           created_at?: string
           default_risk_level?: Database["public"]["Enums"]["risk_level"] | null
           dismissed_get_started_card?: boolean
@@ -10901,14 +10571,6 @@ export type Database = {
         Args: { p_amount: number; p_session_id: string; p_user_id: string }
         Returns: undefined
       }
-      decrypt_binance_keys: {
-        Args: { key_id: string; secret_id: string }
-        Returns: {
-          api_key: string
-          api_secret: string
-          is_testnet: boolean
-        }[]
-      }
       detect_crashed_sessions: { Args: never; Returns: undefined }
       diag_constraints:
         | { Args: never; Returns: Json }
@@ -10941,15 +10603,6 @@ export type Database = {
         }
         Returns: string
       }
-      get_available_auto_budget: {
-        Args: { p_user_id: string }
-        Returns: {
-          allocated_in_open_trades_nok: number
-          available_auto_budget_nok: number
-          binance_balance_nok: number
-          max_auto_budget_nok: number
-        }[]
-      }
       get_avg_onboarding_time: { Args: never; Returns: string }
       get_balance_sync_audit: {
         Args: { p_limit?: number; p_user_id: string }
@@ -10960,14 +10613,6 @@ export type Database = {
           id: string
           resolved_at: string
           status: string
-        }[]
-      }
-      get_binance_vault_keys: {
-        Args: { p_user_id: string }
-        Returns: {
-          api_key: string
-          api_secret: string
-          is_testnet: boolean
         }[]
       }
       get_cron_jobs_status: {
@@ -11400,7 +11045,6 @@ export type Database = {
       refresh_leaderboard: { Args: never; Returns: undefined }
       refresh_marketing_funnel_summary: { Args: never; Returns: undefined }
       refresh_paper_trading_leaderboard: { Args: never; Returns: undefined }
-      remove_binance_keys: { Args: { p_user_id: string }; Returns: boolean }
       run_migration: {
         Args: { migration_name: string; migration_sql: string }
         Returns: {
@@ -11439,15 +11083,6 @@ export type Database = {
         Returns: boolean
       }
       snapshot_leaderboard: { Args: { p_period?: string }; Returns: number }
-      store_binance_keys: {
-        Args: {
-          p_api_key: string
-          p_api_secret: string
-          p_is_testnet?: boolean
-          p_user_id: string
-        }
-        Returns: Json
-      }
       store_exchange_connection: {
         Args: {
           p_api_key: string
@@ -11463,13 +11098,6 @@ export type Database = {
       submit_quiz_attempt: {
         Args: { p_answers: Json; p_quiz_slug: string; p_user_id: string }
         Returns: Json
-      }
-      sync_binance_balances: {
-        Args: { p_balances: Json; p_user_id: string }
-        Returns: {
-          assets_synced: number
-          total_usd_value: number
-        }[]
       }
       track_referral_click: {
         Args: {
@@ -11495,18 +11123,6 @@ export type Database = {
       update_transition_readiness_score: {
         Args: { p_user_id: string }
         Returns: number
-      }
-      upsert_binance_vault_keys: {
-        Args: {
-          p_api_key: string
-          p_api_secret: string
-          p_is_testnet?: boolean
-          p_user_id: string
-        }
-        Returns: {
-          api_key_id: string
-          api_secret_id: string
-        }[]
       }
       user_has_permission: {
         Args: { required_roles: string[]; user_uuid: string }

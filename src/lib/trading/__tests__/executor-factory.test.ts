@@ -3,8 +3,8 @@
  *
  * Factory that creates the appropriate OrderExecutor based on trading mode.
  *
- * EU/EØS-fakta (2026): Binance er geo-blokkert for norske brukere (MiCA).
- * Kraken er Klarpakkes ENESTE live-børs — factory'en har ingen Binance-sti.
+ * EU/EØS-fakta (2026): Kraken er eneste børs (MiCA).
+ * Kraken er Klarpakkes ENESTE live-børs.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -111,7 +111,7 @@ describe("ExecutorFactory", () => {
       expect(executor).toBe(mockKrakenExecutorInstance);
     });
 
-    it("throws when no Kraken keys exist for live mode (Binance er fjernet)", async () => {
+    it("throws when no Kraken keys exist for live mode", async () => {
       const db = makeSupabaseMock();
       await expect(ExecutorFactory.create(db, "user-1", "live")).rejects.toThrow(
         "Kraken API keys not configured",
@@ -181,7 +181,7 @@ describe("ExecutorFactory", () => {
       expect(result).toBe(true);
     });
 
-    it("returns false when Kraken keys are missing (Binance teller ikke lenger)", async () => {
+    it("returns false when Kraken keys are missing", async () => {
       const db = makeSupabaseMock({
         profile: { tier: "bachelor" },
         krakenKeysRow: null,

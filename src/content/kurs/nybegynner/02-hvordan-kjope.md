@@ -8,7 +8,7 @@ De mest populære børsene for nordmenn er:
 
 - **Firi** — Norsk børs, enkel å bruke, Vipps-integrasjon
 - **Coinbase** — Amerikansk børs, veldig brukervennlig
-- **Binance** — Verdens største børs, mange kryptovalutaer
+- **Kraken** — MiCA-regulert børs (EU/EØS), mange kryptovalutaer
 
 ## Steg 2: Opprett konto
 

@@ -32,8 +32,8 @@ describe("GAP-1: Transaction Cost Analysis (TCA)", () => {
 
     it("groups by venue", async () => {
       const trades = [
-        makeTrade({ venue: "binance" }),
-        makeTrade({ venue: "binance" }),
+        makeTrade({ venue: "kraken" }),
+        makeTrade({ venue: "kraken" }),
         makeTrade({ venue: "kraken" }),
       ];
       const supabase = createMockSupabase(trades);

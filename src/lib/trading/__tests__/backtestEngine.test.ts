@@ -179,7 +179,7 @@ describe('Backtest Engine', () => {
         // Hold prisen flat til SMA-er er tilgjengelige, kjøp ved basePrice,
         // og trigger første delvise TP ved +8 % (5 %-nivået krever ekstra
         // margin pga. slippage på kjøpsprisen OG Kraken-taker-fee 0,8 % —
-        // høyere enn Binance-feen backtesten opprinnelig ble kalibrert med).
+        // høyere enn feen backtesten opprinnelig ble kalibrert med).
         const close = i <= 109 ? basePrice : basePrice * 1.08;
         candles.push({
           timestamp: startTime + i * 24 * 60 * 60 * 1000,

@@ -9,7 +9,7 @@
  * 2. Fee-modellen er identisk: begge simulerer/trekker Kraken spot taker-fee
  *    (Tier 1 = 0.8 %). Live henter ekte fee fra Kraken TradesHistory;
  *    paper bruker FILL_CONSTANTS.feeRate — som NÅ er satt til Kraken-verdien
- *    (0.008), ikke Binance (0.001).
+ *    (0.008), ikke 0.001.
  * 3. P&L-formelen er identisk på begge: totalPnl / startingCapital × 100
  *    (FIKS 8-definisjon).
  *
@@ -23,9 +23,9 @@ import { ESTIMATED_FILL_PARAMS } from "../core/execute-trade";
 import { FEE_RATE } from "../backtestEngine";
 
 describe("PAPER = LIVE parity (fakta-bevis)", () => {
-  it("Kraken-fee er standard overalt — ikke Binance-fee (0.008 ≠ 0.001)", () => {
+  it("Kraken-fee er standard overalt — ikke gammel 0.001-fee", () => {
     expect(FILL_CONSTANTS.feeRate).toBe(0.008);
-    expect(FILL_CONSTANTS.feeRate).not.toBe(0.001); // Binance-verdien er borte
+    expect(FILL_CONSTANTS.feeRate).not.toBe(0.001); // gammel fee-verdi er borte
     expect(PAPER_PARAMS.feeRate).toBe(0.008);
     expect(ESTIMATED_FILL_PARAMS.feeRate).toBe(0.008);
     expect(FEE_RATE).toBe(0.008);
