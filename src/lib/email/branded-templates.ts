@@ -132,6 +132,7 @@ export const BrandedTemplates = {
         <li><strong>100% Prioritert overvåkning:</strong> AI-monitoren vår følger dine trades i sanntid.</li>
         <li><strong>Early Access:</strong> Test nye funksjoner 2 uker før lansering.</li>
         <li><strong>Bonus:</strong> Vi har satt inn 5 000 KLT tokens på din konto som velkomstgave.</li>
+        <li><strong>Founder-løftet:</strong> De 100 første får gratis tilgang for livet — ingen prøveperiode, ingen skjulte kostnader.</li>
       </ul>
     </div>
     <p>Vi gleder oss til å se din reise mot økonomisk frihet.</p>

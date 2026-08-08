@@ -213,6 +213,10 @@ export function canEnableLiveTrading(
     normalizeTier(userSubscriptionTier);
   const level = getTierLevel(slug);
   const minLevel = getTierLevel("master");
+  // Founder-loven (2026-08-08): founder = professor-nivå (gratis for livet)
+  if (userSubscriptionTier === "founder") {
+    return { allowed: true };
+  }
   if (level < minLevel) {
     return {
       allowed: false,

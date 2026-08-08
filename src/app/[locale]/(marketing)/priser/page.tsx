@@ -52,6 +52,26 @@ export default async function PriserPage({
         </p>
       </section>
 
+      {/* Founder-loven (2026-08-08): de 100 første får gratis for livet */}
+      <section className="px-6 pb-10">
+        <a
+          href={`/${locale}/founder`}
+          className="mx-auto flex max-w-4xl flex-col items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-6 py-5 text-center transition hover:border-emerald-500/50 hover:bg-emerald-500/15 sm:flex-row sm:justify-between sm:text-left"
+        >
+          <div>
+            <p className="text-lg font-bold text-emerald-300">
+              {t("founderBanner.title")}
+            </p>
+            <p className="text-sm text-[#9CA3AF]">
+              {t("founderBanner.subtitle")}
+            </p>
+          </div>
+          <span className="shrink-0 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-[#0A0B0D]">
+            {t("founderBanner.cta")}
+          </span>
+        </a>
+      </section>
+
       {/* Pricing grid */}
       <section className="max-w-6xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">

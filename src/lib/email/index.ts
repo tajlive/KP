@@ -627,6 +627,7 @@ const templates = {
           <li><strong>100% Prioritert overvåkning:</strong> AI-monitoren følger dine trades.</li>
           <li><strong>Early Access:</strong> Test nye funksjoner før alle andre.</li>
           <li><strong>Bonus:</strong> 5 000 KLT tokens velkomstgave.</li>
+          <li><strong>Founder-løftet:</strong> De 100 første får gratis tilgang for livet — ingen prøveperiode, ingen skjulte kostnader.</li>
         </ul>
       </div>
       <p>Vi gleder oss til å se din reise mot økonomisk frihet.</p>

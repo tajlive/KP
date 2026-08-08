@@ -10,7 +10,8 @@ export type MarketingNamespace =
   | "contact"
   | "calculator"
   | "help"
-  | "metadata";
+  | "metadata"
+  | "founder";
 
 export interface MarketingPageShellProps {
   children: ReactNode;

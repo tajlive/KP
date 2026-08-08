@@ -15,6 +15,7 @@ const HARDCODED_ROUTES: SitemapEntry[] = [
   // Marketing
   { path: "", priority: 1.0, changeFrequency: "daily" },
   { path: "priser", priority: 0.9, changeFrequency: "weekly" },
+  { path: "founder", priority: 0.9, changeFrequency: "weekly" },
   { path: "om-oss", priority: 0.8, changeFrequency: "weekly" },
   { path: "hjelp", priority: 0.7, changeFrequency: "weekly" },
   { path: "kontakt", priority: 0.7, changeFrequency: "weekly" },

@@ -24,6 +24,10 @@ export async function verifyLiveEntitlement(
 
   if (profileError || !profile) return false;
 
+  // Founder-loven (2026-08-08): de 100 første får gratis tilgang for livet —
+  // founder-rolle = full tilgang (samme som professor).
+  if (profile.role === "founder") return true;
+
   // Professor-tier users get live access automatically
   if (profile.role === "professor" || profile.tier === "professor") return true;
 

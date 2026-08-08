@@ -73,11 +73,16 @@ export async function handleTierGate(
     const supabase = createSupabaseClient(request, response);
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("tier")
+      .select("tier, role")
       .eq("id", userId)
       .maybeSingle();
 
-    tier = normalizeTier((profile as { tier?: string } | null)?.tier);
+    // Founder-loven (2026-08-08): founder-rolle = professor-nivå i rutegates
+    if ((profile as { role?: string } | null)?.role === "founder") {
+      tier = "professor";
+    } else {
+      tier = normalizeTier((profile as { tier?: string } | null)?.tier);
+    }
     const host = request.headers.get("host") || "";
     const isLocalhost =
       host.startsWith("localhost") || host.startsWith("127.0.0.1");

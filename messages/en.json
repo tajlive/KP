@@ -1507,7 +1507,7 @@
       "yourBalance": "Your Balance",
       "founderBenefits": {
         "title": "Founder Benefits",
-        "desc": "5,000 free KLT for the first 100 who sign up."
+        "desc": "5,000 free KLT for the first 100 who sign up — plus free access for life."
       },
       "learnEarn": {
         "title": "Learn & Earn",
@@ -2404,7 +2404,7 @@
   },
   "landing": {
     "hero": {
-      "badge": "🔬 Beta — Norway only. 5,000 KLT for the first 100",
+      "badge": "🔬 Beta — Norway only. 5,000 KLT for the first 100 — free for life",
       "title": "100,000 kr in play money. Real markets. Zero risk.",
       "subtitle": "Klarpakke is in beta and only available in Norway. Train on crypto trading with AI agents on real market data — completely free. Live trading opens after beta. It pays to practise before going live.",
       "cta-primary": "Start free",
@@ -2414,7 +2414,7 @@
       "liveUpdates": "Updated live",
       "mockupAlt": "Klarpakke trade screen showing a Bitcoin buy order with paper money",
       "trustPlayMoney": "100,000 kr in play money",
-      "trustKlt": "5,000 KLT for the first 100",
+      "trustKlt": "5,000 KLT for the first 100 · Free for life",
       "trustAgents": "Autonomous AI agents"
     },
     "modes": {
@@ -2981,6 +2981,11 @@
             "Founder group"
           ]
         }
+      },
+      "founderBanner": {
+        "title": "The first 100 get free access for life",
+        "subtitle": "No trial period — no fine print. Become a founder before the spots fill up.",
+        "cta": "Become a founder"
       }
     },
     "autoTrade": {
@@ -6123,6 +6128,75 @@
     },
     "error": {
       "finish": "Something went wrong. Please try again."
+    }
+  },
+  "founder": {
+    "metadata": {
+      "title": "Become a founder — free for life | Klarpakke",
+      "description": "The first 100 to join as founders get free access to Klarpakke for life. No trial period. No fine print."
+    },
+    "hero": {
+      "badge": "The Founder Program",
+      "title": "The first 100 get free access for life.",
+      "subtitle": "Yes, you read that right. Not free for a trial period. Not «free for 14 days, then the invoice starts ticking». Free, as long as Klarpakke exists — if you are one of the first 100 to sign up as a founder.",
+      "cta": "Start free",
+      "ctaSecondary": "Read the full story"
+    },
+    "notLottery": {
+      "title": "This is not a lottery ticket",
+      "body": "It is not a promise that you will get rich. It is an invitation to be part of something from the start that I have spent over half a year building."
+    },
+    "whyFree": {
+      "title": "Why free for life?",
+      "body": "Because I need honest people, not just users.",
+      "founders": "The first 100 are called founders. You will test, tell us what is strange, what is good, and what must become simpler. That is worth more to me than money in the beginning."
+    },
+    "whoAmI": {
+      "title": "Who am I, and why am I doing this",
+      "body": "I work with technology and like to understand how things work under the surface. Since February 2025 I have taken a broad education in artificial intelligence, and since February this year I have used that knowledge to build Klarpakke.",
+      "team": "I have not done it alone. A team of students from MIT and other schools has helped me brainstorm, test and analyse. We have discussed late into the night, laughed at bad ideas and been genuinely frustrated when something that «should just work» did not."
+    },
+    "whatIs": {
+      "title": "What is Klarpakke",
+      "body": "Klarpakke is a simple Norwegian service for people who are curious about crypto, but do not want to spend their evenings on charts and jargon.",
+      "simple": "You should be able to press a button, get an explanation in plain Norwegian, and learn at your own pace.",
+      "ai": "We use artificial intelligence to follow the market and explain it more simply — not to promise miracles. AI can find patterns. It cannot see into the future, and it can never guarantee that you make money."
+    },
+    "facts": {
+      "title": "Facts before fine words",
+      "body": "Crypto is full of big promises: «this robot never loses», «guaranteed profit», «last chance» — every Tuesday since 2021. Klarpakke will be different. We stick to facts, truth and numbers that can be proven:",
+      "items": [
+        "We do not promise that you will get rich.",
+        "We do not hide when things go wrong.",
+        "We do not use numbers we cannot document.",
+        "We do not pretend a robot is always right."
+      ],
+      "closing": "If we cannot show it, we will not brag about it."
+    },
+    "norwayFirst": {
+      "title": "Norway first, the world after",
+      "body": "Klarpakke starts in Norway, launching next Friday. The plan is to open for Europe and Asia in September. If you join now, you are in long before the rest of the world gets the chance."
+    },
+    "benefits": {
+      "title": "What you get as a founder",
+      "items": [
+        "Free access for life — not a trial period, no fine print.",
+        "The chance to practise with play money before you eventually use your own.",
+        "Simple explanations, without difficult words.",
+        "Direct influence on how Klarpakke develops.",
+        "A place in history before we open for Europe and Asia."
+      ],
+      "noKrypto": "You do not need to know crypto. You do not need to be technical. You do not need to deposit a single krone."
+    },
+    "warning": {
+      "title": "An honest warning",
+      "body": "This is a beta. There may be small bugs and short periods of downtime. Not because we are not trying, but because real people testing is the best quality assurance there is. When you tell us, Klarpakke gets better."
+    },
+    "cta": {
+      "title": "Do you want to join?",
+      "body": "100 places. Free for life. You are not too late — you are early.",
+      "button": "Start free",
+      "sub": "Go to klarpakke.no — or write «JEG VIL PRØVE» in the comments, and I will send you a message."
     }
   }
 }

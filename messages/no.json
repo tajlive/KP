@@ -1514,7 +1514,7 @@
       "yourBalance": "Din Beholdning",
       "founderBenefits": {
         "title": "Founder-fordeler",
-        "desc": "5000 gratis KLT til de 100 første som registrerer seg."
+        "desc": "5000 gratis KLT til de 100 første som registrerer seg — og gratis tilgang for livet."
       },
       "learnEarn": {
         "title": "Lær & Tjen",
@@ -2404,7 +2404,7 @@
   },
   "landing": {
     "hero": {
-      "badge": "🔬 Beta — kun Norge. 5000 KLT til de 100 første",
+      "badge": "🔬 Beta — kun Norge. 5000 KLT til de 100 første — gratis for livet",
       "title": "100 000 kr i lekepenger. Ekte markeder. Null risiko.",
       "subtitle": "Klarpakke er i beta og kun tilgjengelig i Norge. Tren på kryptohandel med AI-agenter på ekte markedsdata — helt gratis. Live trading åpner etter beta. Det lønner seg å øve før live åpner.",
       "cta-primary": "Start gratis",
@@ -2414,7 +2414,7 @@
       "liveUpdates": "Oppdateres live",
       "mockupAlt": "Klarpakkes trade-side: kjøp Bitcoin med lekepenger — ekte produktbilde",
       "trustPlayMoney": "100 000 kr i lekepenger",
-      "trustKlt": "5000 KLT til de 100 første",
+      "trustKlt": "5000 KLT til de 100 første · Gratis for livet",
       "trustAgents": "Autonome AI-agenter"
     },
     "modes": {
@@ -2981,6 +2981,11 @@
             "Founder-gruppe"
           ]
         }
+      },
+      "founderBanner": {
+        "title": "De 100 første får gratis for livet",
+        "subtitle": "Ikke prøveperiode — ikke fine bokstaver. Bli founder før plassene fylles.",
+        "cta": "Bli founder"
       }
     },
     "autoTrade": {
@@ -6123,6 +6128,75 @@
     },
     "error": {
       "finish": "Noe gikk galt. Prøv igjen."
+    }
+  },
+  "founder": {
+    "metadata": {
+      "title": "Bli founder — gratis for livet | Klarpakke",
+      "description": "De 100 første som melder seg som founder får gratis tilgang til Klarpakke for livet. Ikke prøveperiode. Ikke fine bokstaver."
+    },
+    "hero": {
+      "badge": "Founder-programmet",
+      "title": "De første 100 får gratis tilgang for livet.",
+      "subtitle": "Ja, du leste rett. Ikke gratis i en prøveperiode. Ikke «gratis i 14 dager, så begynner fakturaen å tikke». Gratis, så lenge Klarpakke finnes — hvis du er en av de 100 første som melder deg som founder.",
+      "cta": "Start gratis",
+      "ctaSecondary": "Les hele historien"
+    },
+    "notLottery": {
+      "title": "Dette er ikke et lodd i et lotteri",
+      "body": "Det er ikke et løfte om at du blir rik. Det er en invitasjon til å være med fra start på noe jeg har brukt over et halvt år på å bygge."
+    },
+    "whyFree": {
+      "title": "Hvorfor gratis for livet?",
+      "body": "Fordi jeg trenger ærlige mennesker, ikke bare brukere.",
+      "founders": "De første 100 kalles founders — grunnleggere. Dere skal teste, si hva som er rart, hva som er bra, og hva som må bli enklere. Det er verdt mer for meg enn penger i starten."
+    },
+    "whoAmI": {
+      "title": "Hvem er jeg, og hvorfor gjør jeg dette",
+      "body": "Jeg jobber med teknologi og liker å forstå hvordan ting fungerer under overflaten. Siden februar 2025 har jeg tatt en bred utdanning innen kunstig intelligens, og siden februar dette året har jeg brukt kunnskapen til å bygge Klarpakke.",
+      "team": "Jeg har ikke gjort det alene. Et team av studenter fra MIT og andre skoler har hjulpet meg å brainstorme, teste og analysere. Vi har diskutert til langt på natt, ledd av dårlige ideer og vært skikkelig frustrerte når noe som «bare skulle fungere» ikke gjorde det."
+    },
+    "whatIs": {
+      "title": "Hva er Klarpakke",
+      "body": "Klarpakke er en enkel, norsk tjeneste for folk som er nysgjerrige på krypto, men ikke har lyst til å bruke kvelden på grafer og fagord.",
+      "simple": "Du skal bare kunne trykke på en knapp, få en forklaring på vanlig norsk, og lære i ditt eget tempo.",
+      "ai": "Vi bruker kunstig intelligens til å følge med på markedet og forklare det enklere — ikke til å love mirakler. AI kan finne mønstre. Den kan ikke se inn i fremtiden, og den kan aldri garantere at du tjener penger."
+    },
+    "facts": {
+      "title": "Fakta før fine ord",
+      "body": "Krypto er fullt av store løfter: «denne roboten taper aldri», «garantert gevinst», «siste sjanse» — hver tirsdag siden 2021. Klarpakke skal være annerledes. Vi forholder oss til fakta, sannhet og tall som kan bevises:",
+      "items": [
+        "Vi lover ikke at du blir rik.",
+        "Vi skjuler ikke når noe går dårlig.",
+        "Vi bruker ikke tall vi ikke kan dokumentere.",
+        "Vi later ikke som en robot alltid har rett."
+      ],
+      "closing": "Hvis vi ikke kan vise det, skal vi ikke skryte av det."
+    },
+    "norwayFirst": {
+      "title": "Norge først, verden etterpå",
+      "body": "Klarpakke starter i Norge, med lansering neste fredag. Planen er å åpne for Europa og Asia i september. Blir du med nå, er du med lenge før resten av verden får sjansen."
+    },
+    "benefits": {
+      "title": "Hva du får som founder",
+      "items": [
+        "Gratis tilgang for livet — ikke prøveperiode, ikke fine bokstaver.",
+        "Mulighet til å øve med lekepenger før du eventuelt bruker egne.",
+        "Enkle forklaringer, uten vanskelige ord.",
+        "Direkte påvirkning på hvordan Klarpakke utvikles videre.",
+        "En plass i historien før vi åpner for Europa og Asia."
+      ],
+      "noKrypto": "Du trenger ikke kunne krypto. Du trenger ikke være teknisk. Du trenger ikke sette inn en krone."
+    },
+    "warning": {
+      "title": "En ærlig advarsel",
+      "body": "Dette er en beta. Det kan komme småfeil og korte perioder med nedetid. Ikke fordi vi ikke prøver, men fordi ekte mennesker som tester er den beste kvalitetssikringen som finnes. Når du sier fra, blir Klarpakke bedre."
+    },
+    "cta": {
+      "title": "Vil du være med?",
+      "body": "100 plasser. Gratis for livet. Du er ikke for sent ute — du er tidlig ute.",
+      "button": "Start gratis",
+      "sub": "Gå til klarpakke.no — eller skriv «JEG VIL PRØVE» i kommentarfeltet, så sender jeg deg beskjed."
     }
   }
 }

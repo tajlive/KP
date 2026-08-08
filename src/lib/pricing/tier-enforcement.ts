@@ -44,9 +44,14 @@ export interface EnforcementResult {
 export async function getUserTier(supabase: Supa, userId: string): Promise<TierSlug> {
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("subscription_tier")
+    .select("subscription_tier, role")
     .eq("id", userId)
     .single();
+
+  // Founder-loven (2026-08-08): de 100 første får gratis tilgang for livet —
+  // founder-rollen gir professor-nivå (alle gates arver dette: papir-cap,
+  // strategier, copy, backtest, live).
+  if (profile?.role === "founder") return "professor";
 
   return normalizeTier(profile?.subscription_tier);
 }
