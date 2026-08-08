@@ -16,9 +16,19 @@
  * Vi bruker Tier 1 taker (0.8 %) som konservativ standard — de fleste
  * Klarpakke-brukere starter under $10K 30-dagers volum. Live-utførelse henter
  * EKTE fee fra Kraken TradesHistory (KrakenExecutor), så live er alltid sann.
+ *
+ * OKX (børs #2, EEA Regular-tier per okx.com/fees, juli 2026):
+ *   taker 0.10 % | maker 0.08 % — klart billigere enn Kraken Tier 1.
+ * Samme prinsipp: paper simulerer OKX-fees, live henter EKTE fee fra fills.
  */
 export const FILL_CONSTANTS = {
   feeRate: 0.008, // 0,8 % — Kraken spot taker fee, Tier 1 (juli 2026)
   marketSlippageRate: 0.002, // 0,2 % — realistisk slippage for retail
   minOrderValue: 10, // USDT — minimum ordreverdi
+} as const;
+
+/** OKX-fee-konfigurasjon (EEA Regular-tier, juli 2026 — okx.com/fees). */
+export const OKX_FEE_CONFIG = {
+  maker: 0.0008, // 0,08 %
+  taker: 0.001, // 0,10 %
 } as const;

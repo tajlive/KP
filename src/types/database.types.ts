@@ -313,6 +313,33 @@ export type Database = {
           },
         ]
       }
+      affiliate_sync: {
+        Row: {
+          created_at: string
+          id: string
+          payload: Json
+          source: string
+          status: string
+          summary: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload: Json
+          source?: string
+          status?: string
+          summary?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          source?: string
+          status?: string
+          summary?: Json
+        }
+        Relationships: []
+      }
       ai_agent_stats: {
         Row: {
           agent_id: string
@@ -9163,6 +9190,45 @@ export type Database = {
           sms_price_alerts?: boolean | null
           sms_signals?: boolean | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_okx_keys: {
+        Row: {
+          api_key_encrypted: string
+          api_secret_encrypted: string
+          broker_code: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          last_validated_at: string | null
+          passphrase_encrypted: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key_encrypted: string
+          api_secret_encrypted: string
+          broker_code?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_validated_at?: string | null
+          passphrase_encrypted: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key_encrypted?: string
+          api_secret_encrypted?: string
+          broker_code?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_validated_at?: string | null
+          passphrase_encrypted?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

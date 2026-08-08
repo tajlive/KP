@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // EU/EØS (2026): live-kobling = Kraken-nøkler.
+    // EU/EØS (2026): live-kobling = Kraken-nøkler (primær), OKX (børs #2).
     const { data: krakenKeys } = await supabase
       .from("user_kraken_keys")
       .select("user_id")
@@ -64,6 +64,17 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
     const krakenConnected = Boolean(krakenKeys);
     const canSwitchToLive = await verifyLiveEntitlement(supabase, user.id);
+
+    // OKX er børs #2 — kun eksponert når OKX_ENABLED=true (kill switch).
+    let okxConnected = false;
+    if (process.env.OKX_ENABLED === "true") {
+      const { data: okxKeys } = await supabase
+        .from("user_okx_keys")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      okxConnected = Boolean(okxKeys);
+    }
 
     const stored = profileRow?.preferred_trading_mode;
     const mode = stored === "live" || stored === "paper" ? stored : "paper";
@@ -73,6 +84,7 @@ export async function GET(request: NextRequest) {
       mode,
       canSwitchToLive,
       krakenConnected,
+      okxConnected,
       paperTradesCount: 0,
     });
   } catch (error) {

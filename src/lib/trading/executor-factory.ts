@@ -14,6 +14,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { OrderExecutor } from "./order-executor";
 import { PaperExecutor } from "./paper-executor";
 import { KrakenExecutor } from "./kraken-executor";
+import { OkxExecutor } from "./okx-executor";
 
 export class ExecutorFactory {
   /**
@@ -34,15 +35,27 @@ export class ExecutorFactory {
       return new PaperExecutor(supabase, userId, sessionId);
     }
 
-    // Live mode — EU/EØS-fakta (2026): Kraken er eneste børs
-    // brukere (MiCA). Kraken er MiCA-regulert og Klarpakkes ENESTE live-børs.
+    // Live mode — EU/EØS-fakta (2026): Kraken er primær børs (MiCA),
+    // OKX er børs #2 (MiCA via Malta, lavere fees).
+    // Kraken har prioritet — OKX brukes kun hvis brukeren ikke har Kraken.
     const krakenExecutor = await KrakenExecutor.fromUser(supabase, userId);
     if (krakenExecutor) {
       return krakenExecutor;
     }
 
+    // OKX er børs #2 — KILL SWITCH: OKX_ENABLED må være "true" i miljøet.
+    // Default off — OKX eksponeres ikke for live-handel før flagget er satt
+    // (etter broker-godkjenning + Fase 5-verifisering).
+    const okxEnabled = process.env.OKX_ENABLED === "true";
+    if (okxEnabled) {
+      const okxExecutor = await OkxExecutor.fromUser(supabase, userId);
+      if (okxExecutor) {
+        return okxExecutor;
+      }
+    }
+
     throw new Error(
-      "Kraken API keys not configured. Please connect your exchange first.",
+      "No exchange keys configured. Please connect your exchange first.",
     );
   }
 
