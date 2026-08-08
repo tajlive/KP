@@ -14,7 +14,6 @@ const COIN_NAMES: { [key: string]: string } = {
   BTCUSDT: "Bitcoin",
   ETHUSDT: "Ethereum",
   SOLUSDT: "Solana",
-  BNBUSDT: "BNB",
   ADAUSDT: "Cardano",
   XRPUSDT: "XRP",
   DOGEUSDT: "Dogecoin",
@@ -28,11 +27,12 @@ const COIN_NAMES: { [key: string]: string } = {
 const POLL_MS = 15_000; // Keep polling conservative to reduce runtime/API load.
 
 /**
- * Sanntidspriser (poll) via egen API-rute → Binance.
- * Krever ikke innlogging; unngår CORS og feil encoding mot Binance.
+ * Sanntidspriser (poll) via egen API-rute → Kraken (EU/EØS 2026:
+ * Binance geo-blokkert, Kraken eneste tallkilde).
+ * Krever ikke innlogging; unngår CORS.
  */
 export function useRealtimePrices(
-  symbols: string[] = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"],
+  symbols: string[] = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "ADAUSDT"],
 ) {
   const [coins, setCoins] = useState<CoinPrice[]>([]);
   const [source, setSource] = useState<string | null>(null);
@@ -76,17 +76,10 @@ export function useRealtimePrices(
       setSource(apiSource);
       setError(null);
     } catch (err) {
+      // EU/EØS (2026): ingen klient-direkte Binance-kall (geo-blokkert).
+      // Ruten faller tilbake til DB-cache; her nullstiller vi bare stille.
       console.error("Error fetching prices:", err);
-      try {
-        const binanceData = await fetchBinancePricesDirect(
-          symbolsKey.split(","),
-        );
-        setCoins(binanceData);
-        setSource("binance-direct");
-        setError(null);
-      } catch {
-        setError("Kunne ikke hente priser");
-      }
+      setError("Kunne ikke hente priser");
     } finally {
       setLoading(false);
     }
@@ -99,58 +92,4 @@ export function useRealtimePrices(
   }, [fetchPrices]);
 
   return { coins, source, loading, error, refresh: fetchPrices };
-}
-
-/** Nødfallback fra klienten hvis API-ruten feiler (f.eks. midlertidig 502) */
-async function fetchBinancePricesDirect(
-  symbols: string[],
-): Promise<CoinPrice[]> {
-  const upper = symbols.map((s) => s.trim().toUpperCase()).filter(Boolean);
-  if (upper.length === 0) return [];
-
-  if (upper.length === 1) {
-    const symbol = upper[0]!;
-    const res = await fetch(
-      `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`,
-      { cache: "no-store" },
-    );
-    if (!res.ok) throw new Error("Binance single ticker failed");
-    const data = (await res.json()) as {
-      symbol: string;
-      lastPrice: string;
-      priceChangePercent: string;
-    };
-    return [
-      {
-        symbol: data.symbol,
-        name: COIN_NAMES[symbol] || symbol,
-        price: parseFloat(data.lastPrice),
-        change24h: parseFloat(data.priceChangePercent),
-        lastUpdated: new Date(),
-      },
-    ];
-  }
-
-  const encoded = encodeURIComponent(JSON.stringify(upper));
-  const res = await fetch(
-    `https://api.binance.com/api/v3/ticker/24hr?symbols=${encoded}`,
-    { cache: "no-store" },
-  );
-  if (!res.ok) throw new Error("Binance batch ticker failed");
-  const tickers = (await res.json()) as Array<{
-    symbol: string;
-    lastPrice: string;
-    priceChangePercent: string;
-  }>;
-
-  return upper.map((symbol) => {
-    const t = tickers.find((x) => x.symbol === symbol);
-    return {
-      symbol,
-      name: COIN_NAMES[symbol] || symbol,
-      price: t ? parseFloat(t.lastPrice) : 0,
-      change24h: t ? parseFloat(t.priceChangePercent) : 0,
-      lastUpdated: new Date(),
-    };
-  });
 }

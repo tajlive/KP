@@ -28,14 +28,14 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface ConnectBinanceModalProps {
+interface ConnectKrakenModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProps) {
-  const t = useTranslations("trading.connectBinanceModal");
-  const { connectBinance, isLoading, error } = useTradingMode();
+export function ConnectKrakenModal({ isOpen, onClose }: ConnectKrakenModalProps) {
+  const t = useTranslations("trading.connectKrakenModal");
+  const { connectKraken, isLoading, error } = useTradingMode();
   const [step, setStep] = useState<'intro' | 'form' | 'verifying' | 'success'>('intro');
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
@@ -47,7 +47,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
     if (!apiKey || !apiSecret) return;
     
     setStep('verifying');
-    const success = await connectBinance(apiKey, apiSecret);
+    const success = await connectKraken(apiKey, apiSecret);
     
     if (success) {
       setStep('success');
@@ -140,7 +140,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
 
               <Button
                 variant="outline"
-                onClick={() => window.open('https://www.binance.com/en/my/settings/api-management', '_blank')}
+                onClick={() => window.open('https://www.kraken.com/u/settings/api', '_blank')}
                 className="w-full"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />

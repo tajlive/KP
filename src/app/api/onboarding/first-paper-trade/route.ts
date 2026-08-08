@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
   }
 
   const binanceRes = await fetch(
-    `https://api.binance.com/api/v3/ticker/24hr?symbol=${encodeURIComponent(FIRST_TRADE_SYMBOL)}`,
+    `/api/market/binance-prices?symbols=${encodeURIComponent(FIRST_TRADE_SYMBOL)}`,
     { next: { revalidate: 0 } },
   );
   if (!binanceRes.ok) {
@@ -70,8 +70,10 @@ export async function POST(request: NextRequest) {
       code: "MARKET_PRICE_ERROR",
     });
   }
-  const binanceData = (await binanceRes.json()) as { lastPrice?: string };
-  const requestedPrice = Number(binanceData.lastPrice) || 0;
+  const binanceBody = (await binanceRes.json()) as {
+    prices?: Array<{ symbol: string; price: number }>;
+  };
+  const requestedPrice = binanceBody.prices?.[0]?.price ?? 0;
   if (requestedPrice <= 0) {
     return internalError("Kunne ikke hente markedspris", {
       code: "MARKET_PRICE_ERROR",

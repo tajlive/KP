@@ -325,7 +325,7 @@ export default function CopyTradingDashboard() {
                     </p>
                     <p className="text-[11px] text-gray-400 tabular-nums">
                       {copy.source === "external"
-                        ? "Binance"
+                        ? "Kraken"
                         : `${copy.latencyMs}ms latency`}
                     </p>
                   </div>

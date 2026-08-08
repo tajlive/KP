@@ -2,8 +2,8 @@
  * WebSocket Module — Barrel exports
  * 
  * Provides a unified interface for WebSocket connections with:
- * - WebSocketManager: Core connection management with reconnect, heartbeat
- * - BinanceWebSocket: Binance-specific streams (ticker, trades, depth)
+ * - WebSocketManager: Core connection management (Kraken — EU/EØS 2026:
+ *   eneste tallkilde; Binance er geo-blokkert og fjernet)
  * - PriceFallback: REST API fallback when WebSocket fails
  * - React hooks for easy integration
  */
@@ -16,28 +16,12 @@ export {
   type PriceCallback,
 } from "./WebSocketManager";
 
-// Binance specific
-export {
-  BinanceWebSocket,
-  binanceWebSocket,
-  BINANCE_WS_BASE,
-  type StreamType,
-  type BinanceStreamOptions,
-  type AggTradeData,
-  type DepthData,
-  type KlineData,
-  type TradeCallback,
-  type DepthCallback,
-  type KlineCallback,
-} from "./BinanceWebSocket";
-
 // Fallback
 export {
   PriceFallback,
   fetchPricesREST,
   fetchPriceREST,
   type CachedPrice,
-  BINANCE_REST_API,
   FALLBACK_INTERVAL_MS,
   CACHE_TTL_MS,
 } from "./fallback";

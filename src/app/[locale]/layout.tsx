@@ -191,8 +191,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
 
   // Modern React 19 preconnects (flyttet til toppen av streaming-buffer)
-  preconnect("https://api.binance.com", { crossOrigin: "anonymous" });
-  prefetchDNS("https://api.binance.com");
+  preconnect("https://api.kraken.com", { crossOrigin: "anonymous" });
+  prefetchDNS("https://api.kraken.com");
   if (supabaseHost) {
     preconnect(supabaseHost, { crossOrigin: "anonymous" });
     prefetchDNS(supabaseHost);

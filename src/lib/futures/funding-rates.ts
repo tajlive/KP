@@ -1,9 +1,11 @@
 /**
- * Binance Futures Funding Rate Monitor - KLA-246
+ * Kraken Futures Funding Rate Monitor - KLA-246
  *
  * Public API — no API keys required.
- * Fetches current funding rates from Binance USDⓈ-M Futures
+ * Fetches current funding rates from Kraken Futures (perpetuals)
  * and identifies delta-neutral arbitrage opportunities.
+ *
+ * EU/EØS (2026): Kraken er eneste tallkilde (Binance geo-blokkert).
  *
  * DISCLAIMER:
  * - This module is for ANALYSIS only. No trading is performed.
@@ -14,7 +16,7 @@
  * @see {@link getFundingRateSnapshot} for complete market data
  */
 
-const FAPI_BASE = 'https://fapi.binance.com';
+const KRAKEN_FUTURES_API = 'https://futures.kraken.com/derivatives/api/v3';
 
 export interface FundingRateData {
   symbol: string;
@@ -43,60 +45,84 @@ export interface FundingRateSnapshot {
   marketSentiment: 'bullish' | 'bearish' | 'neutral';
 }
 
-const DEFAULT_SYMBOLS = [
-  'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
-  'ADAUSDT', 'DOGEUSDT', 'DOTUSDT', 'AVAXUSDT', 'LINKUSDT',
-  'LTCUSDT', 'UNIUSDT', 'ATOMUSDT', 'ETCUSDT',
-];
+// Interne symboler → Kraken Futures perpetuals (BNB finnes ikke på Kraken)
+const INTERNAL_TO_KRAKEN_FUTURES: Record<string, string> = {
+  BTCUSDT: 'PF_XBTUSD',
+  ETHUSDT: 'PF_ETHUSD',
+  SOLUSDT: 'PF_SOLUSD',
+  XRPUSDT: 'PF_XRPUSD',
+  ADAUSDT: 'PF_ADAUSD',
+  DOGEUSDT: 'PF_DOGEUSD',
+  DOTUSDT: 'PF_DOTUSD',
+  AVAXUSDT: 'PF_AVAXUSD',
+  LINKUSDT: 'PF_LINKUSD',
+  LTCUSDT: 'PF_LTCUSD',
+  UNIUSDT: 'PF_UNIUSD',
+  ATOMUSDT: 'PF_ATOMUSD',
+};
+
+const DEFAULT_SYMBOLS = Object.keys(INTERNAL_TO_KRAKEN_FUTURES);
 
 /**
- * Fetch current funding rates from Binance Futures (public, no auth required).
+ * Fetch current funding rates from Kraken Futures (public, no auth required).
  *
- * Uses the Binance USDⓈ-M Futures API to get real-time funding rates.
+ * Uses the Kraken Futures tickers API to get real-time funding rates.
  * This is a read-only operation. No trades are executed.
  *
  * @param symbols - Optional array of trading pairs (e.g., ['BTCUSDT', 'ETHUSDT'])
  * @returns Array of funding rate data sorted by absolute rate (highest first)
- * @throws Error if Binance API returns non-200 status
- * @see https://binance-docs.github.io/apidocs/futures/en/#mark-price
+ * @throws Error if Kraken API returns non-200 status
  */
 export async function getFundingRates(
   symbols?: string[]
 ): Promise<FundingRateData[]> {
   const targetSymbols = symbols ?? DEFAULT_SYMBOLS;
 
-  const res = await fetch(`${FAPI_BASE}/fapi/v1/premiumIndex`, {
+  const res = await fetch(`${KRAKEN_FUTURES_API}/tickers`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    throw new Error(`Binance Futures API error: ${res.status}`);
+    throw new Error(`Kraken Futures API error: ${res.status}`);
   }
 
-  const data: Array<{
-    symbol: string;
-    markPrice: string;
-    indexPrice: string;
-    lastFundingRate: string;
-    nextFundingTime: number;
-    interestRate: string;
-  }> = await res.json();
+  const body = (await res.json()) as {
+    tickers?: Array<{
+      symbol: string;
+      last: string;
+      markPrice: string;
+      indexPrice: string;
+      fundingRate: string;
+      fundingRatePrediction: string;
+      relativeFundingRate: string;
+      nextFundingRateTime: number;
+    }>;
+  };
 
-  return data
-    .filter((d) => targetSymbols.includes(d.symbol))
-    .map((d) => {
-      const rate = parseFloat(d.lastFundingRate);
+  // Kraken-symbol → internt symbol (omvendt mapping)
+  const krakenToInternal = Object.fromEntries(
+    Object.entries(INTERNAL_TO_KRAKEN_FUTURES).map(([k, v]) => [v, k]),
+  );
+
+  return (body.tickers ?? [])
+    .map((t) => {
+      const internal = krakenToInternal[t.symbol];
+      if (!internal) return null;
+      if (!targetSymbols.includes(internal)) return null;
+
+      const rate = parseFloat(t.fundingRate);
       return {
-        symbol: d.symbol,
-        markPrice: parseFloat(d.markPrice),
-        indexPrice: parseFloat(d.indexPrice),
+        symbol: internal,
+        markPrice: parseFloat(t.markPrice) || parseFloat(t.last) || 0,
+        indexPrice: parseFloat(t.indexPrice) || 0,
         lastFundingRate: rate,
-        nextFundingTime: d.nextFundingTime,
-        interestRate: parseFloat(d.interestRate),
-        // 3 payments/day × 365 days × 100 for percentage
+        nextFundingTime: t.nextFundingRateTime * 1000,
+        interestRate: 0,
+        // Kraken funding betales hver 8. time → 3 payments/day × 365 × 100
         annualizedRate: rate * 3 * 365 * 100,
       };
     })
+    .filter((d): d is FundingRateData => d !== null)
     .sort((a, b) => Math.abs(b.lastFundingRate) - Math.abs(a.lastFundingRate));
 }
 
@@ -109,25 +135,29 @@ export async function getFundingRates(
  * @param symbol - Trading pair (e.g., 'BTCUSDT')
  * @param limit - Number of historical records (default: 30, max: 1000)
  * @returns Array of historical funding rates with timestamps
- * @throws Error if Binance API returns non-200 status
+ * @throws Error if Kraken API returns non-200 status
  */
 export async function getFundingRateHistory(
   symbol: string,
   limit = 30
 ): Promise<Array<{ fundingTime: number; fundingRate: number }>> {
+  const krakenSymbol = INTERNAL_TO_KRAKEN_FUTURES[symbol];
+  if (!krakenSymbol) return [];
+
   const res = await fetch(
-    `${FAPI_BASE}/fapi/v1/fundingRate?symbol=${symbol}&limit=${limit}`
+    `${KRAKEN_FUTURES_API}/historicalfundingrates?symbol=${krakenSymbol}&limit=${limit}`
   );
 
   if (!res.ok) {
-    throw new Error(`Binance funding history error: ${res.status}`);
+    throw new Error(`Kraken funding history error: ${res.status}`);
   }
 
-  const data: Array<{ fundingTime: number; fundingRate: string }> =
-    await res.json();
+  const body = (await res.json()) as {
+    rates?: Array<{ fundingRate: string; fundingRateTimestamp: number }>;
+  };
 
-  return data.map((d) => ({
-    fundingTime: d.fundingTime,
+  return (body.rates ?? []).map((d) => ({
+    fundingTime: d.fundingRateTimestamp,
     fundingRate: parseFloat(d.fundingRate),
   }));
 }
@@ -198,7 +228,7 @@ export function identifyOpportunities(
  *
  * @param symbols - Optional array of trading pairs to include
  * @returns Complete funding rate snapshot with analysis
- * @throws Error if Binance API request fails
+ * @throws Error if Kraken API request fails
  * @example
  * const snapshot = await getFundingRateSnapshot();
  * console.log(`Market sentiment: ${snapshot.marketSentiment}`);

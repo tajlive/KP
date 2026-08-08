@@ -7,9 +7,6 @@
  *   - PriceAggregator → consider using useWebSocketPrice hook instead
  */
 
-export { WebSocketManager } from "./websocket-manager";
-export type { PriceCallback, TickerData } from "./websocket-manager";
-
 export { PriceAggregator } from "./price-aggregator";
 
 // Re-export new WebSocket module for convenience
@@ -19,15 +16,6 @@ export {
   type TickerData as RobustTickerData,
   type PriceCallback as RobustPriceCallback,
 } from "@/lib/websocket/WebSocketManager";
-
-export {
-  BinanceWebSocket,
-  binanceWebSocket,
-  type StreamType,
-  type AggTradeData,
-  type DepthData,
-  type KlineData,
-} from "@/lib/websocket/BinanceWebSocket";
 
 export {
   PriceFallback,

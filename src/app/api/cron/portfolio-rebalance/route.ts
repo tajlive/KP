@@ -9,31 +9,33 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Price Data Fetcher
+// Price Data Fetcher — EU/EØS (2026): Kraken via egen rute
 async function fetchCurrentPrices(symbols: string[]): Promise<Record<string, number>> {
-  const baseUrl = "https://api.binance.com";
   const prices: Record<string, number> = {};
   
   // Always include USDT as baseline
   prices["USDT"] = 1.0;
 
   try {
-    const res = await fetch(`${baseUrl}/api/v3/ticker/price`, {
+    const pairs = symbols.map((s) => `${s}USDT`).join(",");
+    const res = await fetch(`/api/market/binance-prices?symbols=${encodeURIComponent(pairs)}`, {
       next: { revalidate: 60 },
     });
     
-    if (!res.ok) throw new Error(`Binance API error: ${res.status}`);
+    if (!res.ok) throw new Error(`Kraken API error: ${res.status}`);
     
-    const data = await res.json();
-    for (const item of data) {
+    const body = (await res.json()) as {
+      prices?: Array<{ symbol: string; price: number }>;
+    };
+    for (const item of body.prices ?? []) {
       for (const symbol of symbols) {
         if (item.symbol === `${symbol}USDT`) {
-          prices[symbol] = parseFloat(item.price);
+          prices[symbol] = item.price;
         }
       }
     }
   } catch (err) {
-    logger.error("Binance API fetch failed in portfolio rebalance", { error: (err as Error).message });
+    logger.error("Kraken API fetch failed in portfolio rebalance", { error: (err as Error).message });
   }
 
   return prices;
@@ -42,16 +44,18 @@ async function fetchCurrentPrices(symbols: string[]): Promise<Record<string, num
 // Volatility Check (e.g., check if price moved > 5% in last 15m)
 async function isAssetVolatile(symbol: string): Promise<{ volatile: boolean, change: number }> {
   try {
-    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=15m&limit=1`, {
+    const res = await fetch(`/api/market/klines?symbol=${symbol}USDT&interval=15m&limit=1`, {
       next: { revalidate: 60 }
     });
     if (!res.ok) return { volatile: false, change: 0 };
     
-    const data = await res.json();
-    if (!data || data.length === 0) return { volatile: false, change: 0 };
+    const body = (await res.json()) as {
+      klines?: Array<{ open: number; close: number }>;
+    };
+    const candle = body.klines?.[0];
+    if (!candle) return { volatile: false, change: 0 };
     
-    const [openTime, open, high, low, close] = data[0];
-    const change = Math.abs((parseFloat(close) - parseFloat(open)) / parseFloat(open)) * 100;
+    const change = Math.abs((candle.close - candle.open) / candle.open) * 100;
     
     return {
       volatile: change > 5.0, // 5% threshold

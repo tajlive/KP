@@ -78,21 +78,20 @@ export function LiveCandlestickChart({ trades = [], symbol = "BTCUSDT", height =
       }));
     createSeriesMarkers(candleSeries, markers);
 
-    // Fetch live data
+    // Fetch live data — EU/EØS (2026): Kraken via egen rute
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=100`
+          `/api/market/klines?symbol=${symbol}&interval=5m&limit=100`
         );
-        const klines = await res.json();
-        // Binance klines: [number, string, string, string, string, string, ...]
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = klines.map((k: any) => ({
-          time: Math.floor(k[0] / 1000),
-          open: parseFloat(k[1]),
-          high: parseFloat(k[2]),
-          low: parseFloat(k[3]),
-          close: parseFloat(k[4]),
+        const body = await res.json();
+        const klines = body.klines ?? [];
+        const data = klines.map((k: { timestamp: number; open: number; high: number; low: number; close: number }) => ({
+          time: Math.floor(k.timestamp / 1000),
+          open: k.open,
+          high: k.high,
+          low: k.low,
+          close: k.close,
         }));
         candleSeries.setData(data);
       } catch (e) {

@@ -210,27 +210,27 @@ export function AutoStrategyPanel() {
     return () => { cancelled = true; };
   }, []);
 
-  // Sjekk Binance-tilkobling (for live-toggle)
+  // Sjekk Kraken-tilkobling (for live-toggle) — EU/EØS 2026: Kraken eneste børs
   React.useEffect(() => {
     let cancelled = false;
-    async function checkBinance() {
+    async function checkKraken() {
       try {
         const res = await fetch("/api/exchanges/connections");
         if (!res.ok) { if (!cancelled) setBinanceConnected(false); return; }
         const data = await res.json();
         const conns: Array<{ exchange: string; isActive: boolean; permissions: string[] }> =
           data?.connections ?? [];
-        const binance = conns.find(
-          (c) => c.exchange === "binance" && c.isActive,
+        const kraken = conns.find(
+          (c) => c.exchange === "kraken" && c.isActive,
         );
         if (cancelled) return;
-        setBinanceConnected(Boolean(binance));
-        setBinanceTradingPerm(Boolean(binance?.permissions?.includes("trading")));
+        setBinanceConnected(Boolean(kraken));
+        setBinanceTradingPerm(Boolean(kraken?.permissions?.includes("trading")));
       } catch {
         if (!cancelled) setBinanceConnected(false);
       }
     }
-    checkBinance();
+    checkKraken();
     return () => { cancelled = true; };
   }, []);
 
@@ -259,12 +259,12 @@ export function AutoStrategyPanel() {
   const startAutoTrade = async () => {
     if (liveMode && !binanceTradingPerm) {
       setStatus("error");
-      setMessage("Koble Binance med trading-tillatelse i Innstillinger → Børser først");
+      setMessage("Koble Kraken med trading-tillatelse i Innstillinger → Børser først");
       return;
     }
     setStatus("starting");
     setStep(3);
-    setMessage(liveMode ? "Starter live-handel (ekte penger via Binance)..." : "Starter auto-handel...");
+    setMessage(liveMode ? "Starter live-handel (ekte penger via Kraken)..." : "Starter auto-handel...");
     try {
       const res = await fetch("/api/pilot", {
         method: "POST",
@@ -532,7 +532,7 @@ export function AutoStrategyPanel() {
                 controlsLocked && "opacity-50 cursor-not-allowed",
               )}
             >
-              <div className="text-xs font-bold text-white">🔥 Live (Binance)</div>
+              <div className="text-xs font-bold text-white">🔥 Live (Kraken)</div>
               <div className="text-[10px] text-slate-400">Ekte penger, dine nøkler</div>
             </button>
           </div>
@@ -540,16 +540,16 @@ export function AutoStrategyPanel() {
           {liveMode && (
             <div className="mt-1.5 rounded-lg border border-[#1E2530] bg-[#0B0F19] px-3 py-2">
               {binanceConnected === null ? (
-                <p className="text-[10px] text-slate-500">Sjekker Binance-tilkobling...</p>
+                <p className="text-[10px] text-slate-500">Sjekker Kraken-tilkobling...</p>
               ) : binanceTradingPerm ? (
                 <p className="text-[10px] text-emerald-400">
-                  ✅ Binance tilkoblet med trading-tillatelse — klar for live-handel
+                  ✅ Kraken tilkoblet med trading-tillatelse — klar for live-handel
                 </p>
               ) : (
                 <p className="text-[10px] text-amber-400">
-                  ⚠️ Koble Binance med <b>trading</b>-tillatelse i{" "}
+                  ⚠️ Koble Kraken med <b>trading</b>-tillatelse i{" "}
                   <a href="/no/dashboard/settings" className="underline hover:text-amber-300">
-                    Innstillinger → Binance API
+                    Innstillinger → Kraken API
                   </a>{" "}
                   før live-handel. Nøklene dine krypteres og brukes kun til dine ordrer.
                 </p>

@@ -51,7 +51,7 @@ import { RecentTradesTable } from "@/features/trading/components/RecentTradesTab
 import { TradeDetailsDrawer } from "@/features/trading/components/TradeDetailsDrawer";
 import { TopAIInsightsRow } from "@/features/trading/TopAIInsightsRow";
 import { PortfolioSection } from "./components/PortfolioSection";
-import { ConnectBinanceModal } from "@/shared/ui/modals/ConnectBinanceModal";
+import { ConnectKrakenModal } from "@/shared/ui/modals/ConnectKrakenModal";
 import { toast } from "sonner";
 import { ActiveStrategiesSection } from "./components/ActiveStrategiesSection";
 import { StrategySelectorSection } from "./components/StrategySelectorSection";
@@ -166,8 +166,8 @@ export default function UnifiedTradingDashboard({
   const handleModeChange = useCallback(
     (newMode: TradingMode) => {
       if (newMode === "live" && !canSwitchToLive) {
-        toast.error(tTrading("connectBinanceRequired"), {
-          description: tTrading("connectBinanceDescription"),
+        toast.error(tTrading("connectKrakenRequired"), {
+          description: tTrading("connectKrakenDescription"),
           action: {
             label: tTrading("connectNow"),
             onClick: () => setShowConnectModal(true),
@@ -366,7 +366,7 @@ export default function UnifiedTradingDashboard({
           isStarting={isStarting}
         />
 
-        <ConnectBinanceModal
+        <ConnectKrakenModal
           isOpen={showConnectModal}
           onClose={() => setShowConnectModal(false)}
         />

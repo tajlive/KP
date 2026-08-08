@@ -255,7 +255,7 @@ export async function getRecentTradingSignals(
   }
 
   // Extract prices from adjustments where ai-engine stores them,
-  // then batch-fetch any missing prices from Binance.
+  // then batch-fetch any missing prices (Kraken — EU/EØS 2026).
   // ai_decision_log-kolonner: adjustments(Json), sentiment_classification,
   // sentiment_value, explanation — symbol ligger i adjustments-json.
   const signals = (data || []).map((item: Tables<"ai_decision_log">) => {
@@ -272,29 +272,30 @@ export async function getRecentTradingSignals(
     };
   });
 
-  // Fetch missing prices from Binance for signals that don't have them
+  // Fetch missing prices from Kraken (via egen rute — EU/EØS 2026) for signals
   const symbolsNeedingPrice = [...new Set(
     signals.filter((s) => s.price === 0).map((s) => s.symbol),
   )];
 
   if (symbolsNeedingPrice.length > 0) {
     const priceMap = new Map<string, number>();
-    await Promise.all(
-      symbolsNeedingPrice.map(async (sym) => {
-        try {
-          const res = await fetch(
-            `https://api.binance.com/api/v3/ticker/price?symbol=${sym}`,
-            { signal: AbortSignal.timeout(5000) },
-          );
-          if (res.ok) {
-            const json = await res.json();
-            priceMap.set(sym, parseFloat(json.price));
-          }
-        } catch {
-          console.warn(`Failed to fetch price for ${sym}`);
+    // Batch: én rute for alle symboler
+    try {
+      const res = await fetch(
+        `/api/market/binance-prices?symbols=${encodeURIComponent(symbolsNeedingPrice.join(","))}`,
+        { signal: AbortSignal.timeout(5000) },
+      );
+      if (res.ok) {
+        const json = (await res.json()) as {
+          prices?: Array<{ symbol: string; price: number }>;
+        };
+        for (const p of json.prices ?? []) {
+          priceMap.set(p.symbol, p.price);
         }
-      }),
-    );
+      }
+    } catch {
+      console.warn("Failed to batch-fetch prices from Kraken");
+    }
 
     for (const signal of signals) {
       if (signal.price === 0) {

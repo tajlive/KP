@@ -26,6 +26,16 @@ vi.mock("@supabase/supabase-js", () => ({
   }),
 }));
 
+// Session-klient: ingen innlogget bruker i testmiljøet → fallback til
+// body.userId (onboarding-mønsteret).
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: async () => ({
+    auth: {
+      getUser: async () => ({ data: { user: null } }),
+    },
+  }),
+}));
+
 const getBalanceMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/exchanges/kraken/client", () => {

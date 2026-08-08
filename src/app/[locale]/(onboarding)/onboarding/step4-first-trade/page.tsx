@@ -41,13 +41,16 @@ interface TradeResult {
 
 async function fetchBtcPrice(): Promise<number | null> {
   try {
+    // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
     const res = await fetch(
-      `https://api.binance.com/api/v3/ticker/price?symbol=${SYMBOL}`,
+      `/api/market/binance-prices?symbols=${SYMBOL}`,
       { signal: AbortSignal.timeout(8000) },
     );
     if (!res.ok) return null;
-    const data = (await res.json()) as { price?: string };
-    const price = data.price ? parseFloat(data.price) : null;
+    const data = (await res.json()) as {
+      prices?: Array<{ symbol: string; price: number }>;
+    };
+    const price = data.prices?.[0]?.price ?? null;
     return price && Number.isFinite(price) ? price : null;
   } catch {
     return null;

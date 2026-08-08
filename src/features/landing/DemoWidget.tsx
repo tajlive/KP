@@ -10,20 +10,19 @@ import { WifiOff, AlertTriangle } from "lucide-react";
 
 const INITIAL_BALANCE = 100_000;
 
-interface BinanceTicker {
-  lastPrice: string;
-  priceChange: string;
-  priceChangePercent: string;
-  volume: string;
+interface MarketTicker {
+  lastPrice: number;
+  priceChangePercent: number;
+  volume: number;
 }
 
-interface BinanceKline {
+interface MarketKline {
   openTime: number;
-  open: string;
-  high: string;
-  low: string;
-  close: string;
-  volume: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
 }
 
 function formatKr(n: number): string {
@@ -45,7 +44,7 @@ export function DemoWidget() {
   const paperHref = hrefWithLocale(locale, "/handel");
 
   const [prices, setPrices] = useState<number[]>([]);
-  const [ticker, setTicker] = useState<BinanceTicker | null>(null);
+  const [ticker, setTicker] = useState<MarketTicker | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
@@ -59,32 +58,40 @@ export function DemoWidget() {
 
   const currentPrice = prices.length > 0 ? prices[prices.length - 1] : 0;
 
-  // Fetch live 24h price history from Binance
+  // Fetch live 24h price history — EU/EØS (2026): Kraken via egen rute
   useEffect(() => {
     async function fetchHistory() {
       try {
         const [tickerRes, klinesRes] = await Promise.all([
-          fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"),
-          fetch(
-            "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=24",
-          ),
+          fetch("/api/market/binance-24hr?symbols=BTCUSDT"),
+          fetch("/api/market/klines?symbol=BTCUSDT&interval=1h&limit=24"),
         ]);
 
         if (!tickerRes.ok || !klinesRes.ok)
-          throw new Error("Binance API error");
+          throw new Error("Kraken API error");
 
-        const tickerData = (await tickerRes.json()) as BinanceTicker;
-        const klinesData = (await klinesRes.json()) as Array<unknown[]>;
+        const tickerBody = (await tickerRes.json()) as {
+          prices?: Array<{ symbol: string; price: number; change24h: number }>;
+        };
+        const klinesBody = (await klinesRes.json()) as {
+          klines?: MarketKline[];
+        };
+
+        const tickerData: MarketTicker = {
+          lastPrice: tickerBody.prices?.[0]?.price ?? 0,
+          priceChangePercent: tickerBody.prices?.[0]?.change24h ?? 0,
+          volume: 0,
+        };
 
         setTicker(tickerData);
         // Map kline close prices to number array
-        const closePrices = klinesData.map((k) => parseFloat(k[4] as string));
+        const closePrices = (klinesBody.klines ?? []).map((k) => k.close);
         setPrices(closePrices);
         setHasError(false);
         setLastUpdatedAt(Date.now());
         setLoading(false);
       } catch (err) {
-        console.error("[DemoWidget] Failed to fetch Binance data:", err);
+        console.error("[DemoWidget] Failed to fetch market data:", err);
         setHasError(true);
         // Fallback: start with a reasonable BTC price if API fails
         if (prices.length === 0) {
@@ -100,12 +107,12 @@ export function DemoWidget() {
   // Poll current price every 10 seconds
   const tick = useCallback(async () => {
     try {
-      const res = await fetch(
-        "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-      );
+      const res = await fetch("/api/market/binance-prices?symbols=BTCUSDT");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = (await res.json()) as { price: string };
-      const price = parseFloat(data.price);
+      const data = (await res.json()) as {
+        prices?: Array<{ symbol: string; price: number }>;
+      };
+      const price = data.prices?.[0]?.price ?? 0;
       setPrices((prev) => [...prev.slice(-23), price]);
       setLastUpdatedAt(Date.now());
       setHasError(false);
@@ -192,7 +199,7 @@ export function DemoWidget() {
     prices.length >= 2 &&
     prices[prices.length - 1] >= prices[prices.length - 2];
 
-  const priceChangePercent = ticker ? parseFloat(ticker.priceChangePercent) : 0;
+  const priceChangePercent = ticker ? ticker.priceChangePercent : 0;
   const portfolioValue = balance + (position > 0 ? pnl : 0);
 
   const isStale = !loading && (isOffline || (lastUpdatedAt != null && Date.now() - lastUpdatedAt > 60_000));
@@ -295,7 +302,7 @@ export function DemoWidget() {
                 </div>
                 {!loading && ticker && (
                   <div className="text-xs text-slate-500">
-                    Vol: {(parseFloat(ticker.volume) / 1e9).toFixed(1)}B USDT
+                    Vol: {(ticker.volume / 1e9).toFixed(1)}B USDC
                   </div>
                 )}
               </div>

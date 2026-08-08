@@ -69,17 +69,22 @@ export async function GET() {
       return NextResponse.json(cached.value as unknown as MarketBrief);
     }
 
-    // Fetch latest prices from Binance
+    // Fetch latest prices — EU/EØS (2026): Kraken eneste tallkilde
     const pricesRes = await fetch(
-      'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]',
+      "/api/market/binance-24hr?symbols=BTCUSDT,ETHUSDT,SOLUSDT",
       { next: { revalidate: 300 } }
     );
-    const priceData = await pricesRes.json();
+    const priceBody = await pricesRes.json();
+    const priceData = (priceBody.prices ?? []) as Array<{
+      symbol: string;
+      price: number;
+      change24h: number;
+    }>;
 
     const marketContext = priceData
       .map(
-        (t: { symbol: string; lastPrice: string; priceChangePercent: string }) =>
-          `${t.symbol}: $${parseFloat(t.lastPrice).toLocaleString()} (${parseFloat(t.priceChangePercent) > 0 ? "+" : ""}${t.priceChangePercent}%)`
+        (t) =>
+          `${t.symbol}: $${t.price.toLocaleString()} (${t.change24h > 0 ? "+" : ""}${t.change24h.toFixed(2)}%)`
       )
       .join(", ");
 

@@ -70,7 +70,7 @@ export function useWebSocketPrice(
   const isMountedRef = useRef(true);
   
   // Get connection state from store
-  const storeConnectionState = useRealtimeStore((state) => state.binanceStatus);
+  const storeConnectionState = useRealtimeStore((state) => state.krakenStatus);
   const storePrice = useRealtimeStore((state) => state.priceCache[normalizedSymbol]);
   
   const isConnected = storeConnectionState === "connected";
@@ -240,7 +240,7 @@ export function useWebSocketPrices(
   const retryCountRef = useRef(0);
   const isMountedRef = useRef(true);
   
-  const storeConnectionState = useRealtimeStore((state) => state.binanceStatus);
+  const storeConnectionState = useRealtimeStore((state) => state.krakenStatus);
   const storePrices = useRealtimeStore((state) => state.priceCache);
   
   const isConnected = storeConnectionState === "connected";
@@ -399,7 +399,7 @@ export function useWebSocketStatus() {
   const manager = WebSocketManager.getInstance();
   const [metrics, setMetrics] = useState(manager.getMetrics());
   
-  const storeConnectionState = useRealtimeStore((state) => state.binanceStatus);
+  const storeConnectionState = useRealtimeStore((state) => state.krakenStatus);
   const subscribedSymbols = useRealtimeStore((state) => state.subscribedSymbols);
   
   useEffect(() => {

@@ -9,6 +9,10 @@
  * - Graceful shutdown
  * - Multi-subscription support (same WS for multiple symbols)
  * - Circuit breaker pattern for repeated failures
+ * 
+ * EU/EØS (2026): Kraken public WebSocket — eneste tallkilde (Binance geo-blokkert).
+ * Protokoll: subscribe-melding på åpning, ticker-svar som
+ * [channelID, {c,o,h,l,v}, "ticker", "XBT/USDC"].
  */
 
 import { useRealtimeStore } from "@/store/realtime-store";
@@ -45,8 +49,8 @@ interface WebSocketMetrics {
   messagesReceived: number;
 }
 
-// Configuration constants
-const BINANCE_STREAM_BASE = "wss://stream.binance.com:9443/stream";
+// Konfigurasjon — Kraken public WS (ingen nøkler, ingen rate-limit på ticker)
+const KRAKEN_WS_URL = "wss://ws.kraken.com";
 const MAX_RECONNECT_ATTEMPTS = 10;
 const BASE_RECONNECT_DELAY_MS = 1000;
 const MAX_RECONNECT_DELAY_MS = 30000;
@@ -54,6 +58,29 @@ const HEARTBEAT_INTERVAL_MS = 30000; // 30 seconds
 const HEARTBEAT_TIMEOUT_MS = 10000; // 10 seconds to receive pong
 const CIRCUIT_BREAKER_THRESHOLD = 5; // Open circuit after 5 consecutive failures
 const CIRCUIT_BREAKER_RESET_MS = 60000; // Try to close circuit after 60 seconds
+
+// Interne symboler (BTCUSDT) → Kraken-par med USDC-kvote (USDT blokkert for NO)
+const INTERNAL_TO_KRAKEN_WS: Record<string, string> = {
+  BTCUSDT: "XBT/USDC",
+  ETHUSDT: "ETH/USDC",
+  SOLUSDT: "SOL/USDC",
+  ADAUSDT: "ADA/USDC",
+  XRPUSDT: "XRP/USDC",
+  DOGEUSDT: "DOGE/USDC",
+  AVAXUSDT: "AVAX/USDC",
+  DOTUSDT: "DOT/USDC",
+  LINKUSDT: "LINK/USDC",
+  UNIUSDT: "UNI/USDC",
+  POLUSDT: "POL/USDC",
+  BTCUSDC: "XBT/USDC",
+  ETHUSDC: "ETH/USDC",
+  SOLUSDC: "SOL/USDC",
+};
+
+// Kraken-par → intern symbol (omvendt mapping)
+const KRAKEN_WS_TO_INTERNAL: Record<string, string> = Object.fromEntries(
+  Object.entries(INTERNAL_TO_KRAKEN_WS).map(([k, v]) => [v, k]),
+);
 
 class WebSocketManager {
   private static instance: WebSocketManager | null = null;
@@ -153,6 +180,23 @@ class WebSocketManager {
     }
     
     return subId;
+  }
+
+  /**
+   * Subscribe to multiple symbols with one callback.
+   * @returns Unsubscribe function that unsubscribes all.
+   */
+  subscribeToTickers(symbols: string[], callback: PriceCallback): () => void {
+    const subIds: string[] = [];
+    for (const symbol of symbols) {
+      const subId = this.subscribe(symbol, callback);
+      subIds.push(subId);
+    }
+    return () => {
+      for (const subId of subIds) {
+        this.unsubscribe(subId);
+      }
+    };
   }
 
   /**
@@ -275,12 +319,8 @@ class WebSocketManager {
     this.state = "connecting";
     this.updateStoreStatus("connecting");
     
-    const symbols = Array.from(this.symbolSubscriptions.keys());
-    const streams = symbols.map((s) => `${s.toLowerCase()}@ticker`).join("/");
-    const wsUrl = `${BINANCE_STREAM_BASE}?streams=${streams}`;
-    
     try {
-      this.ws = new WebSocket(wsUrl);
+      this.ws = new WebSocket(KRAKEN_WS_URL);
       
       this.ws.onopen = this.handleOpen.bind(this);
       this.ws.onmessage = this.handleMessage.bind(this);
@@ -297,18 +337,36 @@ class WebSocketManager {
     this.consecutiveFailures = 0;
     this.isManualClose = false;
 
-    // Nye symboler ble registrert mens vi koblet til — streamen dekker dem
-    // ikke ennå. Reconnect én gang med full symbolliste.
-    if (this.reconnectOnOpen) {
-      this.reconnectOnOpen = false;
-      this.reconnect();
-      return;
-    }
+    // Nye symboler ble registrert mens vi koblet til — re-subscribe med
+    // full symbolliste ved åpning (Kraken: subscribe sendes som melding).
+    this.sendSubscribe();
+
     this.metrics.connectCount++;
     this.metrics.lastConnectAt = Date.now();
     
     this.updateStoreStatus("connected");
     this.startHeartbeat();
+  }
+
+  /** Send subscribe-melding for alle abonnerte symboler (Kraken-protokoll). */
+  private sendSubscribe(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    const symbols = Array.from(this.symbolSubscriptions.keys());
+    const pairs = symbols
+      .map((s) => INTERNAL_TO_KRAKEN_WS[s] ?? null)
+      .filter((p): p is string => p !== null);
+
+    // Unike par
+    const uniquePairs = Array.from(new Set(pairs));
+    if (uniquePairs.length === 0) return;
+
+    this.ws.send(
+      JSON.stringify({
+        event: "subscribe",
+        pair: uniquePairs,
+        subscription: { name: "ticker" },
+      }),
+    );
   }
 
   private handleMessage(event: { data: string }): void {
@@ -317,50 +375,75 @@ class WebSocketManager {
       this.metrics.bytesReceived += event.data.length;
       this.metrics.lastMessageAt = Date.now();
       
-      const { data, stream } = JSON.parse(event.data) as {
-        data: {
-          s: string; // Symbol
-          c: string; // Close price
-          p: string; // Price change
-          P: string; // Price change percent
-          h: string; // High
-          l: string; // Low
-          v: string; // Volume
-          E: number; // Event time
+      const raw = JSON.parse(event.data) as unknown;
+
+      // Kraken heartbeat ("heartbeat" event) — ignorér, brukes som ping-svar
+      if (
+        raw &&
+        typeof raw === "object" &&
+        (raw as { event?: string }).event === "heartbeat"
+      ) {
+        this.lastPongReceived = Date.now();
+        return;
+      }
+
+      // Ticker-svar: [channelID, data, "ticker", "XBT/USDC"]
+      if (Array.isArray(raw)) {
+        const msg = raw as [
+          number,
+          {
+            c?: string[];
+            o?: string[];
+            h?: string[];
+            l?: string[];
+            v?: string[];
+          },
+          string,
+          string,
+        ];
+        const [, data, type, pair] = msg;
+        if (type !== "ticker" || !data?.c?.[0]) return;
+
+        const internalSymbol = KRAKEN_WS_TO_INTERNAL[pair];
+        if (!internalSymbol) return;
+
+        const price = parseFloat(data.c[0]);
+        const open = parseFloat(data.o?.[0] ?? "0");
+        const changePercent24h =
+          open > 0 ? ((price - open) / open) * 100 : 0;
+        const change24h = open > 0 ? price - open : 0;
+
+        const tickerData: TickerData = {
+          symbol: internalSymbol,
+          price,
+          change24h,
+          changePercent24h,
+          high24h: parseFloat(data.h?.[0] ?? "0"),
+          low24h: parseFloat(data.l?.[0] ?? "0"),
+          volume24h: parseFloat(data.v?.[1] ?? data.v?.[0] ?? "0"),
+          timestamp: Date.now(),
         };
-        stream: string;
-      };
-      
-      const tickerData: TickerData = {
-        symbol: data.s,
-        price: parseFloat(data.c),
-        change24h: parseFloat(data.p),
-        changePercent24h: parseFloat(data.P),
-        high24h: parseFloat(data.h),
-        low24h: parseFloat(data.l),
-        volume24h: parseFloat(data.v),
-        timestamp: data.E,
-      };
-      
-      // Update global store
-      useRealtimeStore.getState().updatePrice(data.s, {
-        price: tickerData.price,
-        change24h: tickerData.changePercent24h,
-        volume24h: tickerData.volume24h,
-        high24h: tickerData.high24h,
-        low24h: tickerData.low24h,
-      });
-      
-      // Notify subscribers for this symbol
-      const symbolSubs = this.symbolSubscriptions.get(data.s);
-      if (symbolSubs) {
-        for (const subId of symbolSubs) {
-          const sub = this.subscriptions.get(subId);
-          if (sub) {
-            try {
-              sub.callback(tickerData);
-            } catch (error) {
-              console.error(`[WebSocketManager] Subscriber error for ${subId}:`, error);
+        
+        // Update global store
+        useRealtimeStore.getState().updatePrice(internalSymbol, {
+          price: tickerData.price,
+          change24h: tickerData.changePercent24h,
+          volume24h: tickerData.volume24h,
+          high24h: tickerData.high24h,
+          low24h: tickerData.low24h,
+        });
+        
+        // Notify subscribers for this symbol
+        const symbolSubs = this.symbolSubscriptions.get(internalSymbol);
+        if (symbolSubs) {
+          for (const subId of symbolSubs) {
+            const sub = this.subscriptions.get(subId);
+            if (sub) {
+              try {
+                sub.callback(tickerData);
+              } catch (error) {
+                console.error(`[WebSocketManager] Subscriber error for ${subId}:`, error);
+              }
             }
           }
         }
@@ -508,7 +591,7 @@ class WebSocketManager {
   }
 
   private updateStoreStatus(status: "disconnected" | "connecting" | "connected" | "error"): void {
-    useRealtimeStore.getState().setBinanceStatus(status);
+    useRealtimeStore.getState().setKrakenStatus(status);
   }
 }
 

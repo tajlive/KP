@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     const { data: profileRow, error } = await supabase
       .from("user_profiles")
-      .select("preferred_trading_mode, binance_connected, tier")
+      .select("preferred_trading_mode, tier")
       .eq("id", user.id)
       .single();
 
@@ -56,7 +56,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const binanceConnected = Boolean(profileRow?.binance_connected);
+    // EU/EØS (2026): live-kobling = Kraken-nøkler (Binance er fjernet).
+    const { data: krakenKeys } = await supabase
+      .from("user_kraken_keys")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const krakenConnected = Boolean(krakenKeys);
     const canSwitchToLive = await verifyLiveEntitlement(supabase, user.id);
 
     const stored = profileRow?.preferred_trading_mode;
@@ -66,7 +72,7 @@ export async function GET(request: NextRequest) {
       success: true,
       mode,
       canSwitchToLive,
-      binanceConnected,
+      krakenConnected,
       paperTradesCount: 0,
     });
   } catch (error) {
@@ -108,21 +114,18 @@ export async function POST(request: NextRequest) {
     }
     const { mode, rememberDefault } = parsed.data;
 
-    // Hvis bytte til live, sjekk at Binance er koblet til
+    // Hvis bytte til live, sjekk at Kraken er koblet til (EU/EØS 2026)
     if (mode === "live") {
-      const { data: profileRow } = await supabase
-        .from("user_profiles")
-        .select("binance_api_key_encrypted")
-        .eq("id", user.id)
-        .single();
-      const profile = profileRow as {
-        binance_api_key_encrypted?: string;
-      } | null;
-      if (!profile?.binance_api_key_encrypted) {
+      const { data: krakenKeys } = await supabase
+        .from("user_kraken_keys")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!krakenKeys) {
         return NextResponse.json(
           {
-            error: "Binance API ikke tilkoblet. Koble til Binance først.",
-            code: "BINANCE_NOT_CONNECTED",
+            error: "Kraken API ikke tilkoblet. Koble til Kraken først.",
+            code: "KRAKEN_NOT_CONNECTED",
           },
           { status: 400 },
         );
