@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Bot, Loader2, Play } from "lucide-react";
 
 export function PilotDashboard() {
   const [status, setStatus] = React.useState<"idle" | "starting" | "active" | "error">("idle");
@@ -93,8 +94,12 @@ export function PilotDashboard() {
       </div>
 
       <div className="bg-gradient-to-br from-violet-950/40 to-violet-900/20 border border-violet-500/20 rounded-xl p-5 text-center space-y-4">
-        <div className="text-4xl">
-          {status === "active" ? "🃏" : status === "starting" ? "⏳" : "🃏"}
+        <div className="flex justify-center">
+          {status === "starting" ? (
+            <Loader2 className="h-10 w-10 text-violet-400 animate-spin" aria-hidden />
+          ) : (
+            <Bot className="h-10 w-10 text-violet-400" aria-hidden />
+          )}
         </div>
         <div>
           <h3 className="text-white font-bold text-lg">
@@ -126,9 +131,17 @@ export function PilotDashboard() {
           <button
             onClick={startPilotTrade}
             disabled={status === "starting"}
-            className="w-full py-3 rounded-xl text-sm font-bold bg-violet-500 text-white hover:bg-violet-400 transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50"
+            className="w-full py-3 rounded-xl text-sm font-bold bg-violet-500 text-white hover:bg-violet-400 transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50 inline-flex items-center justify-center gap-2"
           >
-            {status === "starting" ? "⏳ Starter..." : "🎭 Start PilotTrade"}
+            {status === "starting" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Starter...
+              </>
+            ) : (
+              <>
+                <Play className="h-4 w-4" aria-hidden /> Start autopilot
+              </>
+            )}
           </button>
         )}
 
