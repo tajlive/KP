@@ -14,9 +14,10 @@ import { config as loadEnv } from "dotenv";
 
 // Last inn .env.local slik at ENCRYPTION_KEY (32-byte hex) er tilgjengelig for AES-GCM-kryptering.
 loadEnv({ path: ".env.local" });
-if (!process.env.ENCRYPTION_KEY) {
-  throw new Error("ENCRYPTION_KEY mangler i .env.local — trengs for krypteringstest");
-}
+// CI har ikke .env.local — fallback til en deterministisk testnøkkel (32 byte).
+// AES-GCM krever bare en gyldig 32-byte-nøkkel; kryptografisk styrke er ikke
+// testens formål. Prod bruker alltid den ekte ENCRYPTION_KEY-secreten.
+process.env.ENCRYPTION_KEY ??= "0".repeat(64);
 
 const upsertMock = vi.hoisted(() => vi.fn());
 
