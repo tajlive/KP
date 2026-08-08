@@ -31,7 +31,11 @@
       "icon": "🚀",
       "modules": 12,
       "weeks": 4,
-      "tags": ["Bitcoin", "Security", "Trading"],
+      "tags": [
+        "Bitcoin",
+        "Security",
+        "Trading"
+      ],
       "cta": "Start course"
     },
     {
@@ -50,7 +54,10 @@
       "icon": "📈",
       "modules": 16,
       "weeks": 6,
-      "tags": ["Technical analysis", "Risk management"],
+      "tags": [
+        "Technical analysis",
+        "Risk management"
+      ],
       "cta": "Start course"
     },
     {
@@ -69,7 +76,11 @@
       "icon": "🌐",
       "modules": 8,
       "weeks": 3,
-      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "tags": [
+        "DeFi",
+        "Yield farming",
+        "Liquidity"
+      ],
       "cta": "Start course"
     }
   ],
@@ -91,10 +102,30 @@
           "status": "completed",
           "progress": 100
         },
-        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
-        { "id": 3, "title": "Wallet", "status": "available", "progress": 0 },
-        { "id": 4, "title": "Buy Bitcoin", "status": "locked", "progress": 0 },
-        { "id": 5, "title": "Security", "status": "locked", "progress": 0 }
+        {
+          "id": 2,
+          "title": "Blockchain",
+          "status": "current",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "Wallet",
+          "status": "available",
+          "progress": 0
+        },
+        {
+          "id": 4,
+          "title": "Buy Bitcoin",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 5,
+          "title": "Security",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {
@@ -132,7 +163,7 @@
         },
         "4": {
           "title": "Lesson 4: How to Buy Bitcoin",
-          "description": "The easiest way is to use a regulated exchange like Coinbase or Binance. Create an account, verify your identity, and transfer money via bank transfer. You do NOT need to buy a whole Bitcoin! You can buy a small fraction — for example $50 worth. When you trade, you pay a small fee (usually 0.1%-1.5%). After buying, you can leave the crypto on the exchange (convenient but some risk) or move it to your own wallet (safer). Tip: Start with a small amount you can afford to lose, and get comfortable with the process before increasing.",
+          "description": "The easiest way is to use a regulated exchange like Coinbase or Kraken. Create an account, verify your identity, and transfer money via bank transfer. You do NOT need to buy a whole Bitcoin! You can buy a small fraction — for example $50 worth. When you trade, you pay a small fee (usually 0.1%-1.5%). After buying, you can leave the crypto on the exchange (convenient but some risk) or move it to your own wallet (safer). Tip: Start with a small amount you can afford to lose, and get comfortable with the process before increasing.",
           "audioUrl": "/audio/en/lesson4.mp3",
           "buttons": {
             "start": "Start Explanation",
@@ -143,7 +174,7 @@
         },
         "5": {
           "title": "Lesson 5: Security — Protect Your Crypto",
-          "description": "The crypto world has scammers, and you must protect yourself. The most important rules: (1) NEVER share your private key/seed phrase with anyone — no legitimate service will ask for it. (2) Always use 2-factor authentication (2FA) with an app like Google Authenticator, not SMS. (3) Beware of phishing — scammers create fake websites that look like Binance/Coinbase. Always check the URL. (4) Use strong, unique passwords for crypto accounts. (5) Consider a hardware wallet for larger amounts. (6) Don't share how much crypto you own on social media. Finally: no legitimate person promises 'guaranteed returns' in crypto.",
+          "description": "The crypto world has scammers, and you must protect yourself. The most important rules: (1) NEVER share your private key/seed phrase with anyone — no legitimate service will ask for it. (2) Always use 2-factor authentication (2FA) with an app like Google Authenticator, not SMS. (3) Beware of phishing — scammers create fake websites that look like Kraken/Coinbase. Always check the URL. (4) Use strong, unique passwords for crypto accounts. (5) Consider a hardware wallet for larger amounts. (6) Don't share how much crypto you own on social media. Finally: no legitimate person promises 'guaranteed returns' in crypto.",
           "audioUrl": "/audio/en/lesson5.mp3",
           "buttons": {
             "start": "Start Explanation",
@@ -329,7 +360,12 @@
           "status": "locked",
           "progress": 0
         },
-        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+        {
+          "id": 3,
+          "title": "Yield Farming",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {

@@ -16,7 +16,7 @@ import { describe, it, expect } from "vitest";
 
 /**
  * Gjenskaper exit-beregningen i checkExits (pilot-engine/route.ts).
- * entry: NOK-pris lagret på traden. currentPriceUsdt: levende Binance-pris.
+ * entry: NOK-pris lagret på traden. currentPriceUsdt: levende Kraken-pris.
  * rate: raten som brukes for å konvertere current til NOK.
  */
 function beregnPnlPct(entryNok: number, currentPriceUsdt: number, rate: number, side: "buy" | "sell"): number {

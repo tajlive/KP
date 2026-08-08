@@ -46,7 +46,7 @@ These are **non-blocking**:
    - Fix: Week 2 post-launch
 
 2. **Type instantiation deep** - Complex type inference
-   - Files: `mistake-analyzer`, `binance-historical-data`
+   - Files: `mistake-analyzer`, `kraken-historical-data`
    - Impact: None (build succeeds)
    - Fix: Week 3 post-launch
 
@@ -69,7 +69,7 @@ These are **non-blocking**:
 - [x] Add auto_trading_trades to generated types (Deprecated in Dashboard favor of 'trades')
 - [x] Add auto_trading_sessions columns (win_rate, etc.)
 - [ ] Fix mistake-analyzer.ts type casting
-- [ ] Fix binance-historical-data.ts types
+- [ ] Fix kraken-historical-data.ts types
 ```
 
 ### Week 2 (March 17-24): KLA-161
@@ -84,7 +84,7 @@ These are **non-blocking**:
 - [x] Dashboard page: fjernet trial_ends_at fra select, normalisert activeSession (current_capital_nok)
 - [x] BotWizard: Icon-komponent i stedet for icon-streng; useProfile update payload (created_at null)
 - [x] Auth utils: Vipps runtime-check før signInWithOAuth
-- [ ] Fix analytics event types; ClientProfile user_badges/leads (genererte typer); binance-executor notification type enum
+- [ ] Fix analytics event types; ClientProfile user_badges/leads (genererte typer); kraken-executor notification type enum
 ```
 
 ### Week 3 (March 24-31): KLA-162

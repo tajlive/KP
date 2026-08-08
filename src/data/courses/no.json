@@ -31,7 +31,11 @@
       "icon": "🚀",
       "modules": 12,
       "weeks": 4,
-      "tags": ["Bitcoin", "Sikkerhet", "Handel"],
+      "tags": [
+        "Bitcoin",
+        "Sikkerhet",
+        "Handel"
+      ],
       "cta": "Start kurset"
     },
     {
@@ -50,7 +54,10 @@
       "icon": "📈",
       "modules": 16,
       "weeks": 6,
-      "tags": ["Teknisk analyse", "Risk management"],
+      "tags": [
+        "Teknisk analyse",
+        "Risk management"
+      ],
       "cta": "Start kurset"
     },
     {
@@ -69,7 +76,11 @@
       "icon": "🌐",
       "modules": 8,
       "weeks": 3,
-      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "tags": [
+        "DeFi",
+        "Yield farming",
+        "Liquidity"
+      ],
       "cta": "Start kurset"
     }
   ],
@@ -91,10 +102,30 @@
           "status": "completed",
           "progress": 100
         },
-        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
-        { "id": 3, "title": "Lommebok", "status": "available", "progress": 0 },
-        { "id": 4, "title": "Kjøp Bitcoin", "status": "locked", "progress": 0 },
-        { "id": 5, "title": "Sikkerhet", "status": "locked", "progress": 0 }
+        {
+          "id": 2,
+          "title": "Blockchain",
+          "status": "current",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "Lommebok",
+          "status": "available",
+          "progress": 0
+        },
+        {
+          "id": 4,
+          "title": "Kjøp Bitcoin",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 5,
+          "title": "Sikkerhet",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {
@@ -130,7 +161,7 @@
         },
         "4": {
           "title": "Leksjon 4: Hvordan kjøpe Bitcoin",
-          "description": "Det enkleste er å bruke en regulert børs som Firi (norsk), Coinbase eller Binance. Opprett en konto, verifiser identiteten din (BankID), og overfør penger med Vipps eller bankoverføring. Du trenger IKKE kjøpe en hel Bitcoin! Du kan kjøpe en liten del — for eksempel 500 kr i Bitcoin. Når du handler, betaler du et lite gebyr (vanligvis 0,1%–1,5%). Etter kjøpet kan du la kryptoen stå på børsen (enkelt, men noe risiko) eller flytte den til din egen lommebok (tryggere). Tips: Start med et lite beløp du kan tåle å tape, og bli kjent med prosessen før du øker.",
+          "description": "Det enkleste er å bruke en regulert børs som Firi (norsk), Coinbase eller Kraken. Opprett en konto, verifiser identiteten din (BankID), og overfør penger med Vipps eller bankoverføring. Du trenger IKKE kjøpe en hel Bitcoin! Du kan kjøpe en liten del — for eksempel 500 kr i Bitcoin. Når du handler, betaler du et lite gebyr (vanligvis 0,1%–1,5%). Etter kjøpet kan du la kryptoen stå på børsen (enkelt, men noe risiko) eller flytte den til din egen lommebok (tryggere). Tips: Start med et lite beløp du kan tåle å tape, og bli kjent med prosessen før du øker.",
           "buttons": {
             "start": "Start Forklaring",
             "pause": "Pause",
@@ -140,7 +171,7 @@
         },
         "5": {
           "title": "Leksjon 5: Sikkerhet — Beskytt kryptoen din",
-          "description": "Kryptoverdenen har svindlere, og du må beskytte deg. De viktigste reglene: (1) Del ALDRI din private nøkkel med noen — ingen seriøs tjeneste vil be deg om den. (2) Bruk alltid 2-faktor autentisering (2FA) med Google Authenticator, ikke SMS. (3) Pass deg for phishing — svindlere lager falske nettsider som ser ut som Binance/Coinbase. Sjekk alltid URL-en. (4) Bruk sterke, unike passord for kryptokontoer. (5) Vurder en hardware-lommebok for større beløp. (6) Ikke del hvor mye krypto du eier på sosiale medier. Til slutt: ingen seriøs person lover 'garantert avkastning' i krypto.",
+          "description": "Kryptoverdenen har svindlere, og du må beskytte deg. De viktigste reglene: (1) Del ALDRI din private nøkkel med noen — ingen seriøs tjeneste vil be deg om den. (2) Bruk alltid 2-faktor autentisering (2FA) med Google Authenticator, ikke SMS. (3) Pass deg for phishing — svindlere lager falske nettsider som ser ut som Kraken/Coinbase. Sjekk alltid URL-en. (4) Bruk sterke, unike passord for kryptokontoer. (5) Vurder en hardware-lommebok for større beløp. (6) Ikke del hvor mye krypto du eier på sosiale medier. Til slutt: ingen seriøs person lover 'garantert avkastning' i krypto.",
           "buttons": {
             "start": "Start Forklaring",
             "pause": "Pause",
@@ -312,14 +343,24 @@
       "videoTitle": "DeFi Explorer",
       "videoSubtitle": "Forstå fremtidens finans",
       "lessonsList": [
-        { "id": 1, "title": "Hva er DeFi?", "status": "locked", "progress": 0 },
+        {
+          "id": 1,
+          "title": "Hva er DeFi?",
+          "status": "locked",
+          "progress": 0
+        },
         {
           "id": 2,
           "title": "Smart Contracts",
           "status": "locked",
           "progress": 0
         },
-        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+        {
+          "id": 3,
+          "title": "Yield Farming",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {

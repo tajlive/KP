@@ -197,8 +197,8 @@ describe("CircuitBreaker", () => {
 
     it("getAllCircuitBreakerMetrics returns all", () => {
       const all = getAllCircuitBreakerMetrics();
-      expect(Object.keys(all)).toEqual(["binance", "priceFeed", "general"]);
-      expect(all.binance.state).toBe("CLOSED");
+      expect(Object.keys(all)).toEqual(["kraken", "priceFeed", "general"]);
+      expect(all.kraken.state).toBe("CLOSED");
     });
 
     it("resetAllCircuitBreakers resets all", () => {

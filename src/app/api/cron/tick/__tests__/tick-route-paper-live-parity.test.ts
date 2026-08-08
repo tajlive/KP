@@ -190,7 +190,7 @@ describe("tick route paper/live parity", () => {
     // Paper-kapital er NOK: 100 NOK ≈ 10 USDT
     expect(minOrderValueForMode("paper")).toBe(100);
     expect(minOrderValueForMode(null)).toBe(100);
-    // Live-kapital er USDT: 10 USDT er Binance-minste; 75 USDT-ordre
+    // Live-kapital er USDT: minimumsordre er $10; 75 USDT-ordre
     // ble feilaktig holdt med NOK-terskelen (regresjon bevist i prod)
     expect(minOrderValueForMode("live")).toBe(10);
     expect(minOrderValueForMode("live") < 100).toBe(true);

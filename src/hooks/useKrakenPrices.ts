@@ -30,7 +30,7 @@ export function useKrakenPrices(symbols: string[]) {
     );
 
     return () => unsubscribe();
-  }, [symbols.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [symbols.join(",")]);
 
   return prices;
 }

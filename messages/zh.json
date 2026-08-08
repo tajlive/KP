@@ -642,14 +642,9 @@
       "apiKeysSaved": "API 密钥已保存！",
       "apiSecret": "API秘密",
       "apiSecurityNote": "API 密钥在存储前已加密。我们从不以纯文本形式存储密钥。",
-      "binanceAccount": "币安账户",
-      "binanceAccountLink": "您可以在您的",
-      "binanceDescription": "管理您的币安 API 密钥以进行自动交易",
-      "binanceSettings": "币安 API 设置",
       "capital": "资金（USDT）",
       "configureApiKeys": "配置API密钥",
       "confirmDelete": "您确定要删除该策略吗？",
-      "connectBinance": "连接到币安",
       "couldNotCreateStrategy": "无法创建策略",
       "couldNotSaveKeys": "无法保存密钥",
       "createNewStrategy": "制定新战略",
@@ -933,9 +928,8 @@
     "betaDashboard": "测试版仪表板",
     "competition": "竞争",
     "competitionDesc": "赢得奖品并跟单最佳交易者",
-    "connectBinance": "连接币安",
     "copyLink": "复制您的链接",
-    "exchangeConnectDesc": "要开始实时交易，您需要连接您的币安账户。",
+    "exchangeConnectDesc": "要开始实时交易，您需要连接您的Kraken账户。",
     "linkCopied": "推荐链接已复制到剪贴板！",
     "liveTrading": "实时交易",
     "liveTradingDesc": "用真实货币和人工智能指导进行交易",
@@ -954,23 +948,6 @@
     "trades": "交易",
     "tradingLimits": "交易限额",
     "winRate": "胜率"
-  },
-  "binanceGuide": {
-    "title": "Binance 指南",
-    "description": "Binance 指南",
-    "subtitle": "Binance 是全球最大的加密货币交易所。我们将逐步引导您完成注册。",
-    "startSmall": "从小额开始（例如 500 元）通过银行转账。您随时可以存入更多。永远不要投入超出您承受能力的资金。",
-    "timeEstimate": "注册大约需要5分钟 • KYC验证最多需要24小时",
-    "deposit": "存入资金",
-    "guide": "指南",
-    "metadata": {
-      "description": "通过 Klarpakke 创建币安账户的完整指南。获得更低的费用并支持我们的工作。",
-      "title": "如何开始使用币安 - Klarpakke University"
-    },
-    "register": "注册账号",
-    "startTrading": "开始交易",
-    "steps": "步骤",
-    "verify": "验证身份"
   },
   "calculator": {
     "title": "计算器",
@@ -1089,8 +1066,6 @@
     "learnMore": "了解更多",
     "seeAll": "查看全部",
     "comingSoon": "即将推出",
-    "binanceNotConnectedDesc": "Binance 未连接说明",
-    "binanceNotConnectedTitle": "Binance 未连接 标题",
     "botConfigStrategy": "机器人配置策略",
     "botStrategyAi": "机器人策略人工智能",
     "botStrategyAiDesc": "机器人策略 Ai 描述",
@@ -1105,8 +1080,6 @@
     "chooseRisk": "选择风险",
     "chooseStrategy": "选择策略",
     "clickToSelect": "单击选择",
-    "connectBinanceCta": "连接币安 Cta",
-    "connectBinanceToStart": "连接币安开始",
     "customAmount": "定制金额",
     "duplicateSessionDesc": "重复的会话描述",
     "duplicateSessionTitle": "重复的会话标题",
@@ -1237,7 +1210,8 @@
     "upgradeCta": "升级CTA",
     "upgradeNotice": "升级通知",
     "upgradeToStartLive": "升级开始直播",
-    "waitingForSignal": "等待信号"
+    "waitingForSignal": "等待信号",
+    "goToKraken": "Go to Kraken"
   },
   "competition": {
     "title": "比赛",
@@ -1463,7 +1437,6 @@
       "portfolio": "Portefølje",
       "trading": "Trading",
       "liveTrading": "Live Trading",
-      "binanceApi": "Binance API",
       "activity": "Aktivitet",
       "taxReport": "Skatterapport",
       "settings": "Innstillinger",
@@ -1799,12 +1772,6 @@
       "title": "资产配置",
       "trades": "交易"
     },
-    "binanceCard": {
-      "button": "连接币安",
-      "description": "通过 API 连接到币安进行实时交易和投资组合概览。我们只需要只读访问权限。",
-      "subtitle": "连接您的币安账户",
-      "title": "币安API"
-    },
     "bought": "买了",
     "cash": "现金",
     "coinbase": {
@@ -1841,7 +1808,7 @@
         "title": "你的投资组合"
       },
       "emptyState": "所选模式尚无交易。启动一个新会话以查看统计信息。",
-      "emptyStateLive": "还没有实时交易。连接币安并从 /handel 开始实时交易。",
+      "emptyStateLive": "还没有实时交易。连接Kraken并从 /handel 开始实时交易。",
       "emptyStatePaper": "还没有交易。从 /handel 开始纸质交易以在此处查看交易。",
       "errorFallback": "如果问题仍然存在，请重试或联系支持人员。",
       "errorTitle": "无法加载仪表板指标",
@@ -2035,7 +2002,7 @@
       "subtitle": "让我们开始使用您的第一个交易机器人。",
       "welcome": "欢迎，{name}！"
     },
-    "noTrades": "还没有交易。点击“同步币安”加载您的币安交易。",
+    "noTrades": "还没有交易。点击“同步Kraken”加载您的Kraken交易。",
     "onboardingChecklist": {
       "accountCreated": "帐户已创建",
       "complete": "你已经启动并运行了！全部 3 个步骤完成。",
@@ -2413,7 +2380,7 @@
       "tradeCount": "trades",
       "returnLabel": "return",
       "playMoney": "Play money",
-      "realRates": "Real Binance rates",
+      "realRates": "Real Kraken rates",
       "realtime": "Real-time",
       "tagline": "We never show numbers we can't verify. Start with 100,000 kr in play money — completely risk-free."
     },
@@ -2445,7 +2412,7 @@
         "title": "免费 100,000 瑞典克朗"
       },
       "realData": {
-        "desc": "直接来自 Binance — BTC、ETH、SOL 等的实时价格",
+        "desc": "直接来自 Kraken — BTC、ETH、SOL 等的实时价格",
         "title": "真实市场数据"
       },
       "riskFree": {
@@ -2651,7 +2618,6 @@
       "title": "确认交易"
     },
     "errors": {
-      "checkBinance": "检查您的币安连接",
       "enterAmount": "请输入金额",
       "loginRequired": "您必须登录才能交易",
       "priceData": "无法获取价格数据",
@@ -2664,7 +2630,7 @@
       "realtimeDataDesc": "价格通过 WebSocket 实时更新。",
       "title": "重要信息",
       "usdtRequirement": "需要 USDT",
-      "usdtRequirementDesc": "您的币安账户中需要有 USDT 才能进行交易。"
+      "usdtRequirementDesc": "您的Kraken账户中需要有 USDT 才能进行交易。"
     },
     "loading": "正在加载交易数据...",
     "masterOnly": "仅限硕士生",
@@ -2678,7 +2644,7 @@
       "noWithdrawalDesc": "我们永远无法提取您的资金。",
       "title": "您的安全是我们的首要任务",
       "transparency": "完全透明",
-      "transparencyDesc": "所有交易都可以直接在您的币安账户中追踪。"
+      "transparencyDesc": "所有交易都可以直接在您的Kraken账户中追踪。"
     },
     "sell": "出售",
     "upgradeBtn": "升级计划",
@@ -2930,8 +2896,6 @@
     "canvas-confetti": "帆布五彩纸屑",
     "clickToPlay": "点击播放视频",
     "completelyFree": "测试阶段 100% 免费",
-    "connectBinance": "连接币安",
-    "connectBinanceDesc": "当您准备好进行实时交易时，您可以连接自己的交易所",
     "connecting": "正在连接到银行 ID...",
     "continueToDashboard": "继续仪表板",
     "done": "完成",
@@ -3225,7 +3189,7 @@
     "subtitle": "Øv deg på trading med {amount} virtuelle penger",
     "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
     "help": {
-      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Kraken.",
       "close": "Lukk"
     },
     "stats": {
@@ -3265,7 +3229,7 @@
     },
     "disclaimer": {
       "important": "Viktig:",
-      "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Binance API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
+      "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Kraken API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
     },
     "leaderboard": {
       "title": "Toppliste",
@@ -3299,7 +3263,6 @@
     "backToDashboard": "返回仪表板",
     "backToOverview": "返回概览",
     "balance": "平衡",
-    "binanceUpdateInfo": "价格从币安实时更新",
     "buy": "购买",
     "cancel": "取消",
     "capital": "资本",
@@ -3379,7 +3342,8 @@
       "subtitle": "练习用纸币进行交易",
       "title": "交易工作区"
     },
-    "yourBalance": "您的余额"
+    "yourBalance": "您的余额",
+    "krakenUpdateInfo": "Prices are updated from Kraken in real time"
   },
   "payment": {
     "back": "返回",
@@ -3723,54 +3687,8 @@
     "api": {
       "title": "API Innstillinger",
       "description": "Koble til handelsplattformer for automatisk trading",
-      "binance": {
-        "title": "Binance API",
-        "description": "Koble til din Binance-konto for automatisk trading",
-        "addNew": "Legg til ny API-nøkkel",
-        "label": "Merkelapp",
-        "labelPlaceholder": "F.eks. Hovedkonto, Testkonto",
-        "apiKey": "API-nøkkel",
-        "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
-        "apiSecret": "API Secret",
-        "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
-        "testnet": "Bruk Binance Testnet (for testing)",
-        "testConnection": "Test Tilkobling",
-        "saveKey": "Lagre API-nøkkel",
-        "testing": "Tester...",
-        "saving": "Lagrer...",
-        "success": "✅ API-nøkkel lagret!",
-        "testSuccess": "✅ Tilkobling vellykket!",
-        "testFailed": "❌ Tilkobling feilet",
-        "error": "Feil ved lagring",
-        "deleteConfirm": "Er du sikker på at du vil slette denne API-nøkkelen?",
-        "showSecret": "Vis secret",
-        "hideSecret": "Skjul secret",
-        "yourKeys": "Dine API-nøkler",
-        "noKeys": "Ingen API-nøkler lagt til",
-        "noKeysDesc": "Legg til din første API-nøkkel for å komme i gang",
-        "lastTested": "Sist testet",
-        "status": {
-          "active": "Aktiv",
-          "inactive": "Inaktiv",
-          "success": "Vellykket",
-          "failed": "Feilet",
-          "pending": "Venter"
-        },
-        "howToGet": {
-          "title": "Hvordan få Binance API-nøkler",
-          "intro": "Følg disse stegene for å få dine API-nøkler:",
-          "step1": "1. Logg inn på din Binance-konto",
-          "step2": "2. Gå til Profil → API Management",
-          "step3": "3. Opprett en ny API-nøkkel (gi den et navn)",
-          "step4": "4. Fullfør 2FA-verifisering",
-          "step5": "5. Kopier både API Key og Secret Key",
-          "step6": "6. Aktiver 'Enable Spot & Margin Trading' tillatelse",
-          "step7": "7. Lim inn over og test tilkoblingen",
-          "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
-        }
-      },
-      "apiKeyPlaceholder": "输入您的币安 API 密钥",
-      "apiSecretPlaceholder": "输入您的币安 API 密钥",
+      "apiKeyPlaceholder": "输入您的Kraken API 密钥",
+      "apiSecretPlaceholder": "输入您的Kraken API 密钥",
       "copyKeys": "复制钥匙",
       "deleteError": "删除时出错",
       "deleteSuccess": "API 密钥已删除",
@@ -3996,7 +3914,7 @@
         "features": [
           "学士级别的所有内容",
           "自动交易 (3 种策略)",
-          "币安实盘交易",
+          "Kraken实盘交易",
           "复制顶级交易员",
           "通过考试获得学士学位证书",
           "每月 2,500 KLT 代币"
@@ -4189,10 +4107,7 @@
     "switchToLiveWarning": "Du er i ferd med å bytte til live trading med ekte penger.",
     "switchToPaperTitle": "Bytt til Paper Trading?",
     "switchToPaperWarning": "Du bytter tilbake til paper trading.",
-    "switchToPaperNote": "Åpne live posisjoner forblir aktive på Binance. Du kan bytte tilbake til live mode når som helst.",
-    "connectBinance": "Koble til Binance",
-    "connectBinanceRequired": "Koble til Binance",
-    "connectBinanceDescription": "For å bytte til live trading må du først koble til din Binance-konto med API-nøkler.",
+    "switchToPaperNote": "Åpne live posisjoner forblir aktive på Kraken. Du kan bytte tilbake til live mode når som helst.",
     "connectNow": "Koble til nå",
     "apiKeySecurity": "Sikker lagring",
     "apiKeySecurityDesc": "API-nøkler krypteres og lagres sikkert. Vi har aldri tilgang til å ta ut penger.",
@@ -4204,7 +4119,7 @@
     "confirmSwitchToPaper": "Bytt til Paper",
     "liveWarningRealMoney": "Du handler nå med EKTE penger",
     "liveWarningLosses": "Tap er reelle, ikke simulerte",
-    "liveWarningFees": "Handelsgebyrer trekkes fra din Binance-konto",
+    "liveWarningFees": "Handelsgebyrer trekkes fra din Kraken-konto",
     "liveWarningSwitchBack": "Du kan bytte tilbake til paper mode når som helst",
     "slippageSimulated": "Slippage simulert: {{amount}} kr ({{bps}} bps)",
     "slippage": "Slippage",
@@ -4239,7 +4154,7 @@
     "paperTradingInfo": "Paper Trading Mode",
     "paperTradingDescription": "Du handler med virtuell kapital. Slippage og gebyrer er simulert for realistisk øving.",
     "liveTradingInfo": "Live Trading Mode",
-    "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
+    "liveTradingDescription": "Du handler med ekte penger på Kraken. Alle trades er reelle.",
     "balance": "Saldo",
     "available": "Tilgjengelig",
     "buy": "Kjøp",
@@ -4681,43 +4596,6 @@
       }
     },
     "confidence": "信心",
-    "connectBinanceModal": {
-      "apiKeyLabel": "API密钥",
-      "apiKeyPlaceholder": "将您的 API 密钥粘贴到此处...",
-      "apiSecretLabel": "API秘密",
-      "apiSecretPlaceholder": "将您的 API 机密粘贴到此处...",
-      "back": "返回",
-      "connectSecurely": "安全连接",
-      "continue": "我明白了，继续",
-      "description": "链接您的币安账户以使用真实加密货币进行实时交易。",
-      "goToBinance": "前往币安 API 管理",
-      "noWithdrawConfirm": "我确认我的 API 密钥没有启用“提款”权限",
-      "secretHint": "您的 API 密钥在存储前已加密，并且不会再次显示。",
-      "security1": "API 密钥使用 AES-256 加密",
-      "security2": "我们从不以纯文本形式存储密钥",
-      "security3": "存储后密钥永远不会发送到前端",
-      "security4": "您可以随时断开连接",
-      "securityTitle": "您的安全是我们的首要任务：",
-      "startTrading": "开始交易",
-      "step1": "登录您的币安账户",
-      "step2": "进入API管理",
-      "step3": "创建新的 API 密钥",
-      "step4Important": "重要：",
-      "step4OnlyEnable": "仅启用：",
-      "step4Reading": "✅ 启用阅读",
-      "step4Trading": "✅ 启用现货和保证金交易",
-      "step4Withdrawals": "❌ 启用提款（必须禁用）",
-      "step5": "复制并粘贴您的 API 密钥和密码如下",
-      "stepsTitle": "如何创建 API 密钥：",
-      "successDesc": "您的币安账户现已连接。您现在可以切换到实时交易模式。",
-      "successTitle": "连接成功！",
-      "title": "连接币安账户",
-      "understandRisks": "我了解实时交易涉及真实资金和风险",
-      "verifyingDesc": "这可能需要几秒钟。我们正在通过币安检查您的 API 权限。",
-      "verifyingTitle": "正在验证您的 API 密钥...",
-      "warningText": "在币安上创建 API 密钥时，切勿启用“提款”权限。仅应启用“启用读取”和“启用现货和保证金交易”。",
-      "warningTitle": "重要："
-    },
     "conservativeOption": "保守派",
     "copyDiagnostics": "复制诊断",
     "date": "日期",
@@ -4820,7 +4698,6 @@
       "active": "活跃",
       "backToDashboard": "返回仪表板",
       "backToOverview": "返回概览",
-      "binanceUpdateInfo": "币安更新信息",
       "cancel": "取消",
       "card": {
         "currentBalance": "当前余额",
@@ -4878,7 +4755,8 @@
         "badge": "纸",
         "subtitle": "副标题",
         "title": "标题"
-      }
+      },
+      "krakenUpdateInfo": "Prices are updated from Kraken in real time"
     },
     "performance": {
       "avgTrade": "平均贸易额",
@@ -5261,7 +5139,46 @@
     "whyMissing": "为什么失踪",
     "whySell": "为何出售",
     "wins": "胜利",
-    "accountPnl": "Account P&L"
+    "accountPnl": "Account P&L",
+    "connectKraken": "Connect Kraken",
+    "connectKrakenDescription": "To switch to live trading, you must first connect your Kraken account with API keys. Kraken is the only supported exchange for Norwegian users (MiCA).",
+    "connectKrakenModal": {
+      "title": "Connect Kraken Account",
+      "description": "Link your Kraken account to enable live trading with real crypto.",
+      "securityTitle": "Your security is our priority:",
+      "security1": "API keys are encrypted with AES-256",
+      "security2": "We never store keys in plaintext",
+      "security3": "Keys are never sent to the frontend after storage",
+      "security4": "You can disconnect at any time",
+      "warningTitle": "Important:",
+      "warningText": "When creating your API key on Kraken, NEVER enable withdrawal permission. Only query and trade.",
+      "stepsTitle": "How to create your API key:",
+      "step1": "Log in to your Kraken account",
+      "step2": "Go to Settings → API",
+      "step3": "Create a new API key",
+      "step4Important": "Important:",
+      "step4OnlyEnable": "Enable only:",
+      "step4Reading": "✅ Enable Query funds (read)",
+      "step4Trading": "✅ Enable Create & Modify Orders (trade)",
+      "step4Withdrawals": "❌ Enable withdrawals (MUST stay off)",
+      "step5": "Copy and paste your API key and Secret below",
+      "continue": "I understand, continue",
+      "apiKeyLabel": "API key",
+      "apiSecretLabel": "API Secret",
+      "apiKeyPlaceholder": "Paste your API key here...",
+      "apiSecretPlaceholder": "Paste your API Secret here...",
+      "secretHint": "Your API Secret is encrypted before storage and never shown again.",
+      "noWithdrawConfirm": "I confirm my API key does NOT have withdrawal permission enabled",
+      "understandRisks": "I understand live trading involves real money and risk",
+      "back": "Back",
+      "connectSecurely": "Connect securely",
+      "verifyingTitle": "Verifying your API key...",
+      "verifyingDesc": "This may take a few seconds. We verify your API permissions with Kraken.",
+      "successTitle": "Connected!",
+      "successDesc": "Your Kraken account is now connected. You can now switch to Live Trading mode.",
+      "startTrading": "Start trading"
+    },
+    "connectKrakenRequired": "Connect Kraken"
   },
   "wallet": {
     "title": "Lommebok",
@@ -5271,7 +5188,7 @@
     "updatedNow": "Oppdatert nå",
     "selectExchange": "Velg børs",
     "addExchange": "Legg til børs",
-    "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
+    "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Kraken. Du kan senere koble kontoen din hit for å se alt på ett sted.",
     "coursePreview": {
       "sectionTitle": "不到一小时即可开始",
       "sectionSubtitle": "免费开始 — 按自己的节奏完成",
@@ -5320,7 +5237,7 @@
       "title": "Sikkerhet først",
       "readOnly": "Vi ber kun om <strong>read-only</strong> API-nøkler. Dette betyr at vi kan lese saldo og transaksjoner, men <strong>ALDRI</strong> gjøre kjøp/salg eller uttak.",
       "warning": "Aldri del API-nøkler med skrivetilgang (write/trade/withdraw).",
-      "commission": "Vi mottar en liten provisjon fra Binance uten ekstra kostnad for deg. Dette hjelper oss å holde tjenesten gratis."
+      "commission": "Vi mottar en liten provisjon fra Kraken uten ekstra kostnad for deg. Dette hjelper oss å holde tjenesten gratis."
     },
     "balances": {
       "title": "Dine saldoer",
@@ -5457,29 +5374,25 @@
   },
   "BotWizard": {
     "back": "返回",
-    "binanceNotConnectedDesc": "在设置中连接您的币安 API 密钥即可开始实时交易。",
-    "binanceNotConnectedTitle": "币安未连接",
     "chooseRisk": "选择风险级别",
     "chooseStrategy": "选择策略",
     "clickToSelect": "点击策略进行选择",
-    "connectBinanceCta": "连接币安",
-    "connectBinanceToStart": "连接币安开始实时交易。",
     "customAmount": "定制金额：",
     "duplicateSessionDesc": "您已经有一个针对该对的活动机器人 - 首先停止它或选择另一对。",
     "duplicateSessionTitle": "重复会话",
     "high": "高",
     "kellyNotice": "🛡️ 机器人使用凯利准则根据表现调整头寸大小。这降低了风险，但并没有消除风险——您仍然可能会赔钱。",
-    "liveBalanceUnknownWarning": "我们不知道您的币安余额。开始之前请确保该金额可用。",
+    "liveBalanceUnknownWarning": "我们不知道您的Kraken余额。开始之前请确保该金额可用。",
     "liveCapitalHighWarning": "金额大。考虑从较少的资本开始以限制风险。",
     "liveConfirmWarning": "确认：您即将用真钱启动一个实时机器人。",
     "liveModeLabel": "直播",
-    "liveNotAllowedDesc": "实时交易需要学士或更高级别以及连接的币安账户。",
+    "liveNotAllowedDesc": "实时交易需要学士或更高级别以及连接的Kraken账户。",
     "liveNotAllowedTitle": "未启用实时交易",
     "liveStartedDesc": "您的实时交易机器人现在正在用真钱运行",
     "liveStartedTitle": "直播机器人已启动",
     "liveStartingCapital": "启动资金（真实资金）",
-    "liveStartingCapitalDesc": "机器人从您的币安账户进行交易的金额。",
-    "liveWarningDesc": "该机器人将使用您币安账户中的真实资金进行交易。损失是真实存在的。",
+    "liveStartingCapitalDesc": "机器人从您的Kraken账户进行交易的金额。",
+    "liveWarningDesc": "该机器人将使用您Kraken账户中的真实资金进行交易。损失是真实存在的。",
     "liveWarningTitle": "真钱",
     "low": "低",
     "maxCoinsNotice": "{tier} 等级的最大 {limit} 硬币",
@@ -5759,10 +5672,10 @@
     },
     "team": {
       "partners": {
-        "binance": "币安 - 流动性和市场准入",
         "cloudflare": "Cloudflare - 基础设施和安全",
         "supabase": "Supabase - 数据库和身份验证",
-        "title": "我们的合作伙伴"
+        "title": "我们的合作伙伴",
+        "kraken": "Kraken - MiCA-regulated exchange"
       },
       "title": "认识团队",
       "tom": {
@@ -5948,7 +5861,7 @@
       "scaleFactorLabel": "比例因子",
       "sheetAriaLabel": "复制{name}",
       "subtitle": "配置{name}的复制",
-      "title": "复制币安交易平台"
+      "title": "复制Kraken交易平台"
     },
     "followLimitReached": "您最多可以关注您级别的 {limit} 交易者",
     "nav": {
@@ -6289,8 +6202,8 @@
         "question": "什么是自动交易？"
       },
       "q3": {
-        "answer": "不适用于纸质交易。如果您想使用实时交易，您需要一个带有 API 密钥的币安账户。",
-        "question": "我需要币安账户吗？"
+        "answer": "不适用于纸质交易。如果您想使用实时交易，您需要一个带有 API 密钥的Kraken账户。",
+        "question": "我需要Kraken账户吗？"
       },
       "title": "常见问题解答"
     },

@@ -207,10 +207,10 @@ async function fetchOHLCV(
   if (marketData && marketData.length >= 200) {
     return marketData.map((d) => ({
       timestamp: new Date(d.timestamp).getTime(),
-      open: d.open,
-      high: d.high,
-      low: d.low,
-      close: d.close,
+      open: d.open ?? 0,
+      high: d.high ?? 0,
+      low: d.low ?? 0,
+      close: d.close ?? 0,
       volume: d.volume || 0,
     }));
   }

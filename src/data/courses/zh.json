@@ -31,7 +31,11 @@
       "icon": "🚀",
       "modules": 12,
       "weeks": 4,
-      "tags": ["Bitcoin", "安全", "交易"],
+      "tags": [
+        "Bitcoin",
+        "安全",
+        "交易"
+      ],
       "cta": "开始课程"
     },
     {
@@ -50,7 +54,10 @@
       "icon": "📈",
       "modules": 16,
       "weeks": 6,
-      "tags": ["技术分析", "风险管理"],
+      "tags": [
+        "技术分析",
+        "风险管理"
+      ],
       "cta": "开始课程"
     },
     {
@@ -69,7 +76,11 @@
       "icon": "🌐",
       "modules": 8,
       "weeks": 3,
-      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "tags": [
+        "DeFi",
+        "Yield farming",
+        "Liquidity"
+      ],
       "cta": "开始课程"
     }
   ],
@@ -91,10 +102,30 @@
           "status": "completed",
           "progress": 100
         },
-        { "id": 2, "title": "区块链", "status": "current", "progress": 0 },
-        { "id": 3, "title": "钱包", "status": "available", "progress": 0 },
-        { "id": 4, "title": "购买Bitcoin", "status": "locked", "progress": 0 },
-        { "id": 5, "title": "安全", "status": "locked", "progress": 0 }
+        {
+          "id": 2,
+          "title": "区块链",
+          "status": "current",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "钱包",
+          "status": "available",
+          "progress": 0
+        },
+        {
+          "id": 4,
+          "title": "购买Bitcoin",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 5,
+          "title": "安全",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {
@@ -129,7 +160,7 @@
         },
         "4": {
           "title": "第4课：如何购买Bitcoin",
-          "description": "最简单的方法是使用受监管的交易所，如Coinbase或Binance。创建账户，验证身份，通过银行转账充值。你不需要购买整个Bitcoin！你可以购买很小的一部分。交易时你需要支付少量手续费（通常0.1%-1.5%）。购买后，你可以将加密货币留在交易所（方便但有些风险）或转移到自己的钱包（更安全）。提示：从你能承受损失的小金额开始，熟悉流程后再增加。",
+          "description": "最简单的方法是使用受监管的交易所，如Coinbase或Kraken。创建账户，验证身份，通过银行转账充值。你不需要购买整个Bitcoin！你可以购买很小的一部分。交易时你需要支付少量手续费（通常0.1%-1.5%）。购买后，你可以将加密货币留在交易所（方便但有些风险）或转移到自己的钱包（更安全）。提示：从你能承受损失的小金额开始，熟悉流程后再增加。",
           "buttons": {
             "start": "开始讲解",
             "pause": "暂停",
@@ -139,7 +170,7 @@
         },
         "5": {
           "title": "第5课：安全——保护你的加密货币",
-          "description": "加密世界有骗子，你必须保护自己。最重要的规则：(1) 永远不要与任何人分享你的私钥——没有正规服务会要求你提供。(2) 始终使用Google Authenticator的双重验证(2FA)，不要用短信。(3) 小心钓鱼——骗子创建看起来像Binance/Coinbase的假网站，始终检查URL。(4) 为加密账户使用强大、独特的密码。(5) 考虑使用硬件钱包存储大额资金。(6) 不要在社交媒体上分享你拥有多少加密货币。最后：没有正经人会承诺加密货币的'保证回报'。",
+          "description": "加密世界有骗子，你必须保护自己。最重要的规则：(1) 永远不要与任何人分享你的私钥——没有正规服务会要求你提供。(2) 始终使用Google Authenticator的双重验证(2FA)，不要用短信。(3) 小心钓鱼——骗子创建看起来像Kraken/Coinbase的假网站，始终检查URL。(4) 为加密账户使用强大、独特的密码。(5) 考虑使用硬件钱包存储大额资金。(6) 不要在社交媒体上分享你拥有多少加密货币。最后：没有正经人会承诺加密货币的'保证回报'。",
           "buttons": {
             "start": "开始讲解",
             "pause": "暂停",
@@ -161,7 +192,11 @@
       },
       "aiProfessor": {
         "messages": {
-          "encouragement": ["好问题！", "想得好！", "这很重要..."],
+          "encouragement": [
+            "好问题！",
+            "想得好！",
+            "这很重要..."
+          ],
           "correctAnswer": "太棒了！+50 XP！🎉",
           "wrongAnswer": "不太对，再试一次！",
           "nextQuestion": "准备好下一个问题了吗？",
@@ -189,8 +224,15 @@
         "xpLabel": "XP",
         "streakLabel": "今日连续"
       },
-      "badges": { "popular": "热门" },
-      "labels": { "level": "级别", "modules": "模块", "week": "周", "of": "共" }
+      "badges": {
+        "popular": "热门"
+      },
+      "labels": {
+        "level": "级别",
+        "modules": "模块",
+        "week": "周",
+        "of": "共"
+      }
     },
     "trading-masterclass": {
       "title": "交易大师班",
@@ -203,9 +245,24 @@
       "videoTitle": "交易大师班",
       "videoSubtitle": "面向高级交易者",
       "lessonsList": [
-        { "id": 1, "title": "技术分析", "status": "locked", "progress": 0 },
-        { "id": 2, "title": "K线形态", "status": "locked", "progress": 0 },
-        { "id": 3, "title": "风险管理", "status": "locked", "progress": 0 }
+        {
+          "id": 1,
+          "title": "技术分析",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "K线形态",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "风险管理",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {
@@ -221,13 +278,22 @@
       },
       "quiz": {
         "question": "'黄金交叉'意味着什么？",
-        "options": ["看跌趋势", "看涨趋势", "横盘市场", "高波动性"],
+        "options": [
+          "看跌趋势",
+          "看涨趋势",
+          "横盘市场",
+          "高波动性"
+        ],
         "correctAnswer": 1,
         "funFact": "黄金交叉发生在50日移动平均线上穿200日移动平均线时。"
       },
       "aiProfessor": {
         "messages": {
-          "encouragement": ["好问题！", "想得好！", "这很重要..."],
+          "encouragement": [
+            "好问题！",
+            "想得好！",
+            "这很重要..."
+          ],
           "correctAnswer": "太棒了！+50 XP！🎉",
           "wrongAnswer": "不太对，再试一次！",
           "nextQuestion": "准备好下一个问题了吗？",
@@ -255,8 +321,15 @@
         "xpLabel": "XP",
         "streakLabel": "今日连续"
       },
-      "badges": { "popular": "热门" },
-      "labels": { "level": "级别", "modules": "模块", "week": "周", "of": "共" }
+      "badges": {
+        "popular": "热门"
+      },
+      "labels": {
+        "level": "级别",
+        "modules": "模块",
+        "week": "周",
+        "of": "共"
+      }
     },
     "defi-explorer": {
       "title": "DeFi 探索者",
@@ -269,9 +342,24 @@
       "videoTitle": "DeFi 探索者",
       "videoSubtitle": "了解金融的未来",
       "lessonsList": [
-        { "id": 1, "title": "什么是DeFi？", "status": "locked", "progress": 0 },
-        { "id": 2, "title": "智能合约", "status": "locked", "progress": 0 },
-        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+        {
+          "id": 1,
+          "title": "什么是DeFi？",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "智能合约",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "Yield Farming",
+          "status": "locked",
+          "progress": 0
+        }
       ],
       "lessonContent": {
         "1": {
@@ -298,7 +386,11 @@
       },
       "aiProfessor": {
         "messages": {
-          "encouragement": ["好问题！", "想得好！", "这很重要..."],
+          "encouragement": [
+            "好问题！",
+            "想得好！",
+            "这很重要..."
+          ],
           "correctAnswer": "太棒了！+50 XP！🎉",
           "wrongAnswer": "不太对，再试一次！",
           "nextQuestion": "准备好下一个问题了吗？",
@@ -326,12 +418,21 @@
         "xpLabel": "XP",
         "streakLabel": "今日连续"
       },
-      "badges": { "popular": "热门" },
-      "labels": { "level": "级别", "modules": "模块", "week": "周", "of": "共" }
+      "badges": {
+        "popular": "热门"
+      },
+      "labels": {
+        "level": "级别",
+        "modules": "模块",
+        "week": "周",
+        "of": "共"
+      }
     }
   },
   "common": {
-    "header": { "academy": "Klarpakke 学院" },
+    "header": {
+      "academy": "Klarpakke 学院"
+    },
     "lessonStatuses": {
       "completed": "已完成",
       "current": "进行中",
