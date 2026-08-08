@@ -266,6 +266,16 @@ async function makeSonarRequest(
           clearTimeout(timeoutId);
           return data;
         }
+
+        // Fallback feilet også — kast kombinasjonsfeil så vi ser begge svar.
+        const fallbackText = await fallbackResponse.text().catch(() => 'Unknown error');
+        clearTimeout(timeoutId);
+        throw new SonarError(
+          `Kimi API error: primary ${response.status} (Moonshot), fallback ${fallbackResponse.status} (OAuth): ${fallbackText}`,
+          'API_ERROR',
+          fallbackResponse.status,
+          false
+        );
       }
 
       if (!response.ok) {
