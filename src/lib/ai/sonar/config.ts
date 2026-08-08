@@ -1,6 +1,13 @@
 /**
  * Sonar Agent Configuration
- * Miljøvariabler og konfigurasjon for Perplexity Sonar API
+ * AI-analysekonfigurasjon — KIMI API (Moonshot, OpenAI-kompatibel).
+ *
+ * 2026-08-08: Perplexity erstattet med KIMI (Tom-mandat). Web-søk via
+ * Kimi builtin_function `$web_search` (samme flow som Perplexity search).
+ *
+ * Miljøvariabler:
+ *   KIMI_API_KEY      — Global Kimi API-nøkkel (api.moonshot.ai/v1, anbefalt)
+ *   KIMI_OAUTH_TOKEN  — OAuth-fallback (api.kimi.com/coding/v1)
  */
 
 import { logger } from '@/lib/logger';
@@ -10,23 +17,51 @@ import type { SonarCacheConfig, SonarMode, SonarTier } from './types';
 // Environment Configuration
 // ============================================================================
 
-export const SONAR_API_KEY = process.env.PERPLEXITY_API_KEY || process.env.SONAR_API_KEY || '';
-export const SONAR_API_BASE_URL = process.env.SONAR_API_BASE_URL || 'https://api.perplexity.ai';
+export const SONAR_API_KEY =
+  process.env.KIMI_API_KEY ||
+  process.env.PERPLEXITY_API_KEY || // legacy-fallback (utgår)
+  process.env.SONAR_API_KEY ||
+  '';
+export const SONAR_API_BASE_URL =
+  process.env.KIMI_API_KEY
+    ? 'https://api.moonshot.ai/v1'
+    : process.env.SONAR_API_BASE_URL || 'https://api.kimi.com/coding/v1';
 
 // ============================================================================
 // Model Mapping
 // ============================================================================
 
 const MODEL_MAPPING: Record<SonarTier, string> = {
-  'sonar': 'sonar',
-  'sonar-pro': 'sonar-pro',
+  'sonar': 'kimi-k3',
+  'sonar-pro': 'kimi-k3',
 };
 
 /**
- * Get the Perplexity model name for a given tier
+ * Get the Kimi model name for a given tier
  */
 export function getModelForTier(tier: SonarTier): string {
   return MODEL_MAPPING[tier];
+}
+
+// ============================================================================
+// Web Search Tool Declaration (Kimi builtin_function)
+// ============================================================================
+
+/**
+ * Kimi web search — declared via tools som builtin_function.
+ * Modellen genererer søkeargumentene; Kimi utfører søket selv.
+ * Hele tools-deklarasjonen må sendes i hver request.
+ */
+export function getWebSearchTools(): Array<{
+  type: 'builtin_function';
+  function: { name: string };
+}> {
+  return [
+    {
+      type: 'builtin_function',
+      function: { name: '$web_search' },
+    },
+  ];
 }
 
 // ============================================================================
@@ -133,13 +168,13 @@ export function validateConfig(): { valid: boolean; error?: string } {
   if (!SONAR_API_KEY) {
     return {
       valid: false,
-      error: 'PERPLEXITY_API_KEY or SONAR_API_KEY environment variable is required',
+      error: 'KIMI_API_KEY (eller SONAR_API_KEY) environment variable is required',
     };
   }
 
-  // Basic format validation (Perplexity keys start with pplx-)
-  if (!SONAR_API_KEY.startsWith('pplx-')) {
-    logger.warn('[Sonar] API key does not start with expected "pplx-" prefix');
+  // Kimi-nøkler har ikke fast prefix — sjekk bare at den ikke er tom/whitespace
+  if (SONAR_API_KEY.trim().length < 16) {
+    logger.warn('[Sonar] API key looks suspiciously short');
   }
 
   return { valid: true };

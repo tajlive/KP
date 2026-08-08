@@ -11,6 +11,7 @@ import {
   getModelForTier,
   getSearchContextForMode,
   getTimeout,
+  getWebSearchTools,
   RATE_LIMIT_CONFIG,
   SONAR_API_BASE_URL,
   SONAR_API_KEY,
@@ -179,7 +180,9 @@ const metricsCollector = new MetricsCollector();
 // ============================================================================
 
 /**
- * Make a single request to Sonar API
+ * Make a single request to the AI API (Kimi/Moonshot, OpenAI-kompatibel).
+ * Kjøres i loop: modellen kan svare med tool_calls ($web_search) — da
+ * returneres arguments as-is (Kimi utfører søket selv) og vi kaller på nytt.
  */
 async function makeSonarRequest(
   prompt: string,
@@ -196,54 +199,114 @@ async function makeSonarRequest(
   }
 
   const model = getModelForTier(options.tier);
-  const searchContext = getSearchContextForMode(options.mode);
   const timeout = getTimeout(options.timeoutMs);
 
-  const requestBody: { [key: string]: unknown } = {
-    model,
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-    search_context: searchContext,
-  };
+  const messages: Array<Record<string, unknown>> = [
+    {
+      role: 'user',
+      content: prompt,
+    },
+  ];
 
-  // Perplexity API no longer accepts response_format: { type: 'json_object' }.
-  // We rely on the prompt to request JSON output instead.
-
+  // Kimi `$web_search` builtin_function — søk utføres av Kimi selv.
+  // Kun Moonshot-endepunktet (KIMI_API_KEY) støtter web-search-løkken;
+  // OAuth-endepunktet (api.kimi.com) feiler på tool round-trip → ren chat.
+  const useWebSearch = SONAR_API_BASE_URL.includes('moonshot.ai');
+  const tools = useWebSearch ? getWebSearchTools() : undefined;
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(`${SONAR_API_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SONAR_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-      signal: controller.signal,
-    });
+    // Tool-call-løkke: maks 3 runder (søk → svar)
+    for (let round = 0; round < 3; round++) {
+      const requestBody: { [key: string]: unknown } = {
+        model,
+        messages,
+        ...(tools ? { tools } : {}),
+      };
 
-    clearTimeout(timeoutId);
+      const response = await fetch(`${SONAR_API_BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SONAR_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      const isRetryable = DEFAULT_RETRY_CONFIG.retryableStatusCodes.includes(response.status);
+      // Fallback: Moonshot suspendert/rate-limited (KIMI_API_KEY uten saldo)
+      // → prøv OAuth-endepunktet (KIMI_OAUTH_TOKEN) uten web-search.
+      if (
+        !response.ok &&
+        (response.status === 401 || response.status === 429) &&
+        SONAR_API_BASE_URL.includes('moonshot.ai') &&
+        process.env.KIMI_OAUTH_TOKEN
+      ) {
+        const fallbackBody: { [key: string]: unknown } = {
+          model: 'k3',
+          messages,
+        };
+        const fallbackResponse = await fetch(
+          'https://api.kimi.com/coding/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.KIMI_OAUTH_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(fallbackBody),
+            signal: controller.signal,
+          },
+        );
 
-      throw new SonarError(
-        `Sonar API error: ${response.status} - ${errorText}`,
-        response.status === 429 ? 'RATE_LIMIT' : 'API_ERROR',
-        response.status,
-        isRetryable
-      );
+        if (fallbackResponse.ok) {
+          const data: SonarApiResponse = await fallbackResponse.json();
+          clearTimeout(timeoutId);
+          return data;
+        }
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        const isRetryable = DEFAULT_RETRY_CONFIG.retryableStatusCodes.includes(response.status);
+
+        throw new SonarError(
+          `AI API error: ${response.status} - ${errorText}`,
+          response.status === 429 ? 'RATE_LIMIT' : 'API_ERROR',
+          response.status,
+          isRetryable
+        );
+      }
+
+      const data: SonarApiResponse = await response.json();
+      const choice = data.choices?.[0];
+
+      // Modellen vil søke: legg til assistant-message + tool-result (as-is)
+      if (choice?.finish_reason === 'tool_calls' && choice.message.tool_calls?.length) {
+        messages.push(choice.message as Record<string, unknown>);
+        for (const toolCall of choice.message.tool_calls) {
+          messages.push({
+            role: 'tool',
+            tool_call_id: toolCall.id,
+            content: JSON.stringify(toolCall.function?.arguments ?? '{}'),
+          });
+        }
+        continue; // neste runde med søkekontekst
+      }
+
+      clearTimeout(timeoutId);
+      return data;
     }
 
-    const data: SonarApiResponse = await response.json();
-    return data;
+    clearTimeout(timeoutId);
+    throw new SonarError(
+      'AI API did not return a final answer after tool calls',
+      'API_ERROR',
+      undefined,
+      false
+    );
   } catch (error) {
     clearTimeout(timeoutId);
 
