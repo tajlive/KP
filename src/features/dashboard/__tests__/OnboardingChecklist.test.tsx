@@ -35,7 +35,7 @@ describe("OnboardingChecklist", () => {
     );
     expect(
       screen.getByRole("link", { name: /første handel/i }),
-    ).toHaveAttribute("href", expect.stringContaining("/trade?first=1"));
+    ).toHaveAttribute("href", expect.stringContaining("/handel?first=1"));
   });
 
   it("huker av første handel når bruker har trades", () => {

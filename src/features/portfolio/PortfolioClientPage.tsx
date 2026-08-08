@@ -24,6 +24,7 @@ interface Summary {
   closedTrades: number;
   winRate: number | null;
   totalPnl: number;
+  investedCapital?: number;
   positions: Array<{
     symbol: string;
     tradingPair: string;
@@ -177,12 +178,18 @@ export default function PortfolioClientPage() {
 
   const balance = summary?.balance ?? null;
   const initialBalance = summary?.initialBalance ?? null;
-  const changeAbs =
-    balance != null && initialBalance != null ? balance - initialBalance : null;
+  // FIKS 8: EKTE trading-P&L (realisert fra lukkede trades), ikke konto-differansen.
+  // Konto-balansen inkluderer manuelle justeringer — differansen lyver som «avkastning».
+  const changeAbs = summary?.totalPnl ?? null;
   const changePct =
     changeAbs != null && initialBalance
       ? (changeAbs / initialBalance) * 100
       : null;
+  // FIKS 8: «Balanse»-hero viser TOTAL VERDI (ledig + investert) — samme definisjon
+  // som /dashboard-heroen og DashboardTopBar. Investert = kostnadsgrunnlag i åpne posisjoner.
+  const invested = summary?.investedCapital ?? 0;
+  const displayBalance =
+    balance != null ? balance + invested : null;
   const hasTrades = (summary?.totalTrades ?? 0) > 0;
   const positions = summary?.positions ?? [];
 
@@ -204,7 +211,7 @@ export default function PortfolioClientPage() {
             <Wallet className="w-5 h-5 text-[#0052FF]" />
           </div>
           <p className="text-4xl font-bold text-white tabular-nums">
-            {balance != null ? formatNOK(balance) : "—"}
+            {displayBalance != null ? formatNOK(displayBalance) : "—"}
           </p>
           {changeAbs != null && changePct != null && (
             <div
@@ -228,7 +235,7 @@ export default function PortfolioClientPage() {
             </div>
           )}
           <Link
-            href={`/${locale}/trade`}
+            href={`/${locale}/handel`}
             className="inline-flex items-center gap-2 mt-4 text-sm text-[#0052FF] hover:underline"
           >
             {t("goToTrade")} <ArrowRight className="w-4 h-4" />
@@ -291,7 +298,7 @@ export default function PortfolioClientPage() {
                 {t("noAssets.description")}
               </p>
               <Link
-                href={`/${locale}/trade`}
+                href={`/${locale}/handel`}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0052FF] text-white rounded-xl font-semibold text-sm"
               >
                 {t("noAssets.button")} <ArrowRight className="w-4 h-4" />

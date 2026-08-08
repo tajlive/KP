@@ -52,6 +52,6 @@ describe("BottomTabs", () => {
   it("navigates on tab press", () => {
     render(<BottomTabs />);
     fireEvent.click(screen.getByTestId("bottom-tab-trade"));
-    expect(pushMock).toHaveBeenCalledWith("/no/trade");
+    expect(pushMock).toHaveBeenCalledWith("/no/handel");
   });
 });

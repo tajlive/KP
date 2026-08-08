@@ -1,23 +1,25 @@
 /**
  * Per-bruker valg av priskilde i tick-motoren (Task 2, Kraken-priser).
  *
- * Kraken-tilkoblede brukere (rad i user_kraken_keys med is_active=true) får
- * lekepenger-priser fra Kraken; alle andre beholder Binance. Ren og testbar —
- * ingen sideeffekter, ingen I/O.
+ * EU/EØS-fakta (2026): Binance er geo-blokkert for norske brukere (MiCA).
+ * Kraken er MiCA-regulert → Kraken er DEFAULTPRISKILDEN for ALLE brukere,
+ * ikke bare de med tilkoblede Kraken-nøkler. fetchCandles faller automatisk
+ * tilbake til Binance ved Kraken-feil/par-mangel, så tick dør aldri.
  */
 
 export type PriceSource = "kraken" | "binance";
 
 /**
  * Velger priskilde for én bruker.
- * - userId ∈ krakenUserIds → "kraken"
- * - ellers (inkludert tomme/ukjente userId) → "binance"
+ * - ALLE brukere → "kraken" (EU-sannhet; fallback til binance i fetchCandles)
+ * - Parameteren `krakenUserIds` beholdes for API-kompatibilitet (callers
+ *   sender fortsatt settet), men styrer ikke lenger valget.
  */
 export function pickPriceSource(
-  userId: string,
-  krakenUserIds: Set<string>,
+  _userId: string,
+  _krakenUserIds: Set<string>,
 ): PriceSource {
-  return krakenUserIds.has(userId) ? "kraken" : "binance";
+  return "kraken";
 }
 
 /**

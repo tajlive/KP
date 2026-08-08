@@ -43,7 +43,7 @@ export function OnboardingChecklist({
       id: "first-trade",
       done: tradeCount > 0,
       label: t("firstTrade"),
-      href: "/trade?first=1",
+      href: "/handel?first=1",
     },
     {
       id: "see-result",

@@ -17,10 +17,11 @@ import { SkeletonBlock } from "@/features/dashboard/loading-skeleton";
 import { WidgetErrorBoundary } from "@/shared/ui/WidgetErrorBoundary";
 
 /**
- * PortfolioChart — én penge-modell. FIKS 3 (FACT-AUDIT).
+ * PortfolioChart — én penge-modell. FIKS 3 + FIKS 8 (FACT-AUDIT).
  *
- * Overskrift = paper_accounts.current_balance (KONTO).
- * Endring = (current_balance − initial_balance) / initial_balance.
+ * Overskrift = paper_accounts (KONTO): Total verdi = current_balance + investert.
+ * Endring = EKTE trading-P&L (totalPnl / initial_balance) — aldri konto-differansen,
+ * som inkluderer manuelle justeringer og lyver som «avkastning».
  * Kurve = per-sesjon (med "Sesjon"-label) eller ærlig empty-state.
  * ALDRI summert på tvers av sesjoner som om det var én konto.
  */
@@ -95,26 +96,36 @@ export default function PortfolioChart({
         return;
       }
 
-      const { sessions, trades: allTrades, accountStart, accountBalance } =
-        (await res.json()) as {
-          sessions: Array<{ id: string; starting_capital_nok: number | null }>;
-          trades: Array<{
-            created_at: string;
-            realized_pnl: number | null;
-            side: string;
-            total_value: number;
-          }>;
-          accountStart: number | null;
-          accountBalance: number | null;
-        };
+      const {
+        sessions,
+        trades: allTrades,
+        accountStart,
+        accountBalance,
+        investedCapital = 0,
+        totalPnl = 0,
+      } = (await res.json()) as {
+        sessions: Array<{ id: string; starting_capital_nok: number | null }>;
+        trades: Array<{
+          created_at: string;
+          realized_pnl: number | null;
+          side: string;
+          total_value: number;
+        }>;
+        accountStart: number | null;
+        accountBalance: number | null;
+        investedCapital?: number;
+        totalPnl?: number;
+      };
       setFetchFailed(false);
 
-      // FIKS 3: Overskrift = paper_accounts (KONTO)
+      // FIKS 3 + FIKS 8: Overskrift = paper_accounts (KONTO), men:
+      //  - «Total verdi» = ledig (current_balance) + investert (åpne posisjoner)
+      //  - Avkastning-% = EKTE trading-P&L (totalPnl / accountStart), IKKE
+      //    konto-differansen — den inkluderer manuelle justeringer og lyver
+      //    (observert: konto +113.8% mens trades ga −0.19%).
       if (accountStart != null && accountBalance != null) {
-        setHeaderBalance(accountBalance);
-        const pct = accountStart > 0
-          ? ((accountBalance - accountStart) / accountStart) * 100
-          : null;
+        setHeaderBalance(accountBalance + (investedCapital ?? 0));
+        const pct = accountStart > 0 ? (totalPnl / accountStart) * 100 : null;
         setHeaderPct(pct);
       } else {
         setHeaderBalance(null);
