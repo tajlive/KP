@@ -22,7 +22,7 @@ export interface PresetProfile {
   maxTotalExposurePct: number; // Forsiktig: 5, Moderat: 15, Aggressiv: 30
   stopLossPct: number; // Forsiktig: 3, Moderat: 5, Aggressiv: 10
   slippagePct: number; // Paper mode: alltid 0.1
-  feePct: number; // Alltid 0.1 (Binance standard)
+  feePct: number; // Kraken taker 0.8 (Tier 1)
 
   allowedSymbols: string[]; // Forsiktig: [BTC,ETH], Moderat: top10, Aggressiv: alle
   strategies: Array<"dca" | "trend" | "grid" | "momentum">;

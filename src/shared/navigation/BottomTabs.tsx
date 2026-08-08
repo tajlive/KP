@@ -292,7 +292,7 @@ export function BottomTabs() {
                   <Icon className="w-5 h-5" />
                 </motion.div>
 
-                {/* Label — alltid synlig (Robinhood/Binance pattern) */}
+                {/* Label — alltid synlig (Robinhood/Kraken pattern) */}
                 <motion.span
                   initial={false}
                   animate={{

@@ -331,7 +331,7 @@ function PriceCard({ className }: { className?: string }) {
         </div>
       </div>
       <PriceSparkline className="flex-1 mt-2.5 min-h-0" />
-      <div className="text-xs text-slate-500 mt-1.5">BTC/NOK · siste 10 timer · Kilde: Binance</div>
+      <div className="text-xs text-slate-500 mt-1.5">BTC/NOK · siste 10 timer · Kilde: Kraken</div>
     </div>
   );
 }

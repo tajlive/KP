@@ -64,7 +64,8 @@
       "partners": {
         "title": "Våre partnere",
         "supabase": "Supabase - Database og autentisering",
-        "cloudflare": "Cloudflare - Infrastruktur og sikkerhet"
+        "cloudflare": "Cloudflare - Infrastruktur og sikkerhet",
+        "kraken": "Kraken - MiCA-regulert børs"
       }
     },
     "contact": {
@@ -1221,7 +1222,8 @@
     "liveConfirmWarning": "Bekreft live-start",
     "starting": "Starter",
     "startLiveBotAction": "Start live bot",
-    "startBotAction": "Start boten"
+    "startBotAction": "Start boten",
+    "goToKraken": "Gå til Kraken"
   },
   "competition": {
     "title": "Trading Konkurranse",

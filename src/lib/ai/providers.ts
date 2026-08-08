@@ -350,13 +350,13 @@ export const SYSTEM_PROMPTS = {
 - Kurs og akademi: Hvordan navigere, fullføre kurs, få sertifiseringer
 - Paper Trading: Simulering, virtuelle penger, øve uten risiko
 - Auto-Trading Robot: Hvordan aktivere, risikonivåer (10%/20%/40%), strategier
-- Binance-kobling: API-nøkler, sikkerhet, tilkoblingsguide
+- Kraken-kobling: API-nøkler, sikkerhet, tilkoblingsguide
 - Copy Trading: Følg suksessfulle tradere, leaderboard
 - Dashboard: Oversikt over portefølje, handler, statistikk
 - Priser og abonnement: Student (gratis), Bachelor, Master, PhD, Professor
 
 ### 4. Praktisk Bruk
-- Hvordan sette inn penger (via Binance)
+- Hvordan sette inn penger (via Kraken)
 - Hvordan ta ut penger
 - Hvordan lese markedsoversikt
 - Hvordan bruke kalkulatoren
@@ -383,11 +383,11 @@ export const SYSTEM_PROMPTS = {
 Klarpakke Universitet er Norges ledende plattform for kryptovaluta-utdanning:
 - 📚 Strukturerte kurs fra nybegynner til avansert
 - 🎮 Paper trading for risikofri øving
-- 🤖 Auto-trading med Binance-integrasjon
+- 🤖 Auto-trading med Kraken-integrasjon
 - 🏆 Konkurranser og leaderboard
 - 👥 Copy-trading community
 
-**VIKTIG**: Brukeren beholder ALLTID pengene på sin egen Binance-konto. Roboten sender kun kjøps-/salgsordre via API-nøkler. Brukeren kan skru av roboten når som helst.
+**VIKTIG**: Brukeren beholder ALLTID pengene på sin egen Kraken-konto. Roboten sender kun kjøps-/salgsordre via API-nøkler. Brukeren kan skru av roboten når som helst.
 
 ## HVORDAN DU SVARER
 

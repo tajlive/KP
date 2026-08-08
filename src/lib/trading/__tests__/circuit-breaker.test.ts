@@ -3,7 +3,7 @@ import {
   CircuitBreaker,
   CircuitBreakerOpenError,
   CircuitBreakerTimeoutError,
-  binanceCircuitBreaker,
+  krakenCircuitBreaker,
   priceFeedCircuitBreaker,
   generalApiCircuitBreaker,
   withCircuitBreaker,
@@ -180,8 +180,8 @@ describe("CircuitBreaker", () => {
   });
 
   describe("Pre-configured breakers", () => {
-    it("binanceCircuitBreaker has correct config", () => {
-      const metrics = binanceCircuitBreaker.getMetrics();
+    it("krakenCircuitBreaker has correct config", () => {
+      const metrics = krakenCircuitBreaker.getMetrics();
       expect(metrics.state).toBe("CLOSED");
     });
 
@@ -202,9 +202,9 @@ describe("CircuitBreaker", () => {
     });
 
     it("resetAllCircuitBreakers resets all", () => {
-      binanceCircuitBreaker.forceState("OPEN");
+      krakenCircuitBreaker.forceState("OPEN");
       resetAllCircuitBreakers();
-      expect(binanceCircuitBreaker.getMetrics().state).toBe("CLOSED");
+      expect(krakenCircuitBreaker.getMetrics().state).toBe("CLOSED");
       expect(priceFeedCircuitBreaker.getMetrics().state).toBe("CLOSED");
       expect(generalApiCircuitBreaker.getMetrics().state).toBe("CLOSED");
     });

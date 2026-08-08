@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
             timeframe: '1h',
             as_of: asOf,
             features: features as unknown as import('@/types/database.types').Json,
-            source: 'binance_spot',
+            source: 'kraken_spot',
             checksum: `${symbol}-1h-${asOf}`,
           });
 

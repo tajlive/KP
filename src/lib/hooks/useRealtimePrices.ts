@@ -28,7 +28,7 @@ const POLL_MS = 15_000; // Keep polling conservative to reduce runtime/API load.
 
 /**
  * Sanntidspriser (poll) via egen API-rute → Kraken (EU/EØS 2026:
- * Binance geo-blokkert, Kraken eneste tallkilde).
+ * Kraken eneste tallkilde).
  * Krever ikke innlogging; unngår CORS.
  */
 export function useRealtimePrices(
@@ -55,7 +55,7 @@ export function useRealtimePrices(
         source?: string;
       };
       const prices = body.prices ?? [];
-      const apiSource = body.source ?? "binance";
+      const apiSource = body.source ?? "kraken";
 
       const formattedCoins: CoinPrice[] = symbolsKey
         .split(",")
@@ -76,7 +76,7 @@ export function useRealtimePrices(
       setSource(apiSource);
       setError(null);
     } catch (err) {
-      // EU/EØS (2026): ingen klient-direkte Binance-kall (geo-blokkert).
+      // EU/EØS (2026): ingen klient-direkte børs-kall (geo-blokkert).
       // Ruten faller tilbake til DB-cache; her nullstiller vi bare stille.
       console.error("Error fetching prices:", err);
       setError("Kunne ikke hente priser");

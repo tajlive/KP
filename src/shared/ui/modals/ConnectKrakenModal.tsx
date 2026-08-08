@@ -144,7 +144,7 @@ export function ConnectKrakenModal({ isOpen, onClose }: ConnectKrakenModalProps)
                 className="w-full"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                {t("goToBinance")}
+                {t("common.goToKraken")}
               </Button>
             </motion.div>
           )}

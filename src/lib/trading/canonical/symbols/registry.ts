@@ -2,7 +2,7 @@
  * Kanonisk symbolregister for Klarpakke trading.
  *
  * Ett sted for:
- * - Symbolnormalisering (Binance-format)
+ * - Symbolnormalisering (internt format, uppercase uten separatorer)
  * - Kanonisk symbol-univers på tvers av paper/live
  * - Oppslag av tillatte handelspar basert på modus og risk-profil
  */
@@ -23,7 +23,7 @@ export interface SymbolRiskProfile {
 }
 
 /**
- * Normaliserer ethvert symbol til Binance-format: uppercase, fjerner separatorer.
+ * Normaliserer ethvert symbol til internt format: uppercase, fjerner separatorer.
  *
  * @example "BTC/USDT" → "BTCUSDT", " btc-usdt " → "BTCUSDT"
  */

@@ -162,7 +162,7 @@ export default function UnifiedTradingDashboard({
   const { format: formatNOK } = useCurrency();
   const { canSwitchToLive, switchMode } = useTradingMode();
 
-  // Enforce live requirements (tier + Binance) before switching mode
+  // Enforce live requirements (tier + Kraken) before switching mode
   const handleModeChange = useCallback(
     (newMode: TradingMode) => {
       if (newMode === "live" && !canSwitchToLive) {

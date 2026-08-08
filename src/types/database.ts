@@ -17,7 +17,6 @@ export interface Profile {
   } | null;
   onboarding_step?: string | null;
   exchange_connected?: boolean | null;
-  binance_clicked?: boolean | null;
   student_nummer?: string | null;
   risk_tolerance?: 'conservative' | 'aggressive' | 'moderate' | string | null;
   telegram_connected?: boolean | null;
@@ -216,29 +215,4 @@ export interface MarketData {
   high_24h?: number | null;
   low_24h?: number | null;
   timestamp?: string | null;
-}
-
-export interface BinanceTicker {
-  e: string; // Event type
-  E: number; // Event time
-  s: string; // Symbol
-  c: string; // Close price
-  p: string; // Price change
-  P: string; // Price change percent
-  h: string; // High price
-  l: string; // Low price
-  v: string; // Volume
-}
-
-export interface BinanceKline {
-  e: string;
-  E: number;
-  s: string;
-  k: {
-    o: string;
-    h: string;
-    l: string;
-    c: string;
-    v: string;
-  };
 }

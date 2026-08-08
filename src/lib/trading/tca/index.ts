@@ -109,7 +109,7 @@ export async function calculateTCA(
     metrics.avgSlippageBps,
   );
 
-  // Venue comparison (for live trades we can infer venue from binance_order_id)
+  // Venue comparison (for live trades we can infer venue from order id)
   const venues = computeVenueBreakdown(trades);
 
   // Symbol breakdown
@@ -154,7 +154,7 @@ function computeMetrics(trades: TCATrade[]) {
 
     // Estimate slippage: if fee > 0.05% of trade value, assume excess is slippage
     const feePct = totalValue > 0 ? (fee / totalValue) * 100 : 0;
-    const assumedFeePct = 0.1; // Binance 0.1%
+    const assumedFeePct = 0.8; // Kraken 0.8% taker (Tier 1)
     const excessFeePct = Math.max(0, feePct - assumedFeePct);
     const slippageBps = excessFeePct * 100; // Convert % to bps
     totalSlippageBps += slippageBps;
@@ -224,10 +224,10 @@ function computeTrending(
 }
 
 function computeVenueBreakdown(trades: TCATrade[]): VenuePerformance[] {
-  // For now, infer venue from mode (paper = simulated, live = Binance)
+  // For now, infer venue from mode (paper = simulated, live = Kraken)
   const byVenue: Record<string, TCATrade[]> = {};
   for (const t of trades) {
-    const venue = t.mode === "paper" ? "paper-sim" : "binance";
+    const venue = t.mode === "paper" ? "paper-sim" : "kraken";
     byVenue[venue] = byVenue[venue] ?? [];
     byVenue[venue].push(t);
   }

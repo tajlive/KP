@@ -36,7 +36,7 @@ export interface ExecutionResult {
   timestamp: Date;
   error?: string;
   slippagePct?: number;
-  /** Broker-spesifikke detaljer (f.eks. fill-array fra Binance) */
+  /** Broker-spesifikke detaljer (f.eks. fill-array fra Kraken) */
   brokerDetails?: Record<string, unknown>;
 }
 
@@ -60,7 +60,7 @@ export interface PositionInfo {
  *
  * Implementeres av:
  * - PaperExecutionAdapter: simulert utførelse mot kanonisk markedsdata
- * - BinanceExecutionAdapter: ekte ordreutførelse mot Binance
+ * - KrakenExecutionAdapter: ekte ordreutførelse mot Kraken
  */
 export interface ExecutionAdapter {
   execute(request: ExecutionRequest): Promise<ExecutionResult>;

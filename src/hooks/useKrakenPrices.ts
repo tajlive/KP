@@ -7,7 +7,7 @@ import { WebSocketManager } from "@/lib/websocket/WebSocketManager";
  * Live-priser for et sett symboler — EU/EØS (2026): Kraken WS eneste kilde.
  * Renner gjennom WebSocketManager (samme singleton som øvrig sanntidskjede).
  */
-export function useBinancePrices(symbols: string[]) {
+export function useKrakenPrices(symbols: string[]) {
   const [prices, setPrices] = useState<Record<string, number>>({ USDT: 1.0 });
 
   useEffect(() => {

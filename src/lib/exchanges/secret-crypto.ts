@@ -6,7 +6,6 @@ const IV_BYTES = 12;
 function getExchangeKey(): Buffer {
   const secret =
     process.env.EXCHANGE_ENCRYPTION_SECRET ??
-    process.env.BINANCE_ENCRYPTION_SECRET ??
     process.env.ENCRYPTION_KEY;
   if (!secret) {
     throw new Error("Missing EXCHANGE_ENCRYPTION_SECRET");

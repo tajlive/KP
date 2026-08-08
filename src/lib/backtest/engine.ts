@@ -1,6 +1,6 @@
 /**
  * Backtest Engine - KLA-240
- * Simulerer trading strategier mot historiske data fra Binance
+ * Simulerer trading strategier mot historiske data fra Kraken
  *
  * BRUKER DE SAMME STRATEGIENE SOM TICK-ENGINE:
  * src/lib/trading/strategies/ — én kilde til sannhet
@@ -268,7 +268,7 @@ function buildRawRiskProfile(
 }
 
 /**
- * Hent historiske OHLCV-data fra Binance via kanonisk markedsdata-provider.
+ * Hent historiske OHLCV-data fra Kraken via kanonisk markedsdata-provider.
  */
 export async function fetchHistoricalData(
   symbol: string,

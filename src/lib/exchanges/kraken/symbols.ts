@@ -1,10 +1,10 @@
 /**
  * Kraken symbol-mapping
- * Kraken bruker andre symboler enn Binance
+ * Kraken bruker andre symboler enn interne (USDT-baserte) navn
  */
 
 export const KRAKEN_SYMBOL_MAP: Record<string, string> = {
-  // Binance → Kraken
+  // Interne symboler → Kraken
   BTCUSDT: "XBTUSDT",
   ETHUSDT: "ETHUSDT",
   SOLUSDT: "SOLUSDT",
@@ -38,8 +38,8 @@ export const KRAKEN_REVERSE_MAP: Record<string, string> = {
   ZEUR: "EUR",
 };
 
-export function toKrakenSymbol(binanceSymbol: string): string {
-  return KRAKEN_SYMBOL_MAP[binanceSymbol] || binanceSymbol;
+export function toKrakenSymbol(symbol: string): string {
+  return KRAKEN_SYMBOL_MAP[symbol] || symbol;
 }
 
 export function fromKrakenSymbol(krakenSymbol: string): string {

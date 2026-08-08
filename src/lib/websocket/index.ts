@@ -3,7 +3,7 @@
  * 
  * Provides a unified interface for WebSocket connections with:
  * - WebSocketManager: Core connection management (Kraken — EU/EØS 2026:
- *   eneste tallkilde; Binance er geo-blokkert og fjernet)
+ *   eneste tallkilde)
  * - PriceFallback: REST API fallback when WebSocket fails
  * - React hooks for easy integration
  */

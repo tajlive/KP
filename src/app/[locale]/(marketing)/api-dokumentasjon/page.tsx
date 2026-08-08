@@ -12,7 +12,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/health",
     auth: "Ingen",
-    description: "Systemhelsesjekk. Returnerer status for database, Binance-tilkobling, leaderboard, Redis KV, trading-signaler, feilrate, handelsvolum og flere subsystemer. Brukes av Cloudflare-monitorering og intern cron.",
+    description: "Systemhelsesjekk. Returnerer status for database, Kraken-tilkobling, leaderboard, Redis KV, trading-signaler, feilrate, handelsvolum og flere subsystemer. Brukes av Cloudflare-monitorering og intern cron.",
     params: "Ingen",
     response: `{
   "status": "healthy",
@@ -23,11 +23,10 @@ const ENDPOINTS = [
     "tradingSignals": { "status": "ok", "latency": 32 },
     "kv": { "status": "ok", "latency": 12 },
     "environment": { "status": "ok" },
-    "binanceConnectivity": {
+    "krakenConnectivity": {
       "status": "ok",
-      "primaryWorked": false,
-      "fallbackActive": true,
-      "endpointUsed": "binance-proxy"
+      "latency": 140,
+      "endpoint": "api.kraken.com"
     },
     "leaderboard": { "status": "ok", "latency": 28, "count": 42 },
     "errorRate": { "status": "ok", "count": 2 },

@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     const symbol = symbolList[0];
-    console.error("[market/binance-prices] Failed to fetch prices:", error);
+    console.error("[market/prices] Failed to fetch prices:", error);
     // DB-fallback
     try {
       const { createClient } = await import("@/lib/supabase/server");
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       }
     } catch { /* fall through */ }
     return NextResponse.json(
-      { error: "Binance error", symbol, status: 502 },
+      { error: "Price fetch failed", symbol, status: 502 },
       { status: 502 },
     );
   }

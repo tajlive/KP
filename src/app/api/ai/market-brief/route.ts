@@ -109,7 +109,7 @@ export async function GET() {
       brief = {
         summary: `BTC er ${marketContext.includes("BTCUSDT") ? "i fokus" : "på markedet"}. Sjekk porteføljen din for oppdaterte priser.`,
         sentiment: "neutral",
-        highlights: ["Markedsdata hentet fra Binance", "AI-analyse midlertidig utilgjengelig", "Priser oppdateres hvert 5. minutt"],
+        highlights: ["Markedsdata hentet fra Kraken", "AI-analyse midlertidig utilgjengelig", "Priser oppdateres hvert 5. minutt"],
         generated_at: new Date().toISOString(),
       };
     }

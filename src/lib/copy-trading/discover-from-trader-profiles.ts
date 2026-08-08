@@ -6,7 +6,7 @@ type TraderProfileRow = Database["public"]["Tables"]["trader_profiles"]["Row"];
 
 /**
  * Når leaderboard_bots er tom: vis offentlige creator-profiler i discover.
- * PnL-kolonner mappes fra profilens ROI / estimater (ikke sanntid Binance).
+ * PnL-kolonner mappes fra profilens ROI / estimater (ikke sanntid).
  */
 export function traderProfilesToDiscoverLeaders(
   rows: TraderProfileRow[],

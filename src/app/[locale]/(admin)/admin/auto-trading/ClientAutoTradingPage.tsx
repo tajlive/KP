@@ -40,7 +40,7 @@ export default function ClientAutoTradingPage() {
 
       setUser({ id: data.userId ?? "user" });
 
-      // EU/EØS 2026: live-tilkobling = Kraken-nøkler (Binance fjernet)
+      // EU/EØS 2026: live-tilkobling = Kraken-nøkler
       setHasKrakenConnection(Boolean(data.krakenConnected));
     } catch (error) {
       console.error("Error loading user data:", error);

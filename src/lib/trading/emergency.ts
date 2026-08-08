@@ -24,7 +24,7 @@ export interface EmergencyStatus {
 
 /**
  * Hjelper for å lage en KrakenExecutor fra miljøvariabler (kill switch).
- * EU/EØS (2026): Kun Kraken — Binance er geo-blokkert for norske brukere.
+ * EU/EØS (2026): Kun Kraken.
  */
 export function getEnvKrakenExecutor(): KrakenExecutor {
   const apiKey = process.env.KRAKEN_API_KEY || "";

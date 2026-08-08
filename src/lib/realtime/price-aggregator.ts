@@ -1,6 +1,6 @@
 /**
  * Price Aggregator — combines Kraken WS (primary) with REST polling (fallback).
- * EU/EØS (2026): Kraken eneste tallkilde (Binance geo-blokkert).
+ * EU/EØS (2026): Kraken eneste tallkilde.
  * Ensures prices are always available even when WebSocket is disconnected.
  */
 
@@ -82,7 +82,7 @@ class PriceAggregator {
     }
 
     try {
-      // EU/EØS (2026): via egen API-rute → Kraken (ingen direkte Binance-kall)
+      // EU/EØS (2026): via egen API-rute → Kraken
       const response = await fetch(
         `/api/market/binance-24hr?symbols=${encodeURIComponent(this.symbols.join(","))}`,
         { cache: "no-store" },

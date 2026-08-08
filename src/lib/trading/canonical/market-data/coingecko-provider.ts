@@ -1,5 +1,5 @@
 /**
- * CoinGecko pris-provider — gratis fallback når Binance er blokkert
+ * CoinGecko pris-provider — gratis fallback når Kraken er nede
  * Ingen API-nøkkel, 10k kall/måned, fungerer fra Cloudflare Workers
  */
 export async function fetchPriceFromCoinGecko(symbol: string): Promise<number> {
@@ -7,7 +7,7 @@ export async function fetchPriceFromCoinGecko(symbol: string): Promise<number> {
     BTCUSDT: "bitcoin",
     ETHUSDT: "ethereum",
     SOLUSDT: "solana",
-    BNBUSDT: "binancecoin",
+
     XRPUSDT: "ripple",
     DOGEUSDT: "dogecoin",
     ADAUSDT: "cardano",

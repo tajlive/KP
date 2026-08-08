@@ -241,11 +241,11 @@ export class CircuitBreakerTimeoutError extends Error {
 // =============================================================================
 
 /**
- * Circuit breaker for Binance API
+ * Circuit breaker for Kraken API
  * Tuned for trading: faster failure detection, shorter reset
  */
-export const binanceCircuitBreaker = new CircuitBreaker({
-  name: 'binance-api',
+export const krakenCircuitBreaker = new CircuitBreaker({
+  name: 'kraken-api',
   failureThreshold: 3,        // Open after 3 failures
   resetTimeoutMs: 15000,      // Try again after 15 seconds
   successThreshold: 2,        // Need 2 successes to close
@@ -296,7 +296,7 @@ export function withCircuitBreaker<T extends (...args: unknown[]) => Promise<unk
  */
 export function getAllCircuitBreakerMetrics(): Record<string, CircuitBreakerMetrics> {
   return {
-    binance: binanceCircuitBreaker.getMetrics(),
+    kraken: krakenCircuitBreaker.getMetrics(),
     priceFeed: priceFeedCircuitBreaker.getMetrics(),
     general: generalApiCircuitBreaker.getMetrics(),
   };
@@ -306,7 +306,7 @@ export function getAllCircuitBreakerMetrics(): Record<string, CircuitBreakerMetr
  * Reset all circuit breakers (use with caution)
  */
 export function resetAllCircuitBreakers(): void {
-  binanceCircuitBreaker.reset();
+  krakenCircuitBreaker.reset();
   priceFeedCircuitBreaker.reset();
   generalApiCircuitBreaker.reset();
 }

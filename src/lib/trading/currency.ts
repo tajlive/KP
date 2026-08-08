@@ -1,5 +1,5 @@
 /**
- * Paper trading uses NOK balance (current_capital_nok) while Binance prices are in USDT.
+ * Paper trading uses NOK balance (current_capital_nok) while Kraken prices are in USDT.
  * This module provides USDT -> NOK conversion so order value is correct.
  *
  * Hierarki (fikset 2026-07-27, E2E-funn F3):
@@ -94,7 +94,7 @@ export async function getUsdtToNokRateAsync(
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
   }
 
-  // 3. Levende markedsrate via kanonisk tjeneste (Binance proxy)
+  // 3. Levende markedsrate via kanonisk tjeneste (Kraken)
   try {
     const { getNokUsdtRate } = await import("@/lib/trading/canonical/exchange-rate");
     const liveRate = await getNokUsdtRate();
@@ -112,7 +112,7 @@ export async function getUsdtToNokRateAsync(
 }
 
 /**
- * Convert a value in USDT (e.g. quantity * price from Binance) to NOK.
+ * Convert a value in USDT (e.g. quantity * price from Kraken) to NOK.
  */
 export function usdtToNok(usdtAmount: number, rate?: number): number {
   return usdtAmount * (rate ?? getUsdtToNokRate());

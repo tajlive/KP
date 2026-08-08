@@ -10,7 +10,7 @@ export interface ATRResult {
 }
 
 export async function calculateATR(symbol: string, period = 14): Promise<number> {
-  // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
+  // EU/EØS (2026): Kraken via egen rute
   const url = `/api/market/klines?symbol=${symbol}&interval=1h&limit=${period * 2}`;
   
   try {

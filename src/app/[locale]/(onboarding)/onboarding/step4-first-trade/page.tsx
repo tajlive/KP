@@ -41,13 +41,13 @@ interface TradeResult {
 
 async function fetchBtcPrice(): Promise<number | null> {
   try {
-    // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
-    const res = await fetch(
+    // EU/EØS (2026): Kraken via egen rute
+    const priceRes = await fetch(
       `/api/market/binance-prices?symbols=${SYMBOL}`,
       { signal: AbortSignal.timeout(8000) },
     );
-    if (!res.ok) return null;
-    const data = (await res.json()) as {
+    if (!priceRes.ok) return null;
+    const data = (await priceRes.json()) as {
       prices?: Array<{ symbol: string; price: number }>;
     };
     const price = data.prices?.[0]?.price ?? null;
@@ -490,7 +490,7 @@ export default function OnboardingStep4FirstTrade() {
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="bg-[#1A1D26] border border-[#2A2D35] text-xs text-[#D1D5DB] max-w-[200px]">
-                  <p>Live pris fra Binance — prisen oppdateres automatisk hvert 30. sekund</p>
+                  <p>Live pris fra Kraken — prisen oppdateres automatisk hvert 30. sekund</p>
                 </TooltipContent>
               </Tooltip>
             </div>

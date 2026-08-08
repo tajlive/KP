@@ -19,7 +19,6 @@ export type UserProfileOnboardingExtended = Pick<
   | "onboarding_started_at"
   | "paper_balance"
   | "trading_experience"
-  | "binance_connected"
 >;
 
 /**
@@ -40,7 +39,7 @@ export async function getUserProfileOnboarding(
 }
 
 /**
- * Hent onboarding + paper_balance, trading_experience, binance_connected (for steg 2–5).
+ * Hent onboarding + paper_balance, trading_experience (for steg 2–5).
  */
 export async function getProfileOnboardingExtended(
   supabase: SupabaseClient<Database>,
@@ -49,7 +48,7 @@ export async function getProfileOnboardingExtended(
   const { data, error } = await supabase
     .from("user_profiles")
     .select(
-      "onboarding_step, onboarding_completed, onboarding_started_at, paper_balance, trading_experience, binance_connected"
+      "onboarding_step, onboarding_completed, onboarding_started_at, paper_balance, trading_experience"
     )
     .eq("id", userId)
     .maybeSingle();

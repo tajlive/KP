@@ -9,7 +9,7 @@
  * KILDER:
  * [1] Alpaca Markets: Paper vs. Live Trading Data-Backed Guide (2025)
  * [2] Interactive Brokers: Paper Trading vs Live Trading Differences
- * [3] Binance Fee Schedule: 0.1% maker/taker
+ * [3] Kraken spot taker-fee: 0.8% (Tier 1, juli 2026)
  * [4] Research: Slippage increases exponentially with volatility
  */
 
@@ -126,10 +126,12 @@ export interface FeeConfig {
   bnbDiscount: boolean;         // 25% discount with BNB
 }
 
-export const BINANCE_FEE_CONFIG: FeeConfig = {
-  makerFee: 0.001,              // 0.1%
-  takerFee: 0.001,              // 0.1%
-  bnbDiscount: false,           // Conservative: assume no discount
+// Kraken spot taker-fee (juli 2026, cross-platform): Tier 1 = 0,80 %.
+// Fee-parity-mandat: lekepenger og live bruker SAMME fee (0.008).
+export const KRAKEN_FEE_CONFIG: FeeConfig = {
+  makerFee: 0.008,              // 0.8% (Kraken taker Tier 1)
+  takerFee: 0.008,              // 0.8%
+  bnbDiscount: false,
 };
 
 export interface FeeResult {
@@ -142,11 +144,11 @@ export interface FeeResult {
 /**
  * Calculate trading fees for a round trip (entry + exit)
  * 
- * Source: Binance Fee Schedule[3]
+ * Source: Kraken spot taker-fee (juli 2026)
  */
 export function calculateFees(
   positionValue: number,
-  feeConfig: FeeConfig = BINANCE_FEE_CONFIG
+  feeConfig: FeeConfig = KRAKEN_FEE_CONFIG
 ): FeeResult {
   const discount = feeConfig.bnbDiscount ? 0.75 : 1.0;
   
@@ -223,7 +225,7 @@ export function simulateOrderExecution(
     bidPrice,
     askPrice,
     slippageInput,
-    feeConfig = BINANCE_FEE_CONFIG,
+    feeConfig = KRAKEN_FEE_CONFIG,
     paperConfig = DEFAULT_PAPER_CONFIG,
   } = input;
 
@@ -561,7 +563,7 @@ export function estimateLivePerformance(
 export const PaperTradeSimulator = {
   // Configuration
   DEFAULT_CONFIG: DEFAULT_PAPER_CONFIG,
-  BINANCE_FEES: BINANCE_FEE_CONFIG,
+  KRAKEN_FEES: KRAKEN_FEE_CONFIG,
   
   // Core functions
   calculateSlippage,

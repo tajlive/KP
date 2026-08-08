@@ -55,8 +55,8 @@ export {
   type BacktestResult
 } from './enhancements'
 
-// EU/EØS (2026): Binance-integrasjon fjernet — Kun Kraken støttes.
-// (executeTrade/closeTrade/syncOpenTrades levde i ./binance-executor,
+// EU/EØS (2026): Kun Kraken støttes.
+// (executeTrade/closeTrade/syncOpenTrades levde i egen executor,
 //  som er slettet. Kanonisk utførelse går via src/lib/trading/core/execute-trade
 //  med PaperExecutor/KrakenExecutor.)
 

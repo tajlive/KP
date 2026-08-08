@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BinanceConnection,
+  KrakenConnection,
   TradingMode,
   TradingModeState,
 } from "@/types/trading";
@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
  *
  * KLA-auth: Browser-supabase er alltid anon (httpOnly auth-cookie).
  * Tidligere versjon leste/skrev user_profiles direkte fra browseren —
- * det gjorde Binance-tilkobling STILLE ØDELAGT (skrivingen persisterte
+ * det gjorde Kraken-tilkobling STILLE ØDELAGT (skrivingen persisterte
  * aldri). Alt går nå via server-autentiserte API-ruter:
  * - GET/POST /api/trading/mode   (modus + entitlement-sjekk)
  * - POST/DELETE /api/kraken/connect (Kraken-nøkkel-lagring, session-auth)
@@ -28,7 +28,7 @@ export function useTradingMode() {
     error: null,
   });
 
-  const [krakenConnection, setKrakenConnection] = useState<BinanceConnection>(
+  const [krakenConnection, setKrakenConnection] = useState<KrakenConnection>(
     {
       isConnected: false,
       apiKeyLast4: null,
@@ -37,7 +37,7 @@ export function useTradingMode() {
     },
   );
 
-  // Fetch initial trading mode and Binance connection status
+  // Fetch initial trading mode and Kraken connection status
   useEffect(() => {
     const fetchTradingMode = async () => {
       try {

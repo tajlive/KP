@@ -2,7 +2,7 @@
  * Kanonisk markedsdata-provider interface.
  *
  * Dette er kontrakten som alle markedsdata-konsumenter skal bruke.
- * Implementasjoner kan byttes ut (Binance, mock, test, etc.) uten å endre consumers.
+ * Implementasjoner kan byttes ut (Kraken, mock, test, etc.) uten å endre consumers.
  */
 
 export interface OrderBookLevel {
@@ -53,7 +53,7 @@ export interface MarketDataProvider {
   /**
    * Hent OHLCV-lys for et symbol.
    * @param symbol - Handelssymbol, f.eks. "BTCUSDT"
-   * @param interval - Binance intervall, f.eks. "1d", "1h"
+   * @param interval - intervall, f.eks. "1d", "1h"
    * @param limit - Maksimalt antall lys
    * @param startTime - Optional start-tidspunkt i millisekunder siden epoch
    * @param endTime - Optional slutt-tidspunkt i millisekunder siden epoch

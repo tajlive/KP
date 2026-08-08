@@ -123,8 +123,8 @@ interface TickResult {
 }
 
 // Price Data Fetcher — ALWAYS uses mainnet for paper/live parity.
-// EU/EØS (2026): Kraken er ENESTE priskilde (MiCA-regulert; Binance er
-// geo-blokkert for norske brukere). Kraken-par finnes for alle støttede
+// EU/EØS (2026): Kraken er ENESTE priskilde (MiCA-regulert).
+// Kraken-par finnes for alle støttede
 // symboler (USDC-kvote) — se INTERNAL_TO_KRAKEN i kraken-provider.ts.
 const krakenProvider = new KrakenMarketDataProvider();
 
@@ -235,9 +235,9 @@ export async function executeLiveTrade(
     const executor = await ExecutorFactory.create(db, userId, "live");
 
     // 3. Execute on Kraken
-    const binanceSymbol = pair.replace("/", "");
+    const krakenSymbol = pair.replace("/", "");
     const result = await executor.executeOrder({
-      symbol: binanceSymbol,
+      symbol: krakenSymbol,
       side,
       quantity,
       orderType: "market",

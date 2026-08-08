@@ -126,7 +126,7 @@ export async function executeRebalancing(
   let executed = 0;
 
   for (const trade of trades) {
-    // I produksjon: Kall binance-executor for hver trade
+    // I produksjon: Kall Kraken-executor for hver trade
     // Foreløpig: Logg bare
     executed++;
   }

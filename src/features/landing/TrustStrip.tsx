@@ -114,7 +114,7 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
             </div>
             <div className="flex flex-wrap items-center gap-4">
               {[
-                { name: t('partners.binance'), icon: Bitcoin },
+                { name: t('partners.kraken'), icon: Bitcoin },
                 { name: t('partners.supabase'), icon: Database },
                 { name: t('partners.cloudflare'), icon: Cloud },
                 { name: t('partners.stripe'), icon: CreditCard },

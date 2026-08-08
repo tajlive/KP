@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ShieldCheck, Activity, AlertCircle } from "lucide-react";
-import { useBinancePrices } from "@/hooks/useBinancePrices";
+import { useKrakenPrices } from "@/hooks/useKrakenPrices";
 import { m } from "framer-motion";
 
 interface Props {
@@ -21,7 +21,7 @@ interface RebalanceConfig {
 
 export function PortfolioHealthHeader({ wallets, config }: Props) {
   const symbols = config ? Object.keys(config.target_allocations) : ["BTC", "ETH", "SOL", "BNB", "XRP"];
-  const currentPrices = useBinancePrices(symbols);
+  const currentPrices = useKrakenPrices(symbols);
   const [healthScore, setHealthScore] = useState(100);
 
   useEffect(() => {

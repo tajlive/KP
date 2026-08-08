@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
-import { reconcileBinanceTrades, type ReconciliationTrade } from "@/lib/trading/reconciliation";
+import { reconcileLiveTrades, type ReconciliationTrade } from "@/lib/trading/reconciliation";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import type { OrderExecutor } from "@/lib/trading/order-executor";
 import { validateCronSecret } from "@/lib/auth/cron";
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   // live-trading user once per reconciliation run.
   const executors = new Map<string, OrderExecutor>();
 
-  const result = await reconcileBinanceTrades(
+  const result = await reconcileLiveTrades(
     db as SupabaseClient<Database>,
     async (trade: ReconciliationTrade) => {
       const orderId = trade.binance_order_id;
@@ -47,8 +47,8 @@ export async function GET(request: Request) {
         return null;
       }
 
-      const binanceSymbol = trade.trading_pair.replace("/", "");
-      return executor.getOrderStatus(binanceSymbol, orderId);
+      const krakenSymbol = trade.trading_pair.replace("/", "");
+      return executor.getOrderStatus(krakenSymbol, orderId);
     },
   );
 

@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     let currentPrice = 0;
     try {
-      // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
+      // EU/EØS (2026): Kraken via egen rute
       const res = await fetch(
         `/api/market/binance-prices?symbols=${encodeURIComponent(symbol.toUpperCase())}`,
         { signal: AbortSignal.timeout(5000) },

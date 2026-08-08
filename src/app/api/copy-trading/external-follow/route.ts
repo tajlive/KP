@@ -1,6 +1,6 @@
 /**
  * POST /api/copy-trading/external-follow
- * Følg / slutt å følge en Binance trader.
+ * Følg / slutt å følge en ekstern trader.
  */
 
 import { NextRequest, NextResponse } from "next/server";

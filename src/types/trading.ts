@@ -270,9 +270,9 @@ export interface TradingModeState {
 }
 
 /**
- * Binance Connection Status
+ * Kraken Connection Status
  */
-export interface BinanceConnection {
+export interface KrakenConnection {
   isConnected: boolean;
   apiKeyLast4: string | null;
   connectedAt: string | null;

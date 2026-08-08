@@ -9,12 +9,11 @@ export const dynamic = "force-dynamic";
  *
  * KLA-auth: Browser-supabase er alltid anon (httpOnly auth-cookie), så
  * onboarding-sidene kan ikke lese/skrive user_profiles direkte.
- * binance_connected er beskyttet: kan kun settes til true når brukeren
- * faktisk har krypterte Binance-nøkler lagret (binance_api_key_encrypted).
+ * Kraken-tilkobling håndteres via user_kraken_keys + /api/kraken/connect.
  */
 
 const ONBOARDING_SELECT =
-  "onboarding_step, onboarding_completed, onboarding_started_at, onboarding_completed_at, trading_experience, paper_balance, binance_connected";
+  "onboarding_step, onboarding_completed, onboarding_started_at, onboarding_completed_at, trading_experience, paper_balance";
 
 const PATCHABLE_FIELDS = [
   "trading_experience",
@@ -23,7 +22,6 @@ const PATCHABLE_FIELDS = [
   "onboarding_started_at",
   "onboarding_completed",
   "onboarding_completed_at",
-  "binance_connected",
   "setup_completed_at",
 ] as const;
 
@@ -104,32 +102,6 @@ export async function PATCH(request: NextRequest) {
         { ok: false, error: "Ingen gyldige felt" },
         { status: 400 },
       );
-    }
-
-    // binance_connected er beskyttet: krever lagrede krypterte nøkler
-    if ("binance_connected" in updates) {
-      if (updates.binance_connected === true) {
-        const { data: keys } = await supabase
-          .from("user_profiles")
-          .select("binance_api_key_encrypted")
-          .eq("id", user.id)
-          .maybeSingle();
-        if (!keys?.binance_api_key_encrypted) {
-          return NextResponse.json(
-            {
-              ok: false,
-              error:
-                "Kan ikke sette binance_connected uten lagrede Binance-nøkler",
-            },
-            { status: 400 },
-          );
-        }
-      } else if (updates.binance_connected !== false) {
-        return NextResponse.json(
-          { ok: false, error: "binance_connected må være boolean" },
-          { status: 400 },
-        );
-      }
     }
 
     // onboarding_step må være et heltall >= 0

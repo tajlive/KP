@@ -3,7 +3,7 @@
  *
  * KLA-P0: Single shared execution path for both paper and live trading.
  * The only differences are:
- *  - execution adapter (PaperExecutor vs BinanceExecutor)
+ *  - execution adapter (PaperExecutor vs KrakenExecutor)
  *  - exchange credentials / endpoint
  *  - fill policy / simulation
  *  - balance update mechanism
@@ -295,7 +295,7 @@ async function executeTradeWithLock(
           rejectionReason: "LIVE_NOT_ALLOWED",
           rejectionDetails: {
             message:
-              "Live trading requires Bachelor tier and Binance connection",
+              "Live trading requires Bachelor tier and Kraken connection",
           },
         };
         const tradeRequest: TradeRequest = {
@@ -360,7 +360,7 @@ async function executeTradeWithLock(
     if (request.orderType === "market") {
       let marketPrice = request.price;
 
-      // Fallback: hvis markedspris mangler (f.eks. Binance nede), hent siste kjente pris
+      // Fallback: hvis markedspris mangler (f.eks. Kraken nede), hent siste kjente pris
       if (!marketPrice || marketPrice <= 0 || !Number.isFinite(marketPrice)) {
         try {
           const { data: lastTrade } = await supabase
@@ -526,7 +526,7 @@ async function executeTradeWithLock(
                 ? usdtToNok(execResult.fee || 0, rate ?? undefined)
                 : execResult.fee || 0;
 
-            // FIFO-lots: Bruk eldste kjøp først (Binance-stil)
+            // FIFO-lots: Bruk eldste kjøp først (Kraken-stil)
             // Hvis lots finnes, bruk dem. Ellers bruk enkel entry_price (legacy).
             let priorBuys: TradePnlInput[];
             if (openPosition.lots && openPosition.lots.length > 0) {
