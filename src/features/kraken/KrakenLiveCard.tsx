@@ -6,6 +6,7 @@
  * Nybegynner-språk: støvsuger-metaforen, alle tall forklart.
  */
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Loader2, XCircle, ShieldAlert } from "lucide-react";
 
 interface Order {
@@ -152,16 +153,17 @@ export default function KrakenLiveCard() {
         </span>
       </div>
 
-      {/* Per par */}
+      {/* Per par — klikkbar: går til Pilot-fanen for detaljer */}
       {byPair.size > 0 && (
         <div className="mt-3 space-y-2">
           {[...byPair.entries()].map(([pair, ords]) => {
             const buys = ords.filter((o) => o.side === "buy").length;
             const sells = ords.filter((o) => o.side === "sell").length;
             return (
-              <div
+              <Link
                 key={pair}
-                className="flex items-center justify-between rounded-lg border border-[#1E293B] bg-[#0B1220]/60 px-3 py-2.5"
+                href={`/handel?tab=pilot&symbol=${encodeURIComponent(pair)}`}
+                className="flex items-center justify-between rounded-lg border border-[#1E293B] bg-[#0B1220]/60 px-3 py-2.5 transition hover:border-[#334155] hover:bg-[#0B1220]/80"
               >
                 <span className="text-sm font-medium text-white">
                   {PAIR_LABELS[pair] ?? pair}
@@ -171,7 +173,7 @@ export default function KrakenLiveCard() {
                   <span className="text-gray-600">·</span>
                   <span className="text-red-400">{sells} salg</span>
                 </span>
-              </div>
+              </Link>
             );
           })}
         </div>
