@@ -4408,53 +4408,53 @@
     "closeStrategy": "关闭策略",
     "cockpit": {
       "activation": {
-        "activateButton": "激活按钮",
-        "error": "错误",
-        "missingDescription": "缺少描述",
-        "missingTitle": "缺少标题",
-        "pausedDescription": "暂停说明",
-        "pausedTitle": "暂停标题",
-        "success": "成功"
+        "activateButton": "激活",
+        "error": "无法激活",
+        "missingDescription": "请在设置中连接交易所以使用实盘交易。",
+        "missingTitle": "未连接交易所",
+        "pausedDescription": "自动交易已暂停。准备好后重新启动。",
+        "pausedTitle": "自动交易已暂停",
+        "success": "已激活"
       },
       "analysis": {
         "chart": {
           "pnl": "PNL",
-          "pnlTitle": "总标题",
-          "symbolTitle": "符号标题",
-          "togglePnl": "切换 Pnl",
-          "toggleTrades": "切换交易"
+          "pnlTitle": "盈亏走势",
+          "symbolTitle": "各币种分布",
+          "togglePnl": "显示盈亏",
+          "toggleTrades": "显示交易"
         },
-        "description": "描述",
+        "description": "查看您的策略表现。",
         "empty": {
-          "description": "描述",
-          "title": "标题"
+          "description": "进行一些交易后，分析将显示在这里。",
+          "title": "暂无分析"
         },
         "period": {
-          "label": "标签"
+          "label": "时间段"
         },
         "stats": {
-          "bestPair": "最佳配对",
-          "bestSession": "最佳会议",
+          "bestPair": "最佳币种",
+          "bestSession": "最佳会话",
           "maxDrawdown": "最大回撤",
-          "profitFactor": "利润系数",
-          "totalFees": "总费用",
+          "profitFactor": "盈利因子",
+          "totalFees": "总手续费",
           "totalPnl": "总盈亏",
           "totalTrades": "总交易数",
           "winRate": "胜率",
-          "worstPair": "最差的一对",
-          "worstSession": "最差的会议"
+          "worstPair": "最差币种",
+          "worstSession": "最差会话"
         },
-        "title": "标题"
+        "title": "分析"
       },
       "empty": {
-        "sessionsDescription": "会议说明",
-        "sessionsTitle": "会议标题"
+        "sessionsDescription": "您还没有会话。启动机器人开始吧。",
+        "sessionsTitle": "没有会话"
       },
       "error": {
-        "analyticsFailed": "分析失败",
-        "description": "描述",
+        "analyticsFailed": "无法加载分析",
+        "description": "加载时出了问题。请重试。",
         "retry": "重试",
-        "title": "标题"
+        "title": "出了点问题"
       },
       "header": {
         "title": "标题"
@@ -4468,9 +4468,9 @@
       "liveModeConfirm": {
         "cancel": "取消",
         "confirm": "确认",
-        "description": "描述",
-        "rememberDefault": "记住默认值",
-        "title": "标题"
+        "description": "您即将切换到使用真钱的实盘交易。市场可能会波动。",
+        "rememberDefault": "记住我的选择",
+        "title": "切换到实盘交易？"
       },
       "loading": "加载中",
       "marketData": {
@@ -4482,7 +4482,7 @@
       "mode": {
         "live": "直播",
         "liveShort": "短住",
-        "lockedTooltip": "锁定的工具提示",
+        "lockedTooltip": "实盘交易需要连接交易所和订阅",
         "paper": "纸",
         "paperShort": "纸短",
         "upgrade": "升级",
@@ -4496,23 +4496,23 @@
       },
       "realtime": {
         "newTrade": {
-          "title": "标题"
+          "title": "新交易"
         }
       },
       "riskBanner": {
-        "crashed": "坠毁",
-        "dailyLossLimit": "每日损失限额",
+        "crashed": "已崩溃",
+        "dailyLossLimit": "每日亏损上限",
         "maxDrawdown": "最大回撤",
-        "title": "标题"
+        "title": "风险提示"
       },
       "sessions": {
         "columns": {
-          "currentCapital": "流动资金",
+          "currentCapital": "当前资金",
           "pair": "一对",
           "pnl": "PNL",
-          "startingCapital": "启动资金",
+          "startingCapital": "初始资金",
           "status": "状态",
-          "updatedAt": "更新于"
+          "updatedAt": "最近更新"
         },
         "loadMore": "加载更多",
         "loading": "加载中",
@@ -4522,51 +4522,51 @@
           "stopped": "已停止",
           "crashed": "已崩溃"
         },
-        "title": "标题"
+        "title": "会话"
       },
       "statusLog": {
         "evaluatingSignals": "评估信号",
-        "last_tick_at": "最后一次报价时间",
+        "last_tick_at": "最近检查",
         "loading": "加载中",
-        "noRecentDecisions": "最近没有决定",
-        "title": "标题",
-        "tradeFailedNoReason": "交易无故失败"
+        "noRecentDecisions": "暂无近期决策",
+        "title": "决策日志",
+        "tradeFailedNoReason": "交易失败，原因未知"
       },
       "toast": {
         "sessionStatusChanged": {
-          "title": "标题"
+          "title": "状态已更改"
         },
-        "startRobotExisting": "启动现有机器人",
-        "startRobotSuccess": "启动机器人成功"
+        "startRobotExisting": "机器人已在运行",
+        "startRobotSuccess": "机器人已启动"
       },
       "trades": {
         "columns": {
-          "createdAt": "创建于",
+          "createdAt": "创建时间",
           "effectivePnl": "有效盈亏",
-          "executedAt": "执行于",
-          "fee": "费用",
+          "executedAt": "执行时间",
+          "fee": "手续费",
           "price": "价格",
           "quantity": "数量",
           "realizedPnl": "已实现盈亏",
           "totalValue": "总价值"
         },
         "details": {
-          "description": "描述",
+          "description": "有关交易的详细信息",
           "id": "身份证号",
           "noSignal": "无信号",
           "readMore": "了解更多",
           "reason": "原因",
           "sessionId": "会话 ID",
-          "title": "标题"
+          "title": "交易详情"
         },
         "error": {
           "retry": "重试",
-          "title": "标题"
+          "title": "无法加载交易"
         },
         "filters": {
           "all": "全部",
-          "apply": "申请",
-          "dateRange": "日期范围",
+          "apply": "应用",
+          "dateRange": "时间段",
           "open": "打开",
           "pair": "一对",
           "placeholder": "搜索交易",
@@ -4574,19 +4574,19 @@
           "reset": "重置",
           "search": "搜索",
           "sessionStatus": "会话状态",
-          "side": "侧面",
-          "title": "标题",
-          "tradeStatus": "贸易状况"
+          "side": "买入/卖出",
+          "title": "筛选交易",
+          "tradeStatus": "交易状态"
         },
         "loadMore": "加载更多",
         "loading": "加载中",
-        "noTradesDescription": "暂无交易描述",
-        "noTradesTitle": "没有交易标题",
+        "noTradesDescription": "此时间段内没有交易。",
+        "noTradesTitle": "没有交易",
         "side": {
           "buy": "购买",
           "sell": "出售"
         },
-        "title": "标题"
+        "title": "交易"
       },
       "tab": {
         "overview": "概览",

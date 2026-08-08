@@ -126,13 +126,13 @@ describe("GET /api/trading-cockpit/analytics", () => {
     expect(mockRpc).toHaveBeenCalledWith("get_trading_analytics", {
       p_user_id: "user-1",
       p_mode: "paper",
-      p_trade_statuses: [],
-      p_session_statuses: [],
-      p_side: "",
-      p_pair: "",
-      p_search: "",
-      p_from: "",
-      p_to: "",
+      p_trade_statuses: null,
+      p_session_statuses: null,
+      p_side: null,
+      p_pair: null,
+      p_search: null,
+      p_from: null,
+      p_to: null,
     });
   });
 });

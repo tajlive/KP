@@ -4558,10 +4558,10 @@
     "noRealizedPnlShort": "No realized p/l short",
     "cockpit": {
       "riskBanner": {
-        "crashed": "Crashed",
-        "dailyLossLimit": "Daily tap limit",
+        "crashed": "Krasjet",
+        "dailyLossLimit": "Dags-tap-grense",
         "maxDrawdown": "Maks tap",
-        "title": "Tittel"
+        "title": "Risikovarsel"
       },
       "marketData": {
         "aria": "Markedsdata",
@@ -4570,10 +4570,10 @@
         "stale": "Utdatert"
       },
       "error": {
-        "description": "Beskrivelse",
-        "title": "Tittel",
-        "retry": "Retry",
-        "analyticsFailed": "Analytics failed"
+        "description": "Noe gikk galt under lasting. Prøv igjen.",
+        "title": "Noe gikk galt",
+        "retry": "Prøv igjen",
+        "analyticsFailed": "Kunne ikke laste analysen"
       },
       "header": {
         "title": "Handel"
@@ -4583,29 +4583,29 @@
         "live": "Live",
         "paper": "Lekepenger",
         "paperShort": "Papir short",
-        "lockedTooltip": "Locked tooltip",
+        "lockedTooltip": "Live-handel krever tilkoblet børs og abonnement",
         "liveShort": "Live short",
-        "upgrade": "Upgrade"
+        "upgrade": "Oppgrader"
       },
       "liveModeConfirm": {
-        "title": "Tittel",
-        "description": "Beskrivelse",
-        "rememberDefault": "Remember default",
+        "title": "Bytt til live-handel?",
+        "description": "Du er i ferd med å bytte til live-handel med ekte penger. Husk at markedet kan svinge.",
+        "rememberDefault": "Husk valget mitt",
         "cancel": "Avbryt",
         "confirm": "Bekreft"
       },
       "activation": {
-        "pausedTitle": "Pauset tittel",
-        "missingTitle": "Missing tittel",
-        "pausedDescription": "Pauset beskrivelse",
-        "missingDescription": "Missing beskrivelse",
-        "activateButton": "Activate button",
-        "success": "Suksess",
-        "error": "Feil"
+        "pausedTitle": "Auto-handel pauset",
+        "missingTitle": "Mangler børstilkobling",
+        "pausedDescription": "Auto-handel er satt på pause. Start den igjen når du er klar.",
+        "missingDescription": "Koble til en børs i innstillingene for å bruke live-handel.",
+        "activateButton": "Aktiver",
+        "success": "Aktivert",
+        "error": "Kunne ikke aktivere"
       },
       "empty": {
-        "sessionsTitle": "Økter tittel",
-        "sessionsDescription": "Økter beskrivelse"
+        "sessionsTitle": "Ingen økter",
+        "sessionsDescription": "Du har ingen økter ennå. Start en robot for å komme i gang."
       },
       "sessions": {
         "status": {
@@ -4615,24 +4615,24 @@
           "crashed": "Krasjet"
         },
         "columns": {
-          "startingCapital": "Starting kapital",
-          "currentCapital": "Current kapital",
+          "startingCapital": "Startkapital",
+          "currentCapital": "Kapital nå",
           "pair": "Par",
           "status": "Status",
           "pnl": "P/L",
-          "updatedAt": "Oppdatert at"
+          "updatedAt": "Sist oppdatert"
         },
         "loading": "Laster...",
-        "loadMore": "Load mer",
-        "title": "Tittel"
+        "loadMore": "Last flere",
+        "title": "Økter"
       },
       "statusLog": {
-        "evaluatingSignals": "Evaluating signals",
-        "noRecentDecisions": "No recent decisions",
-        "tradeFailedNoReason": "Handel failed no reason",
-        "title": "Tittel",
+        "evaluatingSignals": "Vurderer signaler",
+        "noRecentDecisions": "Ingen nylige beslutninger",
+        "tradeFailedNoReason": "Handel mislyktes uten kjent årsak",
+        "title": "Beslutningslogg",
         "loading": "Laster...",
-        "last_tick_at": "Last Tick At"
+        "last_tick_at": "Sist kontrollert"
       },
       "loading": "Laster...",
       "kpi": {
@@ -4642,10 +4642,10 @@
         "totalPnl": "Totalt p/l"
       },
       "toast": {
-        "startRobotExisting": "Start robot existing",
-        "startRobotSuccess": "Start robot suksess",
+        "startRobotExisting": "Roboten kjører allerede",
+        "startRobotSuccess": "Roboten er startet",
         "sessionStatusChanged": {
-          "title": "Tittel"
+          "title": "Status endret"
         }
       },
       "quickActions": {
@@ -4660,82 +4660,82 @@
           "sell": "Selg"
         },
         "filters": {
-          "open": "Open",
-          "reset": "Reset",
+          "open": "Åpen",
+          "reset": "Tilbakestill",
           "remove": "Fjern",
-          "title": "Tittel",
-          "apply": "Apply",
+          "title": "Filtrer handler",
+          "apply": "Bruk",
           "search": "Søk",
           "placeholder": "Søk i handler",
-          "dateRange": "Dato range",
+          "dateRange": "Tidsperiode",
           "pair": "Par",
           "all": "Alle",
-          "side": "Side",
-          "tradeStatus": "Handel status",
-          "sessionStatus": "Økt status"
+          "side": "Kjøp/salg",
+          "tradeStatus": "Handelsstatus",
+          "sessionStatus": "Økt-status"
         },
-        "title": "Tittel",
+        "title": "Handler",
         "error": {
-          "title": "Tittel",
-          "retry": "Retry"
+          "title": "Kunne ikke laste handler",
+          "retry": "Prøv igjen"
         },
-        "noTradesTitle": "No handler tittel",
-        "noTradesDescription": "No handler beskrivelse",
+        "noTradesTitle": "Ingen handler",
+        "noTradesDescription": "Du har ingen handler i denne perioden.",
         "loading": "Laster...",
-        "loadMore": "Load mer",
+        "loadMore": "Last flere",
         "columns": {
           "price": "Pris",
           "quantity": "Antall",
-          "fee": "Fee",
-          "totalValue": "Totalt verdi",
-          "realizedPnl": "Realized p/l",
-          "effectivePnl": "Effective p/l",
-          "executedAt": "Executed at",
-          "createdAt": "Created at"
+          "fee": "Gebyr",
+          "totalValue": "Total verdi",
+          "realizedPnl": "Realisert P/L",
+          "effectivePnl": "Effektivt P/L",
+          "executedAt": "Utført",
+          "createdAt": "Opprettet"
         },
         "details": {
-          "reason": "Reason",
+          "reason": "Årsak",
           "readMore": "Les mer",
-          "noSignal": "No signal",
+          "noSignal": "Ingen signal",
           "id": "Id",
-          "sessionId": "Økt id",
-          "title": "Tittel",
-          "description": "Beskrivelse"
+          "sessionId": "Økt-ID",
+          "title": "Handelsdetaljer",
+          "description": "Detaljer om handelen"
         }
       },
       "realtime": {
         "newTrade": {
-          "title": "Tittel"
+          "title": "Ny handel"
         }
       },
       "analysis": {
-        "title": "Tittel",
-        "description": "Beskrivelse",
+        "title": "Analyse",
+        "description": "Se hvordan strategien din har gått.",
         "empty": {
-          "title": "Tittel",
-          "description": "Beskrivelse"
+          "title": "Ingen analyse ennå",
+          "description": "Gjør noen handler, så vises analysen her."
         },
         "period": {
-          "label": "Etikett"
+          "label": "Periode"
         },
         "chart": {
-          "symbolTitle": "Symbol tittel",
-          "togglePnl": "Toggle p/l",
-          "toggleTrades": "Toggle handler",
-          "pnlTitle": "P/l tittel",
+          "symbolTitle": "Fordeling per valuta",
+          "togglePnl": "Vis P/L",
+          "toggleTrades": "Vis handler",
+          "pnlTitle": "P/L-utvikling",
           "pnl": "P/L"
         },
         "stats": {
           "totalTrades": "Totalt antall handler",
           "winRate": "Andel vinnere",
-          "totalPnl": "Totalt p/l",
-          "totalFees": "Totalt fees",
-          "profitFactor": "Profitt factor",
+          "totalPnl": "Totalt P/L",
+          "totalFees": "Totale gebyrer",
+          "profitFactor": "Profitfaktor",
           "maxDrawdown": "Maks tap",
-          "bestPair": "Best par",
-          "worstPair": "Worst par",
-          "bestSession": "Best økt",
-          "worstSession": "Worst økt"
+          "bestPair": "Beste valuta",
+          "worstPair": "Dårligste valuta",
+          "bestSession": "Beste økt",
+          "worstSession": "Dårligste økt"
         }
       },
       "tab": {

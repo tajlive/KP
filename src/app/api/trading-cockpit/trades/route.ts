@@ -85,17 +85,19 @@ export async function GET(request: NextRequest) {
 
   const { data: rows, error } = await supabase.rpc("get_trades_paginated", {
     p_user_id: user.id,
-    // Genererte typer krever non-null args — SQL-funksjonen håndterer tomme verdier som "alle"
-    p_cursor: cursor ?? "",
+    // NULL = "alle" (funksjonen tester IS NULL). Tom streng kaster 22007
+    // (timestamptz) / 22P02 (enum); tom array gjør ANY('{}')=false → 0 rader.
+    // Fikset 2026-08-08: alle valgfrie parametere sendes som null når ikke satt.
+    p_cursor: (cursor || null) as unknown as string,
     p_limit: limit,
     p_mode: mode,
-    p_trade_statuses: status?.length ? (status as string[]) : [],
-    p_session_statuses: sessionStatus?.length ? (sessionStatus as string[]) : [],
-    p_side: side ?? "",
-    p_pair: pair ?? "",
-    p_search: search ?? "",
-    p_from: from || "",
-    p_to: to || "",
+    p_trade_statuses: (status?.length ? (status as string[]) : null) as unknown as string[],
+    p_session_statuses: (sessionStatus?.length ? (sessionStatus as string[]) : null) as unknown as string[],
+    p_side: (side || null) as unknown as string,
+    p_pair: (pair || null) as unknown as string,
+    p_search: (search || null) as unknown as string,
+    p_from: (from || null) as unknown as string,
+    p_to: (to || null) as unknown as string,
   });
 
   if (error) {

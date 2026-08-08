@@ -66,7 +66,12 @@ export function MetricCard({
             trend === "neutral" && "text-white",
           )}
         >
-          {prefix}{value.toFixed(decimals)}{suffix}
+          {prefix}
+        {value.toLocaleString("nb-NO", {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        })}
+        {suffix}
         </span>
       </div>
 

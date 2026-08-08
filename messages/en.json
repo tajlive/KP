@@ -4560,9 +4560,9 @@
     "cockpit": {
       "riskBanner": {
         "crashed": "Crashed",
-        "dailyLossLimit": "Daily Loss Limit",
+        "dailyLossLimit": "Daily loss limit",
         "maxDrawdown": "Max Drawdown",
-        "title": "Title"
+        "title": "Risk warning"
       },
       "marketData": {
         "aria": "Market data",
@@ -4571,10 +4571,10 @@
         "stale": "Outdated"
       },
       "error": {
-        "description": "Description",
-        "title": "Title",
-        "retry": "Retry",
-        "analyticsFailed": "Analytics Failed"
+        "description": "Something went wrong while loading. Try again.",
+        "title": "Something went wrong",
+        "retry": "Try again",
+        "analyticsFailed": "Could not load analytics"
       },
       "header": {
         "title": "Trade"
@@ -4584,29 +4584,29 @@
         "live": "Live",
         "paper": "Paper",
         "paperShort": "Paper Short",
-        "lockedTooltip": "Locked Tooltip",
+        "lockedTooltip": "Live trading requires a connected exchange and subscription",
         "liveShort": "Live Short",
         "upgrade": "Upgrade"
       },
       "liveModeConfirm": {
-        "title": "Title",
-        "description": "Description",
-        "rememberDefault": "Remember Default",
+        "title": "Switch to live trading?",
+        "description": "You are about to switch to live trading with real money. Markets can move.",
+        "rememberDefault": "Remember my choice",
         "cancel": "Cancel",
         "confirm": "Confirm"
       },
       "activation": {
-        "pausedTitle": "Paused Title",
-        "missingTitle": "Missing Title",
-        "pausedDescription": "Paused Description",
-        "missingDescription": "Missing Description",
-        "activateButton": "Activate Button",
-        "success": "Success",
-        "error": "Error"
+        "pausedTitle": "Auto trading paused",
+        "missingTitle": "No exchange connected",
+        "pausedDescription": "Auto trading is paused. Start it again when you are ready.",
+        "missingDescription": "Connect an exchange in settings to use live trading.",
+        "activateButton": "Activate",
+        "success": "Activated",
+        "error": "Could not activate"
       },
       "empty": {
-        "sessionsTitle": "Sessions Title",
-        "sessionsDescription": "Sessions Description"
+        "sessionsTitle": "No sessions",
+        "sessionsDescription": "You have no sessions yet. Start a bot to get going."
       },
       "sessions": {
         "status": {
@@ -4616,24 +4616,24 @@
           "crashed": "Crashed"
         },
         "columns": {
-          "startingCapital": "Starting Capital",
-          "currentCapital": "Current Capital",
+          "startingCapital": "Starting capital",
+          "currentCapital": "Capital now",
           "pair": "Pair",
           "status": "Status",
           "pnl": "Pnl",
-          "updatedAt": "Updated At"
+          "updatedAt": "Last updated"
         },
         "loading": "Loading",
-        "loadMore": "Load More",
-        "title": "Title"
+        "loadMore": "Load more",
+        "title": "Sessions"
       },
       "statusLog": {
-        "evaluatingSignals": "Evaluating Signals",
-        "noRecentDecisions": "No Recent Decisions",
-        "tradeFailedNoReason": "Trade Failed No Reason",
-        "title": "Title",
+        "evaluatingSignals": "Evaluating signals",
+        "noRecentDecisions": "No recent decisions",
+        "tradeFailedNoReason": "Trade failed with no known reason",
+        "title": "Decision log",
         "loading": "Loading",
-        "last_tick_at": "Last Tick At"
+        "last_tick_at": "Last checked"
       },
       "loading": "Loading",
       "kpi": {
@@ -4643,10 +4643,10 @@
         "totalPnl": "Total Pnl"
       },
       "toast": {
-        "startRobotExisting": "Start Robot Existing",
-        "startRobotSuccess": "Start Robot Success",
+        "startRobotExisting": "Bot is already running",
+        "startRobotSuccess": "Bot started",
         "sessionStatusChanged": {
-          "title": "Title"
+          "title": "Status changed"
         }
       },
       "quickActions": {
@@ -4664,79 +4664,79 @@
           "open": "Open",
           "reset": "Reset",
           "remove": "Remove",
-          "title": "Title",
+          "title": "Filter trades",
           "apply": "Apply",
           "search": "Search",
           "placeholder": "Search trades",
-          "dateRange": "Date Range",
+          "dateRange": "Time period",
           "pair": "Pair",
           "all": "All",
-          "side": "Side",
-          "tradeStatus": "Trade Status",
-          "sessionStatus": "Session Status"
+          "side": "Buy/sell",
+          "tradeStatus": "Trade status",
+          "sessionStatus": "Session status"
         },
-        "title": "Title",
+        "title": "Trades",
         "error": {
-          "title": "Title",
-          "retry": "Retry"
+          "title": "Could not load trades",
+          "retry": "Try again"
         },
-        "noTradesTitle": "No Trades Title",
-        "noTradesDescription": "No Trades Description",
+        "noTradesTitle": "No trades",
+        "noTradesDescription": "You have no trades in this period.",
         "loading": "Loading",
-        "loadMore": "Load More",
+        "loadMore": "Load more",
         "columns": {
           "price": "Price",
           "quantity": "Quantity",
           "fee": "Fee",
-          "totalValue": "Total Value",
-          "realizedPnl": "Realized Pnl",
-          "effectivePnl": "Effective Pnl",
-          "executedAt": "Executed At",
-          "createdAt": "Created At"
+          "totalValue": "Total value",
+          "realizedPnl": "Realized P/L",
+          "effectivePnl": "Effective P/L",
+          "executedAt": "Executed",
+          "createdAt": "Created"
         },
         "details": {
           "reason": "Reason",
           "readMore": "Read More",
-          "noSignal": "No Signal",
+          "noSignal": "No signal",
           "id": "Id",
-          "sessionId": "Session Id",
-          "title": "Title",
-          "description": "Description"
+          "sessionId": "Session ID",
+          "title": "Trade details",
+          "description": "Details about the trade"
         }
       },
       "realtime": {
         "newTrade": {
-          "title": "Title"
+          "title": "New trade"
         }
       },
       "analysis": {
-        "title": "Title",
-        "description": "Description",
+        "title": "Analysis",
+        "description": "See how your strategy is performing.",
         "empty": {
-          "title": "Title",
-          "description": "Description"
+          "title": "No analysis yet",
+          "description": "Make some trades and the analysis will appear here."
         },
         "period": {
-          "label": "Label"
+          "label": "Period"
         },
         "chart": {
-          "symbolTitle": "Symbol Title",
-          "togglePnl": "Toggle Pnl",
-          "toggleTrades": "Toggle Trades",
-          "pnlTitle": "Pnl Title",
+          "symbolTitle": "Distribution per coin",
+          "togglePnl": "Show P/L",
+          "toggleTrades": "Show trades",
+          "pnlTitle": "P/L development",
           "pnl": "Pnl"
         },
         "stats": {
           "totalTrades": "Total Trades",
           "winRate": "Win Rate",
-          "totalPnl": "Total Pnl",
-          "totalFees": "Total Fees",
-          "profitFactor": "Profit Factor",
+          "totalPnl": "Total P/L",
+          "totalFees": "Total fees",
+          "profitFactor": "Profit factor",
           "maxDrawdown": "Max Drawdown",
-          "bestPair": "Best Pair",
-          "worstPair": "Worst Pair",
-          "bestSession": "Best Session",
-          "worstSession": "Worst Session"
+          "bestPair": "Best coin",
+          "worstPair": "Worst coin",
+          "bestSession": "Best session",
+          "worstSession": "Worst session"
         }
       },
       "tab": {
