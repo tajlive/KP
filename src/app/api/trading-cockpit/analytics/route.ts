@@ -163,15 +163,17 @@ export async function GET(request: NextRequest) {
 
   const { data: rows, error } = await supabase.rpc("get_trading_analytics", {
     p_user_id: user.id,
+    // NULL = "alle" (funksjonen tester IS NULL). Tom streng kaster 22P02
+    // (enum-cast) / 22007 (timestamptz); tom array gjør ANY('{}')=false → 0.
+    // Fikset 2026-08-08: alle valgfrie parametere sendes som null når ikke satt.
     p_mode: mode,
-    // Genererte typer krever non-null args — SQL-funksjonen håndterer tomme verdier som "alle"
-    p_trade_statuses: tradeStatuses as string[],
-    p_session_statuses: sessionStatuses as string[],
-    p_side: side && side !== "all" ? side : "",
-    p_pair: pair || "",
-    p_search: search || "",
-    p_from: from ?? "",
-    p_to: to ?? "",
+    p_trade_statuses: (tradeStatuses.length ? tradeStatuses : null) as unknown as string[],
+    p_session_statuses: (sessionStatuses.length ? sessionStatuses : null) as unknown as string[],
+    p_side: (side && side !== "all" ? side : null) as unknown as string,
+    p_pair: (pair || null) as unknown as string,
+    p_search: (search || null) as unknown as string,
+    p_from: (from || null) as unknown as string,
+    p_to: (to || null) as unknown as string,
   });
 
   if (error) {

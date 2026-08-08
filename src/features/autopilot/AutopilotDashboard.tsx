@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, CheckCircle2, XCircle, ShieldAlert } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ShieldAlert, Bot, TrendingUp, TrendingDown } from "lucide-react";
 import { useAutopilotRealtime } from "@/lib/realtime/autopilot-channel";
 
 interface GridLevelEntry {
