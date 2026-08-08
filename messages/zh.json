@@ -4637,14 +4637,8 @@
           "cancelled": "已取消",
           "failed": "失败"
         },
-        "titleCount": {
-          "one": "{count} 笔交易",
-          "other": "{count} 笔交易"
-        },
-        "unread": {
-          "one": "{count} 笔新交易",
-          "other": "{count} 笔新交易"
-        }
+        "titleCount": "{count, plural, one {# 笔交易} other {# 笔交易}}",
+        "unread": "{count, plural, one {# 笔新交易} other {# 笔新交易}}"
       },
       "tab": {
         "overview": "概览",

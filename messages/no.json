@@ -4746,14 +4746,8 @@
           "cancelled": "Kansellert",
           "failed": "Feilet"
         },
-        "titleCount": {
-          "one": "{count} handel",
-          "other": "{count} handler"
-        },
-        "unread": {
-          "one": "{count} ny handel",
-          "other": "{count} nye handler"
-        }
+        "titleCount": "{count, plural, one {# handel} other {# handler}}",
+        "unread": "{count, plural, one {# ny handel} other {# nye handler}}"
       },
       "realtime": {
         "newTrade": {

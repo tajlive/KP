@@ -12,10 +12,12 @@ const PAGES = [
   "/no/kurs",
 ];
 
-// Rå i18n-nøkkel = "namespace.section.key" der namespace er et kjent toppnivå.
-// Case-insensitiv: CSS text-transform gjør nøklene STORE (TRADING.COCKPIT…).
+// Rå i18n-nøkkel = "namespace.section.key" (3+ segmenter) der namespace er et
+// kjent toppnivå. Case-insensitiv: CSS text-transform gjør nøklene STORE
+// (TRADING.COCKPIT.TRADES.TITLECOUNT). Krever ≥2 segmenter etter namespace
+// for å unngå false positives på vanlige ord.
 const RAW_KEY_PATTERN =
-  /\b(dashboard|trading|common|portfolio|admin|onboarding|navigation|wallet|legal)\.[a-z]+\.[a-zA-Z]+\b/gi;
+  /\b(dashboard|trading|common|portfolio|admin|onboarding|navigation|wallet|legal)\.[a-z0-9_]+(?:\.[a-zA-Z0-9_]+){1,}\b/gi;
 
 test.describe("i18n — ingen rå nøkler", () => {
   for (const path of PAGES) {

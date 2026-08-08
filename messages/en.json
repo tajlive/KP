@@ -4747,14 +4747,8 @@
           "cancelled": "Cancelled",
           "failed": "Failed"
         },
-        "titleCount": {
-          "one": "{count} trade",
-          "other": "{count} trades"
-        },
-        "unread": {
-          "one": "{count} new trade",
-          "other": "{count} new trades"
-        }
+        "titleCount": "{count, plural, one {# trade} other {# trades}}",
+        "unread": "{count, plural, one {# new trade} other {# new trades}}"
       },
       "realtime": {
         "newTrade": {
