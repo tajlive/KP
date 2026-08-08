@@ -7,6 +7,7 @@ import { TradingCockpit } from "@/features/trading-cockpit/components/TradingCoc
 import { AutopilotDashboard } from "@/features/autopilot/AutopilotDashboard";
 import { InstallPrompt } from "@/shared/pwa/InstallPrompt";
 import { CockpitQueryProvider } from "@/features/trading-cockpit/components/CockpitQueryProvider";
+import { UnifiedTradeTerminal } from "@/features/trading/UnifiedTradeTerminal";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -70,6 +71,15 @@ export default async function TradingPage({
       <div className="mt-4">
         <Suspense fallback={null}>
           <AutopilotDashboard userId={user.id} />
+        </Suspense>
+      </div>
+
+      {/* P0-fiks 2026-08-08: UnifiedTradeTerminal var ubrukt siden /trade ble
+          fjernet — brukeren kunne ikke starte manuell handel med lekepenger.
+          Gjenoppretter kjøp/selg-terminalen (OrderPanel → /api/paper-trading/execute). */}
+      <div className="mt-4">
+        <Suspense fallback={null}>
+          <UnifiedTradeTerminal />
         </Suspense>
       </div>
     </CockpitQueryProvider>

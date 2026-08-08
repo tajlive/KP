@@ -42,6 +42,9 @@ export function TradingCockpit({
   } = useCockpit();
 
   const [isActivating, setIsActivating] = React.useState(false);
+  // P0-fiks 2026-08-08: onDismissOnboarding var `() => {}` — wizard-en kunne
+  // aldri lukkes, og brukeren kom aldri til handelsformularet.
+  const [onboardingDismissed, setOnboardingDismissed] = React.useState(false);
 
   const handleActivateAutoTrading = React.useCallback(async () => {
     setIsActivating(true);
@@ -128,8 +131,8 @@ export function TradingCockpit({
             onLoadMoreSessions={loadMoreSessions}
             onActivateAutoTrading={handleActivateAutoTrading}
             isActivatingAutoTrading={isActivating}
-            showOnboarding={!metrics || metrics.totalTrades === 0}
-            onDismissOnboarding={() => {}}
+            showOnboarding={!onboardingDismissed && (!metrics || metrics.totalTrades === 0)}
+            onDismissOnboarding={() => setOnboardingDismissed(true)}
           />
         </>
       )}
