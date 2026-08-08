@@ -4612,7 +4612,8 @@
           "active": "Aktiv",
           "paused": "Pauset",
           "stopped": "Stoppet",
-          "crashed": "Krasjet"
+          "crashed": "Krasjet",
+          "all": "Alle"
         },
         "columns": {
           "startingCapital": "Startkapital",
@@ -4645,14 +4646,17 @@
         "startRobotExisting": "Roboten kjører allerede",
         "startRobotSuccess": "Roboten er startet",
         "sessionStatusChanged": {
-          "title": "Status endret"
+          "title": "Status endret",
+          "description": "Statusen for økten er oppdatert.",
+          "descriptionNoMessage": "En endring ble registrert."
         }
       },
       "quickActions": {
         "pauseAll": "Pause alle",
         "startRobot": "Start robot",
         "viewHistory": "Historikk",
-        "error": "Kunne ikke utføre handlingen"
+        "error": "Kunne ikke utføre handlingen",
+        "resumeAll": "Gjenoppta alle"
       },
       "trades": {
         "side": {
@@ -4701,11 +4705,35 @@
           "sessionId": "Økt-ID",
           "title": "Handelsdetaljer",
           "description": "Detaljer om handelen"
+        },
+        "dateRange": {
+          "7d": "7 dager",
+          "30d": "30 dager",
+          "90d": "90 dager",
+          "1y": "1 år",
+          "all": "All tid"
+        },
+        "status": {
+          "all": "Alle",
+          "filled": "Utført",
+          "partially_filled": "Delvis utført",
+          "pending": "Venter",
+          "cancelled": "Kansellert",
+          "failed": "Feilet"
+        },
+        "titleCount": {
+          "one": "{count} handel",
+          "other": "{count} handler"
+        },
+        "unread": {
+          "one": "{count} ny handel",
+          "other": "{count} nye handler"
         }
       },
       "realtime": {
         "newTrade": {
-          "title": "Ny handel"
+          "title": "Ny handel",
+          "description": "En ny handel er registrert."
         }
       },
       "analysis": {
@@ -4716,7 +4744,12 @@
           "description": "Gjør noen handler, så vises analysen her."
         },
         "period": {
-          "label": "Periode"
+          "label": "Periode",
+          "7d": "7 dager",
+          "30d": "30 dager",
+          "90d": "90 dager",
+          "1y": "1 år",
+          "all": "All tid"
         },
         "chart": {
           "symbolTitle": "Fordeling per valuta",

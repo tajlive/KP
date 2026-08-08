@@ -124,8 +124,9 @@ export function AutopilotDashboard({ userId }: { userId: string }) {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-white">
-            🤖 Kraken Autopilot
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold text-white">
+            <Bot className="h-4 w-4 text-cyan-400" aria-hidden />
+            Kraken Autopilot
           </h3>
           {isLive ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-green-900/40 px-2 py-0.5 text-[10px] font-medium text-green-400">
@@ -164,7 +165,12 @@ export function AutopilotDashboard({ userId }: { userId: string }) {
               isUp ? "text-green-400" : "text-red-400"
             }`}
           >
-            {isUp ? "▲" : "▼"} {pctChange} siden start
+            {isUp ? (
+              <TrendingUp className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <TrendingDown className="h-3.5 w-3.5" aria-hidden />
+            )}{" "}
+            {pctChange} siden start
           </div>
         </div>
         <div className="rounded-xl border border-[#1E293B] bg-[#0B1220] p-4">
