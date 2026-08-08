@@ -285,21 +285,30 @@ export async function getMarketSentimentForEdgeFunction(
     return cached.sentiment_data as MarketSentimentResult;
   }
 
-  // Kall Sonar Pro direkte fra Edge Function
+  // Kall KIMI direkte fra Edge Function (Perplexity erstattet 2026-08-08).
+  // Parameternavnet beholdes for bakoverkompatibilitet, men verdien er
+  // nå KIMI_API_KEY (eller KIMI_OAUTH_TOKEN som fallback).
   const prompt = PROMPT_TEMPLATES.MARKET_SENTIMENT({ symbol });
-  
-  const response = await fetch('https://api.perplexity.ai/chat/completions', {
+  const apiKey = perplexityApiKey || process.env.KIMI_API_KEY || '';
+  const endpoint = process.env.KIMI_API_KEY
+    ? 'https://api.moonshot.ai/v1/chat/completions'
+    : 'https://api.kimi.com/coding/v1/chat/completions';
+  const model = process.env.KIMI_API_KEY ? 'kimi-k3' : 'k3';
+
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${perplexityApiKey}`,
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'sonar-pro',
+      model,
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1000,
       temperature: 0.1,
-      return_citations: true,
+      ...(endpoint.includes('moonshot.ai')
+        ? { tools: [{ type: 'builtin_function', function: { name: '$web_search' } }] }
+        : {}),
     }),
   });
 

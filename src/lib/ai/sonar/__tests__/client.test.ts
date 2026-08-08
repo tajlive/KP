@@ -21,8 +21,8 @@ vi.mock('@/lib/logger', () => ({
 // Mock config module completely BEFORE importing client
 // This ensures SONAR_API_KEY is set at module load time
 vi.mock('../config', () => ({
-  SONAR_API_KEY: 'pplx-test-key-ci',
-  SONAR_API_BASE_URL: 'https://api.perplexity.ai',
+  SONAR_API_KEY: 'kimi-test-key-ci-123456',
+  SONAR_API_BASE_URL: 'https://api.moonshot.ai/v1',
   DEFAULT_RETRY_CONFIG: {
     maxRetries: 2,
     baseDelayMs: 100,
@@ -35,6 +35,12 @@ vi.mock('../config', () => ({
   },
   getModelForTier: (tier: string) => tier,
   getSearchContextForMode: (mode: string) => mode === 'low' ? 'low' : mode === 'high' ? 'high' : 'medium',
+  getWebSearchTools: () => [
+    {
+      type: 'builtin_function',
+      function: { name: '$web_search' },
+    },
+  ],
   getTimeout: (timeoutMs?: number) => timeoutMs || 30000,
   calculateBackoff: (attempt: number) => Math.min(1000 * Math.pow(2, attempt), 10000),
   validateConfig: () => ({ valid: true }),
@@ -103,11 +109,11 @@ describe('callSonar', () => {
     expect(result).toBe('Test response');
     expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.perplexity.ai/chat/completions',
+      'https://api.moonshot.ai/v1/chat/completions',
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          'Authorization': expect.stringMatching(/^Bearer pplx-/),
+          'Authorization': expect.stringMatching(/^Bearer kimi-/),
           'Content-Type': 'application/json',
         }),
         body: expect.stringContaining('Test prompt'),
