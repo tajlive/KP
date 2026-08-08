@@ -8,7 +8,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * Fail-closed live trading entitlement check.
  * Returns true only when the user explicitly passes ALL gates:
  * - tier allows live auto-trading
- * - Binance account is connected
+ * - Kraken account is connected (user_kraken_keys — EU/EØS 2026:
+ *   Binance er geo-blokkert, Kraken er eneste børs)
  * - entitlements RPC returns auto_trade_allow_live = true
  */
 export async function verifyLiveEntitlement(
@@ -17,7 +18,7 @@ export async function verifyLiveEntitlement(
 ): Promise<boolean> {
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles")
-    .select("tier, binance_connected, role")
+    .select("tier, role")
     .eq("id", userId)
     .single();
 
@@ -28,7 +29,16 @@ export async function verifyLiveEntitlement(
 
   const tier = normalizeTier(profile.tier);
   if (!canAccessLiveAutoTrading(tier as TierSlug)) return false;
-  if (!profile.binance_connected) return false;
+
+  // Kraken-nøkler må være lagret (kryptert). Sjekk via ExecutorFactory
+  // (samme kilde som selve utførelsen) — da kan aldri entitlement og
+  // utførelse sprike.
+  const { data: krakenKeys } = await supabase
+    .from("user_kraken_keys")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!krakenKeys) return false;
 
   const { data: entitlements, error } = await supabase.rpc(
     "get_user_entitlements",

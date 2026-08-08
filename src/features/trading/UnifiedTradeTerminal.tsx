@@ -154,9 +154,9 @@ function useHasTraded() {
   return hasTraded;
 }
 
-// ─── Price Sparkline (real Binance 15m klines, client-side) ───
+// ─── Price Sparkline (Kraken 15m klines via egen rute, client-side) ───
 const SPARK_KLINES_URL =
-  "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=40";
+  "/api/market/klines?symbol=BTCUSDT&interval=15m&limit=40";
 const SPARK_POLL_MS = 30_000;
 
 function PriceSparkline({ className }: { className?: string }) {
@@ -168,9 +168,11 @@ function PriceSparkline({ className }: { className?: string }) {
       try {
         const res = await fetch(SPARK_KLINES_URL);
         if (!res.ok) return;
-        const raw = (await res.json()) as unknown[];
-        const closes = raw
-          .map((k) => usdtPriceToNok(Number((k as unknown[])[4])))
+        const body = (await res.json()) as {
+          klines?: Array<{ close: number }>;
+        };
+        const closes = (body.klines ?? [])
+          .map((k) => usdtPriceToNok(Number(k.close)))
           .filter((n) => Number.isFinite(n) && n > 0);
         if (!cancelled && closes.length > 1) setPoints(closes);
       } catch {

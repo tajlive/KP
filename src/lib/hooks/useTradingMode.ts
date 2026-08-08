@@ -8,14 +8,14 @@ import {
 import { useCallback, useEffect, useState } from "react";
 
 /**
- * useTradingMode — leser trading-modus og Binance-tilkobling.
+ * useTradingMode — leser trading-modus og Kraken-tilkobling.
  *
  * KLA-auth: Browser-supabase er alltid anon (httpOnly auth-cookie).
  * Tidligere versjon leste/skrev user_profiles direkte fra browseren —
- * det gjorde Binance-tilkobling STILLE ØDELAGT (skrivingen persiserte
+ * det gjorde Binance-tilkobling STILLE ØDELAGT (skrivingen persisterte
  * aldri). Alt går nå via server-autentiserte API-ruter:
  * - GET/POST /api/trading/mode   (modus + entitlement-sjekk)
- * - GET/POST/DELETE /api/binance/keys (nøkkel-lagring via Edge Function)
+ * - POST/DELETE /api/kraken/connect (Kraken-nøkkel-lagring, session-auth)
  * - GET /api/user/profile        (paper_balance)
  */
 export function useTradingMode() {
@@ -28,7 +28,7 @@ export function useTradingMode() {
     error: null,
   });
 
-  const [binanceConnection, setBinanceConnection] = useState<BinanceConnection>(
+  const [krakenConnection, setKrakenConnection] = useState<BinanceConnection>(
     {
       isConnected: false,
       apiKeyLast4: null,
@@ -74,9 +74,9 @@ export function useTradingMode() {
           isLoading: false,
         }));
 
-        setBinanceConnection({
-          isConnected: Boolean(json.binanceConnected),
-          apiKeyLast4: json.binanceConnected ? "****" : null,
+        setKrakenConnection({
+          isConnected: Boolean(json.krakenConnected),
+          apiKeyLast4: json.krakenConnected ? "****" : null,
           connectedAt: null,
           balance: null,
         });
@@ -101,7 +101,7 @@ export function useTradingMode() {
           setState((prev) => ({
             ...prev,
             error:
-              "Binance API not connected. Please connect your Binance account first.",
+              "Kraken API not connected. Please connect your Kraken account first.",
           }));
           return false;
         }
@@ -145,22 +145,22 @@ export function useTradingMode() {
     [state.canSwitchToLive, state.mode],
   );
 
-  // Connect Binance API — server verifiserer nøkler, tier og krypterer
-  const connectBinance = useCallback(
+  // Connect Kraken API — server verifiserer nøkler, tier og krypterer
+  const connectKraken = useCallback(
     async (apiKey: string, apiSecret: string): Promise<boolean> => {
       try {
         setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-        const res = await fetch("/api/binance/keys", {
+        const res = await fetch("/api/kraken/connect", {
           method: "POST",
           credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey, apiSecret, isTestnet: false }),
+          body: JSON.stringify({ apiKey, apiSecret }),
         });
 
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
-          throw new Error(json.error || "Failed to connect Binance");
+          throw new Error(json.error || "Failed to connect Kraken");
         }
 
         setState((prev) => ({
@@ -169,7 +169,7 @@ export function useTradingMode() {
           isLoading: false,
         }));
 
-        setBinanceConnection({
+        setKrakenConnection({
           isConnected: true,
           apiKeyLast4: "****" + apiKey.slice(-4),
           connectedAt: new Date().toISOString(),
@@ -181,7 +181,7 @@ export function useTradingMode() {
         setState((prev) => ({
           ...prev,
           error:
-            err instanceof Error ? err.message : "Failed to connect Binance",
+            err instanceof Error ? err.message : "Failed to connect Kraken",
           isLoading: false,
         }));
         return false;
@@ -190,19 +190,19 @@ export function useTradingMode() {
     [],
   );
 
-  // Disconnect Binance
-  const disconnectBinance = useCallback(async (): Promise<boolean> => {
+  // Disconnect Kraken
+  const disconnectKraken = useCallback(async (): Promise<boolean> => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      const res = await fetch("/api/binance/keys", {
+      const res = await fetch("/api/kraken/connect", {
         method: "DELETE",
         credentials: "same-origin",
       });
 
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
-        throw new Error(json.error || "Failed to disconnect Binance");
+        throw new Error(json.error || "Failed to disconnect Kraken");
       }
 
       setState((prev) => ({
@@ -212,7 +212,7 @@ export function useTradingMode() {
         isLoading: false,
       }));
 
-      setBinanceConnection({
+      setKrakenConnection({
         isConnected: false,
         apiKeyLast4: null,
         connectedAt: null,
@@ -224,7 +224,7 @@ export function useTradingMode() {
       setState((prev) => ({
         ...prev,
         error:
-          err instanceof Error ? err.message : "Failed to disconnect Binance",
+          err instanceof Error ? err.message : "Failed to disconnect Kraken",
         isLoading: false,
       }));
       return false;
@@ -233,9 +233,9 @@ export function useTradingMode() {
 
   return {
     ...state,
-    binanceConnection,
+    krakenConnection,
     switchMode,
-    connectBinance,
-    disconnectBinance,
+    connectKraken,
+    disconnectKraken,
   };
 }

@@ -7,7 +7,6 @@
 
 import { useRealtimeStore } from "@/store/realtime-store";
 
-const BINANCE_REST_API = "https://api.binance.com/api/v3";
 const FALLBACK_INTERVAL_MS = 10000; // Poll every 10 seconds when WS is down
 const CACHE_TTL_MS = 60000; // Cache prices for 60 seconds
 const CIRCUIT_BREAKER_THRESHOLD = 3;
@@ -228,8 +227,8 @@ class PriceFallback {
     this.abortController = new AbortController();
     
     try {
-      const symbolParam = symbols.map((s) => `"${s}"`).join(",");
-      const url = `${BINANCE_REST_API}/ticker/24hr?symbols=[${symbolParam}]`;
+      // EU/EØS (2026): via egen API-rute → Kraken (ingen direkte Binance-kall)
+      const url = `/api/market/binance-24hr?symbols=${encodeURIComponent(symbols.join(","))}`;
       
       const response = await fetch(url, {
         signal: this.abortController.signal,
@@ -243,15 +242,14 @@ class PriceFallback {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const data = (await response.json()) as Array<{
-        symbol: string;
-        lastPrice: string;
-        priceChange: string;
-        priceChangePercent: string;
-        highPrice: string;
-        lowPrice: string;
-        volume: string;
-      }>;
+      const body = (await response.json()) as {
+        prices?: Array<{
+          symbol: string;
+          price: number;
+          change24h: number;
+        }>;
+      };
+      const data = body.prices ?? [];
       
       // Reset failure counter on success
       this.consecutiveFailures = 0;
@@ -263,11 +261,11 @@ class PriceFallback {
       for (const ticker of data) {
         const cachedPrice: CachedPrice = {
           symbol: ticker.symbol,
-          price: parseFloat(ticker.lastPrice),
-          change24h: parseFloat(ticker.priceChangePercent),
-          volume24h: parseFloat(ticker.volume),
-          high24h: parseFloat(ticker.highPrice),
-          low24h: parseFloat(ticker.lowPrice),
+          price: Number(ticker.price),
+          change24h: Number(ticker.change24h),
+          volume24h: 0,
+          high24h: 0,
+          low24h: 0,
           timestamp: now,
         };
         
@@ -376,13 +374,13 @@ class PriceFallback {
 
 /**
  * Fetch current prices via REST API (one-shot)
- * Useful for initial load or when WebSocket is unavailable
+ * Useful for initial load or when WebSocket is unavailable.
+ * EU/EØS (2026): via egen API-rute → Kraken.
  */
 async function fetchPricesREST(symbols: string[]): Promise<Record<string, CachedPrice>> {
   if (symbols.length === 0) return {};
   
-  const symbolParam = symbols.map((s) => `"${s.toUpperCase()}"`).join(",");
-  const url = `${BINANCE_REST_API}/ticker/24hr?symbols=[${symbolParam}]`;
+  const url = `/api/market/binance-24hr?symbols=${encodeURIComponent(symbols.map((s) => s.toUpperCase()).join(","))}`;
   
   const response = await fetch(url, {
     cache: "no-store",
@@ -395,15 +393,14 @@ async function fetchPricesREST(symbols: string[]): Promise<Record<string, Cached
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
   
-  const data = (await response.json()) as Array<{
-    symbol: string;
-    lastPrice: string;
-    priceChange: string;
-    priceChangePercent: string;
-    highPrice: string;
-    lowPrice: string;
-    volume: string;
-  }>;
+  const body = (await response.json()) as {
+    prices?: Array<{
+      symbol: string;
+      price: number;
+      change24h: number;
+    }>;
+  };
+  const data = body.prices ?? [];
   
   const now = Date.now();
   const result: Record<string, CachedPrice> = {};
@@ -411,11 +408,11 @@ async function fetchPricesREST(symbols: string[]): Promise<Record<string, Cached
   for (const ticker of data) {
     result[ticker.symbol] = {
       symbol: ticker.symbol,
-      price: parseFloat(ticker.lastPrice),
-      change24h: parseFloat(ticker.priceChangePercent),
-      volume24h: parseFloat(ticker.volume),
-      high24h: parseFloat(ticker.highPrice),
-      low24h: parseFloat(ticker.lowPrice),
+      price: Number(ticker.price),
+      change24h: Number(ticker.change24h),
+      volume24h: 0,
+      high24h: 0,
+      low24h: 0,
       timestamp: now,
     };
   }
@@ -425,9 +422,10 @@ async function fetchPricesREST(symbols: string[]): Promise<Record<string, Cached
 
 /**
  * Fetch single symbol price via REST API
+ * EU/EØS (2026): via egen API-rute → Kraken.
  */
 async function fetchPriceREST(symbol: string): Promise<CachedPrice | null> {
-  const url = `${BINANCE_REST_API}/ticker/24hr?symbol=${symbol.toUpperCase()}`;
+  const url = `/api/market/binance-24hr?symbols=${encodeURIComponent(symbol.toUpperCase())}`;
   
   const response = await fetch(url, {
     cache: "no-store",
@@ -440,26 +438,27 @@ async function fetchPriceREST(symbol: string): Promise<CachedPrice | null> {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
   
-  const ticker = (await response.json()) as {
-    symbol: string;
-    lastPrice: string;
-    priceChange: string;
-    priceChangePercent: string;
-    highPrice: string;
-    lowPrice: string;
-    volume: string;
+  const body = (await response.json()) as {
+    prices?: Array<{
+      symbol: string;
+      price: number;
+      change24h: number;
+    }>;
   };
+  const ticker = body.prices?.[0];
+  
+  if (!ticker) return null;
   
   return {
     symbol: ticker.symbol,
-    price: parseFloat(ticker.lastPrice),
-    change24h: parseFloat(ticker.priceChangePercent),
-    volume24h: parseFloat(ticker.volume),
-    high24h: parseFloat(ticker.highPrice),
-    low24h: parseFloat(ticker.lowPrice),
+    price: Number(ticker.price),
+    change24h: Number(ticker.change24h),
+    volume24h: 0,
+    high24h: 0,
+    low24h: 0,
     timestamp: Date.now(),
   };
 }
 
 export { PriceFallback, fetchPricesREST, fetchPriceREST, type CachedPrice };
-export { BINANCE_REST_API, FALLBACK_INTERVAL_MS, CACHE_TTL_MS };
+export { FALLBACK_INTERVAL_MS, CACHE_TTL_MS };

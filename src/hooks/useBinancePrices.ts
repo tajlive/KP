@@ -1,54 +1,36 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { WebSocketManager } from "@/lib/websocket/WebSocketManager";
 
+/**
+ * Live-priser for et sett symboler — EU/EØS (2026): Kraken WS eneste kilde.
+ * Renner gjennom WebSocketManager (samme singleton som øvrig sanntidskjede).
+ */
 export function useBinancePrices(symbols: string[]) {
   const [prices, setPrices] = useState<Record<string, number>>({ USDT: 1.0 });
-  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (symbols.length === 0) return;
 
     // Filter out standard ones
-    const activeSymbols = symbols.filter(s => s !== "USDT" && s !== "NOK");
+    const activeSymbols = symbols.filter((s) => s !== "USDT" && s !== "NOK");
     if (activeSymbols.length === 0) return;
 
-    const streams = activeSymbols.map(s => `${s.toLowerCase()}usdt@ticker`).join("/");
-    const url = `wss://stream.binance.com:9443/ws/${streams}`;
-
-    const connect = () => {
-      const ws = new WebSocket(url);
-      wsRef.current = ws;
-
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        const symbol = data.s.replace("USDT", "");
-        const price = parseFloat(data.c);
-
-        setPrices(prev => ({
+    // Interne symboler (f.eks. BTCUSDT) → Kraken-tickers via WebSocketManager
+    const unsubscribe = WebSocketManager.getInstance().subscribeToTickers(
+      activeSymbols,
+      (ticker) => {
+        const symbol = ticker.symbol.replace("USDT", "");
+        setPrices((prev) => ({
           ...prev,
-          [symbol]: price
+          [symbol]: ticker.price,
         }));
-      };
+      },
+    );
 
-      ws.onerror = (err) => {
-        console.error("Binance WebSocket error:", err);
-      };
-
-      ws.onclose = () => {
-        // Reconnect after 5 seconds
-        setTimeout(connect, 5000);
-      };
-    };
-
-    connect();
-
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
-  }, [symbols]);
+    return () => unsubscribe();
+  }, [symbols.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return prices;
 }

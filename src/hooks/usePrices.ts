@@ -9,7 +9,7 @@
  *   - useAnimatedPrice(symbol) → useWebSocketPrice(symbol)
  */
 
-import { binanceWebSocket } from "@/lib/websocket/BinanceWebSocket";
+import { WebSocketManager } from "@/lib/websocket/WebSocketManager";
 import { getDisplayUsdtToNokRate, usdtPriceToNok } from "@/lib/market/nok";
 
 // KLA-fx: normaliser med SANNTIDS USDT/NOK-rate (/api/fx/usdt-nok).
@@ -136,7 +136,8 @@ export function usePrices() {
       });
     };
 
-    const unsubscribe = binanceWebSocket.subscribeToTickers(
+    // EU/EØS (2026): Kraken WS (WebSocketManager) — eneste tallkilde
+    const unsubscribe = WebSocketManager.getInstance().subscribeToTickers(
       PRIORITY_SYMBOLS,
       (ticker) => {
         callback({

@@ -81,16 +81,19 @@ export async function GET(request: NextRequest) {
 
     let currentPrice = 0;
     try {
+      // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
       const res = await fetch(
-        `https://api.binance.com/api/v3/ticker/price?symbol=${symbol.toUpperCase()}`,
+        `/api/market/binance-prices?symbols=${encodeURIComponent(symbol.toUpperCase())}`,
         { signal: AbortSignal.timeout(5000) },
       );
       if (res.ok) {
-        const data = (await res.json()) as { price: string };
-        currentPrice = parseFloat(data.price);
+        const data = (await res.json()) as {
+          prices?: Array<{ symbol: string; price: number }>;
+        };
+        currentPrice = data.prices?.[0]?.price ?? 0;
       }
     } catch (e) {
-      console.error("[GET /api/trading/position] Binance price error:", e);
+      console.error("[GET /api/trading/position] Kraken price error:", e);
     }
 
     const openPos = (session.open_position ?? null) as unknown as OpenPosition | null;

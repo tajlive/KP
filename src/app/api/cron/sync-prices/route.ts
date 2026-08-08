@@ -4,32 +4,32 @@ import { validateCronSecret } from "@/lib/auth/cron";
 import { usdtPriceToNok } from "@/lib/market/nok";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
+// Kraken-par (USDC-kvote — EU/EØS 2026; BNB finnes ikke på Kraken)
 const TRACKED_SYMBOLS = [
-  "BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT",
+  "BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT",
   "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT", "UNIUSDT", "POLUSDT",
 ];
 
-interface BinanceTicker {
+interface PriceRow {
   symbol: string;
-  lastPrice: string;
-  priceChangePercent: string;
-  volume: string;
-  highPrice: string;
-  lowPrice: string;
+  price: number;
+  price_change_percent_24h: number;
 }
 
-async function upsertPrices(supabase: SupabaseClient<Database>, tickers: BinanceTicker[]) {
-  const updates = tickers.map((t) => ({
+async function upsertPrices(supabase: SupabaseClient<Database>, prices: PriceRow[]) {
+  const updates = prices.map((t) => ({
     symbol: t.symbol,
     name: t.symbol.replace("USDT", ""),
-    price: usdtPriceToNok(parseFloat(t.lastPrice)),
-    price_change_percent_24h: parseFloat(t.priceChangePercent),
-    volume_24h: parseFloat(t.volume),
-    high_24h: usdtPriceToNok(parseFloat(t.highPrice)),
-    low_24h: usdtPriceToNok(parseFloat(t.lowPrice)),
+    price: usdtPriceToNok(t.price),
+    price_change_percent_24h: t.price_change_percent_24h,
+    volume_24h: 0,
+    high_24h: 0,
+    low_24h: 0,
     last_updated: new Date().toISOString(),
   }));
 
@@ -42,84 +42,49 @@ async function upsertPrices(supabase: SupabaseClient<Database>, tickers: Binance
 
 /**
  * GET /api/cron/sync-prices
- * Syncs prices from Binance API to Supabase via Edge Function proxy
+ * Synker priser fra Kraken (eneste tallkilde — EU/EØS 2026) til Supabase.
  */
 export async function GET(request: NextRequest) {
   if (!validateCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
   try {
-    const encodedSymbols = encodeURIComponent(JSON.stringify(TRACKED_SYMBOLS));
-    const supabase = await createClient() as SupabaseClient<Database>;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const proxySecret = process.env.BINANCE_PROXY_SECRET;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const supabase = (await createClient()) as SupabaseClient<Database>;
+    const provider = createKrakenMarketDataProvider();
 
-    // Try via Supabase Edge Function proxy first (unngår Cloudflare IP-blokk)
-    if (supabaseUrl && proxySecret && anonKey) {
-      const proxyRes = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${anonKey}`,
-          "x-binance-proxy-secret": proxySecret,
-          apikey: anonKey,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          action: "publicApi",
-          publicApiPath: `/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
-        }),
-      });
-
-      if (proxyRes.ok) {
-        const proxyData = await proxyRes.json();
-        if (proxyData.ok && Array.isArray(proxyData.data)) {
-          await upsertPrices(supabase, proxyData.data as BinanceTicker[]);
-          clearTimeout(timeoutId);
-          return NextResponse.json({
-            success: true,
-            updated: proxyData.data.length,
-            timestamp: new Date().toISOString(),
-          });
+    const snapshots = await Promise.all(
+      TRACKED_SYMBOLS.map(async (symbol) => {
+        try {
+          const snap = await provider.get24hSnapshot(symbol);
+          return { symbol, snap };
+        } catch {
+          return null;
         }
-      }
-      console.warn("Binance proxy failed, falling back to direct API");
-    }
-
-    // Fallback: direct Binance API
-    const response = await fetch(
-      `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
-      { signal: controller.signal },
+      }),
     );
 
-    if (!response.ok) {
-      throw new Error(`Binance API error: ${response.status}`);
-    }
+    const prices: PriceRow[] = snapshots
+      .filter((r): r is NonNullable<typeof r> => r !== null)
+      .map(({ symbol, snap }) => ({
+        symbol,
+        price: snap.price,
+        price_change_percent_24h: snap.change24hPct,
+      }))
+      .filter((r) => r.price > 0);
 
-    const tickers: BinanceTicker[] = await response.json();
-    await upsertPrices(supabase, tickers);
-    clearTimeout(timeoutId);
+    await upsertPrices(supabase, prices);
 
     return NextResponse.json({
       success: true,
-      updated: tickers.length,
+      updated: prices.length,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    clearTimeout(timeoutId);
-    console.error("Sync prices error:", error);
+    console.error("[sync-prices] Kraken error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
+      { success: false, error: "Kraken API-feil" },
+      { status: 502 },
     );
   }
 }
-
-export const POST = GET;

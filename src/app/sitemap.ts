@@ -18,7 +18,6 @@ const HARDCODED_ROUTES: SitemapEntry[] = [
   { path: "om-oss", priority: 0.8, changeFrequency: "weekly" },
   { path: "hjelp", priority: 0.7, changeFrequency: "weekly" },
   { path: "kontakt", priority: 0.7, changeFrequency: "weekly" },
-  { path: "binance-guide", priority: 0.6, changeFrequency: "monthly" },
   { path: "kalkulator", priority: 0.5, changeFrequency: "monthly" },
   
   // Academy
@@ -172,7 +171,6 @@ function createSitemapEntry(path: string): SitemapEntry | null {
     path === "om-oss" ||
     path === "kontakt" ||
     path === "kalkulator" ||
-    path === "binance-guide" ||
     path === "funding-arbitrage" ||
     path === "leaderboard" ||
     path === "tradere"

@@ -3,7 +3,7 @@ import { create } from "zustand";
 type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
 interface RealtimeState {
-  binanceStatus: ConnectionStatus;
+  krakenStatus: ConnectionStatus;
   supabaseStatus: ConnectionStatus;
   subscribedSymbols: string[];
   lastPriceUpdate: number | null;
@@ -19,7 +19,7 @@ interface RealtimeState {
     }
   >;
 
-  setBinanceStatus: (status: ConnectionStatus) => void;
+  setKrakenStatus: (status: ConnectionStatus) => void;
   setSupabaseStatus: (status: ConnectionStatus) => void;
   updatePrice: (
     symbol: string,
@@ -38,13 +38,13 @@ interface RealtimeState {
 }
 
 export const useRealtimeStore = create<RealtimeState>()((set, get) => ({
-  binanceStatus: "disconnected",
+  krakenStatus: "disconnected",
   supabaseStatus: "disconnected",
   subscribedSymbols: [],
   lastPriceUpdate: null,
   priceCache: {},
 
-  setBinanceStatus: (status) => set({ binanceStatus: status }),
+  setKrakenStatus: (status) => set({ krakenStatus: status }),
   setSupabaseStatus: (status) => set({ supabaseStatus: status }),
 
   updatePrice: (symbol, data) =>
@@ -85,7 +85,7 @@ export const useRealtimeStore = create<RealtimeState>()((set, get) => ({
   getPrice: (symbol) => get().priceCache[symbol]?.price ?? null,
 
   isConnected: () => {
-    const { binanceStatus, supabaseStatus } = get();
-    return binanceStatus === "connected" || supabaseStatus === "connected";
+    const { krakenStatus, supabaseStatus } = get();
+    return krakenStatus === "connected" || supabaseStatus === "connected";
   },
 }));

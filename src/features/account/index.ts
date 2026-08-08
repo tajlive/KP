@@ -1,2 +1,2 @@
 // Account feature exports
-export { default as BinanceAPISettings } from "./settings/BinanceAPISettings";
+export { default as KrakenAPISettings } from "./settings/KrakenAPISettings";

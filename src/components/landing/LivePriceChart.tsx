@@ -5,11 +5,11 @@ import styles from "./LivePriceChart.module.css";
 
 /* ===================================================
    LivePriceChart — Live BTC/USDT price + SVG area chart
-   Binance API polling, localStorage seeding, dark theme
+   Kraken polling via egen rute, localStorage seeding, dark theme
    =================================================== */
 
-const BINANCE_URL =
-  "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT";
+const PRICE_URL =
+  "/api/market/binance-prices?symbols=BTCUSDT";
 const POLL_MS = 5000;
 const CHART_POINTS = 40;
 const CHART_W = 340;
@@ -134,17 +134,19 @@ export default function LivePriceChart() {
     mountRef.current = true;
   }, []);
 
-  // ── fetch price (Binance USDT → NOK via eget fx-endepunkt, valuta-kontrakten) ──
+  // ── fetch price (Kraken USDT → NOK via eget fx-endepunkt, valuta-kontrakten) ──
   const fetchPrice = useCallback(async () => {
     try {
       const [priceRes, fxRes] = await Promise.all([
-        fetch(BINANCE_URL),
+        fetch(PRICE_URL),
         fetch("/api/fx/usdt-nok"),
       ]);
       if (!priceRes.ok) return;
-      const data = (await priceRes.json()) as { symbol: string; price: string };
-      const usdtPrice = Number.parseFloat(data.price);
-      if (Number.isNaN(usdtPrice)) return;
+      const data = (await priceRes.json()) as {
+        prices?: Array<{ symbol: string; price: number }>;
+      };
+      const usdtPrice = data.prices?.[0]?.price;
+      if (usdtPrice == null || Number.isNaN(usdtPrice)) return;
 
       let rate = 10.5; // fallback hvis fx-endepunkt er nede
       if (fxRes.ok) {

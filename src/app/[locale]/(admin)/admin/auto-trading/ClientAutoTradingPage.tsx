@@ -1,22 +1,27 @@
 "use client";
 
-import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
-import { ExchangeApiSettings } from "@/features/account/settings/ExchangeApiSettings";
-import { Button } from "@/shared/ui/button";
-import { Card, CardContent } from "@/shared/ui/card";
-import { createClient } from "@/lib/utils";
-import { AlertCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { User } from "@supabase/supabase-js";
+import { Loader2, AlertCircle, Building2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+} from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
+import KrakenAPISettings from "@/features/account/settings/KrakenAPISettings";
+import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
+
+interface User {
+  id: string;
+}
 
 export default function ClientAutoTradingPage() {
   const params = useParams();
   const locale = (params?.locale as string) || "no";
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const [hasBinanceConnection, setHasBinanceConnection] = useState(false);
+  const [hasKrakenConnection, setHasKrakenConnection] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -24,26 +29,19 @@ export default function ClientAutoTradingPage() {
 
   const loadUserData = async () => {
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
+      const res = await fetch("/api/trading/mode", {
+        credentials: "same-origin",
+      });
+      if (!res.ok) {
         toast.error("Du må være logget inn");
         return;
       }
+      const data = await res.json();
 
-      setUser(user);
+      setUser({ id: data.userId ?? "user" });
 
-      // Sjekk om bruker har Binance tilkobling (fra user_profiles)
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("binance_connected")
-        .eq("id", user.id)
-        .single();
-
-      setHasBinanceConnection(profile?.binance_connected || false);
+      // EU/EØS 2026: live-tilkobling = Kraken-nøkler (Binance fjernet)
+      setHasKrakenConnection(Boolean(data.krakenConnected));
     } catch (error) {
       console.error("Error loading user data:", error);
     } finally {
@@ -76,8 +74,8 @@ export default function ClientAutoTradingPage() {
     );
   }
 
-  // Step 1: Koble til Binance
-  if (!hasBinanceConnection) {
+  // Step 1: Koble til Kraken
+  if (!hasKrakenConnection) {
     return (
       <div className="space-y-8">
         <div>
@@ -87,7 +85,7 @@ export default function ClientAutoTradingPage() {
           <p className="text-slate-400">Steg 1 av 2: Koble til din exchange</p>
         </div>
 
-        <ExchangeApiSettings />
+        <KrakenAPISettings />
       </div>
     );
   }
@@ -104,9 +102,10 @@ export default function ClientAutoTradingPage() {
         </div>
         <Button
           variant="outline"
-          onClick={() => setHasBinanceConnection(false)}
+          onClick={() => setHasKrakenConnection(false)}
           className="border-slate-700 text-slate-400"
         >
+          <Building2 className="w-4 h-4 mr-2" />
           API-innstillinger
         </Button>
       </div>

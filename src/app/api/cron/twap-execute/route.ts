@@ -9,14 +9,18 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Simple price fetcher
+// Simple price fetcher — EU/EØS (2026): Kraken via egen rute
 async function fetchPrice(symbol: string): Promise<number> {
   if (symbol === "USDT") return 1.0;
   try {
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}USDT`);
+    const res = await fetch(
+      `/api/market/binance-prices?symbols=${encodeURIComponent(`${symbol}USDT`)}`,
+    );
     if (!res.ok) return 0;
-    const data = await res.json();
-    return parseFloat(data.price);
+    const data = (await res.json()) as {
+      prices?: Array<{ symbol: string; price: number }>;
+    };
+    return data.prices?.[0]?.price ?? 0;
   } catch {
     return 0;
   }
@@ -49,7 +53,7 @@ export async function POST(req: NextRequest) {
         // If amount_usdt is 500, and twap_chunks is 5, chunk = 100
         const chunkUsdt = order.amount_usdt / order.twap_chunks;
         
-        // Ensure minimum binance trade size ($10)
+        // Ensure minimum trade size ($10)
         let executeUsdt = Math.min(chunkUsdt, order.amount_usdt - (order.executed_amount_usdt || 0));
         if (executeUsdt < 10 && executeUsdt > 0) {
           executeUsdt = order.amount_usdt - (order.executed_amount_usdt || 0); // execute the rest if it's small
@@ -72,17 +76,17 @@ export async function POST(req: NextRequest) {
 
         const quantity = executeUsdt / price;
 
-        // Fetch user profile to check if live trading
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("binance_connected")
-          .eq("id", order.user_id)
-          .single();
+        // Fetch user profile to check if live trading (Kraken-kobling)
+        const { data: krakenKeys } = await supabase
+          .from("user_kraken_keys")
+          .select("user_id")
+          .eq("user_id", order.user_id)
+          .maybeSingle();
 
         let executionSuccess = false;
 
-        if (profile?.binance_connected) {
-          // LIVE EXECUTION via Binance
+        if (krakenKeys) {
+          // LIVE EXECUTION (Kraken er eneste børs — EU/EØS 2026)
           logger.info(`[LIVE] TWAP Order ${order.side.toUpperCase()} ${quantity.toFixed(6)} ${order.symbol} at ${price} (Value: $${executeUsdt.toFixed(2)})`);
           // Simulate success for now
           executionSuccess = true;

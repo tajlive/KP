@@ -24,14 +24,13 @@ export interface MultiTimeframeResult {
 }
 
 /**
- * Fetch candles for multiple timeframes from Binance
+ * Fetch candles for multiple timeframes — EU/EØS (2026): Kraken via egen rute
  */
 export async function fetchMultiTimeframeCandles(
   pair: string,
   timeframes: string[] = ["4h", "1h", "15m"],
   limit: number = 100,
 ): Promise<Record<string, Candle[]>> {
-  const baseUrl = "https://api.binance.com";
   const symbol = pair.replace("/", "");
   const result: Record<string, Candle[]> = {};
 
@@ -39,18 +38,18 @@ export async function fetchMultiTimeframeCandles(
     timeframes.map(async (tf) => {
       try {
         const res = await fetch(
-          `${baseUrl}/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=${limit}`,
+          `/api/market/klines?symbol=${symbol}&interval=${tf}&limit=${limit}`,
           { next: { revalidate: 30 } },
         );
-        if (!res.ok) throw new Error(`Binance ${tf}: ${res.status}`);
-        const data = await res.json();
-        result[tf] = data.map((k: number[]) => ({
-          time: k[0],
-          open: parseFloat(String(k[1])),
-          high: parseFloat(String(k[2])),
-          low: parseFloat(String(k[3])),
-          close: parseFloat(String(k[4])),
-          volume: parseFloat(String(k[5])),
+        if (!res.ok) throw new Error(`Kraken ${tf}: ${res.status}`);
+        const body = await res.json();
+        result[tf] = (body.klines ?? []).map((k: { time?: number; timestamp?: number; open: number; high: number; low: number; close: number; volume: number }) => ({
+          time: k.timestamp ?? k.time ?? 0,
+          open: k.open,
+          high: k.high,
+          low: k.low,
+          close: k.close,
+          volume: k.volume,
         }));
       } catch (err) {
         console.error(`[MTF] Failed to fetch ${tf} for ${symbol}:`, err);

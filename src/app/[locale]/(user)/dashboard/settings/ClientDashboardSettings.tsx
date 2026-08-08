@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BinanceAPISettings } from "@/features/account";
+import { KrakenAPISettings } from "@/features/account";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Card } from "@coinbase/cds-web/cards";
@@ -65,13 +65,13 @@ export default function ClientDashboardSettings() {
     <div className="space-y-4 py-2">
       <Card className="border border-slate-200 bg-white p-5 shadow-sm">
         <Text as="h1" className="text-xl font-semibold text-slate-900">
-          Binance API
+          Kraken API
         </Text>
         <Text as="p" className="mt-1 text-sm text-slate-600">
-          Koble konto for live-handel og verifiser tilgangen.
+          Koble konto for live-handel og verifiser tilgangen (Kraken — eneste støttede børs for norske brukere).
         </Text>
       </Card>
-      <BinanceAPISettings user={user} />
+      <KrakenAPISettings />
     </div>
   );
 }

@@ -1,10 +1,14 @@
 /**
- * Price Aggregator — combines Binance WS (primary) with REST polling (fallback).
+ * Price Aggregator — combines Kraken WS (primary) with REST polling (fallback).
+ * EU/EØS (2026): Kraken eneste tallkilde (Binance geo-blokkert).
  * Ensures prices are always available even when WebSocket is disconnected.
  */
 
 import { useRealtimeStore } from "@/store/realtime-store";
-import { WebSocketManager } from "./websocket-manager";
+import {
+  WebSocketManager,
+  type PriceCallback,
+} from "@/lib/websocket/WebSocketManager";
 
 const REST_POLL_INTERVAL = 10_000; // 10s fallback polling
 const STALE_THRESHOLD = 30_000; // Consider data stale after 30s
@@ -31,11 +35,11 @@ class PriceAggregator {
   }
 
   start(): void {
-    // Subscribe to Binance WS via the singleton manager
-    this.unsubscribeWs = this.wsManager.subscribe(
+    // Subscribe to Kraken WS via the singleton manager
+    this.unsubscribeWs = this.wsManager.subscribeToTickers(
       this.symbols,
-      (symbol, price) => {
-        this.onPriceCallback?.(symbol, price);
+      (ticker: { symbol: string; price: number }) => {
+        this.onPriceCallback?.(ticker.symbol, ticker.price);
       },
     );
 
@@ -70,7 +74,7 @@ class PriceAggregator {
 
     // Only poll if WS is disconnected or data is stale
     if (
-      store.binanceStatus === "connected" &&
+      store.krakenStatus === "connected" &&
       store.lastPriceUpdate &&
       now - store.lastPriceUpdate < STALE_THRESHOLD
     ) {
@@ -78,31 +82,28 @@ class PriceAggregator {
     }
 
     try {
-      const symbolParam = this.symbols.map((s) => `"${s}"`).join(",");
+      // EU/EØS (2026): via egen API-rute → Kraken (ingen direkte Binance-kall)
       const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/24hr?symbols=[${symbolParam}]`,
+        `/api/market/binance-24hr?symbols=${encodeURIComponent(this.symbols.join(","))}`,
         { cache: "no-store" },
       );
 
       if (!response.ok) return;
 
-      const data = (await response.json()) as Array<{
-        symbol: string;
-        lastPrice: string;
-        priceChangePercent: string;
-        highPrice: string;
-        lowPrice: string;
-        volume: string;
-      }>;
+      const body = (await response.json()) as {
+        prices?: Array<{
+          symbol: string;
+          price: number;
+          change24h: number;
+        }>;
+      };
+      const data = body.prices ?? [];
 
       for (const ticker of data) {
-        const price = parseFloat(ticker.lastPrice);
+        const price = Number(ticker.price);
         store.updatePrice(ticker.symbol, {
           price,
-          change24h: parseFloat(ticker.priceChangePercent),
-          high24h: parseFloat(ticker.highPrice),
-          low24h: parseFloat(ticker.lowPrice),
-          volume24h: parseFloat(ticker.volume),
+          change24h: Number(ticker.change24h),
         });
         this.onPriceCallback?.(ticker.symbol, price);
       }

@@ -10,19 +10,23 @@ export interface ATRResult {
 }
 
 export async function calculateATR(symbol: string, period = 14): Promise<number> {
-  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=${period * 2}`;
+  // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
+  const url = `/api/market/klines?symbol=${symbol}&interval=1h&limit=${period * 2}`;
   
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
-    if (!response.ok) throw new Error(`Binance API error: ${response.status}`);
+    if (!response.ok) throw new Error(`Kraken API error: ${response.status}`);
     
-    const klines = await response.json() as [number, string, string, string, string, string, number, string, number, string, string, string][];
+    const body = await response.json() as {
+      klines?: Array<{ high: number; low: number; close: number }>;
+    };
+    const klines = body.klines ?? [];
     
     const trs: number[] = [];
     for (let i = 1; i < klines.length && trs.length < period; i++) {
-      const high = parseFloat(klines[i][2]);
-      const low = parseFloat(klines[i][3]);
-      const prevClose = parseFloat(klines[i - 1][4]);
+      const high = klines[i].high;
+      const low = klines[i].low;
+      const prevClose = klines[i - 1].close;
       
       const tr = Math.max(
         high - low,
