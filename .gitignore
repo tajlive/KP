@@ -334,3 +334,4 @@ tmp/
 .tmp-e2e/
 dogfood-output/
 scripts/__pycache__/
+.env.local.bak-*
