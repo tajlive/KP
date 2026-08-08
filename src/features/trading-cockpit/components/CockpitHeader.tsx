@@ -157,9 +157,9 @@ export function CockpitHeader({
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-kp-text-primary">
-            {t("cockpit.header.title")}
-          </h1>
+          {/* Side-tittel fjernet: TopNav viser allerede aktiv «Handel»-lenke
+              i brand-farge (Task 5 — én topp-nav per skjerm). Beholder kun
+              ModeBadge + modus-toggle (unik funksjonalitet). */}
           <ModeBadge mode={mode} />
         </div>
 
