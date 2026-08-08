@@ -4613,7 +4613,8 @@
           "active": "Active",
           "paused": "Paused",
           "stopped": "Stopped",
-          "crashed": "Crashed"
+          "crashed": "Crashed",
+          "all": "All"
         },
         "columns": {
           "startingCapital": "Starting capital",
@@ -4646,14 +4647,17 @@
         "startRobotExisting": "Bot is already running",
         "startRobotSuccess": "Bot started",
         "sessionStatusChanged": {
-          "title": "Status changed"
+          "title": "Status changed",
+          "description": "The session status has been updated.",
+          "descriptionNoMessage": "A change was recorded."
         }
       },
       "quickActions": {
         "pauseAll": "Pause all",
         "startRobot": "Start robot",
         "viewHistory": "History",
-        "error": "Could not perform action"
+        "error": "Could not perform action",
+        "resumeAll": "Resume all"
       },
       "trades": {
         "side": {
@@ -4702,11 +4706,35 @@
           "sessionId": "Session ID",
           "title": "Trade details",
           "description": "Details about the trade"
+        },
+        "dateRange": {
+          "7d": "7 days",
+          "30d": "30 days",
+          "90d": "90 days",
+          "1y": "1 year",
+          "all": "All time"
+        },
+        "status": {
+          "all": "All",
+          "filled": "Filled",
+          "partially_filled": "Partially filled",
+          "pending": "Pending",
+          "cancelled": "Cancelled",
+          "failed": "Failed"
+        },
+        "titleCount": {
+          "one": "{count} trade",
+          "other": "{count} trades"
+        },
+        "unread": {
+          "one": "{count} new trade",
+          "other": "{count} new trades"
         }
       },
       "realtime": {
         "newTrade": {
-          "title": "New trade"
+          "title": "New trade",
+          "description": "A new trade has been recorded."
         }
       },
       "analysis": {
@@ -4717,7 +4745,12 @@
           "description": "Make some trades and the analysis will appear here."
         },
         "period": {
-          "label": "Period"
+          "label": "Period",
+          "7d": "7 days",
+          "30d": "30 days",
+          "90d": "90 days",
+          "1y": "1 year",
+          "all": "All time"
         },
         "chart": {
           "symbolTitle": "Distribution per coin",

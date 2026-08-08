@@ -4430,7 +4430,12 @@
           "title": "暂无分析"
         },
         "period": {
-          "label": "时间段"
+          "label": "时间段",
+          "7d": "7 天",
+          "30d": "30 天",
+          "90d": "90 天",
+          "1y": "1 年",
+          "all": "全部时间"
         },
         "stats": {
           "bestPair": "最佳币种",
@@ -4492,11 +4497,13 @@
         "error": "错误",
         "startRobot": "启动机器人",
         "viewHistory": "查看历史记录",
-        "pauseAll": "全部暂停"
+        "pauseAll": "全部暂停",
+        "resumeAll": "全部恢复"
       },
       "realtime": {
         "newTrade": {
-          "title": "新交易"
+          "title": "新交易",
+          "description": "已记录一笔新交易。"
         }
       },
       "riskBanner": {
@@ -4520,7 +4527,8 @@
           "active": "活跃",
           "paused": "已暂停",
           "stopped": "已停止",
-          "crashed": "已崩溃"
+          "crashed": "已崩溃",
+          "all": "全部"
         },
         "title": "会话"
       },
@@ -4534,7 +4542,9 @@
       },
       "toast": {
         "sessionStatusChanged": {
-          "title": "状态已更改"
+          "title": "状态已更改",
+          "description": "会话状态已更新。",
+          "descriptionNoMessage": "已记录一项更改。"
         },
         "startRobotExisting": "机器人已在运行",
         "startRobotSuccess": "机器人已启动"
@@ -4586,7 +4596,30 @@
           "buy": "购买",
           "sell": "出售"
         },
-        "title": "交易"
+        "title": "交易",
+        "dateRange": {
+          "7d": "7 天",
+          "30d": "30 天",
+          "90d": "90 天",
+          "1y": "1 年",
+          "all": "全部时间"
+        },
+        "status": {
+          "all": "全部",
+          "filled": "已成交",
+          "partially_filled": "部分成交",
+          "pending": "待处理",
+          "cancelled": "已取消",
+          "failed": "失败"
+        },
+        "titleCount": {
+          "one": "{count} 笔交易",
+          "other": "{count} 笔交易"
+        },
+        "unread": {
+          "one": "{count} 笔新交易",
+          "other": "{count} 笔新交易"
+        }
       },
       "tab": {
         "overview": "概览",
