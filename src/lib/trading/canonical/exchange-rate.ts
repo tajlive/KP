@@ -1,13 +1,14 @@
 /**
  * Canonical exchange rate service — USDTNOK
  *
- * Henter levende USDT→NOK rate fra Binance via Supabase proxy.
+ * Henter levende USDT→NOK rate fra egen rute /api/fx/usdt-nok
+ * (kilde: global_settings.usdt_nok_rate — EU/EØS 2026: Kraken/MiCA,
+ * ingen Binance-kall noe sted i valutakjeden).
  * Cache i 60 sekunder, fallback ved feil.
  * Validerer at rate er innenfor [5, 20] for å guarde mot korrupt API-data.
  */
 
-const BINANCE_PROXY_URL =
-  "https://pskhryjzkobytnfwucrb.supabase.co/functions/v1/binance-proxy?symbol=USDTNOK";
+const FX_ROUTE = "/api/fx/usdt-nok";
 const CACHE_TTL_MS = 60_000;
 const MIN_RATE = 5;
 const MAX_RATE = 20;
@@ -28,11 +29,11 @@ function isCacheValid(): boolean {
 }
 
 /**
- * Fetch the USDT → NOK exchange rate from Binance via the Supabase proxy.
+ * Fetch the USDT → NOK exchange rate from /api/fx/usdt-nok (global_settings).
  *
- * Caches the result for 60 seconds. Falls back to the cached value (or 10.5)
- * on any fetch/parse error. Validates the returned rate is between 5 and 20
- * to guard against corrupted proxy data.
+ * Caches the result for 60 seconds. Falls back to the cached value (or
+ * DEFAULT_FALLBACK) on any fetch/parse error. Validates the returned rate
+ * is between 5 and 20 to guard against corrupted data.
  */
 export async function getNokUsdtRate(): Promise<number> {
   // Return cached value if still fresh
@@ -44,37 +45,25 @@ export async function getNokUsdtRate(): Promise<number> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5_000);
 
-    const res = await fetch(BINANCE_PROXY_URL, {
+    const res = await fetch(FX_ROUTE, {
       signal: controller.signal,
       headers: { Accept: "application/json" },
+      cache: "no-store",
     });
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      throw new Error(`Binance proxy responded with ${res.status}`);
+      throw new Error(`FX route responded with ${res.status}`);
     }
 
     const body: unknown = await res.json();
 
-    // Handle both wrapped proxy response and passthrough Binance response
-    let priceStr: string | undefined;
-
-    if (body && typeof body === "object" && "data" in (body as Record<string, unknown>)) {
-      // Wrapped proxy response: { ok: true, data: { symbol, price } }
-      const data = (body as Record<string, unknown>).data;
-      if (data && typeof data === "object" && "price" in (data as Record<string, unknown>)) {
-        priceStr = (data as Record<string, unknown>).price as string;
-      }
-    } else if (body && typeof body === "object" && "price" in (body as Record<string, unknown>)) {
-      // Passthrough Binance response: { symbol: "USDTNOK", price: "9.58320000" }
-      priceStr = (body as Record<string, unknown>).price as string;
+    // Egen rute: { rate: number, source: "global_settings" }
+    if (!body || typeof body !== "object" || !("rate" in (body as Record<string, unknown>))) {
+      throw new Error("Rate field not found in FX response");
     }
 
-    if (priceStr === undefined || priceStr === null) {
-      throw new Error("Price field not found in proxy response");
-    }
-
-    const rate = Number(priceStr);
+    const rate = Number((body as Record<string, unknown>).rate);
 
     if (!Number.isFinite(rate) || rate < MIN_RATE || rate > MAX_RATE) {
       throw new Error(

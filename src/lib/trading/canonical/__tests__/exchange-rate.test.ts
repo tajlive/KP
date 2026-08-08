@@ -8,10 +8,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getNokUsdtRate, clearRateCache } from "@/lib/trading/canonical/exchange-rate";
 
-const VALID_PROXY_RESPONSE = {
-  ok: true,
-  status: 200,
-  data: { symbol: "USDTNOK", price: "10.25000000" },
+const VALID_FX_RESPONSE = {
+  rate: 10.25,
+  source: "global_settings",
 };
 
 function mockFetch(response: Response) {
@@ -26,7 +25,7 @@ describe("getNokUsdtRate", () => {
 
   it("should return a rate between 5 and 20 from the proxy", async () => {
     mockFetch(
-      new Response(JSON.stringify(VALID_PROXY_RESPONSE), {
+      new Response(JSON.stringify(VALID_FX_RESPONSE), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }),
@@ -41,7 +40,7 @@ describe("getNokUsdtRate", () => {
 
   it("should cache the rate and not call fetch again within 60s", async () => {
     const fetchSpy = mockFetch(
-      new Response(JSON.stringify(VALID_PROXY_RESPONSE), {
+      new Response(JSON.stringify(VALID_FX_RESPONSE), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }),
@@ -60,7 +59,7 @@ describe("getNokUsdtRate", () => {
 
   it("should fall back to cached value on fetch error", async () => {
     const fetchSpy = mockFetch(
-      new Response(JSON.stringify(VALID_PROXY_RESPONSE), {
+      new Response(JSON.stringify(VALID_FX_RESPONSE), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }),

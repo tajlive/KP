@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
-import { BINANCE_REFERRAL_LINK as BINANCE_REF_LINK } from "@/lib/constants/binance";
 import {
   AlertTriangle,
   CheckCircle,
@@ -317,32 +316,6 @@ export function WalletTab() {
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
               {isNo ? "Oppdater saldo" : "Refresh balances"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-yellow-500/20 bg-yellow-950/20">
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center font-bold text-white text-xl">
-                B
-              </div>
-              <div>
-                <h3 className="font-semibold text-white">
-                  {isNo ? "Har du ikke Binance-konto?" : "Don't have a Binance account?"}
-                </h3>
-                <p className="text-slate-400 text-sm">
-                  {isNo ? "Opprett via vår lenke og få lavere gebyrer" : "Create via our link and get lower fees"}
-                </p>
-              </div>
-            </div>
-            <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold" asChild>
-              <a href={BINANCE_REF_LINK} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                {isNo ? "Opprett Binance-konto" : "Create Binance Account"}
-              </a>
             </Button>
           </div>
         </CardContent>
