@@ -388,15 +388,26 @@
       "reportJobId": "Report Job Id",
       "reportDownload": "Report Download",
       "reportExpires": "Report Expires",
-      "reportClose": "Report Close"
+      "reportClose": "Report Close",
+      "sources": {
+        "all": "All sources",
+        "manual": "Manual",
+        "magic_link": "Magic link",
+        "google": "Google"
+      },
+      "tiers": {
+        "all": "All tiers",
+        "free": "Free",
+        "pro": "Pro"
+      }
     },
     "totalUsers": "Total Users",
     "send": "Send",
     "serviceStatus": "Service Status",
     "allServicesNormal": "All Services Normal",
     "impersonation": {
-      "title": "Title",
-      "description": "Description",
+      "title": "Impersonation",
+      "description": "Sign in as another user to see their experience.",
       "warningTitle": "Warning Title",
       "warningText": "Warning Text",
       "email": "Email",
@@ -1082,16 +1093,16 @@
     "update": "Update",
     "submit": "Submit",
     "refresh": "Refresh",
-    "title": "Title",
+    "title": "Klarpakke",
     "unexpectedError": "Unexpected Error",
     "speedOnboarding": {
       "timerPrefix": "Timer Prefix",
       "step1": {
-        "title": "Title",
+        "title": "Welcome",
         "subtitle": "Subtitle"
       },
       "step2": {
-        "title": "Title",
+        "title": "Set up your account",
         "subtitle": "Subtitle",
         "startingCapital": "Starting Capital",
         "paperTradingZeroRisk": "Paper Trading Zero Risk",
@@ -1099,7 +1110,7 @@
         "startTrading": "Start Trading"
       },
       "step3": {
-        "title": "Title",
+        "title": "Ready to trade",
         "line1": "Line",
         "line2": "Line",
         "line3": "Line",
@@ -1112,9 +1123,9 @@
         "finish": "Finish"
       },
       "step1": {
-        "title1": "Title",
-        "title2": "Title",
-        "description": "Description",
+        "title1": "Choose a strategy",
+        "title2": "Adjust risk",
+        "description": "Find a strategy that fits your style and choose how much risk you want to take.",
         "howItWorksTitle": "How It Works Title",
         "list1": "List",
         "list2": "List",
@@ -1122,12 +1133,12 @@
         "cta": "Cta"
       },
       "step2": {
-        "title": "Title",
+        "title": "Follow in real time",
         "subtitle": "Subtitle",
         "preloaded": "Preloaded"
       },
       "step3": {
-        "title": "Title",
+        "title": "Start with play money",
         "subtitle": "Subtitle",
         "goalStrategy": "Goal Strategy",
         "playMoney": "Play Money",
@@ -1141,7 +1152,7 @@
         "startBot": "Start Bot"
       },
       "step4": {
-        "title": "Title",
+        "title": "Go live when ready",
         "subtitle": "Subtitle",
         "redirecting": "Redirecting"
       }
@@ -1149,7 +1160,7 @@
     "mobile": {
       "step2": {
         "backAriaLabel": "Back Aria Label",
-        "title": "Title",
+        "title": "Set up your account",
         "subtitle": "Subtitle"
       }
     },
@@ -1584,7 +1595,7 @@
     "profit": "Profit",
     "loss": "Loss",
     "recentTrades": {
-      "title": "Title",
+      "title": "Recent trades",
       "viewAll": "View All"
     },
     "noTrades": "No trades yet. Click \"Sync Kraken\" to load your Kraken trades.",
@@ -2163,7 +2174,8 @@
       "seeAll": "See All",
       "empty": "Empty",
       "directionBuy": "Buy",
-      "directionSell": "Sell"
+      "directionSell": "Sell",
+      "planChip": "Plan"
     },
     "homeOverview": {
       "title": "Portfolio Overview",
@@ -2774,44 +2786,44 @@
       }
     },
     "cookies": {
-      "title": "Title",
+      "title": "Cookies",
       "whatAreCookies": {
-        "title": "Title",
+        "title": "What are cookies?",
         "content": "Content"
       },
       "categories": {
-        "title": "Title",
+        "title": "Categories",
         "necessary": {
           "name": "Name",
-          "description": "Description"
+          "description": "Necessary cookies keep the service secure and working."
         },
         "analytics": {
           "name": "Name",
-          "description": "Description"
+          "description": "Analytics cookies help us understand how the site is used."
         },
         "marketing": {
           "name": "Name",
-          "description": "Description"
+          "description": "Marketing cookies are only used with your consent."
         },
         "functional": {
           "name": "Name",
-          "description": "Description"
+          "description": "Functional cookies remember your choices and preferences."
         }
       },
       "thirdParty": {
-        "title": "Title",
+        "title": "Third parties",
         "sentry": "Sentry",
         "google": "Google",
         "supabase": "Supabase"
       },
       "manage": {
-        "title": "Title",
+        "title": "Manage consent",
         "lastUpdated": "Last Updated",
         "revoke": "Revoke",
         "noConsent": "No Consent"
       },
       "contact": {
-        "title": "Title",
+        "title": "Contact",
         "content": "Content"
       }
     }
@@ -3041,7 +3053,7 @@
     "logout": "Logout",
     "selectExchange": "Select Exchange",
     "security": {
-      "title": "Title",
+      "title": "Security",
       "warning": "Warning"
     },
     "pilot": "Pilot"
@@ -3054,7 +3066,7 @@
       "dark": "Dark"
     },
     "livePill": {
-      "label": "Label"
+      "label": "Live"
     }
   },
   "notifications": {
@@ -3215,55 +3227,55 @@
       "benefits": {
         "items": {
           "paperMoney": {
-            "title": "Title",
+            "title": "NOK 100,000 in play money",
             "desc": "Desc"
           },
           "journal": {
-            "title": "Title",
+            "title": "Trading journal",
             "desc": "Desc"
           },
           "influence": {
-            "title": "Title",
+            "title": "Shape the product",
             "desc": "Desc"
           },
           "kltPoints": {
-            "title": "Title",
+            "title": "KLT points",
             "desc": "Desc"
           }
         },
-        "title": "Title",
+        "title": "What you get",
         "subtitle": "Subtitle"
       },
       "steps": {
         "items": {
           "checkStatus": {
-            "title": "Title",
+            "title": "Check your status",
             "desc": "Desc",
             "action": "Action"
           },
           "dashboard": {
-            "title": "Title",
+            "title": "Explore the dashboard",
             "desc": "Desc",
             "action": "Action"
           },
           "wait": {
-            "title": "Title",
+            "title": "Wait for approval",
             "desc": "Desc"
           }
         },
-        "title": "Title"
+        "title": "How to get started"
       },
       "hero": {
-        "title": "Title",
+        "title": "Welcome to Klarpakke",
         "highlight": "Highlight",
         "subtitle": "Subtitle"
       },
       "safety": {
-        "title": "Title",
+        "title": "Your money is safe",
         "desc": "Desc"
       },
       "cta": {
-        "title": "Title",
+        "title": "Start for free",
         "subtitle": "Subtitle",
         "button": "Button"
       },
@@ -3274,7 +3286,7 @@
     "paperSetup": {
       "error": "Error",
       "loading": "Loading",
-      "title": "Title",
+      "title": "Set up play money",
       "subtitle": "Subtitle",
       "badge": "Paper",
       "virtual": "Virtual",
@@ -3286,18 +3298,18 @@
     },
     "step4": {
       "error": "Error",
-      "title": "Title",
+      "title": "Connect your exchange",
       "subtitle": "Subtitle",
       "security": {
-        "title": "Title",
-        "description": "Description"
+        "title": "Secure connection",
+        "description": "Your keys are encrypted and only used to execute your trades."
       },
       "apiKey": {
-        "label": "Label",
+        "label": "API key",
         "placeholder": "Paste your API key"
       },
       "apiSecret": {
-        "label": "Label",
+        "label": "API secret",
         "placeholder": "Paste your API secret"
       },
       "connecting": "Connecting",
@@ -3308,7 +3320,7 @@
     "aiMapping": {
       "coachName": "Coach Name",
       "subtitle": "Subtitle",
-      "title": "Title",
+      "title": "AI mapping",
       "cta": "Cta",
       "skip": "Skip"
     },
@@ -3319,15 +3331,16 @@
     },
     "mobile": {
       "step3": {
-        "title": "Title",
-        "description": "Description",
+        "title": "Ready to trade",
+        "description": "Start your first trade with zero risk.",
         "selectedStrategy": "Selected Strategy",
         "loading": "Loading",
-        "cta": "Cta"
+        "cta": "Cta",
+        "discoverCta": "Explore the dashboard"
       },
       "step1": {
-        "title": "Title",
-        "description": "Description",
+        "title": "Start simple",
+        "description": "Create an account and get NOK 100,000 in play money.",
         "badgesAriaLabel": "Badges Aria Label",
         "badges": {
           "bankid": "Bankid",
@@ -3340,7 +3353,13 @@
       "step2": {
         "subtitle": "Subtitle",
         "backAriaLabel": "Back Aria Label",
-        "title": "Title"
+        "title": "Title",
+        "riskLevels": {
+          "safe": "Safe",
+          "balanced": "Balanced",
+          "aggressive": "Aggressive",
+          "offensive": "Offensive"
+        }
       }
     },
     "canvas-confetti": "Canvas Confetti",
@@ -3383,7 +3402,13 @@
         "redirecting": "Redirecting"
       }
     },
-    "ref": "Ref"
+    "ref": "Ref",
+    "error": {
+      "title": "Something went wrong",
+      "message": "Could not load the content. Please try again.",
+      "retry": "Retry",
+      "backToLogin": "Back to login"
+    }
   },
   "orderHistory": {
     "title": "Order History",
@@ -3669,7 +3694,7 @@
       }
     },
     "sectionTitle": "Section Title",
-    "description": "Description",
+    "description": "Choose the plan that fits you. Start free with play money.",
     "disclaimer": "Disclaimer"
   },
   "pricingCancel": {
@@ -3779,9 +3804,9 @@
     },
     "metadata": {
       "sectionTitle": "Marketplace metadata",
-      "title": "Title",
+      "title": "Strategy marketplace",
       "titlePlaceholder": "e.g. Balanced DCA BTC",
-      "description": "Description",
+      "description": "Explore and copy proven trading strategies.",
       "descriptionPlaceholder": "Short pitch for buyers",
       "category": "Category",
       "category_dca": "DCA",
@@ -4379,8 +4404,8 @@
     "confirmTrade": "Confirm Trade",
     "positions": {
       "empty": {
-        "title": "Title",
-        "description": "Description"
+        "title": "No positions",
+        "description": "When you open a position, it will appear here."
       },
       "columns": {
         "symbol": "Symbol",
@@ -4519,7 +4544,7 @@
     "fetchError": "Fetch Error",
     "diagnosticsCopyFailed": "Diagnostics Copy Failed",
     "diagnosticsCopied": "Diagnostics Copied",
-    "title": "Title",
+    "title": "Trade",
     "subtitle": "Subtitle",
     "copyDiagnostics": "Copy Diagnostics",
     "exportCsv": "Export Csv",
@@ -4797,7 +4822,7 @@
       "workspaceHeader": {
         "subtitle": "Subtitle",
         "badge": "Paper",
-        "title": "Title"
+        "title": "Play money"
       },
       "backToOverview": "Back To Overview",
       "backToDashboard": "Back To Dashboard",
@@ -4829,7 +4854,7 @@
       "resetSession": "Reset Session",
       "newSession": "New Session",
       "noSessions": "No Sessions",
-      "description": "Description",
+      "description": "Trade with play money and practise without risk.",
       "refreshList": "Refresh List",
       "krakenUpdateInfo": "Prices are updated from Kraken in real time",
       "tradingPair": "Trading Pair",
@@ -4878,7 +4903,7 @@
       "loading": "Loading",
       "error": "Error",
       "noPosition": "No Position",
-      "title": "Title",
+      "title": "Position size",
       "totalUnrealizedPnL": "Total Unrealized Pn L",
       "lot": "Lot",
       "entryPrice": "Entry Price",
@@ -4892,29 +4917,38 @@
       "balance": "Balance",
       "maxPerTrade": "Max Per Trade",
       "alreadyInMarket": "Already In Market",
-      "title": "Title",
+      "title": "Amount per trade",
       "status": {
         "blocked": {
-          "description": "Description"
+          "description": "Trading is temporarily blocked. Check the message above.",
+          "title": "Trading blocked"
         },
         "warning": {
-          "title": "Title"
+          "title": "Be careful",
+          "description": "The amount exceeds the recommended maximum."
         },
         "caution": {
-          "description": "Description"
+          "description": "The amount is high relative to your balance.",
+          "title": "Be aware"
         },
         "ok": {
-          "description": "Description"
+          "description": "The amount is within safe limits.",
+          "title": "Within limits"
         }
       },
       "whatThisMeans": "What This Means",
       "paperTrading": {
-        "title": "Title",
-        "description": "Description"
+        "title": "Play money mode",
+        "description": "You are trading with play money — no real money is at risk."
+      },
+      "scenarios": {
+        "gain": "Potential gain: {amount}",
+        "loss": "Potential loss: {amount}",
+        "stopLoss": "Stop loss: {amount}"
       }
     },
     "signalFeed": {
-      "title": "Title",
+      "title": "Signals",
       "statusLive": "Status Live",
       "statusStale": "Status Stale",
       "statusEmpty": "Status Empty",
@@ -4985,7 +5019,7 @@
       "overview": "Overview",
       "advanced": "Advanced",
       "botControlCenter": "Bot Control Center",
-      "description": "Description",
+      "description": "The bot is active and following your strategy.",
       "myStrategies": "My Strategies",
       "strategies": {
         "empty": "Empty"
@@ -4997,7 +5031,7 @@
       "action": "Action",
       "symbol": "Symbol",
       "price": "Price",
-      "value": "Value",
+      "value": "Active",
       "time": "Time",
       "trades": {
         "empty": "Empty"
@@ -5072,7 +5106,7 @@
     },
     "aggressivitySlider": {
       "levels": {
-        "title": "Title",
+        "title": "Aggressiveness level",
         "sections": {
           "reactionTime": "Reaction Time",
           "confirmation": "Confirmation",
@@ -5097,7 +5131,7 @@
       }
     },
     "modeSelector": {
-      "title": "Title"
+      "title": "Trading mode"
     },
     "sessionDetail": {
       "active": "Active",
@@ -5152,7 +5186,7 @@
       "orderType": "Order type",
       "quantity": "Quantity",
       "price": "Price",
-      "value": "Value",
+      "value": "Details",
       "fee": "Fee",
       "status": "Status",
       "timestamp": "Timestamp",
@@ -5202,7 +5236,7 @@
       "activePairs": "Active Pairs"
     },
     "strategyPicker": {
-      "title": "Title",
+      "title": "Choose a strategy",
       "paperHint": "Paper Hint",
       "ariaClose": "Aria Close",
       "statusActive": "Status Active",
@@ -5218,7 +5252,7 @@
       "liveStartStrategy": "Live Start Strategy"
     },
     "activeStrategiesPanel": {
-      "title": "Title",
+      "title": "Active strategies",
       "emptyHint": "Empty Hint",
       "stop": "Stop",
       "liveTitle": "Live Title",
@@ -5294,17 +5328,17 @@
       "noTradesYet": "No Trades Yet"
     },
     "tradingModeSelector": {
-      "title": "Title",
+      "title": "Trading mode",
       "paper": {
-        "title": "Title",
-        "description": "Description",
+        "title": "Play money",
+        "description": "Practise with NOK 100,000 in play money. Zero risk.",
         "feature1": "Feature",
         "feature2": "Feature",
         "feature3": "Feature"
       },
       "live": {
-        "title": "Title",
-        "description": "Description",
+        "title": "Live",
+        "description": "Trade with real money on the exchange.",
         "warning": "Warning",
         "feature1": "Feature",
         "feature2": "Feature",
@@ -5315,8 +5349,8 @@
         "connectExchange": "Connect Exchange"
       },
       "liveWarning": {
-        "title": "Title",
-        "description": "Description"
+        "title": "Important",
+        "description": "Live trading involves real risk of loss."
       }
     },
     "shares": "Shares",
@@ -5443,7 +5477,7 @@
       "total": "Total value",
       "currency": "Currency",
       "amount": "Amount",
-      "value": "Value"
+      "value": "Balance"
     }
   },
   "toasts": {

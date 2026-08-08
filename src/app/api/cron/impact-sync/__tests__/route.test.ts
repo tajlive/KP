@@ -8,7 +8,15 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { POST } from "../route";
+
+// Statisk import av route.ts krasjer når NEXT_PUBLIC_SUPABASE_URL mangler
+// (module-scope createClient). Importen gjøres derfor dynamisk i beforeEach,
+// etter at test-env er satt — robust også uten .env.local i shell.
+let POST: typeof import("../route").POST;
+
+async function loadRoute() {
+  ({ POST } = await import("../route"));
+}
 
 function makeRequest(headers: Record<string, string> = {}) {
   return {
@@ -21,12 +29,16 @@ function makeRequest(headers: Record<string, string> = {}) {
 describe("POST /api/cron/impact-sync", () => {
   const OLD_ENV = process.env;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetModules();
     process.env = { ...OLD_ENV };
     process.env.CRON_SECRET = "test-cron-secret";
     process.env.IMPACT_ACCOUNT_SID = "test-sid";
     process.env.IMPACT_AUTH_TOKEN = "test-token";
+    // Module-scope createClient krever Supabase-env ved import
+    process.env.NEXT_PUBLIC_SUPABASE_URL ??= "https://test.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??= "test-key";
+    await loadRoute();
   });
 
   afterEach(() => {
@@ -50,6 +62,10 @@ describe("POST /api/cron/impact-sync", () => {
 
   it("synkroniserer Actions + Campaigns og lagrer i affiliate_sync", async () => {
     process.env.IMPACT_SYNC_ENABLED = "true";
+
+    // Nullstill modul-cache på nytt: beforeEach sin loadRoute() har allerede
+    // importert route-en med EKTE avhengigheter — doMock under må få treffe.
+    vi.resetModules();
 
     const mockActions = vi.fn().mockResolvedValue([
       {
