@@ -17,7 +17,7 @@
 import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics";
 import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
 import { runWalkForward, type WalkForwardResult } from "./walk-forward";
-import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { createKrakenMarketDataProvider } from "./canonical/market-data";
 import { computeFill } from "./canonical/execution/fill-model";
 import { FILL_CONSTANTS } from "./canonical/execution/fill-constants";
 import { roundToLotSize } from "./canonical/symbols/lot-sizes";
@@ -287,7 +287,7 @@ function calculateVolatility(returns: number[]): number {
 // HENTE HISTORISKE DATA
 // ============================================================================
 
-const marketDataProvider = createBinanceMarketDataProvider();
+const marketDataProvider = createKrakenMarketDataProvider();
 
 /**
  * Hent historiske OHLCV-data fra Binance

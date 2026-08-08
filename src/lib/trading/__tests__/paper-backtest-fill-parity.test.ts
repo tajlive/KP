@@ -30,7 +30,7 @@ const { FIXED_PRICE, FIXED_RATE, INITIAL_CAPITAL_USD } = vi.hoisted(() => ({
 const originalComputeFill = fillModel.computeFill;
 
 vi.mock("@/lib/trading/canonical/market-data", () => ({
-  createBinanceMarketDataProvider: vi.fn().mockReturnValue({
+  createKrakenMarketDataProvider: vi.fn().mockReturnValue({
     getPrice: vi.fn().mockResolvedValue(FIXED_PRICE),
     getDepth: vi.fn().mockResolvedValue({
       bids: [],
@@ -40,7 +40,7 @@ vi.mock("@/lib/trading/canonical/market-data", () => ({
     getKlines: vi.fn().mockResolvedValue([]),
     get24hChange: vi.fn().mockResolvedValue(0),
   }),
-  BinanceMarketDataProvider: class {},
+  KrakenMarketDataProvider: class {},
 }));
 
 vi.mock("@/lib/trading/currency", async (importOriginal) => {

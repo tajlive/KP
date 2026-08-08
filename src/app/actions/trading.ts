@@ -46,7 +46,7 @@ export type StartTradingBotResponse = {
     | "PAPER_BOT_DUPLICATE"
     | "LIVE_BOT_DUPLICATE"
     | "LIVE_NOT_ALLOWED"
-    | "BINANCE_NOT_CONNECTED"
+    | "KRAKEN_NOT_CONNECTED"
     | "UNAUTHORIZED"
     | "VALIDATION_FAILED"
     | "INTERNAL_ERROR";
@@ -113,19 +113,19 @@ export async function startTrading(
 
     const tier = (profRow?.tier ?? "student") as TierSlug;
 
-    // Live trading requires Bachelor+ tier and a connected Binance account.
+    // Live trading requires Bachelor+ tier and connected Kraken keys
+    // (EU/EØS 2026: Binance er geo-blokkert — Kraken er eneste børs).
     if (mode === "live") {
       const canLive = await ExecutorFactory.canTradeLive(supabase, user.id);
       if (!canLive) {
         const { data: profile } = await supabase
           .from("user_profiles")
-          .select("tier, binance_connected")
+          .select("tier")
           .eq("id", user.id)
           .maybeSingle();
 
         const allowedTiers = ["bachelor", "master", "phd", "professor"];
         const tierAllowed = allowedTiers.includes(profile?.tier ?? "");
-        const binanceConnected = profile?.binance_connected ?? false;
 
         if (!tierAllowed) {
           return {
@@ -136,15 +136,14 @@ export async function startTrading(
             next_step: "retry",
           };
         }
-        if (!binanceConnected) {
-          return {
-            ok: false,
-            code: "BINANCE_NOT_CONNECTED",
-            message: "Binance API keys not configured. Please connect your exchange first.",
-            error: "Binance API keys not configured. Please connect your exchange first.",
-            next_step: "retry",
-          };
-        }
+        // Tier er OK → manglende Kraken-nøkler er eneste mulige årsak.
+        return {
+          ok: false,
+          code: "KRAKEN_NOT_CONNECTED",
+          message: "Kraken API keys not configured. Please connect your exchange first.",
+          error: "Kraken API keys not configured. Please connect your exchange first.",
+          next_step: "retry",
+        };
       }
     }
 

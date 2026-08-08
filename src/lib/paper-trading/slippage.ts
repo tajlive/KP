@@ -7,9 +7,9 @@
  * Based on TradingView and professional simulator implementations.
  */
 
-import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
-const marketDataProvider = createBinanceMarketDataProvider();
+const marketDataProvider = createKrakenMarketDataProvider();
 
 export interface SlippageParams {
   symbol: string;
