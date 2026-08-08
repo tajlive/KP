@@ -11,7 +11,7 @@ import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-ex
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 import { rejectIfImpersonating } from "@/lib/admin/impersonation-guard";
 import { createServerClient } from "@/lib/supabase/server";
-import { fetchPriceViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 import { syncPaperAccountBalance } from "@/lib/trading/core/paper-account-sync";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -165,10 +165,11 @@ export async function POST(request: NextRequest) {
 
       let fetchedPrice: number;
       try {
-        // Proxy via Supabase Edge Function — avoids Binance geo-block on Workers IPs
-        fetchedPrice = await fetchPriceViaProxy(symbol);
+        // EU/EØS (2026): Kraken public API — eneste tallkilde
+        const provider = createKrakenMarketDataProvider();
+        fetchedPrice = await provider.getPrice(symbol);
       } catch (proxyErr) {
-        console.warn(`[paper-trading/execute] Binance proxy failed for ${symbol}:`, proxyErr);
+        console.warn(`[paper-trading/execute] Kraken failed for ${symbol}:`, proxyErr);
         // Fallback: DB-priser (cachet av cron-jobb)
         try {
           const { data: dbPrice } = await supabase

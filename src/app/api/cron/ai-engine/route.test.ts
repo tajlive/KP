@@ -67,17 +67,31 @@ vi.mock('@/lib/auth/cron', () => ({
   validateCronSecret: vi.fn(() => true),
 }));
 
-vi.mock('@/lib/trading/canonical/market-data/binance-proxy-provider', () => ({
-  fetchKlinesViaProxy: vi.fn(async () => {
+vi.mock('@/lib/trading/canonical/market-data', () => ({
+  createKrakenMarketDataProvider: () => ({
     // Stigende priser (uptrend) + volum > 5M USDT 24h → volum-gaten passeres
     // og 4h-trend er bullish slik at MTF-filteret ikke blokkerer buy.
-    const candles: [number, string, string, string, string, string][] = [];
-    for (let i = 0; i < 55; i++) {
-      const close = 60000 + i * 10; // 60000 → 60540, opptrend
-      candles.push([i, String(close - 100), String(close + 100), String(close - 200), String(close), '3000000']);
-    }
-    return candles;
+    getKlines: vi.fn(async () => {
+      const candles: { timestamp: number; open: number; high: number; low: number; close: number; volume: number }[] = [];
+      for (let i = 0; i < 55; i++) {
+        const close = 60000 + i * 10; // 60000 → 60540, opptrend
+        candles.push({
+          timestamp: i * 3600000,
+          open: close - 100,
+          high: close + 100,
+          low: close - 200,
+          close,
+          volume: 3000000,
+        });
+      }
+      return candles;
+    }),
+    getPrice: vi.fn(async () => 60000),
+    getDepth: vi.fn(async () => ({ bids: [], asks: [], timestamp: new Date() })),
+    get24hChange: vi.fn(async () => 1),
+    get24hSnapshot: vi.fn(async () => ({ price: 60000, change24hPct: 1, high24h: 60100, low24h: 59900, volume24h: 3000000 })),
   }),
+  KrakenMarketDataProvider: class {},
 }));
 
 import { GET } from './route';

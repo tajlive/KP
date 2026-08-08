@@ -117,8 +117,8 @@ export async function PATCH(
         const { closeSessionPositionOnStop } = await import(
           "@/lib/trading/close-on-stop"
         );
-        const { BinanceMarketDataProvider } = await import(
-          "@/lib/trading/canonical/market-data/binance-provider"
+        const { KrakenMarketDataProvider } = await import(
+          "@/lib/trading/canonical/market-data"
         );
         const { getUsdtToNokRateAsync } = await import(
           "@/lib/trading/currency"
@@ -126,7 +126,7 @@ export async function PATCH(
         const { normalizePair } = await import("@/lib/trading/pair");
 
         const symbol = normalizePair(session.trading_pair);
-        const provider = new BinanceMarketDataProvider();
+        const provider = new KrakenMarketDataProvider();
         const klines = await provider.getKlines(symbol, "1h", 1);
         const priceUsdt =
           klines.length > 0 ? klines[klines.length - 1].close : 0;

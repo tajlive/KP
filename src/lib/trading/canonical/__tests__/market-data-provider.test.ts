@@ -1,5 +1,6 @@
 /**
- * Tester for kanonisk markedsdata-provider (Binance implementasjon).
+ * Tester for kanonisk markedsdata-provider (Kraken implementasjon).
+ * EU/EØS (2026): Kraken er eneste tallkilde — Binance er fjernet.
  */
 
 import {
@@ -11,254 +12,161 @@ import {
   afterEach,
   type Mock,
 } from "vitest";
-import { BinanceMarketDataProvider } from "../market-data/binance-provider";
+import { KrakenMarketDataProvider } from "../market-data/kraken-provider";
 
-const EXPECTED_HEADERS = {
-  Accept: "application/json",
-  "User-Agent": "Klarpakke/1.0",
+const TICKER_RESPONSE = {
+  error: [],
+  result: {
+    XBTUSDC: {
+      c: ["618914.46", "0.5"],
+      h: ["623830.04", "623830.04"],
+      l: ["612143.64", "612143.64"],
+      o: ["613200.00", "613200.00"],
+      v: ["11885.64", "11885.64"],
+    },
+  },
 };
 
-describe("BinanceMarketDataProvider", () => {
-  let provider: BinanceMarketDataProvider;
+describe("KrakenMarketDataProvider", () => {
+  let provider: KrakenMarketDataProvider;
 
   beforeEach(() => {
-    provider = new BinanceMarketDataProvider();
+    provider = new KrakenMarketDataProvider();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe("failover", () => {
-    it("uses the next endpoint when mainnet returns 403", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi
-          .fn()
-          .mockResolvedValueOnce({
-            ok: false,
-            status: 403,
-            text: async () => "",
-          })
-          .mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ price: "50000" }),
-          }),
-      );
+  it("getPrice henter siste pris fra Ticker", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => TICKER_RESPONSE,
+      }),
+    );
 
-      const price = await provider.getPrice("BTCUSDT");
-      expect(price).toBe(50000);
+    const price = await provider.getPrice("BTCUSDT");
+    expect(price).toBe(618914.46);
 
-      const mockFetch = fetch as Mock;
-      const calls = mockFetch.mock.calls;
-      expect(calls).toHaveLength(2);
-      expect(calls[0][0]).toBe(
-        "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-      );
-      expect(calls[1][0]).toBe(
-        "https://api1.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-      );
-      expect(calls[0][1]).toMatchObject({ headers: EXPECTED_HEADERS });
-    });
+    const mockFetch = fetch as Mock;
+    const url = String(mockFetch.mock.calls[0][0]);
+    expect(url).toContain("XBTUSDC");
+    expect(url).toContain("api.kraken.com");
+  });
 
-    it("throws after exhausting all endpoints", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: false,
-          status: 403,
-          text: async () => "",
+  it("get24hSnapshot henter pris, endring, high, low og volum i ETT kall", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => TICKER_RESPONSE,
+      }),
+    );
+
+    const snap = await provider.get24hSnapshot("BTCUSDT");
+
+    expect(snap.price).toBe(618914.46);
+    // 24h-endring fra o[1] → c[0]: (618914.46 − 613200) / 613200
+    expect(snap.change24hPct).toBeCloseTo(0.9317, 3);
+    expect(snap.high24h).toBe(623830.04);
+    expect(snap.low24h).toBe(612143.64);
+    expect(snap.volume24h).toBe(11885.64);
+
+    const mockFetch = fetch as Mock;
+    expect(mockFetch.mock.calls).toHaveLength(1);
+  });
+
+  it("get24hSnapshot kaster KRAKEN_PAIR_UNAVAILABLE for symboler Kraken ikke støtter", async () => {
+    await expect(provider.get24hSnapshot("BNBUSDT")).rejects.toThrow(
+      "KRAKEN_PAIR_UNAVAILABLE",
+    );
+  });
+
+  it("getKlines mapper OHLCV-lys fra Kraken-format", async () => {
+    const rawCandle = [
+      1723104000, // timestamp (sekunder)
+      "613000.0", // open
+      "615000.0", // high
+      "612000.0", // low
+      "614000.0", // close
+      "614500.0", // vwap
+      "100.5", // volume
+      "5", // count
+    ];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          error: [],
+          result: {
+            last: 1723104000,
+            XBTUSDC: [rawCandle],
+          },
         }),
-      );
+      }),
+    );
 
-      await expect(provider.getPrice("BTCUSDT")).rejects.toThrow();
-      const mockFetch = fetch as Mock;
-      // 7 direct endpoints + proxy = 8 total calls
-      expect(mockFetch.mock.calls.length).toBeGreaterThanOrEqual(7);
+    const klines = await provider.getKlines("BTCUSDT", "1h", 1);
+
+    expect(klines).toHaveLength(1);
+    expect(klines[0]).toEqual({
+      timestamp: 1723104000 * 1000,
+      open: 613000,
+      high: 615000,
+      low: 612000,
+      close: 614000,
+      volume: 100.5,
     });
   });
 
-  describe("getPrice", () => {
-    it("returns parsed price", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({ price: "42345.67" }),
+  it("get24hChange beregnes fra 24 1h-lys", async () => {
+    const makeCandle = (i: number) => [
+      1723000000 + i * 3600,
+      String(100 + i),
+      String(101 + i),
+      String(99 + i),
+      String(100 + i),
+      String(100 + i),
+      "10",
+      "1",
+    ];
+    const candles = Array.from({ length: 24 }, (_, i) => makeCandle(i));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          error: [],
+          result: {
+            last: 1723000000 + 24 * 3600,
+            XBTUSDC: candles,
+          },
         }),
-      );
+      }),
+    );
 
-      const price = await provider.getPrice("BTCUSDT");
-      expect(price).toBe(42345.67);
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-        expect.objectContaining({
-          signal: expect.any(AbortSignal),
-          headers: EXPECTED_HEADERS,
-        }),
-      );
-    });
-
-    it("uppercases symbol", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({ price: "1.23" }),
-        }),
-      );
-
-      await provider.getPrice("btcusdt");
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("symbol=BTCUSDT"),
-        expect.anything(),
-      );
-    });
-
-    it("throws on non-ok response", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: false,
-          status: 400,
-        }),
-      );
-
-      await expect(provider.getPrice("BTCUSDT")).rejects.toThrow();
-    });
+    const change = await provider.get24hChange("BTCUSDT");
+    // første close 100 → siste close 123 → +23 %
+    expect(change).toBeCloseTo(23, 2);
   });
 
-  describe("getDepth", () => {
-    it("returns order book snapshot with default limit", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({
-            bids: [["100.0", "1.5"]],
-            asks: [["101.0", "2.5"]],
-          }),
+  it("kaster tydelig feil når Kraken returnerer API-error", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          error: ["EQuery:Unknown asset pair"],
+          result: {},
         }),
-      );
+      }),
+    );
 
-      const depth = await provider.getDepth("ETHUSDT");
-      expect(depth.bids).toEqual([{ price: 100, quantity: 1.5 }]);
-      expect(depth.asks).toEqual([{ price: 101, quantity: 2.5 }]);
-      expect(depth.timestamp).toBeInstanceOf(Date);
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.binance.com/api/v3/depth?symbol=ETHUSDT&limit=20",
-        expect.anything(),
-      );
-    });
-
-    it("respects custom limit", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({ bids: [], asks: [] }),
-        }),
-      );
-
-      await provider.getDepth("BTCUSDT", 5);
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=5",
-        expect.anything(),
-      );
-    });
-  });
-
-  describe("getKlines", () => {
-    it("returns parsed klines", async () => {
-      const candle = [
-        1_700_000_000_000,
-        "100.0",
-        "110.0",
-        "90.0",
-        "105.0",
-        "1000.0",
-      ];
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => [candle],
-        }),
-      );
-
-      const klines = await provider.getKlines("BTCUSDT", "1d", 10);
-      expect(klines).toHaveLength(1);
-      expect(klines[0]).toEqual({
-        timestamp: 1_700_000_000_000,
-        open: 100,
-        high: 110,
-        low: 90,
-        close: 105,
-        volume: 1000,
-      });
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=10",
-        expect.anything(),
-      );
-    });
-
-    it("throws on network error", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockRejectedValue(new Error("Network failure")),
-      );
-
-      await expect(provider.getKlines("BTCUSDT", "1h", 100)).rejects.toThrow();
-    });
-  });
-
-  describe("get24hChange", () => {
-    it("returns parsed 24h change percentage", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({ priceChangePercent: "-2.45" }),
-        }),
-      );
-
-      const change = await provider.get24hChange("BTCUSDT");
-      expect(change).toBe(-2.45);
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT",
-        expect.objectContaining({
-          signal: expect.any(AbortSignal),
-          headers: EXPECTED_HEADERS,
-        }),
-      );
-    });
-
-    it("uppercases symbol", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({ priceChangePercent: "5.67" }),
-        }),
-      );
-
-      await provider.get24hChange("btcusdt");
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("symbol=BTCUSDT"),
-        expect.anything(),
-      );
-    });
-
-    it("throws on non-ok response", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn().mockResolvedValue({
-          ok: false,
-          status: 500,
-        }),
-      );
-
-      await expect(provider.get24hChange("BTCUSDT")).rejects.toThrow();
-    });
+    await expect(provider.getPrice("BTCUSDT")).rejects.toThrow(
+      "EQuery:Unknown asset pair",
+    );
   });
 });

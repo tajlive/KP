@@ -30,11 +30,7 @@ import {
   GUARD_ERROR_OR_FILTER,
   sessionSkipReason,
 } from "@/lib/trading/session-guard";
-import {
-  fetchPriceViaProxy,
-  fetchKlinesViaProxy,
-  fetch24hChangeViaProxy,
-} from "@/lib/trading/canonical/market-data/binance-proxy-provider";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
 // ---------------------------------------------------------------------------
 // Konstanter
@@ -48,11 +44,6 @@ const TOP_SYMBOLS = [
   "BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT",
   "LINKUSDT", "ADAUSDT", "DOTUSDT", "POLUSDT",
 ];
-
-const FALLBACK_PRICES: Record<string, number> = {
-  BTCUSDT: 65000, ETHUSDT: 3500, SOLUSDT: 150, AVAXUSDT: 28, DOGEUSDT: 0.12,
-  LINKUSDT: 12, ADAUSDT: 0.45, DOTUSDT: 5.5, POLUSDT: 0.25,
-};
 
 /** Persistert grid-state — lagres i strategy_config per sesjon */
 interface PersistedGridState {
@@ -87,16 +78,15 @@ async function fetchMarketData(symbol: string): Promise<{
   trend: "up" | "down" | "flat";
 }> {
   try {
-    // Hent sanntidsdata via kanonisk proxy-provider (korrekt auth-headers).
-    // Tidligere gikk dette mot GET ?symbol= uten secret → alltid 401 →
-    // fallback (RSI 50 / flat) → evig WAIT og null handler.
+    // EU/EØS (2026): Kraken public API — eneste tallkilde.
+    const provider = createKrakenMarketDataProvider();
     const [currentPrice, klines, change24h] = await Promise.all([
-      fetchPriceViaProxy(symbol),
-      fetchKlinesViaProxy(symbol, "1h", 60) as Promise<unknown[][]>,
-      fetch24hChangeViaProxy(symbol),
+      provider.getPrice(symbol),
+      provider.getKlines(symbol, "1h", 60),
+      provider.get24hChange(symbol),
     ]);
     const prices = (klines ?? [])
-      .map((k) => parseFloat(String((k as unknown[])[4]))) // close-pris
+      .map((k) => k.close)
       .filter((p) => Number.isFinite(p) && p > 0);
     const rsiArr = prices.length > 14 ? calcRSI(prices, 14) : null; const rsi = rsiArr ? (rsiArr[rsiArr.length-1] ?? 50) : 50;
 
@@ -356,7 +346,8 @@ async function checkExits(
   await Promise.all(
     missingSymbols.map(async (s) => {
       try {
-        priceCache.set(s, await fetchPriceViaProxy(s));
+        const provider = createKrakenMarketDataProvider();
+        priceCache.set(s, await provider.getPrice(s));
       } catch { /* prøver igjen neste kjøring */ }
     }),
   );
@@ -545,7 +536,13 @@ async function processUser(
 
     // 3. Hent markedsdata
     const market = await fetchMarketData(symbol);
-    const price = market.currentPrice > 0 ? market.currentPrice : (FALLBACK_PRICES[symbol] ?? 100);
+    // ALDRI fabrikkerte priser: hvis Kraken ikke svarer, hopp over signalet
+    // (P&L og fills må alltid bygge på reelle tall).
+    const price = market.currentPrice > 0 ? market.currentPrice : 0;
+    if (price <= 0) {
+      console.warn(`[pilot-engine] Ingen pris fra Kraken for ${symbol} — hopper over`);
+      continue;
+    }
     if (market.currentPrice <= 0) market.currentPrice = price;
 
     // 4. Generer signal — grid eller multi-signal basert på brukerens strategi

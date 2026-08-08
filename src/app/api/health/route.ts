@@ -1,6 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
-import { BinanceMarketDataProvider } from "@/lib/trading/canonical/market-data/binance-provider";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -15,10 +14,9 @@ interface HealthCheck {
     tradingSignals: CheckResult;
     kv: CheckResult;
     environment: CheckResult;
-    binanceConnectivity: BinanceConnectivityResult;
+    krakenConnectivity: CheckResult;
     leaderboard: CheckResult;
     hangingSessions: CheckResult;
-    binanceProxy: CheckResult;
     errorRate: CheckResult;
     tradesPerMinute: CheckResult;
     stripeApi: CheckResult;
@@ -28,29 +26,9 @@ interface HealthCheck {
   cached?: boolean;
 }
 
-const KNOWN_BINANCE_ENDPOINTS = [
-  "https://data-api.binance.vision",  // API-optimert — mindre sannsynlig geo-blokkert
-  "https://api.binance.com",
-  "https://api1.binance.com",
-  "https://api2.binance.com",
-  "https://api3.binance.com",
-  "https://api4.binance.com",
-  "https://testnet.binance.vision",
-] as const;
-
-// Binance probe: try via Supabase Edge Function proxy first (avoids Worker IP geo-block),
-// then fall back to direct API calls.
-const BINANCE_PROXY_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/binance-proxy`;
-const BINANCE_DIRECT_TIMEOUT_MS = 5000;
-const BINANCE_PROXY_TIMEOUT_MS = 8000;
-
-interface BinanceConnectivityResult {
-  status: "ok" | "degraded" | "error";
-  primaryWorked: boolean;
-  fallbackActive: boolean;
-  endpointUsed?: string;
-  message?: string;
-}
+const KRAKEN_TICKER_URL =
+  "https://api.kraken.com/0/public/Ticker?pair=XBTUSDC";
+const KRAKEN_TIMEOUT_MS = 8000;
 
 interface CheckResult {
   status: "ok" | "error" | "warning";
@@ -219,53 +197,42 @@ async function checkKV(): Promise<CheckResult> {
   }
 }
 
-async function checkBinanceConnectivity(): Promise<BinanceConnectivityResult> {
-  // Bruk Binance proxy direkte — raskere enn 7-endpoint-kjede på Worker
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
+async function checkKrakenConnectivity(): Promise<CheckResult> {
+  // EU/EØS (2026): Kraken er eneste tallkilde. Ping public Ticker — ett kall.
+  const start = Date.now();
   try {
-    const res = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${anonKey}`,
-        "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
-      },
-      body: JSON.stringify({
-        action: "publicApi",
-        apiKey: "public",
-        apiSecret: "public",
-        publicApiPath: "/api/v3/ticker/price?symbol=BTCUSDT",
-      }),
-      signal: AbortSignal.timeout(10000),
+    const res = await fetch(KRAKEN_TICKER_URL, {
+      signal: AbortSignal.timeout(KRAKEN_TIMEOUT_MS),
+      headers: { Accept: "application/json", "User-Agent": "Klarpakke/1.0" },
     });
-
-    if (res.ok) {
-      const payload = await res.json();
-      if (payload.ok) {
-        return {
-          status: "ok",
-          primaryWorked: false,
-          fallbackActive: true,
-          endpointUsed: "binance-proxy",
-        };
-      }
+    if (!res.ok) {
+      return {
+        status: "error",
+        message: `Kraken Ticker HTTP ${res.status}`,
+        latency: Date.now() - start,
+      };
     }
-
-    return {
-      status: "error",
-      primaryWorked: false,
-      fallbackActive: false,
-      endpointUsed: "binance-proxy",
-      message: `Proxy returned ${res.status}`,
-    };
+    const body = (await res.json()) as { error?: string[]; result?: unknown };
+    if (body.error && body.error.length > 0) {
+      return {
+        status: "error",
+        message: `Kraken Ticker error: ${body.error.join(", ")}`,
+        latency: Date.now() - start,
+      };
+    }
+    if (!body.result) {
+      return {
+        status: "error",
+        message: "Kraken Ticker: tomt resultat",
+        latency: Date.now() - start,
+      };
+    }
+    return { status: "ok", latency: Date.now() - start };
   } catch (err) {
     return {
       status: "error",
-      primaryWorked: false,
-      fallbackActive: false,
-      message: err instanceof Error ? err.message : "Unknown proxy error",
+      message: err instanceof Error ? err.message : "Kraken unreachable",
+      latency: Date.now() - start,
     };
   }
 }
@@ -347,46 +314,12 @@ async function checkHangingSessions(): Promise<CheckResult> {
 }
 
 async function checkBinanceProxy(): Promise<CheckResult> {
-  const start = Date.now();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  try {
-    const res = await fetch(`${supabaseUrl}/functions/v1/binance-proxy`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${anonKey}`,
-        "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
-      },
-      body: JSON.stringify({
-        action: "publicApi",
-        apiKey: "",
-        apiSecret: "public",
-        publicApiPath: "/api/v3/ping",
-      }),
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (res.ok) {
-      return {
-        status: "ok",
-        latency: Date.now() - start,
-      };
-    }
-
-    return {
-      status: "error",
-      latency: Date.now() - start,
-      message: `Binance proxy returned ${res.status}`,
-    };
-  } catch (err) {
-    return {
-      status: "error",
-      latency: Date.now() - start,
-      message: err instanceof Error ? err.message : "Unknown proxy error",
-    };
-  }
+  // EU/EØS (2026): Binance-proxyen er slettet. Kraken-connectivity dekker
+  // priskilde-helsen — se checkKrakenConnectivity.
+  return {
+    status: "ok",
+    message: "Binance-proxy fjernet (Kraken er eneste kilde)",
+  };
 }
 
 async function checkSanity(): Promise<CheckResult> {
@@ -598,7 +531,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Run all checks in parallel with individual 3s timeouts
-  const [database, tradingSignals, kv, environment, binanceConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading, executeEndpoint, errorRate, tradesPerMinute, stripeApi, resendApi] =
+  const [database, tradingSignals, kv, environment, krakenConnectivity, leaderboard, hangingSessions, binanceProxy, sanity, paperTrading, executeEndpoint, errorRate, tradesPerMinute, stripeApi, resendApi] =
     await Promise.all([
       withTimeout(checkDatabase(), 3000, {
         status: "error" as const,
@@ -613,11 +546,9 @@ export async function GET(request: NextRequest) {
         message: "Check timed out after 3000ms",
       }),
       Promise.resolve(checkEnvironment()),
-      withTimeout(checkBinanceConnectivity(), 25000, {
+      withTimeout(checkKrakenConnectivity(), 10000, {
         status: "error" as const,
-        primaryWorked: false,
-        fallbackActive: false,
-        message: "Check timed out after 15000ms",
+        message: "Check timed out after 10000ms",
       }),
       withTimeout(checkLeaderboard(), 3000, {
         status: "error" as const,
@@ -668,7 +599,7 @@ export async function GET(request: NextRequest) {
     tradingSignals,
     kv,
     environment,
-    binanceConnectivity,
+    krakenConnectivity,
     leaderboard,
     hangingSessions,
     binanceProxy,
@@ -681,7 +612,7 @@ export async function GET(request: NextRequest) {
     resendApi,
   };
 
-  const { binanceConnectivity: _, ...statusChecks } = checks;
+  const { krakenConnectivity: _, ...statusChecks } = checks;
   const hasError = Object.values(statusChecks).some(
     (c) => c.status === "error",
   );
@@ -747,28 +678,28 @@ export async function POST(request: NextRequest) {
   } catch (e: unknown) { results.auth = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
 
   try {
+    // EU/EØS (2026): Kraken er eneste tallkilde — verifiser public Ticker.
     const res = (await withTimeout(
-      fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + "/functions/v1/binance-proxy", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + (process.env.SUPABASE_SERVICE_ROLE_KEY || ""),
-          "X-Binance-Proxy-Secret": process.env.BINANCE_PROXY_SECRET || "",
-        },
-        body: JSON.stringify({ endpoint: "price", symbol: "BTCUSDT" }),
+      fetch(KRAKEN_TICKER_URL, {
+        headers: { Accept: "application/json", "User-Agent": "Klarpakke/1.0" },
       }),
       8000,
       null as unknown
     )) as Response | null;
     if (res?.ok) {
-      const json = (await res.json()) as { data?: { price?: string } } | null;
-      results.binance = json?.data?.price
-        ? { status: "ok", message: "BTCUSDT: " + json.data.price }
+      const json = (await res.json()) as
+        | { result?: Record<string, { c: [string, string] }> }
+        | null;
+      const price = json?.result
+        ? Object.values(json.result)[0]?.c?.[0]
+        : undefined;
+      results.kraken = price
+        ? { status: "ok", message: "XBTUSDC: " + price }
         : { status: "error", message: "No price" };
     } else {
-      results.binance = { status: "error", message: "HTTP " + res?.status };
+      results.kraken = { status: "error", message: "HTTP " + res?.status };
     }
-  } catch (e: unknown) { results.binance = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
+  } catch (e: unknown) { results.kraken = { status: "error", message: e instanceof Error ? e.message : String(e) }; }
 
   try {
     const lb = (await withTimeout(
