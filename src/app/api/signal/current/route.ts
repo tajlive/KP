@@ -11,7 +11,7 @@ import {
 } from '@/lib/trading/confluent-signal-engine';
 import { logger } from '@/lib/logger';
 import { logSignalGeneration } from '@/lib/ai/sonar/metrics';
-import { createBinanceMarketDataProvider } from '@/lib/trading/canonical/market-data';
+import { createKrakenMarketDataProvider } from '@/lib/trading/canonical/market-data';
 
 // ...
 
@@ -22,11 +22,11 @@ const QuerySchema = z.object({
 });
 
 /**
- * Henter priser fra Binance public API (api.binance.com med failover).
+ * Henter priser fra Kraken public API (EU/EØS 2026: eneste tallkilde).
  * Bruker 50 siste 1h-lys for reell OHLC-historikk.
  */
 async function fetchPrices(symbol: string): Promise<number[]> {
-  const provider = createBinanceMarketDataProvider();
+  const provider = createKrakenMarketDataProvider();
   const klines = await provider.getKlines(symbol.toUpperCase(), '1h', 50);
 
   if (!klines || klines.length === 0) {

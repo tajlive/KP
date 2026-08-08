@@ -100,12 +100,12 @@ export interface OrderExecutor {
   getOrderStatus?(symbol: string, orderId: string): Promise<{ status: string; filled: number } | null>;
 }
 
-import { createBinanceMarketDataProvider } from "./canonical/market-data";
+import { createKrakenMarketDataProvider } from "./canonical/market-data";
 
-const marketDataProvider = createBinanceMarketDataProvider();
+const marketDataProvider = createKrakenMarketDataProvider();
 
 /**
- * Helper: Fetch real-time market price from Binance public API
+ * Helper: Fetch real-time market price from Kraken public API
  * Used by both paper and live executors
  *
  * @deprecated Bruk canonical/market-data provider direkte i ny kode.
@@ -121,7 +121,7 @@ export async function fetchBinancePrice(symbol: string): Promise<number> {
 }
 
 /**
- * Helper: Fetch depth (order book) from Binance public API
+ * Helper: Fetch depth (order book) from Kraken public API
  *
  * @deprecated Bruk canonical/market-data provider direkte i ny kode.
  */
@@ -140,8 +140,8 @@ export async function fetchBinanceDepth(
 
 /**
  * Helper: Calculate trading fee
- * Binance spot fee: 0.1% (with BNB discount: 0.075%)
+ * Kraken spot taker fee (juli 2026): 0.80% Tier 1 (matching fill-constants)
  */
-export function calculateFee(quantity: number, price: number, feePct: number = 0.001): number {
+export function calculateFee(quantity: number, price: number, feePct: number = 0.008): number {
   return quantity * price * feePct;
 }

@@ -113,13 +113,13 @@ export async function GET(request: NextRequest) {
       );
       const computed = computePositionsFromTrades(trades);
       if (computed.length > 0) {
-        const { BinanceMarketDataProvider } = await import(
-          "@/lib/trading/canonical/market-data/binance-provider"
+        const { KrakenMarketDataProvider } = await import(
+          "@/lib/trading/canonical/market-data"
         );
         const { getUsdtToNokRateAsync } = await import(
           "@/lib/trading/currency"
         );
-        const provider = new BinanceMarketDataProvider();
+        const provider = new KrakenMarketDataProvider();
         const rate = await getUsdtToNokRateAsync(supabase);
 
         positions = await Promise.all(

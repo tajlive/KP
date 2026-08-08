@@ -1,4 +1,4 @@
-import { createBinanceMarketDataProvider } from "@/lib/trading/canonical/market-data";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 5;
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const provider = createBinanceMarketDataProvider();
+  const provider = createKrakenMarketDataProvider();
 
   try {
     const prices = await Promise.all(

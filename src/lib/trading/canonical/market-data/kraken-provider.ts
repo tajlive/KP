@@ -13,7 +13,12 @@
  * (f.eks. KRAKEN_PAIR_UNAVAILABLE for symboler Kraken ikke støtter).
  */
 
-import type { Kline, MarketDataProvider, OrderBookSnapshot } from "./types";
+import type {
+  Kline,
+  Market24hSnapshot,
+  MarketDataProvider,
+  OrderBookSnapshot,
+} from "./types";
 
 // Interne symboler (BTCUSDT) → Kraken-par med USDC-kvote (USDT blokkert for NO)
 const INTERNAL_TO_KRAKEN: Record<string, string> = {
@@ -26,6 +31,9 @@ const INTERNAL_TO_KRAKEN: Record<string, string> = {
   ADAUSDT: "ADAUSDC",
   DOTUSDT: "DOTUSDC",
   POLUSDT: "POLUSD",
+  // MATIC ble migrert til POL på Kraken (2024) — gamle konfigurasjoner
+  // som fortsatt sier MATICUSDT må peke til POLUSD, ellers KRAKEN_PAIR_UNAVAILABLE.
+  MATICUSDT: "POLUSD",
 };
 
 // Interne intervaller → Kraken OHLC-intervall i minutter
@@ -180,6 +188,42 @@ export class KrakenMarketDataProvider implements MarketDataProvider {
     const lastClose = klines[klines.length - 1].close;
     const firstClose = klines[0].close;
     return ((lastClose - firstClose) / firstClose) * 100;
+  }
+
+  /**
+   * Full 24h-markedssnapshot for ett symbol (Kraken Ticker — ETT kall).
+   * Felt: siste pris, 24h endring, high, low, volum. Priser i par-valuta
+   * (USDC-kvote), konverteres til NOK av kalleren.
+   */
+  async get24hSnapshot(symbol: string): Promise<Market24hSnapshot> {
+    const pair = this.toKraken(symbol);
+
+    const result = await krakenFetch<
+      Record<
+        string,
+        {
+          c: [string, string]; // last [price, lot]
+          h: [string, string]; // high [today, 24h]
+          l: [string, string]; // low [today, 24h]
+          o: [string, string]; // open [today, 24h]
+          v: [string, string]; // volume [today, 24h]
+        }
+      >
+    >(`/Ticker?pair=${pair}`);
+    const t = extractPairData(result, pair);
+
+    const last = parseFloat(t.c[0]);
+    const open24h = parseFloat(t.o[1]);
+    const change24hPct =
+      open24h > 0 ? ((last - open24h) / open24h) * 100 : 0;
+
+    return {
+      price: last,
+      change24hPct,
+      high24h: parseFloat(t.h[1]),
+      low24h: parseFloat(t.l[1]),
+      volume24h: parseFloat(t.v[1]),
+    };
   }
 
   async getDepth(symbol: string, limit = 20): Promise<OrderBookSnapshot> {

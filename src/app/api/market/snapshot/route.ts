@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { fetchViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
 import { createClient } from "@/lib/supabase/server";
 import { usdtPriceToNok } from "@/lib/market/nok";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
 export const runtime = 'nodejs';
 export const dynamic = "force-dynamic";
@@ -19,22 +19,16 @@ interface MarketSnapshot {
   updatedAt: string;
 }
 
+// EU/EØS (2026): Kun Kraken-støttede par (USDC-kvote). BNB er Binance Coin
+// og finnes ikke på Kraken — fjernet sammen med all Binance-integrasjon.
 const ASSETS = [
   { symbol: "BTCUSDT", name: "Bitcoin" },
   { symbol: "ETHUSDT", name: "Ethereum" },
   { symbol: "SOLUSDT", name: "Solana" },
-  { symbol: "BNBUSDT", name: "BNB" },
-  { symbol: "XRPUSDT", name: "XRP" },
+  { symbol: "ADAUSDT", name: "Cardano" },
+  { symbol: "DOTUSDT", name: "Polkadot" },
+  { symbol: "LINKUSDT", name: "Chainlink" },
 ];
-
-interface Binance24hRow {
-  symbol: string;
-  lastPrice: string;
-  priceChangePercent: string;
-  highPrice: string;
-  lowPrice: string;
-  volume: string;
-}
 
 /**
  * Sanntids USDT/NOK-rate fra global_settings (samme kilde som
@@ -55,46 +49,48 @@ async function getUsdtNokRate(): Promise<number | undefined> {
   }
 }
 
-/** Binance-rader (USDT) -> snapshot-assets i NOK. Priser konverteres ALLTID. */
-function mapRows(rows: Binance24hRow[], rate?: number): MarketSnapshot["assets"] {
-  return rows.map((row) => {
-    const meta = ASSETS.find((a) => a.symbol === row.symbol);
-    return {
-      symbol: meta?.name ?? row.symbol,
-      name: meta?.name ?? row.symbol,
-      price: usdtPriceToNok(parseFloat(row.lastPrice), rate),
-      change24hPct: parseFloat(row.priceChangePercent),
-      high24h: usdtPriceToNok(parseFloat(row.highPrice), rate),
-      low24h: usdtPriceToNok(parseFloat(row.lowPrice), rate),
-      volume24h: parseFloat(row.volume),
-    };
-  });
-}
-
 export async function GET() {
-  const symbolsParam = encodeURIComponent(
-    JSON.stringify(ASSETS.map((a) => a.symbol))
-  );
   const rate = await getUsdtNokRate();
+  const provider = createKrakenMarketDataProvider();
 
-  // 1) Direkte Binance (blokkeres ofte fra Cloudflare Worker-IPer)
+  // Kraken Ticker (public REST) — ett kall per symbol, Promise.all i parallell.
   try {
-    const res = await fetch(
-      `https://api.binance.com/api/v3/ticker/24hr?symbols=${symbolsParam}`,
-      {
-        next: { revalidate: 30 },
-        signal: AbortSignal.timeout(8000),
-      }
+    const snapshots = await Promise.all(
+      ASSETS.map((asset) =>
+        provider
+          .get24hSnapshot(asset.symbol)
+          .then((s) => ({ asset, ...s }))
+          .catch((err: unknown) => {
+            console.warn(
+              `[market/snapshot] Kraken feilet for ${asset.symbol}:`,
+              err instanceof Error ? err.message : err,
+            );
+            return null;
+          }),
+      ),
     );
 
-    if (!res.ok) {
-      console.warn(`[market/snapshot] Binance non-OK: ${res.status}`);
-      throw new Error(`Binance ${res.status}`);
+    const assets: MarketSnapshot["assets"] = snapshots
+      .filter((s): s is NonNullable<typeof s> => s !== null)
+      .map(({ asset, price, change24hPct, high24h, low24h, volume24h }) => ({
+        symbol: asset.name,
+        name: asset.name,
+        price: usdtPriceToNok(price, rate),
+        change24hPct,
+        high24h: usdtPriceToNok(high24h, rate),
+        low24h: usdtPriceToNok(low24h, rate),
+        volume24h,
+      }));
+
+    if (assets.length === 0) {
+      return NextResponse.json(
+        { error: "No market data available" },
+        { status: 503 },
+      );
     }
 
-    const rows = (await res.json()) as Binance24hRow[];
     const snapshot: MarketSnapshot = {
-      assets: mapRows(rows, rate),
+      assets,
       updatedAt: new Date().toISOString(),
     };
 
@@ -104,32 +100,12 @@ export async function GET() {
       },
     });
   } catch (err) {
-    console.warn("[market/snapshot] Direkte Binance feilet, prøver proxy:", err);
-  }
-
-  // 2) Supabase Edge Function binance-proxy (omgår Worker IP-blokk).
-  //    ALDRI hardkodede priser her — fabrikkerte tall med fersk tidsstempel
-  //    er verre enn ingen data (tickeren skjuler seg ved 503).
-  try {
-    const rows = (await fetchViaProxy(
-      `/api/v3/ticker/24hr?symbols=${symbolsParam}`
-    )) as Binance24hRow[];
-
-    const snapshot: MarketSnapshot = {
-      assets: mapRows(rows, rate),
-      updatedAt: new Date().toISOString(),
-    };
-
-    return NextResponse.json(snapshot, {
-      headers: {
-        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
-      },
-    });
-  } catch (proxyErr) {
-    console.error("[market/snapshot] Proxy feilet også:", proxyErr);
+    console.error("[market/snapshot] Kraken feilet totalt:", err);
+    // ALDRI hardkodede priser her — fabrikkerte tall med fersk tidsstempel
+    // er verre enn ingen data (tickeren skjuler seg ved 503).
     return NextResponse.json(
-      { error: "Markedsdata utilgjengelig" },
-      { status: 503 }
+      { error: "Market data temporarily unavailable" },
+      { status: 503 },
     );
   }
 }

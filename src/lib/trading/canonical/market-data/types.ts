@@ -25,6 +25,15 @@ export interface Kline {
   volume: number;
 }
 
+/** Full 24h-markedssnapshot for ett symbol (Kraken Ticker). */
+export interface Market24hSnapshot {
+  price: number;
+  change24hPct: number;
+  high24h: number;
+  low24h: number;
+  volume24h: number;
+}
+
 export interface MarketDataProvider {
   /**
    * Hent siste pris for et symbol.
@@ -64,4 +73,10 @@ export interface MarketDataProvider {
    * @returns 24-timers prosentendring som number
    */
   get24hChange(symbol: string): Promise<number>;
+
+  /**
+   * Hent full 24h-markedssnapshot (pris, endring, high, low, volum).
+   * Implementert av Kraken-provideren (ett Ticker-kall).
+   */
+  get24hSnapshot(symbol: string): Promise<Market24hSnapshot>;
 }

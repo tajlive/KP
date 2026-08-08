@@ -40,7 +40,7 @@ vi.mock('@/lib/logger', () => ({
 
 // Mock canonical market data provider
 vi.mock('@/lib/trading/canonical/market-data', () => ({
-  createBinanceMarketDataProvider: vi.fn().mockReturnValue({
+  createKrakenMarketDataProvider: vi.fn().mockReturnValue({
     getKlines: vi.fn().mockResolvedValue(
       Array.from({ length: 50 }, (_, i) => ({
         timestamp: Date.now() - (50 - i) * 3600000,
@@ -58,7 +58,15 @@ vi.mock('@/lib/trading/canonical/market-data', () => ({
       timestamp: new Date(),
     }),
     get24hChange: vi.fn().mockResolvedValue(0),
+    get24hSnapshot: vi.fn().mockResolvedValue({
+      price: 50000,
+      change24hPct: 0,
+      high24h: 50100,
+      low24h: 49900,
+      volume24h: 1,
+    }),
   }),
+  KrakenMarketDataProvider: class {},
 }));
 
 // Mock explainSignal

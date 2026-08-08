@@ -15,19 +15,20 @@ const SYMBOLS = [
   'DOTUSDT', 'LINKUSDT', 'AVAXUSDT', 'MATICUSDT', 'DOGEUSDT',
 ];
 
-import { fetchKlinesViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
 // OPTIMIZED: Only fetch 55 candles — computeFeatures needs max 50 (SMA50)
 // Saves 45% of klines API weight vs 100 candles
-// Uses Supabase Edge Function proxy (unngår Cloudflare IP-blokk mot Binance)
+// EU/EØS (2026): Kraken public API — eneste tallkilde.
 async function fetchHourlyCandles(symbol: string, limit = 55) {
-  const data = await fetchKlinesViaProxy(symbol, "1h", limit) as [number, string, string, string, string, string][];
-  return data.map((c) => ({
-    open: parseFloat(c[1]),
-    high: parseFloat(c[2]),
-    low: parseFloat(c[3]),
-    close: parseFloat(c[4]),
-    volume: parseFloat(c[5]),
+  const provider = createKrakenMarketDataProvider();
+  const klines = await provider.getKlines(symbol, "1h", limit);
+  return klines.map((k) => ({
+    open: k.open,
+    high: k.high,
+    low: k.low,
+    close: k.close,
+    volume: k.volume,
   }));
 }
 

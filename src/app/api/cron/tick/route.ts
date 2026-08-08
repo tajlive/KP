@@ -6,7 +6,6 @@
  */
 
 import type { RiskConfig } from "@/lib/auto-trading/risk-levels";
-import { BinanceMarketDataProvider } from "@/lib/trading/canonical/market-data/binance-provider";
 import { KrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 import {
   pickPriceSource,
@@ -124,42 +123,22 @@ interface TickResult {
 }
 
 // Price Data Fetcher — ALWAYS uses mainnet for paper/live parity.
-// Task 2 (Kraken-priser): kilde velges per bruker. Kraken-tilkoblede brukere
-// får kraken-priser; alle andre binance. Ved kraken-feil faller vi TILBAKE til
-// binance — tick dør ALDRI på priskilde.
-const marketDataProvider = new BinanceMarketDataProvider();
+// EU/EØS (2026): Kraken er ENESTE priskilde (MiCA-regulert; Binance er
+// geo-blokkert for norske brukere). Kraken-par finnes for alle støttede
+// symboler (USDC-kvote) — se INTERNAL_TO_KRAKEN i kraken-provider.ts.
 const krakenProvider = new KrakenMarketDataProvider();
 
 async function fetchCandles(
   pair: string,
   interval: string = "1h",
   limit: number = 100,
-  source: PriceSource = "binance",
+  source: PriceSource = "kraken",
 ): Promise<Candle[]> {
   // Always use mainnet — paper and live see identical prices
   const symbol = pair.replace("/", "");
 
-  if (source === "kraken") {
-    try {
-      const klines = await krakenProvider.getKlines(symbol, interval, limit);
-      return klines.map((k: Kline) => ({
-        time: k.timestamp,
-        open: k.open,
-        high: k.high,
-        low: k.low,
-        close: k.close,
-        volume: k.volume,
-      }));
-    } catch (err) {
-      console.warn(
-        `Kraken price fallback til binance for ${symbol}: ${(err as Error).message}`,
-      );
-      // fall through til binance nedenfor
-    }
-  }
-
   try {
-    const klines = await marketDataProvider.getKlines(symbol, interval, limit);
+    const klines = await krakenProvider.getKlines(symbol, interval, limit);
     return klines.map((k: Kline) => ({
       time: k.timestamp,
       open: k.open,
@@ -169,8 +148,8 @@ async function fetchCandles(
       volume: k.volume,
     }));
   } catch (err) {
-    console.error("Binance API fetch failed:", err);
-    throw new Error(`BINANCE_API_UNAVAILABLE: ${(err as Error).message}`);
+    console.error("Kraken API fetch failed:", err);
+    throw new Error(`KRAKEN_API_UNAVAILABLE: ${(err as Error).message}`);
   }
 }
 
@@ -179,7 +158,7 @@ export type LiveTradeResult =
       ok: true;
       executedPrice: number;
       executedQuantity: number;
-      binanceOrderId: string;
+      krakenOrderId: string;
       fee: number;
     }
   | { ok: false; error: string; permanent: boolean };
@@ -202,7 +181,7 @@ function classifyLiveTradeError(error: string): {
     "temporarily",
     "econn",
     "fetch failed",
-    "all binance api endpoints failed",
+    "all kraken api endpoints failed",
   ];
   const permanent = [
     "invalid api key",
@@ -231,7 +210,7 @@ function classifyLiveTradeError(error: string): {
 }
 
 /**
- * Execute a live trade on Binance using user's API keys.
+ * Execute a live trade on Kraken using user's API keys.
  * Uses ExecutorFactory for consistent key decryption and tier validation.
  * Returns a discriminated result so callers can decide whether to stop the
  * session or retry on the next tick.
@@ -255,7 +234,7 @@ export async function executeLiveTrade(
     // 2. Create executor via factory (handles key decryption)
     const executor = await ExecutorFactory.create(db, userId, "live");
 
-    // 3. Execute on Binance
+    // 3. Execute on Kraken
     const binanceSymbol = pair.replace("/", "");
     const result = await executor.executeOrder({
       symbol: binanceSymbol,
@@ -266,19 +245,19 @@ export async function executeLiveTrade(
 
     if (!result.success) {
       console.error(
-        `[LiveTrade] Binance order failed for user ${userId}:`,
+        `[LiveTrade] Kraken order failed for user ${userId}:`,
         result.error,
       );
       return {
         ok: false,
-        ...classifyLiveTradeError(result.error ?? "Binance order failed"),
+        ...classifyLiveTradeError(result.error ?? "Kraken order failed"),
       };
     }
     return {
       ok: true,
       executedPrice: result.executedPrice,
       executedQuantity: result.executedQuantity,
-      binanceOrderId: result.orderId,
+      krakenOrderId: result.orderId,
       fee: result.fee,
     };
   } catch (err) {
@@ -303,7 +282,7 @@ function isEnsembleFallbackOnCooldown(sessionId: string): boolean {
  * Minimum order value per trading mode. Paper-kapital er NOK (100 NOK ≈
  * 10 USDT), live-kapital er USDT → live-terskelen må være i USDT.
  * Live-fiks 2026-08-01: live-sesjoner ble holdt på ordrer på 75 USDT
- * (innenfor Binance-minste på 10 USDT) fordi NOK-terskelen ble brukt.
+ * (innenfor Kraken-minste) fordi NOK-terskelen ble brukt.
  */
 export function minOrderValueForMode(mode: string | null | undefined): number {
   return mode === "live" ? 10 : 100;
@@ -360,9 +339,8 @@ async function processSession(
     const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
     const pair = session.trading_pair || "BTCUSDT";
     // OPTIMIZATION: Use pre-fetched candles if available, else fetch individually.
-    // Task 2 (Kraken-priser): cache-nøkkel er per (source, symbol) — kraken for
-    // tilkoblede brukere, binance for alle andre.
-    const priceSource = source ?? "binance";
+    // EU/EØS (2026): Kraken er eneste priskilde for alle brukere.
+    const priceSource = source ?? "kraken";
     const candles =
       candleCache?.get(priceCacheKey(priceSource, pair.replace("/", ""))) ??
       preFetchedCandles ??
@@ -1676,7 +1654,7 @@ async function processSession(
         fee: finalFee,
         status: "filled",
         realized_pnl: realizedPnl,
-        binance_order_id: liveResult.binanceOrderId,
+        binance_order_id: liveResult.krakenOrderId,
         strategy_signal: signalContext.indicators,
         // Explanation data
         reason_code: reasonCode,
@@ -1744,7 +1722,7 @@ async function processSession(
           ? migrateFromLegacy(session.open_position)
           : createLedger("long");
 
-      // For live trades, use actual Binance executed price as cost basis
+      // For live trades, use actual Kraken executed price as cost basis
       const entryPriceForLot = liveResult.executedPrice;
       const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
       const legacyPos = toLegacyPosition(updatedLedger);
@@ -1822,7 +1800,7 @@ async function processSession(
             total_value: totalValue,
             fee: finalFee,
             realized_pnl: realizedPnl ?? null,
-            binance_order_id: liveResult.binanceOrderId,
+            binance_order_id: liveResult.krakenOrderId,
             idempotency_key: idempotencyKey,
             strategy_id: session.strategy_id,
             engine: resolvedEngine,
@@ -2260,8 +2238,8 @@ export async function GET(req: NextRequest) {
     );
 
     // ── Task 2 (Kraken-priser): hent kraken-tilkoblede brukere ÉN gang per
-    // tick. Disse får lekepenger-priser fra Kraken; alle andre beholder Binance.
-    // Feil her er ikke-kritisk — tomt sett = alle bruker binance.
+    // tick. Alle brukere får priser fra Kraken (EU/EØS 2026).
+    // Feil her er ikke-kritisk — tomt sett = alle bruker kraken.
     const krakenUserIds = new Set<string>();
     try {
       const { data: krakenRows } = await db
@@ -2273,7 +2251,7 @@ export async function GET(req: NextRequest) {
       }
     } catch (err) {
       console.warn(
-        "[Tick] Klarte ikke hente kraken-tilkoblede brukere (fallback: alle bruker binance):",
+        "[Tick] Klarte ikke hente kraken-tilkoblede brukere:",
         (err as Error).message,
       );
     }
@@ -2578,15 +2556,13 @@ export async function GET(req: NextRequest) {
       }),
     );
 
-    // ── Task 2 (Kraken-priser): candle-cache per (source, symbol) ─────────
-    // Binance-siden gjenbruker uniqueSymbols (ingen ekstra kall); kraken hentes
-    // kun for symboler der minst én kraken-tilkoblet bruker handler. Hvis
-    // kraken-kallet feiler, faller fetchCandles tilbake til binance — og hvis
-    // BEGGE feiler mangler cache-entry og processSession gjør direkte fetch
-    // (processOne-fallbacken sikrer at tick aldri dør på priskilde).
+    // ── EU/EØS (2026): candle-cache per (source, symbol) — Kraken eneste kilde ─
+    // unik per (kilde, symbol) for kompatibilitet; alle brukere får kraken-lys.
+    // Hvis kraken-kallet feiler mangler cache-entry og processSession gjør
+    // direkte fetch (processOne-fallbacken sikrer at tick aldri dør på priskilde).
     const candleCache = new Map<string, Candle[]>();
     for (const [symbol, candles] of uniqueSymbols) {
-      candleCache.set(priceCacheKey("binance", symbol), candles);
+      candleCache.set(priceCacheKey("kraken", symbol), candles);
     }
     const krakenSymbols = [
       ...new Set(
@@ -2605,7 +2581,7 @@ export async function GET(req: NextRequest) {
             );
           } catch (err) {
             console.warn(
-              `[Tick] Kraken price fallback til binance for ${symbol} (begge kilder feilet):`,
+              `[Tick] Kraken fetch feilet for ${symbol}:`,
               (err as Error).message,
             );
           }
@@ -2664,7 +2640,7 @@ export async function GET(req: NextRequest) {
         console.error(`Error processing session ${session.id}:`, errorMessage);
 
         // Update heartbeat even on processing errors so transient failures
-        // (e.g. Binance 403) do not mark the session as crashed.
+        // (e.g. Kraken API-feil) do not mark the session as crashed.
         try {
           await db
             .from("trading_sessions")

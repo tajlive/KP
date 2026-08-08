@@ -12,19 +12,20 @@ import { validateCronSecret } from "@/lib/auth/cron";
 // på hver insert. Erstattet med systembrukeren algo1@klarpakke.no.
 const SYSTEM_SIGNAL_USER_ID = 'b0700000-0000-0000-0000-000000000001';
 
-import { fetchKlinesViaProxy } from "@/lib/trading/canonical/market-data/binance-proxy-provider";
+import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
 
 // OPTIMIZED: Only fetch 55 candles — computeFeatures needs max 50 (SMA50)
 // Saves 45% of klines API weight vs 100 candles
-// Uses Supabase Edge Function proxy (unngår Cloudflare IP-blokk mot Binance)
+// EU/EØS (2026): Kraken public API — eneste tallkilde.
 async function fetchCandles(symbol: string, interval: string, limit = 55) {
-  const data = await fetchKlinesViaProxy(symbol, interval, limit) as [number, string, string, string, string, string][];
-  return data.map((c) => ({
-    open: parseFloat(c[1]),
-    high: parseFloat(c[2]),
-    low: parseFloat(c[3]),
-    close: parseFloat(c[4]),
-    volume: parseFloat(c[5]),
+  const provider = createKrakenMarketDataProvider();
+  const klines = await provider.getKlines(symbol, interval, limit);
+  return klines.map((k) => ({
+    open: k.open,
+    high: k.high,
+    low: k.low,
+    close: k.close,
+    volume: k.volume,
   }));
 }
 
