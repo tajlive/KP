@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient, createServerClient } from "@/lib/supabase/server";
-import { BinanceExecutor } from "@/lib/trading/binance-executor";
 import {
   validateKrakenReadOnlyKeys,
 } from "@/lib/exchanges/adapters/kraken-readonly";
@@ -100,14 +99,11 @@ export async function POST(request: NextRequest) {
       }
       await validateKrakenReadOnlyKeys(apiKey, apiSecret);
     } else {
-      const isValid = await new BinanceExecutor({
-        apiKey,
-        apiSecret,
-        testnet: isTestnet,
-      }).validateApiKeys();
-      if (!isValid) {
-        throw new Error("Binance API key validation failed");
-      }
+      // EU/EØS (2026): Binance er geo-blokkert (MiCA). Kraken er eneste børs.
+      return NextResponse.json(
+        { error: "Unsupported exchange: only Kraken is available" },
+        { status: 400 },
+      );
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Validation failed";

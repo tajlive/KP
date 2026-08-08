@@ -246,10 +246,11 @@ export class KrakenExecutor implements OrderExecutor {
       // Klarpakke-kontrakt: live-kapital er USDC (USDT er blokkert for norske
       // brukere — MiCA). USDC-saldoen er tilgjengelig kapital for nye handler.
       const available = parseFloat(balance.USDC ?? "0") || 0;
-      return { available, total: available };
+      // Kontrakt-parity med PaperExecutor: locked er eksplisitt 0.
+      return { available, locked: 0, total: available };
     } catch (error) {
       console.error("[KrakenExecutor] getBalance failed:", error);
-      return { available: 0, total: 0 };
+      return { available: 0, locked: 0, total: 0 };
     }
   }
 

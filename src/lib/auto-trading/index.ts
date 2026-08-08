@@ -55,18 +55,11 @@ export {
   type BacktestResult
 } from './enhancements'
 
-// Binance integration
-export {
-  executeTrade,
-  closeTrade,
-  syncOpenTrades,
-} from './binance-executor'
+// EU/EØS (2026): Binance-integrasjon fjernet — Kun Kraken støttes.
+// (executeTrade/closeTrade/syncOpenTrades levde i ./binance-executor,
+//  som er slettet. Kanonisk utførelse går via src/lib/trading/core/execute-trade
+//  med PaperExecutor/KrakenExecutor.)
 
-export { BINANCE_REFERRAL, BINANCE_REFERRAL_LINK } from '@/lib/constants/binance'
-
-export * from './binance-websocket'
-
-// Strategies (inkluderer nye Grid og DCA)
 export * from './strategies'
 
 /**

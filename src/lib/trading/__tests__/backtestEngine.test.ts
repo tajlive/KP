@@ -177,9 +177,10 @@ describe('Backtest Engine', () => {
 
       for (let i = 0; i < 150; i++) {
         // Hold prisen flat til SMA-er er tilgjengelige, kjøp ved basePrice,
-        // og trigger første delvise TP ved +6 % (5 %-nivået krever litt
-        // ekstra pga. slippage på kjøpsprisen i backtesten).
-        const close = i <= 109 ? basePrice : basePrice * 1.06;
+        // og trigger første delvise TP ved +8 % (5 %-nivået krever ekstra
+        // margin pga. slippage på kjøpsprisen OG Kraken-taker-fee 0,8 % —
+        // høyere enn Binance-feen backtesten opprinnelig ble kalibrert med).
+        const close = i <= 109 ? basePrice : basePrice * 1.08;
         candles.push({
           timestamp: startTime + i * 24 * 60 * 60 * 1000,
           open: close,
@@ -200,7 +201,7 @@ describe('Backtest Engine', () => {
       // Finn første salgshandel (delvis TP).
       const firstSell = result.trades[0];
       // Markedsordre i backtest får kanonisk slippage ved salg.
-      expect(firstSell.exitPrice).toBeCloseTo(basePrice * 1.06 * (1 - MARKET_SLIPPAGE_RATE), 4);
+      expect(firstSell.exitPrice).toBeCloseTo(basePrice * 1.08 * (1 - MARKET_SLIPPAGE_RATE), 4);
 
       // Kjøp bruker 50 % av kapital ved basePrice.
       const buyCapital = initialCapital * 0.5;
@@ -329,7 +330,7 @@ describe('Backtest Engine', () => {
       const startTime = Date.now();
 
       for (let i = 0; i < 150; i++) {
-        const close = i <= 109 ? basePrice : basePrice * 1.06;
+        const close = i <= 109 ? basePrice : basePrice * 1.08;
         candles.push({
           timestamp: startTime + i * 24 * 60 * 60 * 1000,
           open: close,
