@@ -148,7 +148,7 @@
     "grantFounderError": "授予创始人身份时出错",
     "id": "身份证号",
     "impersonation": {
-      "description": "描述",
+      "description": "以其他用户身份登录以查看其体验。",
       "email": "电子邮件",
       "emailPlaceholder": "你@example.com",
       "endSession": "结束会议",
@@ -161,7 +161,7 @@
       "reasonPlaceholder": "冒充原因",
       "start": "开始",
       "starting": "开始",
-      "title": "标题",
+      "title": "模拟登录",
       "warningText": "警告文字",
       "warningTitle": "警告标题"
     },
@@ -364,7 +364,18 @@
       },
       "syncSessions": "同步会话",
       "tierError": "层错误",
-      "tierUpdated": "等级更新"
+      "tierUpdated": "等级更新",
+      "sources": {
+        "all": "所有来源",
+        "manual": "手动",
+        "magic_link": "魔法链接",
+        "google": "Google"
+      },
+      "tiers": {
+        "all": "所有等级",
+        "free": "免费",
+        "pro": "Pro"
+      }
     },
     "verifyLinkError": "无法验证链接",
     "verifyingLink": "正在验证链接...",
@@ -1090,18 +1101,18 @@
       },
       "step1": {
         "cta": "克塔",
-        "description": "描述",
+        "description": "找到适合您风格的策略，并选择您愿意承担的风险程度。",
         "howItWorksTitle": "它是如何运作的",
         "list1": "列表",
         "list2": "列表",
         "list3": "列表",
-        "title1": "标题",
-        "title2": "标题"
+        "title1": "选择策略",
+        "title2": "调整风险"
       },
       "step2": {
         "preloaded": "预载",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "实时跟踪"
       },
       "step3": {
         "currencySuffix": "货币后缀",
@@ -1112,7 +1123,7 @@
         "status": "状态",
         "statusValue": "状态值",
         "subtitle": "副标题",
-        "title": "标题",
+        "title": "使用模拟资金开始",
         "tooltip": "工具提示",
         "tradingMode": "交易模式",
         "tradingModeValue": "交易模式价值"
@@ -1120,7 +1131,7 @@
       "step4": {
         "redirecting": "重定向",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "准备好后开始实盘"
       }
     },
     "kellyNotice": "凯利通知",
@@ -1136,7 +1147,7 @@
       "step2": {
         "backAriaLabel": "返回 Aria 标签",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "设置账户"
       }
     },
     "modeLabel": "模式标签",
@@ -1155,7 +1166,7 @@
     "speedOnboarding": {
       "step1": {
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "欢迎"
       },
       "step2": {
         "paperTradingZeroRisk": "模拟交易零风险",
@@ -1163,14 +1174,14 @@
         "starting": "开始",
         "startingCapital": "启动资金",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "设置账户"
       },
       "step3": {
         "goToDashboard": "转到仪表板",
         "line1": "线",
         "line2": "线",
         "line3": "线",
-        "title": "标题",
+        "title": "准备交易",
         "viewActivity": "查看活动"
       },
       "timerPrefix": "定时器前缀"
@@ -1195,7 +1206,7 @@
     "strategyTrendDesc": "策略趋势描述",
     "submit": "提交",
     "summary": "总结",
-    "title": "标题",
+    "title": "Klarpakke",
     "toasts": {
       "general": {
         "error": "错误",
@@ -2095,7 +2106,7 @@
     "quickLinks": "快速链接",
     "recentActivity": "最近的活动",
     "recentTrades": {
-      "title": "标题",
+      "title": "最近交易",
       "viewAll": "查看全部"
     },
     "riskNote": {
@@ -2146,7 +2157,8 @@
       "liveBadge": "直播",
       "seeAll": "查看全部",
       "staleBadge": "陈旧的",
-      "title": "交易信号"
+      "title": "交易信号",
+      "planChip": "方案"
     },
     "smartActions": {
       "liveMode": {
@@ -2553,43 +2565,43 @@
     "cookies": {
       "categories": {
         "analytics": {
-          "description": "描述",
+          "description": "分析 Cookie 帮助我们了解网站的使用情况。",
           "name": "名称"
         },
         "functional": {
-          "description": "描述",
+          "description": "功能性 Cookie 记住您的选择和偏好。",
           "name": "名称"
         },
         "marketing": {
-          "description": "描述",
+          "description": "营销 Cookie 仅在获得您同意时使用。",
           "name": "名称"
         },
         "necessary": {
-          "description": "描述",
+          "description": "必要 Cookie 确保服务安全运行。",
           "name": "名称"
         },
-        "title": "标题"
+        "title": "类别"
       },
       "contact": {
         "content": "内容",
-        "title": "标题"
+        "title": "联系我们"
       },
       "manage": {
         "lastUpdated": "最后更新",
         "noConsent": "不同意",
         "revoke": "撤销",
-        "title": "标题"
+        "title": "管理同意"
       },
       "thirdParty": {
         "google": "谷歌",
         "sentry": "哨兵",
         "supabase": "苏帕贝斯",
-        "title": "标题"
+        "title": "第三方"
       },
-      "title": "标题",
+      "title": "Cookie",
       "whatAreCookies": {
         "content": "内容",
-        "title": "标题"
+        "title": "什么是 Cookie？"
       }
     }
   },
@@ -2816,7 +2828,7 @@
     "pilot": "飞行员",
     "portfolio": "投资组合",
     "security": {
-      "title": "标题",
+      "title": "安全",
       "warning": "警告"
     },
     "selectExchange": "选择交易所",
@@ -2887,7 +2899,7 @@
       "cta": "克塔",
       "skip": "跳过",
       "subtitle": "副标题",
-      "title": "标题"
+      "title": "AI 映射"
     },
     "and": "和",
     "bankid": "银行ID",
@@ -2956,21 +2968,28 @@
         },
         "badgesAriaLabel": "徽章咏叹调标签",
         "cta": "克塔",
-        "description": "描述",
+        "description": "创建账户并获得 100,000 克朗模拟资金。",
         "skip": "跳过",
-        "title": "标题"
+        "title": "简单开始"
       },
       "step2": {
         "backAriaLabel": "返回 Aria 标签",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "标题",
+        "riskLevels": {
+          "safe": "保守",
+          "balanced": "平衡",
+          "aggressive": "激进",
+          "offensive": "进攻型"
+        }
       },
       "step3": {
         "cta": "克塔",
-        "description": "描述",
+        "description": "零风险开始您的第一笔交易。",
         "loading": "加载中",
         "selectedStrategy": "选定的策略",
-        "title": "标题"
+        "title": "准备交易",
+        "discoverCta": "探索仪表盘"
       }
     },
     "noCreditCard": "无需信用卡",
@@ -2986,7 +3005,7 @@
       "error": "错误",
       "loading": "加载中",
       "subtitle": "副标题",
-      "title": "标题",
+      "title": "设置模拟资金",
       "tooltip": "工具提示",
       "virtual": "虚拟",
       "whatIs": "什么是"
@@ -3046,24 +3065,24 @@
     "startFree": "现在开始——完全免费",
     "step4": {
       "apiKey": {
-        "label": "标签",
+        "label": "API 密钥",
         "placeholder": "粘贴您的 API 密钥"
       },
       "apiSecret": {
-        "label": "标签",
+        "label": "API 密钥（Secret）",
         "placeholder": "粘贴您的 API 机密"
       },
       "connecting": "正在连接",
       "cta": "克塔",
       "error": "错误",
       "security": {
-        "description": "描述",
-        "title": "标题"
+        "description": "您的密钥经过加密，仅用于执行您的交易。",
+        "title": "安全连接"
       },
       "skip": "跳过",
       "skipping": "跳绳",
       "subtitle": "副标题",
-      "title": "标题"
+      "title": "连接交易所"
     },
     "step5": {
       "botReady": "机器人准备就绪",
@@ -3109,28 +3128,28 @@
         "items": {
           "influence": {
             "desc": "描述",
-            "title": "标题"
+            "title": "影响产品"
           },
           "journal": {
             "desc": "描述",
-            "title": "标题"
+            "title": "交易日志"
           },
           "kltPoints": {
             "desc": "描述",
-            "title": "标题"
+            "title": "KLT 积分"
           },
           "paperMoney": {
             "desc": "描述",
-            "title": "标题"
+            "title": "100,000 克朗模拟资金"
           }
         },
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "您将获得"
       },
       "cta": {
         "button": "按钮",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "免费开始"
       },
       "footer": {
         "questions": "问题"
@@ -3138,34 +3157,40 @@
       "hero": {
         "highlight": "亮点",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "欢迎来到 Klarpakke"
       },
       "safety": {
         "desc": "描述",
-        "title": "标题"
+        "title": "您的资金是安全的"
       },
       "steps": {
         "items": {
           "checkStatus": {
             "action": "行动",
             "desc": "描述",
-            "title": "标题"
+            "title": "查看状态"
           },
           "dashboard": {
             "action": "行动",
             "desc": "描述",
-            "title": "标题"
+            "title": "探索仪表盘"
           },
           "wait": {
             "desc": "描述",
-            "title": "标题"
+            "title": "等待批准"
           }
         },
-        "title": "标题"
+        "title": "如何开始"
       }
     },
     "welcomeTitle": "欢迎来到 Klarpakke 团队！ 🚀",
-    "welcomeVideo": "观看这个短视频"
+    "welcomeVideo": "观看这个短视频",
+    "error": {
+      "title": "出了点问题",
+      "message": "无法加载内容，请重试。",
+      "retry": "重试",
+      "backToLogin": "返回登录"
+    }
   },
   "orderHistory": {
     "title": "订单历史",
@@ -3414,7 +3439,7 @@
       "subtitle": "与其他挪威人一起学习如何用虚拟货币进行安全交易。",
       "title": "准备好开始了吗？"
     },
-    "description": "描述",
+    "description": "选择适合您的方案。使用模拟资金免费开始。",
     "disclaimer": "免责声明",
     "faq": {
       "title": "常见问题解答"
@@ -3561,9 +3586,9 @@
     },
     "metadata": {
       "sectionTitle": "Marketplace metadata",
-      "title": "Title",
+      "title": "策略市场",
       "titlePlaceholder": "Strategy title",
-      "description": "Description",
+      "description": "探索并复制经过验证的交易策略。",
       "descriptionPlaceholder": "Short pitch",
       "category": "Category",
       "category_dca": "DCA",
@@ -4178,8 +4203,8 @@
         "symbol": "符号"
       },
       "empty": {
-        "description": "描述",
-        "title": "标题"
+        "description": "当您开仓时，持仓将显示在这里。",
+        "title": "暂无持仓"
       },
       "totalUnrealizedPnL": "未实现盈亏总额"
     },
@@ -4195,7 +4220,7 @@
       "liveStop": "实时停止",
       "liveTitle": "实时标题",
       "stop": "停止",
-      "title": "标题"
+      "title": "活跃策略"
     },
     "activeTraders": "{count} 活跃交易者",
     "advancedStats": {
@@ -4233,7 +4258,7 @@
           "moreLikely": "更有可能",
           "reactionTime": "反应时间"
         },
-        "title": "标题"
+        "title": "激进程度"
       },
       "sections": {
         "comparison": "比较",
@@ -4325,7 +4350,7 @@
       "copyTrading": "复制交易",
       "currentStatus": "目前状态",
       "dailyResult": "每日结果",
-      "description": "描述",
+      "description": "机器人正在运行并遵循您的策略。",
       "detailedPerformanceMetrics": "详细的性能指标",
       "emergencyStop": "紧急停止",
       "followSuccessfulTraders": "关注成功交易者",
@@ -4382,7 +4407,7 @@
       "trades": {
         "empty": "空"
       },
-      "value": "价值",
+      "value": "运行中",
       "waitingForYou": "等你",
       "weeklyResult": "每周结果",
       "winRate": "胜率",
@@ -4707,7 +4732,7 @@
     "mode": "模式",
     "modeLabel": "模式标签",
     "modeSelector": {
-      "title": "标题"
+      "title": "交易模式"
     },
     "noRealizedPnlExplainer": "无已实现盈亏解释器",
     "noRealizedPnlShort": "无已实现盈亏空头",
@@ -4742,7 +4767,7 @@
       },
       "confirmResetAll": "确认全部重置",
       "crashed": "坠毁",
-      "description": "描述",
+      "description": "使用模拟资金交易，零风险练习。",
       "errors": {
         "forbidden": "禁止",
         "generic": "通用",
@@ -4787,7 +4812,7 @@
       "workspaceHeader": {
         "badge": "纸",
         "subtitle": "副标题",
-        "title": "标题"
+        "title": "模拟资金"
       },
       "krakenUpdateInfo": "Prices are updated from Kraken in real time"
     },
@@ -4810,7 +4835,7 @@
       "lot": "地段",
       "noPosition": "没有职位",
       "quantity": "数量",
-      "title": "标题",
+      "title": "仓位大小",
       "totalQuantity": "总量",
       "totalUnrealizedPnL": "未实现盈亏总额",
       "unrealizedPnL": "未实现盈亏",
@@ -4984,7 +5009,7 @@
       "upgrade": "升级",
       "upgradeNow": "立即升级",
       "upgradePrompt": "升级提示",
-      "value": "价值",
+      "value": "详情",
       "winRate": "胜率"
     },
     "shares": "股份",
@@ -5007,7 +5032,7 @@
       "statusError": "状态错误",
       "statusLive": "实时状态",
       "statusStale": "状态陈旧",
-      "title": "标题",
+      "title": "信号",
       "updatedPrefix": "更新的前缀"
     },
     "sonarLoadError": "无法加载 Sonar AI 分析。",
@@ -5058,11 +5083,11 @@
       "statusActive": "状态活跃",
       "statusIdle": "状态 空闲",
       "stopStrategy": "停止策略",
-      "title": "标题"
+      "title": "选择策略"
     },
     "subtitle": "副标题",
     "takeProfit": "止盈",
-    "title": "标题",
+    "title": "交易",
     "toggleAria": "切换咏叹调",
     "toggleLabel": "切换标签",
     "totalRealizedPnl": "已实现盈亏总额",
@@ -5073,25 +5098,34 @@
       "balance": "平衡",
       "maxPerTrade": "每笔交易最高限额",
       "paperTrading": {
-        "description": "描述",
-        "title": "标题"
+        "description": "您正在使用模拟资金交易 — 无真实资金风险。",
+        "title": "模拟资金模式"
       },
       "status": {
         "blocked": {
-          "description": "描述"
+          "description": "交易暂时被阻止。请查看上方消息。",
+          "title": "交易被阻止"
         },
         "caution": {
-          "description": "描述"
+          "description": "金额相对于您的余额偏高。",
+          "title": "请注意"
         },
         "ok": {
-          "description": "描述"
+          "description": "金额在安全范围内。",
+          "title": "在限制范围内"
         },
         "warning": {
-          "title": "标题"
+          "title": "请谨慎",
+          "description": "金额超过建议上限。"
         }
       },
-      "title": "标题",
-      "whatThisMeans": "这意味着什么"
+      "title": "每笔交易金额",
+      "whatThisMeans": "这意味着什么",
+      "scenarios": {
+        "gain": "潜在收益：{amount}",
+        "loss": "潜在亏损：{amount}",
+        "stopLoss": "止损：{amount}"
+      }
     },
     "tradeDetails": {
       "automatic": "自动",
@@ -5138,29 +5172,29 @@
     },
     "tradingModeSelector": {
       "live": {
-        "description": "描述",
+        "description": "在交易所使用真实资金交易。",
         "feature1": "特点",
         "feature2": "特点",
         "feature3": "特点",
-        "title": "标题",
+        "title": "实盘",
         "warning": "警告"
       },
       "liveWarning": {
-        "description": "描述",
-        "title": "标题"
+        "description": "实盘交易存在真实的亏损风险。",
+        "title": "重要"
       },
       "locked": {
         "comingSoon": "即将推出",
         "connectExchange": "连接交易所"
       },
       "paper": {
-        "description": "描述",
+        "description": "使用 100,000 克朗模拟资金练习。零风险。",
         "feature1": "特点",
         "feature2": "特点",
         "feature3": "特点",
-        "title": "标题"
+        "title": "模拟资金"
       },
-      "title": "标题"
+      "title": "交易模式"
     },
     "type": "类型",
     "unknownStrategy": "未知策略",
@@ -5277,7 +5311,7 @@
       "total": "Total verdi",
       "currency": "Valuta",
       "amount": "Antall",
-      "value": "Verdi"
+      "value": "余额"
     }
   },
   "jokertrade": {
@@ -5779,7 +5813,7 @@
   },
   "components": {
     "livePill": {
-      "label": "标签"
+      "label": "实盘"
     },
     "themeToggle": {
       "dark": "黑暗",

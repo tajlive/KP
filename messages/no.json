@@ -388,15 +388,26 @@
       "reportJobId": "Report job id",
       "reportDownload": "Report download",
       "reportExpires": "Report expires",
-      "reportClose": "Report lukk"
+      "reportClose": "Report lukk",
+      "sources": {
+        "all": "Alle kilder",
+        "manual": "Manuell",
+        "magic_link": "Magisk lenke",
+        "google": "Google"
+      },
+      "tiers": {
+        "all": "Alle nivåer",
+        "free": "Gratis",
+        "pro": "Pro"
+      }
     },
     "totalUsers": "Totalt users",
     "send": "Send",
     "serviceStatus": "Service status",
     "allServicesNormal": "Alle services normal",
     "impersonation": {
-      "title": "Tittel",
-      "description": "Beskrivelse",
+      "title": "Impersonering",
+      "description": "Logg inn som en annen bruker for å se deres opplevelse.",
       "warningTitle": "Warning tittel",
       "warningText": "Warning text",
       "email": "E-post",
@@ -1082,16 +1093,16 @@
     "update": "Oppdater",
     "submit": "Send inn",
     "refresh": "Oppdater side",
-    "title": "Tittel",
+    "title": "Klarpakke",
     "unexpectedError": "Unexpected feil",
     "speedOnboarding": {
       "timerPrefix": "Timer prefix",
       "step1": {
-        "title": "Tittel",
+        "title": "Velkommen",
         "subtitle": "Undertittel"
       },
       "step2": {
-        "title": "Tittel",
+        "title": "Sett opp kontoen",
         "subtitle": "Undertittel",
         "startingCapital": "Starting kapital",
         "paperTradingZeroRisk": "Papir trading zero risiko",
@@ -1099,7 +1110,7 @@
         "startTrading": "Start trading"
       },
       "step3": {
-        "title": "Tittel",
+        "title": "Klar til å handle",
         "line1": "Line",
         "line2": "Line",
         "line3": "Line",
@@ -1112,9 +1123,9 @@
         "finish": "Fullfør"
       },
       "step1": {
-        "title1": "Tittel",
-        "title2": "Tittel",
-        "description": "Beskrivelse",
+        "title1": "Velg strategi",
+        "title2": "Justér risiko",
+        "description": "Finn en strategi som passer din stil, og velg hvor mye risiko du vil ta.",
         "howItWorksTitle": "How it works tittel",
         "list1": "List",
         "list2": "List",
@@ -1122,12 +1133,12 @@
         "cta": "Start her"
       },
       "step2": {
-        "title": "Tittel",
+        "title": "Følg med i sanntid",
         "subtitle": "Undertittel",
         "preloaded": "Preloaded"
       },
       "step3": {
-        "title": "Tittel",
+        "title": "Start med lekepenger",
         "subtitle": "Undertittel",
         "goalStrategy": "Goal strategi",
         "playMoney": "Play money",
@@ -1141,7 +1152,7 @@
         "startBot": "Start boten"
       },
       "step4": {
-        "title": "Tittel",
+        "title": "Gå live når du er klar",
         "subtitle": "Undertittel",
         "redirecting": "Redirecting"
       }
@@ -1149,7 +1160,7 @@
     "mobile": {
       "step2": {
         "backAriaLabel": "Tilbake aria etikett",
-        "title": "Tittel",
+        "title": "Sett opp kontoen",
         "subtitle": "Undertittel"
       }
     },
@@ -1591,7 +1602,7 @@
     "profit": "Profitt",
     "loss": "Tap",
     "recentTrades": {
-      "title": "Tittel",
+      "title": "Siste handler",
       "viewAll": "Vis alle"
     },
     "noTrades": "Ingen handler ennå. Trykk «Sync Kraken» for å laste dine Kraken-handler.",
@@ -2163,7 +2174,8 @@
       "seeAll": "Se alle",
       "empty": "Ingen data",
       "directionBuy": "Kjøp",
-      "directionSell": "Salg"
+      "directionSell": "Salg",
+      "planChip": "Plan"
     },
     "homeOverview": {
       "title": "Porteføljeoversikt",
@@ -2774,44 +2786,44 @@
       }
     },
     "cookies": {
-      "title": "Tittel",
+      "title": "Informasjonskapsler",
       "whatAreCookies": {
-        "title": "Tittel",
+        "title": "Hva er informasjonskapsler?",
         "content": "Content"
       },
       "categories": {
-        "title": "Tittel",
+        "title": "Kategorier",
         "necessary": {
           "name": "Navn",
-          "description": "Beskrivelse"
+          "description": "Nødvendige kapsler holder tjenesten sikker og fungerende."
         },
         "analytics": {
           "name": "Navn",
-          "description": "Beskrivelse"
+          "description": "Analytiske kapsler hjelper oss å forstå hvordan siden brukes."
         },
         "marketing": {
           "name": "Navn",
-          "description": "Beskrivelse"
+          "description": "Markedsføringskapsler brukes kun med ditt samtykke."
         },
         "functional": {
           "name": "Navn",
-          "description": "Beskrivelse"
+          "description": "Funksjonelle kapsler husker dine valg og preferanser."
         }
       },
       "thirdParty": {
-        "title": "Tittel",
+        "title": "Tredjeparter",
         "sentry": "Sentry",
         "google": "Google",
         "supabase": "Supabase"
       },
       "manage": {
-        "title": "Tittel",
+        "title": "Administrer samtykke",
         "lastUpdated": "Sist oppdatert",
         "revoke": "Revoke",
         "noConsent": "No consent"
       },
       "contact": {
-        "title": "Tittel",
+        "title": "Kontakt",
         "content": "Content"
       }
     }
@@ -3041,7 +3053,7 @@
     "logout": "Logg ut",
     "selectExchange": "Select exchange",
     "security": {
-      "title": "Tittel",
+      "title": "Sikkerhet",
       "warning": "Warning"
     },
     "pilot": "Pilot"
@@ -3054,7 +3066,7 @@
       "dark": "Mørkt"
     },
     "livePill": {
-      "label": "Etikett"
+      "label": "Live"
     }
   },
   "notifications": {
@@ -3215,55 +3227,55 @@
       "benefits": {
         "items": {
           "paperMoney": {
-            "title": "Tittel",
+            "title": "100 000 kr i lekepenger",
             "desc": "Desc"
           },
           "journal": {
-            "title": "Tittel",
+            "title": "Handelsjournal",
             "desc": "Desc"
           },
           "influence": {
-            "title": "Tittel",
+            "title": "Påvirke produktet",
             "desc": "Desc"
           },
           "kltPoints": {
-            "title": "Tittel",
+            "title": "KLT-poeng",
             "desc": "Desc"
           }
         },
-        "title": "Tittel",
+        "title": "Hva du får",
         "subtitle": "Undertittel"
       },
       "steps": {
         "items": {
           "checkStatus": {
-            "title": "Tittel",
+            "title": "Sjekk status",
             "desc": "Desc",
             "action": "Action"
           },
           "dashboard": {
-            "title": "Tittel",
+            "title": "Utforsk dashbordet",
             "desc": "Desc",
             "action": "Action"
           },
           "wait": {
-            "title": "Tittel",
+            "title": "Vent på godkjenning",
             "desc": "Desc"
           }
         },
-        "title": "Tittel"
+        "title": "Slik kommer du i gang"
       },
       "hero": {
-        "title": "Tittel",
+        "title": "Velkommen til Klarpakke",
         "highlight": "Highlight",
         "subtitle": "Undertittel"
       },
       "safety": {
-        "title": "Tittel",
+        "title": "Dine penger er trygge",
         "desc": "Desc"
       },
       "cta": {
-        "title": "Tittel",
+        "title": "Start gratis",
         "subtitle": "Undertittel",
         "button": "Button"
       },
@@ -3274,7 +3286,7 @@
     "paperSetup": {
       "error": "Feil",
       "loading": "Laster...",
-      "title": "Tittel",
+      "title": "Sett opp lekepenger",
       "subtitle": "Undertittel",
       "badge": "Lekepenger",
       "virtual": "Virtual",
@@ -3286,18 +3298,18 @@
     },
     "step4": {
       "error": "Feil",
-      "title": "Tittel",
+      "title": "Koble til børsen",
       "subtitle": "Undertittel",
       "security": {
-        "title": "Tittel",
-        "description": "Beskrivelse"
+        "title": "Sikker tilkobling",
+        "description": "Nøklene dine krypteres og brukes kun for å utføre dine handler."
       },
       "apiKey": {
-        "label": "Etikett",
+        "label": "API-nøkkel",
         "placeholder": "Lim inn API-nøkkelen"
       },
       "apiSecret": {
-        "label": "Etikett",
+        "label": "Hemmelig nøkkel",
         "placeholder": "Lim inn API-hemmeligheten"
       },
       "connecting": "Connecting",
@@ -3308,7 +3320,7 @@
     "aiMapping": {
       "coachName": "Coach navn",
       "subtitle": "Undertittel",
-      "title": "Tittel",
+      "title": "AI-tilordning",
       "cta": "Start nå",
       "skip": "Hopp over"
     },
@@ -3319,15 +3331,16 @@
     },
     "mobile": {
       "step3": {
-        "title": "Tittel",
-        "description": "Beskrivelse",
+        "title": "Klar til å handle",
+        "description": "Start din første handel med null risiko.",
         "selectedStrategy": "Selected strategi",
         "loading": "Laster...",
-        "cta": "Aktiver bot"
+        "cta": "Aktiver bot",
+        "discoverCta": "Utforsk dashbordet"
       },
       "step1": {
-        "title": "Tittel",
-        "description": "Beskrivelse",
+        "title": "Start enkelt",
+        "description": "Opprett en konto og få 100 000 kr i lekepenger.",
         "badgesAriaLabel": "Badges aria etikett",
         "badges": {
           "bankid": "Bankid",
@@ -3340,7 +3353,13 @@
       "step2": {
         "subtitle": "Subtitle",
         "backAriaLabel": "Back Aria Label",
-        "title": "Title"
+        "title": "Title",
+        "riskLevels": {
+          "safe": "Trygg",
+          "balanced": "Balansert",
+          "aggressive": "Aggressiv",
+          "offensive": "Offensiv"
+        }
       }
     },
     "canvas-confetti": "Canvas Confetti",
@@ -3383,7 +3402,13 @@
         "redirecting": "Redirecting"
       }
     },
-    "ref": "Ref"
+    "ref": "Ref",
+    "error": {
+      "title": "Noe gikk galt",
+      "message": "Kunne ikke laste innholdet. Prøv igjen.",
+      "retry": "Prøv igjen",
+      "backToLogin": "Tilbake til innlogging"
+    }
   },
   "orderHistory": {
     "title": "Ordrehistorikk",
@@ -3669,7 +3694,7 @@
       }
     },
     "sectionTitle": "Section tittel",
-    "description": "Beskrivelse",
+    "description": "Velg planen som passer deg. Start gratis med lekepenger.",
     "disclaimer": "Ansvarsfraskrivelse"
   },
   "pricingCancel": {
@@ -3779,9 +3804,9 @@
     },
     "metadata": {
       "sectionTitle": "Markedsplass-metadata",
-      "title": "Tittel",
+      "title": "Strategi-marked",
       "titlePlaceholder": "F.eks. Balansert DCA BTC",
-      "description": "Beskrivelse",
+      "description": "Utforsk og kopier velprøvde handelsstrategier.",
       "descriptionPlaceholder": "Kort pitch til kjøpere",
       "category": "Kategori",
       "category_dca": "DCA",
@@ -4405,8 +4430,8 @@
     "confirmTrade": "Bekreft Handel",
     "positions": {
       "empty": {
-        "title": "Tittel",
-        "description": "Beskrivelse"
+        "title": "Ingen posisjoner",
+        "description": "Når du åpner en posisjon, vises den her."
       },
       "columns": {
         "symbol": "Symbol",
@@ -4519,7 +4544,7 @@
     "fetchError": "Fetch feil",
     "diagnosticsCopyFailed": "Diagnostics copy failed",
     "diagnosticsCopied": "Diagnostics copied",
-    "title": "Tittel",
+    "title": "Handel",
     "subtitle": "Undertittel",
     "copyDiagnostics": "Copy diagnostics",
     "exportCsv": "Export csv",
@@ -4539,7 +4564,7 @@
     "decisionModify": "Decision modify",
     "live": "Live",
     "paper": "Lekepenger",
-    "retry": "Retry",
+    "retry": "Prøv igjen",
     "noTradesFiltered": "No handler filtered",
     "noTradesFilteredHint": "No handler filtered tips",
     "noTrades": "Ingen handler",
@@ -4796,7 +4821,7 @@
       "workspaceHeader": {
         "subtitle": "Undertittel",
         "badge": "Lekepenger",
-        "title": "Tittel"
+        "title": "Lekepenger"
       },
       "backToOverview": "Tilbake to oversikt",
       "backToDashboard": "Tilbake til dashboard",
@@ -4828,7 +4853,7 @@
       "resetSession": "Reset økt",
       "newSession": "New økt",
       "noSessions": "Ingen økter",
-      "description": "Beskrivelse",
+      "description": "Handel med lekepenger og øv deg uten risiko.",
       "refreshList": "Oppdater list",
       "krakenUpdateInfo": "Priser oppdateres fra Kraken i sanntid",
       "tradingPair": "Trading par",
@@ -4877,7 +4902,7 @@
       "loading": "Laster...",
       "error": "Feil",
       "noPosition": "No position",
-      "title": "Tittel",
+      "title": "Posisjonsstørrelse",
       "totalUnrealizedPnL": "Totalt unrealized pn l",
       "lot": "Lot",
       "entryPrice": "Entry pris",
@@ -4891,29 +4916,38 @@
       "balance": "Balanse",
       "maxPerTrade": "Max per handel",
       "alreadyInMarket": "Already in marked",
-      "title": "Tittel",
+      "title": "Beløp per handel",
       "status": {
         "blocked": {
-          "description": "Beskrivelse"
+          "description": "Handel er midlertidig blokkert. Sjekk meldingen over.",
+          "title": "Handel blokkert"
         },
         "warning": {
-          "title": "Tittel"
+          "title": "Vær forsiktig",
+          "description": "Beløpet overstiger anbefalt maks."
         },
         "caution": {
-          "description": "Beskrivelse"
+          "description": "Beløpet er høyt i forhold til saldoen din.",
+          "title": "Vær oppmerksom"
         },
         "ok": {
-          "description": "Beskrivelse"
+          "description": "Beløpet er innenfor trygge rammer.",
+          "title": "Innenfor rammene"
         }
       },
       "whatThisMeans": "What this means",
       "paperTrading": {
-        "title": "Tittel",
-        "description": "Beskrivelse"
+        "title": "Lekepenger-modus",
+        "description": "Du handler med lekepenger — ingen ekte penger risikeres."
+      },
+      "scenarios": {
+        "gain": "Mulig gevinst: {amount}",
+        "loss": "Mulig tap: {amount}",
+        "stopLoss": "Stopp-tap: {amount}"
       }
     },
     "signalFeed": {
-      "title": "Tittel",
+      "title": "Signaler",
       "statusLive": "Status live",
       "statusStale": "Status stale",
       "statusEmpty": "Status ingen data",
@@ -4984,7 +5018,7 @@
       "overview": "Oversikt",
       "advanced": "Avansert",
       "botControlCenter": "Bot control center",
-      "description": "Beskrivelse",
+      "description": "Roboten er aktiv og følger strategien din.",
       "myStrategies": "My strategies",
       "strategies": {
         "empty": "Ingen data"
@@ -4996,7 +5030,7 @@
       "action": "Action",
       "symbol": "Symbol",
       "price": "Pris",
-      "value": "Verdi",
+      "value": "Aktiv",
       "time": "Tid",
       "trades": {
         "empty": "Ingen data"
@@ -5071,7 +5105,7 @@
     },
     "aggressivitySlider": {
       "levels": {
-        "title": "Tittel",
+        "title": "Aggressivitetsnivå",
         "sections": {
           "reactionTime": "Reaction tid",
           "confirmation": "Confirmation",
@@ -5096,7 +5130,7 @@
       }
     },
     "modeSelector": {
-      "title": "Tittel"
+      "title": "Handelsmodus"
     },
     "sessionDetail": {
       "active": "Aktiv",
@@ -5151,7 +5185,7 @@
       "orderType": "Ordretype",
       "quantity": "Mengde",
       "price": "Pris",
-      "value": "Verdi",
+      "value": "Detaljer",
       "fee": "Gebyr",
       "status": "Status",
       "timestamp": "Tidspunkt",
@@ -5201,7 +5235,7 @@
       "activePairs": "Aktive par"
     },
     "strategyPicker": {
-      "title": "Tittel",
+      "title": "Velg strategi",
       "paperHint": "Papir tips",
       "ariaClose": "Aria lukk",
       "statusActive": "Status aktiv",
@@ -5217,7 +5251,7 @@
       "liveStartStrategy": "Live Start Strategy"
     },
     "activeStrategiesPanel": {
-      "title": "Tittel",
+      "title": "Aktive strategier",
       "emptyHint": "Ingen data tips",
       "stop": "Stopp",
       "liveTitle": "Live Title",
@@ -5293,17 +5327,17 @@
       "noTradesYet": "No handler yet"
     },
     "tradingModeSelector": {
-      "title": "Tittel",
+      "title": "Handelsmodus",
       "paper": {
-        "title": "Tittel",
-        "description": "Beskrivelse",
+        "title": "Lekepenger",
+        "description": "Øv deg med 100 000 kr i lekepenger. Null risiko.",
         "feature1": "Feature",
         "feature2": "Feature",
         "feature3": "Feature"
       },
       "live": {
-        "title": "Tittel",
-        "description": "Beskrivelse",
+        "title": "Live",
+        "description": "Handle med ekte penger på børsen.",
         "warning": "Warning",
         "feature1": "Feature",
         "feature2": "Feature",
@@ -5314,8 +5348,8 @@
         "connectExchange": "Connect exchange"
       },
       "liveWarning": {
-        "title": "Tittel",
-        "description": "Beskrivelse"
+        "title": "Viktig",
+        "description": "Live-handel innebærer reell risiko for tap."
       }
     },
     "shares": "Shares",
@@ -5443,7 +5477,7 @@
       "total": "Total verdi",
       "currency": "Valuta",
       "amount": "Antall",
-      "value": "Verdi"
+      "value": "Saldo"
     }
   },
   "toasts": {
