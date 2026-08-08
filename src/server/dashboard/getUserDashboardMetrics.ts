@@ -257,6 +257,20 @@ export async function getUserDashboardMetrics(
       startingCapital = fallback.startingCapital;
     }
 
+    // Live: startingCapital kan mangle fra RPC — utled fra første live-sesjon
+    // slik at totalReturn (totalPnl/startingCapital) kan beregnes.
+    if (mode === "live" && startingCapital === 0) {
+      const { data: firstLiveSession } = await supabaseClient
+        .from("trading_sessions")
+        .select("starting_capital_nok")
+        .eq("user_id", userId)
+        .eq("mode", "live")
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      startingCapital = Number(firstLiveSession?.starting_capital_nok ?? 0);
+    }
+
     const winRate =
       winningTrades + losingTrades > 0
         ? winningTrades / (winningTrades + losingTrades)
