@@ -123,8 +123,10 @@ describe("RecentTradesTable", () => {
   it("shows PnL for trades with realized_pnl", () => {
     renderWithI18n(<RecentTradesTable {...defaultProps} />);
 
-    // ETH-salg har +5,000 USDT PnL (vises både i tabell og mobilkort)
-    expect(screen.getAllByText("+5 000,00 USDT").length).toBeGreaterThanOrEqual(1);
+    // ETH-salg har +5 000 kr PnL — live-handel lagres i NOK per
+    // valuta-kontrakten (§45). Før valuta-fiksen ble dette vist som
+    // "+5 000,00 USDT" — feil enhet for et NOK-tall.
+    expect(screen.getAllByText("+5 000,00 kr").length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows filter buttons when onModeFilterChange is provided", () => {
