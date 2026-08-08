@@ -227,7 +227,7 @@ class PriceFallback {
     this.abortController = new AbortController();
     
     try {
-      // EU/EØS (2026): via egen API-rute → Kraken (ingen direkte Binance-kall)
+      // EU/EØS (2026): via egen API-rute → Kraken
       const url = `/api/market/binance-24hr?symbols=${encodeURIComponent(symbols.join(","))}`;
       
       const response = await fetch(url, {

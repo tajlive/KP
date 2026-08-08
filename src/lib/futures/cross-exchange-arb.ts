@@ -14,7 +14,7 @@
  * @see {@link identifyCrossExchangeArbitrage} for main opportunity detection
  */
 
-import { getFundingRates as getBinanceFunding } from './funding-rates';
+import { getFundingRates as getKrakenFunding } from './funding-rates';
 
 interface ExchangeFundingRate {
   exchange: string;
@@ -81,7 +81,7 @@ async function getOKXFundingRates(): Promise<ExchangeFundingRate[]> {
 /**
  * Identify cross-exchange funding arbitrage opportunities.
  *
- * Analyzes funding rates across multiple exchanges (Binance real API + mock data
+ * Analyzes funding rates across multiple exchanges (Kraken real API + mock data
  * for Bybit/OKX) to find delta-neutral opportunities.
  *
  * Strategy:
@@ -98,14 +98,14 @@ async function getOKXFundingRates(): Promise<ExchangeFundingRate[]> {
  * @see {@link getHistoricalArbitragePerformance} for backtested historical data
  */
 export async function identifyCrossExchangeArbitrage(): Promise<CrossExchangeOpportunity[]> {
-  const [binanceRates, bybitRates, okxRates] = await Promise.all([
-    getBinanceFunding().catch(() => []),
+  const [krakenRates, bybitRates, okxRates] = await Promise.all([
+    getKrakenFunding().catch(() => []),
     getBybitFundingRates().catch(() => []),
     getOKXFundingRates().catch(() => []),
   ]);
 
   const allRates: ExchangeFundingRate[] = [
-    ...binanceRates.map(r => ({ exchange: 'Binance', symbol: r.symbol, fundingRate: r.lastFundingRate, nextFundingTime: r.nextFundingTime, estimatedAnnual: r.annualizedRate })),
+    ...krakenRates.map(r => ({ exchange: 'Kraken', symbol: r.symbol, fundingRate: r.lastFundingRate, nextFundingTime: r.nextFundingTime, estimatedAnnual: r.annualizedRate })),
     ...bybitRates,
     ...okxRates,
   ];

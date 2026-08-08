@@ -6,9 +6,9 @@
  * - Pre-trade estimation (execute-trade)
  * - Backtest engine (backtestEngine / lib/backtest/engine)
  *
- * EU/EØS-fakta (2026): Binance er geo-blokkert for norske brukere (MiCA).
+ * EU/EØS-fakta (2026): Kraken er eneste børs (MiCA).
  * Kraken er MiCA-regulert og Klarpakkes eneste sanne børs. Paper må simulere
- * Kraken-kostnader, ikke Binance — ellers lyver lekepenger-P&L.
+ * Kraken-kostnader — ellers lyver lekepenger-P&L.
  *
  * Fee-kilde: Kraken cross-platform fee tiers (support.kraken.com, juli 2026):
  *   Tier 1 ($0+):           taker 0.80 % | maker 0.40 %

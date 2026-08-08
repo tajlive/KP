@@ -26,7 +26,7 @@ setInterval(() => {
 const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
   "/api/trading": { max: 60, windowMs: 60_000 },        // 60 req/min for trading
   "/api/ai/chat": { max: 20, windowMs: 60_000 },        // 20 req/min for AI chat (costly API calls)
-  "/api/binance": { max: 30, windowMs: 60_000 },        // 30 req/min for Binance proxy
+  
   "/api/webhooks/stripe": { max: 100, windowMs: 60_000 }, // Stripe webhooks (unlimited)
   "/api/cron": { max: 100, windowMs: 60_000 },           // Cron jobs (unlimited via CRON_SECRET)
 };

@@ -669,7 +669,7 @@ export function SmartPortfolioDashboard({ userId }: { userId: string }) {
           
           <div className="flex items-center gap-2 text-xs text-gray-500 bg-white/5 px-4 py-2 rounded-full border border-white/5">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            Fullt sikret via Supabase Vault \u0026 Binance API (AES-256)
+            Fullt sikret via Supabase Vault \u0026 Kraken API (AES-256)
           </div>
         </div>
       </div>

@@ -336,7 +336,7 @@ export class MiFID2Compliance {
     // Determine best execution venue
     const venues = [
       { name: 'Bybit', price: 100, liquidity: 1000000, fee: 0.00055, latency: 50 },
-      { name: 'Binance', price: 100.1, liquidity: 2000000, fee: 0.0005, latency: 60 },
+      { name: 'Kraken', price: 100.1, liquidity: 2000000, fee: 0.0005, latency: 60 },
       { name: 'Coinbase', price: 100.2, liquidity: 500000, fee: 0.006, latency: 100 }
     ];
     

@@ -33,6 +33,4 @@ export type {
   LeaderboardEntry,
   Notification,
   MarketData,
-  BinanceTicker,
-  BinanceKline,
 } from "@/types/database";

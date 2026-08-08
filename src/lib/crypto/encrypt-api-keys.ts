@@ -1,5 +1,5 @@
 /**
- * Kryptering av Binance API-nøkler før lagring i database.
+ * Kryptering av API-nøkler før lagring i database.
  * Bruker Web Crypto API (edge-compatible).
  */
 

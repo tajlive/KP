@@ -247,7 +247,7 @@ export function getDefaultStrategyDashboardConfigs(): Record<
   };
 }
 
-function toBinanceSymbol(pair: string): string {
+function toKrakenSymbol(pair: string): string {
   return pair.replace("/", "");
 }
 
@@ -326,7 +326,7 @@ export const STRATEGY_CATALOG_PAPER = [
 /** StrategyBuilder — tillatte symboler fra optimalisert profil */
 export const STRATEGY_CATALOG_BUILDER = STRATEGY_UI_ORDER.map((id) => {
   const opt = optProfile(id);
-  const allowed_symbols = opt.allowedPairs.slice(0, 10).map(toBinanceSymbol);
+  const allowed_symbols = opt.allowedPairs.slice(0, 10).map(toKrakenSymbol);
   const names: Record<ProductStrategyId, string> = {
     dca_trygg: "DCA Trygg",
     trend_balansert: "Trend Balansert",

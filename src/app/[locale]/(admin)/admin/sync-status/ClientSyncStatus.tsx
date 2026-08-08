@@ -362,7 +362,7 @@ export default function SyncStatusPage() {
             </p>
             <p className="text-sm mt-4">
               The auto-sync function runs automatically every 15 minutes to sync
-              trades from Binance for all users with connected API keys.
+              trades from Kraken for all users with connected API keys.
             </p>
           </div>
         </CardContent>

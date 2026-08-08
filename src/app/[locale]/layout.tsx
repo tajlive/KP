@@ -58,7 +58,7 @@ import "../globals.css";
  *    - adjustFontFallback: true (metric optimization)
  *
  * 8. RESOURCE HINTS (Task 5):
- *    - DNS prefetch + preconnect for Binance API
+ *    - DNS prefetch + preconnect for Kraken API
  *    - DNS prefetch + preconnect for Supabase (conditional)
  *
  * APP ROUTES with full providers:

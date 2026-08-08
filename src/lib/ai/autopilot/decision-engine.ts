@@ -99,7 +99,7 @@ const RISK_APPETITE_PROFILE: Record<RiskAppetite, RiskLevel> = {
 // ============================================================================
 
 async function fetchCandles(symbol: string, limit = 55): Promise<Candle[]> {
-  // EU/EØS (2026): Kraken via egen rute (ingen direkte Binance-kall)
+  // EU/EØS (2026): Kraken via egen rute
   const url = `/api/market/klines?symbol=${symbol}&interval=1h&limit=${limit}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Kraken API error: ${res.status} for ${symbol}`);

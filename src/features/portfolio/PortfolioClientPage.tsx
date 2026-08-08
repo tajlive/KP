@@ -112,7 +112,7 @@ export default function PortfolioClientPage() {
     [summary],
   );
   const { coins, source } = useRealtimePrices(positionSymbols.length > 0 ? positionSymbols : undefined);
-  // binance-24hr returnerer USDT-priser — konverter til NOK (trades.price er NOK).
+  // 24hr-ruten returnerer USDT-priser — konverter til NOK (trades.price er NOK).
   // UNNTAK: db-cache fallback returnerer ALLEREDE NOK-priser (coin_prices.price er NOK).
   const [usdtNok, setUsdtNok] = React.useState<number | null>(null);
   React.useEffect(() => {

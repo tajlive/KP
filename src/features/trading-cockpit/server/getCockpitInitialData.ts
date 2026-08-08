@@ -53,7 +53,7 @@ export async function getCockpitInitialData(
     await Promise.all([
       supabase
         .from("user_profiles")
-        .select("preferred_trading_mode, binance_connected, tier")
+        .select("preferred_trading_mode, tier")
         .eq("id", userId)
         .single(),
       verifyLiveEntitlement(supabase, userId),

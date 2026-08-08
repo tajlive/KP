@@ -378,7 +378,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
       }),
     );
 
-    // External (Binance) mirror trades
+    // External mirror trades
     let externalCopies: CopiedPosition[] = [];
     try {
       const {

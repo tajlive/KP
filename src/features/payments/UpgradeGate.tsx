@@ -174,7 +174,7 @@ export function UpgradeGate({
                 <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
                   <Shield className="w-5 h-5 text-blue-400 flex-shrink-0" />
                   <p className="text-slate-300 text-sm">
-                    <strong className="text-white">Live trading</strong> med Binance integrasjon
+                    <strong className="text-white">Live trading</strong> med Kraken-integrasjon
                   </p>
                 </div>
 

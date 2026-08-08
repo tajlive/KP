@@ -3,7 +3,7 @@
 /**
  * ExternalFollowSheet
  *
- * Mobil-first bottom-sheet for konfigurasjon av Binance copy-trading.
+ * Mobil-first bottom-sheet for konfigurasjon av copy-trading.
  * Scale factor + allocation % + max trade amount.
  */
 

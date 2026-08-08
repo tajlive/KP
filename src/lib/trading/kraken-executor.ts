@@ -1,7 +1,7 @@
 /**
  * KrakenExecutor — OrderExecutor-adapter for Kraken (live trading).
  *
- * EU/EØS-fakta (2026): Binance er geo-blokkert for norske brukere (MiCA).
+ * EU/EØS-fakta (2026): Kraken er eneste børs (MiCA).
  * Kraken er MiCA-regulert og Klarpakkes eneste sanne live-vei. Denne
  * adapteren kobler den kanoniske executeTrade-pipelinen til Kraken:
  *   - Symboler konverteres (BTCUSDT → XBTUSDT, SOLUSDT → SOLUSDT)

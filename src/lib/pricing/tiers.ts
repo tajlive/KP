@@ -52,7 +52,7 @@ export const TIERS = {
     popular: false,
     features: [
       "Alt i Student",
-      "Live trading på Binance",
+      "Live trading på Kraken",
       "3 live auto-trading-strategier",
       "Skatterapport (CSV/HTML for Skatteetaten)",
       "Kopier topp-tradere i paper-modus",

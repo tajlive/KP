@@ -1,6 +1,6 @@
 /**
  * Trading Mode API
- * GET: Hent nåværende trading mode og Binance-tilkobling
+ * GET: Hent nåværende trading mode og Kraken-tilkobling
  * POST: Bytt mellom paper og live trading
  */
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // EU/EØS (2026): live-kobling = Kraken-nøkler (Binance er fjernet).
+    // EU/EØS (2026): live-kobling = Kraken-nøkler.
     const { data: krakenKeys } = await supabase
       .from("user_kraken_keys")
       .select("user_id")

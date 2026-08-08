@@ -3,7 +3,7 @@
  *
  * Henter levende USDT→NOK rate fra egen rute /api/fx/usdt-nok
  * (kilde: global_settings.usdt_nok_rate — EU/EØS 2026: Kraken/MiCA,
- * ingen Binance-kall noe sted i valutakjeden).
+ * ingen børs-kall utenfor egen rute).
  * Cache i 60 sekunder, fallback ved feil.
  * Validerer at rate er innenfor [5, 20] for å guarde mot korrupt API-data.
  */

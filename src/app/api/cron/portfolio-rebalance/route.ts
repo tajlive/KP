@@ -229,7 +229,7 @@ export async function POST(req: NextRequest) {
             // Value to buy or sell in USDT
             const amountUsdt = Math.abs(diffWeight * totalValueUsdt);
             
-            // Minimum trade size usually $10 on Binance
+            // Minimum trade size usually $10
             if (amountUsdt > 10 && asset !== "USDT") {
               ordersToInsert.push({
                 event_id: newEvent.id,

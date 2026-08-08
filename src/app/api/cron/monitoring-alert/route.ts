@@ -49,7 +49,7 @@ async function checkExecuteEndpoint(baseUrl: string): Promise<CheckResult> {
 
     // 400 = endpoint is alive (validation failed as expected with empty body)
     // 401 = auth required but endpoint is up
-    // 502/503 = backend failure (Binance proxy, DB, rate, etc.)
+    // 502/503 = backend failure (børs, DB, rate, etc.)
     if (statusCode === 502 || statusCode === 503) {
       let body: { error?: string } = {};
       try { body = await res.json(); } catch { /* ignore */ }
@@ -220,7 +220,7 @@ async function sendAlertEmail(result: CheckResult, baseUrl: string): Promise<voi
       </div>
       <h3 style="color: #f8fafc;">🔍 Hva bør sjekkes?</h3>
       <ul style="padding-left: 20px;">
-        <li>Binance proxy — er Supabase Edge Function oppe?</li>
+        <li>Kraken-API — er børsen tilgjengelig?</li>
         <li>USDT/NOK kurs — fungerer valutakonverteringen?</li>
         <li>Database — er Supabase tilgjengelig?</li>
         <li>CF Worker — er Next.js-appen i live?</li>

@@ -630,7 +630,7 @@ export default function PortfolioDashboard({
         </p>
       </div>
 
-      {/* Widget 2: Live Prices (Binance, oppdatert ca. hvert 10. sekund) */}
+      {/* Widget 2: Live Prices (Kraken, oppdatert ca. hvert 10. sekund) */}
       <div className="animate-fade-in-up stagger-2">
         <div className="flex items-center gap-2 mb-2">
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8E95A9]">

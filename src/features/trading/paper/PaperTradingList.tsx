@@ -391,7 +391,7 @@ export function PaperTradingList({
         </CardContent>
       </Card>
 
-      {/* Sidetittel + oppdater + info om Binance */}
+      {/* Sidetittel + oppdater + info om Kraken */}
       <PremiumPanel className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
         <div>
           <h2

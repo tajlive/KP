@@ -19,8 +19,8 @@ interface MarketSnapshot {
   updatedAt: string;
 }
 
-// EU/EØS (2026): Kun Kraken-støttede par (USDC-kvote). BNB er Binance Coin
-// og finnes ikke på Kraken — fjernet sammen med all Binance-integrasjon.
+// EU/EØS (2026): Kun Kraken-støttede par (USDC-kvote). BNB var
+// Coin og finnes ikke på Kraken — fjernet.
 const ASSETS = [
   { symbol: "BTCUSDT", name: "Bitcoin" },
   { symbol: "ETHUSDT", name: "Ethereum" },

@@ -194,7 +194,7 @@ export async function OmOssContent({ locale }: { locale: string }) {
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                {t("team.partners.binance")}
+                {t("team.partners.kraken")}
               </li>
             </ul>
           </div>

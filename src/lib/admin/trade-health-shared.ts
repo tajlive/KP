@@ -6,7 +6,7 @@ import "server-only";
  */
 
 const COINGECKO_IDS: Record<string, string> = {
-  BTC: "bitcoin", ETH: "ethereum", SOL: "solana", BNB: "binancecoin",
+  BTC: "bitcoin", ETH: "ethereum", SOL: "solana", 
   XRP: "ripple", DOGE: "dogecoin", AVAX: "avalanche-2", ADA: "cardano", DOT: "polkadot",
 };
 const BAND_LO = 0.45, BAND_HI = 1.6, FALLBACK_RATE = 9.7;

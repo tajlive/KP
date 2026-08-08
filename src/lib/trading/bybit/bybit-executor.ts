@@ -719,7 +719,6 @@ export const FeeComparison = {
    */
   compareExchanges(tradeValue: number): {
     bybit: { maker: number; taker: number };
-    binance: { maker: number; taker: number };
     coinbase: { maker: number; taker: number };
     kraken: { maker: number; taker: number };
   } {
@@ -727,10 +726,6 @@ export const FeeComparison = {
       bybit: {
         maker: tradeValue * DEFAULT_BYBIT_FEES.futuresMaker,
         taker: tradeValue * DEFAULT_BYBIT_FEES.futuresTaker
-      },
-      binance: {
-        maker: tradeValue * 0.0002,
-        taker: tradeValue * 0.0005
       },
       coinbase: {
         maker: tradeValue * 0.004,

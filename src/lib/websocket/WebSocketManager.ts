@@ -10,7 +10,7 @@
  * - Multi-subscription support (same WS for multiple symbols)
  * - Circuit breaker pattern for repeated failures
  * 
- * EU/EØS (2026): Kraken public WebSocket — eneste tallkilde (Binance geo-blokkert).
+ * EU/EØS (2026): Kraken public WebSocket — eneste tallkilde.
  * Protokoll: subscribe-melding på åpning, ticker-svar som
  * [channelID, {c,o,h,l,v}, "ticker", "XBT/USDC"].
  */
@@ -534,7 +534,7 @@ class WebSocketManager {
     
     this.heartbeatInterval = setInterval(() => {
       if (this.ws?.readyState === WebSocket.OPEN) {
-        // Send ping frame (Binance handles this automatically, but we track it)
+        // Send ping frame (Kraken svarer med heartbeat; vi sporer selv)
         this.lastPongReceived = 0;
         
         // Set timeout to detect if connection is dead

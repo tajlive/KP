@@ -114,7 +114,7 @@ export async function startTrading(
     const tier = (profRow?.tier ?? "student") as TierSlug;
 
     // Live trading requires Bachelor+ tier and connected Kraken keys
-    // (EU/EØS 2026: Binance er geo-blokkert — Kraken er eneste børs).
+    // (EU/EØS 2026: Kraken er eneste børs).
     if (mode === "live") {
       const canLive = await ExecutorFactory.canTradeLive(supabase, user.id);
       if (!canLive) {

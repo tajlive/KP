@@ -61,19 +61,19 @@ export async function POST(request: NextRequest) {
     return badRequest("Beløp overstiger paper-saldo", "INSUFFICIENT_BALANCE");
   }
 
-  const binanceRes = await fetch(
+  const priceRes = await fetch(
     `/api/market/binance-prices?symbols=${encodeURIComponent(FIRST_TRADE_SYMBOL)}`,
     { next: { revalidate: 0 } },
   );
-  if (!binanceRes.ok) {
+  if (!priceRes.ok) {
     return internalError("Kunne ikke hente markedspris", {
       code: "MARKET_PRICE_ERROR",
     });
   }
-  const binanceBody = (await binanceRes.json()) as {
+  const priceBody = (await priceRes.json()) as {
     prices?: Array<{ symbol: string; price: number }>;
   };
-  const requestedPrice = binanceBody.prices?.[0]?.price ?? 0;
+  const requestedPrice = priceBody.prices?.[0]?.price ?? 0;
   if (requestedPrice <= 0) {
     return internalError("Kunne ikke hente markedspris", {
       code: "MARKET_PRICE_ERROR",

@@ -132,7 +132,7 @@ export function wouldLimitOrderFill(
  */
 export async function fetchMarketVolatility(symbol: string): Promise<number> {
   try {
-    // OPTIMIZED: Use canonical Binance market-data provider
+    // OPTIMIZED: Use canonical Kraken market-data provider
     const priceChangePercent = Math.abs(
       (await marketDataProvider.get24hChange(symbol.toUpperCase())) || 0,
     );

@@ -42,7 +42,7 @@ export interface LiveTradeResult {
  *
  * SAFETY REQUIREMENTS:
  * - User must have Bachelor tier or higher
- * - Binance must be connected
+ * - Kraken must be connected
  * - All risk limits must be satisfied
  * - Session must be active
  * - Bot must be healthy (if specified)

@@ -4,7 +4,7 @@ import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-d
 
 /**
  * Offentlig rute: 24h-ticker for flere symboler.
- * EU/EØS (2026): Kraken er eneste tallkilde (MiCA; Binance geo-blokkert).
+ * EU/EØS (2026): Kraken er eneste tallkilde (MiCA).
  *
  * Fallback-kjede:
  * 1. Kraken public Ticker (ett kall per symbol — usignert, ingen CORS-problem)

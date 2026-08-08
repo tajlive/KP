@@ -350,7 +350,7 @@ export const autoTradeWelcome = (params: {
     
     <h3>Hvordan komme i gang:</h3>
     <ol>
-      <li>Koble til din Binance-konto (API-nøkler)</li>
+      <li>Koble til din Kraken-konto (API-nøkler)</li>
       <li>Velg en strategi (DCA, Trend, Multi-Signal, etc.)</li>
       <li>Start med Paper Trading for å teste</li>
       <li>Aktiver Live Trading når du er klar</li>

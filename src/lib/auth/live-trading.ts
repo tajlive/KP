@@ -9,7 +9,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * Returns true only when the user explicitly passes ALL gates:
  * - tier allows live auto-trading
  * - Kraken account is connected (user_kraken_keys — EU/EØS 2026:
- *   Binance er geo-blokkert, Kraken er eneste børs)
+ *   Kraken er eneste børs)
  * - entitlements RPC returns auto_trade_allow_live = true
  */
 export async function verifyLiveEntitlement(

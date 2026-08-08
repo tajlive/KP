@@ -26,7 +26,7 @@ const WHALE_ALERT_API = "https://api.whale-alert.io/v1/transactions";
 
 // Kjent exchange wallets (forenklet — utvides med full mapping)
 const EXCHANGE_TAGS = new Set([
-  "binance", "coinbase", "kraken", "kucoin", "bybit",
+  "coinbase", "kraken", "kucoin", "bybit",
   "okx", "bitfinex", "huobi", "gate.io", "gemini",
 ]);
 

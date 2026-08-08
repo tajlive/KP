@@ -155,7 +155,7 @@ export async function validateTradeAgainstRiskProfile(
       }
     }
 
-    // 3. Valutakonvertering for paper (kapital er NOK, priser fra Binance er USDT)
+    // 3. Valutakonvertering for paper (kapital er NOK, priser fra Kraken er USDT)
     const usdtNokRate =
       trade.tradingMode === "paper"
         ? await getUsdtToNokRateAsync(supabase)

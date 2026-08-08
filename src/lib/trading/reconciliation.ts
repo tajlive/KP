@@ -39,7 +39,7 @@ function mapExchangeStatus(exchangeStatus: string): string {
   }
 }
 
-export async function reconcileBinanceTrades(
+export async function reconcileLiveTrades(
   db: SupabaseClient<Database>,
   fetchExchangeOrder: (trade: ReconciliationTrade) => Promise<{ status: string; filled: number } | null>,
 ): Promise<ReconciliationResult> {

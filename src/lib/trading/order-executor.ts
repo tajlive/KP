@@ -2,7 +2,7 @@
  * Unified Order Execution Interface
  *
  * This abstraction allows strategies to work identically in paper and live mode.
- * The strategy doesn't know if it's executing on Binance or simulating - it just
+ * The strategy doesn't know if it's executing on Kraken or simulating - it just
  * calls executor.executeOrder() and gets back a result.
  *
  * Pattern: Strategy Pattern + Factory Pattern
@@ -31,7 +31,7 @@ export interface OrderParams {
 
 export interface OrderResult {
   success: boolean;
-  orderId: string;                   // Unique order ID (Binance ID or synthetic)
+  orderId: string;                   // Unique order ID (Kraken txid or synthetic)
   executedPrice: number;             // Actual execution price
   executedQuantity: number;          // Actual quantity filled
   fee: number;                       // Trading fee in quote currency (USDT)
@@ -60,7 +60,7 @@ export interface Position {
  *
  * Implemented by:
  * - PaperExecutor: Simulates orders using real market prices
- * - BinanceExecutor: Executes real orders on Binance
+ * - KrakenExecutor: Executes real orders on Kraken
  */
 export interface OrderExecutor {
   /**
@@ -110,7 +110,7 @@ const marketDataProvider = createKrakenMarketDataProvider();
  *
  * @deprecated Bruk canonical/market-data provider direkte i ny kode.
  */
-export async function fetchBinancePrice(symbol: string): Promise<number> {
+export async function fetchKrakenPrice(symbol: string): Promise<number> {
   try {
     return await marketDataProvider.getPrice(symbol);
   } catch (error) {
@@ -125,7 +125,7 @@ export async function fetchBinancePrice(symbol: string): Promise<number> {
  *
  * @deprecated Bruk canonical/market-data provider direkte i ny kode.
  */
-export async function fetchBinanceDepth(
+export async function fetchKrakenDepth(
   symbol: string,
   limit: number = 20,
 ): Promise<OrderBookSnapshot> {

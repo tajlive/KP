@@ -152,7 +152,7 @@ export async function GET(req: NextRequest) {
               ? volumes.slice(-20).reduce((a, b) => a + b, 0) / 20
               : null,
           } as unknown as import('@/types/database.types').Json,
-          source: 'binance_spot',
+          source: 'kraken_spot',
         };
         const { error: featErr } = await db.from('ai_feature_store').insert(featuresPayload);
         if (featErr) {

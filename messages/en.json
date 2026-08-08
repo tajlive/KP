@@ -64,7 +64,8 @@
       "partners": {
         "title": "Our Partners",
         "supabase": "Supabase - Database and authentication",
-        "cloudflare": "Cloudflare - Infrastructure and security"
+        "cloudflare": "Cloudflare - Infrastructure and security",
+        "kraken": "Kraken - MiCA-regulated exchange"
       }
     },
     "contact": {
@@ -1221,7 +1222,8 @@
     "riskLowDesc": "Risk Low Desc",
     "riskLowLabel": "Risk Low Label",
     "riskMedDesc": "Risk Med Desc",
-    "riskMedLabel": "Risk Med Label"
+    "riskMedLabel": "Risk Med Label",
+    "goToKraken": "Go to Kraken"
   },
   "competition": {
     "title": "Trading Competition",

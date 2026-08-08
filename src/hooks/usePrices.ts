@@ -98,14 +98,14 @@ export function usePrices() {
         });
       });
 
-    // 2. Binance WebSocket for Priority Symbols (Active UI)
+    // 2. Kraken WebSocket for Priority Symbols (Active UI)
     const callback = (
       updatedPrices: Record<string, { price: number; changePercent24h?: number }>,
     ) => {
       setPrices((prev) => {
         const next = { ...prev };
         Object.entries(updatedPrices).forEach(([symbol, tick]) => {
-          // Binance WebSocket gir USDT-priser, mens coin_prices i DB er NOK.
+          // Kraken WebSocket gir USDT-priser, mens coin_prices i DB er NOK.
           // Normaliser alltid til NOK før state oppdateres.
           const priceNok = usdtPriceToNok(tick.price, getLiveUsdtNokRate());
           const changePatch =

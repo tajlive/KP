@@ -5,7 +5,7 @@
  * Fetches current funding rates from Kraken Futures (perpetuals)
  * and identifies delta-neutral arbitrage opportunities.
  *
- * EU/EØS (2026): Kraken er eneste tallkilde (Binance geo-blokkert).
+ * EU/EØS (2026): Kraken er eneste tallkilde.
  *
  * DISCLAIMER:
  * - This module is for ANALYSIS only. No trading is performed.

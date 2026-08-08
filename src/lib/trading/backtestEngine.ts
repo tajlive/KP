@@ -9,7 +9,7 @@
  * - Paper trading simulering
  * - Live trading performance estimater
  * 
- * Bruker ekte historiske data fra Binance med realistiske fees og slippage.
+ * Bruker ekte historiske data fra Kraken med realistiske fees og slippage.
  * 
  * @module lib/trading/backtestEngine
  */
@@ -290,7 +290,7 @@ function calculateVolatility(returns: number[]): number {
 const marketDataProvider = createKrakenMarketDataProvider();
 
 /**
- * Hent historiske OHLCV-data fra Binance
+ * Hent historiske OHLCV-data fra Kraken
  */
 export async function fetchHistoricalData(
   symbol: string,
@@ -781,7 +781,7 @@ export function runBacktest(
 /**
  * Kjør komplett backtest med input-parametere.
  * 
- * Henter historiske OHLCV-data fra Binance, simulerer trading med SMA-crossover
+ * Henter historiske OHLCV-data fra Kraken, simulerer trading med SMA-crossover
  * strategi, og returnerer detaljerte metrics inkludert scenarier og fees.
  * 
  * @param input - Input-parametere for backtest
@@ -792,7 +792,7 @@ export function runBacktest(
  * 
  * @returns Fullstendig backtest-resultat med trades, equity curve og metrics
  * 
- * @throws Error hvis Binance API feiler eller strategi ikke finnes
+ * @throws Error hvis Kraken API feiler eller strategi ikke finnes
  * 
  * @example
  * ```typescript
@@ -807,7 +807,7 @@ export function runBacktest(
  * ```
  * 
  * @remarks
- * - Bruker 0.1% trading fees (Binance taker fee)
+ * - Bruker 0.8% trading fees (Kraken taker fee)
  * - Maks 3 år historiske data (1095 dager)
  * - SMA-beregning starter etter smaSlow perioder
  * - Scenarier beregnes basert på faktisk volatilitet
@@ -877,7 +877,7 @@ export async function calculateBacktest(input: BacktestInput): Promise<BacktestR
  * 
  * @returns Fullstendig backtest-resultat
  * 
- * @throws Error hvis Binance API feiler
+ * @throws Error hvis Kraken API feiler
  * 
  * @example
  * ```typescript

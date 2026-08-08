@@ -1,8 +1,8 @@
 /**
  * Kanonisk markedsdata-provider — entry point.
  *
- * EU/EØS (2026): Kun Kraken (MiCA-regulert). Binance er geo-blokkert for
- * norske brukere og er fjernet — ingen binance-provider finnes lenger.
+ * EU/EØS (2026): Kun Kraken (MiCA-regulert).
+ * Ingen annen provider finnes lenger.
  * Eksporterer typer og fabrikk for Kraken-baserte providere.
  */
 

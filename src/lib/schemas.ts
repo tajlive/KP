@@ -5,7 +5,6 @@ export {
   ExecuteTradeSchema,
   FollowLeaderSchema,
   UnfollowSchema,
-  ConnectBinanceSchema,
   RecoverSessionSchema,
   LeaderboardQuerySchema,
   DiscoverQuerySchema,

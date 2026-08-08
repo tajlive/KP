@@ -1,4 +1,4 @@
-export type SupportedExchange = "binance" | "kraken";
+export type SupportedExchange = "kraken";
 
 export type ExchangePermission =
   | "balances"

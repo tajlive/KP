@@ -154,11 +154,6 @@ export const UnfollowSchema = z.object({
   follow_id: z.string().uuid(),
 });
 
-export const ConnectBinanceSchema = z.object({
-  api_key: z.string().min(20).max(200),
-  api_secret: z.string().min(20).max(200),
-});
-
 export const RecoverSessionSchema = z.object({
   session_id: z.string().uuid(),
 });

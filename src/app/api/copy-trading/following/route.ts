@@ -138,7 +138,7 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
       };
     });
 
-    // Also fetch external (Binance) follows
+    // Also fetch external follows
     const { data: externalRows } = await db
       .from("copy_trading_external_follows")
       .select("id, external_leader_id, scale_factor, allocation_percent, max_trade_amount, is_active, created_at")

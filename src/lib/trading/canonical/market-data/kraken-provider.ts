@@ -9,7 +9,7 @@
  * Symbol-mapping: interne symboler (BTCUSDT) → Kraken-par med USDC-kvote
  * (USDT er blokkert for norske brukere). POLUSDT → POLUSD (POLUSDC finnes ikke).
  *
- * Failover: tick-rouen faller tilbake til Binance hvis et kall kaster
+ * Failover: tick-ruten faller tilbake til andre kilder hvis et kall kaster
  * (f.eks. KRAKEN_PAIR_UNAVAILABLE for symboler Kraken ikke støtter).
  */
 
@@ -117,7 +117,7 @@ export class KrakenMarketDataProvider implements MarketDataProvider {
   async getPrice(symbol: string): Promise<number> {
     const pair = this.toKraken(symbol);
 
-    // Cache først — samme mønster som Binance-provideren (10s TTL)
+    // Cache først — samme mønster som Kraken-provideren (10s TTL)
     const cached = this.priceCache.get(pair);
     if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL_MS) {
       return cached.price;
@@ -160,7 +160,7 @@ export class KrakenMarketDataProvider implements MarketDataProvider {
     let klines = (rawCandles as unknown[]).map((candle) => {
       const c = candle as unknown[];
       return {
-        timestamp: Number(c[0]) * 1000, // sekunder → ms (samme enhet som Binance)
+        timestamp: Number(c[0]) * 1000, // sekunder → ms (samme enhet internt)
         open: parseFloat(String(c[1])),
         high: parseFloat(String(c[2])),
         low: parseFloat(String(c[3])),

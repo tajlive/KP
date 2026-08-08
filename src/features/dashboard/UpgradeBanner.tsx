@@ -56,7 +56,7 @@ export function UpgradeBanner({ tierSlug, locale }: UpgradeBannerProps) {
               Du bruker <strong>Bachelor</strong>. Oppgrader til Master for 499 kr/mnd og få:
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm mb-4">
-              <li><strong>Live Trading på Binance</strong> — handel med ekte crypto</li>
+              <li><strong>Live Trading på Kraken</strong> — handel med ekte crypto</li>
               <li>Automatisk Trading (3 strategier)</li>
               <li>Kopiering av topp-tradere</li>
               <li>Bachelor-sertifikat ved bestått eksamen</li>

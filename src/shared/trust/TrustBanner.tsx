@@ -8,7 +8,7 @@ export default function TrustBanner() {
             Dine penger er aldri på Klarpakke
           </h3>
           <p className="text-gray-300 leading-relaxed">
-            Vi håndterer <strong className="text-white">IKKE</strong> dine penger. Du kobler din Binance-konto via API 
+            Vi håndterer <strong className="text-white">IKKE</strong> dine penger. Du kobler din Kraken-konto via API 
             (kun lese + trade). Uttak er alltid deaktivert. 
             Du har full kontroll til enhver tid.
           </p>

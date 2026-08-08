@@ -1,17 +1,16 @@
 /**
- * Per-bruker valg av priskilde i tick-motoren (Task 2, Kraken-priser).
+ * Priskilde-valg i tick-motoren (Task 2, Kraken-priser).
  *
- * EU/EØS-fakta (2026): Binance er geo-blokkert for norske brukere (MiCA).
- * Kraken er MiCA-regulert → Kraken er DEFAULTPRISKILDEN for ALLE brukere,
- * ikke bare de med tilkoblede Kraken-nøkler. fetchCandles faller automatisk
- * tilbake til Binance ved Kraken-feil/par-mangel, så tick dør aldri.
+ * EU/EØS-fakta (2026): Kraken er eneste børs (MiCA).
+ * Kraken er MiCA-regulert → Kraken er DEFAULTPRISKILDEN for ALLE brukere.
+ * fetchCandles henter alltid fra Kraken-provideren.
  */
 
-export type PriceSource = "kraken" | "binance";
+export type PriceSource = "kraken";
 
 /**
  * Velger priskilde for én bruker.
- * - ALLE brukere → "kraken" (EU-sannhet; fallback til binance i fetchCandles)
+ * - ALLE brukere → "kraken" (EU-sannhet).
  * - Parameteren `krakenUserIds` beholdes for API-kompatibilitet (callers
  *   sender fortsatt settet), men styrer ikke lenger valget.
  */
@@ -23,9 +22,8 @@ export function pickPriceSource(
 }
 
 /**
- * Cache-nøkkel for candle-cache — unik per (kilde, symbol) slik at ett symbol
- * kan ha BÅDE kraken- og binance-lys i samme tick (Tom + vanlig bruker
- * handler samme symbol). Format: `${source}:${symbol}`.
+ * Cache-nøkkel for candle-cache — unik per (kilde, symbol).
+ * Format: `${source}:${symbol}`.
  */
 export function priceCacheKey(source: PriceSource, symbol: string): string {
   return `${source}:${symbol}`;

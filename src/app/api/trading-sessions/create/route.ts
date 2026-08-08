@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     const { data: profRow, error: profFetchErr } = await supabase
       .from("user_profiles")
-      .select("binance_connected, tier")
+      .select("tier")
       .eq("id", user.id)
       .single();
 
@@ -57,9 +57,17 @@ export async function POST(request: NextRequest) {
     const tier = normalizeTier(profRow?.tier) as TierSlug;
 
     if (mode === "live") {
-      if (!profRow?.binance_connected) {
+      // EU/EØS (2026): live krever Kraken-nøkler (user_kraken_keys)
+      const { data: krakenKeys } = await supabase
+        .from("user_kraken_keys")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+      if (!krakenKeys) {
         return NextResponse.json(
-          { error: "Live krever tilkoblet Binance-konto", code: "LIVE_BINANCE_REQUIRED" },
+          { error: "Live krever tilkoblet Kraken-konto", code: "LIVE_KRAKEN_REQUIRED" },
           { status: 403 },
         );
       }

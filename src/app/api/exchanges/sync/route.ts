@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const balances =
       exchange === "kraken"
         ? await fetchKrakenBalances(apiKey, apiSecret)
-        : // EU/EØS (2026): Binance geo-blokkert (MiCA) — kun Kraken støttes.
+        : // EU/EØS (2026): kun Kraken støttes.
           [];
 
     // Keep wallets as current source for dashboard totals.

@@ -182,7 +182,7 @@ export function ReferralDashboard({ locale }: ReferralDashboardProps) {
         )}
       </div>
 
-      {/* BINANCE AFFILIATE NOTE */}
+      {/* EXCHANGE AFFILIATE NOTE */}
       <div className="mt-8 flex items-start gap-3 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 text-sm text-blue-200">
         <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
         <p>
@@ -190,7 +190,7 @@ export function ReferralDashboard({ locale }: ReferralDashboardProps) {
             Slik fungerer det for vennen din:
           </strong>{" "}
           Når de klikker på Golden Ticket-lenken din, vil de først opprette en
-          brukerkonto. Deretter blir de bedt om å koble til Binance for å
+          brukerkonto. Deretter blir de bedt om å koble til Kraken for å
           aktivere auto-trading. Bonusen din utløses automatisk 24 timer etter
           deres første live-trade.
         </p>

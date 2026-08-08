@@ -34,7 +34,7 @@ export class ExecutorFactory {
       return new PaperExecutor(supabase, userId, sessionId);
     }
 
-    // Live mode — EU/EØS-fakta (2026): Binance er geo-blokkert for norske
+    // Live mode — EU/EØS-fakta (2026): Kraken er eneste børs
     // brukere (MiCA). Kraken er MiCA-regulert og Klarpakkes ENESTE live-børs.
     const krakenExecutor = await KrakenExecutor.fromUser(supabase, userId);
     if (krakenExecutor) {
@@ -89,7 +89,7 @@ export class ExecutorFactory {
 
     const tierOk = ["bachelor", "master", "phd", "professor"].includes(profile.tier);
 
-    // EU/EØS (2026): kun Kraken-nøkler teller (Binance er geo-blokkert).
+    // EU/EØS (2026): kun Kraken-nøkler teller.
     const { data: krakenKeys } = await supabase
       .from("user_kraken_keys")
       .select("id")
