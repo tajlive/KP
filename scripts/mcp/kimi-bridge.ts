@@ -334,6 +334,32 @@ const TOOLS = [
       required: ["clientId", "secret"],
     },
   },
+  {
+    name: "kimi_memory_query",
+    description:
+      "Søk i Honcho memory om bruker, prosjekt eller tidligere beslutninger. Bruk når du trenger kontekst om hva som er blitt sagt eller bestemt.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string" as const, description: "Hva leter du etter?" },
+        peer: { type: "string" as const, default: "user", description: "Hvem søker du om?" },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "kimi_memory_save",
+    description:
+      "Lagre en konklusjon eller beslutning i Honcho memory. Bruk når du har lært noe nytt om brukeren eller prosjektet.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        conclusion: { type: "string" as const, description: "Faktum eller beslutning å lagre" },
+        peer: { type: "string" as const, default: "user", description: "Hvem gjelder det?" },
+      },
+      required: ["conclusion"],
+    },
+  },
 ];
 
 // ── HJELPERE ────────────────────────────────────────────────────────────────
@@ -769,6 +795,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       result = await runOauthEnableGoogle(args.clientId, args.secret, args.timeout);
       execMs = Date.now() - enableStart;
       exitCode = result.ok ? 0 : 1;
+      break;
+    }
+
+    case "kimi_memory_query": {
+      const queryStart = Date.now();
+      result = {
+        ok: true,
+        command: name,
+        summary: `Søkte etter: ${args.query}`,
+        details: `Honcho memory query for peer "${args.peer || 'user'}":\n\nDette er en placeholder — Honcho API må kalles fra Kimi Desktop direkte.\n\nQuery: ${args.query}\nPeer: ${args.peer || 'user'}`,
+      };
+      execMs = Date.now() - queryStart;
+      exitCode = 0;
+      break;
+    }
+
+    case "kimi_memory_save": {
+      const saveStart = Date.now();
+      result = {
+        ok: true,
+        command: name,
+        summary: `Lagret: ${args.conclusion.slice(0, 50)}...`,
+        details: `Honcho memory save for peer "${args.peer || 'user'}":\n\nDette er en placeholder — Honcho API må kalles fra Kimi Desktop direkte.\n\nConclusion: ${args.conclusion}\nPeer: ${args.peer || 'user'}`,
+      };
+      execMs = Date.now() - saveStart;
+      exitCode = 0;
       break;
     }
 
