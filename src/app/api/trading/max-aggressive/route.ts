@@ -94,15 +94,48 @@ export async function GET(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Hent user_id fra sesjonscookien (sb-<ref>-auth-token)
+    // Hent user_id fra sesjonscookien (sb-<ref>-auth-token).
+    // Supabase kan chunke store cookies: sb-...-auth-token.0, .1, ...
     let userId: string | null = null;
-    const tokenMatch = cookieHeader.match(/sb-[a-z]+-auth-token=([^;]+)/);
-    if (tokenMatch) {
+    const cookieMap = new Map<string, string>();
+    for (const part of cookieHeader.split(";")) {
+      const eq = part.indexOf("=");
+      if (eq > 0) {
+        cookieMap.set(part.slice(0, eq).trim(), part.slice(eq + 1).trim());
+      }
+    }
+
+    // Finn base-navnet (sb-<ref>-auth-token) og slå sammen chunks
+    let sessionRaw: string | null = null;
+    for (const key of cookieMap.keys()) {
+      if (/^sb-[a-z]+-auth-token$/.test(key)) {
+        sessionRaw = cookieMap.get(key) ?? null;
+        break;
+      }
+    }
+    if (!sessionRaw) {
+      // Chunked: .0, .1, ... i rekkefølge
+      const chunks: string[] = [];
+      for (let i = 0; i < 10; i++) {
+        let found: string | undefined;
+        for (const [key, val] of cookieMap) {
+          if (key.endsWith(`-auth-token.${i}`)) {
+            found = val;
+            break;
+          }
+        }
+        if (found === undefined) break;
+        chunks.push(found);
+      }
+      if (chunks.length > 0) sessionRaw = chunks.join("");
+    }
+
+    if (sessionRaw) {
       try {
-        const session = JSON.parse(decodeURIComponent(tokenMatch[1]));
+        const session = JSON.parse(decodeURIComponent(sessionRaw));
         userId = session?.user?.id ?? null;
       } catch {
-        // Cookie kan være base64 eller delt — prøv bearer-token i stedet
+        // Ugyldig cookie-format — prøv bearer-token i stedet
       }
     }
     if (!userId && authHeader?.startsWith("Bearer ")) {
