@@ -26,10 +26,6 @@ const config: PlaywrightTestConfig = {
   use: {
     actionTimeout: 10000,
     baseURL: process.env.TEST_BASE_URL || "https://www.klarpakke.no",
-    // Innlogget smoke (auth-dashboard-smoke.spec.ts) krever QA-bruker-sesjonen
-    // som genereres av playwright.auth.config.ts-steget i CI (auth.setup.ts).
-    // Uten denne rendres login-siden i stedet for dashboardet.
-    storageState: "e2e/.auth/user.json",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -40,6 +36,20 @@ const config: PlaywrightTestConfig = {
       use: {
         browserName: "chromium",
         viewport: { width: 1280, height: 720 },
+      },
+    },
+    {
+      // Innloggede tester (auth-dashboard-smoke.spec.ts) — krever sesjonsfil
+      // fra playwright.auth.config.ts-steget. Kun denne profilen bruker
+      // storageState; uautentiserte smoke-tester (health/landing/i18n) kjører
+      // på "chromium"-profilen og skal IKKE ha en auth-fil (2026-08-09:
+      // global storageState brøt e2e-smoke-prod med ENOENT).
+      name: "chromium-auth",
+      testMatch: /auth-.*\.spec\.ts/,
+      use: {
+        browserName: "chromium",
+        viewport: { width: 1280, height: 720 },
+        storageState: "e2e/.auth/user.json",
       },
     },
     {

@@ -47,7 +47,7 @@ jobs:
           set +e
           npx playwright test \
             --config=playwright.allure.config.ts \
-            --project=chromium \
+            --project=chromium-auth \
             e2e/smoke/auth-dashboard-smoke.spec.ts
           EXIT=$?
           echo "exit_code=$EXIT" >> "$GITHUB_OUTPUT"

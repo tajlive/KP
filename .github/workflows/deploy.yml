@@ -165,7 +165,7 @@ jobs:
         run: |
           npx playwright test \
             --config=playwright.allure.config.ts \
-            --project=chromium \
+            --project=chromium-auth \
             e2e/smoke/auth-dashboard-smoke.spec.ts
         env:
           CI: 'true'
