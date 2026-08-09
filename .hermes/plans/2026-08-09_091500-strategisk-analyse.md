@@ -13,22 +13,27 @@
 | **Trading** | Klarpakke trader for bruker | **Verktøy sender til studentens exchange** |
 | **Live vs Leke** | Separate systemer | **Samme trade engine, gradvis overgang** |
 
-## Forretningsmodell (å analysere)
+## Forretningsmodell (analysert)
 
-### Hypotese: Freemium + Abonnement
+### Freemium — Student gratis for alltid
 
 | Tier | Pris | Innhold |
 |------|------|---------|
-| **Gratis** | 0 kr | Lekepenger, basis opplæring, 1 exchange |
-| **Student** | 99 kr/mnd | Live trading (egen konto), full opplæring, prioritert support |
-| **Pro** | 299 kr/mnd | Avanserte strategier, API-tilgang, 1:1 coaching |
+| **Student** | **0 kr for alltid** | Lekepenger, full opplæring, Kraken/OKX-kobling |
+| **Pro** | 299 kr/mnd | Avanserte strategier, API-tilgang, 1:1 coaching, prioritert support |
 
-### Alternativ: Engangsbeløp kurs
+**Begrunnelse:** 
+- Studenter har lite penger — gratis fjerner barriere
+- Verktøyet må bevise verdi før betaling
+- Pro-tier for de som vil videre etter opplæring
 
-| | Pris | Innhold |
-|---|------|---------|
-| **Kurs** | 1 999 kr | Full opplæring + 3 mnd verktøy |
-| **Verktøy etter** | 99 kr/mnd | Fortsatt tilgang |
+### Exchange-støtte
+
+| Exchange | Status | Begrunnelse |
+|----------|--------|-------------|
+| **Kraken** | ✅ Primær | MiCA-lisensiert, NOK-støtte, lav terskel |
+| **OKX** | ✅ Sekundær | Lavest fees (0,1%), god API |
+| **Binance** | ❌ Droppes | Geo-blokkert i EU, MiCA-uvisshet |
 
 ## Målgruppe: Småsparere
 
@@ -135,7 +140,14 @@ Modul 4: Risiko (6 min video)
 | 6 | **Task 5 (vektlæring)** | Middels — forbedrer verktøy | 🟡 Gate klar |
 | 7 | **Task 2 (Orchestrator-LLM)** | Middels — krever KIMI_API_KEY | 🟡 Venter |
 
-## Neste steg (anbefalt)
+## Ressursfordeling (Tom-beslutning)
+
+| | Andel | Fokus |
+|---|-------|-------|
+| **Verktøy** | **75%** | Exchange-kobling, trade engine, UI/UX, automatisering |
+| **Opplæring** | **25%** | Video, tekst, onboarding, support |
+
+**Begrunnelse:** Verktøyet må fungere perfekt før opplæring gir verdi. En student med et dårlig verktøy lærer ingenting. En student med et perfekt verktøy kan lære selv.
 
 **Denne uken:**
 1. Verifiser at leke/live bruker samme engine (test)
