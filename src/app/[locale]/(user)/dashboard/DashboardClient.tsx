@@ -6,6 +6,7 @@ import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/Da
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 import KrakenLiveCard from "@/features/kraken/KrakenLiveCard";
 import { BestemorPanel } from "@/features/dashboard/BestemorPanel";
+import { QueryProvider } from "@/shared/providers/query-provider";
 
 interface DashboardClientProps {
   locale: string;
@@ -132,7 +133,11 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
   return (
     <div data-testid="dashboard-page">
-      {mounted && <BestemorPanel sessionId={state.userId} />}
+      {mounted && (
+        <QueryProvider>
+          <BestemorPanel sessionId={state.userId} />
+        </QueryProvider>
+      )}
       <KrakenLiveCard />
       <DashboardContent
         userId={state.userId}
