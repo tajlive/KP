@@ -20,7 +20,7 @@ import {
 } from "vitest";
 import { OkxMarketDataProvider, OkxApiError } from "../okx-provider";
 
-const API = "https://www.okx.com/api/v5/market";
+const API = "https://eea.okx.com/api/v5/market";
 
 const EXPECTED_HEADERS = {
   Accept: "application/json",

@@ -11,7 +11,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { OkxClient, OkxLockoutError } from "../client";
 
-const API = "https://www.okx.com/api/v5";
+const API = "https://eea.okx.com/api/v5";
 
 function okResponse(data: unknown, code = "0") {
   return { ok: true, json: async () => ({ code, msg: "", data }) };
