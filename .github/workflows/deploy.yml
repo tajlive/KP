@@ -153,7 +153,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Innlogging (QA-bruker) — genererer e2e/.auth/user.json
-        run: npx playwright test --config=playwright.allure.config.ts e2e/auth.setup.ts
+        run: npx playwright test --config=playwright.auth.config.ts
         env:
           CI: 'true'
           TEST_BASE_URL: 'https://www.klarpakke.no'
@@ -194,13 +194,14 @@ jobs:
       - name: Finn forrige versjon og rull tilbake
         id: rollback
         run: |
-          # Versjoner listes nyeste først — [0] er den ødelagte, [1] er forrige
+          # wrangler versions list --json er IKKE sortert — sorter på created_on
+          # og ta nest nyeste ([0] er den ødelagte versjonen vi nettopp deployet).
           PREV_VERSION=$(npx wrangler versions list --json 2>/dev/null | \
-            node -e "const v=JSON.parse(require('fs').readFileSync(0,'utf8'));const vs=Array.isArray(v)?v:(v.versions||v.result||[]);console.log(vs[1]?.id||vs[1]?.version_id||'')")
+            node -e "const vs=JSON.parse(require('fs').readFileSync(0,'utf8'));vs.sort((a,b)=>new Date(b.metadata.created_on)-new Date(a.metadata.created_on));console.log(vs[1]?.id||'')")
           if [ -z "$PREV_VERSION" ]; then
             echo "::error::Fant ikke forrige versjon — manuell rollback kreves"
             echo "rollback=manual" >> "$GITHUB_OUTPUT"
-            exit 0
+            exit 1
           fi
           npx wrangler versions deploy "$PREV_VERSION" --yes --message "AUTO-ROLLBACK: innlogget smoke feilet (${GITHUB_SHA::7})"
           echo "rollback=$PREV_VERSION" >> "$GITHUB_OUTPUT"

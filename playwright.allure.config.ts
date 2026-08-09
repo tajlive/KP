@@ -26,6 +26,10 @@ const config: PlaywrightTestConfig = {
   use: {
     actionTimeout: 10000,
     baseURL: process.env.TEST_BASE_URL || "https://www.klarpakke.no",
+    // Innlogget smoke (auth-dashboard-smoke.spec.ts) krever QA-bruker-sesjonen
+    // som genereres av playwright.auth.config.ts-steget i CI (auth.setup.ts).
+    // Uten denne rendres login-siden i stedet for dashboardet.
+    storageState: "e2e/.auth/user.json",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
