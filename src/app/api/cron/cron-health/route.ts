@@ -77,7 +77,8 @@ export async function GET(req: NextRequest) {
     }
 
     const allHealthy = results.every((r) => r.healthy);
-    const overallHealthy = allHealthy && decisionHealthy;
+    // AI Decision Log starvation er WARNING, ikke CRITICAL — returner 200 med advarsel
+    const overallHealthy = allHealthy;
 
     if (!overallHealthy) {
       const failedJobs = results.filter(r => !r.healthy).map(r => `${r.job} (${r.status})`).join(', ');
@@ -94,6 +95,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         healthy: overallHealthy,
+        warning: !decisionHealthy ? 'AI Decision Log starving (ingen beslutninger siste 3t) — normalt ved lav aktivitet' : undefined,
         checkedAt: new Date().toISOString(),
         jobs: results,
         aiDecisionLog: {

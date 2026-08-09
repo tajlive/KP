@@ -136,8 +136,8 @@ Gratis beta · 100 000 kr i lekepenger (JokerTrade) · autonome AI-agenter · pa
 
 ### WebBridge-notater (browser-automasjon)
 
-- FB-post-editor (Lexical): `fill`/`insertText` komprimerer linjeskift — bruk trusted CDP per linje + Enter keyDown.
-- Filopplasting FB/LinkedIn: `DOM.setFileInputFiles` nektes — bruk DataTransfer-injeksjon (base64 via `window.__b64` i 90k-chunks). LinkedIn banner: Edit Page → pencil → Edit cover image → injiser i `#org-image-editor__change-photo-input` → scroll til Apply → trusted CDP-klikk.
+- **Full oppskrift ligger i skillen `klarpakke-webbridge`** (lastes via Skill-verktøyet) — pre-flight-sjekk, hastighetsregler, trusted CDP-input, DataTransfer-opplasting, Lexical-triks, cache-bypass ved deploy-verifisering. Last den ved enhver browser-automasjon.
+- Kortversjon: FB-post-editor (Lexical) komprimerer linjeskift ved `fill` — bruk trusted CDP per linje + Enter keyDown. Filopplasting FB/LinkedIn: `DOM.setFileInputFiles` nektes — bruk DataTransfer-injeksjon (base64 via `window.__b64` i 90k-chunks).
 
 ---
 
