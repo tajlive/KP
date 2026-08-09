@@ -32,19 +32,19 @@ const MIN_OVERFIT_RATIO = 0.5;
 
 /** Defaults når ingen backtest finnes (konservative, fra sweep-funn). */
 const FALLBACK: Record<string, { gridLevels: number; rangePct: number }> = {
-  BTCUSDT: { gridLevels: 30, rangePct: 0.10 },
-  ETHUSDT: { gridLevels: 30, rangePct: 0.10 },
+  BTCUSDT: { gridLevels: 30, rangePct: 0.1 },
+  ETHUSDT: { gridLevels: 30, rangePct: 0.1 },
   SOLUSDT: { gridLevels: 50, rangePct: 0.25 },
   AVAXUSDT: { gridLevels: 50, rangePct: 0.25 },
   DOGEUSDT: { gridLevels: 50, rangePct: 0.25 },
   LINKUSDT: { gridLevels: 30, rangePct: 0.15 },
-  ADAUSDT: { gridLevels: 30, rangePct: 0.10 },
+  ADAUSDT: { gridLevels: 30, rangePct: 0.1 },
   DOTUSDT: { gridLevels: 50, rangePct: 0.15 },
   UNIUSDT: { gridLevels: 20, rangePct: 0.05 },
-  POLUSDT: { gridLevels: 20, rangePct: 0.10 },
+  POLUSDT: { gridLevels: 20, rangePct: 0.1 },
 };
 
-const GENERIC_FALLBACK = { gridLevels: 20, rangePct: 0.10 };
+const GENERIC_FALLBACK = { gridLevels: 20, rangePct: 0.1 };
 
 interface BacktestRow {
   symbol: string;
@@ -73,15 +73,33 @@ export async function getBestGridConfigs(
   try {
     const { data, error } = await supabase
       .from("backtest_results")
-      .select("symbol, total_return_pct, sharpe_ratio, max_drawdown_pct, metrics, created_at")
+      .select(
+        "symbol, total_return_pct, sharpe_ratio, max_drawdown_pct, metrics, created_at",
+      )
       .eq("strategy", "GRID")
       .not("sharpe_ratio", "is", null)
-      .order("sharpe_ratio", { ascending: false })
-      .limit(200);
+      .order("created_at", { ascending: false })
+      .limit(400);
 
     if (error || !data) return out;
 
+    // Finn siste sweep-dag (created_at kan være sekund-forskjellig innen samme kjøring)
+    let latestTs = 0;
     for (const row of data as BacktestRow[]) {
+      const ts = Date.parse(row.created_at || "");
+      if (ts > latestTs) latestTs = ts;
+    }
+    // Samme sweep = innen 1 time av nyeste rad
+    const cutoff = latestTs - 3600_000;
+    const latestRun = (data as BacktestRow[]).filter(
+      (r) => Date.parse(r.created_at || "") >= cutoff,
+    );
+    // Høyeste sharpe per symbol innen siste sweep
+    latestRun.sort(
+      (a, b) => Number(b.sharpe_ratio ?? 0) - Number(a.sharpe_ratio ?? 0),
+    );
+
+    for (const row of latestRun) {
       // Første (høyeste sharpe) per symbol vinner — list er sortert desc
       if (out.has(row.symbol)) continue;
 
@@ -116,7 +134,12 @@ export async function getGridConfigForSymbol(
   supabase: SupabaseClient,
   symbol: string,
   currentPrice: number,
-): Promise<{ gridLevels: number; lowerPrice: number; upperPrice: number; source: "backtest" | "fallback" }> {
+): Promise<{
+  gridLevels: number;
+  lowerPrice: number;
+  upperPrice: number;
+  source: "backtest" | "fallback";
+}> {
   const configs = await getBestGridConfigs(supabase);
   const hit = configs.get(symbol);
 
