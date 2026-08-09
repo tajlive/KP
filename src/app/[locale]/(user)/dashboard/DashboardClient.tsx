@@ -28,6 +28,7 @@ interface ProfileResponse {
 
 export default function DashboardClient({ locale }: DashboardClientProps) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [state, setState] = useState<{
     loading: boolean;
     error?: string;
@@ -40,6 +41,11 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
     metrics: DashboardMetrics | null;
     isPriority: boolean;
   }>({ loading: true, preferredTradingMode: "paper", onboardingCompleted: false, signupDays: 1, cmsData: null, metrics: null, isPriority: false });
+
+  // Sørg for at vi er på klienten før vi viser BestemorPanel (unngår hydration mismatch)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -126,7 +132,7 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
   return (
     <div data-testid="dashboard-page">
-      <BestemorPanel sessionId={state.userId} />
+      {mounted && <BestemorPanel sessionId={state.userId} />}
       <KrakenLiveCard />
       <DashboardContent
         userId={state.userId}
