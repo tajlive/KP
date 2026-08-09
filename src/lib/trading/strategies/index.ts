@@ -20,7 +20,20 @@ import { MultiSignalStrategy } from "./multi";
 import { GridBotStrategy } from "./grid";
 import { AICopyStrategy } from "./ai-copy";
 import { HybridArbitrageStrategy } from "./hybrid-arbitrage";
+import { MaxAggressiveGridStrategy } from "./max-aggressive-grid";
 import type { StrategyEngine } from "./types";
+
+/** Default-konfig for Max Aggressive (5x SOL leveraged grid) */
+export const MAX_AGGRESSIVE_DEFAULT_CONFIG = {
+  symbol: "SOLUSDT",
+  leverage: 5,
+  grid_range_pct: 1.5,
+  grid_levels: 20,
+  capital: 100,
+  kill_switch_loss_pct: 3,
+  auto_reduce_after_loss_days: 2,
+  rebalance_interval_hours: 2,
+};
 
 export const strategyRegistry: Record<string, StrategyEngine> = {
   dca: new DCAStrategy(),
@@ -29,6 +42,7 @@ export const strategyRegistry: Record<string, StrategyEngine> = {
   grid: new GridBotStrategy(),
   ai_copy: new AICopyStrategy(),
   hybrid_arbitrage: new HybridArbitrageStrategy(),
+  max_aggressive: new MaxAggressiveGridStrategy(MAX_AGGRESSIVE_DEFAULT_CONFIG),
 };
 
 /**
