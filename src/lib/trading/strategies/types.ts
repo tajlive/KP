@@ -46,6 +46,14 @@ export interface StrategySignal {
   exitReason?: string;
   indicators?: Record<string, unknown>;
   reason?: string;
+  /** Leverage used for this signal ( leveraged grid only ) */
+  leverage?: number;
+  /** Liquidation price for leveraged positions */
+  liquidation_price?: number;
+  /** Margin ratio for leveraged positions */
+  margin_ratio?: number;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
 }
 
 export interface StrategyInput {
