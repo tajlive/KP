@@ -98,7 +98,7 @@
 **Live-lansering planlagt fredag 2026-08-07. Historiske trading-data FØR 2026-07-30 kl. 11:00 UTC er forurenset** (fiktive fallback-priser + NOK/USDT-enhetsbug) — bruk kun nyere data til strategivurdering.
 
 Fikset denne dagen:
-1. **jokertrade markedsdata**: kalte binance-proxy med feil endepunkt/uten auth → alltid fallback (RSI 50/flat → evig WAIT). Bruk alltid `@/lib/trading/canonical/market-data/binance-proxy-provider` — aldri håndrullede proxy-kall.
+1. **jokertrade markedsdata**: kalte binance-proxy med feil endepunkt/uten auth → alltid fallback (RSI 50/flat → evig WAIT). Bruk alltid kanonisk markedsdata-provider — aldri håndrullede proxy-kall. *(Historisk: `binance-proxy-provider` er fjernet 2026-08-08, bruk `createKrakenMarketDataProvider` fra `@/lib/trading/canonical/market-data`.)*
 2. **jokertrade exits**: `trades.price` er **NOK** for paper — sammenligning mot USDT-priser ga falske ±89 % exits, og stop-loss manglet helt. Nå: konverter via `getNokUsdtRate()`, sjekk både TP og SL, hent priser for ALLE åpne symboler.
 3. **Sesjonsbølger**: `ensure_active_sessions_for_all()` laget ny sesjon per bruker hvert ~30 min. Nå gjenbruker den stoppede sesjoner (migrasjon 20260730120000). `session_maintenance()` hadde alias-bug (`ts.user_id` uten alias) som feilet stille hvert 2. min — fikset.
 4. **Cron 401-krise**: `klarpakke-trading-tick`, `smart-trader-v3` og `reconcile-binance-trades` fikk 401 i timevis (utdatert/vault-mismatchet CRON_SECRET). **Regel: alle cron HTTP-kall skal bruke `klarpakke_trigger_cron()` eller lese `vault.decrypted_secrets` — aldri hardkodede tokens eller `current_setting('app.settings...')`.**
@@ -178,10 +178,10 @@ Viktig:
 - DB trigger `sync_paper_balance()` synker til `user_profiles.paper_balance`
 - Hvis balanse viser feil tall → sjekk triggeren eller sync manuelt
 
-### Markedsdata
-- Cloudflare Workers IP er **blokkert** av Binance.
-- Priser hentes via Supabase Edge Function `binance-proxy`.
-- Price cache: 10s in-memory TTL i BinanceMarketDataProvider.
+### Markedsdata (oppdatert 2026-08-09 — Binance er fjernet)
+- **Kraken er primær markedsdatakilde** (MiCA-regulert, EU/EØS), OKX er børs #2. Binance er fjernet fra kodebasen 2026-08-08 — `binance-proxy` Edge Function og `binance-proxy-provider` finnes ikke lenger.
+- Bruk alltid `@/lib/trading/canonical/market-data` (`createKrakenMarketDataProvider` / `createOkxMarketDataProvider`) — aldri håndrullede børskall.
+- **Navnefelle:** API-rutene `/api/market/binance-24hr` og `/api/market/binance-prices` heter fortsatt «binance» av legacy-grunner, men er internt Kraken-only. Ikke la navnet lure deg.
 - `coin_prices` tabellen oppdateres av cron `sync-prices`.
 
 ### Dashboard
@@ -278,7 +278,7 @@ Eksempel: `web_search("site:nextjs.org app router middleware i18n")`
 - ⚠️ Stopp ved >10 filer eller tvetydig scope
 
 ## 🐛 Kjente issues
-1. Binance 403 på Cloudflare → løst med proxy
+1. ~~Binance 403 på Cloudflare → løst med proxy~~ (utdatert — Binance fjernet 2026-08-08, Kraken er primær)
 2. ICU `select`-format brekker med apostrof → bruk forenklede meldinger
 3. `opennextjs-cloudflare build` feiler på eksisterende TS-feil → bruk --skipNextBuild
 

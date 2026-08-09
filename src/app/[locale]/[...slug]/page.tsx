@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { PortableText } from '@/components/portable-text/PortableText';
 import { safeFetch } from '@/lib/sanity/client';
 import { pageBySlugQuery } from '@/lib/sanity/queries';
@@ -52,7 +52,9 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
   );
 
   if (!page) {
-    notFound();
+    // Soft-404-fiks: redirect til eksplisitt 404-route i stedet for notFound()
+    // som mister status i OpenNext/Cloudflare-adapteren.
+    redirect(`/${locale}/404`);
   }
 
   return (
