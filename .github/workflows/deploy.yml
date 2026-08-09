@@ -127,3 +127,97 @@ jobs:
           E2E_BASE_URL: 'https://www.klarpakke.no'
           PLAYWRIGHT_TEST_BASE_URL: 'https://www.klarpakke.no'
           BASE_URL: 'https://www.klarpakke.no'
+
+  # ============ POST-DEPLOY INNLOGGET SMOKE (2026-08-09): 2026-standard.
+  # Bakgrunn: QueryClientProvider-krasj på /no/dashboard nådde prod og ble
+  # oppdaget av BRUKEREN. Uautentisert smoke kan ALDRI fange innloggede
+  # JS-krasj — denne jobben logger inn med QA-bruker og verifiserer
+  # kjerneflyten med ekte nettleser UMIDDELBART etter deploy.
+  e2e-smoke-auth-prod:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      status: ${{ job.status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Innlogging (QA-bruker) — genererer e2e/.auth/user.json
+        run: npx playwright test --config=playwright.allure.config.ts e2e/auth.setup.ts
+        env:
+          CI: 'true'
+          TEST_BASE_URL: 'https://www.klarpakke.no'
+          PLAYWRIGHT_TEST_BASE_URL: 'https://www.klarpakke.no'
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      - name: Innlogget smoke (dashboard + handel, console-guard)
+        run: |
+          npx playwright test \
+            --config=playwright.allure.config.ts \
+            --project=chromium \
+            e2e/smoke/auth-dashboard-smoke.spec.ts
+        env:
+          CI: 'true'
+          TEST_BASE_URL: 'https://www.klarpakke.no'
+          PLAYWRIGHT_TEST_BASE_URL: 'https://www.klarpakke.no'
+
+  # ============ AUTO-ROLLBACK (2026-08-09): rød innlogget smoke → rull tilbake
+  # til forrige versjon FØR brukere treffer den brutte flyten, og varsl
+  # Trello «🚨 Varsler». Dette er 2026-standarden (post-deploy smoke +
+  # automatisk rollback).
+  auto-rollback:
+    needs: [deploy, e2e-smoke-auth-prod]
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Finn forrige versjon og rull tilbake
+        id: rollback
+        run: |
+          # Versjoner listes nyeste først — [0] er den ødelagte, [1] er forrige
+          PREV_VERSION=$(npx wrangler versions list --json 2>/dev/null | \
+            node -e "const v=JSON.parse(require('fs').readFileSync(0,'utf8'));const vs=Array.isArray(v)?v:(v.versions||v.result||[]);console.log(vs[1]?.id||vs[1]?.version_id||'')")
+          if [ -z "$PREV_VERSION" ]; then
+            echo "::error::Fant ikke forrige versjon — manuell rollback kreves"
+            echo "rollback=manual" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          npx wrangler versions deploy "$PREV_VERSION" --yes --message "AUTO-ROLLBACK: innlogget smoke feilet (${GITHUB_SHA::7})"
+          echo "rollback=$PREV_VERSION" >> "$GITHUB_OUTPUT"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CI: 'true'
+          WRANGLER_LOG: error
+
+      - name: Varsle Trello «🚨 Varsler»
+        if: always()
+        run: |
+          curl -s -X POST "https://api.trello.com/1/cards" \
+            --data-urlencode "key=${{ secrets.TRELLO_KEY }}" \
+            --data-urlencode "token=${{ secrets.TRELLO_TOKEN }}" \
+            --data-urlencode "idList=6a77a7b720d121385c010083" \
+            --data-urlencode "name=🚨 AUTO-ROLLBACK: innlogget smoke feilet" \
+            --data-urlencode "desc=Deploy ${GITHUB_SHA::7} feilet post-deploy innlogget smoke og ble rullet tilbake til ${{ steps.rollback.outputs.rollback }}.%0A%0ASjekk: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --data-urlencode "pos=top" > /dev/null
+          echo "Trello-varsel sendt"

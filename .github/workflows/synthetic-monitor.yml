@@ -1,0 +1,71 @@
+name: Synthetic Monitor — innlogget prod-overvåkning
+
+# 2026-standard (2026-08-09): skriptede INNLOGGEDE brukerflyter mot prod
+# hvert 5. minutt, 24/7. Fanger brudd i stille perioder — ikke bare når
+# ekte brukere treffer en ødelagt side. Kjører i GitHub Actions (IKKE
+# Cloudflare Workers — Workers kan ikke kjøre ekte browser/V8 isolates).
+#
+# Ved feil: Trello-kort i «🚨 Varsler» med run-lenke.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Innlogging (QA-bruker)
+        run: npx playwright test --config=playwright.allure.config.ts e2e/auth.setup.ts
+        env:
+          CI: "true"
+          TEST_BASE_URL: "https://www.klarpakke.no"
+          PLAYWRIGHT_TEST_BASE_URL: "https://www.klarpakke.no"
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      - name: Syntetisk sjekk (dashboard + handel)
+        id: check
+        run: |
+          set +e
+          npx playwright test \
+            --config=playwright.allure.config.ts \
+            --project=chromium \
+            e2e/smoke/auth-dashboard-smoke.spec.ts
+          EXIT=$?
+          echo "exit_code=$EXIT" >> "$GITHUB_OUTPUT"
+          exit 0
+        env:
+          CI: "true"
+          TEST_BASE_URL: "https://www.klarpakke.no"
+          PLAYWRIGHT_TEST_BASE_URL: "https://www.klarpakke.no"
+
+      - name: Varsle Trello ved brudd
+        if: steps.check.outputs.exit_code != '0'
+        run: |
+          curl -s -X POST "https://api.trello.com/1/cards" \
+            --data-urlencode "key=${{ secrets.TRELLO_KEY }}" \
+            --data-urlencode "token=${{ secrets.TRELLO_TOKEN }}" \
+            --data-urlencode "idList=6a77a7b720d121385c010083" \
+            --data-urlencode "name=🚨 SYNTETISK MONITOR: innlogget flyt feiler i prod" \
+            --data-urlencode "desc=Dashboard/handel feiler for innlogget bruker (syntetisk sjekk).%0A%0ATid: $(date -u +%Y-%m-%dT%H:%M:%SZ)%0ARun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --data-urlencode "pos=top" > /dev/null
+          echo "Varsel sendt"
+          exit 1
