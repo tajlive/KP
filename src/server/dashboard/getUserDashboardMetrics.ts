@@ -196,6 +196,26 @@ export async function getUserDashboardMetrics(
       ? await getAccountInitial(supabaseClient, userId)
       : null;
 
+  // Live: hent faktisk Kraken-saldo fra kraken_live_state (SSoT for live).
+  // trading_sessions.current_capital_nok er FEIL — det er en beregnet verdi
+  // fra en gammel sesjon, ikke brukerens faktiske Kraken-konto.
+  let liveKrakenBalanceNok: number | null = null;
+  if (mode === "live") {
+    const { data: krakenState } = await supabaseClient
+      .from("kraken_live_state")
+      .select("total_usdc")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (krakenState?.total_usdc != null) {
+      // USDC ≈ USD. Fallback-kurs 9.6 (samme som i exchange-rate.ts) — ingen
+      // exchange_rates-tabell finnes i DB per 2026-08-09.
+      const usdtNok = 9.6;
+      liveKrakenBalanceNok = Math.round(Number(krakenState.total_usdc) * usdtNok * 100) / 100;
+    }
+  }
+
   // ------------------------------------------------------------------
   // 1. Fetch recent sessions for display (always needed)
   // ------------------------------------------------------------------
@@ -285,7 +305,7 @@ export async function getUserDashboardMetrics(
       winningTrades,
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),
-      accountBalance,
+      accountBalance: mode === "live" ? liveKrakenBalanceNok : accountBalance,
       accountBalanceUpdatedAt,
       investedCapital,
       positionCount,
