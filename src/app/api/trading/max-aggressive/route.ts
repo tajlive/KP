@@ -1,100 +1,186 @@
 /**
- * API: Max Aggressive — OKX live data for bestemor
- * 
- * Henter posisjon, balanse, beregner P&L.
- * Returnerer enkelt format for BestemorPanel.
- * 
+ * API: Max Aggressive — OKX live data for BestemorPanel.
+ *
+ * 2026-08-09 (P0, Tom-rapport): API-en leste USDT (Toms saldo er USDC → viste 0)
+ * og brukte process.env.OKX_API_KEY (finnes ikke i CF Workers → stille feil).
+ * Nå: nøkler hentes kryptert fra user_okx_keys (samme som motoren), saldo leses
+ * som USDC med USDT-fallback, og svaret inkluderer begge valutaer eksplisitt.
+ *
+ * Auth: krever innlogget bruker (Supabase-sesjon). Returnerer KUN brukerens
+ * egne OKX-data — aldri andres.
+ *
  * @module api/trading/max-aggressive
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { NextResponse } from "next/server";
-import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
+import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
-export async function GET() {
-  try {
-    const timestamp = new Date().toISOString();
-    const path = "/api/v5/account/positions";
-    const message = timestamp + "GET" + path;
-    const signature = crypto
-      .createHmac("sha256", process.env.OKX_SECRET_KEY!)
-      .update(message)
-      .digest("base64");
+export const runtime = "edge";
 
-    const res = await fetch(`https://eea.okx.com${path}`, {
-      headers: {
-        "OK-ACCESS-KEY": process.env.OKX_API_KEY!,
-        "OK-ACCESS-SIGN": signature,
-        "OK-ACCESS-TIMESTAMP": timestamp,
-        "OK-ACCESS-PASSPHRASE": process.env.OKX_PASSPHRASE!,
-      },
-    });
+const OKX_BASE = "https://eea.okx.com";
 
-    const data = await res.json();
-    const position = data.data?.[0];
-    
-    // Hent balanse
-    const balancePath = "/api/v5/account/balance";
-    const balanceMessage = timestamp + "GET" + balancePath;
-    const balanceSignature = crypto
-      .createHmac("sha256", process.env.OKX_SECRET_KEY!)
-      .update(balanceMessage)
-      .digest("base64");
-
-    const balanceRes = await fetch(`https://eea.okx.com${balancePath}`, {
-      headers: {
-        "OK-ACCESS-KEY": process.env.OKX_API_KEY!,
-        "OK-ACCESS-SIGN": balanceSignature,
-        "OK-ACCESS-TIMESTAMP": timestamp,
-        "OK-ACCESS-PASSPHRASE": process.env.OKX_PASSPHRASE!,
-      },
-    });
-
-    const balanceData = await balanceRes.json();
-    const usdtBalance = balanceData.data?.[0]?.details?.find(
-      (d: { ccy?: string; availBal?: string }) => d.ccy === "USDT"
-    )?.availBal || "0";
-
-    // Beregn P&L (forenklet — skal hentes fra trades)
-    const dailyPnl = position?.upl ? parseFloat(position.upl) : 0;
-    const dailyPnlPct = position?.uplRatio ? parseFloat(position.uplRatio) * 100 : 0;
-
-    return NextResponse.json({
-      status: position ? "running" : "waiting",
-      daily_pnl: dailyPnlPct,
-      daily_pnl_kr: dailyPnl * 9.6, // USDT → NOK
-      explanation: position 
-        ? `Roboten har ${parseFloat(position.pos) > 0 ? "kjøpt" : "solgt"} ${Math.abs(parseFloat(position.pos))} ${position.instId}. Den venter på å selge høyere.`
-        : "Roboten venter på riktig pris for å starte.",
-      kill_switch: dailyPnlPct <= -3,
-      leverage: 5,
-      symbol: "SOL",
-      balance: usdtBalance,
-      position: position || null,
-    });
-  } catch (error) {
-    console.error("Max aggressive API error:", error);
-    return NextResponse.json(
-      {
-        status: "error",
-        daily_pnl: 0,
-        daily_pnl_kr: 0,
-        explanation: "Kunne ikke hente data. Prøver igjen...",
-        kill_switch: false,
-        leverage: 5,
-        symbol: "SOL",
-        balance: "0",
-        position: null,
-      },
-      { status: 500 }
-    );
-  }
+interface OkxBalanceDetail {
+  ccy?: string;
+  availBal?: string;
+  eq?: string;
 }
 
-export async function POST() {
-  // Stopp-knapp — deaktiverer trading
-  return NextResponse.json({
-    status: "stopped",
-    message: "Roboten er stoppet. Ingen flere trades i dag.",
+interface OkxBalanceResponse {
+  data?: Array<{ details?: OkxBalanceDetail[] }>;
+}
+
+interface OkxPosition {
+  instId?: string;
+  pos?: string;
+  upl?: string;
+  uplRatio?: string;
+  liqPx?: string;
+  lever?: string;
+}
+
+interface OkxPositionsResponse {
+  data?: OkxPosition[];
+}
+
+async function okxSign(
+  secret: string,
+  timestamp: string,
+  method: string,
+  path: string,
+): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(timestamp + method + path),
+  );
+  return btoa(String.fromCharCode(...new Uint8Array(signature)));
+}
+
+async function okxGet<T>(
+  path: string,
+  creds: { apiKey: string; apiSecret: string; passphrase: string },
+): Promise<T> {
+  const timestamp = new Date().toISOString();
+  const sign = await okxSign(creds.apiSecret, timestamp, "GET", path);
+  const res = await fetch(`${OKX_BASE}${path}`, {
+    headers: {
+      "OK-ACCESS-KEY": creds.apiKey,
+      "OK-ACCESS-SIGN": sign,
+      "OK-ACCESS-TIMESTAMP": timestamp,
+      "OK-ACCESS-PASSPHRASE": creds.passphrase,
+    },
   });
+  return res.json() as Promise<T>;
+}
+
+export async function GET(req: Request) {
+  try {
+    // 1. Autentiser bruker fra Supabase-sesjonscookie
+    const authHeader = req.headers.get("authorization");
+    const cookieHeader = req.headers.get("cookie") ?? "";
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    // Hent user_id fra sesjonscookien (sb-<ref>-auth-token)
+    let userId: string | null = null;
+    const tokenMatch = cookieHeader.match(/sb-[a-z]+-auth-token=([^;]+)/);
+    if (tokenMatch) {
+      try {
+        const session = JSON.parse(decodeURIComponent(tokenMatch[1]));
+        userId = session?.user?.id ?? null;
+      } catch {
+        // Cookie kan være base64 eller delt — prøv bearer-token i stedet
+      }
+    }
+    if (!userId && authHeader?.startsWith("Bearer ")) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser(authHeader.slice(7));
+      userId = user?.id ?? null;
+    }
+
+    if (!userId) {
+      return NextResponse.json({ error: "Ikke innlogget" }, { status: 401 });
+    }
+
+    // 2. Hent brukerens krypterte OKX-nøkler (samme som motoren bruker)
+    const { data: okxRow } = await supabase
+      .from("user_okx_keys")
+      .select("api_key_encrypted, api_secret_encrypted, passphrase_encrypted")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!okxRow) {
+      return NextResponse.json(
+        { error: "Ingen OKX-tilkobling", connected: false },
+        { status: 200 },
+      );
+    }
+
+    const creds = {
+      apiKey: await decryptApiKey(okxRow.api_key_encrypted),
+      apiSecret: await decryptApiKey(okxRow.api_secret_encrypted),
+      passphrase: await decryptApiKey(okxRow.passphrase_encrypted),
+    };
+
+    // 3. Hent balanse + posisjoner parallelt
+    const [balanceData, positionsData] = await Promise.all([
+      okxGet<OkxBalanceResponse>("/api/v5/account/balance", creds),
+      okxGet<OkxPositionsResponse>("/api/v5/account/positions", creds),
+    ]);
+
+    const details = balanceData.data?.[0]?.details ?? [];
+    const findCcy = (ccy: string) =>
+      details.find((d) => d.ccy === ccy)?.availBal ?? null;
+
+    // Tom: EU-konto er USDC-denominert. USDT-fallback for andre.
+    const usdc = findCcy("USDC");
+    const usdt = findCcy("USDT");
+    const balance = parseFloat(usdc ?? usdt ?? "0");
+    const quoteCcy = usdc != null ? "USDC" : "USDT";
+
+    const position = positionsData.data?.find((p) => p.pos && p.pos !== "0");
+    const dailyPnl = position?.upl ? parseFloat(position.upl) : 0;
+    const dailyPnlPct = position?.uplRatio
+      ? parseFloat(position.uplRatio) * 100
+      : 0;
+
+    return NextResponse.json({
+      connected: true,
+      balance,
+      quoteCcy,
+      balanceNok: Math.round(balance * 9.6 * 100) / 100,
+      dailyPnl,
+      dailyPnlPct,
+      position: position
+        ? {
+            symbol: position.instId,
+            size: position.pos,
+            leverage: position.lever,
+            liqPrice: position.liqPx,
+          }
+        : null,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error("[max-aggressive] error:", (err as Error).message);
+    return NextResponse.json(
+      { error: "Kunne ikke hente OKX-data" },
+      { status: 500 },
+    );
+  }
 }

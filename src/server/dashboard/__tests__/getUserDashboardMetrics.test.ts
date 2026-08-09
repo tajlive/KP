@@ -278,7 +278,11 @@ describe("getUserDashboardMetrics", () => {
 
   // ── TS fallback path ────────────────────────────────────────────────
 
-  it("TS fallback: aggregates trades across multiple sessions", async () => {
+  it("TS fallback: aggregates trades across sessions, capital ONLY from active", async () => {
+    // 2026-08-09 (P0, Tom-rapport): stoppede sesjoners current_capital_nok er
+    // fryste historiske verdier og skal IKKE summeres inn i kapital — Tom så
+    // 9 492 kr fra en stoppet ADA-sesjon som levende penger. Trades (historikk)
+    // telles fortsatt over alle scopete sesjoner.
     const supabase = createMockSupabase({
       rpcError: { message: "function does not exist" },
       sessions: [
@@ -310,7 +314,9 @@ describe("getUserDashboardMetrics", () => {
 
     expect(result.totalTrades).toBe(3);
     expect(result.totalPnl).toBe(5000);
-    expect(result.totalCapital).toBe(205000); // sum across sessions
+    // Kapital KUN fra aktiv sesjon (110000), IKKE 205000 (aktiv + stoppet)
+    expect(result.totalCapital).toBe(110000);
+    expect(result.startingCapital).toBe(100000);
   });
 
   it("TS fallback: throws DashboardMetricsError when sessions query fails", async () => {

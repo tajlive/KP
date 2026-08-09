@@ -91,6 +91,18 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
 }
 
 /**
+ * Statuser som skal telle i KAPITAL-summering (totalCapital/startingCapital).
+ *
+ * 2026-08-09 (P0, Tom-rapport): dashboardet viste 9 492 kr fra den STOPPEDE
+ * ADA-sesjonen (01.08) pluss den aktive OKX-sesjonen — Tom trodde live-kontoen
+ * hans hadde ~11 000 kr mens faktisk OKX-saldo var ~1 458 kr. En stoppet
+ * sesjons current_capital_nok er en FRYST historisk verdi, ikke penger brukeren
+ * har nå. Kapital summeres derfor KUN over aktive sesjoner. Trade-statistikk
+ * (totalTrades/totalPnl) kan fortsatt telle historikk — men kapital er nå-tilstand.
+ */
+const CAPITAL_STATUSES = ["active"] as const;
+
+/**
  * Returns unified dashboard metrics for a single user + mode.
  *
  * Implementation strategy:
@@ -434,6 +446,13 @@ async function tsAggregationFallback(
 
   const sessionIds = (sessions ?? []).map((s) => s.id);
 
+  // Kapital summeres KUN over aktive sesjoner — stoppede sesjoners
+  // current_capital_nok er fryste historiske verdier, ikke nåværende penger.
+  // (2026-08-09: Tom så 9 492 kr fra stoppet ADA-sesjon som levende kapital.)
+  const capitalSessions = (sessions ?? []).filter((s) =>
+    (CAPITAL_STATUSES as readonly string[]).includes(s.status),
+  );
+
   let totalTrades = 0;
   let totalPnl = 0;
   let winningTrades = 0;
@@ -472,12 +491,12 @@ async function tsAggregationFallback(
     }
   }
 
-  let totalCapital = (sessions ?? []).reduce(
+  let totalCapital = capitalSessions.reduce(
     (sum, s) => sum + (s.current_capital_nok ?? 0),
     0,
   );
 
-  let startingCapital = (sessions ?? []).reduce(
+  let startingCapital = capitalSessions.reduce(
     (sum, s) => sum + (s.starting_capital_nok ?? 0),
     0,
   );
