@@ -58,7 +58,7 @@ export function resolveTickStrategyEngineKey(
 
   // 4. Direct engine name
   const validEngines: TickStrategyEngineKey[] = [
-    "dca", "trend_follow", "multi_signal", "grid", "ai_copy", "hybrid_arbitrage", "ensemble_ai",
+    "dca", "trend_follow", "multi_signal", "grid", "ai_copy", "hybrid_arbitrage", "ensemble_ai", "max_aggressive",
   ];
   if (validEngines.includes(strategyId as TickStrategyEngineKey)) {
     return strategyId as TickStrategyEngineKey;

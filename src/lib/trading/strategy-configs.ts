@@ -379,6 +379,23 @@ export function getStrategyConfig(
         rebalance_on_regime_change: false,
       },
     },
+    max_aggressive: {
+      engine: "max_aggressive",
+      config: {
+        symbol: "SOLUSDC",
+        leverage: 5,
+        grid_range_pct: 1.5,
+        grid_levels: 20,
+        capital: 100,
+        kill_switch_loss_pct: 3,
+        auto_reduce_after_loss_days: 2,
+        rebalance_interval_hours: 2,
+        exchange: "okx",
+        quote: "USDC",
+      },
+      // Dark Fleet skal IKKE overstyre max_aggressive — strategien er mekanisk grid
+      darkFleet: { enabled: false },
+    },
   };
 
   return engineDefaults[strategyId] ?? null;
