@@ -7,20 +7,25 @@
  *
  * Arkitektur-sannhet #1: paper_accounts.current_balance er source of truth.
  *
- * ⚠️  Scope (2026-08-04): active + paused + stopped paper-sesjoner telles
- *     ALLE med. Stoppede sesjoner har fortsatt cash + posisjoner som tilhører
- *     brukeren — de er ikke slettet, bare stoppet (Tom-bevis: 9 578 vs
- *     199 198 kr når kun 'active' ble telt). Matcher
- *     klarpakke_hourly_balance_sync og portfolio/summary.
+ * ⚠️  P0-FIKS (2026-08-10): Tidligere summeres active+paused+stopped.
+ *     Stoppede sesjoners current_capital_nok er FRYSTE historiske verdier —
+ *     summert inn i SSoT hver 5. minutt (tick-cron) ga eksponentiell inflasjon:
+ *     Toms saldo 100k → 199k → 697k uten én reell trade.
+ *     Nå: KUN aktive/pausede sesjoner summeres. Stoppede er historikk.
+ *     (Tidligere kommentar om «stoppede tilhører brukeren» var feil —
+ *     deres kapital er allerede telt da de var aktive. Å telle dem igjen
+ *     er dobbelt-telling. Tom-bevis 2026-08-10: saldo 697 576,98 → 99 646,50.)
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
 /**
- * Beregn total kapital på tvers av alle aktive/pausede/stoppede
- * paper-sesjoner for én bruker, og skriv resultatet tilbake til
- * paper_accounts.current_balance.
+ * Beregn total kapital på tvers av AKTIVE/PAUSED paper-sesjoner for én
+ * bruker, og skriv resultatet tilbake til paper_accounts.current_balance.
+ *
+ * Stoppede sesjoner telles IKKE — deres current_capital_nok er fryst
+ * historikk, ikke levende penger (P0 2026-08-10).
  */
 export async function syncPaperAccountBalance(
   supabase: SupabaseClient<Database>,
@@ -32,16 +37,21 @@ export async function syncPaperAccountBalance(
       .select("current_capital_nok, starting_capital_nok")
       .eq("user_id", userId)
       .eq("mode", "paper")
-      .in("status", ["active", "paused", "stopped"]);
+      .in("status", ["active", "paused"]); // KUN levende sesjoner (2026-08-10)
 
     if (sessionError) {
       console.warn("[syncPaperBalance] session fetch error:", sessionError.message);
       return;
     }
 
-    const totalCapital = (sessions ?? []).reduce(
+    // Ingen aktive/pausede sesjoner → ikke oppdater (behold SSoT uendret)
+    if (!sessions || sessions.length === 0) {
+      return;
+    }
+
+    const totalCapital = sessions.reduce(
       (sum, s) => sum + Number(s.current_capital_nok ?? 0), 0);
-    const totalInitial = (sessions ?? []).reduce(
+    const totalInitial = sessions.reduce(
       (sum, s) => sum + Number(s.starting_capital_nok ?? 0), 0);
 
     if (!Number.isFinite(totalCapital) || totalCapital <= 0) {

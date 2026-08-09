@@ -148,7 +148,7 @@ export async function GET(req: Request) {
       .select("user_id, current_capital_nok")
       .in("user_id", userIds)
       .eq("mode", "paper")
-      .in("status", ["active", "paused", "stopped"]);
+      .in("status", ["active", "paused"]); // 2026-08-10: stoppede = fryst historikk
 
     const sessionBalanceMap = new Map<string, number>();
     for (const s of sessionSums ?? []) {

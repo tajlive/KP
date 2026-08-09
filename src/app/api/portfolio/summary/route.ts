@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
         .select("current_capital_nok, starting_capital_nok")
         .eq("user_id", user.id)
         .eq("mode", "paper")
-        .in("status", ["active", "paused", "stopped"]);
+        .in("status", ["active", "paused"]); // 2026-08-10: stoppede = fryst historikk, ikke levende penger
 
       const sessionsSum = balanceSessions?.reduce(
         (sum, s) => sum + Number(s.current_capital_nok ?? 0),
