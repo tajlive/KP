@@ -31,7 +31,9 @@ export async function generateMetadata({ params }: DynamicPageProps): Promise<Me
   );
 
   if (!page) {
-    notFound();
+    // Soft-404-fiks: ikke notFound() — den mister status i OpenNext/Cloudflare.
+    // Returner minimal metadata; page-komponenten redirecter til /404.
+    return { title: 'Not Found' };
   }
 
   return {
