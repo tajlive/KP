@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { DashboardContent, type DashboardCmsData } from "@/features/dashboard/DashboardContent";
 import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 import KrakenLiveCard from "@/features/kraken/KrakenLiveCard";
+import { BestemorPanel } from "@/features/dashboard/BestemorPanel";
 
 interface DashboardClientProps {
   locale: string;
@@ -125,6 +126,7 @@ export default function DashboardClient({ locale }: DashboardClientProps) {
 
   return (
     <div data-testid="dashboard-page">
+      <BestemorPanel sessionId={state.userId} />
       <KrakenLiveCard />
       <DashboardContent
         userId={state.userId}
