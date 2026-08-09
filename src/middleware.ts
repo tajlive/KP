@@ -21,7 +21,7 @@ import { legacyRedirectsMiddleware } from "@/middleware/legacy-redirects";
 export const config = {
   matcher: [
     // Skip static files and internal Next.js paths
-    "/((?!_next/static|_next/image|favicon.ico|logo.svg|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2?|ico)).*)",
+    "/((?!_next/static|_next/image|favicon.ico|logo.svg|sitemap.xml|robots.txt|llms.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2?|ico)).*)",
   ],
 };
 
