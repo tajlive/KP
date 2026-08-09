@@ -10,7 +10,7 @@
  * Rate-limit: 429 → OkxLockoutError (konsistent med KrakenLockoutError).
  */
 
-const API_BASE = "https://www.okx.com/api/v5";
+const API_BASE = "https://eea.okx.com/api/v5";
 const REQUEST_TIMEOUT_MS = 15_000;
 
 /** Kastet ved OKX rate-limit (HTTP 429) eller midlertidige feil — retry med backoff. */

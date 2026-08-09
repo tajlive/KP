@@ -40,6 +40,10 @@ const INTERNAL_TO_OKX: Record<string, string> = {
   ADAUSDT: "ADA-USDT",
   DOTUSDT: "DOT-USDT",
   POLUSDT: "POL-USDT",
+  // EU-konto (eea.okx.com): USDC-kvote (MiCA). Toms konto er USDC-denominert.
+  BTCUSDC: "BTC-USDC",
+  ETHUSDC: "ETH-USDC",
+  SOLUSDC: "SOL-USDC",
 };
 
 function toOkxPair(symbol: string): string {
@@ -252,8 +256,10 @@ export class OkxExecutor implements OrderExecutor {
   async getBalance(): Promise<BalanceInfo> {
     try {
       const balance = await this.client.getBalance();
-      // Klarpakke-kontrakt (OKX-kvote): USDT er tilgjengelig kapital.
-      const available = parseFloat(balance.USDT ?? "0") || 0;
+      // Toms OKX-konto er EU (eea.okx.com) — kvote er USDC (MiCA), ikke USDT.
+      // Les USDC først, fall tilbake til USDT for konti som har begge.
+      const available =
+        parseFloat(balance.USDC ?? "0") || parseFloat(balance.USDT ?? "0") || 0;
       // Kontrakt-parity med PaperExecutor: locked er eksplisitt 0.
       return { available, locked: 0, total: available };
     } catch (error) {
