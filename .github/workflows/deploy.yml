@@ -158,8 +158,8 @@ jobs:
           CI: 'true'
           TEST_BASE_URL: 'https://www.klarpakke.no'
           PLAYWRIGHT_TEST_BASE_URL: 'https://www.klarpakke.no'
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          E2E_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
       - name: Innlogget smoke (dashboard + handel, console-guard)
         run: |

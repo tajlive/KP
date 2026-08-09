@@ -33,6 +33,10 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: "chromium",
+      // auth-*-specs tilhører chromium-auth (innlogget, med storageState).
+      // Uten denne ekskluderingen kjører auth-dashboard-smoke også på
+      // chromium (uten sesjonsfil) → ENOENT-feil (2026-08-09).
+      testIgnore: /auth-.*\.spec\.ts/,
       use: {
         browserName: "chromium",
         viewport: { width: 1280, height: 720 },
@@ -54,6 +58,7 @@ const config: PlaywrightTestConfig = {
     },
     {
       name: "mobile-chrome",
+      testIgnore: /auth-.*\.spec\.ts/,
       use: {
         browserName: "chromium",
         viewport: { width: 375, height: 667 },
