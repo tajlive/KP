@@ -566,6 +566,7 @@
         "subtitle": "Logg inn på din konto",
         "or": "eller",
         "continueWithGoogle": "Fortsett med Google",
+        "continueWithApple": "Fortsett med Apple",
         "continueWithMicrosoft": "Fortsett med Microsoft",
         "registerLink": "Registrer deg"
       },
@@ -1910,7 +1911,15 @@
       "title": "Daglig P&L Heatmap",
       "loss": "Tap",
       "win": "Gevinst",
-      "dayLabels": ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
+      "dayLabels": [
+        "Man",
+        "Tir",
+        "Ons",
+        "Tor",
+        "Fre",
+        "Lør",
+        "Søn"
+      ],
       "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
     },

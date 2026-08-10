@@ -15,7 +15,7 @@ function getLocaleFromWindow(): string {
 }
 
 async function performOAuthSignIn(
-  provider: "google" | "azure",
+  provider: "google" | "azure" | "apple",
   config: (typeof OAUTH_CONFIG)["google"],
 ) {
   const origin = getAppUrl();
@@ -46,7 +46,9 @@ async function performOAuthSignIn(
         const code =
           provider === "google"
             ? AuthErrorCode.GOOGLE_OAUTH_FAILED
-            : AuthErrorCode.MICROSOFT_OAUTH_FAILED;
+            : provider === "apple"
+              ? AuthErrorCode.APPLE_OAUTH_FAILED
+              : AuthErrorCode.MICROSOFT_OAUTH_FAILED;
         logAuthError(code, error, { locale, origin });
       }
       throw error;
@@ -66,7 +68,9 @@ async function performOAuthSignIn(
       const code =
         provider === "google"
           ? AuthErrorCode.GOOGLE_OAUTH_FAILED
-          : AuthErrorCode.MICROSOFT_OAUTH_FAILED;
+          : provider === "apple"
+            ? AuthErrorCode.APPLE_OAUTH_FAILED
+            : AuthErrorCode.MICROSOFT_OAUTH_FAILED;
       logAuthError(code, catchError, {
         locale,
         origin,
@@ -84,6 +88,10 @@ export async function signInWithGoogle() {
 
 export async function signInWithMicrosoft() {
   return performOAuthSignIn("azure", OAUTH_CONFIG.azure);
+}
+
+export async function signInWithApple() {
+  return performOAuthSignIn("apple", OAUTH_CONFIG.apple);
 }
 
 export async function signOut() {

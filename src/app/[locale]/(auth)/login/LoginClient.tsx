@@ -17,8 +17,12 @@ import {
   CONFIG_ERROR_MSG,
   CONFIG_USER_MSG_NO,
 } from "@/lib/supabase/client";
-import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
-import { isMicrosoftOAuthEnabled } from "@/lib/auth/config";
+import {
+  signInWithGoogle,
+  signInWithMicrosoft,
+  signInWithApple,
+} from "@/lib/auth/googleAuth";
+import { isMicrosoftOAuthEnabled, isAppleOAuthEnabled } from "@/lib/auth/config";
 import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
 
 export default function LoginPage() {
@@ -98,6 +102,24 @@ export default function LoginPage() {
           : err instanceof Error
             ? err.message
             : "Microsoft-innlogging feilet",
+      );
+      setLoading(false);
+    }
+  }
+
+  async function handleAppleLogin() {
+    setLoading(true);
+    setError("");
+    try {
+      await signInWithApple();
+      // Redirect happens inside signInWithApple — no need to handle success
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message === CONFIG_ERROR_MSG
+          ? CONFIG_USER_MSG_NO
+          : err instanceof Error
+            ? err.message
+            : "Apple-innlogging feilet",
       );
       setLoading(false);
     }
@@ -198,6 +220,24 @@ export default function LoginPage() {
               </svg>
               {t("pages.login.continueWithGoogle")}
             </button>
+
+            {isAppleOAuthEnabled && (
+              <button
+                data-testid="apple-login-button"
+                onClick={handleAppleLogin}
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:bg-black/50"
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8.98-.2 1.92-.87 3.24-.78 1.28.1 2.25.61 2.88 1.56-2.65 1.59-2.22 5.06.44 6.11-.52 1.54-1.19 3.07-2.64 5.28ZM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z" />
+                </svg>
+                {t("pages.login.continueWithApple")}
+              </button>
+            )}
 
             {isMicrosoftOAuthEnabled && (
               <button

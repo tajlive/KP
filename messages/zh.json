@@ -509,6 +509,7 @@
         "subtitle": "Log in to your account",
         "or": "or",
         "continueWithGoogle": "Continue with Google",
+        "continueWithApple": "使用 Apple 继续",
         "continueWithMicrosoft": "Continue with Microsoft",
         "registerLink": "Register"
       },
@@ -1661,7 +1662,15 @@
       "welcome": "嗨！我可以帮助您了解您的交易数据。"
     },
     "winLossHeatmap": {
-      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "subtitle": "{winningDays, plural, one {# 个绿色} other {# 个绿色}} · {losingDays, plural, one {# 个红色} other {# 个红色}} · {winRate}% 胜率",
       "infoTooltip": "每种颜色代表您一天的损益。深绿色=大赢，深红色=大输。用它来识别模式（例如，周一的损失）。",
       "loss": "损失",

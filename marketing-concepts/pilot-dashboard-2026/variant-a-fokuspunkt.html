@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+  KLARPAKKE PILOT-DASHBOARD — DESIGN-MOCK VARIANT A «ÉT FOKUSPUNKT»
+  Retning: Mormor-maks. ÉN ting å se på, ÉN knapp. Alt annet er sekundært.
+  Hele skjermen puster: stor status, størst beløp, stor knapp.
+  MERK: Alle tall er EKSEMPELDATA — kobles til ekte API (paper_accounts = fasit).
+-->
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Din Pilot — Klarpakke</title>
+<style>
+  :root {
+    --bg: #0f172a; --bg-card: #16203a; --bg-soft: #1e293b;
+    --text: #f1f5f9; --text-dim: #b6c2d4;
+    --green: #22c55e; --red: #ef4444; --yellow: #eab308;
+    --blue: #0052ff; --blue-soft: #3d7aff; --border: #2d3d5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 20px; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  /* ── Trafikklys-status ── */
+  .status {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 18px; border-radius: 20px; font-size: 1.3rem; font-weight: 800;
+    margin-bottom: 28px;
+  }
+  .status.gronn { background: rgba(34,197,94,.12); border: 2px solid rgba(34,197,94,.5); color: #86efac; }
+  .status-prikk { width: 22px; height: 22px; border-radius: 50%; background: var(--green); box-shadow: 0 0 18px rgba(34,197,94,.7); }
+
+  /* ── Beløp (størst — 48px+) ── */
+  .belop-seksjon { text-align: center; margin-bottom: 32px; }
+  .belop-label { color: var(--text-dim); font-size: 1rem; margin-bottom: 4px; }
+  .belop { font-size: 3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .belop.gronn { color: var(--green); }
+  .belop-under { color: var(--text-dim); font-size: .95rem; margin-top: 6px; }
+
+  /* ── STOR knapp ── */
+  .pilot-knapp {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    width: 100%; min-height: 88px; border: none; border-radius: 24px;
+    font-family: inherit; font-size: 1.6rem; font-weight: 800; cursor: pointer;
+    margin-bottom: 32px;
+  }
+  .pilot-knapp.stopp { background: var(--red); color: #fff; box-shadow: 0 12px 40px rgba(239,68,68,.3); }
+  .pilot-knapp.start { background: var(--green); color: #06280f; box-shadow: 0 12px 40px rgba(34,197,94,.3); }
+
+  /* ── Hvorfor-kort (LLM-feed) ── */
+  .feed-tittel { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-dim); margin-bottom: 12px; }
+  .feed-kort {
+    background: var(--bg-card); border-left: 5px solid var(--blue-soft);
+    border-radius: 16px; padding: 18px 20px; margin-bottom: 12px;
+  }
+  .feed-kort p { font-size: 1.1rem; font-weight: 600; }
+  .feed-kort .tid { display: block; margin-top: 6px; font-size: .8rem; color: var(--text-dim); font-weight: 400; }
+  .feed-kort.handlet { border-left-color: var(--green); }
+  .feed-kort.venter { border-left-color: var(--yellow); }
+
+  /* ── Bevis + brems ── */
+  .bevis-linje {
+    margin-top: 28px; padding: 16px 18px; border-radius: 16px;
+    background: var(--bg-soft); font-size: .9rem; color: var(--text-dim); text-align: center;
+  }
+  .bevis-linje .slot { border-bottom: 2px dashed rgba(34,197,94,.5); color: var(--green); font-weight: 700; }
+  .brems {
+    margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;
+    padding: 16px 18px; border-radius: 16px; border: 1px solid var(--border);
+    font-size: .9rem; color: var(--text-dim);
+  }
+  .brems span:first-child { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <!-- TRAFIKKLYS: AKTIV (grønn) / VENTER (gul) / STOPPET (rød) -->
+  <div class="status gronn" role="status">
+    <span class="status-prikk" aria-hidden></span>
+    PILOTEN ER AKTIV
+  </div>
+
+  <!-- BELØP STØRST (lekepenger) — EKSEMPELDATA -->
+  <div class="belop-seksjon">
+    <p class="belop-label">Din gevinst så langt</p>
+    <p class="belop gronn">+ {{eksempel_gevinst}} kr</p>
+    <p class="belop-under">Saldo: {{eksempel_saldo}} kr i lekepenger · Krypto kan falle — dette er trening</p>
+  </div>
+
+  <!-- ÉN KNAPP -->
+  <button class="pilot-knapp stopp" type="button">■ STOPP PILOTEN</button>
+  <!-- I stoppet tilstand: <button class="pilot-knapp start">▶ START PILOTEN</button> -->
+
+  <!-- LLM-FEED: Piloten forklarer — EKSEMPELDATA -->
+  <p class="feed-tittel">Piloten forklarer</p>
+
+  <div class="feed-kort handlet">
+    <p>«Prisen falt, så jeg kjøpte litt billig. Når den stiger igjen, selger jeg.»</p>
+    <span class="tid">For 1 time siden · Kjøp</span>
+  </div>
+  <div class="feed-kort handlet">
+    <p>«Jeg solgte litt med gevinst. Pengene er trygge på kontoen din.»</p>
+    <span class="tid">I går kveld · Salg</span>
+  </div>
+  <div class="feed-kort venter">
+    <p>«Markedet beveger seg lite akkurat nå. Jeg venter på en bedre pris.»</p>
+    <span class="tid">I går ettermiddag · Venter</span>
+  </div>
+
+  <!-- BACKTEST-BEVIS: dynamisk felt — ALDRI hardkod -->
+  <div class="bevis-linje">
+    Siste 90 dager ville strategien gitt <span class="slot">{{backtest_resultat_90d}}</span> med 100 000 kr.
+    <br>Historisk avkastning er ingen garanti for fremtidig avkastning.
+  </div>
+
+  <!-- KILL-SWITCH forklart -->
+  <div class="brems">
+    <span aria-hidden>🛡️</span>
+    <span><strong>Automatisk brems:</strong> Taper Piloten mer enn 3 % på én dag, stopper den av seg selv og varsler deg. Du kan alltid stoppe den selv med den røde knappen over.</span>
+  </div>
+
+</main>
+</body>
+</html>

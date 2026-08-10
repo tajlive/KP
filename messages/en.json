@@ -566,6 +566,7 @@
         "subtitle": "Log in to your account",
         "or": "or",
         "continueWithGoogle": "Continue with Google",
+        "continueWithApple": "Continue with Apple",
         "continueWithMicrosoft": "Continue with Microsoft",
         "registerLink": "Register"
       },
@@ -1910,7 +1911,15 @@
       "title": "Daily P&L Heatmap",
       "loss": "Loss",
       "win": "Win",
-      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "subtitle": "{winningDays, plural, one {# green} other {# green}} · {losingDays, plural, one {# red} other {# red}} · {winRate}% win rate",
       "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
     },

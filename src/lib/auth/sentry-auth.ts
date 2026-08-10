@@ -19,6 +19,7 @@ export enum AuthErrorCode {
   GOOGLE_OAUTH_CANCELLED = "auth:google:cancelled",
   GOOGLE_OAUTH_POPUP_BLOCKED = "auth:google:popup_blocked",
   MICROSOFT_OAUTH_FAILED = "auth:microsoft:oauth_failed",
+  APPLE_OAUTH_FAILED = "auth:apple:oauth_failed",
   LINKEDIN_OAUTH_FAILED = "auth:linkedin:oauth_failed",
   VIPPS_OAUTH_FAILED = "auth:vipps:oauth_failed",
   

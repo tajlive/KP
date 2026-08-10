@@ -12,6 +12,8 @@ export const isProduction = process.env.NODE_ENV === "production";
 export const isDevelopment = process.env.NODE_ENV === "development";
 export const isMicrosoftOAuthEnabled =
   process.env.NEXT_PUBLIC_ENABLE_MICROSOFT_OAUTH === "true";
+export const isAppleOAuthEnabled =
+  process.env.NEXT_PUBLIC_ENABLE_APPLE_OAUTH === "true";
 
 // Valid locales are derived from the i18n source of truth.
 export type ValidLocale = (typeof locales)[number];
@@ -109,6 +111,7 @@ export function getCallbackUrl(locale: string = defaultLocale): string {
 export const SUPPORTED_PROVIDERS = {
   GOOGLE: "google",
   MICROSOFT: "azure", // Supabase uses 'azure' for Microsoft
+  APPLE: "apple",
   VIPPS: "vipps", // Custom OAuth flow via /api/auth/vipps-url + callback
 } as const;
 
@@ -116,6 +119,7 @@ export const SUPPORTED_PROVIDERS = {
 export const PROVIDER_NAMES: { [key: string]: string } = {
   google: "Google",
   azure: "Microsoft",
+  apple: "Apple",
   vipps: "Vipps",
   email: "E-post",
 };
@@ -136,6 +140,9 @@ export const OAUTH_CONFIG: Record<
   },
   azure: {
     scopes: "email profile openid",
+  },
+  apple: {
+    scopes: "email name",
   },
   // Vipps uses custom OAuth flow via Supabase Auth
 };
