@@ -140,8 +140,9 @@ function isDashboardAuthedUrl(url: string): boolean {
 }
 
 setup("authenticate via login", async ({ page, context, playwright }) => {
-  // Må matche setup-prosjekt timeout i playwright.config (ellers 300s/120s default).
-  setup.setTimeout(720_000);
+  // Job-timeout er 12 min (inkl. ~4 min install). Test-budsjett 7 min slik at
+  // en fremtidig heng FEILER ærlig i stedet for å bli kansellert av jobben.
+  setup.setTimeout(420_000);
 
   const authDir = dirname(authFile);
   if (!fs.existsSync(authDir)) {
@@ -195,20 +196,48 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
         // /api/health kan være 503 — innlogging 200 er sterkere signal (matcher full-e2e.sh).
         await waitForInnloggingPageReady(playwright, base);
 
+        // KRITISK (2026-08-10): domcontentloaded er for tidlig i prod — React
+        // hydration har ikke bundet onSubmit ennå, og skjemaet (uten method="post")
+        // faller tilbake til native GET-submit med passord i URL. Vent på
+        // networkidle + verifiser at React faktisk har hydrert (fiber på form)
+        // før vi fyller inn og klikker.
         await page.goto(loginUrl, {
-          waitUntil: "domcontentloaded",
+          waitUntil: "networkidle",
           timeout: 90_000,
         });
 
         const emailInput = page.locator('input[name="email"]').first();
         await emailInput.waitFor({ state: "visible", timeout: 45_000 });
 
+        // Vent til React-hydration er ferdig: form må ha reactProps med onSubmit.
+        // Uten dette blir klikket en native GET-submit (credentials i URL).
+        await page
+          .waitForFunction(
+            () => {
+              const form = document.querySelector("form");
+              if (!form) return false;
+              const propsKey = Object.keys(form).find((k) =>
+                k.startsWith("__reactProps"),
+              );
+              const props = propsKey
+                ? (form as unknown as Record<string, { onSubmit?: unknown }>)[
+                    propsKey
+                  ]
+                : null;
+              return Boolean(props && typeof props.onSubmit === "function");
+            },
+            { timeout: 30_000 },
+          )
+          .catch(() => {
+            console.log(
+              "⚠️ React-hydration ikke verifisert innen 30s — fortsetter likevel (fallback håndterer)",
+            );
+          });
+
         await fillEmailControlledInput(emailInput, email);
         await expect(emailInput).toHaveValue(email, { timeout: 10_000 });
 
-        const passwordInput = page
-          .locator('input[name="password"]')
-          .first();
+        const passwordInput = page.locator('input[name="password"]').first();
         await typeIntoControlledInput(passwordInput, password);
         await expect(passwordInput).toHaveValue(password, { timeout: 10_000 });
         await delayMs(200);
@@ -258,15 +287,25 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
           );
         }
 
-        await page.waitForURL((u) => isDashboardAuthedUrl(u.toString()), {
-          timeout: 65_000,
+        // 2026-08-10 (CI-fiks): Verifiser sesjon via /api/auth/me i stedet
+        // for å vente på UI-redirect til dashboard. Reprodusert heng både i
+        // CI og lokalt: token 200 → evig venting på waitForURL (jobben ble
+        // kansellert ved 12-min timeout, aldri en ærlig feilmelding).
+        // goto har hard timeout, og auth-sjekken er det vi faktisk skal bevise.
+        await page.goto(`${base}/no/dashboard`, {
           waitUntil: "domcontentloaded",
+          timeout: 60_000,
         });
 
-        await page.waitForLoadState("networkidle").catch(() => {});
-        await delayMs(1500);
-
-        authed = isDashboardAuthedUrl(page.url());
+        const meStatus = await page.evaluate(async () => {
+          try {
+            const r = await fetch("/api/auth/me", { credentials: "include" });
+            return r.status;
+          } catch {
+            return 0;
+          }
+        });
+        authed = meStatus === 200;
         console.log(
           `✅ Login form complete (forsøk ${attempt}/${maxUiAttempts}, authenticated: ${authed}), URL: ${page.url()}`,
         );
