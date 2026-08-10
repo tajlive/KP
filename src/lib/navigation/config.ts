@@ -231,7 +231,6 @@ export type DashboardSidebarLabelKey =
   | "profile"
   | "settings"
   | "admin"
-  | "referral"
   | "taxReport"
   | "pilot"
   | "analysis"
@@ -293,7 +292,6 @@ export const DASHBOARD_USER_MENU_NAV: readonly CoinbaseNavItem[] = [
   { href: "/marked", labelKey: "market" },
   { href: "/kurs", labelKey: "learn" },
   { href: "/pilot", labelKey: "pilot" },
-  { href: "/dashboard/referral", labelKey: "referral" },
 ];
 
 export const dashboardNavigation = {

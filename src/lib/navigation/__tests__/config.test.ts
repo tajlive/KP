@@ -222,7 +222,6 @@ describe("DASHBOARD_USER_MENU_NAV", () => {
       "market",
       "learn",
       "pilot",
-      "referral",
     ]);
     expect(keys).not.toContain("settings");
     expect(keys).not.toContain("profile");

@@ -14,7 +14,6 @@ import {
   Globe,
   BookOpen,
   Zap,
-  Gift,
   Sun,
   Moon,
   ShieldCheck,
@@ -55,7 +54,6 @@ const SECONDARY_ICONS: Partial<
   market: Globe,
   learn: BookOpen,
   pilot: Zap,
-  referral: Gift,
 };
 
 const itemClass =
