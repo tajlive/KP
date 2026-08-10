@@ -439,5 +439,18 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
     }
   } finally {
     await persistStorageStateSafe(context);
+    // Verifiser at auth-filen faktisk ble skrevet — uten den feiler
+    // alle etterfølgende @auth-tester med kryptisk ENOENT.
+    if (!fs.existsSync(authFile)) {
+      console.error(
+        `❌ auth.setup.ts fullførte uten å skrive ${authFile}. ` +
+          `Dette betyr at context.storageState() feilet stille. ` +
+          `Sjekk at E2E_USER_EMAIL/E2E_USER_PASSWORD er korrekte og at ` +
+          `innlogging faktisk lyktes (se logg over).`,
+      );
+      process.exitCode = 1;
+    } else {
+      console.log(`✅ Auth state persisted to ${authFile}`);
+    }
   }
 });
