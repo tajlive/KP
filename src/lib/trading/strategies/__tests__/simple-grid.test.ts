@@ -166,3 +166,77 @@ describe("SimpleGridStrategy — COMBO", () => {
     expect(sig.action).toBe("sell");
   });
 });
+
+describe("Grid-pause under hele rutenettet (kanonisk range-exit)", () => {
+  const strat = new SimpleGridStrategy();
+
+  function lagSessionMedLot(timerSiden: number) {
+    return {
+      open_position: {
+        side: "long" as const,
+        quantity: 1,
+        entry_price: 100,
+        entry_time: new Date(NÅ - timerSiden * 3600_000).toISOString(),
+        lots: [{
+          id: "l1", quantity: 1, entryPrice: 100,
+          timestamp: new Date(NÅ - timerSiden * 3600_000).toISOString(),
+          originalQuantity: 1,
+        }],
+      },
+      last_tick_at: null,
+      strategy_config: {},
+      current_capital_nok: 90000,
+    } as unknown as MinimalSession;
+  }
+
+  it("pris under hele gridet → hold (ingen DCA selv om den er overstadig)", () => {
+    // Anker 100, grid-bunn 92.5. Pris 90 < 92.5 → pause selv om siste kjøp er 10t siden
+    const candles = [...candlesAv(Array(48).fill(100)), candle(90)];
+    const sig = strat.evaluate(input(candles, lagSessionMedLot(10)));
+    expect(sig.action).toBe("hold");
+    expect(sig.indicators?.paused_below_grid).toBe(true);
+  });
+
+  it("pris tilbake innenfor gridet → normal oppførsel gjenopptas", () => {
+    const candles = [...candlesAv(Array(48).fill(100)), candle(96)];
+    const sig = strat.evaluate(input(candles, lagSessionMedLot(1)));
+    expect(sig.indicators?.paused_below_grid).toBeUndefined();
+  });
+});
+
+describe("Drawdown-gate (krasj-pause)", () => {
+  const strat = new SimpleGridStrategy();
+
+  it("pris >20 % under 30-dagers topp → ingen kjøp", () => {
+    // 720 candles: topp 130, siste 48 faller til 95 (>20 % under topp)
+    const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(95))];
+    const sig = strat.evaluate(input(candles, lagSession({})));
+    expect(sig.action).toBe("hold");
+    expect(sig.indicators?.regime).toBe("drawdown_paused");
+  });
+
+  it("pris innen 20 % av toppen → gate åpen", () => {
+    const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(120))];
+    const sig = strat.evaluate(input(candles, lagSession({})));
+    expect(sig.indicators?.regime).not.toBe("drawdown_paused");
+  });
+});
+
+function lagSession({ timerSiden = 10 }: { timerSiden?: number }) {
+  return {
+    open_position: {
+      side: "long" as const,
+      quantity: 1,
+      entry_price: 100,
+      entry_time: new Date(NÅ - timerSiden * 3600_000).toISOString(),
+      lots: [{
+        id: "l1", quantity: 1, entryPrice: 100,
+        timestamp: new Date(NÅ - timerSiden * 3600_000).toISOString(),
+        originalQuantity: 1,
+      }],
+    },
+    last_tick_at: null,
+    strategy_config: {},
+    current_capital_nok: 90000,
+  } as unknown as MinimalSession;
+}

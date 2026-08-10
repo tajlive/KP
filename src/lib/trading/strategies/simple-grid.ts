@@ -45,6 +45,15 @@ export const SIMPLE_GRID_DEFAULTS = {
   anchor_candles: 48,
   /** Toleranse for «nivå allerede fylt» (%) */
   level_tolerance_pct: 0.25,
+  /** Posisjons-tak: maks andel av kapital investert (60 %) — stopper
+      ubegrenset posisjonsbygging i fallende trender. Salg blokkeres aldri. */
+  max_invested_pct: 0.6,
+  /** Drawdown-gate (2026-08-10): ingen kjøp når prisen er mer enn
+      (1 − verdi) under toppen av siste slow_anchor_candles closes.
+      0.8 = maks 20 % under 30-dagers topp. Salg blokkeres aldri. */
+  dd_gate_pct: 0.8,
+  /** Tregt regime-vindu for drawdown-gate: 720 × 1h = 30 dager */
+  slow_anchor_candles: 720,
 } as const;
 
 type Lots = NonNullable<
@@ -72,11 +81,6 @@ export class SimpleGridStrategy implements StrategyEngine {
     const anker = median(ankerCandles.map((c) => c.close));
 
     const lots: Lots = session.open_position?.lots ?? [];
-    const kapital =
-      ((session as unknown as Record<string, unknown>)
-        ?.current_capital_nok as number) ??
-      (config?.capital as number) ??
-      10000;
 
     const steg = cfg.grid_step_pct / 100;
     const toleranse = cfg.level_tolerance_pct / 100;
@@ -92,6 +96,7 @@ export class SimpleGridStrategy implements StrategyEngine {
           confidence: 0.8,
           exitReason: "take_profit",
           indicators: {
+            lot_id: lot.id, // BUG-FIKS 2026-08-10: executor skal selge DENNE loten (ikke FIFO)
             grid_sell: true,
             entry_price: lot.entryPrice,
             profit_pct: Number(gevinstPct.toFixed(2)),
@@ -99,6 +104,64 @@ export class SimpleGridStrategy implements StrategyEngine {
           reason: `Prisen steg ${gevinstPct.toFixed(1)} % siden kjøpet — Piloten solgte med gevinst.`,
         };
       }
+    }
+
+    // ── Drawdown-gate: pris >20 % under 30-dagers topp → ingen kjøp ─────
+    // (2026-08-10, erstatter median-gate som var for treg i krasj.)
+    // Rolling topp faller ikke med prisen → gaten slår igjen raskt i krasj,
+    // og gjenåpner når markedet stabiliserer seg (på ethvert nivå).
+    // Salg blokkeres ALDRI. Grid kjøper kun når det verste fallet er over.
+    const tregCandles = candles.slice(-cfg.slow_anchor_candles);
+    const topp720 = Math.max(...tregCandles.map((c) => c.close));
+    if (tregCandles.length >= 48 && pris < topp720 * cfg.dd_gate_pct) {
+      return {
+        action: "hold",
+        indicators: {
+          regime: "drawdown_paused",
+          rolling_high: Number(topp720.toFixed(8)),
+          current_price: pris,
+          dd_from_high_pct: Number(((1 - pris / topp720) * 100).toFixed(1)),
+        },
+        reason: `Prisen er over ${Math.round((1 - cfg.dd_gate_pct) * 100)} % under toppen fra siste måned — Piloten pauser kjøp til fallet har stanset seg. Pengene dine er trygge.`,
+      };
+    }
+
+    // ── Grid-pause: pris under HELE rutenettet → ingen kjøp (kanonisk
+    // grid-oppførsel: Pionex/3Commas pauser når prisen forlater rangen.
+    // Forhindrer «catch a falling knife» i vedvarende trender.) ──────────
+    const gridBunn = anker * (1 - cfg.grid_levels * steg);
+    if (pris < gridBunn && lots.length > 0) {
+      return {
+        action: "hold",
+        indicators: {
+          paused_below_grid: true,
+          grid_lower: Number(gridBunn.toFixed(8)),
+          current_price: pris,
+        },
+        reason: `Prisen har falt under hele rutenettet — Piloten venter til den er tilbake på normalnivå før nye kjøp. Pengene dine er trygge.`,
+      };
+    }
+
+    // ── Posisjons-tak: blokker kjøp når investert ≥ max_invested_pct ─────
+    const cash =
+      ((session as unknown as Record<string, unknown>)
+        ?.current_capital_nok as number) ??
+      (config?.capital as number) ??
+      10000;
+    const investertVerdi = lots.reduce((s, l) => s + l.quantity * pris, 0);
+    const egenkapital = cash + investertVerdi;
+    const overTaket =
+      egenkapital > 0 && investertVerdi / egenkapital >= cfg.max_invested_pct;
+
+    if (overTaket && lots.length > 0) {
+      return {
+        action: "hold",
+        indicators: {
+          blocked_by: "max_invested",
+          invested_pct: Number(((investertVerdi / egenkapital) * 100).toFixed(1)),
+        },
+        reason: `Piloten har investert maksimalt tillatt (${cfg.max_invested_pct * 100} %). Venter på salg før nye kjøp.`,
+      };
     }
 
     // ── 2. GRID-KJØP: dypeste utløste, ikke-fylte nivå ───────────────────
@@ -110,8 +173,14 @@ export class SimpleGridStrategy implements StrategyEngine {
 
     if (dypesteNivå > 0) {
       const nivåPris = anker * (1 - dypesteNivå * steg);
+      // BUG-FIKS #3 (2026-08-10): nivå er «fylt» hvis det finnes en lot i
+      // båndet [nivå − steg, nivå + toleranse]. Slippage flytter fyll-prisen
+      // under nivå-prisen, så ren punkt-toleranse ga DUPLET-kjøp på samme
+      // nivå for hver candle (observert: 5× kjøp på samme dip).
+      const båndBunn = nivåPris * (1 - steg);
+      const båndTopp = nivåPris * (1 + toleranse);
       const alleredeFylt = lots.some(
-        (lot) => Math.abs(lot.entryPrice - nivåPris) <= nivåPris * toleranse,
+        (lot) => lot.entryPrice >= båndBunn && lot.entryPrice <= båndTopp,
       );
       if (!alleredeFylt) {
         const fallPct = ((anker - pris) / anker) * 100;

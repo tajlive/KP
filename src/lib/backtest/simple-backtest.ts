@@ -303,25 +303,58 @@ export function runSimpleBacktest(options: SimpleBacktestOptions): SimpleBacktes
         quoteCurrency,
       });
       if (fill.success) {
-        const sellResult = sellFIFO(ledger, selgKvantum, fill.executedPrice);
-        ledger = { ...ledger, lots: sellResult.remainingLots };
+        // BUG-FIKS 2026-08-10: selg DEN loten strategien valgte (lot_id) —
+        // ikke eldste FIFO. Strategien selger kun profitable lots; FIFO
+        // realiserte tap på gamle undervanns-lots og ga falsk win rate.
+        const ønsketLotId = signal.indicators?.lot_id as string | undefined;
+        const valgtLot = ønsketLotId
+          ? ledger.lots.find((l) => l.id === ønsketLotId)
+          : undefined;
 
-        // Fordel gebyret pro-rata på lot-matches for netto realisert PnL per lot
-        const totalMatch = sellResult.lotMatches.reduce((s, m) => s + m.matchedQuantity, 0);
-        let nettoRealisert = 0;
-        for (const match of sellResult.lotMatches) {
-          const gebyrAndel = totalMatch > 0 ? (match.matchedQuantity / totalMatch) * fill.fee : 0;
-          const netto = match.pnl - gebyrAndel;
-          nettoRealisert += netto;
+        if (valgtLot) {
+          const solgtKvantum = Math.min(fill.executedQuantity, valgtLot.quantity);
+          const bruttoPnl = (fill.executedPrice - valgtLot.entryPrice) * solgtKvantum;
+          const netto = bruttoPnl - fill.fee;
           lukkedeLots.push({ pnl: netto });
-        }
 
-        cash += fill.totalCost - fill.fee;
-        trades.push({
-          side: "sell", time: candle.time, price: fill.executedPrice,
-          quantity: fill.executedQuantity, fee: fill.fee,
-          realizedPnl: nettoRealisert, reason: signal.reason,
-        });
+          ledger = {
+            ...ledger,
+            lots: ledger.lots
+              .map((l) =>
+                l.id === valgtLot.id
+                  ? { ...l, quantity: l.quantity - solgtKvantum }
+                  : l,
+              )
+              .filter((l) => l.quantity > 1e-10),
+          };
+
+          cash += fill.totalCost - fill.fee;
+          trades.push({
+            side: "sell", time: candle.time, price: fill.executedPrice,
+            quantity: solgtKvantum, fee: fill.fee,
+            realizedPnl: netto, reason: signal.reason,
+          });
+        } else {
+          // Fallback for strategier uten lot_id: FIFO (uendret oppførsel)
+          const sellResult = sellFIFO(ledger, selgKvantum, fill.executedPrice);
+          ledger = { ...ledger, lots: sellResult.remainingLots };
+
+          const totalMatch = sellResult.lotMatches.reduce((s, m) => s + m.matchedQuantity, 0);
+          let nettoRealisert = 0;
+          for (const match of sellResult.lotMatches) {
+            const gebyrAndel = totalMatch > 0 ? (match.matchedQuantity / totalMatch) * fill.fee : 0;
+            const netto = match.pnl - gebyrAndel;
+            nettoRealisert += netto;
+            lukkedeLots.push({ pnl: netto });
+          }
+
+          cash += fill.totalCost - fill.fee;
+          trades.push({
+            side: "sell", time: candle.time, price: fill.executedPrice,
+            quantity: fill.executedQuantity, fee: fill.fee,
+            realizedPnl: nettoRealisert, reason: signal.reason,
+          });
+        }
       }
     }
 
@@ -337,6 +370,10 @@ export function runSimpleBacktest(options: SimpleBacktestOptions): SimpleBacktes
             lots: ledger.lots,
           }
         : null;
+
+    // BUG-FIKS #2 (2026-08-10): speil tick — current_capital_nok er CASH etter
+    // handler. Uten dette regnet posisjons-taket mot konstant startkapital.
+    (session as unknown as Record<string, unknown>).current_capital_nok = cash;
 
     const nyEquity = cash + nyKvantum * pris;
     equityCurve.push({ time: candle.time, equity: nyEquity });
