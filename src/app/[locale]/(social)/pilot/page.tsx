@@ -1,18 +1,19 @@
-import { redirect } from "next/navigation";
+import PilotDashboard from "@/features/pilot/PilotDashboard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Pilot — Folkets AI-pilot",
+  title: "Din Pilot — Klarpakke",
   description:
-    "Din personlige AI-trader — automatisk analyse og intelligente signaler. Start gratis med 100 000 kr i lekepenger.",
+    "Én knapp. Én pilot. Null innstillinger. Piloten handler med lekepenger og forklarer hvert steg på norsk.",
 };
 
 /**
- * Pilot er nå en integrert del av Trade-siden.
- * Redirecter til /trade?first=1 for enklere brukeropplevelse.
+ * /pilot — Variant B «Dagboken» (Tom-valgt design 2026-08-10).
+ * Erstatter redirecten til /trade. Utloggede får login/register-prompt
+ * i komponenten (401-håndtering), innloggede får ekte dashboard.
  */
 export default function PilotPage() {
-  redirect("/trade?first=1");
+  return <PilotDashboard />;
 }
