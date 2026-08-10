@@ -91,7 +91,7 @@ describe("SimpleGridStrategy — COMBO", () => {
     expect(sig.action).toBe("hold");
   });
 
-  it("E3: lot på grid-nivå → selg HALVPARTEN (take_profit_partial), resten løper", () => {
+  it("E3: lot på grid-nivå → selg 15 % (take_profit_partial), 85 % løper videre", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(102)];
     const session = sessionMed({
       capital: 100000,
@@ -103,7 +103,7 @@ describe("SimpleGridStrategy — COMBO", () => {
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("sell");
-    expect(sig.quantity).toBe(0.5); // 50 % av originalQuantity
+    expect(sig.quantity).toBeCloseTo(0.15, 10); // 15 % av originalQuantity (robust topp fra sweep)
     expect(sig.exitReason).toBe("take_profit_partial");
     expect(sig.indicators?.lot_id).toBe("l1");
   });

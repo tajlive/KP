@@ -240,6 +240,7 @@ export function getDefaultStrategyDashboardConfigs(): Record<
       dd_gate_pct: 0.8,
       slow_anchor_candles: 720,
       liquidate_on_range_exit: true,
+      partial_sell_pct: 0.15,
     },
     grid_bot: {
       upperPrice: 70000,

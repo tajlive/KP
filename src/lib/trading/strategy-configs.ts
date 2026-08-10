@@ -394,6 +394,7 @@ export function getStrategyConfig(
         dd_gate_pct: 0.8,
         slow_anchor_candles: 720,
         liquidate_on_range_exit: true,
+        partial_sell_pct: 0.15,
       },
       // Mekanisk strategi — Dark Fleet skal IKKE overstyre
       darkFleet: { enabled: false },

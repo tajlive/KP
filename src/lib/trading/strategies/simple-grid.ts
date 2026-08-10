@@ -76,7 +76,8 @@ export const SIMPLE_GRID_DEFAULTS = {
       la resten («runner») løpe med breakeven-gulv. Fixed TP amputerer
       høyrehalen (+380 %/+918 %-rallyene); runneren fanger den.
       «Fixed take profits destroy returns» — trading-agent-prinsipp #2. */
-  partial_sell_pct: 0.5,
+  partial_sell_pct: 0.15, // robust topp i sweep 2026-08-10 (kurve flater ut
+      // 0.25→0.05; 0.15 valgt i flat sone, ikke eksakt-maks-fellen)
 } as const;
 
 type Lots = NonNullable<

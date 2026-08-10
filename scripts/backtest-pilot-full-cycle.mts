@@ -6,6 +6,7 @@
  *
  * Kjør: npx tsx scripts/backtest-pilot-full-cycle.mts [SOL-USDT] [startÅr]
  */
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { runSimpleBacktest, formatBacktestBevis } from "../src/lib/backtest/simple-backtest";
 import type { Candle } from "../src/lib/trading/strategies/types";
 
@@ -21,7 +22,18 @@ interface OkxSvar {
   data: [string, string, string, string, string, string, string, string, string][];
 }
 
+const CACHE_DIR = ".cache/backtest";
+function cacheFil(inst: string): string {
+  return `${CACHE_DIR}/${inst.replace("/", "-")}-1H.json`;
+}
+
 async function hentFullHistorikk(): Promise<Candle[]> {
+  const fil = cacheFil(INST);
+  if (existsSync(fil)) {
+    console.log("(cache)");
+    const alle = JSON.parse(readFileSync(fil, "utf8")) as Candle[];
+    return alle.filter((c) => c.time >= START_TS); // START_TS gjelder også ved cache
+  }
   const alle = new Map<number, Candle>();
   let after = Date.now();
   let runder = 0;
@@ -52,7 +64,10 @@ async function hentFullHistorikk(): Promise<Candle[]> {
     await sleep(PACING_MS);
   }
 
-  return [...alle.values()].sort((a, b) => a.time - b.time);
+  const sortert = [...alle.values()].sort((a, b) => a.time - b.time);
+  mkdirSync(CACHE_DIR, { recursive: true });
+  writeFileSync(cacheFil(INST), JSON.stringify(sortert));
+  return sortert;
 }
 
 async function main() {
@@ -71,7 +86,7 @@ async function main() {
   console.log("──────────┼──────────┼────────────┼─────────┼─────────┼──────");
   for (const [år, lys] of [...perÅr.entries()].sort()) {
     if (lys.length < 100) continue;
-    const res = runSimpleBacktest({ candles: lys, initialCapital: 10000 });
+    const res = runSimpleBacktest({ candles: lys, initialCapital: 10000, ...(process.argv[5] ? { config: { partial_sell_pct: Number(process.argv[5]) } } : {}) });
     const hold = (lys[lys.length - 1].close / lys[0].close - 1) * 100;
     const m = res.metrics;
     console.log(
@@ -80,7 +95,7 @@ async function main() {
   }
 
   // HELE perioden
-  const res = runSimpleBacktest({ candles, initialCapital: 10000, nTrials: Number(process.argv[4]) || 1 });
+  const res = runSimpleBacktest({ candles, initialCapital: 10000, nTrials: Number(process.argv[4]) || 1, ...(process.argv[5] ? { config: { partial_sell_pct: Number(process.argv[5]) } } : {}) });
   const m = res.metrics;
   const hold = (candles[candles.length - 1].close / candles[0].close - 1) * 100;
   console.log("──────────┴──────────┴────────────┴─────────┴─────────┴──────");
