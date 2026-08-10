@@ -122,11 +122,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Multi-symbol: én sesjon per valgt valuta (tick = 1 sesjon : 1 trading_pair).
-    // Hvis symbols ikke er valgt, fallback til standard (BTCUSDT for auto).
+    // Default per mode (2026-08-11): pilot → SOLUSDT (COMBO E3 er mappet optimal
+    // på SOL — høy volatilitet + fete haler), auto → BTCUSDT (uendret).
     const tradeSymbols =
       symbols && symbols.length > 0
         ? symbols
-        : [mode === "auto" ? "BTCUSDT" : "BTCUSDT"];
+        : [mode === "pilot" ? "SOLUSDT" : "BTCUSDT"];
 
     // Del valgt kapital jevnt på antall symboler.
     const capitalPerSymbol = Math.round(capital / tradeSymbols.length);
