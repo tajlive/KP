@@ -25,7 +25,8 @@ const eventSchema = z.object({
 });
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  const serverClient = await createServerClient();
+  const response = NextResponse.next();
+  const serverClient = createServerClient(request, response);
   const {
     data: { user },
     error: authError,
