@@ -51,11 +51,12 @@ test.describe("Landing smoke — post-deploy verifisering", () => {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(2000);
 
-    // Sjekk at nøkkelseksjoner har innhold
+    // Sjekk at nøkkelseksjoner har innhold (Variant C «Beviset», 2026-08-10)
     const checks = [
       { name: "Hero", text: "Klarpakke" },
       { name: "CTA", text: "Start gratis" },
-      { name: "Trade-modes-seksjon", text: "En konto \u2014 tre m\u00e5ter \u00e5 trade p\u00e5" },
+      { name: "Løfte-seksjon", text: "Dette lover vi" },
+      { name: "FAQ", text: "Spørsmål og svar" },
       { name: "Footer", selector: "footer" },
     ];
 
