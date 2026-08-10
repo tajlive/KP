@@ -53,7 +53,7 @@ const config: PlaywrightTestConfig = {
       use: {
         browserName: "chromium",
         viewport: { width: 1280, height: 720 },
-        storageState: "e2e/.auth/user.json",
+        storageState: ".auth/user.json",
       },
     },
     {
