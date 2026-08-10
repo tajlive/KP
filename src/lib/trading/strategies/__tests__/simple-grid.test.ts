@@ -207,10 +207,19 @@ describe("Grid-pause under hele rutenettet (kanonisk range-exit)", () => {
 describe("Drawdown-gate (krasj-pause)", () => {
   const strat = new SimpleGridStrategy();
 
-  it("pris >20 % under 30-dagers topp → ingen kjøp", () => {
+  it("pris >20 % under topp → «slipp posene»: selger ALT (range_exit)", () => {
     // 720 candles: topp 130, siste 48 faller til 95 (>20 % under topp)
     const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(95))];
     const sig = strat.evaluate(input(candles, lagSession({})));
+    expect(sig.action).toBe("sell");
+    expect(sig.exitReason).toBe("range_exit");
+    expect(sig.indicators?.regime).toBe("range_exit_liquidation");
+    expect(sig.quantity).toBe(1); // hele posisjonen (1 lot × 1)
+  });
+
+  it("liquidate_on_range_exit: false → bare pause (aldri tvunget salg)", () => {
+    const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(95))];
+    const sig = strat.evaluate(input(candles, lagSession({}), { liquidate_on_range_exit: false }));
     expect(sig.action).toBe("hold");
     expect(sig.indicators?.regime).toBe("drawdown_paused");
   });

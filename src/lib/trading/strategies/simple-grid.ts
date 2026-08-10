@@ -54,6 +54,11 @@ export const SIMPLE_GRID_DEFAULTS = {
   dd_gate_pct: 0.8,
   /** Tregt regime-vindu for drawdown-gate: 720 × 1h = 30 dager */
   slow_anchor_candles: 720,
+  /** «Slipp posene» (2026-08-10, Toms krav): ved drawdown-gate SELGES
+      hele posisjonen kontrollert — liten styrt tap nå, heller enn −40 %
+      undervanns-poser i månedsvis. Piloten kjøper inn igjen billigere
+      når markedet stabiliserer seg (gaten åpner automatisk). */
+  liquidate_on_range_exit: true,
 } as const;
 
 type Lots = NonNullable<
@@ -114,6 +119,23 @@ export class SimpleGridStrategy implements StrategyEngine {
     const tregCandles = candles.slice(-cfg.slow_anchor_candles);
     const topp720 = Math.max(...tregCandles.map((c) => c.close));
     if (tregCandles.length >= 48 && pris < topp720 * cfg.dd_gate_pct) {
+      // «Slipp posene»: selg ALT kontrollert ved krasj (Toms krav 2026-08-10).
+      // Liten styrt tap nå > −40 % undervanns-poser i månedsvis.
+      if (cfg.liquidate_on_range_exit && lots.length > 0) {
+        const totalKvantum = lots.reduce((s, l) => s + l.quantity, 0);
+        return {
+          action: "sell",
+          quantity: totalKvantum,
+          confidence: 0.9,
+          exitReason: "range_exit",
+          indicators: {
+            regime: "range_exit_liquidation",
+            rolling_high: Number(topp720.toFixed(8)),
+            dd_from_high_pct: Number(((1 - pris / topp720) * 100).toFixed(1)),
+          },
+          reason: `Markedet har falt over ${Math.round((1 - cfg.dd_gate_pct) * 100)} % fra toppen — Piloten solgte for å beskytte pengene dine, og kjøper inn igjen billigere når det roer seg.`,
+        };
+      }
       return {
         action: "hold",
         indicators: {

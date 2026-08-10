@@ -89,6 +89,7 @@ async function main() {
     initialCapital: KAPITAL_USDT,
     nTrials: 1,
     ...(anchorOverride ? { config: { anchor_candles: anchorOverride } } : {}),
+    ...(process.argv[5] ? { config: { ...(anchorOverride ? { anchor_candles: anchorOverride } : {}), dd_gate_pct: Number(process.argv[5]) } } : {}),
   });
   if (anchorOverride) console.log(`Anchor-override: ${anchorOverride} candles\n`);
 

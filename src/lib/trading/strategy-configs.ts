@@ -390,6 +390,10 @@ export function getStrategyConfig(
         dca_amount_pct: 0.02,
         anchor_candles: 48,
         level_tolerance_pct: 0.25,
+        max_invested_pct: 0.6,
+        dd_gate_pct: 0.8,
+        slow_anchor_candles: 720,
+        liquidate_on_range_exit: true,
       },
       // Mekanisk strategi — Dark Fleet skal IKKE overstyre
       darkFleet: { enabled: false },
