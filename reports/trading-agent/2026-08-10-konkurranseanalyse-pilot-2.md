@@ -101,3 +101,39 @@ Konkurrentenes adaptiv/smart-evidens (dcabot, mai 2024–mai 2026 — vindu med 
 - Ukentlig auto-backtest (når den bygges) aktiverer E1/E2 først når forward-data
   beviser dem — ikke konkurrentblogg.
 - Script: `scripts/backtest-pilot-variants.mts` (rekjørbart når som helst).
+
+---
+
+## TILLEGG 2: Full-syklus + symbol-sweep + OOS (2026-08-10 kveld, 44.8k candles/symbol, OKX)
+
+### Symbol-sweep full syklus 2021→2026 (E3 asymmetrisk exit)
+
+| Symbol | Pilot | Buy-and-hold | DSR(1) | PF | Dom |
+|---|---|---|---|---|---|
+| **SOL** | **+280,3 %** | +116,0 % | 0,98 ✓ | 1,37 ✓ | Suveren vinner |
+| AVAX | +62,9 % | −45,5 % | 0,85 | 1,13 | God nr. 2 |
+| DOGE | +10,1 % | −72,5 % | 0,69 | 1,05 | Slår markedet |
+| BTC | −7,8 % | +83,8 % | 0,56 | 0,94 | Underperform |
+| LINK | −30,6 % | −57,0 % | 0,46 | 0,85 | Slår markedet |
+| ADA | −47,3 % | −85,9 % | 0,31 | 0,79 | Slår markedet |
+
+**Pilot slår buy-and-hold på 5 av 6 symboler.** SOL er suverent beste hjem
+(høyest volatilitet + fettest haler = grid-frekvens + runner-fangst).
+
+### Harde gates — status for beste oppsett (E3 på SOL)
+
+| Gate | Resultat | Status |
+|---|---|---|
+| PF full syklus ≥ 1,3 | 1,37 | ✓ |
+| DSR ≥ 0,95 (nTrials=1) | 0,98 | ✓ |
+| **DSR korrigert (nTrials=7 symboler)** | **0,75** | **✗** |
+| **OOS walk-forward PF ≥ 1,1 (2025–26)** | **0,51** | **✗** |
+| MaxDD ≤ 15 % | 53,8 % | ✗ |
+| ≥100 lukkede | 7 396 | ✓ |
+| Slår buy-and-hold | overalt (+164pp full, +28pp OOS) | ✓ |
+
+**DOM: Strategien er genuin (slår markedet overalt, vinner hvert grid-salg),
+men passerer IKKE alle gatene i gjeldende regime — fordi siste 1,5 år er
+historisk bjørn for alle alts. Ingen live-påstand, ingen bevist-stempel.
+Paper-launch er trygt og riktig. Gatene åpner seg i et normalt/ranging-vindu —
+ukentlig auto-backtest (Hermes-oppgave) detekterer det automatisk.**

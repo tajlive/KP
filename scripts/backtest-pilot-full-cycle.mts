@@ -80,7 +80,7 @@ async function main() {
   }
 
   // HELE perioden
-  const res = runSimpleBacktest({ candles, initialCapital: 10000, nTrials: 1 });
+  const res = runSimpleBacktest({ candles, initialCapital: 10000, nTrials: Number(process.argv[4]) || 1 });
   const m = res.metrics;
   const hold = (candles[candles.length - 1].close / candles[0].close - 1) * 100;
   console.log("──────────┴──────────┴────────────┴─────────┴─────────┴──────");
