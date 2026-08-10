@@ -1,0 +1,37 @@
+# Ukentlig Pilot-backtest → backtest-bevis.json (landingens «Beviset»-seksjon)
+# Kjører 90d SOL-backtest med produksjons-defaults og commiter kun hvis
+# tallet endret seg. Ingen secrets — OKX public market data.
+name: Pilot ukentlig backtest
+
+on:
+  schedule:
+    - cron: "47 6 * * 0" # søndager 06:47 UTC (off-peak)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Kjør 90d SOL-backtest og skriv bevis-JSON
+        run: npx tsx scripts/backtest-pilot-weekly.mts
+
+      - name: Commit hvis endret
+        run: |
+          git config user.name "klarpakke-backtest-bot"
+          git config user.email "bot@klarpakke.no"
+          git add src/data/backtest-bevis.json
+          git diff --cached --quiet || git commit -m "chore(backtest): ukentlig Pilot-bevis $(date -u +%F)"
+          git push

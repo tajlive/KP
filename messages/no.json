@@ -2529,7 +2529,8 @@
         "m2Desc": "Vi trekker fra handelsgebyr og slippage i regnestykket — slik det ville vært i virkeligheten.",
         "m3Title": "Alt vises",
         "m3Desc": "Også periodene hvor strategien gikk på tap. Du får hele bildet.",
-        "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning."
+        "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning.",
+        "holdLabel": "Markedet (kjøp og hold) i samme periode"
       },
       "steg": {
         "title": "Slik kommer du i gang",

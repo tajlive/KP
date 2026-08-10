@@ -23,26 +23,27 @@ export function isGridDefaultRouting(
 
 /**
  * strategy_id for trading_sessions-insertet.
- * gridDefault=true → "grid" for begge modes.
+ * gridDefault=true → pilot → "simple_grid" (COMBO E3, backtest-bevis 2026-08-10),
+ *                     auto  → "grid" (uendret for eksisterende auto-brukere).
  * gridDefault=false → gammel oppførsel: auto → multi_signal, pilot → cryptopilot.
  */
 export function resolveDefaultStrategyId(
   mode: PilotSessionMode,
   gridDefault: boolean,
 ): string {
-  if (gridDefault) return "grid";
+  if (gridDefault) return mode === "pilot" ? "simple_grid" : "grid";
   return mode === "auto" ? "multi_signal" : "cryptopilot";
 }
 
 /**
  * strategy i auto_trading_configs-upserten.
- * gridDefault=true → "grid" for begge modes.
+ * gridDefault=true → pilot → "simple_grid", auto → "grid".
  * gridDefault=false → gammel oppførsel: auto → multi_signal, pilot → grid.
  */
 export function resolveAutoConfigStrategy(
   mode: PilotSessionMode,
   gridDefault: boolean,
 ): string {
-  if (gridDefault) return "grid";
+  if (gridDefault) return mode === "pilot" ? "simple_grid" : "grid";
   return mode === "pilot" ? "grid" : "multi_signal";
 }

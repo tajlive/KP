@@ -62,6 +62,13 @@ describe("BacktestBevisSection — fakta-regelen", () => {
     expect(screen.getByText("m2Title")).toBeTruthy();
     expect(screen.getByText("m3Title")).toBeTruthy();
   });
+
+  it("viser hold-sammenligning når holdBelop er gitt", () => {
+    render(<BacktestBevisSection resultat="−1 231 kr" holdBelop="−1 924 kr" />);
+    expect(screen.getByText("−1 231 kr")).toBeTruthy();
+    expect(screen.getByText(/holdLabel/)).toBeTruthy();
+    expect(screen.getByText("−1 924 kr")).toBeTruthy();
+  });
 });
 
 describe("SlikVirkerDetSection", () => {

@@ -2529,7 +2529,8 @@
         "m2Desc": "We deduct trading fees and slippage — just like real life.",
         "m3Title": "Everything shown",
         "m3Desc": "Including the periods where the strategy lost. You get the full picture.",
-        "disclaimer": "Past performance is no guarantee of future results."
+        "disclaimer": "Past performance is no guarantee of future results.",
+        "holdLabel": "Markedet (kjøp og hold) i samme periode"
       },
       "steg": {
         "title": "How to get started",

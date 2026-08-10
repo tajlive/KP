@@ -2479,7 +2479,8 @@
         "m2Desc": "我们扣除交易手续费和滑点——就像真实情况一样。",
         "m3Title": "全部展示",
         "m3Desc": "包括策略亏损的时期。您看到的是完整画面。",
-        "disclaimer": "历史回报并不代表未来表现。"
+        "disclaimer": "历史回报并不代表未来表现。",
+        "holdLabel": "Markedet (kjøp og hold) i samme periode"
       },
       "steg": {
         "title": "如何开始",

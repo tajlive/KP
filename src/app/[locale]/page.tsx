@@ -6,6 +6,7 @@ import SlikVirkerDetSection from "@/components/landing/SlikVirkerDetSection";
 import FounderSection from "@/components/landing/FounderSection";
 import LandingFaq from "@/components/landing/LandingFaq";
 import { generateMarketingMetadata } from "@/shared/ui/marketing";
+import backtestBevis from "@/data/backtest-bevis.json";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,10 +47,14 @@ export default async function HomePage({ params }: HomePageProps) {
       <BevisHero />
       <LofterSection />
       {/*
-        FAKTA-REGEL: BacktestBevisSection er skjult (null) inntil backtest-motoren
-        (mega-plan Oppgave 2.3) leverer reelle data. Kobles til her når API finnes.
+        Backtest-bevis med EKTE data (ukentlig GitHub Actions-cron regenererer
+        src/data/backtest-bevis.json — build-time import, edge-safe).
+        Vises uansett fortegn: «Beviset» viser også tap (metodekort m3).
       */}
-      <BacktestBevisSection resultat={null} />
+      <BacktestBevisSection
+        resultat={backtestBevis.resultat}
+        holdBelop={backtestBevis.holdBelop}
+      />
       <SlikVirkerDetSection />
       <FounderSection />
       <LandingFaq />
