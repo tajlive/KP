@@ -10,7 +10,7 @@ import {
   isDashboardSidebarLinkActive,
 } from "@/lib/navigation/config";
 import { UserMenu } from "./UserMenu";
-import { useAuth } from "@/lib/auth/new/AuthContext";
+import { useServerVerifiedUser } from "@/lib/auth/use-server-verified-user";
 import { useActiveTraderSessions } from "./use-active-trader-sessions";
 
 function TopNavLink({
@@ -43,8 +43,7 @@ function ActiveTraderPill({ locale }: { locale: string }) {
   if (activeCount === 0) return null;
 
   const hasLive = sessions.some((session) => session.mode === "live");
-  const label =
-    locale === "en" ? "Auto-trading active" : "Auto-handel aktiv";
+  const label = locale === "en" ? "Auto-trading active" : "Auto-handel aktiv";
   const countLabel = activeCount > 1 ? ` (${activeCount})` : "";
 
   return (
@@ -71,7 +70,10 @@ function ActiveTraderPill({ locale }: { locale: string }) {
         />
       </span>
       <Activity className="h-3.5 w-3.5" aria-hidden />
-      <span>{label}{countLabel}</span>
+      <span>
+        {label}
+        {countLabel}
+      </span>
     </Link>
   );
 }
@@ -80,7 +82,7 @@ export function TopNav() {
   const locale = useLocale();
   const pathname = usePathname() ?? "/";
   const t = useTranslations("dashboard.sidebar");
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useServerVerifiedUser();
   const isAuthenticated = !!user;
 
   // (user)-gruppen er beskyttet av requireAuth server-side — en bruker som
@@ -93,7 +95,10 @@ export function TopNav() {
     return (
       <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
-          <Link href={hrefWithLocale(locale, "/dashboard")} className="shrink-0">
+          <Link
+            href={hrefWithLocale(locale, "/dashboard")}
+            className="shrink-0"
+          >
             <span className="text-lg font-bold text-kp-text-primary sm:text-xl">
               Klarpakke
             </span>
@@ -108,10 +113,7 @@ export function TopNav() {
     return (
       <header className="sticky top-0 z-30 border-b border-kp-border bg-kp-bg-secondary/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
-          <Link
-            href={hrefWithLocale(locale, "/")}
-            className="shrink-0"
-          >
+          <Link href={hrefWithLocale(locale, "/")} className="shrink-0">
             <span className="text-lg font-bold text-kp-text-primary sm:text-xl">
               Klarpakke
             </span>

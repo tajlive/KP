@@ -1,13 +1,14 @@
 "use client";
 
 import { useAuth } from "@/lib/auth/new/AuthContext";
+import { useServerVerifiedUser } from "@/lib/auth/use-server-verified-user";
 import { Button } from "@/shared/ui/button";
 import { BRAND } from "@/lib/design/tokens";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { NavigationData } from "@/lib/navigation/config";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 
@@ -25,31 +26,11 @@ const AUTH_MARKETING_PATHS = new Set([
 
 export function NavAuthState({ navData }: NavAuthStateProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { user: contextUser, loading, signOut } = useAuth();
-  // 2026-08-10 (QA P1): Sesjonen lever i HttpOnly-cookies, så klient-
-  // AuthContext er ofte null i prod selv for innloggede brukere — headeren
-  // viste da «Logg inn / Start gratis» på INNLOGGEDE sider. Server-
-  // verifisert fallback via /api/auth/me (samme mønster som profilsiden).
-  const [serverUser, setServerUser] = useState<{
-    id: string;
-    email: string;
-  } | null>(null);
-  useEffect(() => {
-    if (loading || contextUser) return;
-    let cancelled = false;
-    fetch("/api/auth/me", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data?.user) setServerUser(data.user);
-      })
-      .catch(() => {
-        /* 401/nettverksfeil → forbli gjestevisning */
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [loading, contextUser]);
-  const user = contextUser ?? serverUser;
+  const { signOut } = useAuth();
+  // 2026-08-10 (QA P1): server-verifisert fallback — klient-AuthContext er
+  // ofte null i prod (HttpOnly-cookie-sesjon), så headeren viste gjeste-CTA
+  // til innloggede brukere.
+  const { user } = useServerVerifiedUser();
   const locale = useLocale();
   const router = useRouter();
   const t = useTranslations("navigation");
