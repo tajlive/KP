@@ -17,7 +17,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
-export const runtime = "edge";
+export const runtime = "nodejs"; // @supabase/supabase-js krever process.version — krasjer i edge (500 i prod)
 
 const OKX_BASE = "https://eea.okx.com";
 

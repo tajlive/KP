@@ -22,7 +22,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-export const runtime = "edge";
+export const runtime = "nodejs"; // @supabase/supabase-js krever process.version — krasjer i edge (500 i prod)
 
 const TRELLO_LIST_VARSLE = "6a77a7b720d121385c010083";
 

@@ -92,6 +92,7 @@ export const cspMiddleware: MiddlewareFn = (
       "https://www.googletagmanager.com",
       "https://www.google-analytics.com",
       "https://challenges.cloudflare.com",
+      "https://static.cloudflareinsights.com",
     ],
     "style-src": [
       "'self'",

@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import { KrakenClient } from "@/lib/exchanges/kraken/client";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
 
-export const runtime = "edge";
+export const runtime = "nodejs"; // @supabase/supabase-js krever process.version — krasjer i edge (500 i prod)
 export const dynamic = "force-dynamic";
 
 function getSupabaseAdmin() {
