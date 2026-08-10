@@ -27,32 +27,28 @@ export function useCockpitUrlSync(): UseCockpitUrlSyncResult {
 
   const tab: CockpitTab = useMemo(() => {
     const value = searchParams.get("tab");
-    return value === "trades" || value === "sessions" || value === "analysis" ? value : DEFAULT_TAB;
+    return value === "trades" || value === "sessions" || value === "analysis"
+      ? value
+      : DEFAULT_TAB;
   }, [searchParams]);
 
-  const hasModeParam = useMemo(
-    () => searchParams.has("mode"),
-    [searchParams],
-  );
+  const hasModeParam = useMemo(() => searchParams.has("mode"), [searchParams]);
 
-  const hasTabParam = useMemo(
-    () => searchParams.has("tab"),
-    [searchParams],
-  );
+  const hasTabParam = useMemo(() => searchParams.has("tab"), [searchParams]);
 
   const updateUrl = useCallback(
     (next: Partial<{ mode: CockpitMode; tab: CockpitTab }>) => {
       const params = new URLSearchParams(searchParams.toString());
 
-      if (next.mode === DEFAULT_MODE) {
-        params.delete("mode");
-      } else if (next.mode) {
+      // 2026-08-10 (QA P1): Sett ALLTID eksplisitte parametre. Tidligere ble
+      // standardverdier slettet fra URL-en — da kunne ikke URL-sync skille
+      // «ingen param» (behold server-modus fra profilen) fra «bruker valgte
+      // paper», og badge viste Lekepenger mens dataene var live.
+      if (next.mode) {
         params.set("mode", next.mode);
       }
 
-      if (next.tab === DEFAULT_TAB) {
-        params.delete("tab");
-      } else if (next.tab) {
+      if (next.tab) {
         params.set("tab", next.tab);
       }
 

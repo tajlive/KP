@@ -6,7 +6,6 @@ import Link from "next/link";
 import { AlertTriangle, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Switch } from "@/shared/ui/switch";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
@@ -92,7 +91,10 @@ export function CockpitHeader({
     }
     const minutesSince = (Date.now() - tickTime) / 1000 / 60;
     if (minutesSince > 15) {
-      return { variant: "danger" as const, label: t("cockpit.marketData.stale") };
+      return {
+        variant: "danger" as const,
+        label: t("cockpit.marketData.stale"),
+      };
     }
     if (minutesSince > 5) {
       return {
@@ -165,34 +167,49 @@ export function CockpitHeader({
 
         <TooltipProvider delayDuration={100}>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-medium text-kp-text-secondary">
-              {t("cockpit.mode.label", {
-                mode: isLive
-                  ? t("cockpit.mode.live")
-                  : t("cockpit.mode.paper"),
-              })}
-            </span>
-
-            <div className="flex items-center gap-3">
-              <span
+            {/* 2026-08-10: Segmentert modusvelger erstatter bryteren — to
+                tydelige 48px-knapper («Lekepenger» / «Ekte penger»). Den gamle
+                bryteren med «Papir short/Live short»-etiketter var uforståelig
+                for målgruppen («short» betyr noe helt annet i trading).
+                Live-klikk åpner samme bekreftelsesdialog som før. */}
+            <div
+              role="group"
+              aria-label={t("toggleAria")}
+              className="flex rounded-xl border border-kp-border bg-kp-bg-card p-1"
+              data-testid="mode-toggle"
+            >
+              <button
+                type="button"
+                onClick={() => handleSwitchChange(false)}
+                aria-pressed={!isLive}
+                data-testid="mode-paper-button"
                 className={cn(
-                  "text-sm font-medium",
-                  isLive ? "text-kp-text-secondary" : "text-kp-text-primary",
+                  "min-h-[48px] rounded-lg px-4 text-sm font-semibold transition-colors",
+                  !isLive
+                    ? "bg-[#0052ff] text-white shadow-md"
+                    : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary",
                 )}
               >
-                {t("cockpit.mode.paperShort")}
-              </span>
-
+                🎮 {t("cockpit.mode.paper")}
+              </button>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="inline-flex items-center">
-                    <Switch
-                      checked={isLive}
+                  <span className="inline-flex">
+                    <button
+                      type="button"
+                      onClick={() => handleSwitchChange(true)}
                       disabled={!canUseLive}
-                      onCheckedChange={handleSwitchChange}
-                      aria-label={t("toggleAria")}
-                      data-testid="mode-switch"
-                    />
+                      aria-pressed={isLive}
+                      data-testid="mode-live-button"
+                      className={cn(
+                        "min-h-[48px] rounded-lg px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                        isLive
+                          ? "bg-amber-500 text-black shadow-md"
+                          : "text-kp-text-secondary hover:bg-kp-bg-hover hover:text-kp-text-primary",
+                      )}
+                    >
+                      💰 {t("cockpit.mode.liveMoney")}
+                    </button>
                   </span>
                 </TooltipTrigger>
                 {!canUseLive && (
@@ -203,15 +220,6 @@ export function CockpitHeader({
                   </TooltipContent>
                 )}
               </Tooltip>
-
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  isLive ? "text-kp-text-primary" : "text-kp-text-secondary",
-                )}
-              >
-                {t("cockpit.mode.liveShort")}
-              </span>
             </div>
 
             {!canUseLive && (
@@ -278,7 +286,11 @@ export function CockpitHeader({
             icon={<Activity className="size-3" />}
             data-testid="market-data-pill"
           >
-            BTC: {(btcPrice.price ?? 0).toLocaleString("no-NO", { maximumFractionDigits: 0 })} kr
+            BTC:{" "}
+            {(btcPrice.price ?? 0).toLocaleString("no-NO", {
+              maximumFractionDigits: 0,
+            })}{" "}
+            kr
           </Badge>
         ) : (
           <Badge

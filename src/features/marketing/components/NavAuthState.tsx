@@ -7,7 +7,7 @@ import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { NavigationData } from "@/lib/navigation/config";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 
@@ -25,7 +25,31 @@ const AUTH_MARKETING_PATHS = new Set([
 
 export function NavAuthState({ navData }: NavAuthStateProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, loading, signOut } = useAuth();
+  const { user: contextUser, loading, signOut } = useAuth();
+  // 2026-08-10 (QA P1): Sesjonen lever i HttpOnly-cookies, så klient-
+  // AuthContext er ofte null i prod selv for innloggede brukere — headeren
+  // viste da «Logg inn / Start gratis» på INNLOGGEDE sider. Server-
+  // verifisert fallback via /api/auth/me (samme mønster som profilsiden).
+  const [serverUser, setServerUser] = useState<{
+    id: string;
+    email: string;
+  } | null>(null);
+  useEffect(() => {
+    if (loading || contextUser) return;
+    let cancelled = false;
+    fetch("/api/auth/me", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.user) setServerUser(data.user);
+      })
+      .catch(() => {
+        /* 401/nettverksfeil → forbli gjestevisning */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, contextUser]);
+  const user = contextUser ?? serverUser;
   const locale = useLocale();
   const router = useRouter();
   const t = useTranslations("navigation");
@@ -114,11 +138,7 @@ export function NavAuthState({ navData }: NavAuthStateProps) {
           className="flex h-12 w-12 items-center justify-center rounded-lg border border-kp-border bg-kp-bg-card text-kp-text-primary transition-colors duration-150 hover:bg-kp-bg-hover"
           aria-label={isOpen ? "Lukk meny" : "Åpne meny"}
         >
-          {isOpen ? (
-            <X className="w-5 h-5" />
-          ) : (
-            <Menu className="w-5 h-5" />
-          )}
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 

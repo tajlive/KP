@@ -74,7 +74,12 @@ type Action =
   | { type: "SET_FILTERS"; filters: Partial<CockpitFilters> }
   | { type: "RESET_FILTERS" }
   | { type: "FETCH_TRADES_START" }
-  | { type: "FETCH_TRADES_SUCCESS"; trades: Trade[]; nextCursor: string | null; hasMore: boolean }
+  | {
+      type: "FETCH_TRADES_SUCCESS";
+      trades: Trade[];
+      nextCursor: string | null;
+      hasMore: boolean;
+    }
   | { type: "FETCH_TRADES_ERROR"; error: CockpitError }
   | { type: "LOAD_MORE_TRADES_START" }
   | {
@@ -88,9 +93,7 @@ type Action =
   | { type: "MARK_TRADES_SEEN" }
   | { type: "REFRESH_METRICS"; metrics: DashboardMetrics };
 
-function buildSessionsCursor(
-  sessions: TradingSessionSummary[],
-): string | null {
+function buildSessionsCursor(sessions: TradingSessionSummary[]): string | null {
   if (sessions.length < SESSIONS_LIMIT) return null;
   return sessions[sessions.length - 1]?.id ?? null;
 }
@@ -269,9 +272,19 @@ export function TradingCockpitProvider({
   userId,
   locale,
 }: TradingCockpitProviderProps) {
-  const { mode: urlMode, tab: urlTab, updateUrl } = useCockpitUrlSync();
+  const {
+    mode: urlMode,
+    tab: urlTab,
+    hasModeParam,
+    hasTabParam,
+    updateUrl,
+  } = useCockpitUrlSync();
   const t = useTranslations("trading");
-  const [state, dispatch] = useReducer(reducer, initialData, createInitialState);
+  const [state, dispatch] = useReducer(
+    reducer,
+    initialData,
+    createInitialState,
+  );
 
   const currentModeRef = useRef(state.mode);
   const currentTabRef = useRef(state.activeTab);
@@ -290,11 +303,17 @@ export function TradingCockpitProvider({
   }, [state.filters]);
 
   // Sync external URL changes into state.
+  // 2026-08-10 (QA P1): Manglende URL-param = «ingen preferanse» — behold
+  // server-modus fra initialData (profilens preferred_trading_mode). Uten
+  // denne guarden tvang defaulten («paper») state tilbake mens dataene
+  // var hentet for live → badge sa Lekepenger, tallene var live.
   useEffect(() => {
-    if (urlMode !== state.mode || urlTab !== state.activeTab) {
-      dispatch({ type: "SET_URL", mode: urlMode, tab: urlTab });
+    const nextMode = hasModeParam ? urlMode : state.mode;
+    const nextTab = hasTabParam ? urlTab : state.activeTab;
+    if (nextMode !== state.mode || nextTab !== state.activeTab) {
+      dispatch({ type: "SET_URL", mode: nextMode, tab: nextTab });
     }
-  }, [urlMode, urlTab, state.mode, state.activeTab]);
+  }, [urlMode, urlTab, hasModeParam, hasTabParam, state.mode, state.activeTab]);
 
   const setMode = useCallback(
     (mode: CockpitMode) => {
@@ -347,9 +366,12 @@ export function TradingCockpitProvider({
         cursor: state.sessionsCursor,
         limit: String(SESSIONS_LIMIT),
       });
-      const res = await fetch(`/api/trading-cockpit/sessions?${params.toString()}`, {
-        cache: "no-store",
-      });
+      const res = await fetch(
+        `/api/trading-cockpit/sessions?${params.toString()}`,
+        {
+          cache: "no-store",
+        },
+      );
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || res.statusText);
@@ -382,21 +404,30 @@ export function TradingCockpitProvider({
       params.set("mode", currentModeRef.current);
       params.set("limit", String(TRADES_LIMIT));
       if (cursor) params.set("cursor", cursor);
-      if (filters.dateRange !== "all") params.set("dateRange", filters.dateRange);
+      if (filters.dateRange !== "all")
+        params.set("dateRange", filters.dateRange);
       if (filters.pair) params.set("pair", filters.pair);
-      if (filters.sessionStatus !== "all") params.set("sessionStatus", filters.sessionStatus);
+      if (filters.sessionStatus !== "all")
+        params.set("sessionStatus", filters.sessionStatus);
       if (filters.side !== "all") params.set("side", filters.side);
-      if (filters.tradeStatus !== "all") params.set("status", filters.tradeStatus);
+      if (filters.tradeStatus !== "all")
+        params.set("status", filters.tradeStatus);
       if (filters.search) params.set("search", filters.search);
 
-      const res = await fetch(`/api/trading-cockpit/trades?${params.toString()}`, {
-        cache: "no-store",
-      });
+      const res = await fetch(
+        `/api/trading-cockpit/trades?${params.toString()}`,
+        {
+          cache: "no-store",
+        },
+      );
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || res.statusText);
       }
-      return res.json() as Promise<{ trades: Trade[]; next_cursor: string | null }>;
+      return res.json() as Promise<{
+        trades: Trade[];
+        next_cursor: string | null;
+      }>;
     },
     [],
   );
@@ -594,15 +625,20 @@ export function TradingCockpitProvider({
       params.set("mode", currentModeRef.current);
       params.set("dateRange", filters.dateRange);
       if (filters.pair) params.set("pair", filters.pair);
-      if (filters.sessionStatus !== "all") params.set("sessionStatus", filters.sessionStatus);
+      if (filters.sessionStatus !== "all")
+        params.set("sessionStatus", filters.sessionStatus);
       if (filters.side !== "all") params.set("side", filters.side);
-      if (filters.tradeStatus !== "all") params.set("status", filters.tradeStatus);
+      if (filters.tradeStatus !== "all")
+        params.set("status", filters.tradeStatus);
       if (filters.search) params.set("search", filters.search);
 
       try {
-        const res = await fetch(`/api/trading-cockpit/analytics?${params.toString()}`, {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `/api/trading-cockpit/analytics?${params.toString()}`,
+          {
+            cache: "no-store",
+          },
+        );
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(body.error || res.statusText);

@@ -83,7 +83,7 @@ export const BrandedTemplates = {
     <h1>Problem med betaling ⚠️</h1>
     <p>Hei ${name}, vi klarte dessverre ikke å fornye abonnementet ditt.</p>
     <p>Dette kan skyldes et utløpt kort eller tekniske problemer hos banken. For å unngå at trading-botene dine stopper, anbefaler vi at du oppdaterer betalingsinformasjonen din med en gang.</p>
-    <a href="https://www.klarpakke.no/no/innstillinger/betaling" class="button">Oppdater betalingsmetode</a>
+    <a href="https://www.klarpakke.no/no/profile?tab=settings" class="button">Oppdater betalingsmetode</a>
     <p style="margin-top: 24px; font-size: 14px; color: #64748b;">Dersom betalingen ikke går gjennom innen 48 timer, vil tilgangen din bli nedgradert til Gratis-planen.</p>
   `,
       "Viktig: Vi klarte ikke å gjennomføre betalingen din.",
@@ -113,7 +113,7 @@ export const BrandedTemplates = {
     <h1>Du har låst opp en ny badge! 🎖️</h1>
     <p>Hei ${name}, du har nettopp oppnådd: <strong>${achievementName}</strong>.</p>
     <p>Badgen er nå synlig på din offentlige profil på leaderboardet.</p>
-    <a href="https://www.klarpakke.no/no/profil" class="button">Se min profil</a>
+    <a href="https://www.klarpakke.no/no/profile" class="button">Se min profil</a>
   `,
       `Ny utmerkelse: ${achievementName}`,
     ),

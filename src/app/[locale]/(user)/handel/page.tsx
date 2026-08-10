@@ -1,4 +1,6 @@
 import { Suspense, type ReactNode } from "react";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth-guard";
 import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { getCockpitInitialData } from "@/features/trading-cockpit/server/getCockpitInitialData";
@@ -11,6 +13,17 @@ import { UnifiedTradeTerminal } from "@/features/trading/UnifiedTradeTerminal";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// 2026-08-10 (QA P2): siden manglet metadata og arvet landing-tittelen.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "navigation" });
+  return { title: t("trade") };
+}
 
 function CockpitSkeleton() {
   return (

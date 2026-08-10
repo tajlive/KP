@@ -424,7 +424,7 @@ const templates = {
       <p style="text-align: center; font-size: 24px; font-weight: bold; color: #fbbf24;">${badgeName}</p>
       <p style="text-align: center;">Badgen er nå synlig på din offentlige profil.</p>
       <div style="text-align: center;">
-        <a href="https://www.klarpakke.no/no/profil" class="button">Se Min Profil</a>
+        <a href="https://www.klarpakke.no/no/profile" class="button">Se Min Profil</a>
       </div>
     `,
       `Gratulerer! Du har låst opp ${badgeName}!`,
@@ -767,7 +767,9 @@ export async function sendTemplatedEmail(
         );
         break;
       case "priority_invitation":
-        email = templates.priorityInvitation((data.name as string) || user.name);
+        email = templates.priorityInvitation(
+          (data.name as string) || user.name,
+        );
         break;
       default:
         return { success: false, error: "Unknown email type" };

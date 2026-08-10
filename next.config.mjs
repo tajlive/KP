@@ -372,6 +372,9 @@ const nextConfig = {
       { source: "/:locale(no|en)/konto", destination: "/:locale(no|en)/profile?tab=wallet", permanent: true },
       { source: "/innstillinger", destination: "/no/profile?tab=settings", permanent: true },
       { source: "/:locale(no|en)/innstillinger", destination: "/:locale(no|en)/profile?tab=settings", permanent: true },
+      // 2026-08-10 (QA P1): gamle e-poster lenker til /no/profil — 404 uten denne
+      { source: "/profil", destination: "/no/profile", permanent: true },
+      { source: "/:locale(no|en)/profil", destination: "/:locale(no|en)/profile", permanent: true },
     ];
   },
 

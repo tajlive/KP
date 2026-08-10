@@ -47,11 +47,15 @@ describe("CockpitHeader", () => {
     } as Response);
   });
 
-  it("renders header in paper mode", () => {
+  it("renders header in paper mode with paper button active", () => {
     renderCockpitHeader();
     expect(screen.getByTestId("cockpit-header")).toBeInTheDocument();
-    expect(screen.getByTestId("mode-switch")).toHaveAttribute(
-      "aria-checked",
+    expect(screen.getByTestId("mode-paper-button")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByTestId("mode-live-button")).toHaveAttribute(
+      "aria-pressed",
       "false",
     );
   });
@@ -61,11 +65,11 @@ describe("CockpitHeader", () => {
     const onModeChange = vi.fn();
     renderCockpitHeader({ onModeChange });
 
-    fireEvent.click(screen.getByTestId("mode-switch"));
+    fireEvent.click(screen.getByTestId("mode-live-button"));
     fireEvent.click(screen.getByTestId("live-mode-cancel"));
     expect(alertSpy).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByTestId("mode-switch"));
+    fireEvent.click(screen.getByTestId("mode-live-button"));
     fireEvent.click(screen.getByTestId("live-mode-confirm"));
     await waitFor(() => expect(onModeChange).toHaveBeenCalledWith("live"));
     expect(alertSpy).not.toHaveBeenCalled();
@@ -73,22 +77,20 @@ describe("CockpitHeader", () => {
     alertSpy.mockRestore();
   });
 
-  it("opens live-mode confirmation dialog when toggling to live", () => {
+  it("opens live-mode confirmation dialog when clicking live button", () => {
     renderCockpitHeader();
-    fireEvent.click(screen.getByTestId("mode-switch"));
+    fireEvent.click(screen.getByTestId("mode-live-button"));
     expect(screen.getByTestId("live-mode-dialog")).toBeInTheDocument();
     expect(screen.getByTestId("live-mode-confirm")).toBeInTheDocument();
     expect(screen.getByTestId("live-mode-cancel")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("remember-default-checkbox"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("remember-default-checkbox")).toBeInTheDocument();
   });
 
   it("switches to live and POSTs rememberDefault when confirmed", async () => {
     const onModeChange = vi.fn();
     renderCockpitHeader({ onModeChange });
 
-    fireEvent.click(screen.getByTestId("mode-switch"));
+    fireEvent.click(screen.getByTestId("mode-live-button"));
     expect(screen.getByTestId("live-mode-dialog")).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId("remember-default-checkbox"));
@@ -110,7 +112,7 @@ describe("CockpitHeader", () => {
     const onModeChange = vi.fn();
     renderCockpitHeader({ onModeChange });
 
-    fireEvent.click(screen.getByTestId("mode-switch"));
+    fireEvent.click(screen.getByTestId("mode-live-button"));
     fireEvent.click(screen.getByTestId("live-mode-cancel"));
 
     expect(screen.queryByTestId("live-mode-dialog")).not.toBeInTheDocument();
@@ -122,11 +124,15 @@ describe("CockpitHeader", () => {
     const onModeChange = vi.fn();
     renderCockpitHeader({ mode: "live", onModeChange });
 
-    fireEvent.click(screen.getByTestId("mode-switch"));
-    expect(
-      screen.queryByTestId("live-mode-dialog"),
-    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("mode-paper-button"));
+    expect(screen.queryByTestId("live-mode-dialog")).not.toBeInTheDocument();
     expect(onModeChange).toHaveBeenCalledWith("paper");
+  });
+
+  it("disables live button when user cannot use live", () => {
+    renderCockpitHeader({ canUseLive: false });
+    expect(screen.getByTestId("mode-live-button")).toBeDisabled();
+    expect(screen.getByTestId("mode-paper-button")).toBeEnabled();
   });
 
   it("shows risk banner when crashed sessions exist", () => {
@@ -134,9 +140,7 @@ describe("CockpitHeader", () => {
       riskStatus: { ...baseRiskStatus, crashed: true },
     });
     expect(screen.getByTestId("risk-banner")).toBeInTheDocument();
-    expect(
-      screen.getByText("cockpit.riskBanner.crashed"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("cockpit.riskBanner.crashed")).toBeInTheDocument();
   });
 
   it("shows risk banner when daily loss limit reached", () => {

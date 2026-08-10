@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Marked - Klarpakke",
+  title: "Marked",
   description: "Oversikt over markeder og watchlist",
 };
 

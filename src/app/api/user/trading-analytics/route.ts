@@ -102,18 +102,15 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Ekskluder arkivert test-era — konsistent med portefølje og historikk.
-    const { data: sessions } = await supabase
-      .from("trading_sessions")
-      .select("id")
-      .eq("user_id", user.id)
-      .is("archived", false);
-
-    const sessionIds = (sessions ?? []).map((s) => s.id);
-
+    // 2026-08-10 (QA P1): Sesjonsfilter på archived=false er FJERNET.
+    // Arkivering er en visnings-/hygiene-flagg for sesjonslister — den skal
+    // ikke slette brukerens resultathistorikk. Filtret ga «0 handler» på
+    // Resultater-siden for brukere med arkiverte sesjoner, mens Historikk
+    // (uten filter) viste alle. Forurensings-cutoff i getCleanTrades
+    // håndterer datakvalitet; utelatt sessionIds = alle sesjoner.
     let cleanTrades: CleanTrade[];
     try {
-      cleanTrades = await getCleanTrades(supabase, user.id, sessionIds, {
+      cleanTrades = await getCleanTrades(supabase, user.id, undefined, {
         limit: MAX_TRADES,
       });
     } catch (err) {
@@ -141,8 +138,13 @@ export async function GET(request: NextRequest) {
     try {
       built = buildTradingAnalytics(analyticsInput);
     } catch (buildErr) {
-      const buildMsg = buildErr instanceof Error ? buildErr.message : "Unknown build error";
-      console.error("[GET /api/user/trading-analytics] buildTradingAnalytics failed:", buildMsg, buildErr);
+      const buildMsg =
+        buildErr instanceof Error ? buildErr.message : "Unknown build error";
+      console.error(
+        "[GET /api/user/trading-analytics] buildTradingAnalytics failed:",
+        buildMsg,
+        buildErr,
+      );
       return NextResponse.json(
         { ok: false, error: "Failed to compute analytics", details: buildMsg },
         { status: 500 },
@@ -153,12 +155,15 @@ export async function GET(request: NextRequest) {
     // Én forklaring per nøkkeltall + samlet oppsummering, på brukerens språk.
     // Cachet per dag (KV hvis tilgjengelig). Fakta-regel: forklarer tallene,
     // lover aldri fremtidig avkastning. Feiler stille til null ved LLM-nedetid.
-    let riskAI: import("@/lib/trading/risk-ai-explanations").RiskAIExplanation | null = null;
+    let riskAI:
+      | import("@/lib/trading/risk-ai-explanations").RiskAIExplanation
+      | null = null;
     try {
-      const locale = request.headers.get("accept-language")?.startsWith("en") ? "en" : "no";
-      const { generateRiskExplanations } = await import(
-        "@/lib/trading/risk-ai-explanations"
-      );
+      const locale = request.headers.get("accept-language")?.startsWith("en")
+        ? "en"
+        : "no";
+      const { generateRiskExplanations } =
+        await import("@/lib/trading/risk-ai-explanations");
       riskAI = await generateRiskExplanations(
         {
           ...built.riskMetrics,
@@ -169,7 +174,10 @@ export async function GET(request: NextRequest) {
         locale,
       );
     } catch (aiErr) {
-      console.warn("[GET /api/user/trading-analytics] riskAI feilet:", (aiErr as Error).message);
+      console.warn(
+        "[GET /api/user/trading-analytics] riskAI feilet:",
+        (aiErr as Error).message,
+      );
     }
 
     const body = {
@@ -195,7 +203,11 @@ export async function GET(request: NextRequest) {
         check.error.flatten(),
       );
       return NextResponse.json(
-        { ok: false, error: "Response validation failed", details: check.error.format() },
+        {
+          ok: false,
+          error: "Response validation failed",
+          details: check.error.format(),
+        },
         { status: 500 },
       );
     }
