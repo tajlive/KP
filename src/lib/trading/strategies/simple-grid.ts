@@ -29,6 +29,7 @@ import type {
   StrategyInput,
   StrategySignal,
 } from "./types";
+import { atr } from "./indicators";
 
 export const SIMPLE_GRID_DEFAULTS = {
   /** Nivåavstand OG gevinstterskel (%) — «±1.5 %-regelen» */
@@ -59,6 +60,17 @@ export const SIMPLE_GRID_DEFAULTS = {
       undervanns-poser i månedsvis. Piloten kjøper inn igjen billigere
       når markedet stabiliserer seg (gaten åpner automatisk). */
   liquidate_on_range_exit: true,
+  /** E1 (Pilot 2.0): adaptiv grid-steg = ATR_14 i % av pris, clampet til
+      [step_min, step_max]. Evidens: dcabot 2år-backtest +11.4pp vs fast steg. */
+  adaptive_step: false,
+  step_min_pct: 1.0,
+  step_max_pct: 3.0,
+  atr_period: 14,
+  /** E2 (Pilot 2.0): smart DCA — kjøp MER jo dypere prisen er under ankeret
+      (multiplikator = 1 + fall/steg, cap smart_dca_max_mult).
+      Evidens: dcabot +10.6pp vs vanlig DCA. */
+  smart_dca: false,
+  smart_dca_max_mult: 3,
 } as const;
 
 type Lots = NonNullable<
@@ -87,7 +99,22 @@ export class SimpleGridStrategy implements StrategyEngine {
 
     const lots: Lots = session.open_position?.lots ?? [];
 
-    const steg = cfg.grid_step_pct / 100;
+    // E1: adaptiv steg = ATR_14 i % av pris (clampet). Fast steg ellers.
+    let steg = cfg.grid_step_pct / 100;
+    if (cfg.adaptive_step && candles.length >= cfg.atr_period + 1) {
+      const atrAbs = atr(
+        candles.map((c) => c.high),
+        candles.map((c) => c.low),
+        candles.map((c) => c.close),
+        cfg.atr_period,
+      );
+      const atrPct = (atrAbs / pris) * 100;
+      steg =
+        Math.min(
+          Math.max(atrPct, cfg.step_min_pct),
+          cfg.step_max_pct,
+        ) / 100;
+    }
     const toleranse = cfg.level_tolerance_pct / 100;
 
     // ── 1. SELG: gevinst ≥ grid_step på noen lot ─────────────────────────
@@ -236,12 +263,25 @@ export class SimpleGridStrategy implements StrategyEngine {
     );
     const timerSiden = (nå - nyesteKjøp) / 3600_000;
     if (timerSiden >= cfg.dca_interval_hours) {
+      // E2: smart DCA — kjøp mer jo dypere prisen er under ankeret
+      let mult = 1;
+      if (cfg.smart_dca && pris < anker) {
+        const fallISteg = (anker - pris) / anker / steg;
+        mult = Math.min(1 + fallISteg, cfg.smart_dca_max_mult);
+      }
       return {
         action: "buy",
-        positionSize: cfg.dca_amount_pct,
+        positionSize: cfg.dca_amount_pct * mult,
         confidence: 0.6,
-        indicators: { dca: true, hours_since_last_buy: Number(timerSiden.toFixed(1)) },
-        reason: `Rolig marked — Piloten kjøper litt hver ${cfg.dca_interval_hours}. time, uansett pris.`,
+        indicators: {
+          dca: true,
+          hours_since_last_buy: Number(timerSiden.toFixed(1)),
+          ...(mult > 1 ? { smart_dca_mult: Number(mult.toFixed(2)) } : {}),
+        },
+        reason:
+          mult > 1
+            ? `Prisen er godt under snittet — Piloten kjøper litt ekstra mens den er billig.`
+            : `Rolig marked — Piloten kjøper litt hver ${cfg.dca_interval_hours}. time, uansett pris.`,
       };
     }
 
