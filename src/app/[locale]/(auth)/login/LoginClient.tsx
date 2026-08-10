@@ -123,8 +123,9 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Email Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email Login Form — method="post" hindrer at passord havner i URL
+              dersom React-hydration er treg/feitlar (native GET-submit som fallback) */}
+          <form onSubmit={handleSubmit} method="post" className="space-y-4">
             <AuthFormField
               id="email"
               name="email"
