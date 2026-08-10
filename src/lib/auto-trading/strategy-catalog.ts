@@ -69,6 +69,7 @@ export const STRATEGY_DEFS_FOR_DASHBOARD: {
   { type: "dca_trygg", risk: 1 },
   { type: "trend_balansert", risk: 3 },
   { type: "multisignal_aktiv", risk: 4 },
+  { type: "simple_grid", risk: 3 },
   { type: "grid_bot", risk: 3 },
   { type: "ensemble_ai", risk: 3 },
   { type: "ai_copy", risk: 5 },

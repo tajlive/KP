@@ -5,13 +5,19 @@ import {
   resolveDefaultStrategyId,
 } from "../routing-default";
 
+/**
+ * Ruting (2026-08-10): mode=pilot → simple_grid (COMBO E3, backtest-bevis).
+ * mode=auto → grid (uendret for eksisterende auto-brukere).
+ * gridDefault=false → gammel oppførsel (uendret).
+ */
+
 describe("resolveDefaultStrategyId (strategy_id for trading_sessions)", () => {
   it("gridDefault=true + mode=auto → grid", () => {
     expect(resolveDefaultStrategyId("auto", true)).toBe("grid");
   });
 
-  it("gridDefault=true + mode=pilot → grid", () => {
-    expect(resolveDefaultStrategyId("pilot", true)).toBe("grid");
+  it("gridDefault=true + mode=pilot → simple_grid (Pilot COMBO E3)", () => {
+    expect(resolveDefaultStrategyId("pilot", true)).toBe("simple_grid");
   });
 
   it("gridDefault=false + mode=auto → multi_signal (gammel oppførsel)", () => {
@@ -41,16 +47,16 @@ describe("isGridDefaultRouting (GRID_DEFAULT_ROUTING-flagget)", () => {
     expect(isGridDefaultRouting({ GRID_DEFAULT_ROUTING: "1" })).toBe(true);
   });
 
-  it("flagget default (udefinert) → grid for begge modes", () => {
+  it("flagget default (udefinert) → auto=grid, pilot=simple_grid", () => {
     expect(resolveDefaultStrategyId("auto", isGridDefaultRouting({}))).toBe("grid");
-    expect(resolveDefaultStrategyId("pilot", isGridDefaultRouting(undefined))).toBe("grid");
+    expect(resolveDefaultStrategyId("pilot", isGridDefaultRouting(undefined))).toBe("simple_grid");
   });
 });
 
 describe("resolveAutoConfigStrategy (strategy i auto_trading_configs-upsert)", () => {
-  it("gridDefault=true → grid for begge modes", () => {
+  it("gridDefault=true → auto=grid, pilot=simple_grid", () => {
     expect(resolveAutoConfigStrategy("auto", true)).toBe("grid");
-    expect(resolveAutoConfigStrategy("pilot", true)).toBe("grid");
+    expect(resolveAutoConfigStrategy("pilot", true)).toBe("simple_grid");
   });
 
   it("gridDefault=false + mode=auto → multi_signal (gammel oppførsel)", () => {
