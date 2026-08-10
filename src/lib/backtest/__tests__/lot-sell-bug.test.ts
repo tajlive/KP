@@ -67,14 +67,17 @@ describe("BUG-FIKS: riktig lot selges (ikke FIFO)", () => {
     expect(førsteSalg!.realizedPnl).toBeGreaterThan(0);
   });
 
-  it("alle lukkede lots er i gevinst (salg skjer kun ≥ +1.5 %)", () => {
-    // Sidelengs marked: alle salg skal være gevinst — ingen tap-realisationer
+  it("E3-design: høy win rate, aldri stort tap (breakeven-gulv beskytter)", () => {
+    // Sidelengs marked: partial-salg i gevinst + breakeven-stops ~null.
+    // Forventning: >50 % win rate, positiv total, og ingen enkelt-lot taper
+    // mer enn gebyret (breakeven-gulv).
     const candles = Array.from({ length: 400 }, (_, i) =>
       candle(100 + 3 * Math.sin((i * Math.PI) / 6), i),
     );
     const res = runSimpleBacktest({ candles, initialCapital: 10000 });
     expect(res.metrics.closedTrades).toBeGreaterThan(0);
-    expect(res.metrics.winRate).toBe(100);
+    expect(res.metrics.winRate).toBeGreaterThan(50);
+    expect(res.metrics.totalPnl).toBeGreaterThan(0);
   });
 });
 

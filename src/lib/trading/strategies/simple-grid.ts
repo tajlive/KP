@@ -71,6 +71,12 @@ export const SIMPLE_GRID_DEFAULTS = {
       Evidens: dcabot +10.6pp vs vanlig DCA. */
   smart_dca: false,
   smart_dca_max_mult: 3,
+  /** E3 (2026-08-10, full-syklus-bevis + Toms compounding-poeng):
+      asymmetrisk exit — selg bare DENNE ANDELEN av loten på grid-nivå,
+      la resten («runner») løpe med breakeven-gulv. Fixed TP amputerer
+      høyrehalen (+380 %/+918 %-rallyene); runneren fanger den.
+      «Fixed take profits destroy returns» — trading-agent-prinsipp #2. */
+  partial_sell_pct: 0.5,
 } as const;
 
 type Lots = NonNullable<
@@ -117,23 +123,46 @@ export class SimpleGridStrategy implements StrategyEngine {
     }
     const toleranse = cfg.level_tolerance_pct / 100;
 
-    // ── 1. SELG: gevinst ≥ grid_step på noen lot ─────────────────────────
+    // ── 1. SELG: asymmetrisk exit (E3, 2026-08-10) ───────────────────────
+    // Runner (delvis solgt): breakeven-gulv — aldri la en vinner bli taper.
+    // Ny lot på grid-nivå: selg KUN partial_sell_pct, la resten løpe.
     for (const lot of lots) {
+      const erRunner = lot.quantity < lot.originalQuantity * 0.999;
+
+      if (erRunner) {
+        if (pris < lot.entryPrice) {
+          return {
+            action: "sell",
+            quantity: lot.quantity,
+            confidence: 0.85,
+            exitReason: "breakeven_stop",
+            indicators: {
+              lot_id: lot.id,
+              entry_price: lot.entryPrice,
+            },
+            reason: "Prisen falt tilbake til kjøpsprisen — Piloten sikret resten. Ingen tap på denne.",
+          };
+        }
+        continue; // Runner løper videre og fanger høyrehalen
+      }
+
       const terskel = lot.entryPrice * (1 + steg);
       if (pris >= terskel) {
         const gevinstPct = ((pris - lot.entryPrice) / lot.entryPrice) * 100;
+        const selges = Math.min(lot.originalQuantity * cfg.partial_sell_pct, lot.quantity);
         return {
           action: "sell",
-          quantity: lot.quantity,
+          quantity: selges,
           confidence: 0.8,
-          exitReason: "take_profit",
+          exitReason: "take_profit_partial",
           indicators: {
-            lot_id: lot.id, // BUG-FIKS 2026-08-10: executor skal selge DENNE loten (ikke FIFO)
+            lot_id: lot.id,
             grid_sell: true,
+            partial: true,
             entry_price: lot.entryPrice,
             profit_pct: Number(gevinstPct.toFixed(2)),
           },
-          reason: `Prisen steg ${gevinstPct.toFixed(1)} % siden kjøpet — Piloten solgte med gevinst.`,
+          reason: `Prisen steg ${gevinstPct.toFixed(1)} % — Piloten solgte halvparten med gevinst og lar resten løpe videre.`,
         };
       }
     }

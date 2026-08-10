@@ -91,20 +91,52 @@ describe("SimpleGridStrategy — COMBO", () => {
     expect(sig.action).toBe("hold");
   });
 
-  it("lot med gevinst ≥ 1.5 % → selg lot-kvantum, exitReason take_profit", () => {
+  it("E3: lot på grid-nivå → selg HALVPARTEN (take_profit_partial), resten løper", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(102)];
+    const session = sessionMed({
+      capital: 100000,
+      lots: [{
+        id: "l1", quantity: 1.0, entryPrice: 100,
+        timestamp: new Date(NÅ - 7200_000).toISOString(),
+        originalQuantity: 1.0,
+      }],
+    });
+    const sig = strat.evaluate(input(candles, session));
+    expect(sig.action).toBe("sell");
+    expect(sig.quantity).toBe(0.5); // 50 % av originalQuantity
+    expect(sig.exitReason).toBe("take_profit_partial");
+    expect(sig.indicators?.lot_id).toBe("l1");
+  });
+
+  it("E3: runner over breakeven → hold (løper videre og fanger høyrehalen)", () => {
+    const candles = [...candlesAv(Array(48).fill(100)), candle(102)];
+    const session = sessionMed({
+      capital: 100000,
+      lots: [{
+        id: "l1", quantity: 0.5, entryPrice: 100, // delvis solgt (0.5 < 1.0)
+        timestamp: new Date(NÅ - 7200_000).toISOString(),
+        originalQuantity: 1.0,
+      }],
+    });
+    const sig = strat.evaluate(input(candles, session));
+    expect(sig.action).not.toBe("sell");
+  });
+
+  it("E3: runner under breakeven → selg resten (aldri vinner→taper)", () => {
+    const candles = [...candlesAv(Array(48).fill(100)), candle(99)];
     const session = sessionMed({
       capital: 100000,
       lots: [{
         id: "l1", quantity: 0.5, entryPrice: 100,
         timestamp: new Date(NÅ - 7200_000).toISOString(),
-        originalQuantity: 0.5,
+        originalQuantity: 1.0,
       }],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("sell");
     expect(sig.quantity).toBe(0.5);
-    expect(sig.exitReason).toBe("take_profit");
+    expect(sig.exitReason).toBe("breakeven_stop");
+    expect(sig.indicators?.lot_id).toBe("l1");
   });
 
   it("lot UTEN gevinst ennå (pris +1 %) → ikke selg", () => {
