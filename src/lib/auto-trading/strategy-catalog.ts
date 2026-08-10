@@ -18,6 +18,7 @@ const STRATEGY_TO_RISK_KEY: Record<ProductStrategyId, RiskLevelKey> = {
   dca_trygg: "safe",
   trend_balansert: "balanced",
   multisignal_aktiv: "offensive",
+  simple_grid: "balanced",
   grid_bot: "balanced",
   ensemble_ai: "balanced",
   ai_copy: "aggressive",
@@ -28,12 +29,14 @@ const STRATEGY_TO_OPT_PROFILE: Record<ProductStrategyId, OptProfileName> = {
   dca_trygg: "conservative",
   trend_balansert: "moderate",
   multisignal_aktiv: "aggressive",
+  simple_grid: "moderate",
   grid_bot: "moderate",
   ensemble_ai: "moderate",
   ai_copy: "dynamic",
 };
 
 export const STRATEGY_UI_ORDER: ProductStrategyId[] = [
+  "simple_grid",
   "dca_trygg",
   "trend_balansert",
   "multisignal_aktiv",
@@ -224,6 +227,16 @@ export function getDefaultStrategyDashboardConfigs(): Record<
       slow_period: 26,
     },
     multisignal_aktiv: { aggressiveness: "normal" },
+    simple_grid: {
+      // COMBO (mega-plan 2026-08-10): grid ±1.5 % + DCA hver 4. time
+      grid_step_pct: 1.5,
+      grid_levels: 5,
+      grid_amount_pct: 0.05,
+      dca_interval_hours: 4,
+      dca_amount_pct: 0.02,
+      anchor_candles: 48,
+      level_tolerance_pct: 0.25,
+    },
     grid_bot: {
       upperPrice: 70000,
       lowerPrice: 50000,
@@ -331,6 +344,7 @@ export const STRATEGY_CATALOG_BUILDER = STRATEGY_UI_ORDER.map((id) => {
     dca_trygg: "DCA Trygg",
     trend_balansert: "Trend Balansert",
     multisignal_aktiv: "Multi-Signal Aktiv",
+    simple_grid: "Pilot (COMBO)",
     grid_bot: "Grid Bot",
     ensemble_ai: "Ensemble AI",
     ai_copy: "AI Copy Trading",
@@ -339,6 +353,7 @@ export const STRATEGY_CATALOG_BUILDER = STRATEGY_UI_ORDER.map((id) => {
     dca_trygg: "Dollar-cost averaging med lav risiko",
     trend_balansert: "Trend-following med middels risiko",
     multisignal_aktiv: "Multi-indikator strategi med høy aktivitet",
+    simple_grid: "COMBO: grid ±1,5 % + DCA hver 4. time — én strategi, null innstillinger",
     grid_bot: "Grid trading i definerte prisområder",
     ensemble_ai: "AI-drevet ensemble-strategi som kombinerer teknisk analyse, LLM og markedsregime",
     ai_copy:

@@ -14,6 +14,7 @@ export const STRATEGY_ID_TO_TICK_ENGINE = {
   trend_balansert: "trend_follow",
   multisignal_aktiv: "multi_signal",
   grid_bot: "grid",
+  simple_grid: "simple_grid",
   ensemble_ai: "ensemble_ai",
   ai_copy: "ai_copy",
 } as const;
@@ -58,7 +59,7 @@ export function resolveTickStrategyEngineKey(
 
   // 4. Direct engine name
   const validEngines: TickStrategyEngineKey[] = [
-    "dca", "trend_follow", "multi_signal", "grid", "ai_copy", "hybrid_arbitrage", "ensemble_ai", "max_aggressive",
+    "dca", "trend_follow", "multi_signal", "grid", "ai_copy", "hybrid_arbitrage", "ensemble_ai", "max_aggressive", "simple_grid",
   ];
   if (validEngines.includes(strategyId as TickStrategyEngineKey)) {
     return strategyId as TickStrategyEngineKey;

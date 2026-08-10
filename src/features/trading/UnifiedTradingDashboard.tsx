@@ -30,6 +30,7 @@ import {
   TrendingUp,
   Bot,
   Brain,
+  Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -66,6 +67,7 @@ const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
   dca_trygg: <Shield className="w-5 h-5" />,
   trend_balansert: <TrendingUp className="w-5 h-5" />,
   multisignal_aktiv: <Target className="w-5 h-5" />,
+  simple_grid: <Zap className="w-5 h-5" />,
   grid_bot: <Grid3X3 className="w-5 h-5" />,
   ensemble_ai: <Brain className="w-5 h-5" />,
   ai_copy: <Bot className="w-5 h-5" />,

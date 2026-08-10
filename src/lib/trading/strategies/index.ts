@@ -11,6 +11,7 @@ export { DCAStrategy } from "./dca";
 export { TrendFollowStrategy } from "./trend";
 export { MultiSignalStrategy } from "./multi";
 export { GridBotStrategy } from "./grid";
+export { SimpleGridStrategy, SIMPLE_GRID_DEFAULTS } from "./simple-grid";
 export { AICopyStrategy } from "./ai-copy";
 export { HybridArbitrageStrategy } from "./hybrid-arbitrage";
 
@@ -21,6 +22,7 @@ import { GridBotStrategy } from "./grid";
 import { AICopyStrategy } from "./ai-copy";
 import { HybridArbitrageStrategy } from "./hybrid-arbitrage";
 import { MaxAggressiveGridStrategy } from "./max-aggressive-grid";
+import { SimpleGridStrategy } from "./simple-grid";
 import type { StrategyEngine } from "./types";
 
 /** Default-konfig for Max Aggressive (5x SOL leveraged grid) */
@@ -40,6 +42,7 @@ export const strategyRegistry: Record<string, StrategyEngine> = {
   trend_follow: new TrendFollowStrategy(),
   multi_signal: new MultiSignalStrategy(),
   grid: new GridBotStrategy(),
+  simple_grid: new SimpleGridStrategy(),
   ai_copy: new AICopyStrategy(),
   hybrid_arbitrage: new HybridArbitrageStrategy(),
   max_aggressive: new MaxAggressiveGridStrategy(MAX_AGGRESSIVE_DEFAULT_CONFIG),

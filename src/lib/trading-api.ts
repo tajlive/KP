@@ -19,6 +19,7 @@ export type StrategyType =
   | "dca_trygg"
   | "trend_balansert"
   | "multisignal_aktiv"
+  | "simple_grid"
   | "grid_bot"
   | "ensemble_ai"
   | "ai_copy";

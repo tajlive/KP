@@ -379,6 +379,21 @@ export function getStrategyConfig(
         rebalance_on_regime_change: false,
       },
     },
+    simple_grid: {
+      engine: "simple_grid",
+      config: {
+        // COMBO (mega-plan 2026-08-10): grid ±1.5 % + DCA hver 4. time
+        grid_step_pct: 1.5,
+        grid_levels: 5,
+        grid_amount_pct: 0.05,
+        dca_interval_hours: 4,
+        dca_amount_pct: 0.02,
+        anchor_candles: 48,
+        level_tolerance_pct: 0.25,
+      },
+      // Mekanisk strategi — Dark Fleet skal IKKE overstyre
+      darkFleet: { enabled: false },
+    },
     max_aggressive: {
       engine: "max_aggressive",
       config: {

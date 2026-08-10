@@ -69,4 +69,4 @@ export interface StrategyEngine {
 }
 
 /** Valid engine keys for the tick engine */
-export type TickStrategyEngineKey = "dca" | "trend_follow" | "multi_signal" | "grid" | "ai_copy" | "hybrid_arbitrage" | "ensemble_ai" | "max_aggressive";
+export type TickStrategyEngineKey = "dca" | "trend_follow" | "multi_signal" | "grid" | "ai_copy" | "hybrid_arbitrage" | "ensemble_ai" | "max_aggressive" | "simple_grid";
