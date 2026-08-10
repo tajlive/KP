@@ -164,6 +164,7 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           mode: sessionMode,
           strategy_id: resolveDefaultStrategyId(mode, gridDefault),
+          is_pilot: mode === "pilot",
           status: "active",
           trading_pair: pair,
           starting_capital_nok: capitalPerSymbol,

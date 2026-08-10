@@ -8318,6 +8318,7 @@ export type Database = {
           error_message: string | null
           id: string
           initial_capital: number
+          is_pilot: boolean
           is_leaderboard_visible: boolean
           last_analysis_details: Json | null
           last_heartbeat: string
@@ -8361,6 +8362,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           initial_capital?: number
+          is_pilot?: boolean
           is_leaderboard_visible?: boolean
           last_analysis_details?: Json | null
           last_heartbeat?: string
@@ -8404,6 +8406,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           initial_capital?: number
+          is_pilot?: boolean
           is_leaderboard_visible?: boolean
           last_analysis_details?: Json | null
           last_heartbeat?: string
