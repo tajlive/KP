@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!--
+  KLARPAKKE LANDING 2026 — VARIANT B «PILOTEN FREMST»
+  Retning: Vis produktet direkte i hero. Besøkende ser nøyaktig hva de får:
+  én stor knapp, trafikklys, gevinst/tap i kroner, og Pilotens norske forklaringer.
+  MERK: App-mocken viser EKSEMPELDATA (kommentert i koden) — byttes mot ekte API-data.
+  Copy: KUN faktagodkjent.
+-->
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klarpakke — Én knapp. Én pilot. Null innstillinger.</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-soft: #1e293b;
+    --bg-card: #16203a;
+    --text: #f1f5f9;
+    --text-dim: #b6c2d4;
+    --green: #22c55e;
+    --blue: #0052ff;
+    --blue-soft: #3d7aff;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --border: #2d3d5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 20px; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+  .logo { font-weight: 800; font-size: 1.3rem; }
+  .logo span { color: var(--blue-soft); }
+  .topbar-cta {
+    background: var(--green); color: #06280f; font-weight: 700;
+    padding: 12px 24px; border-radius: 12px; text-decoration: none;
+    min-height: 48px; display: inline-flex; align-items: center;
+  }
+
+  /* ── Hero med produkt-mock ── */
+  .hero { padding: 2.5rem 0 3rem; display: grid; gap: 3rem; align-items: center; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1fr 1fr; } }
+  .badge {
+    display: inline-block; background: rgba(34,197,94,.12);
+    border: 1px solid rgba(34,197,94,.4); color: #86efac;
+    padding: 8px 18px; border-radius: 999px; font-size: .85rem; font-weight: 600;
+    margin-bottom: 1.25rem;
+  }
+  h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.12; letter-spacing: -0.03em; font-weight: 800; margin-bottom: 1rem; }
+  h1 .gronn { color: var(--green); }
+  .hero-sub { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 1.75rem; max-width: 40ch; }
+  .cta-stor {
+    display: inline-flex; align-items: center; background: var(--green); color: #06280f;
+    font-size: 1.25rem; font-weight: 800; padding: 18px 44px; border-radius: 16px;
+    text-decoration: none; min-height: 64px; box-shadow: 0 8px 30px rgba(34,197,94,.25);
+  }
+  .tillit-bar { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--text-dim); font-size: .85rem; }
+  .tillit-bar span::before { content: "✓ "; color: var(--green); font-weight: 700; }
+
+  /* ── App-mock (Pilot-dashbordet) ── */
+  .appmock {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  }
+  .appmock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .appmock-tittel { font-weight: 700; font-size: 1rem; color: var(--text-dim); }
+  .trafikklys { display: inline-flex; align-items: center; gap: 8px; background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.4); padding: 6px 14px; border-radius: 999px; font-size: .85rem; font-weight: 700; color: #86efac; }
+  .trafikklys-prikk { width: 12px; height: 12px; border-radius: 50%; background: var(--green); }
+  .belop-label { color: var(--text-dim); font-size: .9rem; margin-bottom: 2px; }
+  /* EKSEMPELDATA — 48px kr-beløp hentes fra paper_accounts via API */
+  .belop { font-size: 2.4rem; font-weight: 800; color: var(--green); letter-spacing: -0.02em; margin-bottom: 20px; }
+  .pilot-knapp {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    width: 100%; background: var(--red); color: #fff; border: none;
+    font-size: 1.3rem; font-weight: 800; padding: 20px; border-radius: 16px;
+    min-height: 64px; font-family: inherit;
+  }
+  .llm-feed { margin-top: 20px; }
+  .llm-feed-tittel { font-size: .85rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  .llm-kort {
+    background: var(--bg-soft); border-left: 4px solid var(--blue-soft);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; font-size: .95rem;
+  }
+  .llm-kort .tid { color: var(--text-dim); font-size: .75rem; display: block; margin-top: 4px; }
+  /* EKSEMPELDATA SLUTT */
+
+  section { padding: 3rem 0; }
+  .seksjon-tittel { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; text-align: center; margin-bottom: .75rem; }
+  .seksjon-ingress { text-align: center; color: var(--text-dim); max-width: 48ch; margin: 0 auto 2.5rem; font-size: 1.05rem; }
+
+  .steg-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .steg-grid { grid-template-columns: repeat(3, 1fr); } }
+  .steg { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 32px 28px; }
+  .steg-ikon { font-size: 2rem; margin-bottom: 14px; }
+  .steg h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  .steg p { color: var(--text-dim); font-size: .95rem; }
+
+  .forklaring { background: var(--bg-soft); border-radius: 28px; padding: 3rem 2rem; text-align: center; }
+  .forklaring-sitat {
+    font-size: clamp(1.3rem, 3.5vw, 2rem); font-weight: 700; max-width: 26ch;
+    margin: 1.5rem auto; line-height: 1.35;
+  }
+  .forklaring-sitat .gronn { color: var(--green); }
+
+  .risiko {
+    border: 2px solid var(--yellow); border-radius: 20px; padding: 28px;
+    background: rgba(234,179,8,.06); max-width: 760px; margin: 0 auto;
+  }
+  .risiko h3 { color: var(--yellow); font-size: 1.15rem; margin-bottom: 8px; }
+
+  .faq { max-width: 720px; margin: 0 auto; }
+  details { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 12px; }
+  summary { padding: 20px 24px; font-weight: 700; font-size: 1.05rem; cursor: pointer; list-style: none; min-height: 48px; }
+  summary::after { content: "+"; float: right; color: var(--blue-soft); font-size: 1.4rem; }
+  details[open] summary::after { content: "–"; }
+  details p { padding: 0 24px 20px; color: var(--text-dim); }
+
+  footer { border-top: 1px solid var(--border); padding: 2.5rem 0; text-align: center; color: var(--text-dim); font-size: .9rem; }
+  footer a { color: var(--blue-soft); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="topbar">
+    <div class="logo">Klarpakke<span>.</span></div>
+    <a class="topbar-cta" href="/no/register">Start gratis</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO: tekst + produkt-mock -->
+  <section class="hero wrap">
+    <div>
+      <div class="badge">🔬 Gratis beta — kun i Norge · 5000 KLT til de 100 første 🪙</div>
+      <h1>Én knapp. Én pilot.<br><span class="gronn">Null innstillinger.</span></h1>
+      <p class="hero-sub">Du får 100 000 kr i lekepenger. Piloten handler på ekte markeder for deg — og forklarer hvert eneste valg på norsk.</p>
+      <a class="cta-stor" href="/no/register">Start gratis →</a>
+      <div class="tillit-bar">
+        <span>Ingen kredittkort</span>
+        <span>Ingen KYC</span>
+        <span>Null risiko</span>
+      </div>
+    </div>
+
+    <!-- PRODUKT-MOCK: slik ser Pilot-dashbordet ut (EKSEMPELDATA — kobles til ekte API) -->
+    <div class="appmock" role="img" aria-label="Eksempel på Pilot-dashbordet i Klarpakke">
+      <div class="appmock-header">
+        <span class="appmock-tittel">Din Pilot</span>
+        <span class="trafikklys"><span class="trafikklys-prikk"></span>AKTIV</span>
+      </div>
+      <div class="belop-label">Din gevinst så langt (lekepenger)</div>
+      <div class="belop">+ {{eksempel_beløp}} kr</div>
+      <button class="pilot-knapp" type="button">■ STOPP PILOTEN</button>
+      <div class="llm-feed">
+        <div class="llm-feed-tittel">Piloten forklarer</div>
+        <div class="llm-kort">
+          «Prisen falt, så jeg kjøpte litt billig. Når den stiger igjen, selger jeg.»
+          <span class="tid">For 2 timer siden</span>
+        </div>
+        <div class="llm-kort">
+          «Jeg solgte litt med gevinst. Pengene er trygge på kontoen din.»
+          <span class="tid">I går kveld</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIK VIRKER DET -->
+  <section class="wrap">
+    <h2 class="seksjon-tittel">Fra null til Pilot på tre minutter</h2>
+    <p class="seksjon-ingress">Du skal ikke stille inn noe. Det har vi allerede gjort for deg.</p>
+    <div class="steg-grid">
+      <div class="steg">
+        <div class="steg-ikon">📧</div>
+        <h3>Registrer deg med e-post</h3>
+        <p>Under ett minutt. Ingen legitimasjon, ingen kredittkort.</p>
+      </div>
+      <div class="steg">
+        <div class="steg-ikon">💰</div>
+        <h3>Få 100 000 kr lekepenger</h3>
+        <p>Øv på ekte markedspriser — helt uten risiko.</p>
+      </div>
+      <div class="steg">
+        <div class="steg-ikon">🟢</div>
+        <h3>Trykk «Start Piloten»</h3>
+        <p>Ferdig. Piloten gjør resten, og forklarer alt underveis.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORKLARING -->
+  <section class="wrap">
+    <div class="forklaring">
+      <h2 class="seksjon-tittel">Du skal alltid vite hvorfor</h2>
+      <p class="forklaring-sitat">«Prisen falt, så Piloten kjøpte billig. <span class="gronn">Når den stiger igjen, selger den.</span>»</p>
+      <p class="seksjon-ingress" style="margin-bottom:0">Hver handel forklart med én norsk setning. Ingen fagspråk. Ingen grafer du må tolke selv — med mindre du vil.</p>
+    </div>
+  </section>
+
+  <!-- RISIKO -->
+  <section class="wrap">
+    <div class="risiko">
+      <h3>⚠️ Ærlig om risiko</h3>
+      <p>Krypto kan falle kraftig. Ingen AI kan love gevinst — og vi lover deg aldri noe. Derfor trener du med lekepenger først: lær alt, tap ingenting. Når live trading åpner etter beta, er det du som bestemmer.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="wrap">
+    <h2 class="seksjon-tittel">Spørsmål og svar</h2>
+    <div class="faq">
+      <details>
+        <summary>Koster det noe?</summary>
+        <p>Nei. Beta er gratis, og paper trading er gratis og ubegrenset. Senere kommer betalte planer — da betaler du for verktøyene, aldri for avkastningsløfter.</p>
+      </details>
+      <details>
+        <summary>Kan jeg tape ekte penger?</summary>
+        <p>Nei — ikke i beta. Du handler med lekepenger på ekte markedsdata. Når live trading åpner etter beta, er det et aktivt valg du tar selv.</p>
+      </details>
+      <details>
+        <summary>Hva gjør Piloten egentlig?</summary>
+        <p>Piloten følger en tested handelsstrategi: den kjøper når prisen faller og selger når den stiger igjen, innenfor trygge grenser. Du kan stoppe den når som helst med én stor rød knapp.</p>
+      </details>
+      <details>
+        <summary>Må jeg kunne noe om krypto?</summary>
+        <p>Nei. Klarpakke er laget for folk uten teknisk bakgrunn. Vil du lære mer, finner du kurs inne i appen — i helt enkelt norsk språk.</p>
+      </details>
+      <details>
+        <summary>Hva er KLT?</summary>
+        <p>KLT er Klarpakke-tokens — vår takk til tidlige testere. De 100 første registrerte får 5000 KLT og gratis tilgang for livet.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Klarpakke</strong> — norsk verktøy for kryptotrening · <a href="mailto:post@klarpakke.no">post@klarpakke.no</a></p>
+    <p style="margin-top:8px">Beta · Kun Norge · Live trading kommer · Historisk avkastning er ingen garanti for fremtidig avkastning</p>
+  </div>
+</footer>
+
+</body>
+</html>

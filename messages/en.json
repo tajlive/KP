@@ -2480,8 +2480,75 @@
       "footer": "No credit card • No KYC • No commitment"
     },
     "metadata": {
-      "title": "Klarpakke — AI trading with play money",
-      "description": "Free beta: You get 100,000 kr in play money. Train with autonomous AI agents on real market data — Manual, Auto and Pilot. No risk."
+      "title": "Klarpakke — See the maths before you trust us",
+      "description": "Free beta: 100,000 kr in play money, an AI pilot that explains everything, and backtest proof with fees included. Norway only."
+    },
+    "bevis": {
+      "hero": {
+        "badge": "🔬 Free beta — Norway only · 5,000 KLT (Klarpakke tokens) for the first 100 🪙",
+        "title": "We show you the maths before you trust us.",
+        "subtitle": "100,000 kr in play money. An AI pilot that explains everything in plain language. And proof of how the strategy has performed — fees included.",
+        "cta": "Start free",
+        "trust1": "No credit card",
+        "trust2": "No KYC",
+        "trust3": "No commitment",
+        "trust4": "Norwegian platform"
+      },
+      "lofter": {
+        "title": "This we promise. This we never promise.",
+        "subtitle": "Crypto is full of promises. Here are ours — and our limits.",
+        "jaTitle": "We promise",
+        "ja1": "You always train free with 100,000 kr in play money",
+        "ja2": "Every trade explained in one plain sentence",
+        "ja3": "We show you the backtest results — fees included",
+        "ja4": "We never touch your money",
+        "ja5": "You can stop everything with one big red button",
+        "neiTitle": "We never promise",
+        "nei1": "We never promise profits — nobody can guarantee that in crypto",
+        "nei2": "We never show numbers we can't document",
+        "nei3": "We never withdraw money from your account",
+        "nei4": "We never hide risk in fine print",
+        "nei5": "We never sell the dream of getting rich quick"
+      },
+      "backtest": {
+        "title": "The proof: 90 days of real data",
+        "subtitle": "We run the strategy against actual historical prices — and show you the outcome.",
+        "label": "This is how 100,000 kr would have performed over the last 90 days.",
+        "m1Title": "Real price data",
+        "m1Desc": "Prices from actual exchange data, day by day.",
+        "m2Title": "Fees included",
+        "m2Desc": "We deduct trading fees and slippage — just like real life.",
+        "m3Title": "Everything shown",
+        "m3Desc": "Including the periods where the strategy lost. You get the full picture.",
+        "disclaimer": "Past performance is no guarantee of future results."
+      },
+      "steg": {
+        "title": "How to get started",
+        "s1Title": "Create a free account",
+        "s1Desc": "Email is all you need. Under a minute.",
+        "s2Title": "Get 100,000 kr in play money",
+        "s2Desc": "Real market prices, zero real risk.",
+        "s3Title": "Start the Pilot",
+        "s3Desc": "It trades and explains. You learn along the way."
+      },
+      "founder": {
+        "title": "The first 100 get free access — for life",
+        "subtitle": "As a thank-you to our earliest testers, the first 100 registered users get free access for life — and 5,000 KLT (Klarpakke tokens).",
+        "cta": "Claim your spot"
+      },
+      "faq": {
+        "title": "Questions and answers",
+        "q1": "Why should I trust you?",
+        "a1": "You shouldn't — not without proof. That's why we show you backtest results with fees included, let you train free with play money, and never touch your money. Feel free to ask us anything at post@klarpakke.no.",
+        "q2": "Does it cost anything?",
+        "a2": "No. The beta is free, and paper trading is free and unlimited. Paid plans come later — you pay for the tools, never for promises of returns.",
+        "q3": "What is a backtest?",
+        "a3": "We run the trading strategy against historical price data and show what the outcome would have been. It tells you how the strategy has behaved — not what the future holds.",
+        "q4": "Can I lose real money?",
+        "a4": "No — not in beta. You trade with play money. When live trading opens after beta, that's an active choice you make yourself, and we remind you of the risks first.",
+        "q5": "What is KLT?",
+        "a5": "KLT is Klarpakke tokens — our thank-you to early testers. The first 100 registered users get 5,000 KLT and free access for life."
+      }
     }
   },
   "tradingGuide": {

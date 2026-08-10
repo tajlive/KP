@@ -2480,8 +2480,75 @@
       "footer": "Ingen kredittkort • Ingen KYC • Ingen binding"
     },
     "metadata": {
-      "title": "Klarpakke — AI-trading med lekepenger",
-      "description": "Gratis beta: Du får 100 000 kr i lekepenger. Tren med autonome AI-agenter på ekte markedsdata — Manuell, Auto og Pilot. Ingen risiko."
+      "title": "Klarpakke — Se regnestykket før du stoler på oss",
+      "description": "Gratis beta: 100 000 kr i lekepenger, en AI-pilot som forklarer alt på norsk, og backtest-bevis med gebyr inkludert. Kun i Norge."
+    },
+    "bevis": {
+      "hero": {
+        "badge": "🔬 Gratis beta — kun i Norge · 5000 KLT (Klarpakke-tokens) til de 100 første 🪙",
+        "title": "Vi viser deg regnestykket før du stoler på oss.",
+        "subtitle": "100 000 kr i lekepenger. En AI-pilot som forklarer alt på norsk. Og bevis på hvordan strategien har gått — med gebyr og alt regnet inn.",
+        "cta": "Start gratis",
+        "trust1": "Ingen kredittkort",
+        "trust2": "Ingen KYC",
+        "trust3": "Ingen binding",
+        "trust4": "Norsk plattform"
+      },
+      "lofter": {
+        "title": "Dette lover vi. Dette lover vi aldri.",
+        "subtitle": "Krypto-bransjen er full av løfter. Her er våre — og grensene våre.",
+        "jaTitle": "Dette lover vi",
+        "ja1": "Du trener alltid gratis med 100 000 kr lekepenger",
+        "ja2": "Hver handel forklart med én norsk setning",
+        "ja3": "Vi viser deg backtest-resultatene — med gebyr inkludert",
+        "ja4": "Vi rører aldri pengene dine",
+        "ja5": "Du kan stoppe alt med én stor rød knapp",
+        "neiTitle": "Dette lover vi aldri",
+        "nei1": "Vi lover aldri gevinst — ingen kan garantere det i krypto",
+        "nei2": "Vi viser aldri tall vi ikke kan dokumentere",
+        "nei3": "Vi tar aldri ut penger fra kontoen din",
+        "nei4": "Vi skjuler aldri risiko i liten skrift",
+        "nei5": "Vi selger aldri drømmen om å bli rik fort"
+      },
+      "backtest": {
+        "title": "Beviset: 90 dager med ekte data",
+        "subtitle": "Vi kjører strategien mot faktiske historiske kurser — og viser deg utfallet.",
+        "label": "Slik hadde det gått med 100 000 kr siste 90 dager.",
+        "m1Title": "Ekte kursdata",
+        "m1Desc": "Kurser hentet fra faktiske børsdata, dag for dag.",
+        "m2Title": "Gebyr inkludert",
+        "m2Desc": "Vi trekker fra handelsgebyr og slippage i regnestykket — slik det ville vært i virkeligheten.",
+        "m3Title": "Alt vises",
+        "m3Desc": "Også periodene hvor strategien gikk på tap. Du får hele bildet.",
+        "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning."
+      },
+      "steg": {
+        "title": "Slik kommer du i gang",
+        "s1Title": "Lag gratis konto",
+        "s1Desc": "E-post er alt som trengs. Under ett minutt.",
+        "s2Title": "Få 100 000 kr lekepenger",
+        "s2Desc": "Ekte markedspriser, null ekte risiko.",
+        "s3Title": "Start Piloten",
+        "s3Desc": "Den handler og forklarer. Du lærer underveis."
+      },
+      "founder": {
+        "title": "De 100 første får gratis tilgang — for alltid",
+        "subtitle": "Som takk for at dere tester Klarpakke først, får de 100 første registrerte gratis tilgang for livet — og 5000 KLT (Klarpakke-tokens).",
+        "cta": "Sikre din plass"
+      },
+      "faq": {
+        "title": "Spørsmål og svar",
+        "q1": "Hvorfor skal jeg stole på dere?",
+        "a1": "Det skal du ikke — ikke uten bevis. Derfor viser vi deg backtest-resultatene med gebyr inkludert, lar deg trene gratis med lekepenger, og rører aldri pengene dine. Still oss gjerne spørsmål på post@klarpakke.no.",
+        "q2": "Koster det noe?",
+        "a2": "Nei. Beta er gratis, og paper trading er gratis og ubegrenset. Senere kommer betalte planer — da betaler du for verktøyene, aldri for avkastningsløfter.",
+        "q3": "Hva er en backtest?",
+        "a3": "Vi kjører handelsstrategien mot historiske kursdata og viser hva utfallet ville blitt. Det forteller deg hvordan strategien har oppført seg — ikke hvordan fremtiden blir.",
+        "q4": "Kan jeg tape ekte penger?",
+        "a4": "Nei — ikke i beta. Du handler med lekepenger. Når live trading åpner etter beta, er det et aktivt valg du tar selv, og vi minner deg på risikoen først.",
+        "q5": "Hva er KLT?",
+        "a5": "KLT er Klarpakke-tokens — vår takk til tidlige testere. De 100 første registrerte får 5000 KLT og gratis tilgang for livet."
+      }
     }
   },
   "tradingGuide": {

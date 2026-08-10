@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<!--
+  KLARPAKKE LANDING 2026 — VARIANT A «FJORDRO»
+  Retning: Tillit først. Rolig, norsk, stor skrift. For «mormor på 60».
+  Palett: mørk blå #0f172a · grønn #22c55e · brand-blå #0052ff · Inter
+  Copy: KUN faktagodkjent. Dynamiske felt merket {{...}} fylles fra API — ALDRI hardkod.
+-->
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klarpakke — 100 000 kr i lekepenger. Ekte markeder. Null risiko.</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-soft: #1e293b;
+    --bg-card: #16203a;
+    --text: #f1f5f9;
+    --text-dim: #b6c2d4;
+    --green: #22c55e;
+    --green-dark: #16a34a;
+    --blue: #0052ff;
+    --blue-soft: #3d7aff;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --border: #2d3d5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 20px; } /* mormor-standard: aldri under 20px */
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  /* ── Topbar ── */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 0;
+  }
+  .logo { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em; }
+  .logo span { color: var(--blue-soft); }
+  .topbar-cta {
+    background: var(--green); color: #06280f; font-weight: 700;
+    padding: 12px 24px; border-radius: 12px; text-decoration: none;
+    font-size: 1rem; min-height: 48px; display: inline-flex; align-items: center;
+  }
+
+  /* ── Hero ── */
+  .hero { padding: 3.5rem 0 3rem; text-align: center; }
+  .badge {
+    display: inline-block; background: rgba(34,197,94,.12);
+    border: 1px solid rgba(34,197,94,.4); color: #86efac;
+    padding: 10px 20px; border-radius: 999px; font-size: .9rem;
+    font-weight: 600; margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.12; letter-spacing: -0.03em; font-weight: 800;
+    max-width: 16ch; margin: 0 auto 1.25rem;
+  }
+  h1 .gronn { color: var(--green); }
+  .hero-sub {
+    font-size: 1.15rem; color: var(--text-dim);
+    max-width: 42ch; margin: 0 auto 2rem;
+  }
+  .cta-stor {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--green); color: #06280f;
+    font-size: 1.3rem; font-weight: 800;
+    padding: 20px 48px; border-radius: 16px; text-decoration: none;
+    min-height: 64px; box-shadow: 0 8px 30px rgba(34,197,94,.25);
+  }
+  .cta-sekunder {
+    display: block; margin-top: 1rem; color: var(--blue-soft);
+    text-decoration: none; font-size: 1rem; font-weight: 600;
+  }
+  .tillit-bar {
+    margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 12px 28px;
+    justify-content: center; color: var(--text-dim); font-size: .9rem;
+  }
+  .tillit-bar span::before { content: "✓ "; color: var(--green); font-weight: 700; }
+
+  /* ── Seksjoner ── */
+  section { padding: 3rem 0; }
+  .seksjon-tittel {
+    font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800;
+    letter-spacing: -0.02em; text-align: center; margin-bottom: .75rem;
+  }
+  .seksjon-ingress {
+    text-align: center; color: var(--text-dim);
+    max-width: 48ch; margin: 0 auto 2.5rem; font-size: 1.05rem;
+  }
+
+  /* ── 3 steg ── */
+  .steg-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .steg-grid { grid-template-columns: repeat(3, 1fr); } }
+  .steg {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px 28px;
+  }
+  .steg-nummer {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--blue); color: #fff; font-weight: 800; font-size: 1.4rem;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+  }
+  .steg h3 { font-size: 1.25rem; margin-bottom: 8px; }
+  .steg p { color: var(--text-dim); font-size: 1rem; }
+
+  /* ── Trygghet ── */
+  .trygghet { background: var(--bg-soft); border-radius: 28px; padding: 3rem 2rem; }
+  .trygghet-grid { display: grid; gap: 24px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .trygghet-grid { grid-template-columns: repeat(3, 1fr); } }
+  .trygghet-kort h3 { font-size: 1.15rem; margin-bottom: 8px; }
+  .trygghet-kort h3::before { content: "🛡️ "; }
+  .trygghet-kort p { color: var(--text-dim); font-size: .95rem; }
+
+  /* ── Risiko-ærlighet ── */
+  .risiko {
+    border: 2px solid var(--yellow); border-radius: 20px;
+    padding: 28px; margin-top: 2.5rem; background: rgba(234,179,8,.06);
+  }
+  .risiko h3 { color: var(--yellow); font-size: 1.15rem; margin-bottom: 8px; }
+  .risiko p { color: var(--text); font-size: 1rem; }
+
+  /* ── Backtest-bevis ── */
+  .bevis { text-align: center; }
+  .bevis-tall {
+    font-size: clamp(2.5rem, 7vw, 4rem); font-weight: 800; color: var(--green);
+    letter-spacing: -0.03em; margin: 1rem 0 .25rem;
+  }
+  .bevis-tall .slot { border-bottom: 3px dashed rgba(34,197,94,.5); }
+  .bevis-label { color: var(--text-dim); font-size: 1rem; max-width: 44ch; margin: 0 auto; }
+  .bevis-disclaimer {
+    margin-top: 1.5rem; font-size: .85rem; color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ── Founder-banner ── */
+  .founder {
+    background: linear-gradient(135deg, rgba(0,82,255,.18), rgba(34,197,94,.12));
+    border: 1px solid var(--border); border-radius: 28px;
+    padding: 3rem 2rem; text-align: center;
+  }
+  .founder h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: .75rem; }
+  .founder p { color: var(--text-dim); max-width: 46ch; margin: 0 auto 1.5rem; }
+
+  /* ── FAQ ── */
+  .faq { max-width: 720px; margin: 0 auto; }
+  details {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; margin-bottom: 12px; overflow: hidden;
+  }
+  summary {
+    padding: 20px 24px; font-weight: 700; font-size: 1.05rem;
+    cursor: pointer; list-style: none; min-height: 48px;
+  }
+  summary::after { content: "+"; float: right; color: var(--blue-soft); font-size: 1.4rem; }
+  details[open] summary::after { content: "–"; }
+  details p { padding: 0 24px 20px; color: var(--text-dim); font-size: 1rem; }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border); padding: 2.5rem 0;
+    text-align: center; color: var(--text-dim); font-size: .9rem;
+  }
+  footer a { color: var(--blue-soft); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="topbar">
+    <div class="logo">Klarpakke<span>.</span></div>
+    <a class="topbar-cta" href="/no/register">Start gratis</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="badge">🔬 Gratis beta — kun i Norge · 5000 KLT (Klarpakke-tokens) til de 100 første 🪙</div>
+    <h1>100 000 kr i <span class="gronn">lekepenger</span>.<br>Ekte markeder. Null risiko.</h1>
+    <p class="hero-sub">Tren på kryptohandel med en AI-pilot som forklarer hvert eneste steg på norsk. Helt gratis — og du risikerer aldri en ekte krone.</p>
+    <a class="cta-stor" href="/no/register">Start gratis →</a>
+    <a class="cta-sekunder" href="#slik-virker-det">Se hvordan det virker (30 sekunder)</a>
+    <div class="tillit-bar">
+      <span>Ingen kredittkort</span>
+      <span>Ingen KYC</span>
+      <span>Ingen binding</span>
+      <span>Norsk plattform</span>
+    </div>
+  </section>
+
+  <!-- SLIK VIRKER DET -->
+  <section id="slik-virker-det" class="wrap">
+    <h2 class="seksjon-tittel">Slik virker det</h2>
+    <p class="seksjon-ingress">Tre steg. Ingen innstillinger. Ingen fagspråk.</p>
+    <div class="steg-grid">
+      <div class="steg">
+        <div class="steg-nummer">1</div>
+        <h3>Lag en gratis konto</h3>
+        <p>Du registrerer deg med e-post. Det tar under ett minutt, og du trenger ikke legitvere deg.</p>
+      </div>
+      <div class="steg">
+        <div class="steg-nummer">2</div>
+        <h3>Få 100 000 kr i lekepenger</h3>
+        <p>Pengene er ikke ekte — men prisene er. Du handler på de samme kursene som profesjonelle tradere.</p>
+      </div>
+      <div class="steg">
+        <div class="steg-nummer">3</div>
+        <h3>Trykk «Start Piloten»</h3>
+        <p>AI-piloten handler for deg — og forklarer hvert kjøp og salg med én enkel norsk setning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRYGGHET -->
+  <section class="wrap">
+    <div class="trygghet">
+      <h2 class="seksjon-tittel">Vi er et verktøy — aldri en børs</h2>
+      <p class="seksjon-ingress">Klarpakke eier ikke pengene dine, og skal aldri gjøre det.</p>
+      <div class="trygghet-grid">
+        <div class="trygghet-kort">
+          <h3>Vi rører aldri pengene dine</h3>
+          <p>Når live trading åpner etter beta, kobler du din egen exchange-konto (OKX eller Kraken). Pengene blir liggende hos deg — vi får aldri tilgang til å ta dem ut.</p>
+        </div>
+        <div class="trygghet-kort">
+          <h3>Du lærer uten risiko først</h3>
+          <p>Paper trading med 100 000 kr lekepenger er gratis og ubegrenset. Du trener så lenge du vil før du eventuelt går live.</p>
+        </div>
+        <div class="trygghet-kort">
+          <h3>Én person du kan nå</h3>
+          <p>Spørsmål? Skriv til <a href="mailto:post@klarpakke.no" style="color:var(--blue-soft)">post@klarpakke.no</a> — du får svar fra et menneske i Norge, ikke en chatbot.</p>
+        </div>
+      </div>
+      <div class="risiko">
+        <h3>⚠️ Vi er ærlige om risiko</h3>
+        <p>Krypto kan falle kraftig i verdi. Ingen — heller ikke en AI — kan love deg gevinst. Derfor starter du med lekepenger: Du kan lære alt, og tape ingenting.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BACKTEST-BEVIS -->
+  <section class="bevis wrap">
+    <h2 class="seksjon-tittel">Vi viser deg regnestykket</h2>
+    <p class="seksjon-ingress">Før du stoler på Piloten, får du se hvordan strategien ville gått på ekte historiske kurser — gebyr og alt inkludert.</p>
+    <!-- DYNAMISK FELT: hentes fra backtest-API (Oppgave 2.3). ALDRI hardkod et tall her. -->
+    <div class="bevis-tall"><span class="slot">{{backtest_resultat_90d}}</span></div>
+    <p class="bevis-label">Slik hadde det gått med 100 000 kr siste 90 dager, basert på ekte kursdata.</p>
+    <p class="bevis-disclaimer">Historisk avkastning er ingen garanti for fremtidig avkastning.</p>
+  </section>
+
+  <!-- FOUNDER -->
+  <section class="wrap">
+    <div class="founder">
+      <h2>De 100 første får gratis tilgang — for alltid</h2>
+      <p>Som takk for at dere tester Klarpakke først, får de 100 første registrerte gratis tilgang for livet — og 5000 KLT (Klarpakke-tokens).</p>
+      <a class="cta-stor" href="/no/register">Sikre din plass →</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="wrap">
+    <h2 class="seksjon-tittel">Spørsmål og svar</h2>
+    <p class="seksjon-ingress">Korte svar. Ingen småskrift.</p>
+    <div class="faq">
+      <details>
+        <summary>Koster det noe?</summary>
+        <p>Nei. Klarpakke er i gratis beta, og paper trading med 100 000 kr lekepenger er gratis og ubegrenset. Betalte planer kommer senere — da betaler du for tilgang til verktøyene, aldri for løfter om avkastning.</p>
+      </details>
+      <details>
+        <summary>Er det ekte penger?</summary>
+        <p>Nei. Du handler med lekepenger, men på ekte markedsdata — de samme prisene som i det virkelige markedet. Du kan aldri tape en ekte krone i beta.</p>
+      </details>
+      <details>
+        <summary>Er dere en kryptobørs?</summary>
+        <p>Nei. Klarpakke er et verktøy og opplæringsplattform. Når live trading åpner etter beta, kobler du din egen exchange-konto til — vi rører aldri pengene dine.</p>
+      </details>
+      <details>
+        <summary>Hva er KLT?</summary>
+        <p>KLT er Klarpakke-tokens — vår egen belønning til tidlige testere. De 100 første registrerte får 5000 KLT.</p>
+      </details>
+      <details>
+        <summary>Når kan jeg trade med ekte penger?</summary>
+        <p>Live trading åpner etter beta. Det lønner seg å øve nå — de som trener med lekepenger først, tar bedre beslutninger når det gjelder.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Klarpakke</strong> — norsk verktøy for kryptotrening · <a href="mailto:post@klarpakke.no">post@klarpakke.no</a></p>
+    <p style="margin-top:8px">Beta · Kun Norge · Live trading kommer · Historisk avkastning er ingen garanti for fremtidig avkastning</p>
+  </div>
+</footer>
+
+</body>
+</html>
