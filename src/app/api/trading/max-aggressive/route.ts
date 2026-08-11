@@ -16,7 +16,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { decryptApiKey } from "@/lib/crypto/encrypt-api-keys";
-import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 
 export const runtime = "nodejs"; // @supabase/supabase-js krever process.version — krasjer i edge (500 i prod)
 
@@ -193,14 +192,11 @@ export async function GET(req: Request) {
       ? parseFloat(position.uplRatio) * 100
       : 0;
 
-    // Ekte USD→NOK-kurs (DB > env > Kraken-live > 9.6-fallback) — P1-C 2026-08-11
-    const rate = await getUsdtToNokRateAsync(supabase);
-
     return NextResponse.json({
       connected: true,
       balance,
       quoteCcy,
-      balanceNok: Math.round(balance * rate * 100) / 100,
+      balanceNok: Math.round(balance * 9.6 * 100) / 100,
       dailyPnl,
       dailyPnlPct,
       position: position
@@ -215,11 +211,9 @@ export async function GET(req: Request) {
     });
   } catch (err) {
     console.error("[max-aggressive] error:", (err as Error).message);
-    // Graceful degradation: return connected=false i stedet for 500 —
-    // dashboardet skal overleve et sekunds OKX-nedetid uten å krasje.
     return NextResponse.json(
-      { connected: false, balance: 0, balanceNok: 0, error: "OKX unavailable" },
-      { status: 200 },
+      { error: "Kunne ikke hente OKX-data" },
+      { status: 500 },
     );
   }
 }

@@ -438,9 +438,9 @@ describe("getUserDashboardMetrics", () => {
     expect(result.accountBalance).toBe(80000);
   });
 
-  // ── P1-C (2026-08-11): live-kapital henter OKX-saldo, ikke Kraken ──────
+  // ── P1-C (2026-08-11): live-kapital bruker ekte rate, ikke 9.6 ──────
 
-  it("P1-C: live-kapital kommer fra getOkxLiveBalance (OKX), ikke Kraken", async () => {
+  it("P1-C: live-kapital multipliseres med ekte USDT→NOK-rate", async () => {
     const supabase = createMockSupabase({
       rpcResult: {
         total_pnl: 0,
@@ -450,18 +450,42 @@ describe("getUserDashboardMetrics", () => {
         total_capital: 0,
       },
     });
+    // Mock kraken_live_state → total_usdc 100; rate 10.5 → 1050 NOK
+    const fromMock = (supabase as unknown as { from: ReturnType<typeof vi.fn> })
+      .from;
+    fromMock.mockImplementation((table: string) => {
+      if (table === "kraken_live_state") {
+        const builder = {
+          select: vi.fn(() => builder),
+          eq: vi.fn(() => builder),
+          order: vi.fn(() => builder),
+          limit: vi.fn(() => builder),
+          maybeSingle: vi.fn(() =>
+            Promise.resolve({ data: { total_usdc: 100 }, error: null }),
+          ),
+        };
+        return builder;
+      }
+      // Ellers: eksisterende mock-adferd — vi bygger en tom builder
+      const builder = {
+        select: vi.fn(() => builder),
+        eq: vi.fn(() => builder),
+        in: vi.fn(() => builder),
+        is: vi.fn(() => builder),
+        not: vi.fn(() => builder),
+        gte: vi.fn(() => builder),
+        order: vi.fn(() => builder),
+        limit: vi.fn(() => builder),
+        maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+        single: vi.fn(() => Promise.resolve({ data: null, error: null })),
+      };
+      return builder;
+    });
 
-    // Mock getOkxLiveBalance → balanceNok=1050 (100 USDC × 10.5)
-    vi.mock("@/lib/trading/okx-live", () => ({
-      getOkxLiveBalance: vi.fn().mockResolvedValue({
-        connected: true,
-        balanceUsdc: 100,
-        balanceNok: 1050,
-        quoteCcy: "USDC",
-        dailyPnl: 0,
-        dailyPnlPct: 0,
-        position: null,
-      }),
+    // Mock rate-helperen
+    vi.mock("@/lib/trading/currency", () => ({
+      getUsdtToNokRateAsync: vi.fn().mockResolvedValue(10.5),
+      getUsdtToNokRate: vi.fn().mockReturnValue(9.6),
     }));
 
     const result = await getUserDashboardMetrics({
@@ -470,6 +494,6 @@ describe("getUserDashboardMetrics", () => {
       mode: "live",
     });
 
-    expect(result.accountBalance).toBe(1050); // OKX-balansen, ikke Kraken
+    expect(result.accountBalance).toBe(1050); // 100 USDC × 10.5, ikke 960
   });
 });
