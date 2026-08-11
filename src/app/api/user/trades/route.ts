@@ -51,8 +51,15 @@ export async function GET(request: NextRequest) {
       );
 
     let sessionIds: string[];
+    // Sesjoner som har LEVENDE posisjoner (active/paused). Stoppede og
+    // arkiverte sesjoner er fryst historikk — trades fra dem vises i
+    // ledgeren, men deres kjøp er ALDRI «åpne posisjoner» (fantom-
+    // posisjoner, samme klasse som portfolio/summary-fiksen 2026-08-10:
+    // Tom så ADA/BTC-posisjoner fra stoppede sesjoner som levende penger).
+    let liveSessionIds: string[] = [];
     if (sessionIdValid) {
       sessionIds = [sessionIdParam];
+      liveSessionIds = [sessionIdParam];
     } else {
       // Handelshistorikken er en LEDGER: den må ALDRI miste rader. Derfor
       // hentes trades fra ALLE brukerens sesjoner — også arkiverte. Stopp
@@ -62,10 +69,13 @@ export async function GET(request: NextRequest) {
       // i VISNINGER (bot-lister), ikke i regnskapet.
       const { data: sessions } = await supabase
         .from("trading_sessions")
-        .select("id")
+        .select("id, status")
         .eq("user_id", user.id);
 
       sessionIds = (sessions ?? []).map((s) => s.id);
+      liveSessionIds = (sessions ?? [])
+        .filter((s) => s.status === "active" || s.status === "paused")
+        .map((s) => s.id);
       if (sessionIds.length === 0) {
         return NextResponse.json(
           { ok: true as const, trades: [], diagnostic_id, limit },
@@ -113,11 +123,21 @@ export async function GET(request: NextRequest) {
 
     // UI-A: åpne posisjoner (FIFO) m/ urealisert P&L. Pris-feil skal
     // aldri knekke API-et — fall tilbake til current_price_nok: null.
+    // P1 (2026-08-11): posisjoner bygges KUN fra trades i levende sesjoner
+    // (liveSessionIds = active/paused). Stoppede/arkiverte sesjoner er
+    // fryst historikk — deres kjøp er fantom-posisjoner, ikke penger
+    // brukeren har (Tom så ADA 3 253 kr + BTC 1 330 kr fra stoppede
+    // sesjoner som «åpne posisjoner» på Historikk-siden).
+    const positionTrades = liveSessionIds.length
+      ? trades.filter(
+          (t) => t.session_id && liveSessionIds.includes(t.session_id),
+        )
+      : [];
     let positions: import("@/lib/trading/me-trades-api").MePosition[] = [];
     try {
       const { computePositionsFromTrades } =
         await import("@/lib/trading/positions-from-trades");
-      const computed = computePositionsFromTrades(trades);
+      const computed = computePositionsFromTrades(positionTrades);
       if (computed.length > 0) {
         const { KrakenMarketDataProvider } =
           await import("@/lib/trading/canonical/market-data");
