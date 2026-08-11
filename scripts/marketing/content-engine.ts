@@ -57,7 +57,13 @@ interface ContentWeek {
   facebookPosts: string[];
 }
 
-const EDITORIAL_PLAN_PATH = path.resolve(process.cwd(), "REDAKTORPLAN-V2.md");
+const EDITORIAL_PLAN_CANDIDATES = [
+  path.resolve(process.cwd(), "docs/marketing/REDAKTORPLAN-V2.md"),
+  path.resolve(process.cwd(), "REDAKTORPLAN-V2.md"),
+];
+const EDITORIAL_PLAN_PATH =
+  EDITORIAL_PLAN_CANDIDATES.find((p) => existsSync(p)) ??
+  EDITORIAL_PLAN_CANDIDATES[0];
 const QUEUE_DIR = path.resolve(process.cwd(), "content/marketing/queue");
 
 const KLT_TOTAL_SLOTS = 100;
