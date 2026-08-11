@@ -1,6 +1,6 @@
 #!/bin/bash
-# MemPalace Knowledge Search v2 (Ranked)
-# Wrapper for mempalace-search.mjs
+# Honcho Knowledge Search v2 (Ranked)
+# Wrapper for honcho-search
 
 QUERY="$1"
 ROOM="${2:-all}"
@@ -12,4 +12,4 @@ if [ -z "$QUERY" ]; then
 fi
 
 # Kjør den nye JS-baserte søkemotoren med rangering
-/bin/zsh -ilc "node $(dirname "$0")/mempalace-search.mjs '$QUERY' '$ROOM' '$LIMIT'"
+/bin/zsh -ilc "node $(dirname "$0")/honcho-search.mjs '$QUERY' '$ROOM' '$LIMIT'"

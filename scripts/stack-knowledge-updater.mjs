@@ -41,7 +41,7 @@ async function scanPackageJson() {
       ccxt: packageJson.dependencies?.ccxt || 'not installed'
     },
     ai: {
-      mempalace: '3.0.0' // From pip
+
     }
   };
   

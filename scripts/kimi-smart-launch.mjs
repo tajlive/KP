@@ -3,9 +3,9 @@
  * 🚀 KIMI Smart Launch v3.0 — KIMI Code 0.18.0 Session Orchestrator
  *
  * One command to rule them all:
- *   - Pre-session: MemPalace context + skill classification
+ *   - Pre-session: Honcho context + skill classification
  *   - Launch: KIMI with optimal skill directory
- *   - Post-session: Self-improve + MemPalace sync + verify recommendations
+ *   - Post-session: Self-improve + Honcho sync + verify recommendations
  *
  * Usage:
  *   node scripts/kimi-smart-launch.mjs              # Auto-detect from git
@@ -97,49 +97,6 @@ function fetchGitContext() {
   } catch {
     return { branch: 'unknown', lastCommit: 'unknown', modified: [] };
   }
-}
-
-function fetchMemPalaceBrief(query) {
-  try {
-    const brief = execSync(
-      `node "${KP_DIR}/scripts/kimi-smart-brief.mjs" "${query.replace(/"/g, '\\"')}" 2>&1`,
-      { cwd: KP_DIR, encoding: 'utf8', timeout: 5000 }
-    );
-    return brief;
-  } catch (e) {
-    return null;
-  }
-}
-
-function fetchGitDiffMemPalaceContext(modifiedFiles) {
-  if (!modifiedFiles || modifiedFiles.length === 0) return null;
-  const contexts = [];
-  // Group files by domain for smarter queries
-  const domainPatterns = {
-    trading: /trading|auto-trading|bot|strategy|binance/,
-    auth: /auth|oauth|session|middleware/,
-    database: /migration|supabase|postgres/,
-    frontend: /components|page\.tsx|layout/,
-    api: /app\/api/,
-  };
-  const domains = new Set();
-  for (const f of modifiedFiles) {
-    for (const [domain, pattern] of Object.entries(domainPatterns)) {
-      if (pattern.test(f)) domains.add(domain);
-    }
-  }
-  for (const domain of domains) {
-    try {
-      const result = execSync(
-        `node "${KP_DIR}/scripts/mempalace-search.mjs" "${domain}" 2>&1 | head -20`,
-        { cwd: KP_DIR, encoding: 'utf8', timeout: 3000 }
-      );
-      if (result && result.trim()) {
-        contexts.push(`### ${domain}\n${result.trim()}`);
-      }
-    } catch { /* ignore */ }
-  }
-  return contexts.length ? contexts.join('\n\n') : null;
 }
 
 function checkPreviousSession(modifiedFiles) {
@@ -234,31 +191,6 @@ function runPreSession(prompt, forcedAgent, forcedMcp) {
     log('🔮', `Domain detected: ${agent.name} (confidence: ${classification.confidence})`);
   }
 
-  // MemPalace brief
-  log('🧠', 'Fetching MemPalace context...');
-  const brief = fetchMemPalaceBrief(prompt || git.lastCommit || 'general');
-
-  // Velg MCP-profil (informasjon; KIMI Code 0.18.0 bruker prosjektets MCP-konfigurasjon)
-  const targetMcp = forcedMcp || agent.mcp;
-  log('⚙️', `Target MCP profile: ${targetMcp}`);
-
-  // Git-kontekst
-  log('🔀', `Branch: ${git.branch} | Last: ${git.lastCommit}`);
-  if (git.modified.length > 0) {
-    log('📁', `Modified files (${git.modified.length}):`);
-    for (const f of git.modified.slice(0, 5)) {
-      log('   ', `  - ${f}`);
-    }
-    if (git.modified.length > 5) log('   ', `  ... and ${git.modified.length - 5} more`);
-  }
-
-  // Git-diff MemPalace context injection
-  let diffContext = null;
-  if (git.modified.length > 0) {
-    log('🧠', 'Fetching MemPalace context for modified files...');
-    diffContext = fetchGitDiffMemPalaceContext(git.modified);
-  }
-
   // Session resumption check
   const previousSession = checkPreviousSession(git.modified);
   if (previousSession) {
@@ -281,21 +213,19 @@ ${prompt || '(auto-detected from git)'}
 - Skills dir: .kimi/skills/${agent.skillsDir}
 
 ## ⚙️ MCP
-- Profile: ${targetMcp} (managed by KIMI Code project config)
+- Profile: minimal (managed by KIMI Code project config)
 
 ## 🔀 Git
 - Branch: ${git.branch}
 - Commit: ${git.lastCommit}
 - Modified: ${git.modified.length} files
 
-${diffContext ? `## 🏛️ MemPalace Context (from modified files)\n${diffContext}\n` : ''}
 ${previousSession ? `## ⏮️ Previous Session (WIP/NO-GO)\n\`\`\`\n${previousSession.content}\n\`\`\`\n` : ''}
 
 ## 📝 Instructions
-1. MemPalace search already attempted — results above
-2. Use skills-dir: .kimi/skills/${agent.skillsDir}
-3. Self-correct after >30 lines
-4. Memory sync after task
+1. Use skills-dir: .kimi/skills/${agent.skillsDir}
+2. Self-correct after >30 lines
+3. Memory sync after task
 5. End with status block
 ${previousSession ? '6. ⏮️ Previous session was WIP/NO-GO — consider continuing from where it left off' : ''}
 
@@ -306,19 +236,11 @@ ${previousSession ? '6. ⏮️ Previous session was WIP/NO-GO — consider conti
 
   writeFileSync(sessionFile, sessionContext);
 
-  // Print brief hvis tilgjengelig
-  if (brief) {
-    log('', '');
-    log('📋', '=== MEMPALACE BRIEF ===');
-    console.error(brief);
-    log('', '=== END BRIEF ===');
-  }
-
   // Print instruksjoner for brukeren
   log('', '');
   log('🚀', 'READY TO LAUNCH KIMI');
   log('   ', `Skill: ${agent.name} (.kimi/skills/${agent.skillsDir})`);
-  log('   ', `MCP:   ${targetMcp}`);
+  log('   ', `MCP:   minimal`);
   log('   ', `Context saved to: ${sessionFile}`);
   log('', '');
   log('💡', 'Start KIMI with:');
@@ -327,7 +249,7 @@ ${previousSession ? '6. ⏮️ Previous session was WIP/NO-GO — consider conti
   log('💡', 'Or paste the brief above into your existing KIMI session.');
   log('', '');
 
-  return { agent, targetMcp, sessionFile };
+  return { agent, sessionFile };
 }
 
 function runPostSession() {
@@ -553,7 +475,7 @@ function main() {
 
   // Hvis --launch flagg, start KIMI automatisk
   if (flags.autoLaunch) {
-    launchKimi(session.agent, session.targetMcp);
+    launchKimi(session.agent, 'minimal');
   } else {
     log('ℹ️', 'Pre-session complete. Start KIMI manually or re-run with --launch');
   }

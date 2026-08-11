@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 🔬 Repo Optimizer - Full oversikt for KIMI + MemPalace
+ * 🔬 Repo Optimizer - Full oversikt for KIMI + Honcho
  * 
  * Genererer komplett analyse av kodebasen:
  * - Kodekvalitet metrics

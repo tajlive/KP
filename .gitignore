@@ -228,11 +228,8 @@ klarpakke-mcp-server/node_modules/
 .mcp-cache/
 public/favicon.png
 
-# Autogenererte KIMI / MemPalace filer (skal ikke committes)
-.kimi/diary.jsonl
-.kimi/mempalace/
-.mempalace/kg-append.jsonl
-.mempalace/config.json
+# ── Autogenerert (KIMI / AI) ──
+# KIMI-kjøringsartefakter (skal ikke committes)
 
 # Script backup-filer
 scripts/*-backup.mjs
@@ -277,15 +274,10 @@ supabase/sql-scripts/grant-professor-tom-arne.sql
 storybook-static
 .env.local.save
 config/perplexity-local-mcp.json
-.mempalace/index-cache*.json
-.mempalace/index-cache*.json.gz
-.mempalace/kg.json
-.mempalace/kg.json.bak
+# ── End MemPalace-rensing ──
 # KIMI Smart Orchestrator auto-generert kontekst\n.kimi/session-summaries/
 
-# KIMI / MemPalace autogenererte rapporter
-.knowledge/session/
-.mempalace/kimi_sessions/
+# KIMI / AI autogenererte rapporter
 # Swarm auto-genererte rapporter
 .knowledge/session/
 .kimi/oauth-guard-snapshots/

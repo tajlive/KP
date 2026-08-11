@@ -79,14 +79,6 @@ const AGENTS = {
     description: '🚀 Deploy & CI/CD',
     color: '\x1b[31m'
   },
-  mempalace: {
-    skillsDir: '.kimi/skills/klarpakke-mempalace',
-    cmd: 'kimi --skills-dir .kimi/skills/klarpakke-mempalace',
-    patterns: ['mempalace', 'memory', 'kg', 'knowledge', 'diary', 'context', 'search', 'index', 'cache', 'optimize'],
-    mcp: 'minimal',
-    description: '🏛️ MemPalace',
-    color: '\x1b[36m'
-  },
   architect: {
     skillsDir: '.kimi/skills/klarpakke-architect',
     cmd: 'kimi --skills-dir .kimi/skills/klarpakke-architect',
@@ -157,35 +149,7 @@ function classifyPrompt(prompt) {
   return { agent: best[0], confidence: best[1], runnerUp: runnerUp?.[0], scores, sorted };
 }
 
-// ─── 2. MEMPALACE RETRIEVAL ───
-function getMemPalaceSnippets(prompt, agentKey, limit = 3) {
-  const snippets = [];
-  const terms = [prompt.slice(0, 60), agentKey, ...AGENTS[agentKey]?.patterns.slice(0, 2) || []];
 
-  for (const term of terms) {
-    if (!term) continue;
-    try {
-      const result = execSync(
-        `node scripts/mempalace-search.mjs "${term.replace(/"/g, '\\"')}" 2>/dev/null | head -20`,
-        { cwd: root, encoding: 'utf8', timeout: 3000 }
-      );
-      if (result.trim() && !result.includes('Ingen treff')) {
-        snippets.push(result.trim());
-      }
-    } catch { /* ignore */ }
-  }
-
-  // Dedupliser og begrens
-  const seen = new Set();
-  return snippets.filter(s => {
-    const key = s.slice(0, 100);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  }).slice(0, limit);
-}
-
-// ─── 3. KONTEKST-BYGGING ───
 function buildSmartBrief(prompt, classification) {
   const agent = AGENTS[classification.agent];
   const lines = [];
@@ -236,17 +200,6 @@ function buildSmartBrief(prompt, classification) {
     }
     lines.push('');
   } catch { /* ignore */ }
-
-  // MemPalace snippets
-  const snippets = getMemPalaceSnippets(prompt, classification.agent);
-  if (snippets.length > 0) {
-    lines.push(`${BOLD}🏛️ Relevant MemPalace Kontekst:${RESET}`);
-    for (const snippet of snippets) {
-      const preview = snippet.split('\n').slice(0, 8).join('\n   ');
-      lines.push(`   ${preview}`);
-      lines.push('');
-    }
-  }
 
   // Kritiske regler
   try {
