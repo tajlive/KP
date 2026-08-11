@@ -34,6 +34,18 @@ const INTERNAL_TO_KRAKEN: Record<string, string> = {
   // MATIC ble migrert til POL på Kraken (2024) — gamle konfigurasjoner
   // som fortsatt sier MATICUSDT må peke til POLUSD, ellers KRAKEN_PAIR_UNAVAILABLE.
   MATICUSDT: "POLUSD",
+  // USDC-kvote-par som input (OKX-live-sesjoner, 2026-08-11):
+  // Toms OKX-sesjon handler SOLUSDC internt — priskilden må akseptere
+  // USDC-par direkte, ikke bare konvertere fra USDT.
+  BTCUSDC: "XBTUSDC",
+  ETHUSDC: "ETHUSDC",
+  SOLUSDC: "SOLUSDC",
+  AVAXUSDC: "AVAXUSDC",
+  DOGEUSDC: "XDGUSDC",
+  LINKUSDC: "LINKUSDC",
+  ADAUSDC: "ADAUSDC",
+  DOTUSDC: "DOTUSDC",
+  POLUSDC: "POLUSD",
 };
 
 // Interne intervaller → Kraken OHLC-intervall i minutter
