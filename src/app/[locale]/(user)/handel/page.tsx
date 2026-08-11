@@ -6,7 +6,7 @@ import { LoginRequired } from "@/shared/ui/LoginRequired";
 import { getCockpitInitialData } from "@/features/trading-cockpit/server/getCockpitInitialData";
 import { CockpitProvider } from "@/features/trading-cockpit/hooks/useCockpit";
 import { TradingCockpit } from "@/features/trading-cockpit/components/TradingCockpit";
-import { AutopilotDashboard } from "@/features/autopilot/AutopilotDashboard";
+import { AutopilotModeGate } from "@/features/autopilot/AutopilotModeGate";
 import { InstallPrompt } from "@/shared/pwa/InstallPrompt";
 import { CockpitQueryProvider } from "@/features/trading-cockpit/components/CockpitQueryProvider";
 import { UnifiedTradeTerminal } from "@/features/trading/UnifiedTradeTerminal";
@@ -50,6 +50,11 @@ async function CockpitSection({
   return (
     <CockpitProvider initialData={initialData} userId={userId} locale={locale}>
       <TradingCockpit installPrompt={installPrompt} />
+      {/* P1.2 (2026-08-11): Autopilot-panelet (EKTE penger) ligger nå bak
+          mode-gate — rendres kun i live-modus, aldri i Lekepenger. */}
+      <div className="mt-4">
+        <AutopilotModeGate userId={userId} />
+      </div>
     </CockpitProvider>
   );
 }
@@ -81,11 +86,7 @@ export default async function TradingPage({
         />
       </Suspense>
       {/* Autopilot er uavhengig av cockpit-data — streamer umiddelbart med egen loading-state */}
-      <div className="mt-4">
-        <Suspense fallback={null}>
-          <AutopilotDashboard userId={user.id} />
-        </Suspense>
-      </div>
+      {/* P1.2: flyttet inn i CockpitSection bak AutopilotModeGate */}
 
       {/* P0-fiks 2026-08-08: UnifiedTradeTerminal var ubrukt siden /trade ble
           fjernet — brukeren kunne ikke starte manuell handel med lekepenger.
