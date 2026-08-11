@@ -110,6 +110,10 @@ export interface TradingSession {
   // Capital & Risk
   current_capital: number;
   initial_capital: number;
+  /** NOK-konvertert kapital (live: USDC→NOK, paper: lik current_capital). */
+  current_capital_nok?: number | null;
+  /** NOK-denominert startkapital — riktig baseline for drawdown-beregning. */
+  starting_capital_nok?: number | null;
   allocated_capital_pct: number;
   phase: TradingPhase;
   risk_config: RiskConfig;

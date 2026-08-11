@@ -279,13 +279,21 @@ function isEnsembleFallbackOnCooldown(sessionId: string): boolean {
 }
 
 /**
- * Minimum order value per trading mode. Paper-kapital er NOK (100 NOK ≈
+ * Minimum order value per trading mode og børs. Paper-kapital er NOK (100 NOK ≈
  * 10 USDT), live-kapital er USDT → live-terskelen må være i USDT.
  * Live-fiks 2026-08-01: live-sesjoner ble holdt på ordrer på 75 USDT
  * (innenfor Kraken-minste) fordi NOK-terskelen ble brukt.
+ * OKX-fiks 2026-08-11: $10-minimumet var en Kraken-tids konstant (0.80% fee
+ * krever store ordrer). OKX (0.10% fee, break-even 0.20%/trade) gjør små
+ * ordrer lønnsomme → 1.5 USDC. Uten dette avvises ALLE Pilot-kjøp
+ * (grid $5, DCA $2) stille på 101.66 USDC-kapital.
  */
-export function minOrderValueForMode(mode: string | null | undefined): number {
-  return mode === "live" ? 10 : 100;
+export function minOrderValueForMode(
+  mode: string | null | undefined,
+  exchange?: "kraken" | "okx",
+): number {
+  if (mode !== "live") return 100;
+  return exchange === "okx" ? 1.5 : 10;
 }
 
 /**
@@ -1042,9 +1050,13 @@ async function processSession(
       if (!regimeGate.allowed) {
         // Grid-unntak (2026-08-02): grid har egen 25% katastrofe-SL + DCA.
         // Mekaniske nivå-kjøp skal ikke stoppes av SMA-regime — men vi logger det.
+        // simple_grid-unntak (2026-08-11): har egen dd-gate (>20% fra 30d-topp),
+        // posisjons-tak 60% og «slipp posene»-likvidering — sterkere bremser enn
+        // Fase2-gaten. Uten unntak blokkeres ALLE Pilot-kjøp i trend_down.
         const isGrid =
           (signal.reason ?? "").includes("Grid buy") ||
-          (signal.reason ?? "").includes("DCA buy");
+          (signal.reason ?? "").includes("DCA buy") ||
+          resolvedEngine === "simple_grid";
         if (!isGrid) {
           try {
             await db.from("trading_logs").insert({
@@ -1119,10 +1131,17 @@ async function processSession(
     // Live-sesjoner har USDT-kapital og skal IKKE konverteres.
     const tradeAmount = session.current_capital * positionSize;
 
+    // Exchange-aware minimum (2026-08-11): OKX (0.10% fee) gjør små ordrer
+    // lønnsomme — resolve børsen samme vei som ExecutorFactory.
+    const liveExchange =
+      session.mode === "live"
+        ? await ExecutorFactory.resolveLiveExchange(db, session.user_id)
+        : undefined;
+
     // Minimum order value — 10 USD ≈ 100 NOK (var kommentert $10 men
     // sammenlignet NOK → reell terskel ~1 USD). Paper-kapital er NOK,
     // live-kapital er USDT → terskelen må følge kapitalens valuta.
-    if (tradeAmount < minOrderValueForMode(session.mode)) {
+    if (tradeAmount < minOrderValueForMode(session.mode, liveExchange)) {
       // Diagnostikk: logg hvorfor trade stoppes på minsteverdi
       if (resolvedEngine === "grid") {
         try {
@@ -1132,7 +1151,7 @@ async function processSession(
             action: "grid_below_min_order",
             details: {
               trade_amount: tradeAmount,
-              min_order: minOrderValueForMode(session.mode),
+              min_order: minOrderValueForMode(session.mode, liveExchange),
               position_size: positionSize,
               capital: session.current_capital,
               signal_reason: signal.reason ?? null,
@@ -1602,9 +1621,33 @@ async function processSession(
       const matchedQty = Math.min(quantity, positionQty);
       if (matchedQty > 0) {
         try {
-          const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
-          realizedPnl = sellResult.realizedPnl;
-          updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
+          // LOT_ID-FIKS (2026-08-11): strategien (simple_grid) velger DEN
+          // profitable loten som skal selges — ikke eldste FIFO. Samme bug-
+          // klasse som backtest-simulatoren (falske tap, feil nivå-sporing).
+          const ønsketLotId = signal.indicators?.lot_id as string | undefined;
+          const valgtLot = ønsketLotId
+            ? ledger.lots.find((l) => l.id === ønsketLotId)
+            : undefined;
+
+          if (valgtLot) {
+            const solgtKvantum = Math.min(matchedQty, valgtLot.quantity);
+            realizedPnl =
+              (currentPrice - valgtLot.entryPrice) * solgtKvantum;
+            updatedLedgerState = {
+              ...ledger,
+              lots: ledger.lots
+                .map((l) =>
+                  l.id === valgtLot.id
+                    ? { ...l, quantity: l.quantity - solgtKvantum }
+                    : l,
+                )
+                .filter((l) => l.quantity > 1e-10),
+            };
+          } else {
+            const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
+            realizedPnl = sellResult.realizedPnl;
+            updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
+          }
         } catch {
           // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
           const rawEntryPrice = session.open_position?.entry_price;
@@ -2409,13 +2452,18 @@ export async function GET(req: NextRequest) {
           ? s.open_position.quantity *
             usdtToNok(currentPriceUsdt, getUsdtToNokRate())
           : 0;
-      const equity = s.current_capital + positionValueNok;
+      // NOK-denominert equity: current_capital_nok er rate-konvertert for
+      // live (USDC→NOK) og lik current_capital for paper (NOK). Å blande
+      // rå current_capital (USDC for live) mot NOK-initial ga 93%-fantom-
+      // drawdown og stoppet Toms OKX-live-sesjon 2026-08-11 20:10.
+      const equity =
+        (s.current_capital_nok ?? s.current_capital) + positionValueNok;
 
       const existing = userPortfolioMap.get(s.user_id) || {
         initial: 0,
         equity: 0,
       };
-      existing.initial += s.initial_capital;
+      existing.initial += s.starting_capital_nok ?? s.initial_capital;
       existing.equity += equity;
       userPortfolioMap.set(s.user_id, existing);
     }
