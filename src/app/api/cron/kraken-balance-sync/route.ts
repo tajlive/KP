@@ -51,10 +51,9 @@ export async function POST(request: NextRequest) {
         const apiSecret = await decryptApiKey(user.api_secret_encrypted);
         const client = new KrakenClient(apiKey, apiSecret);
 
-        const [balance, openOrders] = await Promise.all([
-          client.getBalance(),
-          client.getOpenOrders(),
-        ]);
+        // Hent balance + åpne ordre — serielt (samme API-nøkkel, nonce må være unik)
+        const balance = await client.getBalance();
+        const openOrders = await client.getOpenOrders();
 
         // Priser for ikke-USDC-assets (XXBT, XETH, XSOL, ZEUR...)
         const tickerPairs: string[] = [];
