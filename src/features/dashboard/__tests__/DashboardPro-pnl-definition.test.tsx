@@ -83,7 +83,8 @@ describe("DashboardPro avkastningsdefinisjon (FIKS 8)", () => {
 
     render(<DashboardPro stats={stats} preferredTradingMode="paper" />);
 
-    // StatsGrid «Total avkastning» = −830 kr (RPC total_pnl)
-    expect(screen.getByText(/-830/)).toBeTruthy();
+    // StatsGrid «Total avkastning» = −830 kr (RPC total_pnl).
+    // Vises i hero og StatsGrid avhengig av render-timing → getAllByText.
+    expect(screen.getAllByText(/-830/).length).toBeGreaterThan(0);
   });
 });
