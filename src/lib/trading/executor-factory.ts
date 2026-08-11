@@ -35,17 +35,15 @@ export class ExecutorFactory {
       return new PaperExecutor(supabase, userId, sessionId);
     }
 
-    // Live mode — EU/EØS-fakta (2026): Kraken er primær børs (MiCA),
-    // OKX er børs #2 (MiCA via Malta, lavere fees).
-    // Kraken har prioritet — OKX brukes kun hvis brukeren ikke har Kraken.
+    // Live mode — EU/EØS-fakta (2026): Kraken og OKX er begge MiCA-regulert.
+    // Kraken har prioritet — OKX brukes kun hvis brukeren ikke har aktiv Kraken.
     const krakenExecutor = await KrakenExecutor.fromUser(supabase, userId);
     if (krakenExecutor) {
       return krakenExecutor;
     }
 
-    // OKX er børs #2 — KILL SWITCH: OKX_ENABLED må være "true" i miljøet.
-    // Default off — OKX eksponeres ikke for live-handel før flagget er satt
-    // (etter broker-godkjenning + Fase 5-verifisering).
+    // OKX er børs #2 — OKX_ENABLED må være "true" i miljøet.
+    // Tom sin konto (2026-08-11): Kraken-nøkkel revokert → OKX er aktiv børs.
     const okxEnabled = process.env.OKX_ENABLED === "true";
     if (okxEnabled) {
       const okxExecutor = await OkxExecutor.fromUser(supabase, userId);
@@ -102,7 +100,7 @@ export class ExecutorFactory {
 
     const tierOk = ["bachelor", "master", "phd", "professor"].includes(profile.tier);
 
-    // EU/EØS (2026): kun Kraken-nøkler teller.
+    // EU/EØS (2026): Kraken ELLER OKX-nøkler teller for live-tilgang.
     const { data: krakenKeys } = await supabase
       .from("user_kraken_keys")
       .select("id")
@@ -111,6 +109,19 @@ export class ExecutorFactory {
       .limit(1)
       .maybeSingle();
 
-    return tierOk && Boolean(krakenKeys);
+    const okxEnabled = process.env.OKX_ENABLED === "true";
+    let okxKeys: { id: string } | null = null;
+    if (okxEnabled) {
+      const { data } = await supabase
+        .from("user_okx_keys")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+      okxKeys = data;
+    }
+
+    return tierOk && Boolean(krakenKeys || okxKeys);
   }
 }
