@@ -18,8 +18,11 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
+import { CONTAMINATION_CUTOFF } from "@/lib/trading/clean-trades";
+import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 
-type TradingSessionRow = Database["public"]["Tables"]["trading_sessions"]["Row"];
+type TradingSessionRow =
+  Database["public"]["Tables"]["trading_sessions"]["Row"];
 
 export type DashboardMode = "paper" | "live";
 
@@ -117,7 +120,12 @@ const CAPITAL_STATUSES = ["active"] as const;
 async function getAccountBalance(
   supabaseClient: SupabaseClient<Database>,
   userId: string,
-): Promise<{ available: number; invested: number; positionCount: number; updated_at: string | null } | null> {
+): Promise<{
+  available: number;
+  invested: number;
+  positionCount: number;
+  updated_at: string | null;
+} | null> {
   // 1. PRIMÆR: paper_accounts (source of truth per AGENTS.md arkitektur-sannhet #1)
   const { data: paperAccount, error: paError } = await supabaseClient
     .from("paper_accounts")
@@ -125,7 +133,11 @@ async function getAccountBalance(
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (!paError && paperAccount && typeof paperAccount.current_balance === "number") {
+  if (
+    !paError &&
+    paperAccount &&
+    typeof paperAccount.current_balance === "number"
+  ) {
     const available = paperAccount.current_balance;
     // Hent posisjonsdata (invested + positionCount) fra aktive sesjoner
     const { data: positions } = await supabaseClient
@@ -137,22 +149,34 @@ async function getAccountBalance(
     let invested = 0;
     let positionCount = 0;
     for (const s of positions ?? []) {
-      const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
+      const pos = s.open_position as {
+        quantity?: number;
+        entry_price?: number;
+      } | null;
       if (pos?.quantity && pos?.entry_price) {
         invested += pos.quantity * pos.entry_price;
         positionCount++;
       }
     }
-    return { available, invested, positionCount, updated_at: paperAccount.updated_at ?? null };
+    return {
+      available,
+      invested,
+      positionCount,
+      updated_at: paperAccount.updated_at ?? null,
+    };
   }
 
-  // 2. FALLBACK: Kun hvis paper_accounts mangler helt — summer sessions
+  // 2. FALLBACK: Kun hvis paper_accounts mangler helt — summer sessions.
+  // P1-B (2026-08-11): KUN active/paused — stoppede sesjoners
+  // current_capital_nok er fryst historikk, ikke levende penger (P0-regel,
+  // CAPITAL_STATUSES over). Å inkludere stopped er samme feilklasse som
+  // P0-inflasjonen.
   const { data: sessions, error: sessionError } = await supabaseClient
     .from("trading_sessions")
     .select("current_capital_nok, open_position")
     .eq("user_id", userId)
     .eq("mode", "paper")
-    .in("status", ["active", "paused", "stopped"]);
+    .in("status", ["active", "paused"]);
 
   if (!sessionError && sessions && sessions.length > 0) {
     let available = 0;
@@ -160,13 +184,16 @@ async function getAccountBalance(
     let positionCount = 0;
     for (const s of sessions) {
       available += Number(s.current_capital_nok ?? 0);
-      const pos = s.open_position as { quantity?: number; entry_price?: number } | null;
+      const pos = s.open_position as {
+        quantity?: number;
+        entry_price?: number;
+      } | null;
       if (pos?.quantity && pos?.entry_price) {
         invested += pos.quantity * pos.entry_price;
         positionCount++;
       }
     }
-    if (Number.isFinite(available + invested) && (available + invested) > 0) {
+    if (Number.isFinite(available + invested) && available + invested > 0) {
       return { available, invested, positionCount, updated_at: null };
     }
   }
@@ -185,28 +212,31 @@ async function getAccountInitial(
     .eq("user_id", userId)
     .maybeSingle();
   if (error) return null;
-  return typeof data?.initial_balance === "number" ? data.initial_balance : null;
+  return typeof data?.initial_balance === "number"
+    ? data.initial_balance
+    : null;
 }
 
 export async function getUserDashboardMetrics(
   input: DashboardMetricsInput,
 ): Promise<DashboardMetrics> {
-  const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
+  const {
+    supabaseClient,
+    userId,
+    mode,
+    sessionScope = "active_and_completed",
+  } = input;
 
   // Kontobalanse (source of truth) — hentes alltid for paper-modus slik at
   // ALLE retur-veier (RPC + fallbacks) leverer samme balanse-tall.
   const balResult =
-    mode === "paper"
-      ? await getAccountBalance(supabaseClient, userId)
-      : null;
+    mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
   const accountBalance = balResult?.available ?? null;
   const accountBalanceUpdatedAt = balResult?.updated_at ?? null;
   const investedCapital = balResult?.invested ?? 0;
   const positionCount = balResult?.positionCount ?? 0;
   const accountInitial =
-    mode === "paper"
-      ? await getAccountInitial(supabaseClient, userId)
-      : null;
+    mode === "paper" ? await getAccountInitial(supabaseClient, userId) : null;
 
   // Live: hent faktisk Kraken-saldo fra kraken_live_state (SSoT for live).
   // trading_sessions.current_capital_nok er FEIL — det er en beregnet verdi
@@ -221,10 +251,12 @@ export async function getUserDashboardMetrics(
       .limit(1)
       .maybeSingle();
     if (krakenState?.total_usdc != null) {
-      // USDC ≈ USD. Fallback-kurs 9.6 (samme som i exchange-rate.ts) — ingen
-      // exchange_rates-tabell finnes i DB per 2026-08-09.
-      const usdtNok = 9.6;
-      liveKrakenBalanceNok = Math.round(Number(krakenState.total_usdc) * usdtNok * 100) / 100;
+      // P1-C (2026-08-11): ekte USD→NOK-kurs fra getUsdtToNokRateAsync
+      // (DB > env > Kraken-live > 9.6-fallback) — ikke hardkodet 9.6.
+      // Samme rate-helper som /handel/execute bruker, så flater matcher.
+      const usdtNok = await getUsdtToNokRateAsync(supabaseClient);
+      liveKrakenBalanceNok =
+        Math.round(Number(krakenState.total_usdc) * usdtNok * 100) / 100;
     }
   }
 
@@ -241,7 +273,10 @@ export async function getUserDashboardMetrics(
     .limit(5);
 
   if (sessionsError) {
-    console.error("[getUserDashboardMetrics] failed to fetch recent sessions:", sessionsError.message);
+    console.error(
+      "[getUserDashboardMetrics] failed to fetch recent sessions:",
+      sessionsError.message,
+    );
   }
 
   // ------------------------------------------------------------------
@@ -256,6 +291,10 @@ export async function getUserDashboardMetrics(
         p_user_id: userId,
         p_mode: mode,
         p_statuses: statuses,
+        // P1-A (2026-08-11): samme forurensings-cutoff som getCleanTrades
+        // (Resultater-siden) — uten dette summerer RPC-en rå realized_pnl
+        // fra oversell-perioden og dashboardet avviker fra Resultater.
+        p_cutoff: CONTAMINATION_CUTOFF,
       },
     );
 
@@ -270,7 +309,12 @@ export async function getUserDashboardMetrics(
     if (!row) {
       // No data returned — valid state (no sessions/trades).
       const metrics = await fallbackMetrics(supabaseClient, userId, mode);
-      return { ...metrics, recentSessions: recentSessions || [], investedCapital, positionCount };
+      return {
+        ...metrics,
+        recentSessions: recentSessions || [],
+        investedCapital,
+        positionCount,
+      };
     }
 
     const totalPnl = Number(row.total_pnl ?? 0);
@@ -313,7 +357,10 @@ export async function getUserDashboardMetrics(
       totalTrades,
       winRate: Math.round(winRate * 100) / 100,
       totalCapital: Math.round(totalCapital * 100) / 100,
-      startingCapital: accountInitial != null ? accountInitial : Math.round(startingCapital * 100) / 100,
+      startingCapital:
+        accountInitial != null
+          ? accountInitial
+          : Math.round(startingCapital * 100) / 100,
       winningTrades,
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),
@@ -334,7 +381,12 @@ export async function getUserDashboardMetrics(
         error.message,
       );
       const metrics = await tsAggregationFallback(input);
-      return { ...metrics, recentSessions: recentSessions || [], investedCapital, positionCount };
+      return {
+        ...metrics,
+        recentSessions: recentSessions || [],
+        investedCapital,
+        positionCount,
+      };
     }
     throw error;
   }
@@ -367,7 +419,10 @@ async function getProfileFallback(
     .maybeSingle();
 
   if (profileError) {
-    console.warn("[getUserDashboardMetrics] profile fetch failed:", profileError.message);
+    console.warn(
+      "[getUserDashboardMetrics] profile fetch failed:",
+      profileError.message,
+    );
   }
 
   return {
@@ -435,7 +490,10 @@ async function tsAggregationFallback(
     .eq("user_id", userId)
     .eq("mode", mode)
     .is("archived", false)
-    .in("status", statuses as readonly ("active" | "paused" | "crashed" | "stopped")[]);
+    .in(
+      "status",
+      statuses as readonly ("active" | "paused" | "crashed" | "stopped")[],
+    );
 
   if (sessionsError) {
     throw new DashboardMetricsError(
@@ -469,6 +527,7 @@ async function tsAggregationFallback(
         .in("session_id", chunk)
         .eq("user_id", userId)
         .eq("mode", mode)
+        .gte("executed_at", CONTAMINATION_CUTOFF) // P1-A: samme cutoff som RPC/Resultater
         .not("status", "in", '("cancelled","failed")');
 
       if (tradesError) {
@@ -512,7 +571,8 @@ async function tsAggregationFallback(
       ? winningTrades / (winningTrades + losingTrades)
       : 0;
 
-  const balResult = mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
+  const balResult =
+    mode === "paper" ? await getAccountBalance(supabaseClient, userId) : null;
   const accountBalance = balResult?.available ?? null;
   const accountBalanceUpdatedAt = balResult?.updated_at ?? null;
   const investedCapital = balResult?.invested ?? 0;

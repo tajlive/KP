@@ -3,6 +3,7 @@ import {
   getUserDashboardMetrics,
   DashboardMetricsError,
 } from "../getUserDashboardMetrics";
+import { CONTAMINATION_CUTOFF } from "@/lib/trading/clean-trades";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
@@ -12,6 +13,7 @@ type MockQueryBuilder = {
   in: ReturnType<typeof vi.fn>;
   is: ReturnType<typeof vi.fn>;
   not: ReturnType<typeof vi.fn>;
+  gte: ReturnType<typeof vi.fn>;
   order: ReturnType<typeof vi.fn>;
   limit: ReturnType<typeof vi.fn>;
   maybeSingle: ReturnType<typeof vi.fn>;
@@ -65,6 +67,7 @@ function createMockSupabase(opts: MockOpts = {}): SupabaseClient<Database> {
       in: vi.fn(() => builder),
       is: vi.fn(() => builder),
       not: vi.fn(() => builder),
+      gte: vi.fn(() => builder),
       order: vi.fn(() => builder),
       limit: vi.fn(() => builder),
       maybeSingle: vi.fn(() =>
@@ -87,9 +90,15 @@ function createMockSupabase(opts: MockOpts = {}): SupabaseClient<Database> {
   sessionsBuilder.select = vi.fn(() => sessionsBuilder);
   sessionsBuilder.eq = vi.fn(() => sessionsBuilder);
   sessionsBuilder.is = vi.fn(() => sessionsBuilder);
-  sessionsBuilder.in = vi.fn(() =>
-    Promise.resolve({ data: sessions, error: sessionError }),
-  );
+  sessionsBuilder.in = vi.fn((column: string, values: string[]) => {
+    // Respekter status-filteret (active/paused/stopped) — ellers tester
+    // mock-data, ikke koden (P1-B: stopped skal IKKE telle i kapital).
+    const filtered =
+      column === "status"
+        ? sessions.filter((s) => values.includes(s.status))
+        : sessions;
+    return Promise.resolve({ data: filtered, error: sessionError });
+  });
 
   const tradesBuilder = mockQueryBuilder("trades");
   tradesBuilder.select = vi.fn(() => tradesBuilder);
@@ -332,5 +341,159 @@ describe("getUserDashboardMetrics", () => {
         mode: "paper",
       }),
     ).rejects.toBeInstanceOf(DashboardMetricsError);
+  });
+
+  // ── P1-A (2026-08-11): RPC-kall sender forurensings-cutoff ──────────
+
+  it("P1-A: RPC-kallet sender CONTAMINATION_CUTOFF som p_cutoff", async () => {
+    const supabase = createMockSupabase({
+      rpcResult: {
+        total_pnl: 100,
+        total_trades: 1,
+        winning_trades: 1,
+        losing_trades: 0,
+        total_capital: 100000,
+      },
+    });
+
+    await getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId: "user-1",
+      mode: "paper",
+    });
+
+    const rpcMock = (supabase as unknown as { rpc: ReturnType<typeof vi.fn> })
+      .rpc;
+    expect(rpcMock).toHaveBeenCalledWith(
+      "get_dashboard_metrics",
+      expect.objectContaining({ p_cutoff: CONTAMINATION_CUTOFF }),
+    );
+  });
+
+  it("P1-A: TS-fallback filtrerer trades på cutoff (gte executed_at)", async () => {
+    const supabase = createMockSupabase({
+      rpcError: { message: "function does not exist" },
+      sessions: [
+        {
+          id: "sess-a",
+          current_capital_nok: 100000,
+          starting_capital_nok: 100000,
+          status: "active",
+        },
+      ],
+      trades: [{ realized_pnl: 5000 }],
+    });
+
+    await getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId: "user-1",
+      mode: "paper",
+    });
+
+    const tradesBuilder = (
+      supabase as unknown as {
+        from: (t: string) => { gte: ReturnType<typeof vi.fn> };
+      }
+    ).from("trades");
+    // gte ble kalt med CONTAMINATION_CUTOFF på trades-spørringen
+    const gteCalls = tradesBuilder.gte.mock.calls.filter(
+      (c: unknown[]) => c[0] === "executed_at",
+    );
+    expect(gteCalls.length).toBeGreaterThan(0);
+    expect(gteCalls[0][1]).toBe(CONTAMINATION_CUTOFF);
+  });
+
+  // ── P1-B (2026-08-11): fallback-kapital KUN active/paused ───────────
+
+  it("P1-B: getAccountBalance-fallback ekskluderer stoppede sesjoner", async () => {
+    // paper_accounts finnes IKKE → fallback-stien kjører; stopped skal
+    // ikke telle i kapital (P0-regel: fryst historikk).
+    const supabase = createMockSupabase({
+      rpcError: { message: "function does not exist" },
+      paperAccountError: { message: "no rows" },
+      paperAccount: null,
+      sessions: [
+        {
+          id: "sess-active",
+          current_capital_nok: 80000,
+          starting_capital_nok: 80000,
+          status: "active",
+        },
+        {
+          id: "sess-stopped",
+          current_capital_nok: 90000,
+          starting_capital_nok: 90000,
+          status: "stopped",
+        },
+      ],
+    });
+
+    const result = await getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId: "user-1",
+      mode: "paper",
+    });
+
+    // stopped-sesjonen skal IKKE gi 170000 — kun 80000 fra aktiv
+    expect(result.accountBalance).toBe(80000);
+  });
+
+  // ── P1-C (2026-08-11): live-kapital bruker ekte rate, ikke 9.6 ──────
+
+  it("P1-C: live-kapital multipliseres med ekte USDT→NOK-rate", async () => {
+    const supabase = createMockSupabase({
+      rpcResult: {
+        total_pnl: 0,
+        total_trades: 0,
+        winning_trades: 0,
+        losing_trades: 0,
+        total_capital: 0,
+      },
+    });
+    // Mock kraken_live_state → total_usdc 100; rate 10.5 → 1050 NOK
+    const fromMock = (supabase as unknown as { from: ReturnType<typeof vi.fn> })
+      .from;
+    fromMock.mockImplementation((table: string) => {
+      if (table === "kraken_live_state") {
+        const builder = {
+          select: vi.fn(() => builder),
+          eq: vi.fn(() => builder),
+          order: vi.fn(() => builder),
+          limit: vi.fn(() => builder),
+          maybeSingle: vi.fn(() =>
+            Promise.resolve({ data: { total_usdc: 100 }, error: null }),
+          ),
+        };
+        return builder;
+      }
+      // Ellers: eksisterende mock-adferd — vi bygger en tom builder
+      const builder = {
+        select: vi.fn(() => builder),
+        eq: vi.fn(() => builder),
+        in: vi.fn(() => builder),
+        is: vi.fn(() => builder),
+        not: vi.fn(() => builder),
+        gte: vi.fn(() => builder),
+        order: vi.fn(() => builder),
+        limit: vi.fn(() => builder),
+        maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+        single: vi.fn(() => Promise.resolve({ data: null, error: null })),
+      };
+      return builder;
+    });
+
+    // Mock rate-helperen
+    vi.mock("@/lib/trading/currency", () => ({
+      getUsdtToNokRateAsync: vi.fn().mockResolvedValue(10.5),
+      getUsdtToNokRate: vi.fn().mockReturnValue(9.6),
+    }));
+
+    const result = await getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId: "user-1",
+      mode: "live",
+    });
+
+    expect(result.accountBalance).toBe(1050); // 100 USDC × 10.5, ikke 960
   });
 });

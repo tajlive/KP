@@ -81,6 +81,13 @@ export async function GET(request: NextRequest) {
       )
       .eq("user_id", user.id)
       .in("session_id", sessionIds)
+      // KONTRAKT (P1-D, 2026-08-11): Historikk er en LEDGER — INGEN
+      // forurensings-cutoff her, bevisst. Rå rader vises som de er, så
+      // brukerens egne handler aldri forsvinner. Resultater-siden
+      // (/api/user/trading-analytics) bruker derimot getCleanTrades med
+      // CONTAMINATION_CUTOFF + oversell-clamp — tallene kan derfor avvike
+      // for trades før 2026-07-30. Det er DESIGN, ikke bug: ledger viser
+      // alt, analytics viser rensede tall. Ikke fjern cutoff-forskjellen.
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -108,17 +115,14 @@ export async function GET(request: NextRequest) {
     // aldri knekke API-et — fall tilbake til current_price_nok: null.
     let positions: import("@/lib/trading/me-trades-api").MePosition[] = [];
     try {
-      const { computePositionsFromTrades } = await import(
-        "@/lib/trading/positions-from-trades"
-      );
+      const { computePositionsFromTrades } =
+        await import("@/lib/trading/positions-from-trades");
       const computed = computePositionsFromTrades(trades);
       if (computed.length > 0) {
-        const { KrakenMarketDataProvider } = await import(
-          "@/lib/trading/canonical/market-data"
-        );
-        const { getUsdtToNokRateAsync } = await import(
-          "@/lib/trading/currency"
-        );
+        const { KrakenMarketDataProvider } =
+          await import("@/lib/trading/canonical/market-data");
+        const { getUsdtToNokRateAsync } =
+          await import("@/lib/trading/currency");
         const provider = new KrakenMarketDataProvider();
         const rate = await getUsdtToNokRateAsync(supabase);
 
@@ -128,17 +132,13 @@ export async function GET(request: NextRequest) {
             try {
               const klines = await provider.getKlines(p.pair, "1h", 1);
               const closeUsdt = klines?.[klines.length - 1]?.close;
-              if (
-                typeof closeUsdt === "number" &&
-                Number.isFinite(closeUsdt)
-              ) {
+              if (typeof closeUsdt === "number" && Number.isFinite(closeUsdt)) {
                 priceNok = closeUsdt * rate;
               }
             } catch {
               // pris utilgjengelig → null
             }
-            const marketValue =
-              priceNok != null ? p.quantity * priceNok : null;
+            const marketValue = priceNok != null ? p.quantity * priceNok : null;
             const unrealizedPnl =
               marketValue != null ? marketValue - p.cost_basis_nok : null;
             return {
