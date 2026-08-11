@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 🔁 Verify that every secret in .env.local can be encrypted into MemPalace
+ * 🔁 Verify that every secret in .env.local can be encrypted into Honcho
  * and decrypted back to the same value.
  *
  * This script is read-only: it never writes to .env.local.

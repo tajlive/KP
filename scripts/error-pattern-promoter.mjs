@@ -152,7 +152,7 @@ async function main() {
   console.log(`   Skippet (allerede dokumentert): ${skipped}`);
 
   if (promoted > 0) {
-    console.log(`\n🏛️  Kjor na: npm run mempalace:sync for a indeksere nye error patterns.`);
+    console.log(`\n🧠  Kjør: hermes memory sync for å indeksere nye error patterns.`);
   }
 }
 

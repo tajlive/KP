@@ -6,7 +6,7 @@
  * 1. Skanner kodebasen for TODOs, FIXMEs, og viktige kommentarer
  * 2. Ekstraherer arkitektur-beslutninger fra ADR-filer
  * 3. Logger feilmønstre fra error-tracking
- * 4. Lagrer alt i .knowledge/ for MemPalace-indeksering
+ * 4. Lagrer alt i .knowledge/ for Honcho-indeksering
  */
 
 import { readFile, writeFile, readdir, mkdir } from 'fs/promises';
@@ -259,8 +259,7 @@ async function main() {
   
   console.log('\n✅ Knowledge mining fullført!');
   console.log('📁 Resultater lagret i .knowledge/');
-  console.log('🏛️  Reindexer MemPalace: node scripts/mempalace-reindex.mjs');
-  console.log('   (Python CLI "mempalace mine" er deprecated — bruk Node.js MCP server.)');
+  console.log('🧠 Synkroniserer til Honcho via hermes CLI');
 }
 
 main().catch(console.error);

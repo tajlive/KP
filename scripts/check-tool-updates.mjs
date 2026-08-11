@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sjekker om KIMI Code CLI og MemPalace har nye versjoner.
+ * Sjekker om KIMI Code CLI har nye versjoner.
  *
  * Bruk:
  *   node scripts/check-tool-updates.mjs          # menneskevennlig status
@@ -16,12 +16,6 @@ const TOOLS = [
     label: "KIMI Code CLI",
     source: "npm",
     packageName: "@moonshot-ai/kimi-code",
-  },
-  {
-    name: "mempalace",
-    label: "MemPalace",
-    source: "pypi",
-    packageName: "mempalace",
   },
 ];
 

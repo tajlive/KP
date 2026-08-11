@@ -32,7 +32,7 @@ function loadOrCreateKey() {
   const newKey = generateKey();
   const warningComment =
     "# KLARPAKKE_VAULT_KEY — master key for the local secrets vault. " +
-    "Back this up securely; losing it means encrypted MemPalace secrets cannot be decrypted.";
+    "Back this up securely; losing it means encrypted Honcho secrets cannot be decrypted.";
 
   entries.push({ comment: warningComment });
   entries.push({ key: "KLARPAKKE_VAULT_KEY", value: newKey });
@@ -47,5 +47,5 @@ const { key, source } = loadOrCreateKey();
 console.log(key);
 console.error("🔑 Vault key source:", source);
 console.error(
-  "⚠️  WARNING: This key is the only way to decrypt secrets stored in MemPalace. Back it up securely."
+  "⚠️  WARNING: This key is the only way to decrypt secrets stored in Honcho. Back it up securely."
 );
