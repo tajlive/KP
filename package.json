@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
-    "build": "bash --norc --noprofile -c 'export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; source ~/.nvm/nvm.sh 2>/dev/null; nvm use --silent 2>/dev/null; SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" next build'",
+    "build": "bash --norc --noprofile -c 'export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; source ~/.nvm/nvm.sh 2>/dev/null; nvm use --silent 2>/dev/null; OPENNEXT_SKIP_REMOTE_DEV=true SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" next build'",
     "build:local": "SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" next build",
     "cf:build": "SKIP_LINT_IN_BUILD=true NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=\"--max-old-space-size=4096\" opennextjs-cloudflare build",
     "deploy": "bash scripts/deploy.sh",
