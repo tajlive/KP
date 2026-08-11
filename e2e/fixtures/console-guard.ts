@@ -31,7 +31,8 @@ export const test = base.extend<{
           // 404 fra /api/paper-trading/balance = bevisst API-kontrakt for
           // «bruker uten aktiv paper-sesjon» (NO_SESSION) — ny bruker er
           // legitim tilstand; klienten håndterer 404 eksplisitt (useHasTraded).
-          /Failed to load resource: the server responded with a status of 404 \(\) at https:\/\/www\.klarpakke\.no\/api\/paper-trading\/balance/i,
+          // MERK: resource-load-feil har URL-en i msg.location().url, IKKE i
+          // msg.text() — URL-basert regex (03a7adbb) matchet aldri → gate rød.
           /hydrat|Hydration/i, // Next.js hydration (ofte tredjeparts)
           /ResizeObserver loop/i, // Browser quirk
           /fetch failed|NetworkError|Failed to fetch/i, // Nettverk (håndtert av retry)
@@ -48,7 +49,18 @@ export const test = base.extend<{
           /Image with src ".*\/(?:images|brand)\/payments\/(?:stripe|apple-pay|paypal)\.svg" has either width or height modified.*to maintain the aspect ratio/i,
         ];
 
-        if (allowedPatterns.some((p) => p.test(text))) return;
+        // Location-aware unntak: resource-load-feil («Failed to load resource»)
+        // har URL-en i msg.location().url, ikke i msg.text(). 404 fra
+        // /api/paper-trading/balance er bevisst API-kontrakt (NO_SESSION).
+        const locationUrl = msg.location()?.url ?? "";
+        const isAllowed =
+          allowedPatterns.some((p) => p.test(text)) ||
+          (/Failed to load resource: the server responded with a status of 404/i.test(
+            text,
+          ) &&
+            locationUrl.includes("/api/paper-trading/balance"));
+
+        if (isAllowed) return;
 
         const location = msg.location()
           ? `${msg.location().url}:${msg.location().lineNumber}`
