@@ -161,6 +161,22 @@ export class OkxClient {
     return result;
   }
 
+  /** Hent alle åpne spot-ordrer. Brukes av kill-switch. */
+  async getOpenOrders(): Promise<Array<{ ordId: string; instId: string }>> {
+    const data = await this.request<
+      Array<{ ordId: string; instId: string }>
+    >("GET", "/trade/orders-pending?instType=SPOT");
+    return data ?? [];
+  }
+
+  /** Kanseller en ordre. */
+  async cancelOrder(instId: string, ordId: string): Promise<unknown> {
+    return this.request<unknown>("POST", "/trade/cancel-order", {
+      instId,
+      ordId,
+    });
+  }
+
   /** Fills (utførte delhandler) for en ordre — sanne fill-priser. */
   async getFills(instId: string, ordId: string): Promise<OkxFillRecord[]> {
     return this.request<OkxFillRecord[]>(
