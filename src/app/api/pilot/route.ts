@@ -356,6 +356,28 @@ export async function GET(request: NextRequest) {
     const winRate =
       closed.length > 0 ? (winningTrades / closed.length) * 100 : 0;
 
+    // Regime-pause (feed-kort 2026-08-11): siste regime_gate_blocked for
+    // brukeren — «Piloten venter på roligere farvann» når 0 handler skyldes
+    // bremser, ikke feil. Hentes fra trading_logs (siste 48 t).
+    let regimePause: { reason: string; at: string } | null = null;
+    const { data: gateRows, error: gateError } = await db
+      .from("trading_logs")
+      .select("details, created_at")
+      .eq("user_id", user.id)
+      .eq("action", "regime_gate_blocked")
+      .gte("created_at", new Date(Date.now() - 48 * 3600000).toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (!gateError && gateRows && gateRows.length > 0) {
+      const row = gateRows[0] as {
+        details?: { reason?: string } | null;
+        created_at: string;
+      };
+      if (row.details?.reason) {
+        regimePause = { reason: row.details.reason, at: row.created_at };
+      }
+    }
+
     const byCoinMap = new Map<
       string,
       {
@@ -399,6 +421,7 @@ export async function GET(request: NextRequest) {
         byCoin,
       },
       trades: rows.slice(0, 10),
+      regimePause,
     });
   } catch (err) {
     console.error("[GET /api/pilot]", err);

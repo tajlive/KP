@@ -35,6 +35,7 @@ interface PilotData {
   saldo: number | null;
   totalPnl: number | null;
   trades: Trade[];
+  regimePause: { reason: string; at: string } | null;
 }
 
 type LastStatus = "laster" | "ok" | "feil" | "utlogget";
@@ -43,7 +44,10 @@ const fmtKr = (n: number) =>
   `${n < 0 ? "−" : ""}${Math.abs(Math.round(n)).toLocaleString("no-NO")}`;
 
 const fmtKlokke = (iso: string) =>
-  new Date(iso).toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleTimeString("no-NO", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 function dagsgruppe(iso: string): "iDag" | "iGaar" | "dato" {
   const d = new Date(iso);
@@ -70,11 +74,17 @@ export default function PilotDashboard() {
     try {
       const [profilRes, sesjonRes, pilotRes] = await Promise.all([
         fetch("/api/user/profile", { credentials: "same-origin" }),
-        fetch("/api/trading/sessions?status=active&mode=paper", { credentials: "same-origin" }),
+        fetch("/api/trading/sessions?status=active&mode=paper", {
+          credentials: "same-origin",
+        }),
         fetch("/api/pilot", { credentials: "same-origin" }),
       ]);
 
-      if (profilRes.status === 401 || sesjonRes.status === 401 || pilotRes.status === 401) {
+      if (
+        profilRes.status === 401 ||
+        sesjonRes.status === 401 ||
+        pilotRes.status === 401
+      ) {
         setStatus("utlogget");
         return;
       }
@@ -83,18 +93,28 @@ export default function PilotDashboard() {
         return;
       }
 
-      const profil = (await profilRes.json()) as { profile?: { paper_balance?: number } };
+      const profil = (await profilRes.json()) as {
+        profile?: { paper_balance?: number };
+      };
       const sesjoner = (await sesjonRes.json()) as { sessions?: unknown[] };
       const pilot = (await pilotRes.json()) as {
         analytics?: { totalPnl?: number };
         trades?: Trade[];
+        regimePause?: { reason: string; at: string } | null;
       };
 
       setData({
         aktiv: (sesjoner.sessions?.length ?? 0) > 0,
-        saldo: typeof profil.profile?.paper_balance === "number" ? profil.profile.paper_balance : null,
-        totalPnl: typeof pilot.analytics?.totalPnl === "number" ? pilot.analytics.totalPnl : null,
+        saldo:
+          typeof profil.profile?.paper_balance === "number"
+            ? profil.profile.paper_balance
+            : null,
+        totalPnl:
+          typeof pilot.analytics?.totalPnl === "number"
+            ? pilot.analytics.totalPnl
+            : null,
         trades: pilot.trades ?? [],
+        regimePause: pilot.regimePause ?? null,
       });
       setStatus("ok");
     } catch {
@@ -158,7 +178,9 @@ export default function PilotDashboard() {
           <h1 className="text-heading-sm font-black text-kp-text-primary sm:text-heading">
             {t("loginTittel")}
           </h1>
-          <p className="mt-3 text-body text-kp-text-secondary">{t("loginTekst")}</p>
+          <p className="mt-3 text-body text-kp-text-secondary">
+            {t("loginTekst")}
+          </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href={`/${locale}/innlogging`}
@@ -183,8 +205,12 @@ export default function PilotDashboard() {
     return (
       <div className="flex min-h-[70vh] items-center justify-center bg-kp-bg-primary px-6">
         <div className="max-w-md text-center">
-          <h1 className="text-heading-sm font-black text-kp-text-primary">{t("feilTittel")}</h1>
-          <p className="mt-3 text-body text-kp-text-secondary">{t("feilTekst")}</p>
+          <h1 className="text-heading-sm font-black text-kp-text-primary">
+            {t("feilTittel")}
+          </h1>
+          <p className="mt-3 text-body text-kp-text-secondary">
+            {t("feilTekst")}
+          </p>
           <button
             type="button"
             onClick={() => void last()}
@@ -201,20 +227,31 @@ export default function PilotDashboard() {
   if (status === "laster" || !data) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center bg-kp-bg-primary">
-        <p className="animate-pulse text-lg text-kp-text-muted">{t("laster")}</p>
+        <p className="animate-pulse text-lg text-kp-text-muted">
+          {t("laster")}
+        </p>
       </div>
     );
   }
 
-  const { aktiv, saldo, totalPnl, trades } = data;
+  const { aktiv, saldo, totalPnl, trades, regimePause } = data;
+
+  // Regime-pause-kort: Piloten er AKTIV men venter (markedet er for urolig).
+  // Vises i stedet for «Ingen handler ennå» — ærlig forklaring på hvorfor
+  // ingenting skjer (K3 nattstatus §6.2, 2026-08-11).
+  const viserVenterKort = aktiv && trades.length === 0 && regimePause !== null;
 
   // Grupper feed per dag
   const grupper = new Map<string, Trade[]>();
   for (const trade of trades) {
     const gruppe = dagsgruppe(trade.created_at);
-    const nøkkel = gruppe === "dato"
-      ? new Date(trade.created_at).toLocaleDateString("no-NO", { day: "numeric", month: "long" })
-      : t(gruppe);
+    const nøkkel =
+      gruppe === "dato"
+        ? new Date(trade.created_at).toLocaleDateString("no-NO", {
+            day: "numeric",
+            month: "long",
+          })
+        : t(gruppe);
     const liste = grupper.get(nøkkel) ?? [];
     liste.push(trade);
     grupper.set(nøkkel, liste);
@@ -244,7 +281,8 @@ export default function PilotDashboard() {
               data-testid="pilot-gevinst"
               className={`text-2xl font-extrabold leading-tight tabular-nums ${totalPnl >= 0 ? "text-green-500" : "text-red-500"}`}
             >
-              {totalPnl >= 0 ? "+" : ""}{fmtKr(totalPnl)} kr
+              {totalPnl >= 0 ? "+" : ""}
+              {fmtKr(totalPnl)} kr
             </p>
           )}
           {saldo !== null && (
@@ -257,9 +295,28 @@ export default function PilotDashboard() {
 
       <main className="mx-auto max-w-xl px-4 pb-40 pt-6 sm:px-6">
         {/* DAGBOK-FEED */}
-        {trades.length === 0 ? (
+        {viserVenterKort ? (
           <div className="mt-10 text-center">
-            <p className="text-5xl" aria-hidden>🧑‍✈️</p>
+            <p className="text-5xl" aria-hidden>
+              🌊
+            </p>
+            <h2 className="mt-4 text-heading-sm font-black text-kp-text-primary">
+              {t("venterTittel")}
+            </h2>
+            <p className="mx-auto mt-3 max-w-sm text-body text-kp-text-secondary">
+              {t("venterTekst")}
+            </p>
+            {regimePause && (
+              <p className="mx-auto mt-4 max-w-sm rounded-2xl border border-kp-border bg-kp-bg-secondary px-4 py-3 text-sm text-kp-text-muted">
+                {regimePause.reason}
+              </p>
+            )}
+          </div>
+        ) : trades.length === 0 ? (
+          <div className="mt-10 text-center">
+            <p className="text-5xl" aria-hidden>
+              🧑‍✈️
+            </p>
             <h2 className="mt-4 text-heading-sm font-black text-kp-text-primary">
               {t("feedEmptyTitle")}
             </h2>
@@ -296,7 +353,8 @@ export default function PilotDashboard() {
                         </p>
                       ) : (
                         <p className="text-base font-semibold text-kp-text-primary">
-                          {erKjop ? t("kjop") : t("salg")} · {trade.trading_pair.replace("USDT", "")}
+                          {erKjop ? t("kjop") : t("salg")} ·{" "}
+                          {trade.trading_pair.replace("USDT", "")}
                         </p>
                       )}
                       <p
@@ -326,14 +384,20 @@ export default function PilotDashboard() {
 
         {/* Handlings-feil (ærlig melding) */}
         {handlingFeil && (
-          <p className="mt-6 rounded-2xl border border-red-500/40 bg-red-500/10 px-5 py-4 text-center text-sm font-semibold text-red-400" role="alert">
+          <p
+            className="mt-6 rounded-2xl border border-red-500/40 bg-red-500/10 px-5 py-4 text-center text-sm font-semibold text-red-400"
+            role="alert"
+          >
             {t(handlingFeil)}
           </p>
         )}
       </main>
 
       {/* FAST BUNN: én stor knapp + brems-forklaring */}
-      <footer className="fixed bottom-0 left-0 right-0 z-10 border-t border-kp-border bg-kp-bg-primary/95 backdrop-blur-md px-4 pt-4 sm:px-6" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
+      <footer
+        className="fixed bottom-0 left-0 right-0 z-10 border-t border-kp-border bg-kp-bg-primary/95 backdrop-blur-md px-4 pt-4 sm:px-6"
+        style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+      >
         <div className="mx-auto max-w-xl">
           {aktiv ? (
             <button
