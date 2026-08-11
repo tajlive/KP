@@ -22,7 +22,10 @@ const KRITISKE_RUTER = ["/no/dashboard", "/no/handel"];
 
 for (const route of KRITISKE_RUTER) {
   test(`[post-deploy] innlogget smoke: ${route}`, async ({ page }) => {
-    const response = await page.goto(route, { waitUntil: "networkidle" });
+    // networkidle nås ALDRI på /no/handel — TradingCockpit poller hvert 5 s
+    // (bevisst: levende priser). load = HTML+ressurser lastet, så venter vi
+    // på hydration + element-sjekkene under.
+    const response = await page.goto(route, { waitUntil: "load" });
     expect(
       response?.status(),
       `${route} returnerte ${response?.status()} (>= 500)`,

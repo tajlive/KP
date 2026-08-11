@@ -28,6 +28,10 @@ export const test = base.extend<{
         const allowedPatterns = [
           /401|403|Unauthorized|Forbidden/i, // Auth errors (håndtert av UI)
           /JWT expired|Invalid Refresh Token|Auth session missing|Using the user object as returned from supabase\.auth\.getSession/i, // Supabase auth
+          // 404 fra /api/paper-trading/balance = bevisst API-kontrakt for
+          // «bruker uten aktiv paper-sesjon» (NO_SESSION) — ny bruker er
+          // legitim tilstand; klienten håndterer 404 eksplisitt (useHasTraded).
+          /Failed to load resource: the server responded with a status of 404 \(\) at https:\/\/www\.klarpakke\.no\/api\/paper-trading\/balance/i,
           /hydrat|Hydration/i, // Next.js hydration (ofte tredjeparts)
           /ResizeObserver loop/i, // Browser quirk
           /fetch failed|NetworkError|Failed to fetch/i, // Nettverk (håndtert av retry)
@@ -61,7 +65,7 @@ export const test = base.extend<{
           .map((e) => `[${e.type.toUpperCase()}] ${e.text} at ${e.location}`)
           .join("\n  ");
         throw new Error(
-          `Console guard caught ${errors.length} unexpected error(s):\n  ${summary}`
+          `Console guard caught ${errors.length} unexpected error(s):\n  ${summary}`,
         );
       }
     },
