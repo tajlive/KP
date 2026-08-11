@@ -87,8 +87,8 @@ export class KrakenClient {
   private async signRequest(
     path: string,
     params: Record<string, string>,
+    nonce: string,
   ): Promise<string> {
-    const nonce = this.getNonce();
     const postData = new URLSearchParams({ nonce, ...params }).toString();
     const encoder = new TextEncoder();
 
@@ -148,7 +148,7 @@ export class KrakenClient {
       throw new Error("Max retries exceeded");
     } else {
       const nonce = this.getNonce();
-      const signature = await this.signRequest(path, params);
+      const signature = await this.signRequest(path, params, nonce);
 
       headers["API-Key"] = this.apiKey;
       headers["API-Sign"] = signature;
