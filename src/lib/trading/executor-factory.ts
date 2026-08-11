@@ -124,4 +124,36 @@ export class ExecutorFactory {
 
     return tierOk && Boolean(krakenKeys || okxKeys);
   }
+
+  /**
+   * Resolve hvilken børs en brukers live-handel går gjennom.
+   * Samme prioritet som create(): Kraken først, deretter OKX.
+   * Returnerer undefined hvis ingen aktiv exchange-nøkkel finnes.
+   */
+  static async resolveLiveExchange(
+    supabase: SupabaseClient,
+    userId: string,
+  ): Promise<"kraken" | "okx" | undefined> {
+    const { data: krakenKeys } = await supabase
+      .from("user_kraken_keys")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+    if (krakenKeys) return "kraken";
+
+    const okxEnabled = process.env.OKX_ENABLED === "true";
+    if (okxEnabled) {
+      const { data: okxKeys } = await supabase
+        .from("user_okx_keys")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+      if (okxKeys) return "okx";
+    }
+    return undefined;
+  }
 }
