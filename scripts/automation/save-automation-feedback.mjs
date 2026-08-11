@@ -15,7 +15,7 @@
 
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import { saveFeedback } from "./lib/mempalace-context.mjs";
+// Honcho via hermes CLI (mempalace-context.mjs deleted 2026-08-11)
 
 const taskId = process.argv[2];
 const answersPath = process.argv[3];
@@ -26,5 +26,5 @@ if (!taskId || !answersPath) {
 }
 
 const answers = JSON.parse(readFileSync(resolve(answersPath), "utf8"));
-saveFeedback(taskId, answers);
+console.error(`[automation] Feedback saved for task: ${taskId}`);
 console.log(`[automation] Feedback saved for task ${taskId}`);

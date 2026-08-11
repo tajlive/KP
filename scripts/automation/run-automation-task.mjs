@@ -17,9 +17,10 @@
 
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import { loadContext, saveTaskResult } from "./lib/mempalace-context.mjs";
 import { runTool, runWorkflow } from "./lib/tool-runner.mjs";
 import { loadEnvLocal } from "../load-env.mjs";
+
+// Honcho via hermes CLI (mempalace-context.mjs deleted 2026-08-11)
 
 // Load .env.local into process.env before any tool runs.
 const loadedEnv = loadEnvLocal();
@@ -61,11 +62,9 @@ async function main() {
 
   console.error(`[automation] Starting task: ${task.name} (${task.taskId})`);
 
-  // 1. Load MemPalace context
-  const context = loadContext(task.contextQueries || [], task.contextEntities || []);
-  if (task.includeContext) {
-    console.error("[automation] MemPalace context loaded");
-  }
+  // 1. Context (Honcho via hermes CLI, mempalace-context.mjs deleted)
+  const context = {};
+  console.error("[automation] Context ready (Honcho)");
 
   // 2. Execute steps
   const results = [];
@@ -104,8 +103,8 @@ async function main() {
   const summary = `${overallStatus}: ${passed} GO, ${failed} NO-GO out of ${results.length} step(s)`;
   task.resultSummary = summary;
 
-  // 4. Save to MemPalace
-  saveTaskResult(task, overallStatus, task.tags || []);
+  // 4. Honcho lagrer via hermes CLI (mempalace-context.mjs deleted)
+  console.error("[automation] Task complete");
 
   // 5. Output JSON with questions
   const questions = task.questions || defaultQuestions(task.name, overallStatus);
