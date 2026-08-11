@@ -1,0 +1,45 @@
+{
+  "week": 3,
+  "theme": "Hvorfor bygger vi dette?",
+  "stats": {
+    "totalUsers": 45,
+    "activePaperSessions": 4,
+    "enabledSmartTrader": 0,
+    "tradesLast7Days": 4,
+    "avgTradeValueNok": 751.945,
+    "totalPnlNok": 0,
+    "registrationsRemaining": 55,
+    "kltSlotsRemaining": 55,
+    "weekNumber": 3,
+    "generatedAt": "2026-08-11T07:10:18.141Z"
+  },
+  "linkedin": [
+    {
+      "platform": "linkedin",
+      "title": "Hvorfor tester profesjonelle tradere alltid strategiene sine før de risikerer...",
+      "body": "Hvorfor tester profesjonelle tradere alltid strategiene sine før de risikerer penger?\n\nFordi en utestet strategi ikke er en strategi. Det er et håp.\n\nProffene backtester mot historiske data. De simulerer. De paper trader mot live markeder. Først når tallene holder over tid, setter de inn kapital.\n\nSmåsparere gjør ofte det motsatte: Ekte penger først, plan senere.\n\nKlarpakke gir deg samme arbeidsmetode som proffene:\n\n1. 100 000 kr i lekepenger — ingen risiko.\n2. Ekte markedsdata — treningen er reell, selv om pengene ikke er det.\n3. AI-agenter som paper trader ved siden av deg — se hva som fungerer, og hva som ikke gjør det.\n\nGratis beta. Test metoden: klarpakke.no",
+      "hashtags": "#klarpakke #krypto #trading #norsk #lekepenger",
+      "scheduledFor": "2026-08-10T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Hvorfor bygger vi dette?\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    }
+  ],
+  "facebook": [
+    {
+      "platform": "facebook",
+      "title": "👋 Hvorfor bygger en kar med 30 år i industrien en AI-tradingplattform?",
+      "body": "👋 Hvorfor bygger en kar med 30 år i industrien en AI-tradingplattform?\n\nFordi proffer alltid tester strategiene sine før de risikerer penger — mens småsparere får beskjed om å «lære av å tape».\n\nKlarpakke snur om på det: 100 000 kr i lekepenger, ekte markedsdata, AI-agenter som trader transparent. Gratis.\n\nByggeloggen fortsetter. Følg siden for å se hva som skjer: klarpakke.no\n\n#klarpakke #gründer #ai #trading",
+      "hashtags": "#klarpakke #krypto #trading #norsk",
+      "scheduledFor": "2026-08-10T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Hvorfor bygger vi dette?\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    },
+    {
+      "platform": "facebook",
+      "title": "🎯 Proffer risikerer aldri penger på en utestet strategi. Hvorfor skal du?",
+      "body": "🎯 Proffer risikerer aldri penger på en utestet strategi. Hvorfor skal du?\n\nPaper trading er proffens oppvarming — og nå får du den gratis, på norsk.\n\n100 000 kr i lekepenger. Ekte markedsdata. AI-agenter som trader ved siden av deg.\n\nklarpakke.no\n\n#klarpakke #trading #papertrading",
+      "hashtags": "#klarpakke #krypto #trading #norsk",
+      "scheduledFor": "2026-08-13T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Hvorfor bygger vi dette?\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    }
+  ],
+  "generatedAt": "2026-08-11T07:10:18.142Z"
+}
