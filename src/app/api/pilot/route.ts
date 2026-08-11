@@ -30,19 +30,24 @@ const pilotSchema = z.object({
   capital: z.number().min(1000).max(10_000_000).optional(),
 });
 
-const GUARD_ERROR_OR_FILTER = "error_message.not.like.GUARD:%,error_message.is.null";
+const GUARD_ERROR_OR_FILTER =
+  "error_message.not.like.GUARD:%,error_message.is.null";
 
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
     const authClient = createServerClient(request, response);
-    const { data: { user } } = await authClient.auth.getUser();
+    const {
+      data: { user },
+    } = await authClient.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const db = createClient();
 
-    const parsed = pilotSchema.safeParse(await request.json().catch(() => ({})));
+    const parsed = pilotSchema.safeParse(
+      await request.json().catch(() => ({})),
+    );
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid body", details: parsed.error.flatten() },
@@ -80,7 +85,8 @@ export async function POST(request: NextRequest) {
       if (!hasKeys) {
         return NextResponse.json(
           {
-            error: "Koble Kraken i Innstillinger → Kraken API før live-handel (trading-tillatelse kreves)",
+            error:
+              "Koble Kraken i Innstillinger → Kraken API før live-handel (trading-tillatelse kreves)",
             requiresConnection: true,
           },
           { status: 400 },
@@ -102,25 +108,6 @@ export async function POST(request: NextRequest) {
     // Sikre aktive sesjoner (paper eller live) — én per valgt symbol
     const sessionMode = live ? "live" : "paper";
 
-    // Kapital: brukerens valgte beløp hvis gitt, ellers hele paper-balansen.
-    // FIKS (2026-08-04): Tom valgte 10 000 kr men fikk hele balansen per
-    // symbol (94 389 × 11 = 1 038 281 kr "investert"). Nå respekteres
-    // requestedCapital, og det deles jevnt på antall symboler.
-    let capital = 10000;
-    if (!live) {
-      const { data: account } = await db
-        .from("paper_accounts")
-        .select("current_balance")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      const balance = Number(account?.current_balance ?? 10000);
-      capital = requestedCapital != null
-        ? Math.min(requestedCapital, balance) // aldri mer enn faktisk saldo
-        : balance;
-    } else {
-      capital = requestedCapital ?? 10000; // live: kun posisjonsstørrelse teller
-    }
-
     // Multi-symbol: én sesjon per valgt valuta (tick = 1 sesjon : 1 trading_pair).
     // Default per mode (2026-08-11): pilot → SOLUSDT (COMBO E3 er mappet optimal
     // på SOL — høy volatilitet + fete haler), auto → BTCUSDT (uendret).
@@ -129,16 +116,10 @@ export async function POST(request: NextRequest) {
         ? symbols
         : [mode === "pilot" ? "SOLUSDT" : "BTCUSDT"];
 
-    // Del valgt kapital jevnt på antall symboler.
-    const capitalPerSymbol = Math.round(capital / tradeSymbols.length);
-
-    const createdIds: string[] = [];
-    let createFailed = false;
-
+    // Finn hvilke par som faktisk trenger NY sesjon (resten = heartbeat)
+    const pendingSymbols: string[] = [];
     for (const sym of tradeSymbols) {
       const pair = sym.includes("USDT") ? sym : `${sym}USDT`;
-
-      // Eksisterende aktiv sesjon for dette paret?
       const { data: existingForPair } = await db
         .from("trading_sessions")
         .select("id")
@@ -149,16 +130,100 @@ export async function POST(request: NextRequest) {
         .or(GUARD_ERROR_OR_FILTER)
         .limit(1)
         .maybeSingle();
+      if (!existingForPair) pendingSymbols.push(pair);
+    }
 
-      if (existingForPair) {
-        await db.from("trading_sessions").update({
-          last_heartbeat: new Date().toISOString(),
-          last_tick_at: new Date().toISOString(),
-        }).eq("id", existingForPair.id);
-        createdIds.push(existingForPair.id);
-        continue;
+    // Kapital: kun nødvendig når det opprettes NYE sesjoner. FRI kapital
+    // (P1-fiks 2026-08-11) = current_balance − sum(aktive/paused). Tidligere:
+    // hele saldoen per ny sesjon → to aktive sesjoner delte samme saldo →
+    // syncPaperAccountBalance summerte begge → 199 294 ≈ 2×100k (K3-observasjon).
+    let capital = 10000;
+    let freeCapital = 0;
+    if (pendingSymbols.length === 0) {
+      // Alt aktivt allerede — heartbeat uten kapitalkrav
+      for (const pair of tradeSymbols) {
+        const p = pair.includes("USDT") ? pair : `${pair}USDT`;
+        const { data: existing } = await db
+          .from("trading_sessions")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .eq("mode", sessionMode)
+          .eq("trading_pair", p)
+          .limit(1)
+          .maybeSingle();
+        if (existing) {
+          await db
+            .from("trading_sessions")
+            .update({
+              last_heartbeat: new Date().toISOString(),
+              last_tick_at: new Date().toISOString(),
+            })
+            .eq("id", existing.id);
+        }
       }
+      return NextResponse.json({
+        success: true,
+        mode,
+        live,
+        sessionId: null,
+        sessionIds: [],
+        sessionCount: 0,
+        message: live
+          ? "Auto-handel er allerede aktiv."
+          : `${mode === "auto" ? "Auto-handel" : "PilotTrade"} er allerede aktiv.`,
+      });
+    }
 
+    if (!live) {
+      const { data: account } = await db
+        .from("paper_accounts")
+        .select("current_balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const balance = Number(account?.current_balance ?? 10000);
+
+      // Hvor mye er allerede allokert i levende sesjoner?
+      const { data: liveSessions } = await db
+        .from("trading_sessions")
+        .select("current_capital_nok")
+        .eq("user_id", user.id)
+        .eq("mode", sessionMode)
+        .in("status", ["active", "paused"]);
+      const allocated = (liveSessions ?? []).reduce(
+        (sum, s) => sum + Number(s.current_capital_nok ?? 0),
+        0,
+      );
+      freeCapital = Math.max(0, balance - allocated);
+
+      // Aldri mer enn faktisk fri kapital; default = hele frie kapitalen.
+      capital =
+        requestedCapital != null
+          ? Math.min(requestedCapital, freeCapital)
+          : freeCapital;
+
+      if (capital < 1000) {
+        return NextResponse.json(
+          {
+            error:
+              "Ikke nok ledig kapital til ny sesjon. Stopp en aktiv sesjon først.",
+            code: "INSUFFICIENT_FREE_CAPITAL",
+            freeCapital: Math.round(freeCapital * 100) / 100,
+          },
+          { status: 400 },
+        );
+      }
+    } else {
+      capital = requestedCapital ?? 10000; // live: kun posisjonsstørrelse teller
+    }
+
+    // Del valgt kapital jevnt på antall NYE symboler.
+    const capitalPerSymbol = Math.round(capital / pendingSymbols.length);
+
+    const createdIds: string[] = [];
+    let createFailed = false;
+
+    for (const pair of pendingSymbols) {
       const { data: created, error: createError } = await db
         .from("trading_sessions")
         .insert({
@@ -192,19 +257,28 @@ export async function POST(request: NextRequest) {
 
     if (createdIds.length === 0) {
       return NextResponse.json(
-        { error: createFailed ? "Kunne ikke opprette sesjon" : "Ingen sesjoner opprettet" },
+        {
+          error: createFailed
+            ? "Kunne ikke opprette sesjon"
+            : "Ingen sesjoner opprettet",
+        },
         { status: 500 },
       );
     }
 
     // Auto-opprett/synk auto_trading_configs så cron plukker opp brukeren
     try {
-      await db.from("auto_trading_configs").upsert({
-        user_id: user.id,
-        is_enabled: true,
-        strategy: resolveAutoConfigStrategy(mode, gridDefault),
-      }, { onConflict: "user_id" });
-    } catch { /* best effort */ }
+      await db.from("auto_trading_configs").upsert(
+        {
+          user_id: user.id,
+          is_enabled: true,
+          strategy: resolveAutoConfigStrategy(mode, gridDefault),
+        },
+        { onConflict: "user_id" },
+      );
+    } catch {
+      /* best effort */
+    }
 
     return NextResponse.json({
       success: true,
@@ -236,13 +310,17 @@ export async function GET(request: NextRequest) {
   try {
     const response = NextResponse.next();
     const authClient = createServerClient(request, response);
-    const { data: { user } } = await authClient.auth.getUser();
+    const {
+      data: { user },
+    } = await authClient.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const db = createClient();
 
-    const sinceDays = Number(request.nextUrl.searchParams.get("since_days") ?? 30);
+    const sinceDays = Number(
+      request.nextUrl.searchParams.get("since_days") ?? 30,
+    );
 
     const { data: trades, error } = await db
       .from("trades")
@@ -250,7 +328,10 @@ export async function GET(request: NextRequest) {
         "id, trading_pair, side, total_value, quantity, realized_pnl, pilot_explanation, created_at",
       )
       .eq("user_id", user.id)
-      .gte("created_at", new Date(Date.now() - sinceDays * 86400000).toISOString())
+      .gte(
+        "created_at",
+        new Date(Date.now() - sinceDays * 86400000).toISOString(),
+      )
       .order("created_at", { ascending: false })
       .limit(200);
 
@@ -262,26 +343,51 @@ export async function GET(request: NextRequest) {
     const closed = rows.filter(
       (t) => t.realized_pnl !== null && t.realized_pnl !== undefined,
     );
-    const totalPnl = closed.reduce((s, t) => s + Number(t.realized_pnl ?? 0), 0);
-    const winningTrades = closed.filter((t) => Number(t.realized_pnl) > 0).length;
-    const losingTrades = closed.filter((t) => Number(t.realized_pnl) <= 0).length;
-    const winRate = closed.length > 0 ? (winningTrades / closed.length) * 100 : 0;
+    const totalPnl = closed.reduce(
+      (s, t) => s + Number(t.realized_pnl ?? 0),
+      0,
+    );
+    const winningTrades = closed.filter(
+      (t) => Number(t.realized_pnl) > 0,
+    ).length;
+    const losingTrades = closed.filter(
+      (t) => Number(t.realized_pnl) <= 0,
+    ).length;
+    const winRate =
+      closed.length > 0 ? (winningTrades / closed.length) * 100 : 0;
 
-    const byCoinMap = new Map<string, { coin: string; trades: number; pnl: number; winRate: number; wins: number }>();
+    const byCoinMap = new Map<
+      string,
+      {
+        coin: string;
+        trades: number;
+        pnl: number;
+        winRate: number;
+        wins: number;
+      }
+    >();
     for (const t of closed) {
       const coin = (t.trading_pair ?? "UNKNOWN").replace("USDT", "");
-      const entry = byCoinMap.get(coin) ?? { coin, trades: 0, pnl: 0, winRate: 0, wins: 0 };
+      const entry = byCoinMap.get(coin) ?? {
+        coin,
+        trades: 0,
+        pnl: 0,
+        winRate: 0,
+        wins: 0,
+      };
       entry.trades += 1;
       entry.pnl += Number(t.realized_pnl ?? 0);
       if (Number(t.realized_pnl) > 0) entry.wins += 1;
       byCoinMap.set(coin, entry);
     }
-    const byCoin = Array.from(byCoinMap.values()).map((e) => ({
-      coin: e.coin,
-      trades: e.trades,
-      pnl: e.pnl,
-      winRate: e.trades > 0 ? (e.wins / e.trades) * 100 : 0,
-    })).sort((a, b) => b.pnl - a.pnl);
+    const byCoin = Array.from(byCoinMap.values())
+      .map((e) => ({
+        coin: e.coin,
+        trades: e.trades,
+        pnl: e.pnl,
+        winRate: e.trades > 0 ? (e.wins / e.trades) * 100 : 0,
+      }))
+      .sort((a, b) => b.pnl - a.pnl);
 
     return NextResponse.json({
       analytics: {

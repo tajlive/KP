@@ -30,16 +30,65 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = createSessionSchema.safeParse(body);
     if (!parsed.success) {
-      console.error("[trading-sessions/create] validation failed:", parsed.error.flatten());
+      console.error(
+        "[trading-sessions/create] validation failed:",
+        parsed.error.flatten(),
+      );
       return NextResponse.json(
-        { error: "Validation failed", code: "VALIDATION_FAILED", details: parsed.error.flatten() },
+        {
+          error: "Validation failed",
+          code: "VALIDATION_FAILED",
+          details: parsed.error.flatten(),
+        },
         { status: 400 },
       );
     }
 
     const { trading_pair, strategy_id } = parsed.data;
     const mode = parsed.data.mode;
-    const capital = parsed.data.starting_capital_nok || 100000;
+    const requested = parsed.data.starting_capital_nok;
+
+    // P1-fiks (2026-08-11): kapital må komme fra FRI kapital, aldri settes
+    // blindt til 100 000/hele saldoen. To aktive sesjoner som deler samme
+    // saldo → syncPaperAccountBalance summerer begge → balanse-inflasjon
+    // (K3-observasjon 199 294 ≈ 2×100k, samme feilklasse som P0).
+    let capital: number;
+    if (mode === "paper") {
+      const { data: account } = await supabase
+        .from("paper_accounts")
+        .select("current_balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const balance = Number(account?.current_balance ?? 10000);
+
+      const { data: liveSessions } = await supabase
+        .from("trading_sessions")
+        .select("current_capital_nok")
+        .eq("user_id", user.id)
+        .eq("mode", "paper")
+        .in("status", ["active", "paused"]);
+      const allocated = (liveSessions ?? []).reduce(
+        (sum, s) => sum + Number(s.current_capital_nok ?? 0),
+        0,
+      );
+      const free = Math.max(0, balance - allocated);
+
+      capital = requested != null ? Math.min(requested, free) : free;
+
+      if (capital < 1000) {
+        return NextResponse.json(
+          {
+            error:
+              "Ikke nok ledig kapital til ny sesjon. Stopp en aktiv sesjon først.",
+            code: "INSUFFICIENT_FREE_CAPITAL",
+            freeCapital: Math.round(free * 100) / 100,
+          },
+          { status: 400 },
+        );
+      }
+    } else {
+      capital = requested ?? 10000; // live: kun posisjonsstørrelse teller
+    }
 
     const { data: profRow, error: profFetchErr } = await supabase
       .from("user_profiles")
@@ -67,14 +116,20 @@ export async function POST(request: NextRequest) {
 
       if (!krakenKeys) {
         return NextResponse.json(
-          { error: "Live krever tilkoblet Kraken-konto", code: "LIVE_KRAKEN_REQUIRED" },
+          {
+            error: "Live krever tilkoblet Kraken-konto",
+            code: "LIVE_KRAKEN_REQUIRED",
+          },
           { status: 403 },
         );
       }
 
       if (!canAccessLiveAutoTrading(tier)) {
         return NextResponse.json(
-          { error: "Live trading krever Bachelor-tier eller høyere", code: "LIVE_TIER_REQUIRED" },
+          {
+            error: "Live trading krever Bachelor-tier eller høyere",
+            code: "LIVE_TIER_REQUIRED",
+          },
           { status: 403 },
         );
       }
@@ -88,7 +143,10 @@ export async function POST(request: NextRequest) {
         | undefined;
       if (ent && !ent.auto_trade_allow_live) {
         return NextResponse.json(
-          { error: "Live trading er ikke aktivert for abonnementet ditt", code: "LIVE_ENTITLEMENT_REQUIRED" },
+          {
+            error: "Live trading er ikke aktivert for abonnementet ditt",
+            code: "LIVE_ENTITLEMENT_REQUIRED",
+          },
           { status: 403 },
         );
       }
@@ -97,7 +155,10 @@ export async function POST(request: NextRequest) {
     const maxSessions = maxActiveTradingSessions(tier, mode);
     if (maxSessions <= 0) {
       return NextResponse.json(
-        { error: "Ingen tilgang til ny sesjon i denne modusen", code: "NO_SESSION_ACCESS" },
+        {
+          error: "Ingen tilgang til ny sesjon i denne modusen",
+          code: "NO_SESSION_ACCESS",
+        },
         { status: 403 },
       );
     }
@@ -171,7 +232,11 @@ export async function POST(request: NextRequest) {
     if (insertError || !session) {
       console.error("[trading-sessions/create] insert failed:", insertError);
       return NextResponse.json(
-        { error: "Kunne ikke opprette trading session", code: "CREATE_FAILED", details: insertError ? { message: insertError.message } : null },
+        {
+          error: "Kunne ikke opprette trading session",
+          code: "CREATE_FAILED",
+          details: insertError ? { message: insertError.message } : null,
+        },
         { status: 500 },
       );
     }
@@ -194,6 +259,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Unexpected error in create trading session:", error);
-    return NextResponse.json({ error: "Uventet feil", code: "UNEXPECTED_ERROR" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Uventet feil", code: "UNEXPECTED_ERROR" },
+      { status: 500 },
+    );
   }
 }
