@@ -7,6 +7,24 @@ vi.mock("next-intl", () => ({
   useTranslations: (ns: string) => (key: string) => `${ns}.${key}`,
 }));
 
+// Mock next/navigation — PaperTradingList (rendres i samme grid som
+// StatsGrid) kaller useRouter; uten mock krasjer den → WidgetErrorBoundary
+// fanger HELE grid-et og StatsGrid forsvinner (test-feil, ikke prod-feil).
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  usePathname: () => "/no/dashboard",
+  useParams: () => ({ locale: "no" }),
+  useSearchParams: () => new URLSearchParams(),
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
 // Fiks 8-regresjon: Avkastning må komme fra EKTE trading-P&L (totalPnl),
 // ikke konto-differansen (accountBalance − startingCapital) som inkluderer
 // manuelle justeringer og lyver som «avkastning».
@@ -37,8 +55,9 @@ describe("DashboardPro avkastningsdefinisjon (FIKS 8)", () => {
     render(<DashboardPro stats={stats} preferredTradingMode="paper" />);
 
     // Total verdi = ledig + investert (238 210.17 + 412.30 = 238 622)
-    // Hero-balansen vises som «238 622 kr» — totalen, ikke bare ledig
-    expect(screen.getByText(/238 622/)).toBeTruthy();
+    // Hero-balansen vises som «238 622 kr» — totalen, ikke bare ledig.
+    // Vises både i hero og StatsGrid-kortet → getAllByText (minst 1).
+    expect(screen.getAllByText(/238 622/).length).toBeGreaterThan(0);
 
     // Avkastningsprosenten må være −0.83 % (totalPnl/startingCapital),
     // IKKE +138.21 % (konto-differansen) — det var løgnen.
