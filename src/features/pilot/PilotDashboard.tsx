@@ -240,6 +240,10 @@ export default function PilotDashboard() {
   // Vises i stedet for «Ingen handler ennå» — ærlig forklaring på hvorfor
   // ingenting skjer (K3 nattstatus §6.2, 2026-08-11).
   const viserVenterKort = aktiv && trades.length === 0 && regimePause !== null;
+  // Pause-banner OGSÅ når historikk finnes (2026-08-11): pausen er GJELDENDE
+  // tilstand, ikke bare tomtilstand — ellers ser brukere med gamle handler
+  // aldri forklaringen på hvorfor Piloten venter.
+  const viserPauseBanner = aktiv && trades.length > 0 && regimePause !== null;
 
   // Grupper feed per dag
   const grupper = new Map<string, Trade[]>();
@@ -325,7 +329,19 @@ export default function PilotDashboard() {
             </p>
           </div>
         ) : (
-          Array.from(grupper.entries()).map(([dag, liste]) => (
+          <>
+            {/* Pause-banner øverst i feeden når Piloten venter pga. markedet */}
+            {viserPauseBanner && (
+              <div className="mt-4 rounded-2xl border border-yellow-500/40 bg-yellow-500/[0.07] p-4">
+                <p className="font-bold text-kp-text-primary">
+                  🌊 {t("venterTittel")}
+                </p>
+                <p className="mt-1 text-sm text-kp-text-secondary">
+                  {regimePause.reason}
+                </p>
+              </div>
+            )}
+            {Array.from(grupper.entries()).map(([dag, liste]) => (
             <section key={dag}>
               <p className="mb-3 mt-6 text-xs font-bold uppercase tracking-wider text-kp-text-muted">
                 {dag}
@@ -379,7 +395,8 @@ export default function PilotDashboard() {
                 );
               })}
             </section>
-          ))
+          ))}
+          </>
         )}
 
         {/* Handlings-feil (ærlig melding) */}
