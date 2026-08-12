@@ -1,12 +1,17 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import ClientCheckout from "./ClientCheckout";
-import PlanCheckout from "./CheckoutContent";
+import { BetaPricingPage } from "@/components/BetaPricingPage";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
+/**
+ * /checkout — P0 kundevendt (2026-08-12): beta.
+ * Betaling er ikke åpent. Alle checkout-varianter (plan/kurs/sesjon)
+ * viser samme beta-informasjonsside — ingen skjema, ingen kortfelt,
+ * ingen betalingsintegrasjon. CTA → /register.
+ * Gamle CheckoutContent/ClientCheckout ligger urørt til betaling åpner.
+ */
 export const metadata: Metadata = {
-  title: "Checkout | Klarpakke",
+  title: "Betaling kommer senere | Klarpakke",
   robots: { index: false, follow: false },
 };
 
@@ -19,15 +24,11 @@ export default async function Page({
 }) {
   const { locale } = await params;
   const sp = await searchParams;
-  const hasPlan = Boolean(sp?.plan);
-  const hasCourse = Boolean(sp?.course);
-  const hasSessionId = Boolean(sp?.session_id);
 
-  if (hasPlan) {
-    return <PlanCheckout />;
-  }
-  if (hasCourse || hasSessionId) {
-    return <ClientCheckout />;
-  }
-  redirect(`/${locale}/priser`);
+  // Alle checkout-varianter → beta-side. Uten plan/kurs/sesjon → /priser
+  // (som også er beta-siden). Ingen kundevendt rute når betalingslogikk.
+  void sp;
+  void locale;
+
+  return <BetaPricingPage />;
 }

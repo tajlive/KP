@@ -2,10 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getErrorMessage } from "@/lib/utils/error";
 import { stripe } from "@/lib/stripe/config";
 import { createServerClient, createClient } from "@/lib/supabase/server";
+import { betaPaymentsDisabled } from "@/lib/beta-guards";
 
 export const dynamic = "force-dynamic";
 
+/** Beta-sperre (2026-08-12): verifisering av betalingssesjoner er ikke åpen i beta. */
+const BETA_PAYMENTS_ENABLED = false;
+
 export async function POST(request: NextRequest) {
+  // P0 kundevendt (2026-08-12): betaling er ikke åpnet i beta.
+  if (!BETA_PAYMENTS_ENABLED) {
+    return betaPaymentsDisabled();
+  }
   try {
     const { sessionId } = await request.json();
 

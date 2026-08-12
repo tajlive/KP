@@ -1,17 +1,15 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import PriserBevis from "@/components/priser/PriserBevis";
-import LiveMarketTicker from "@/components/landing/LiveMarketTicker";
+import { BetaPricingPage } from "@/components/BetaPricingPage";
 
 export const runtime = "nodejs";
 
 /**
- * /priser — Variant C «Beviset» (mega-plan Oppgave 1.3, 2026-08-10).
- *
- * 3-tier-struktur LÅST av Tom: Student gratis / Pro 399 / Pro+ 799.
- * Gamle 5-tier-checkout (ClientPricingPage/PricingGrid + bachelor…professor)
- * er fjernet fra visning — filene ligger urørt igjen til Stripe-migrering
- * er gjort i Hermes-sone. success/cancel-rutene er uberørt.
+ * /priser — P0 kundevendt (2026-08-12): beta.
+ * Betaling er ikke åpent. Siden viser informasjonskort om lekepenger,
+ * ingen priser, ingen kortfelt, ingen checkout. CTA → /register.
+ * Tidligere PriserBevis (3-tier, 399/799) er fjernet fra visning;
+ * filen ligger urørt til betaling faktisk åpner.
  */
 export default async function PriserPage({
   params,
@@ -19,7 +17,7 @@ export default async function PriserPage({
   params: Promise<{ locale: string }>;
 }) {
   await params;
-  return <PriserBevis tickerSlot={<LiveMarketTicker />} />;
+  return <BetaPricingPage />;
 }
 
 export async function generateMetadata({
@@ -28,13 +26,13 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "meta.pricing" });
+  const t = await getTranslations({ locale, namespace: "betaUi" });
   return {
-    title: t("title"),
-    description: t("description"),
+    title: t("metaTitle"),
+    description: t("metaDescription"),
     openGraph: {
-      title: t("title"),
-      description: t("description"),
+      title: t("metaTitle"),
+      description: t("metaDescription"),
     },
   };
 }

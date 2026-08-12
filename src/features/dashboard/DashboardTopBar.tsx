@@ -8,6 +8,7 @@ import { TrendingUp, TrendingDown, Minus, Info, Wallet } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { useCurrency } from "@/hooks/useCurrency";
 import type { DashboardMode } from "@/hooks/useDashboardMetrics";
+import { BetaBadgeClient } from "@/components/BetaBadgeClient";
 
 interface DashboardTopBarProps {
   balance?: number | null;
@@ -56,27 +57,30 @@ export function DashboardTopBar({
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 gap-3">
           {/* Mode badge */}
-          <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide uppercase whitespace-nowrap ${
-              isPaper
-                ? "bg-blue-500/12 text-blue-500 dark:text-blue-400 border border-blue-500/20"
-                : "bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-            }`}
-          >
-            <span className="relative flex h-1.5 w-1.5">
-              <span
-                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${
-                  isPaper ? "bg-blue-400" : "bg-emerald-400"
-                }`}
-              />
-              <span
-                className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
-                  isPaper ? "bg-blue-500" : "bg-emerald-500"
-                }`}
-              />
+          <div className="flex items-center gap-2">
+            <BetaBadgeClient />
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide uppercase whitespace-nowrap ${
+                isPaper
+                  ? "bg-blue-500/12 text-blue-500 dark:text-blue-400 border border-blue-500/20"
+                  : "bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+              }`}
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${
+                    isPaper ? "bg-blue-400" : "bg-emerald-400"
+                  }`}
+                />
+                <span
+                  className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
+                    isPaper ? "bg-blue-500" : "bg-emerald-500"
+                  }`}
+                />
+              </span>
+              {isPaper ? t("paperMode") : t("liveMode")}
             </span>
-            {isPaper ? t("paperMode") : t("liveMode")}
-          </span>
+          </div>
 
           {/* Balance + endring */}
           <div className="flex flex-col items-end min-w-0">

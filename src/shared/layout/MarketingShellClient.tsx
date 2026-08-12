@@ -7,6 +7,7 @@ import {
 import { isGuestAuthRoute, parseLocalePath } from "@/middleware/locale-path";
 import { usePathname, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
+import { BetaInfoBannerClient } from "@/components/BetaInfoBannerClient";
 
 /**
  * Ruter med egen app-chrome (sidebar, fullskjerm trading, checkout, osv.)
@@ -49,6 +50,8 @@ function MarketingShellLayout({
   return (
     <div className="relative flex min-h-screen flex-col">
       {marketingNav}
+      {/* P0 kundevendt: beta-banner rett under header for innloggede */}
+      <BetaInfoBannerClient />
       <main className="flex-1">{children}</main>
       <ConditionalFooter />
     </div>

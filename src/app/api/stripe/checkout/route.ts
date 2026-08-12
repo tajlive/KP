@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
 import { createServerClient } from '@/lib/supabase/server';
+import { betaPaymentsDisabled } from '@/lib/beta-guards';
 
 const pendingCheckouts = new Set<string>();
+
+/**
+ * Beta-sperre (2026-08-12): betaling er IKKE åpnet for kunder.
+ * Sett til true i et fremtidig deploy når betaling faktisk åpner.
+ */
+const BETA_PAYMENTS_ENABLED = false;
 
 // Valid Stripe price IDs - must match environment variables
 const getAllowedPriceIds = (): string[] => {
@@ -15,6 +22,12 @@ const getAllowedPriceIds = (): string[] => {
 };
 
 export async function POST(request: NextRequest) {
+  // P0 kundevendt (2026-08-12): betaling er ikke åpnet i beta.
+  // Alle kunder (inkludert Tom) får BETA_PAYMENTS_DISABLED.
+  // Reversibelt: sett BETA_PAYMENTS_ENABLED=true for å gjenåpne (krever deploy).
+  if (!BETA_PAYMENTS_ENABLED) {
+    return betaPaymentsDisabled();
+  }
   try {
     const { priceId, mode = 'subscription', successPath = '/dashboard' } = await request.json();
     

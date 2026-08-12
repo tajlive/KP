@@ -268,7 +268,9 @@ function getDefaultActions(
           title: t("paperMode.title"),
           description: t("paperMode.description"),
           ctaText: t("paperMode.cta"),
-          ctaLink: "/handel?mode=live",
+          // P0 kundevendt (2026-08-12): live er ikke åpent i beta —
+          // lekepenger-CTA, aldri live-start.
+          ctaLink: "/handel?mode=paper",
           icon: "Shield",
           color: "green",
         },

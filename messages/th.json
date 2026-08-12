@@ -2341,5 +2341,20 @@
         "kraken": "Kraken - MiCA-regulated exchange"
       }
     }
+  },
+  "betaUi": {
+    "badge": "IN BETA",
+    "badgeAria": "Klarpakke is in beta",
+    "bannerTitle": "Klarpakke is in beta",
+    "bannerText": "You can test with play money while we improve the experience.",
+    "infoTitle": "Thank you for testing Klarpakke in beta",
+    "infoText": "You are currently trading with play money only, using real market data. Payments, subscriptions and live trading with real money are not available yet.",
+    "paymentsTitle": "Payments are coming later",
+    "paymentsText": "Payments and subscriptions have not been opened in beta. You do not need to enter a card or pay to use play money.",
+    "liveTitle": "Live trading is not available in beta",
+    "liveText": "You can practise with play money on real market data. Real money is not in use in the customer version.",
+    "cta": "Start with play money",
+    "metaTitle": "Klarpakke is in beta",
+    "metaDescription": "Klarpakke is in beta. You can test trading with play money on real market data. Payments and live trading come later."
   }
 }

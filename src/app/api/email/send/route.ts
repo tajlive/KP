@@ -91,7 +91,6 @@ function welcomeEmail(name: string): string {
     <hr style="border-color:#1F2937;margin:32px 0 16px">
     <p style="font-size:12px;color:#4B5563">
       Klarpakke AS — Norges krypto-skole<br>
-      Org.nr: 929 003 292 MVA
     </p>
   </div>
 </body>
@@ -120,7 +119,7 @@ function tradeConfirmedEmail(name: string, symbol: string, side: string, amount:
       Se dashboard →
     </a>
     <hr style="border-color:#1F2937;margin:32px 0 16px">
-    <p style="font-size:12px;color:#4B5563">Klarpakke AS — Org.nr: 929 003 292 MVA</p>
+    <p style="font-size:12px;color:#4B5563">Klarpakke AS</p>
   </div>
 </body>
 </html>`;

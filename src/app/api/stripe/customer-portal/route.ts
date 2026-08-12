@@ -8,9 +8,13 @@ import {
 } from "@/lib/api-response";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { createClient, createServerClient } from "@/lib/supabase/server";
+import { betaPaymentsDisabled } from "@/lib/beta-guards";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/** Beta-sperre (2026-08-12): kundeporter er ikke åpnet i beta. */
+const BETA_PAYMENTS_ENABLED = false;
 
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -23,6 +27,10 @@ function getStripe(): Stripe {
  * Krever rad i `subscriptions` med `stripe_customer_id` (typisk etter checkout).
  */
 export async function POST(request: NextRequest) {
+  // P0 kundevendt (2026-08-12): betaling er ikke åpnet i beta.
+  if (!BETA_PAYMENTS_ENABLED) {
+    return betaPaymentsDisabled();
+  }
   try {
     const response = NextResponse.next();
     const supabaseAuth = createServerClient(request, response);

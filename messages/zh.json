@@ -1662,7 +1662,15 @@
       "welcome": "嗨！我可以帮助您了解您的交易数据。"
     },
     "winLossHeatmap": {
-      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "subtitle": "{winningDays, plural, one {# 个绿色} other {# 个绿色}} · {losingDays, plural, one {# 个红色} other {# 个红色}} · {winRate}% 胜率",
       "infoTooltip": "每种颜色代表您一天的损益。深绿色=大赢，深红色=大输。用它来识别模式（例如，周一的损失）。",
       "loss": "损失",
@@ -5754,7 +5762,7 @@
       "locationValue": "挪威奥斯陆",
       "org": "组织编号",
       "orgName": "克拉帕克公司",
-      "orgNumber": "929 003 292 伏安",
+      "orgNumber": "",
       "subtitle": "有疑问吗？我们随时为您提供帮助。",
       "title": "联系我们"
     },
@@ -6568,5 +6576,20 @@
       "button": "免费开始",
       "sub": "访问 klarpakke.no——或在评论区写下「JEG VIL PRØVE」，我会给你发消息。"
     }
+  },
+  "betaUi": {
+    "badge": "IN BETA",
+    "badgeAria": "Klarpakke is in beta",
+    "bannerTitle": "Klarpakke is in beta",
+    "bannerText": "You can test with play money while we improve the experience.",
+    "infoTitle": "Thank you for testing Klarpakke in beta",
+    "infoText": "You are currently trading with play money only, using real market data. Payments, subscriptions and live trading with real money are not available yet.",
+    "paymentsTitle": "Payments are coming later",
+    "paymentsText": "Payments and subscriptions have not been opened in beta. You do not need to enter a card or pay to use play money.",
+    "liveTitle": "Live trading is not available in beta",
+    "liveText": "You can practise with play money on real market data. Real money is not in use in the customer version.",
+    "cta": "Start with play money",
+    "metaTitle": "Klarpakke is in beta",
+    "metaDescription": "Klarpakke is in beta. You can test trading with play money on real market data. Payments and live trading come later."
   }
 }

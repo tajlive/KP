@@ -76,7 +76,7 @@ describe("live-trading-dogfood", () => {
       vi.stubEnv("NEXT_PUBLIC_LIVE_TRADING_DOGFOOD", "true");
       const reason = liveTradingBlockReason(UNKNOWN_ID);
       expect(reason).toBeTruthy();
-      expect(reason).toContain("testbrukere");
+      expect(reason).toContain("beta");
     });
 
     it("returnerer null når dogfood er AV", () => {

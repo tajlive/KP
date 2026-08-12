@@ -53,7 +53,7 @@ export const translations = {
     trustBadges: {
       trustedBy: "Betrodd av norske tradere",
       ssl: "256-bit SSL",
-      registered: "Org.nr 929003292 MVA",
+      registered: "Klarpakke AS",
       gdpr: "GDPR-sikret",
     },
     nav: {
@@ -274,7 +274,7 @@ export const translations = {
       connectNow: "Koble til nå",
     },
     footer: {
-      companyInfo: "Klarpakke AS - Org.nr: 929003292 MVA",
+      companyInfo: "Klarpakke AS",
       registeredWith: "Registrert hos Brønnøysundregistrene",
       disclaimer: "⚠️ Kun opplæring - ingen finansiell rådgivning",
       copyright: "© 2026 Klarpakke AS. Alle rettigheter reservert.",
@@ -388,7 +388,7 @@ export const translations = {
     trustBadges: {
       trustedBy: "Trusted by Norwegian traders",
       ssl: "256-bit SSL",
-      registered: "Org.no 929003292 VAT",
+      registered: "Klarpakke AS",
       gdpr: "GDPR compliant",
     },
     nav: {
@@ -609,7 +609,7 @@ export const translations = {
       connectNow: "Connect now",
     },
     footer: {
-      companyInfo: "Klarpakke AS - Org.no: 929003292 VAT",
+      companyInfo: "Klarpakke AS",
       registeredWith: "Registered with Brønnøysundregistrene",
       disclaimer: "⚠️ Educational only - no financial advice",
       copyright: "© 2026 Klarpakke AS. All rights reserved.",

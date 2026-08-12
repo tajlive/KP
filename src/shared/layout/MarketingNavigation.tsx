@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { NavigationData } from "@/lib/navigation/config";
 import { NavAuthState } from "@/features/marketing/components/NavAuthState";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { BetaBadge } from "@/components/BetaBadge";
 
 interface MarketingNavigationProps {
   navData: NavigationData;
@@ -47,6 +48,7 @@ export async function MarketingNavigation({ navData, locale }: MarketingNavigati
             <span className="ml-1.5 text-sm font-medium text-kp-text-muted truncate hidden xl:inline shrink-0">
               — {t("tagline")}
             </span>
+            <BetaBadge locale={locale} />
           </Link>
 
           <div className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0">

@@ -49,9 +49,11 @@ export function canUserAccessLiveTrading(userId: string): boolean {
 
 /**
  * Hvorfor er live trading utilgjengelig?
- * Returnerer null hvis tilgang er OK, eller en brukervennlig norsk melding.
+ * Returnerer null hvis tilgang er OK, eller en brukervennlig melding.
+ * 2026-08-12: kundevendt sperre i beta — «Live-handel er ikke
+ * tilgjengelig i beta» (ikke «testbrukere», som eksponerer dogfood).
  */
 export function liveTradingBlockReason(userId: string): string | null {
   if (canUserAccessLiveTrading(userId)) return null;
-  return "Live trading er for øyeblikket kun tilgjengelig for testbrukere.";
+  return "Live-handel er ikke tilgjengelig i beta. Du kan øve med lekepenger på ekte markedsdata.";
 }

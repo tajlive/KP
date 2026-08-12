@@ -6,6 +6,8 @@ import {
   resolveAutoConfigStrategy,
   resolveDefaultStrategyId,
 } from "@/lib/trading/routing-default";
+import { canUserAccessLiveTrading } from "@/lib/auth/live-trading-dogfood";
+import { betaLiveTradingDisabled } from "@/lib/beta-guards";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,8 +65,12 @@ export async function POST(request: NextRequest) {
     // PF 7.42 OOS — trading-agent-forslag 2026-08-05).
     const gridDefault = isGridDefaultRouting();
 
-    // Live-krav: Kraken-kobling (user_kraken_keys — EU/EØS 2026) + kvalifisert tier
+    // Live-krav: beta-sperre (2026-08-12) — kun intern dogfood slipper.
+    // Kundevendt: BETA_LIVE_TRADING_DISABLED før exchange-nøkler røres.
     if (live) {
+      if (!canUserAccessLiveTrading(user.id)) {
+        return betaLiveTradingDisabled();
+      }
       const { data: krakenKeysRow } = await db
         .from("user_kraken_keys")
         .select("api_key_encrypted, api_secret_encrypted")

@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { betaPaymentsDisabled } from "@/lib/beta-guards";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 60; // Cache i 60 sekunder
+
+/** Beta-sperre (2026-08-12): prisdata er ikke kundevendt i beta. */
+const BETA_PAYMENTS_ENABLED = false;
 
 // Fallback-priser hvis databasen ikke er tilgjengelig
 const FALLBACK_PRICES = {
@@ -73,6 +77,10 @@ const getSupabase = () => {
 };
 
 export async function GET() {
+  // P0 kundevendt (2026-08-12): prisdata er ikke kundevendt i beta.
+  if (!BETA_PAYMENTS_ENABLED) {
+    return betaPaymentsDisabled();
+  }
   try {
     const supabase = getSupabase();
 

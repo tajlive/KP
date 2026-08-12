@@ -12,6 +12,7 @@ import {
   isLiveTradingDogfood,
   liveTradingBlockReason,
 } from "@/lib/auth/live-trading-dogfood";
+import { betaLiveTradingDisabled } from "@/lib/beta-guards";
 import type { Json } from "@/types/database.types";
 import { z } from "zod";
 
@@ -135,15 +136,9 @@ export async function POST(request: NextRequest) {
 
     // Hvis bytte til live, sjekk dogfood-gate først (2026-08-12, P0)
     if (mode === "live") {
-      // Gate 0: Dogfood-whitelist
+      // Gate 0: Dogfood-whitelist — kunder får BETA_LIVE_TRADING_DISABLED
       if (!canUserAccessLiveTrading(user.id)) {
-        return NextResponse.json(
-          {
-            error: liveTradingBlockReason(user.id) || "Live trading er ikke tilgjengelig",
-            code: "LIVE_TRADING_DOGFOOD",
-          },
-          { status: 403 },
-        );
+        return betaLiveTradingDisabled();
       }
 
       // Gate 1: Exchange-nøkler — Kraken ELLER OKX (2026-08-12: OKX er primær)

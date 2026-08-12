@@ -4,6 +4,8 @@ import { normalizeTier } from "@/lib/pricing/tiers";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import { normalizePair } from "@/lib/trading/pair";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
+import { canUserAccessLiveTrading } from "@/lib/auth/live-trading-dogfood";
+import { betaLiveTradingDisabled } from "@/lib/beta-guards";
 import { z } from "zod";
 
 const createSessionSchema = z.object({
@@ -106,6 +108,12 @@ export async function POST(request: NextRequest) {
     const tier = normalizeTier(profRow?.tier) as TierSlug;
 
     if (mode === "live") {
+      // P0 kundevendt (2026-08-12): live-handel er ikke åpent i beta.
+      // Kun intern dogfood (Tom) slipper gjennom — alle kunder får
+      // BETA_LIVE_TRADING_DISABLED før vi rører exchange-nøkler.
+      if (!canUserAccessLiveTrading(user.id)) {
+        return betaLiveTradingDisabled();
+      }
       // EU/EØS (2026): live krever Kraken-nøkler (user_kraken_keys)
       const { data: krakenKeys } = await supabase
         .from("user_kraken_keys")

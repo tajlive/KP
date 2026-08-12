@@ -7,6 +7,7 @@ import { TradingModeProvider } from "@/context/TradingModeContext";
  *
  * AuthProvider + ProtectedRoute leveres av RootProviders (app/layout).
  * Denne layouten legger kun til TradingModeProvider.
+ * BetaInfoBanner vises av AppShell ((user)/layout) — ikke dupliser her.
  */
 export default function DashboardClientLayout({
   children,

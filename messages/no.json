@@ -74,7 +74,7 @@
       "email": "E-post",
       "emailValue": "post@klarpakke.no",
       "org": "Organisasjonsnummer",
-      "orgNumber": "929 003 292 MVA",
+      "orgNumber": "",
       "orgName": "Klarpakke AS",
       "location": "Lokasjon",
       "locationValue": "Oslo, Norge"
@@ -1214,11 +1214,11 @@
     "botStrategyDca": "Bot Strategy Dca",
     "botStrategyTrendDesc": "Bot Strategy Trend Desc",
     "strategyTrend": "Strategy Trend",
-    "upgradeToStartLive": "Upgrade To Start Live",
-    "upgradeCta": "Oppgrader",
+    "upgradeToStartLive": "Ikke tilgjengelig i beta",
+    "upgradeCta": "Lekepenger",
     "liveWarningTitle": "Live Warning Title",
     "liveWarningDesc": "Live Warning Desc",
-    "upgradeNotice": "Upgrade Notice",
+    "upgradeNotice": "Kun lekepenger i beta",
     "seePlans": "See Plans",
     "chooseStrategy": "Choose Strategy",
     "clickToSelect": "Click To Select",
@@ -1911,7 +1911,15 @@
       "title": "Daglig P&L Heatmap",
       "loss": "Tap",
       "win": "Gevinst",
-      "dayLabels": ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
+      "dayLabels": [
+        "Man",
+        "Tir",
+        "Ons",
+        "Tor",
+        "Fre",
+        "Lør",
+        "Søn"
+      ],
       "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
     },
@@ -1987,9 +1995,9 @@
         "cta": "Utforsk strategier"
       },
       "paperMode": {
-        "title": "Gå Live",
-        "description": "Klar for ekte trading? Oppgrader til live-modus.",
-        "cta": "Aktiver Live"
+        "title": "Fortsett med lekepenger",
+        "description": "Du handler med lekepenger og ekte markedsdata. Live-handel er ikke tilgjengelig i beta.",
+        "cta": "Gå til trading"
       },
       "liveMode": {
         "title": "Optimaliser strategien",
@@ -2061,7 +2069,7 @@
       "lastUpdated": "Sist oppdatert",
       "seeAll": "Se alle",
       "upgradeTitle": "Klar for neste nivå?",
-      "upgradeDescription": "Oppgrader til Bachelor for live trading, avanserte strategier og prioritert support.",
+      "upgradeDescription": "Klarpakke er i beta. Lekepenger er gratis og ubegrenset. Betalte planer kommer senere.",
       "upgradeCta": "Se priser",
       "advancedAnalyticsTitle": "Avansert analyse",
       "advancedAnalyticsDesc": "Egenkapitalkurve, P&L-varmekart, risikomål og posisjonskalkulator",
@@ -2267,7 +2275,7 @@
     "tagline": "Norsk krypto-utdanning. Lær uten risiko.",
     "paymentLabel": "Sikker betaling med:",
     "paymentSubtitle": "Vi bruker Stripe og Vipps for sikker betaling. Ingen kortdetaljer lagres hos oss.",
-    "copyright": "© {year} Klarpakke AS. Org.nr: 929 003 292. Alle rettigheter reservert.",
+    "copyright": "© {year} Klarpakke AS. Alle rettigheter reservert.",
     "disclaimer": "Trading med kryptovaluta innebærer risiko. Klarpakke er en læringsplattform og gir ikke finansiell rådgivning. Alle investeringsbeslutninger er ditt eget ansvar. Tidligere resultater er ingen garanti for fremtidige avkastninger. Invester aldri mer enn du har råd til å tape.",
     "links": {
       "courses": "Kurs",
@@ -2399,10 +2407,10 @@
     "hero": {
       "badge": "🔬 Beta — kun Norge. 5000 KLT til de 100 første — gratis for livet",
       "title": "100 000 kr i lekepenger. Ekte markeder. Null risiko.",
-      "subtitle": "Klarpakke er i beta og kun tilgjengelig i Norge. Tren på kryptohandel med AI-agenter på ekte markedsdata — helt gratis. Live trading åpner etter beta. Det lønner seg å øve før live åpner.",
+      "subtitle": "Klarpakke er i beta og kun tilgjengelig i Norge. Tren på kryptohandel med AI-agenter på ekte markedsdata — helt gratis. Du handler med lekepenger i beta, og ekte markedsdata. Betaling og live-handel er ikke tilgjengelig ennå.",
       "cta-primary": "Start gratis",
       "cta-secondary": "Se hvordan det fungerer",
-      "trustNote": "Beta • Kun Norge • Live trading kommer • Ingen kredittkort",
+      "trustNote": "Beta • Kun Norge • Lekepenger • Ingen kredittkort",
       "livePrices": "Live markedsdata",
       "liveUpdates": "Oppdateres live",
       "mockupAlt": "Klarpakkes trade-side: kjøp Bitcoin med lekepenger — ekte produktbilde",
@@ -2547,7 +2555,7 @@
         "q3": "Hva er en backtest?",
         "a3": "Vi kjører handelsstrategien mot historiske kursdata og viser hva utfallet ville blitt. Det forteller deg hvordan strategien har oppført seg — ikke hvordan fremtiden blir.",
         "q4": "Kan jeg tape ekte penger?",
-        "a4": "Nei — ikke i beta. Du handler med lekepenger. Når live trading åpner etter beta, er det et aktivt valg du tar selv, og vi minner deg på risikoen først.",
+        "a4": "Nei — Klarpakke er i beta. Du handler kun med lekepenger på ekte markedsdata. Betaling og live-handel er ikke tilgjengelig ennå.",
         "q5": "Hva er KLT?",
         "a5": "KLT er Klarpakke-tokens — vår takk til tidlige testere. De 100 første registrerte får 5000 KLT og gratis tilgang for livet."
       }
@@ -2748,7 +2756,7 @@
     "mod3Tag": "Etter beta",
     "mod3Title": "Fra leke til ekte",
     "mod3t1": "Akkurat nå er Klarpakke i beta, og alt er lekepenger. Det er meningen: Du skal få trent så mye du vil før ekte penger kommer på bordet.",
-    "mod3t2": "Når live trading åpner etter beta, kobler du din egen børskonto (OKX eller Kraken) til Klarpakke. Pengene blir liggende hos deg — vi kan aldri ta dem ut. Og du velger selv om, og når, du vil gå live. Det er alltid ditt valg.",
+    "mod3t2": "I beta handler du kun med lekepenger. Når betalte planer og live-handel blir tilgjengelig, kobler du din egen børskonto (OKX eller Kraken) til Klarpakke. Pengene blir liggende hos deg — vi kan aldri ta dem.",
     "mod4Tag": "Viktigst til slutt",
     "mod4Title": "Risiko — det ærlige kapittelet",
     "mod4t1": "Vi sier det rett ut: krypto kan falle kraftig i verdi. Ingen — heller ikke en smart datamaskin — kan love deg gevinst. De som lover det, lyver.",
@@ -2788,17 +2796,17 @@
     "proplussF4": "Tidlig tilgang til nye funksjoner",
     "studentCta": "Start gratis",
     "paidCta": "Registrer deg nå",
-    "betaNote": "Klarpakke er i gratis beta. Betalte planer aktiveres etter beta — og de 100 første registrerte får gratis tilgang for livet.",
+    "betaNote": "Klarpakke er i beta. Alle funksjoner med lekepenger er gratis. Betalte planer er ikke tilgjengelig ennå.",
     "founderTitle": "De 100 første får gratis tilgang — for alltid",
     "founderText": "Som takk for at dere tester Klarpakke først, får de 100 første registrerte gratis tilgang for livet — og 5000 KLT (Klarpakke-tokens).",
     "founderRegistered": "har registrert seg siste 90 dager",
     "faqTitle": "Spørsmål og svar",
     "faqQ1": "Må jeg betale nå?",
-    "faqA1": "Nei. Klarpakke er i gratis beta — alt er gratis akkurat nå. Betalte planer aktiveres etter beta, og de 100 første registrerte får gratis tilgang for livet.",
+    "faqA1": "Nei. Klarpakke er i beta — alt er gratis med lekepenger. Betalte planer er ikke tilgjengelig ennå.",
     "faqQ2": "Får jeg pengene tilbake hvis jeg ikke er fornøyd?",
     "faqA2": "Nei. Du betaler for tilgang til verktøyene våre, ikke for resultater eller løfter om avkastning. Paper trading med 100 000 kr lekepenger er gratis og ubegrenset. Når du oppgraderer, får du umiddelbar tilgang til funksjoner som live trading, flere strategier og avanserte verktøy — på samme måte som et abonnement på en programvare.",
     "faqQ3": "Rører dere pengene mine?",
-    "faqA3": "Aldri. Når live trading åpner etter beta, kobler du din egen børskonto (OKX eller Kraken) til Klarpakke. Pengene blir liggende hos deg — vi kan ikke ta dem ut.",
+    "faqA3": "I beta: nei. Når live-handel blir tilgjengelig, kobler du din egen børskonto (OKX eller Kraken) til Klarpakke. Pengene blir liggende hos deg — vi har ikke tilgang til dem.",
     "faqQ4": "Hva er 5x gearing?",
     "faqA4": "Gearing betyr at både gevinst og tap forsterkes like mye — 5x gevinst er også 5x tap. Derfor krever Pro+ en ekstra, eksplisitt risiko-godkjenning før funksjonen kan slås på.",
     "faqQ5": "Kan jeg avslutte abonnementet når som helst?",
@@ -6367,5 +6375,20 @@
       "button": "Start gratis",
       "sub": "Gå til klarpakke.no — eller skriv «JEG VIL PRØVE» i kommentarfeltet, så sender jeg deg beskjed."
     }
+  },
+  "betaUi": {
+    "badge": "I BETA",
+    "badgeAria": "Klarpakke er i beta",
+    "bannerTitle": "Klarpakke er i beta",
+    "bannerText": "Du kan teste med lekepenger mens vi forbedrer opplevelsen.",
+    "infoTitle": "Takk for at du tester Klarpakke i beta",
+    "infoText": "Du handler nå kun med lekepenger og ekte markedsdata. Betaling, abonnement og live-handel med ekte penger er ikke tilgjengelig ennå.",
+    "paymentsTitle": "Betaling kommer senere",
+    "paymentsText": "Betaling og abonnement er ikke åpnet i beta. Du trenger ikke legge inn kort eller betale for å bruke lekepenger.",
+    "liveTitle": "Live-handel er ikke tilgjengelig i beta",
+    "liveText": "Du kan øve med lekepenger på ekte markedsdata. Ekte penger er ikke i bruk i kundeversjonen.",
+    "cta": "Start med lekepenger",
+    "metaTitle": "Klarpakke er i beta",
+    "metaDescription": "Klarpakke er i beta. Du kan teste trading med lekepenger på ekte markedsdata. Betaling og live-handel kommer senere."
   }
 }
