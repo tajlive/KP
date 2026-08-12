@@ -240,10 +240,13 @@ export async function getUserDashboardMetrics(
 
   // Live: hent OKX-saldo live fra exchange (2026-08-11: Kraken erstattet av OKX).
   // Kraken d10c6096 er stopped og nøkkel inaktiv — dashboard live-mode viser KUN OKX.
+  // KLA-300 (2026-08-12): leser cache fra okx_live_state (≤5 min), fallback live API.
   let liveOkxBalanceNok: number | null = null;
+  let liveOkxUpdatedAt: string | null = null;
   if (mode === "live") {
     const okx = await getOkxLiveBalance(supabaseClient, userId);
     liveOkxBalanceNok = okx.balanceNok;
+    liveOkxUpdatedAt = okx.updatedAt;
   }
 
   // ------------------------------------------------------------------
@@ -351,7 +354,8 @@ export async function getUserDashboardMetrics(
       losingTrades,
       sessionCount: Number(row.session_count ?? 0),
       accountBalance: mode === "live" ? liveOkxBalanceNok : accountBalance,
-      accountBalanceUpdatedAt,
+      accountBalanceUpdatedAt:
+        mode === "live" ? liveOkxUpdatedAt : accountBalanceUpdatedAt,
       investedCapital,
       positionCount,
       recentSessions: recentSessions || [],

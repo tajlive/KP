@@ -24,6 +24,7 @@ Alder: paper_accounts.updated_at — maks 6 min gammel
 ```
 
 **Hvor brukes denne:**
+
 - Dashboard hero (total verdi)
 - DashboardPro balanse
 - Portfolio summary saldo
@@ -106,13 +107,15 @@ Valuta: NOK
 ### 2.1 Cash-saldo
 
 ```
-STATUS: ⚠️ IKKE PERSISTERT TIL DB — hentes LIVE fra OKX API
-Felt: getOkxLiveBalance().balanceUsdc (→ balanceNok via rate)
-Kilde: eea.okx.com/api/v5/account/balance
-Valuta: USDC (primær) → NOK (via USDT/NOK rate ~9.6)
-Cache: INGEN — nytt API-kall hver dashboard-innlasting
-Alder: < 2 sekunder (API-respons)
-Mangler: historisk tracking, DB-persistens, fallback
+STATUS: ✅ PERSISTERT TIL DB (KLA-300, 2026-08-12) — okx_live_state
+Felt: okx_live_state.snapshot.balanceUsdc / total_usdc / total_nok
+Kilde: /api/cron/okx-balance-sync (hvert 5. min) skriver; getOkxLiveBalance()
+       leser cache ≤ 5 min, ellers live API (eea.okx.com/api/v5/account/balance)
+       med skriv-tilbake til DB
+Valuta: USDC (primær) → NOK (via USDT/NOK rate ~9.5)
+Cache: ≤ 5 min (okx_live_state.updated_at)
+Alder: MoneyDataBadge merker "OKX live" stale hvis > 5 min
+Mangler: historisk serie (kun siste snapshot — KLA-300 v1)
 ```
 
 ### 2.2 Beholdninger
@@ -166,57 +169,57 @@ Korrekt: BØR bruke OKX sin daglige P&L mot OKX-initial-balance
 
 ## 3. VALUTAKONTRAKT
 
-| Kontekst | Primær valuta | Visningsvaluta | Konvertering |
-|---|---|---|---|
-| Paper trading | NOK | NOK | Ingen |
-| Paper trades | NOK | NOK | Priser allerede i NOK |
-| OKX live | USDC | NOK | USDC × USDT/NOK rate |
-| Kraken live | USDC | NOK | USDC × USDT/NOK rate |
-| coin_prices | USDT | NOK | Ingen (kun pris-data) |
-| Leaderboard | NOK | NOK | — |
+| Kontekst      | Primær valuta | Visningsvaluta | Konvertering          |
+| ------------- | ------------- | -------------- | --------------------- |
+| Paper trading | NOK           | NOK            | Ingen                 |
+| Paper trades  | NOK           | NOK            | Priser allerede i NOK |
+| OKX live      | USDC          | NOK            | USDC × USDT/NOK rate  |
+| Kraken live   | USDC          | NOK            | USDC × USDT/NOK rate  |
+| coin_prices   | USDT          | NOK            | Ingen (kun pris-data) |
+| Leaderboard   | NOK           | NOK            | —                     |
 
 ---
 
 ## 4. DATAALDER-KONTRAKT
 
-| Data | Alder | Hentes fra | Stale hvis |
-|---|---|---|---|
-| paper_accounts.current_balance | ≤ 6 min | syncPaperAccountBalance (5 min cron) | updated_at > 6 min |
-| OKX saldo | ≤ 2 sek | Live API | API-feil |
-| coin_prices | ≤ 5 min | sync-prices cron | updated_at > 10 min |
-| trading_sessions | ≤ 5 min | tick-cron | last_tick_at > 10 min |
-| kraken_live_state | ∞ (død) | Kraken balance-sync (død) | Alltid stale |
+| Data                           | Alder   | Hentes fra                           | Stale hvis            |
+| ------------------------------ | ------- | ------------------------------------ | --------------------- |
+| paper_accounts.current_balance | ≤ 6 min | syncPaperAccountBalance (5 min cron) | updated_at > 6 min    |
+| OKX saldo                      | ≤ 2 sek | Live API                             | API-feil              |
+| coin_prices                    | ≤ 5 min | sync-prices cron                     | updated_at > 10 min   |
+| trading_sessions               | ≤ 5 min | tick-cron                            | last_tick_at > 10 min |
+| kraken_live_state              | ∞ (død) | Kraken balance-sync (død)            | Alltid stale          |
 
 ---
 
 ## 5. DEFINISJONER — ordliste
 
-| Term | Definisjon | Scope |
-|---|---|---|
-| **Saldo** | Disponible midler (cash) | Paper: paper_accounts. Live: OKX USDC |
-| **Totalverdi** | Saldo + markedsverdi av posisjoner | Paper + Live |
-| **Investert** | Kostnadsgrunnlag for åpne posisjoner | Paper: open_position |
-| **Realisert P&L** | Gevinst/tap på lukkede handler | Alltid via cleanTradeStats |
-| **Urealisert P&L** | Markedsverdi − kostnad for åpne posisjoner | Kun active+paused |
-| **Avkastning** | (Totalverdi − startkapital) / startkapital | Paper + Live |
-| **Startkapital** | paper_accounts.initial_balance (paper) / første innskudd (live) | Paper + Live |
-| **Posisjon** | Netto beholdning per trading_pair | Kun active+paused |
+| Term               | Definisjon                                                      | Scope                                 |
+| ------------------ | --------------------------------------------------------------- | ------------------------------------- |
+| **Saldo**          | Disponible midler (cash)                                        | Paper: paper_accounts. Live: OKX USDC |
+| **Totalverdi**     | Saldo + markedsverdi av posisjoner                              | Paper + Live                          |
+| **Investert**      | Kostnadsgrunnlag for åpne posisjoner                            | Paper: open_position                  |
+| **Realisert P&L**  | Gevinst/tap på lukkede handler                                  | Alltid via cleanTradeStats            |
+| **Urealisert P&L** | Markedsverdi − kostnad for åpne posisjoner                      | Kun active+paused                     |
+| **Avkastning**     | (Totalverdi − startkapital) / startkapital                      | Paper + Live                          |
+| **Startkapital**   | paper_accounts.initial_balance (paper) / første innskudd (live) | Paper + Live                          |
+| **Posisjon**       | Netto beholdning per trading_pair                               | Kun active+paused                     |
 
 ---
 
 ## 6. BRUTTE KONTRAKTER (avvik fra denne spesifikasjonen)
 
-| # | Hvor | Brudd | Alvor |
-|---|---|---|---|
-| 1 | Leaderboard | Bruker sessions-sum som PRIMÆR, paper_accounts som FALLBACK | 🟡 P1 |
-| 2 | /api/paper-trading/balance | Bruker session.current_capital_nok (én sesjon), ikke paper_accounts | 🟡 P1 |
-| 3 | Dashboard live | accountBalance (OKX API) ≠ totalCapital (RPC sessions) — to ulike kilder | 🔴 P0 |
-| 4 | Ingen OKX DB-synk | getOkxLiveBalance() har ingen persistens — null historikk | 🔴 P0 |
-| 5 | KrakenMarketDataProvider | 16+ ruter bruker Kraken for priser — Kraken-nøkkel er død | 🔴 P0 |
-| 6 | syncPaperAccountBalance | 1.5× sanity cap kan blokkere synk stille | 🟡 P1 |
-| 7 | OKX ordre mangler | getOkxLiveBalance() henter ikke pending orders | 🟡 P1 |
-| 8 | Kill switch GET | Teller kun Kraken-brukere, ikke OKX | 🟡 P1 |
+| #   | Hvor                       | Brudd                                                                                                                    | Alvor     |
+| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------- |
+| 1   | Leaderboard                | Bruker sessions-sum som PRIMÆR, paper_accounts som FALLBACK                                                              | 🟡 P1     |
+| 2   | /api/paper-trading/balance | Bruker session.current_capital_nok (én sesjon), ikke paper_accounts                                                      | 🟡 P1     |
+| 3   | Dashboard live             | ✅ FIXET (KLA-300): OKX-saldo persistet til okx_live_state; accountBalanceUpdatedAt koblet                               | ~~🔴~~ ✅ |
+| 4   | OKX DB-synk                | ✅ FIXET (KLA-300): okx_live_state-tabell + /api/cron/okx-balance-sync (hvert 5. min) + cache-lesing i getOkxLiveBalance | ~~🔴~~ ✅ |
+| 5   | KrakenMarketDataProvider   | 16+ ruter bruker Kraken for priser — Kraken-nøkkel er død                                                                | 🔴 P0     |
+| 6   | syncPaperAccountBalance    | 1.5× sanity cap kan blokkere synk stille                                                                                 | 🟡 P1     |
+| 7   | OKX ordre mangler          | okx_live_state har ikke åpne ordre ennå (open_orders=0 i sync)                                                           | 🟡 P1     |
+| 8   | Kill switch GET            | Teller kun Kraken-brukere, ikke OKX                                                                                      | 🟡 P1     |
 
 ---
 
-*Denne kontrakten er autoritativ. Alle nye pengerelaterte features SKAL følge den. Eksisterende avvik skal fikses i prioritert rekkefølge.*
+_Denne kontrakten er autoritativ. Alle nye pengerelaterte features SKAL følge den. Eksisterende avvik skal fikses i prioritert rekkefølge._

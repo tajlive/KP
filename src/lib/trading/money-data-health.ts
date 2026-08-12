@@ -25,17 +25,13 @@ export interface MoneyDataHealthInput {
 
 const MAX_AGE_MS: Record<string, number> = {
   paper_accounts: 6 * 60 * 1000, // 6 min — syncPaperAccountBalance kjører hvert 5. min
-  "trading_sessions": 10 * 60 * 1000, // 10 min — tick-cron hvert 5. min
-  "OKX live": 2 * 60 * 1000, // 2 min — live API
+  trading_sessions: 10 * 60 * 1000, // 10 min — tick-cron hvert 5. min
+  "OKX live": 5 * 60 * 1000, // 5 min — cache fra okx_live_state (KLA-300), cron hvert 5. min
   coin_prices: 10 * 60 * 1000, // 10 min — sync-prices hvert 5. min
 };
 
 /** Kilde som vet vi IKKE kan stole på i dag (Kraken-nøkkel død). */
-const UNTRUSTED_SOURCES = new Set([
-  "kraken_live_state",
-  "Kraken",
-  "kraken",
-]);
+const UNTRUSTED_SOURCES = new Set(["kraken_live_state", "Kraken", "kraken"]);
 
 export function assessMoneyDataHealth(
   input: MoneyDataHealthInput,

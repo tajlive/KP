@@ -38,6 +38,8 @@ export interface OkxLiveData {
   quoteCcy: string;
   dailyPnl: number;
   dailyPnlPct: number;
+  /** Når dataen sist ble hentet (cache-skriv eller live-kall) */
+  updatedAt: string | null;
   position: {
     symbol: string;
     size: string;
@@ -81,11 +83,56 @@ async function okxGet<T>(
 /**
  * Hent live OKX-data for en bruker. Returnerer alltid et objekt —
  * {connected: false} ved manglende nøkler eller API-feil.
+ *
+ * KLA-300 (2026-08-12): leser først fra okx_live_state (skrevet av
+ * /api/cron/okx-balance-sync hvert 5. min). Kun ved tom rad eller
+ * stale data (> 5 min) gjøres live API-kall — med skriv-tilbake til DB.
+ * Dette gir: raskere dashboard, historikk og pålitelig dataalder.
  */
 export async function getOkxLiveBalance(
   supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<OkxLiveData> {
+  // ── 1. Cache: okx_live_state (≤ 5 min) ────────────────────────────
+  try {
+    const { data: cached } = await supabase
+      .from("okx_live_state")
+      .select("snapshot, total_usdc, updated_at")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (cached?.snapshot && cached.updated_at) {
+      const ageMs = Date.now() - new Date(cached.updated_at).getTime();
+      if (Number.isFinite(ageMs) && ageMs <= 5 * 60 * 1000) {
+        const snap = cached.snapshot as {
+          balanceUsdc?: number;
+          balanceNok?: number;
+          quoteCcy?: string;
+          dailyPnl?: number;
+          dailyPnlPct?: number;
+          position?: OkxLiveData["position"];
+        };
+        return {
+          connected: true,
+          balanceUsdc: snap.balanceUsdc ?? (Number(cached.total_usdc) || 0),
+          balanceNok: snap.balanceNok ?? 0,
+          quoteCcy: snap.quoteCcy ?? "USDC",
+          dailyPnl: snap.dailyPnl ?? 0,
+          dailyPnlPct: snap.dailyPnlPct ?? 0,
+          updatedAt: cached.updated_at,
+          position: snap.position ?? null,
+        };
+      }
+    }
+  } catch (cacheErr) {
+    // Cache-feil skal aldri krasje — fall tilbake til live API
+    console.error(
+      "[getOkxLiveBalance] cache read failed:",
+      (cacheErr as Error).message,
+    );
+  }
+
+  // ── 2. Live API-kall ──────────────────────────────────────────────
   try {
     const { data: okxRow } = await supabase
       .from("user_okx_keys")
@@ -102,6 +149,7 @@ export async function getOkxLiveBalance(
         quoteCcy: "USDC",
         dailyPnl: 0,
         dailyPnlPct: 0,
+        updatedAt: null,
         position: null,
       };
     }
@@ -138,13 +186,14 @@ export async function getOkxLiveBalance(
 
     const rate = await getUsdtToNokRateAsync(supabase);
 
-    return {
+    const result: OkxLiveData = {
       connected: true,
       balanceUsdc,
       balanceNok: Math.round(balanceUsdc * rate * 100) / 100,
       quoteCcy,
       dailyPnl,
       dailyPnlPct,
+      updatedAt: new Date().toISOString(),
       position: position
         ? {
             symbol: position.instId ?? "?",
@@ -154,6 +203,31 @@ export async function getOkxLiveBalance(
           }
         : null,
     };
+
+    // ── 3. Skriv-tilbake til okx_live_state (cache for neste lesing) ──
+    // Fire-and-forget: feil her skal ikke krasje dashboard-responsen.
+    void supabase.from("okx_live_state").upsert(
+      {
+        user_id: userId,
+        snapshot: {
+          balanceUsdc: result.balanceUsdc,
+          balanceNok: result.balanceNok,
+          quoteCcy,
+          dailyPnl,
+          dailyPnlPct,
+          position: result.position,
+          fetchedAt: new Date().toISOString(),
+        },
+        total_usdc: Math.round(result.balanceUsdc * 100) / 100,
+        total_nok: result.balanceNok,
+        daily_pnl_usdc: dailyPnl,
+        daily_pnl_pct: dailyPnlPct,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+
+    return result;
   } catch (err) {
     console.error("[getOkxLiveBalance] error:", (err as Error).message);
     return {
@@ -163,6 +237,7 @@ export async function getOkxLiveBalance(
       quoteCcy: "USDC",
       dailyPnl: 0,
       dailyPnlPct: 0,
+      updatedAt: null,
       position: null,
     };
   }

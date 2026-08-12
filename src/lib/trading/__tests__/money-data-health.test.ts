@@ -82,7 +82,7 @@ describe("assessMoneyDataHealth", () => {
     ).toBe("verified");
   });
 
-  it("fersk OKX live (< 2 min) → verified", () => {
+  it("fersk OKX live (< 5 min) → verified", () => {
     const fresh = new Date(NOW - 30 * 1000).toISOString();
     expect(
       assessMoneyDataHealth({
@@ -94,7 +94,7 @@ describe("assessMoneyDataHealth", () => {
     ).toBe("verified");
   });
 
-  it("stale OKX live (> 2 min) → stale", () => {
+  it("stale OKX live (> 5 min) → stale", () => {
     expect(
       assessMoneyDataHealth({
         source: "OKX live",
