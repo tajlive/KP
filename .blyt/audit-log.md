@@ -1,5 +1,17 @@
 # Blyt Audit-log — Klarpakke
 
+## 2026-08-12 — KLA-276: Secret Governance v2 utført
+
+- **Aktør:** Hermes · **Hjemmel:** KLA-276 task prompt
+- **Hendelse:** Fase 1 audit (2 config-tokens + mal-PEM + plaintext-backup) →
+  Fase 4 migrering (~/.hermes/config.yaml → ~/.hermes/.env via ${env:VAR},
+  backup config.yaml.bak-kla276-1786558665419, smoke github+supabase ✅) →
+  Fase 2 .blyt/secrets/ → Fase 5 scanner --json → Fase 6 security-audit.yml +
+  deploy.yml security-check → audit clean (7639 filer, 0 funn).
+- **Slettet:** .env.local.bak-20260809-000306 (alle levende nøkler dekket av .env.local;
+  kun døde Binance-nøkler gikk tapt) og PEM-plassholder i env-mal.
+- **Ikke endret:** produksjonssecrets, rotasjon, trading, DB, deploy.
+
 ## 2026-08-12 — Master Prompt v4.1 adoptert
 
 - **Aktør:** Hermes · **Hjemmel:** Master Prompt v4.1 (Tom)

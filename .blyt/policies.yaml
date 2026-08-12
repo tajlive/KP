@@ -67,3 +67,27 @@ selvforbedring:
     - .hermes/decisions.md
     - .hermes/architecture-history.md
     - .blyt/audit-log.md
+
+release_policy:
+  direct_main_push:
+    allowed: false
+  merge_requires:
+    - linear_issue
+    - tests_passed
+    - ci_passed
+    - security_check_passed
+  production_changes:
+    require_tom_approval: true
+
+secret_policy:
+  forbidden_locations:
+    - repository
+    - markdown
+    - agent_prompts
+  allowed:
+    - secret_registry
+    - runtime_environment
+  scanning:
+    required: true
+  rotation:
+    documented: true

@@ -25,6 +25,8 @@ const PATTERNS = [
   { name: "openai-style-key", re: /\bsk-[A-Za-z0-9_-]{20,}\b/ },
   { name: "honcho-key", re: /hch-(at|rt)-[A-Za-z0-9]{20,}/ },
   { name: "bearer-token", re: /Bearer\s+[A-Za-z0-9._-]{20,}/ },
+  { name: "supabase-pat", re: /sbp_[A-Za-z0-9]{20,}/ },
+  { name: "private-key", re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
   { name: "aws-key", re: /AKIA[0-9A-Z]{16}/ },
   { name: "slack-token", re: /xox[baprs]-[A-Za-z0-9-]{10,}/ },
 ];
@@ -138,6 +140,28 @@ const annotated = findings
 
 const leaks = annotated.filter((f) => !f.gitignored);
 const notes = annotated.filter((f) => f.gitignored);
+
+const args = process.argv.slice(2);
+const jsonMode = args.includes("--json") || args.includes("--check");
+
+if (jsonMode) {
+  // Metadata-only output (KLA-276 Fase 5) — ALDRI verdier.
+  console.log(
+    JSON.stringify({
+      status: leaks.length ? "leaks_found" : "clean",
+      files_scanned: scannedFiles,
+      findings: leaks.length,
+      gitignored_notes: notes.length,
+      details: annotated.slice(0, 50).map((f) => ({
+        file: f.file,
+        line: f.line,
+        pattern: f.pattern,
+        severity: f.gitignored ? "note" : "leak",
+      })),
+    }),
+  );
+  process.exit(leaks.length ? 1 : 0);
+}
 
 console.log(`Scannet ${scannedFiles} filer. Funn: ${annotated.length} (lekkasjer: ${leaks.length}, gitignoret: ${notes.length})`);
 for (const f of annotated.slice(0, 100)) {

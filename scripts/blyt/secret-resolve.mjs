@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..", "..");
-const REGISTRY_PATH = join(REPO_ROOT, ".blyt", "secrets.yaml");
+const REGISTRY_PATH = join(REPO_ROOT, ".blyt", "secrets", "registry.yaml");
 const ENV_LOCAL_PATH = join(REPO_ROOT, ".env.local");
 
 /** Minimal YAML-subset-parser for secrets.yaml (flat entries-liste). */
@@ -45,6 +45,23 @@ function parseRegistry(text) {
 function readEnvLocalKeys() {
   try {
     const text = readFileSync(ENV_LOCAL_PATH, "utf8");
+    const keys = new Set();
+    for (const line of text.split("\n")) {
+      const m = line.match(/^([A-Z0-9_]+)=/);
+      if (m) keys.add(m[1]);
+    }
+    return keys;
+  } catch {
+    return null;
+  }
+}
+
+function readHermesDotenvKeys() {
+  try {
+    const text = readFileSync(
+      join(process.env.HOME ?? "", ".hermes", ".env"),
+      "utf8",
+    );
     const keys = new Set();
     for (const line of text.split("\n")) {
       const m = line.match(/^([A-Z0-9_]+)=/);
@@ -90,14 +107,17 @@ console.log(`Status:     ${entry.status}`);
 if (entry.note) console.log(`Note:       ${entry.note}`);
 
 if (args.includes("--check")) {
-  if (entry.store === "env.local") {
-    const keys = readEnvLocalKeys();
+  if (entry.store === "env.local" || entry.store === "hermes-dotenv") {
+    const keys =
+      entry.store === "env.local" ? readEnvLocalKeys() : readHermesDotenvKeys();
+    const storeLabel =
+      entry.store === "env.local" ? ".env.local" : "~/.hermes/.env";
     if (keys === null) {
-      console.log(`CHECK:      .env.local ikke lesbar`);
+      console.log(`CHECK:      ${storeLabel} ikke lesbar`);
       process.exit(1);
     }
     const present = keys.has(entry.key_name);
-    console.log(`CHECK:      ${entry.key_name} finnes i .env.local: ${present}`);
+    console.log(`CHECK:      ${entry.key_name} finnes i ${storeLabel}: ${present}`);
     process.exit(present ? 0 : 1);
   }
   console.log(`CHECK:      store «${entry.store}» sjekkes ikke lokalt (v1) — verifiser manuelt/bws/wrangler`);
