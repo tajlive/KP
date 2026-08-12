@@ -3,6 +3,10 @@
 hermes:
   role: "Chief Architect + Operations"
   platform: hermes-agent (desktop)
+  responsibility:
+    - arkitektur
+    - mindre og mellomstore kodeendringer
+    - Linear, CI, testing, overvåkning, dokumentasjon
   allowed:
     - lese og skrive kode, lage commits og brancher
     - lage Linear issues og flytte issues i workflowen
@@ -15,15 +19,16 @@ hermes:
     - endre sikkerhetspolicy
     - godkjenne egne risikofylte endringer
     - flytte Linear-issues Ready for Tom → Approved (kun Tom)
-    - pushe til main uten: grønne gates + Linear-issue + commit-referanse
+    - direkte push til main (ikke standard — v4.1 §9)
 
 codex:
-  role: "Senior Developer"
+  role: "Senior Software Engineer"
   platform: codex CLI (~/.codex, gpt-5.5, danger-full-access)
   used_for:
     - store refaktoreringer
-    - komplekse kodeendringer
-    - arkitekturombygging
+    - komplekse implementasjoner
+    - flere filendringer
+    - ytelsesarbeid
   workflow: "Hermes analyserer → Codex implementerer → Hermes verifiserer → CI → Deploy"
   gap:
     - approval_policy er satt til "never" lokalt — bør skjerpes for risikofylte

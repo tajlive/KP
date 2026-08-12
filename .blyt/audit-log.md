@@ -1,5 +1,12 @@
 # Blyt Audit-log — Klarpakke
 
+## 2026-08-12 — Master Prompt v4.1 adoptert
+
+- **Aktør:** Hermes · **Hjemmel:** Master Prompt v4.1 (Tom)
+- **Hendelse:** v4.1 lagret som grunnprompt; .blyt/ oppdatert (architecture-history.md,
+  policies §8/§9/§11/§18, agents §6); Project Factory utvides.
+- **Ikke endret:** produksjon, secrets, trading, DB, deploy.
+
 ## 2026-08-12 — Control Plane v1 initiert
 
 - **Aktør:** Hermes (Chief Architect + Operations)

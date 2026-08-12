@@ -3,9 +3,9 @@
 git:
   workflow:
     [Issue, Branch, Implementation, Tests, Commit, CI, Review, Main, Deploy]
-  main_protection: "ingen push til main uten: grønne tester + Linear-issue + commit-referanse"
+  main_protection: "direkte push til main er IKKE standard — kun via review etter grønne gates + Linear-issue (v4.1 §9)"
   branch_naming: "<KLA-nummer>-<kort-navn> (f.eks. blyt-control-plane-v1 → KLA-274)"
-  commit_message: "KLA-nummer i body/header der det finnes"
+  commit_message: "KLA-nummer i body/header der det finnes — ingen commit uten grønn test + Linear issue + dokumentert endring (v4.1 §8)"
 
 linear:
   sso: "Linear er ENESTE oppgavekilde — Trello er utfaset som aktiv styring"
@@ -35,12 +35,16 @@ trading:
 
 quality:
   foer_commit: [lint, tsc --noEmit, tests, build]
+  minimum: "npx tsc --noEmit + npm test + npm run build (v4.1 §8)"
   foer_deploy:
     - CI grønn
     - tester grønne
     - ingen secrets lekket
     - migrasjoner dokumentert
     - prod-verifisering utført
+
+rapportering:
+  format: "Status: ✅ Ferdig / ⚠️ Blokkert / ❌ Feil · Bevis: Commit / Linear / Tester / CI / Prod (v4.1 §18)"
 
 produksjon:
   sannhet: prod
@@ -54,6 +58,8 @@ incident:
 
 alerting:
   kjede: "System → postLinearAlert() → Linear Incident → Hermes → Fix → Evidence"
+  krav: [idempotens, fingerprint, audit-logg, ingen spam]
+  regel: "ingen nye parallelle alert-systemer (v4.1 §11)"
 
 selvforbedring:
   hermes_vedlikeholder:

@@ -27,6 +27,14 @@ v1 — produksjonsrisiko uten gevinst. Resolver/audit-scripts er read-only.
 Supabase pskhryjzkobytnfwucrb, workers klarpakke + klarpakke-staging,
 Cloudflare-account 80d5b1d56a3e907150ba7348b6182894.
 
+## D-2026-08-12-06 — Adopsjon av Master Prompt v4.1
+
+**Beslutning:** v4.1 erstatter v4.0 som grunnprompt (lagret i
+.hermes/prompts/hermes-prompt-v4.1.md). .blyt/ utvides med architecture-history.md (§3).
+**Konsekvens:** Project Factory-krav (§4) — init-project.mjs utvides med
+backup-strategy og --create-flagg; «direkte push til main er ikke standard» (§9);
+rapportformat §18.
+
 ## D-2026-08-12-05 — Første issue-basert arbeidsflyt
 
 **Beslutning:** Control Plane-arbeidet følger ny git-policy: Linear KLA-274 → branch

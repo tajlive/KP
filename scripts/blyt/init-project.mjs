@@ -1,20 +1,26 @@
 #!/usr/bin/env node
 /**
- * Blyt project init (v1) — Master Prompt v4.0 §14: «blyt project init kunde-navn»
+ * Blyt Project Factory (v1.1) — Master Prompt v4.1 §4: «blyt project init <navn>»
  *
- * Scaffolder .blyt/ for et NYTT prosjekt med plassholdere. DRY-RUN mot eksterne
- * systemer: oppretter IKKE GitHub-repo, Linear-prosjekt, secrets eller CI —
- * det gjøres av Hermes via gh/MCP etter Tom-godkjenning (sjekklisten printes).
+ * Scaffolder .blyt/ (Customer Project Package: project/agents/secrets/environments/
+ * policies/decisions/audit-log/architecture-history + backup-strategy) for et NYTT
+ * prosjekt. DEFAULT: dry-run mot eksterne systemer.
+ *
+ * Valgfrie opprettelsesflagg (governed — kjøres kun når Tom har godkjent
+ * prosjektet; agenten godkjenner ikke egne risikofylte endringer, v4.1 §6):
+ *   --create-github [org]   gh repo create <org>/<navn> --private
+ *   --create-linear <key>   Linear team (key, 1-4 tegn) + prosjekt via API
  *
  * Bruk: node scripts/blyt/init-project.mjs <prosjekt-navn> [--out <katalog>]
  */
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const args = process.argv.slice(2);
 const name = args[0];
 if (!name || !/^[a-z0-9-]+$/.test(name)) {
-  console.error("Bruk: node scripts/blyt/init-project.mjs <prosjekt-navn> [--out <katalog>]");
+  console.error("Bruk: node scripts/blyt/init-project.mjs <prosjekt-navn> [--out <katalog>] [--create-github [org]] [--create-linear <team-key>]");
   console.error("Navn: små bokstaver, tall, bindestrek (f.eks. autoglass)");
   process.exit(2);
 }
@@ -46,12 +52,17 @@ runtime:
 database:
   provider: supabase
   project_id: "<TODO>"
+backup_strategy:
+  - github: "git-historikk (kildekode-SSoT)"
+  - supabase: "PITR + daglig backup (konsoll)"
+  - cloudflare: "D1/KV/R2 backupper etter tjeneste"
+  - secrets: "BWS org-vault (referanser i secrets.yaml)"
 management:
   linear:
     team: "<TODO: team-key>"
 agents:
   hermes: chief-architect-ops
-  codex: senior-developer
+  codex: senior-software-engineer
   kimi: research-analyst
 security_level: high
 `);
@@ -96,9 +107,72 @@ write("audit-log.md", `# Blyt Audit-log — ${name}
 
 write("decisions.md", `# Blyt beslutninger — ${name}
 ## D-${date.replaceAll("-", "")}-01 — prosjekt scaffoldet
-**Beslutning:** .blyt/ opprettet med init-project v1.
+**Beslutning:** .blyt/ opprettet med Project Factory v1.1.
 **Gjenstår før prosjektstart:** repo, Linear-prosjekt, secret-namespace, CI, monitoring.
 `);
+
+write("architecture-history.md", `# Blyt arkitekturhistorikk — ${name}
+## ${date} — scaffold (Project Factory v1.1)
+- **Beslutning:** prosjekt registrert i Blyt Control Plane.
+- **Begrunnelse:** Master Prompt v4.1 §3-§4 — ingen prosjekt regnes komplett uten.
+- **Konsekvens:** <TODO: oppdater etter faktisk oppsett>
+`);
+
+// ── Governed opprettelse (v4.1 §4/§6: kun når Tom har godkjent prosjektet) ──
+let created = [];
+
+if (args.includes("--create-github")) {
+  const orgIdx = args.indexOf("--create-github");
+  const org = args[orgIdx + 1] && !args[orgIdx + 1].startsWith("--") ? args[orgIdx + 1] : null;
+  const repo = org ? `${org}/${name}` : name;
+  try {
+    execFileSync("gh", ["repo", "create", repo, "--private"], { stdio: "inherit" });
+    created.push(`GitHub: ${repo}`);
+  } catch (err) {
+    console.error(`GitHub-opprettelse feilet: ${err.message.split("\n")[0]}`);
+  }
+}
+
+if (args.includes("--create-linear")) {
+  const keyIdx = args.indexOf("--create-linear");
+  const teamKey = args[keyIdx + 1];
+  if (!teamKey || !/^[A-Z0-9]{1,4}$/.test(teamKey)) {
+    console.error("--create-linear krever team-key (1-4 tegn, f.eks. AGD)");
+    process.exit(2);
+  }
+  try {
+    // LINEAR_API_KEY hentes fra .env.local i TARGET-repoets miljø ved kjøring der.
+    const key = process.env.LINEAR_API_KEY;
+    if (!key) throw new Error("LINEAR_API_KEY mangler i miljøet");
+    const gql = async (query, variables) => {
+      const res = await fetch("https://api.linear.app/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: key },
+        body: JSON.stringify({ query, variables }),
+      });
+      const j = await res.json();
+      if (j.errors) throw new Error(j.errors[0]?.message ?? "GQL-feil");
+      return j.data;
+    };
+    const team = await gql(
+      `mutation($n: String!, $k: String!){ teamCreate(input: { name: $n, key: $k }) { success team { id } } }`,
+      { n: name, k: teamKey },
+    );
+    if (!team.teamCreate.success) throw new Error("teamCreate mislyktes");
+    const teamId = team.teamCreate.team.id;
+    await gql(
+      `mutation($n: String!, $t: ID!){ projectCreate(input: { name: $n, teamIds: [$t] }) { success } }`,
+      { n: name, t: teamId },
+    );
+    created.push(`Linear: team ${teamKey} + prosjekt ${name}`);
+  } catch (err) {
+    console.error(`Linear-opprettelse feilet: ${err.message.split("\n")[0]}`);
+  }
+}
+
+if (created.length) {
+  console.log(`\nOpprettet (governed):\n${created.map((c) => `  ✅ ${c}`).join("\n")}`);
+}
 
 console.log(`
 Oppfølgingssjekkliste (Hermes, etter Tom-godkjenning):
