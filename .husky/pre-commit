@@ -1,2 +1,8 @@
+#!/usr/bin/env sh
+# Pre-commit gate (P0-fiks 2026-08-12): set -e gjør at ENHVER gate-feil
+# (lint-staged ELLER tsc) stopper commiten. Tidligere var exit-koden
+# lik siste kommandos exit — lint-staged-feil druknet i tsc-suksess.
+set -e
+
 npx lint-staged
 npx tsc --noEmit

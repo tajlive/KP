@@ -1,9 +1,10 @@
 /**
- * Sentry Webhook → Trello «🚨 Varsler» (2026-standard).
+ * Sentry Webhook → Linear incident (Task 2B, 2026-08-12).
  *
  * Bakgrunn (2026-08-09): QueryClientProvider-krasj ble logget til Sentry,
  * men INGEN ble varslet — feilen ble oppdaget av brukeren i konsollen.
- * Denne webhooken gjør Sentry-feil om til et Trello-kort automatisk.
+ * Denne webhooken gjør Sentry-feil om til et Linear-issue automatisk.
+ * (Tidligere: Trello-kort i «🚨 Varsler».)
  *
  * Oppsett (én gang, i Sentry UI):
  *   Settings → Developer Settings → Internal Integration → Webhooks:
@@ -16,15 +17,20 @@
  * likevel med 200 for å unngå retry-storm — men kun etter signatursjekk
  * når secret ER satt.
  *
+ * Routing: team KLA, label «incident», prosjekt «Reliability & Trading
+ * Safety», prioritet fatal→urgent(1) / error→high(2). Dedup på fingerprint
+ * `sentry:<issue-id>` — gjentatte events spammer ikke.
+ *
  * @module api/webhooks/sentry
  */
 
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { postLinearAlert, redactForLog } from "@/lib/alerts/linear-alerts";
 
 export const runtime = "nodejs"; // @supabase/supabase-js krever process.version — krasjer i edge (500 i prod)
 
-const TRELLO_LIST_VARSLE = "6a77a7b720d121385c010083";
+const LINEAR_PROJECT = "Reliability & Trading Safety";
 
 interface SentryIssuePayload {
   action?: string;
@@ -40,6 +46,7 @@ interface SentryIssuePayload {
       count?: number;
     };
     event?: {
+      event_id?: string;
       title?: string;
       level?: string;
       web_url?: string;
@@ -67,24 +74,25 @@ function verifySentrySignature(
   }
 }
 
-async function postTrelloCard(name: string, desc: string): Promise<boolean> {
-  const key = process.env.TRELLO_KEY;
-  const token = process.env.TRELLO_TOKEN;
-  if (!key || !token) return false;
+/** Linear-prioritet: 1=urgent (fatal), 2=high (error). */
+function linearPriorityForLevel(level: string): 1 | 2 {
+  return level === "fatal" ? 1 : 2;
+}
 
-  const res = await fetch("https://api.trello.com/1/cards", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      key,
-      token,
-      idList: TRELLO_LIST_VARSLE,
-      name: name.slice(0, 160),
-      desc: desc.slice(0, 4000),
-      pos: "top",
-    }),
-  });
-  return res.ok;
+/** Stabil fingerprint: issue.id → event.event_id → hash(tittel|culprit). */
+function fingerprintFor(payload: SentryIssuePayload): string {
+  const issue = payload.data?.issue;
+  const event = payload.data?.event;
+  if (issue?.id) return `sentry:${issue.id}`;
+  if (event?.event_id) return `sentry:event:${event.event_id}`;
+  const stable = `${issue?.title ?? event?.title ?? "ukjent"}|${
+    issue?.culprit ?? event?.culprit ?? ""
+  }`;
+  return `sentry:hash:${crypto
+    .createHash("sha256")
+    .update(stable)
+    .digest("hex")
+    .slice(0, 16)}`;
 }
 
 export async function POST(req: Request) {
@@ -117,7 +125,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, skipped: "no-issue" });
   }
 
-  // Kun error/fatal — warning/info er for mye støy for Trello
+  // Kun error/fatal — warning/info er for mye støy for incident-køen
   const level = (issue.level ?? "error").toLowerCase();
   if (!["error", "fatal"].includes(level)) {
     return NextResponse.json({ ok: true, skipped: `level:${level}` });
@@ -130,8 +138,7 @@ export async function POST(req: Request) {
       ? issue.web_url
       : "https://klarpakke.sentry.io";
 
-  const cardName = `🚨 SENTRY: ${title}`;
-  const cardDesc = [
+  const description = [
     `**Nivå:** ${level}`,
     culprit ? `**Hvor:** ${culprit}` : null,
     `**Tid:** ${new Date().toISOString()}`,
@@ -142,7 +149,33 @@ export async function POST(req: Request) {
     .filter(Boolean)
     .join("\n");
 
-  const posted = await postTrelloCard(cardName, cardDesc);
+  const fingerprint = fingerprintFor(payload);
 
-  return NextResponse.json({ ok: true, trello: posted });
+  // Fail-safe: Linear-feil skal aldri krasje webhooken — kontrollert håndtering,
+  // 200 med ok:true + linear-ok:false slik at Sentry ikke retry-stormer.
+  const result = await postLinearAlert({
+    kind: "SENTRY",
+    subject: title,
+    body: description,
+    fingerprint,
+    priority: linearPriorityForLevel(level),
+    labels: ["incident"],
+    project: LINEAR_PROJECT,
+  });
+
+  if (result.ok) {
+    console.info(
+      redactForLog(
+        `[sentry-webhook] Linear ${result.created ? "opprettet" : "gjenbrukt"}: ${
+          result.identifier ?? "ukjent"
+        } (fingerprint ${fingerprint})`,
+      ),
+    );
+  } else {
+    console.error(
+      redactForLog(`[sentry-webhook] Linear-feil: ${result.error ?? "ukjent"}`),
+    );
+  }
+
+  return NextResponse.json({ ok: true, linear: result });
 }
