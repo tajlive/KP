@@ -40,7 +40,10 @@ export async function syncPaperAccountBalance(
       .in("status", ["active", "paused"]); // KUN levende sesjoner (2026-08-10)
 
     if (sessionError) {
-      console.warn("[syncPaperBalance] session fetch error:", sessionError.message);
+      console.warn(
+        "[syncPaperBalance] session fetch error:",
+        sessionError.message,
+      );
       return;
     }
 
@@ -50,21 +53,24 @@ export async function syncPaperAccountBalance(
     }
 
     const totalCapital = sessions.reduce(
-      (sum, s) => sum + Number(s.current_capital_nok ?? 0), 0);
+      (sum, s) => sum + Number(s.current_capital_nok ?? 0),
+      0,
+    );
     const totalInitial = sessions.reduce(
-      (sum, s) => sum + Number(s.starting_capital_nok ?? 0), 0);
+      (sum, s) => sum + Number(s.starting_capital_nok ?? 0),
+      0,
+    );
 
     if (!Number.isFinite(totalCapital) || totalCapital <= 0) {
       return; // Ingen gyldige sesjoner — ikke oppdater
     }
 
-    // Sanity-cap (2026-08-04): sesjons-sum > 3× startkapital = arvet inflasjon
-    // (f.eks. fra sesjoner opprettet med hele balansen per symbol — prod-hendelse:
-    // 11 × 94 389 kr ble 1 038 280 kr i paper_accounts). Da skriver vi IKKE —
+    // Sanity-cap (2026-08-12, strammet fra 3× til 1.5× per INC-2026-08-12):
+    // sesjons-sum > 1.5× startkapital = inflasjon. Da skriver vi IKKE —
     // bedre å beholde forrige kjente balance enn å spre inflasjon til SSoT.
-    if (totalInitial > 0 && totalCapital > totalInitial * 3) {
+    if (totalInitial > 0 && totalCapital > totalInitial * 1.5) {
       console.warn(
-        `[syncPaperBalance] Sanity-cap: sessions-sum ${totalCapital} > 3× initial ${totalInitial} — hopper over (user ${userId})`,
+        `[syncPaperBalance] Sanity-cap: sessions-sum ${totalCapital} > 1.5× initial ${totalInitial} — hopper over (user ${userId})`,
       );
       return;
     }
