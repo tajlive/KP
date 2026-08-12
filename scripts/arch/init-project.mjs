@@ -1,139 +1,155 @@
 #!/usr/bin/env node
 /**
- * Arch Project Factory (v1.1) — Master Prompt v4.1 §4: «arch project init <navn>»
+ * Arch Project Factory v2.0 — «arch project init <navn>»
  *
- * Scaffolder .arch/ (Customer Project Package: project/agents/secrets/environments/
- * policies/decisions/audit-log/architecture-history + backup-strategy) for et NYTT
- * prosjekt. DEFAULT: dry-run mot eksterne systemer.
+ * Lifecycle: analyze → (Tom-godkjenning) → init. Se analyze-project.mjs.
  *
- * Valgfrie opprettelsesflagg (governed — kjøres kun når Tom har godkjent
- * prosjektet; agenten godkjenner ikke egne risikofylte endringer, v4.1 §6):
- *   --create-github [org]   gh repo create <org>/<navn> --private
- *   --create-linear <key>   Linear team (key, 1-4 tegn) + prosjekt via API
+ * Modus:
+ *   --dry-run                     Viser plan (local + ekstern), oppretter INGENTING.
+ *   (default)                     Scaffolder LOKALE filer (repo-struktur, .arch/,
+ *                                 docs/, src/, CI-mal). Ingen eksterne side-effekter.
+ *   --approve --create-github <org>   Oppretter GitHub-repo (Tom-godkjent).
+ *   --approve --create-linear <KEY>   Oppretter Linear team + prosjekt (Tom-godkjent).
  *
- * Bruk: node scripts/arch/init-project.mjs <prosjekt-navn> [--out <katalog>]
+ * F2-regel: Factory kan lage repo-struktur/dokumentasjon/workflows/policies —
+ * ALDRI deploye, prod-secrets, live-tjenester, betaling eller risiko-godkjenning.
+ *
+ * Bruk: node scripts/arch/init-project.mjs <prosjekt-navn> [--out <katalog>] [--dry-run] [--approve] [--create-github [org]] [--create-linear <KEY>]
  */
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync } from "node:fs";
+import { join, resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(__dirname, "../..");
+const templatesRoot = join(repoRoot, ".arch/templates");
+const lessonsDir = join(repoRoot, ".arch/knowledge/lessons");
 
 const args = process.argv.slice(2);
 const name = args[0];
 if (!name || !/^[a-z0-9-]+$/.test(name)) {
-  console.error("Bruk: node scripts/arch/init-project.mjs <prosjekt-navn> [--out <katalog>] [--create-github [org]] [--create-linear <team-key>]");
-  console.error("Navn: små bokstaver, tall, bindestrek (f.eks. autoglass)");
+  console.error("Bruk: node scripts/arch/init-project.mjs <prosjekt-navn> [--out <katalog>] [--dry-run] [--approve] [--create-github [org]] [--create-linear <KEY>]");
+  console.error("Navn: små bokstaver, tall, bindestrek (f.eks. kundeportal-ai)");
   process.exit(2);
 }
+
+const flag = (f) => args.includes(f);
+const dryRun = flag("--dry-run");
+const approve = flag("--approve");
 const outIdx = args.indexOf("--out");
-const outDir = outIdx >= 0 ? resolve(args[outIdx + 1] ?? ".") : resolve(".");
-const archDir = join(outDir, ".arch");
-if (existsSync(archDir)) {
+const outDir = outIdx >= 0 ? resolve(args[outIdx + 1] ?? ".") : resolve(".", name);
+const date = new Date().toISOString().slice(0, 10);
+
+// ── Kunnskaps-arv (alle lessons fra Knowledge Graph) ──
+const lessons = existsSync(lessonsDir)
+  ? readdirSync(lessonsDir).filter((f) => f.endsWith(".md")).sort()
+  : [];
+
+// ── Template-loading ──
+const loadTmpl = (rel) => {
+  const p = join(templatesRoot, rel);
+  if (!existsSync(p)) return null;
+  return readFileSync(p, "utf8").replaceAll("{{NAME}}", name).replaceAll("{{DATE}}", date);
+};
+
+// ── Plan (hva som opprettes) ──
+const plan = {
+  local: [
+    ".arch/project.yaml",
+    ".arch/policies.yaml",
+    ".arch/agents.yaml",
+    ".arch/environments.yaml",
+    ".arch/audit-log.md",
+    ".arch/decisions.md",
+    ".arch/architecture-history.md",
+    ".arch/secrets/registry.yaml",
+    ".arch/inherited-lessons.md",
+    "docs/ARCHITECT.md",
+    "docs/README.md",
+    "src/.gitkeep",
+    ".github/workflows/deploy.yml",
+  ],
+  external: [],
+};
+if (flag("--create-github")) {
+  const orgIdx = args.indexOf("--create-github");
+  const org = args[orgIdx + 1] && !args[orgIdx + 1].startsWith("--") ? args[orgIdx + 1] : null;
+  plan.external.push(`GitHub repository: ${org ? org + "/" + name : name} (--private)`);
+}
+if (flag("--create-linear")) {
+  const keyIdx = args.indexOf("--create-linear");
+  const key = args[keyIdx + 1] ?? "???";
+  plan.external.push(`Linear team (key ${key}) + prosjekt ${name}`);
+}
+
+// ── DRY-RUN ──
+if (dryRun) {
+  console.log(`Will create (${name}):\n`);
+  for (const f of plan.local) console.log(`  ✓ ${f}`);
+  for (const e of plan.external) console.log(`  ✓ ${e}`);
+  if (!approve && plan.external.length) {
+    console.log(`\n⚠️  Ekstern opprettelse krever --approve (etter Tom-godkjenning). Vises kun som plan.`);
+  }
+  console.log(`\nNo changes performed.`);
+  process.exit(0);
+}
+
+// ── EKTE SCAFFOLD (lokale filer) ──
+if (existsSync(join(outDir, ".arch"))) {
   console.error(`.arch finnes allerede i ${outDir} — avbryter (ingen overskriving).`);
   process.exit(1);
 }
-mkdirSync(archDir, { recursive: true });
+mkdirSync(outDir, { recursive: true });
 
-const date = new Date().toISOString().slice(0, 10);
-const write = (file, content) => {
-  writeFileSync(join(archDir, file), content);
-  console.log(`  + .arch/${file}`);
+const write = (rel, content) => {
+  const p = join(outDir, rel);
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, content);
+  console.log(`  + ${rel}`);
 };
 
-write("project.yaml", `# Arch Control Plane — ${name} (scaffold ${date})
-project:
-  name: ${name}
-  owner: arch
-  description: "<TODO: beskrivelse>"
-repository:
-  github: "<TODO: org/repo>"
-  default_branch: main
-runtime:
-  cloudflare: true
-database:
-  provider: supabase
-  project_id: "<TODO>"
-backup_strategy:
-  - github: "git-historikk (kildekode-SSoT)"
-  - supabase: "PITR + daglig backup (konsoll)"
-  - cloudflare: "D1/KV/R2 backupper etter tjeneste"
-  - secrets: "BWS org-vault (referanser i secrets.yaml)"
-management:
-  linear:
-    team: "<TODO: team-key>"
-agents:
-  hermes: chief-architect-ops
-  codex: senior-software-engineer
-  kimi: research-analyst
-security_level: high
-`);
+// .arch/ (fra templates, fallback til inline)
+write(".arch/project.yaml", loadTmpl("arch/project.yaml.tmpl") ?? `# Arch — ${name}\nproject:\n  name: ${name}\n  owner: arch\n`);
+write(".arch/policies.yaml", loadTmpl("arch/policies.yaml.tmpl") ?? `# Arch policies — ${name}\n`);
+write(".arch/agents.yaml", loadTmpl("arch/agents.yaml.tmpl") ?? `# Arch agent-roller — ${name}\n`);
+write(".arch/environments.yaml", `# Arch miljøer — ${name}\nenvironments:\n  local:\n    url: http://localhost:3000\n    secrets_store: .env.local\n  prod:\n    url: "<TODO>"\n    worker: "<TODO>"\n`);
+write(".arch/audit-log.md", `# Arch Audit-log — ${name}\n## ${date} — scaffold\n- **Aktør:** Hermes (Project Factory v2.0)\n- **Hendelse:** .arch/ + struktur scaffoldet. Ekstern oppsett: ${plan.external.length ? "governed (se under)" : "ikke utført (krever --approve)"}.\n`);
+write(".arch/decisions.md", `# Arch beslutninger — ${name}\n## D-${date.replaceAll("-", "")}-01 — prosjekt scaffoldet\n**Beslutning:** ${name} registrert i Arch Control Plane (Project Factory v2.0).\n**Gjenstår før prosjektstart:** repo, Linear-prosjekt, secret-namespace, CI, monitoring.\n`);
+write(".arch/architecture-history.md", `# Arch arkitekturhistorikk — ${name}\n## ${date} — scaffold (Project Factory v2.0)\n- **Beslutning:** prosjekt registrert i Arch Control Plane.\n- **Konsekvens:** <TODO: oppdater etter faktisk oppsett>\n`);
+write(".arch/secrets/registry.yaml", loadTmpl("arch/secrets-registry.yaml.tmpl") ?? `# Secret Registry — ${name}\nentries: []\n`);
 
-write("agents.yaml", `# Arch agent-roller — ${name}
-# <TODO: kopier mal fra tajlive/KP .arch/agents.yaml og tilpass>
-`);
+// Arvet kunnskap
+const inheritedBody = lessons
+  .map((f) => readFileSync(join(lessonsDir, f), "utf8"))
+  .join("\n---\n\n");
+write(".arch/inherited-lessons.md", `# Arvet kunnskap (fra Arch Knowledge Graph)\n\nProsjekt ${name} arver ${lessons.length} lessons fra Arch sin kunnskapsbase.\nKilde: tajlive/KP .arch/knowledge/lessons/ · generert ${date}.\n\n---\n\n${inheritedBody}`);
 
-write("secrets.yaml", `# Secret Registry (v1) — ${name}
-# FORMAT-KONTRAKT: flat struktur, ingen verdier (se tajlive/KP .arch/secrets.yaml).
-entries:
-  - uri: secret://${name}/local/example/key
-    store: env.local
-    key_name: EXAMPLE_KEY
-    path: .env.local
-    consumers: "<TODO>"
-    status: planned
-`);
+// docs/ + src/ + CI
+write("docs/ARCHITECT.md", loadTmpl("docs/ARCHITECT.md.tmpl") ?? `# ${name} — Arkitektur\n`);
+write("docs/README.md", `# ${name}\n\n<TODO: prosjektbeskrivelse>\n\nArvet fra Arch Control Plane (Project Factory v2.0, ${date}).\n`);
+write("src/.gitkeep", "");
+write(".github/workflows/deploy.yml", loadTmpl("ci/deploy.yml.tmpl") ?? `# CI — ${name}\nname: deploy\non: {push: {branches: [main]}}\n`);
 
-write("environments.yaml", `# Arch miljøer — ${name}
-environments:
-  local:
-    url: http://localhost:3000
-    secrets_store: .env.local
-  prod:
-    url: "<TODO>"
-    worker: "<TODO>"
-`);
+// ── GOVERNED EKSTERN OPPRETTELSE (kun med --approve) ──
+const created = [];
+if (plan.external.length && !approve) {
+  console.log(`\n⚠️  ${plan.external.length} ekstern(e) ressurs(er) IKKE opprettet — krever --approve (Tom-godkjenning).`);
+}
 
-write("policies.yaml", `# Arch policies — ${name}
-# <TODO: kopier mal fra tajlive/KP .arch/policies.yaml og tilpass>
-git:
-  workflow: [Issue, Branch, Implementation, Tests, Commit, CI, Review, Main, Deploy]
-  main_protection: "ingen push til main uten: grønne tester + Linear-issue + commit-referanse"
-`);
-
-write("audit-log.md", `# Arch Audit-log — ${name}
-## ${date} — scaffold
-- **Aktør:** Hermes (init-project v1)
-- **Hendelse:** .arch/ scaffoldet. Ekstern oppsett IKKE utført (dry-run).
-`);
-
-write("decisions.md", `# Arch beslutninger — ${name}
-## D-${date.replaceAll("-", "")}-01 — prosjekt scaffoldet
-**Beslutning:** .arch/ opprettet med Project Factory v1.1.
-**Gjenstår før prosjektstart:** repo, Linear-prosjekt, secret-namespace, CI, monitoring.
-`);
-
-write("architecture-history.md", `# Arch arkitekturhistorikk — ${name}
-## ${date} — scaffold (Project Factory v1.1)
-- **Beslutning:** prosjekt registrert i Arch Control Plane.
-- **Begrunnelse:** Master Prompt v4.1 §3-§4 — ingen prosjekt regnes komplett uten.
-- **Konsekvens:** <TODO: oppdater etter faktisk oppsett>
-`);
-
-// ── Governed opprettelse (v4.1 §4/§6: kun når Tom har godkjent prosjektet) ──
-let created = [];
-
-if (args.includes("--create-github")) {
+if (approve && flag("--create-github")) {
   const orgIdx = args.indexOf("--create-github");
   const org = args[orgIdx + 1] && !args[orgIdx + 1].startsWith("--") ? args[orgIdx + 1] : null;
   const repo = org ? `${org}/${name}` : name;
   try {
     execFileSync("gh", ["repo", "create", repo, "--private"], { stdio: "inherit" });
     created.push(`GitHub: ${repo}`);
-  } catch (err) {
-    console.error(`GitHub-opprettelse feilet: ${err.message.split("\n")[0]}`);
+  } catch (e) {
+    console.error(`GitHub-opprettelse feilet: ${e.message.split("\n")[0]}`);
   }
 }
 
-if (args.includes("--create-linear")) {
+if (approve && flag("--create-linear")) {
   const keyIdx = args.indexOf("--create-linear");
   const teamKey = args[keyIdx + 1];
   if (!teamKey || !/^[A-Z0-9]{1,4}$/.test(teamKey)) {
@@ -141,7 +157,6 @@ if (args.includes("--create-linear")) {
     process.exit(2);
   }
   try {
-    // LINEAR_API_KEY hentes fra .env.local i TARGET-repoets miljø ved kjøring der.
     const key = process.env.LINEAR_API_KEY;
     if (!key) throw new Error("LINEAR_API_KEY mangler i miljøet");
     const gql = async (query, variables) => {
@@ -165,21 +180,16 @@ if (args.includes("--create-linear")) {
       { n: name, t: teamId },
     );
     created.push(`Linear: team ${teamKey} + prosjekt ${name}`);
-  } catch (err) {
-    console.error(`Linear-opprettelse feilet: ${err.message.split("\n")[0]}`);
+  } catch (e) {
+    console.error(`Linear-opprettelse feilet: ${e.message.split("\n")[0]}`);
   }
 }
 
 if (created.length) {
-  console.log(`\nOpprettet (governed):\n${created.map((c) => `  ✅ ${c}`).join("\n")}`);
+  console.log(`\nOpprettet (governed, Tom-godkjent):\n${created.map((c) => `  ✅ ${c}`).join("\n")}`);
 }
 
-console.log(`
-Oppfølgingssjekkliste (Hermes, etter Tom-godkjenning):
-  1. GitHub-repo: gh repo create <org>/${name}
-  2. Linear-prosjekt: via Linear MCP (team-opprettelse + prosjekt)
-  3. Secret-namespace: secret://${name}/… i secrets.yaml (referanser, ingen verdier)
-  4. CI/CD: .github/workflows (kopier deploy.yml-mal fra tajlive/KP)
-  5. Monitoring: health + alerting via postLinearAlert()
-  6. Registrer i ${outDir}/.arch/project.yaml med verifiserte fakta
-`);
+console.log(`\nScaffold fullført i ${outDir} (${plan.local.length} filer).`);
+console.log(`Neste (etter Tom-godkjenning):`);
+console.log(`  node scripts/arch/init-project.mjs ${name} --approve --create-github <org> --create-linear <KEY>`);
+console.log(`Deretter: secret-namespace, CI-skarpe, monitoring (postLinearAlert).`);

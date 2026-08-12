@@ -8,12 +8,16 @@ Mal-bibliotek som Project Factory v2.0 bruker når den scaffolder nye prosjekter
 Kunnskapen fra `knowledge/` blir nedfelt i maler slik at neste prosjekt arver
 standarder automatisk.
 
-## Planlagte maler (F2)
+## Versjonerte maler (F2 — klare)
 
-- `repo/` — repo-mal (README, .gitignore, license)
-- `ci/` — GitHub Actions-maler (deploy.yml, security-audit.yml, synthetic-monitor.yml)
-- `policies/` — policy-maler (git, deploy, secret, knowledge_governance)
-- `arch/` — ARCHITECT.md-mal + .arch/-scaffold
-- `agents/` — agentrolle-konfig (Hermes/Kimi/Tom)
+| Mal                               | Bruk av Factory                |
+| --------------------------------- | ------------------------------ |
+| `arch/project.yaml.tmpl`          | `.arch/project.yaml`           |
+| `arch/policies.yaml.tmpl`         | `.arch/policies.yaml`          |
+| `arch/agents.yaml.tmpl`           | `.arch/agents.yaml`            |
+| `arch/secrets-registry.yaml.tmpl` | `.arch/secrets/registry.yaml`  |
+| `ci/deploy.yml.tmpl`              | `.github/workflows/deploy.yml` |
+| `docs/ARCHITECT.md.tmpl`          | `docs/ARCHITECT.md`            |
 
-Ingen maler her ennå — kunnskapsgrunnlaget (F1) må være på plass først, jf. F1-gate.
+Placeholders: `{{NAME}}`, `{{DATE}}` — substitueres av `init-project.mjs`.
+Kunnskapen fra `knowledge/` nedfelles i malene, så neste prosjekt arver standarder automatisk.

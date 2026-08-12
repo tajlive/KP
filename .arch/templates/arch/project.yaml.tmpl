@@ -1,0 +1,27 @@
+# Arch Control Plane — {{NAME}} (scaffoldet {{DATE}})
+project:
+  name: {{NAME}}
+  owner: arch
+  description: "<TODO: beskrivelse>"
+repository:
+  github: "<TODO: org/repo>"
+  default_branch: main
+runtime:
+  cloudflare: true
+database:
+  provider: supabase
+  project_id: "<TODO>"
+management:
+  linear:
+    team: "<TODO: team-key>"
+sources_of_truth:
+  work: linear
+  code: github
+  data: supabase
+  runtime: cloudflare
+  governance: arch
+agents:
+  hermes: chief-architect-ops
+  codex: senior-developer
+  kimi: research-analyst
+security_level: high
