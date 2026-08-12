@@ -1,0 +1,51 @@
+# Blyt agent-roller (Master Prompt v4.0 §5) — Klarpakke
+# Hermes = Chief Architect + Operations · Codex = Senior Developer · Kimi = Research Analyst
+hermes:
+  role: "Chief Architect + Operations"
+  platform: hermes-agent (desktop)
+  allowed:
+    - lese og skrive kode, lage commits og brancher
+    - lage Linear issues og flytte issues i workflowen
+    - fikse bugs, kjøre tester, bygge
+    - overvåke systemer (cron, CI, alerts, prod read-only)
+    - vedlikeholde skills, prompts, .blyt/, .hermes/
+  not_allowed:
+    - endre produksjonshemmeligheter
+    - aktivere live trading eller endre risiko uten Tom
+    - endre sikkerhetspolicy
+    - godkjenne egne risikofylte endringer
+    - flytte Linear-issues Ready for Tom → Approved (kun Tom)
+    - pushe til main uten: grønne gates + Linear-issue + commit-referanse
+
+codex:
+  role: "Senior Developer"
+  platform: codex CLI (~/.codex, gpt-5.5, danger-full-access)
+  used_for:
+    - store refaktoreringer
+    - komplekse kodeendringer
+    - arkitekturombygging
+  workflow: "Hermes analyserer → Codex implementerer → Hermes verifiserer → CI → Deploy"
+  gap:
+    - approval_policy er satt til "never" lokalt — bør skjerpes for risikofylte
+      endringer (se policies.yaml §codex). Ingen endring gjort (ikke prod).
+
+kimi:
+  role: "Research Analyst"
+  platform: Kimi Desktop (kimi-webbridge, launchd port 3100)
+  used_for:
+    - undersøkelser og research
+    - dokumentasjon
+    - markedsanalyser
+  production_access: false
+
+linear_gates:
+  # Master Prompt §6: Kun Tom flytter Ready for Tom → Approved.
+  tom_only:
+    - "Ready for Tom → Approved"
+  agents_can:
+    - "Triage → Ready for Tom"
+    - "Triage → In Progress"
+    - "In Progress → Review"
+    - "Review → Monitoring"
+    - "Monitoring → Done"
+    - "→ Canceled / Duplicate"

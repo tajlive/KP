@@ -1,0 +1,54 @@
+# Blyt Control Plane — prosjektregistrering (Master Prompt v4.0 §3)
+# Fakta verifisert 2026-08-12 via gh/wrangler/supabase-config.
+project:
+  name: klarpakke
+  owner: blyt # organisatorisk eier (Blyt AS)
+  description: >
+    Trading-plattform (paper + live dogfood) — Next.js 16 + Supabase +
+    Cloudflare Workers (opennextjs-cloudflare).
+
+repository:
+  github: tajlive/KP # verifisert: gh repo view
+  default_branch: main
+
+runtime:
+  cloudflare: true
+  workers:
+    - name: klarpakke # www.klarpakke.no/*
+    - name: klarpakke-staging # staging.klarpakke.no/*
+
+database:
+  provider: supabase
+  project_id: pskhryjzkobytnfwucrb
+
+hosting:
+  - url: https://www.klarpakke.no
+    environment: prod
+  - url: https://staging.klarpakke.no
+    environment: staging
+
+integrations:
+  - linear # work/task SSoT
+  - sentry # GlitchTip (self-hosted Sentry-kompatibel)
+  - resend # e-post
+  - okx # live exchange (eea.okx.com, EU)
+  - telegram # @KlarpakkeBot gateway
+  - github # code SSoT + CI
+
+management:
+  linear:
+    team: KLA
+    workflow: Triage → Ready for Tom → Approved → In Progress → Review → Monitoring → Done
+  sources_of_truth:
+    work: linear
+    code: github
+    data: supabase
+    build: github-actions
+    prod: www.klarpakke.no
+
+agents:
+  hermes: chief-architect-ops
+  codex: senior-developer
+  kimi: research-analyst
+
+security_level: high # penger + personopplysninger

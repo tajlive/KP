@@ -1,0 +1,22 @@
+# Blyt miljøer — Klarpakke
+environments:
+  local:
+    url: http://localhost:3000
+    secrets_store: .env.local
+    purpose: utvikling + Hermes MCP/cron-agenter
+  staging:
+    url: https://staging.klarpakke.no
+    worker: klarpakke-staging
+    purpose: deploy-verifisering før prod
+  prod:
+    url: https://www.klarpakke.no
+    worker: klarpakke
+    cloudflare_account: 80d5b1d56a3e907150ba7348b6182894
+    supabase_project: pskhryjzkobytnfwucrb
+    trading:
+      exchange: OKX (eea.okx.com)
+      mode: dogfood — kun Tom (user_id 0dd08529)
+      standard_flags:
+        OKX_ENABLED: "false"
+        RL_ENABLED: "false"
+        WEIGHT_LEARNING_ENABLED: "false"

@@ -9,7 +9,7 @@ import {
   LINEAR_TEAM_KEY,
 } from "../linear-alerts";
 
-const FAKE_KEY = `lin_api_test_${"x".repeat(40)}`;
+const FAKE_KEY = "lin_api_test_" + "x".repeat(40);
 
 function jsonOk(data: unknown) {
   return { ok: true, status: 200, json: async () => data };
@@ -245,7 +245,7 @@ describe("postLinearAlert", () => {
 
 describe("redactForLog", () => {
   it("redigerer lin_api_-nøkler og Bearer-tokens", () => {
-    const secret = `lin_api_${"A".repeat(48)}`;
+    const secret = "lin_api_" + "A".repeat(48);
     const bearer = `Bearer ${"b".repeat(30)}`;
     const out = redactForLog(`feil med ${secret} og ${bearer}`);
     expect(out).not.toContain("A".repeat(48));

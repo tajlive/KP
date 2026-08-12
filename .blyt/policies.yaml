@@ -1,0 +1,63 @@
+# Blyt policies — Klarpakke (Master Prompt v4.0 §7-§13)
+
+git:
+  workflow:
+    [Issue, Branch, Implementation, Tests, Commit, CI, Review, Main, Deploy]
+  main_protection: "ingen push til main uten: grønne tester + Linear-issue + commit-referanse"
+  branch_naming: "<KLA-nummer>-<kort-navn> (f.eks. blyt-control-plane-v1 → KLA-274)"
+  commit_message: "KLA-nummer i body/header der det finnes"
+
+linear:
+  sso: "Linear er ENESTE oppgavekilde — Trello er utfaset som aktiv styring"
+  gate_ready_for_tom_to_approved: "kun Tom"
+  auto_commit_policy: "K3/Hermes committer kun ved grønne gates (tsc+eslint+vitest)"
+
+secrets:
+  aldri_i: [git, kode, dokumentasjon, chat, hermes-config]
+  standard: "secret://<prosjekt>/<miljø>/<tjeneste>/<nøkkel>"
+  agent_kan: [bruke, referere]
+  agent_kan_ikke: [eksponere, skrive uten godkjenning]
+  gaps:
+    - finding: "~/.hermes/config.yaml inneholder tokens (linje 435 gho_…, linje 501 Bearer sbp_…)"
+      rule: "Master Prompt §4"
+      plan: "flytt til env.local/BWS + erstatt med referanse — egen oppgave, ingen endring nå (verifisert 2026-08-12 read-only)"
+
+codex:
+  gap: "approval_policy=never lokalt — skjerpes før Codex brukes på risikofylt arbeid"
+
+trading:
+  standard_flags:
+    OKX_ENABLED: "false"
+    RL_ENABLED: "false"
+    WEIGHT_LEARNING_ENABLED: "false"
+  live: "kun Tom — ingen agent åpner live trading, endrer risiko eller øker posisjon uten Tom"
+  kill_switch: "POST /api/admin/kill-switch med CRON_SECRET"
+
+quality:
+  foer_commit: [lint, tsc --noEmit, tests, build]
+  foer_deploy:
+    - CI grønn
+    - tester grønne
+    - ingen secrets lekket
+    - migrasjoner dokumentert
+    - prod-verifisering utført
+
+produksjon:
+  sannhet: prod
+  verifiser:
+    api: "fetch mot prod"
+    database: "query-verifisering"
+    frontend: "browser-verifisering (Playwright/browserbase)"
+
+incident:
+  format: [Problem, Rotårsak, Løsning, Test, Forebygging]
+
+alerting:
+  kjede: "System → postLinearAlert() → Linear Incident → Hermes → Fix → Evidence"
+
+selvforbedring:
+  hermes_vedlikeholder:
+    - .hermes/learning-log.md
+    - .hermes/decisions.md
+    - .hermes/architecture-history.md
+    - .blyt/audit-log.md

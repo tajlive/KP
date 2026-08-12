@@ -253,7 +253,7 @@ describe("Sentry webhook → Linear", () => {
   });
 
   it("secrets/tokens havner ikke i logs (redaksjon)", async () => {
-    const rawSecret = `lin_api_${"A".repeat(48)}`;
+    const rawSecret = "lin_api_" + "A".repeat(48);
     stubLinearApi({ rejectWith: `nettverksfeil: ${rawSecret}` });
 
     const res = await POST(
