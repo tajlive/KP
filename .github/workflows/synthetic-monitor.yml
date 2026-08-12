@@ -5,7 +5,7 @@ name: Synthetic Monitor — innlogget prod-overvåkning
 # ekte brukere treffer en ødelagt side. Kjører i GitHub Actions (IKKE
 # Cloudflare Workers — Workers kan ikke kjøre ekte browser/V8 isolates).
 #
-# Ved feil: Trello-kort i «🚨 Varsler» med run-lenke.
+# Ved feil: Linear-issue (label incident, fingerprint-dedup) med run-lenke.
 
 on:
   schedule:
@@ -57,15 +57,64 @@ jobs:
           TEST_BASE_URL: "https://www.klarpakke.no"
           PLAYWRIGHT_TEST_BASE_URL: "https://www.klarpakke.no"
 
-      - name: Varsle Trello ved brudd
+      - name: Varsle Linear ved brudd (fingerprint-dedup)
         if: steps.check.outputs.exit_code != '0'
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          FINGERPRINT: synthetic:klarpakke.no/dashboard:failure
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TEAM_ID: a2b657ba-6d13-48b0-8570-25cbcb69f9c4
+          LABEL_INCIDENT: f3469fde-fcfc-440e-b463-7c23b34684a3
         run: |
-          curl -s -X POST "https://api.trello.com/1/cards" \
-            --data-urlencode "key=${{ secrets.TRELLO_KEY }}" \
-            --data-urlencode "token=${{ secrets.TRELLO_TOKEN }}" \
-            --data-urlencode "idList=6a77a7b720d121385c010083" \
-            --data-urlencode "name=🚨 SYNTETISK MONITOR: innlogget flyt feiler i prod" \
-            --data-urlencode "desc=Dashboard/handel feiler for innlogget bruker (syntetisk sjekk).%0A%0ATid: $(date -u +%Y-%m-%dT%H:%M:%SZ)%0ARun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --data-urlencode "pos=top" > /dev/null
-          echo "Varsel sendt"
+          python3 - <<'PYEOF'
+          import json, os, sys, urllib.request
+
+          fp = os.environ["FINGERPRINT"]
+
+          def gql(query, variables=None):
+              body = {"query": query}
+              if variables is not None:
+                  body["variables"] = variables
+              req = urllib.request.Request(
+                  "https://api.linear.app/graphql",
+                  data=json.dumps(body).encode(),
+                  headers={"Content-Type": "application/json",
+                           "Authorization": os.environ["LINEAR_API_KEY"]},
+              )
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return json.load(r)
+
+          # Dedup: samme feil (fingerprint) = samme ÅPNE issue. Ingen spam ved kronisk brudd.
+          existing = gql(
+              '{ issues(filter: { description: { contains: "' + fp + '" }, '
+              'state: { type: { neq: "completed" } } }) { nodes { id } } }'
+          )
+          if existing["data"]["issues"]["nodes"]:
+              print("Dedup: issue finnes allerede — ingen ny opprettes")
+              sys.exit(0)
+
+          desc = (
+              "Dashboard/handel feiler for innlogget bruker (syntetisk sjekk, hvert 5. min).\n"
+              f"Tid: {os.environ.get('GITHUB_RUN_STARTED_AT', '')}\n"
+              f"Run: {os.environ['RUN_URL']}"
+          )
+          desc += f"\n\n<!--arch-alert\nfingerprint: {fp}\nsource: ci:synthetic-monitor\nseverity: critical\n-->"
+
+          res = gql(
+              "mutation CreateIncident($input: IssueCreateInput!) "
+              "{ issueCreate(input: $input) { issue { identifier } } }",
+              {"input": {
+                  "teamId": os.environ["TEAM_ID"],
+                  "title": "🚨 SYNTETISK MONITOR: innlogget flyt feiler i prod",
+                  "description": desc,
+                  "labelIds": [os.environ["LABEL_INCIDENT"]],
+                  "priority": 1,
+              }},
+          )
+          ident = res.get("data", {}).get("issueCreate", {}).get("issue", {}).get("identifier", "")
+          if not ident:
+              print("::warning::Linear-varsel feilet (fail-safe — blokkerer ikke)")
+          else:
+              print(f"Linear-issue opprettet: {ident}")
+          PYEOF
           exit 1

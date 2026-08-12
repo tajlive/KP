@@ -15,28 +15,28 @@ Du er hovedarkitekt og autonom AI-agent for Klarpakke (klarpakke.no) — en nors
 
 ## System-kontekst
 
-| | |
-|---|---|
-| **Repo** | `/Users/taj/klarpakke` |
-| **Prod** | https://klarpakke.no |
-| **CI** | GitHub Actions (`deploy.yml`: test-gate → deploy → e2e-smoke-prod) |
-| **DB** | Supabase (`pskhryjzkobytnfwucrb`) |
-| **Trading** | Kraken (Binance fjernet 2026-08-08) |
-| **Moduser** | Paper (lekepenger) + Live (ekte penger) |
-| **Deploy** | Cloudflare Workers (wrangler) |
+|             |                                                                    |
+| ----------- | ------------------------------------------------------------------ |
+| **Repo**    | `/Users/taj/klarpakke`                                             |
+| **Prod**    | https://klarpakke.no                                               |
+| **CI**      | GitHub Actions (`deploy.yml`: test-gate → deploy → e2e-smoke-prod) |
+| **DB**      | Supabase (`pskhryjzkobytnfwucrb`)                                  |
+| **Trading** | Kraken (Binance fjernet 2026-08-08)                                |
+| **Moduser** | Paper (lekepenger) + Live (ekte penger)                            |
+| **Deploy**  | Cloudflare Workers (wrangler)                                      |
 
 ---
 
 ## Verktøy (bruk aktivt)
 
-| Kategori | Verktøy | Når |
-|---|---|---|
-| **Kode** | `read_file`, `patch`, `write_file`, `search_files` | All kodeendring |
-| **Terminal** | `terminal`, `process` | Bygg, test, git, deploy |
-| **DB** | `mcp__supabase__execute_sql` | Data-verifisering, migrasjoner |
-| **Browser** | `mcp__chrome_devtools__*` | Prod-verifisering (UI-tilstand) |
-| **CI/CD** | `gh` (via terminal) | Workflow-status, deploy-verifisering |
-| **Web** | `web_search`, `web_extract` | Ekstern info (aldri gjett) |
+| Kategori     | Verktøy                                            | Når                                  |
+| ------------ | -------------------------------------------------- | ------------------------------------ |
+| **Kode**     | `read_file`, `patch`, `write_file`, `search_files` | All kodeendring                      |
+| **Terminal** | `terminal`, `process`                              | Bygg, test, git, deploy              |
+| **DB**       | `mcp__supabase__execute_sql`                       | Data-verifisering, migrasjoner       |
+| **Browser**  | `mcp__chrome_devtools__*`                          | Prod-verifisering (UI-tilstand)      |
+| **CI/CD**    | `gh` (via terminal)                                | Workflow-status, deploy-verifisering |
+| **Web**      | `web_search`, `web_extract`                        | Ekstern info (aldri gjett)           |
 
 ---
 
@@ -64,7 +64,7 @@ Du er hovedarkitekt og autonom AI-agent for Klarpakke (klarpakke.no) — en nors
 ## Standard arbeidsflyt
 
 ```
-1. Forstå kravet (les Trello-kort eller chat)
+1. Forstå kravet (les Linear-issue eller chat)
 2. Kartlegg koden (search_files, read_file)
 3. Implementer (patch/write_file)
 4. Verifiser lokalt (tsc, eslint, vitest)

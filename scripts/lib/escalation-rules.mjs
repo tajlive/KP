@@ -1,15 +1,24 @@
-# Eskalasjons-protokoll for Klarpakke
-# Versjon: 1.0.0
-# Formål: Forhindre falske alarmer — kun varsle Tom ved faktisk kritisk
+# Eskalasjons-protokoll for Klarpakke — Arch Alert Layer
+# Versjon: 2.0.0 (2026-08-12, KLA-279 — Trello fjernet, Linear er eneste kanal)
+# Formål: Forhindre falske alarmer — kun varsle ved faktisk kritisk hendelse.
+
+## Arkitektur
+
+```
+Hendelse (Sentry / CI / Monitoring / Cron / Security / Deploy)
+  → Arch Alert Layer (fingerprint + severity-mapping)
+  → Linear Issue (label incident, idempotent)
+  → Hermes Agent → Fix / Verify / Evidence → Done
+```
 
 ## Nivåer
 
-| Nivå | Kriterium | Handling | Kanal |
-|------|-----------|----------|-------|
-| **INFO** | Systemet fungerer, noe er suboptimalt | Logg til fil, ikke varsle | `logs/info.log` |
-| **WARNING** | Kan bli kritisk, krever oppmerksomhet | Trello-kort i «Varsler» | Trello API |
-| **CRITICAL** | Penger i fare, eller prod nede | Trello + DM til Tom | Trello + Slack/Discord |
-| **EMERGENCY** | Tap av penger, sikkerhetsbrudd | Alle kanaler + stopp trading | Telefon + alle over |
+| Nivå | Kriterium | Handling | Kanal | Linear-priority |
+|------|-----------|----------|-------|-----------------|
+| **INFO** | Systemet fungerer, noe er suboptimalt | Logg til fil, ikke varsle | `logs/info.log` | — |
+| **WARNING** | Kan bli kritisk, krever oppmerksomhet | Linear-issue (incident) | Linear | 2 |
+| **CRITICAL** | Penger i fare, eller prod nede | Linear-issue urgent (incident + p0) + DM til Tom | Linear + Discord/DM | 1 |
+| **EMERGENCY** | Tap av penger, sikkerhetsbrudd | Linear p0 + Tom-approval (stopp trading) | Linear + alle kanaler | 0 (urgent) |
 
 ## Regler per scenario
 
@@ -30,33 +39,29 @@
 ```javascript
 // scripts/lib/escalation-rules.mjs
 export const ESCALATION = {
-  INFO: { notify: false, trello: false, dm: false },
-  WARNING: { notify: true, trello: true, dm: false },
-  CRITICAL: { notify: true, trello: true, dm: true },
-  EMERGENCY: { notify: true, trello: true, dm: true, phone: true },
+  INFO:      { log: true,  linear: false, linearPriority: 0,  tomApproval: false },
+  WARNING:   { log: false, linear: true,  linearPriority: 2,  tomApproval: false },
+  CRITICAL:  { log: false, linear: true,  linearPriority: 1,  tomApproval: false, dm: true },
+  EMERGENCY: { log: false, linear: true,  linearPriority: 0,  tomApproval: true,  dm: true },
 };
 
 export function classify(result) {
-  // Cron succeeded but empty
   if (result.cronSucceeded && result.rowsProcessed === 0) {
     return { level: 'WARNING', reason: 'Cron kjører men har ingenting å gjøre' };
   }
-  
-  // Cron failed multiple times
+
   if (result.cronFailedCount >= 3) {
     return { level: 'CRITICAL', reason: 'Cron feilet 3+ ganger' };
   }
-  
-  // API error
+
   if (result.httpStatus >= 500) {
     return { level: 'CRITICAL', reason: `API feil: ${result.httpStatus}` };
   }
-  
-  // Data quality issue
+
   if (result.httpStatus === 200 && result.dataInconsistent) {
     return { level: 'WARNING', reason: 'Data inkonsistent' };
   }
-  
+
   return { level: 'INFO', reason: 'Alt OK' };
 }
 ```
@@ -68,16 +73,40 @@ import { classify, ESCALATION } from './lib/escalation-rules.mjs';
 
 const result = await checkOrchestrator();
 const { level, reason } = classify(result);
+const rule = ESCALATION[level];
 
-if (ESCALATION[level].trello) {
-  await createTrelloCard({ title: reason, list: 'Varsler' });
+if (rule.linear) {
+  await postLinearAlert({
+    title: reason,
+    fingerprint: `watchdog:orchestrator:${reason}`,
+    severity: level.toLowerCase(),
+    priority: rule.linearPriority,
+    tomApproval: rule.tomApproval,   // EMERGENCY: flytt til Ready for Tom, aldri Approved
+  });
 }
 
-if (ESCALATION[level].dm) {
+if (rule.dm) {
   await sendDM({ to: 'tom', message: reason });
 }
 ```
 
+## Arch alert-format (felles for alle sinks)
+
+Alle Linear-alerts bærer en maskinlesbar markør i beskrivelsen:
+
+```
+<!--arch-alert
+fingerprint: <kilde>:<stabil-id>
+source: <ci|monitor|webhook|cron>:<navn>
+severity: info|warning|critical|emergency
+-->
+```
+
+Fingerprint = dedupliseringsnøkkel. Søk på `description contains "<fingerprint>"`
+mot ÅPNE issues (`state.type neq completed`) før opprettelse — samme hendelse gir
+aldri to issues. Alert-feil skal aldri krasje hovedsystemet (fail-safe).
+
 ## Versjonering
 
-- 1.0.0 (2026-08-09): Første versjon — forhindrer falske alarmer fra autopilot-watchdog
+- 2.0.0 (2026-08-12, KLA-279): Trello fjernet — Linear issue/urgent + Tom-approval-modell, Arch alert-format med fingerprint.
+- 1.0.0 (2026-08-09): Første versjon — forhindrer falske alarmer fra autopilot-watchdog.

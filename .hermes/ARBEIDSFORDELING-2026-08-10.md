@@ -9,11 +9,11 @@
 
 ## Prinsipp
 
-| Agent | Modell | Tar |
-|---|---|---|
-| **K3** (Kimi Desktop) | K2.7/K3-klasse | Pilot-motor, LLM-explainer, backtest, strategi, affiliate |
-| **Hermes** | deepseek-v4-flash | CI/drift, mekaniske bugfikser, migrasjoner, secrets, overvåking |
-| **Tom** | — | Live-trading, DB-godkjenning, priser/tiers, UI-fjerninger |
+| Agent                 | Modell            | Tar                                                             |
+| --------------------- | ----------------- | --------------------------------------------------------------- |
+| **K3** (Kimi Desktop) | K2.7/K3-klasse    | Pilot-motor, LLM-explainer, backtest, strategi, affiliate       |
+| **Hermes**            | deepseek-v4-flash | CI/drift, mekaniske bugfikser, migrasjoner, secrets, overvåking |
+| **Tom**               | —                 | Live-trading, DB-godkjenning, priser/tiers, UI-fjerninger       |
 
 ---
 
@@ -25,7 +25,7 @@
    - `src/lib/trading/strategies/types.ts` (TickStrategyEngineKey)
    - `src/lib/trading/strategy-id-aliases.ts` (validEngines)
    - `src/lib/trading/strategy-configs.ts` (engineDefaults)
-   → **Hermes: ikke rør disse 4 filene før commit `feat(strategy): simple-grid` er på main** (ETA: i kveld). Meldes i commit + her når landet.
+     → **Hermes: ikke rør disse 4 filene før commit `feat(strategy): simple-grid` er på main** (ETA: i kveld). Meldes i commit + her når landet.
 2. **Oppgave 2.2 — `src/lib/llm/trade-explainer.ts`** (Kimi K3 → norsk forklaring per trade, template-fallback)
 3. **Oppgave 2.3 — `src/lib/backtest/simple-backtest.ts`** (90d OKX-historikk, DSR-sjekk, gebyr+slippage)
 4. **Oppgave 3 (de to tunge):** `/handel` live-tall i Lekepenger-modus (P1.2) + Resultater-side «0 handler» vs historikk 13 (P1.4) — krever dataflyt-graving
@@ -46,7 +46,7 @@
 
 1. **Sonekartet gjelder** — eneste unntak er 2.1 (4 filer, listet over).
 2. **Delte registry-filer** (strategy types/aliases/configs): commit umiddelbart, separat, aldri samle opp.
-3. **Kommunikasjon:** commit-meldinger + `.hermes/*.md` + Trello-kort med bevis (hash + CI-grønn).
+3. **Kommunikasjon:** commit-meldinger + `.hermes/*.md` + Linear-issues med bevis (hash + CI-grønn).
 4. **Ved sone-tvil:** stopp, skriv i neste handoff — ikke gjett.
 5. **Ingen av oss rører:** Stripe-priser (venter Tom/Hermes-migrasjon til 399/799), live-trading, DB-schema uten Tom.
 

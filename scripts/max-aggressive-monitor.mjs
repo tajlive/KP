@@ -2,7 +2,8 @@
 /**
  * MAX AGGRESSIVE OVERVÅKNING — 5x Leveraged Grid SOL
  * 
- * Kjører hver 15. minutt. Rapporterer til Trello + Discord.
+ * Kjører hver 15. minutt. Discord-rapport hver kjøring; Linear-issue KUN ved
+ * alert (kill switch / feil) — fingerprint-dedup, Arch alert-format (KLA-279).
  * 
  * Bruk: node scripts/max-aggressive-monitor.mjs
  * Cron: hvert 15. minutt (0,15,30,45)
@@ -21,9 +22,13 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_P
 const OKX_API_KEY = process.env.OKX_API_KEY;
 const OKX_SECRET = process.env.OKX_SECRET_KEY;
 const OKX_PASSPHRASE = process.env.OKX_PASSPHRASE;
-const TRELLO_KEY = process.env.TRELLO_KEY;
-const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
+const LINEAR_API_KEY = process.env.LINEAR_API_KEY;
 const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK_URL;
+
+// Linear-konstanter (KLA-team + incident-label)
+const LINEAR_TEAM_ID = 'a2b657ba-6d13-48b0-8570-25cbcb69f9c4';
+const LINEAR_LABEL_INCIDENT = 'f3469fde-fcfc-440e-b463-7c23b34684a3';
+const LINEAR_LABEL_P0 = '8a58eb7b-5a16-40ac-83f1-9f0484cc207b';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -76,32 +81,89 @@ function calculateDailyPnl(trades) {
   return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
 }
 
-// Send rapport til Trello
-async function sendTrelloReport(data) {
-  const listId = '6a77a7b720d121385c010083'; // 🚨 Varsler
-  
-  const card = {
-    name: `📊 Max Aggressive ${data.status} — ${data.daily_pnl}% P&L`,
-    desc: `
-**Tid:** ${new Date().toISOString()}
-**Symbol:** SOL
-**Leverage:** ${data.leverage}x
-**Daglig P&L:** ${data.daily_pnl}%
-**Trades i dag:** ${data.trades_today}
-**Liquidation-avstand:** ${data.liquidation_distance}%
-**Kill switch:** ${data.kill_switch ? '🔴 AKTIV' : '🟢 OK'}
-**Saldo:** ${data.balance} USDT
+// Post alert til Linear (KLA-279: erstatter Trello-kort). Kun ved data.alert.
+// Fingerprint-dedup mot ÅPNE issues — samme alert = samme issue, ingen spam.
+async function postLinearAlert(data) {
+  if (!data.alert) return;
+  if (!LINEAR_API_KEY) {
+    console.error('[linear-alert] LINEAR_API_KEY mangler i env — alert droppet (fail-safe)');
+    return;
+  }
 
-${data.notes || ''}
-    `,
-    idList: listId,
+  const type = data.kill_switch ? 'kill-switch' : 'monitor-error';
+  const fingerprint = `max-aggressive:${type}`;
+  const severity = data.kill_switch ? 'critical' : 'warning';
+  const priority = data.kill_switch ? 1 : 2;
+
+  const gql = async (query, variables) => {
+    const body = { query };
+    if (variables !== undefined) body.variables = variables;
+    const res = await fetch('https://api.linear.app/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: LINEAR_API_KEY,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Linear API ${res.status}`);
+    return res.json();
   };
-  
-  await fetch(`https://api.trello.com/1/cards?key=${TRELLO_KEY}&token=${TRELLO_TOKEN}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(card),
-  });
+
+  try {
+    // Dedup: kun ÅPNE issues med samme fingerprint teller.
+    const existing = await gql(
+      `{ issues(filter: { description: { contains: "${fingerprint}" }, state: { type: { neq: "completed" } } }) { nodes { id } } }`
+    );
+    if (existing?.data?.issues?.nodes?.length) {
+      console.log(`[linear-alert] Issue finnes allerede (${fingerprint}) — ingen duplikat`);
+      return;
+    }
+
+    const title = data.kill_switch
+      ? '⚠️ MAX AGGRESSIVE: KILL SWITCH AKTIVERT (3% daglig tap)'
+      : '🔴 MAX AGGRESSIVE: overvåkningsfeil';
+
+    const desc = [
+      `**Tid:** ${new Date().toISOString()}`,
+      `**Symbol:** SOL`,
+      `**Leverage:** ${data.leverage}x`,
+      `**Daglig P&L:** ${data.daily_pnl}%`,
+      `**Trades i dag:** ${data.trades_today}`,
+      `**Liquidation-avstand:** ${data.liquidation_distance}%`,
+      `**Kill switch:** ${data.kill_switch ? '🔴 AKTIV' : '🟢 OK'}`,
+      `**Saldo:** ${data.balance} USDT`,
+      '',
+      data.notes || '',
+      '',
+      `<!--arch-alert`,
+      `fingerprint: ${fingerprint}`,
+      `source: monitor:max-aggressive`,
+      `severity: ${severity}`,
+      `-->`,
+    ].join('\n');
+
+    const res = await gql(
+      'mutation CreateIncident($input: IssueCreateInput!) { issueCreate(input: $input) { issue { identifier } } }',
+      {
+        input: {
+          teamId: LINEAR_TEAM_ID,
+          title,
+          description: desc,
+          labelIds: data.kill_switch ? [LINEAR_LABEL_INCIDENT, LINEAR_LABEL_P0] : [LINEAR_LABEL_INCIDENT],
+          priority,
+        },
+      }
+    );
+    const ident = res?.data?.issueCreate?.issue?.identifier;
+    if (!ident) {
+      console.error('[linear-alert] Issue-opprettelse feilet (fail-safe: monitor fortsetter)');
+    } else {
+      console.log(`[linear-alert] Issue opprettet: ${ident}`);
+    }
+  } catch (e) {
+    console.error(`[linear-alert] Feil: ${e.message} (fail-safe: monitor fortsetter)`);
+  }
 }
 
 // Send rapport til Discord
@@ -166,6 +228,7 @@ async function main() {
       trades_today: trades?.filter(t => t.timestamp?.startsWith(new Date().toISOString().split('T')[0])).length || 0,
       liquidation_distance: liquidationDistance?.toFixed(2) || 'N/A',
       kill_switch: dailyPnl <= -3,
+      alert: dailyPnl <= -3,
       balance: availBal,
       positions,
       notes: dailyPnl <= -3 ? '⚠️ KILL SWITCH AKTIVERT — 3% daglig tap' : '',
@@ -173,9 +236,9 @@ async function main() {
     
     console.log('📊 Rapport:', report);
     
-    // Send rapporter
+    // Send rapporter (Discord hver kjøring; Linear kun ved alert)
     await Promise.all([
-      sendTrelloReport(report),
+      postLinearAlert(report),
       sendDiscordReport(report),
     ]);
     
@@ -191,14 +254,15 @@ async function main() {
   } catch (error) {
     console.error('❌ Feil:', error);
     
-    // Send feil-rapport
-    await sendTrelloReport({
+    // Send feil-alert (Linear) — Discord ikke relevant ved monitor-krasj
+    await postLinearAlert({
       status: '🔴 FEIL',
       daily_pnl: 'N/A',
       leverage: 5,
       trades_today: 0,
       liquidation_distance: 'N/A',
       kill_switch: false,
+      alert: true,
       balance: 'N/A',
       notes: `Feil: ${error.message}`,
     });

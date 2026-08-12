@@ -185,7 +185,7 @@ jobs:
 
   # ============ AUTO-ROLLBACK (2026-08-09): rød innlogget smoke → rull tilbake
   # til forrige versjon FØR brukere treffer den brutte flyten, og varsl
-  # Trello «🚨 Varsler». Dette er 2026-standarden (post-deploy smoke +
+  # Linear-issue (incident, fingerprint-dedup). Dette er 2026-standarden (post-deploy smoke +
   # automatisk rollback).
   auto-rollback:
     needs: [deploy, e2e-smoke-auth-prod]
@@ -229,14 +229,68 @@ jobs:
           CI: 'true'
           WRANGLER_LOG: error
 
-      - name: Varsle Trello «🚨 Varsler»
+      - name: Varsle Linear (fingerprint-dedup, fail-safe)
         if: always()
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          FINGERPRINT: auto-rollback:${{ github.repository }}:${{ github.sha }}
+          ROLLBACK_OUT: ${{ steps.rollback.outputs.rollback }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TEAM_ID: a2b657ba-6d13-48b0-8570-25cbcb69f9c4
+          LABEL_INCIDENT: f3469fde-fcfc-440e-b463-7c23b34684a3
         run: |
-          curl -s -X POST "https://api.trello.com/1/cards" \
-            --data-urlencode "key=${{ secrets.TRELLO_KEY }}" \
-            --data-urlencode "token=${{ secrets.TRELLO_TOKEN }}" \
-            --data-urlencode "idList=6a77a7b720d121385c010083" \
-            --data-urlencode "name=🚨 AUTO-ROLLBACK: innlogget smoke feilet" \
-            --data-urlencode "desc=Deploy ${GITHUB_SHA::7} feilet post-deploy innlogget smoke og ble rullet tilbake til ${{ steps.rollback.outputs.rollback }}.%0A%0ASjekk: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --data-urlencode "pos=top" > /dev/null
-          echo "Trello-varsel sendt"
+          python3 - <<'PYEOF'
+          import json, os, sys, urllib.request
+
+          fp = os.environ["FINGERPRINT"]
+          rollback = os.environ.get("ROLLBACK_OUT", "")
+
+          def gql(query, variables=None):
+              body = {"query": query}
+              if variables is not None:
+                  body["variables"] = variables
+              req = urllib.request.Request(
+                  "https://api.linear.app/graphql",
+                  data=json.dumps(body).encode(),
+                  headers={"Content-Type": "application/json",
+                           "Authorization": os.environ["LINEAR_API_KEY"]},
+              )
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return json.load(r)
+
+          # Dedup: samme deploy-sha gir aldri to issues — kun ÅPNE issues teller.
+          existing = gql(
+              '{ issues(filter: { description: { contains: "' + fp + '" }, '
+              'state: { type: { neq: "completed" } } }) { nodes { id } } }'
+          )
+          if existing["data"]["issues"]["nodes"]:
+              print("Dedup: issue finnes allerede — ingen ny opprettes")
+              sys.exit(0)
+
+          failed = rollback == "manual"
+          prio = 1 if failed else 2  # Rollback FEILET = 1, rollback utført = 2
+          title = ("🚨 AUTO-ROLLBACK FEILET: innlogget smoke feilet + manuell rollback kreves"
+                   if failed else "🚨 AUTO-ROLLBACK: innlogget smoke feilet")
+          desc = f"Deploy {os.environ['GITHUB_SHA'][:7]} feilet post-deploy innlogget smoke."
+          if not failed:
+              desc += f" Rullet tilbake til {rollback}."
+          desc += f"\nRun: {os.environ['RUN_URL']}"
+          desc += f"\n\n<!--arch-alert\nfingerprint: {fp}\nsource: ci:auto-rollback\nseverity: {'critical' if failed else 'warning'}\n-->"
+
+          res = gql(
+              "mutation CreateIncident($input: IssueCreateInput!) "
+              "{ issueCreate(input: $input) { issue { identifier } } }",
+              {"input": {
+                  "teamId": os.environ["TEAM_ID"],
+                  "title": title,
+                  "description": desc,
+                  "labelIds": [os.environ["LABEL_INCIDENT"]],
+                  "priority": prio,
+              }},
+          )
+          ident = res.get("data", {}).get("issueCreate", {}).get("issue", {}).get("identifier", "")
+          if not ident:
+              print("::warning::Linear-varsel feilet (fail-safe — blokkerer ikke pipelinen)")
+          else:
+              print(f"Linear-issue opprettet: {ident}")
+          PYEOF
