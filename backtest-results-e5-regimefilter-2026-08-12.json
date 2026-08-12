@@ -1,0 +1,164 @@
+{
+  "generatedAt": "2026-08-12T01:38:54.316Z",
+  "gitSha": "unknown",
+  "protocol": ".hermes/plans/e5-backtest-protocol-2026-08-12.md",
+  "metadata": {
+    "period": "2025-08-12 → 2026-08-11",
+    "days": "~372",
+    "candles": "hentet fra DB",
+    "initialCapital": 10000,
+    "feeRate": 0.001,
+    "slippagePct": 0.05,
+    "nTrials": 3,
+    "symbols": ["SOLUSDT", "BTCUSDT", "ETHUSDT"]
+  },
+  "results": [
+    {
+      "variant": "V0",
+      "name": "Baseline",
+      "config": {
+        "regime_filter_enabled": false
+      },
+      "aggregate": {
+        "avgTrainReturnPct": -18.3,
+        "avgOosReturnPct": -8.7,
+        "pfTrainMin": 0.05,
+        "pfOosMin": 0.09,
+        "maxDD": 32.9,
+        "totalTrades": 3650
+      },
+      "perSymbol": [
+        {
+          "symbol": "SOLUSDT",
+          "trainReturnPct": -15.4,
+          "oosReturnPct": -10.2,
+          "pfTrain": 0.18,
+          "pfOos": 0.12,
+          "dsr": 0.07,
+          "trades": 1300,
+          "maxDD": 32.9
+        },
+        {
+          "symbol": "BTCUSDT",
+          "trainReturnPct": -21.3,
+          "oosReturnPct": -9,
+          "pfTrain": 0.05,
+          "pfOos": 0.1,
+          "dsr": 0.05,
+          "trades": 1108,
+          "maxDD": 29.1
+        },
+        {
+          "symbol": "ETHUSDT",
+          "trainReturnPct": -18.3,
+          "oosReturnPct": -6.8,
+          "pfTrain": 0.1,
+          "pfOos": 0.09,
+          "dsr": 0.1,
+          "trades": 1242,
+          "maxDD": 31.2
+        }
+      ]
+    },
+    {
+      "variant": "V1",
+      "name": "E5 basis",
+      "config": {
+        "regime_filter_enabled": true,
+        "adx_range_max": 20,
+        "adx_trend_min": 25,
+        "bbw_min_pct": 2
+      },
+      "aggregate": {
+        "avgTrainReturnPct": -12.7,
+        "avgOosReturnPct": -9.1,
+        "pfTrainMin": 0.04,
+        "pfOosMin": 0.05,
+        "maxDD": 26,
+        "totalTrades": 1051
+      },
+      "perSymbol": [
+        {
+          "symbol": "SOLUSDT",
+          "trainReturnPct": -10.9,
+          "oosReturnPct": -14.5,
+          "pfTrain": 0.13,
+          "pfOos": 0.05,
+          "dsr": 0.02,
+          "trades": 501,
+          "maxDD": 26
+        },
+        {
+          "symbol": "BTCUSDT",
+          "trainReturnPct": -10.6,
+          "oosReturnPct": -7.3,
+          "pfTrain": 0.04,
+          "pfOos": 0.08,
+          "dsr": 0.06,
+          "trades": 218,
+          "maxDD": 18.4
+        },
+        {
+          "symbol": "ETHUSDT",
+          "trainReturnPct": -16.7,
+          "oosReturnPct": -5.5,
+          "pfTrain": 0.05,
+          "pfOos": 0.09,
+          "dsr": 0.09,
+          "trades": 332,
+          "maxDD": 25.3
+        }
+      ]
+    },
+    {
+      "variant": "V2",
+      "name": "E5 konservativ",
+      "config": {
+        "regime_filter_enabled": true,
+        "adx_range_max": 18,
+        "adx_trend_min": 22,
+        "bbw_min_pct": 3
+      },
+      "aggregate": {
+        "avgTrainReturnPct": -8.3,
+        "avgOosReturnPct": -5.3,
+        "pfTrainMin": 0.01,
+        "pfOosMin": 0.02,
+        "maxDD": 27.1,
+        "totalTrades": 344
+      },
+      "perSymbol": [
+        {
+          "symbol": "SOLUSDT",
+          "trainReturnPct": -13.8,
+          "oosReturnPct": -6.8,
+          "pfTrain": 0.06,
+          "pfOos": 0.04,
+          "dsr": 0.04,
+          "trades": 215,
+          "maxDD": 27.1
+        },
+        {
+          "symbol": "BTCUSDT",
+          "trainReturnPct": -4.3,
+          "oosReturnPct": -1.8,
+          "pfTrain": 0.01,
+          "pfOos": 0.06,
+          "dsr": 0.12,
+          "trades": 24,
+          "maxDD": 7.5
+        },
+        {
+          "symbol": "ETHUSDT",
+          "trainReturnPct": -6.9,
+          "oosReturnPct": -7.4,
+          "pfTrain": 0.05,
+          "pfOos": 0.02,
+          "dsr": 0.05,
+          "trades": 105,
+          "maxDD": 15.1
+        }
+      ]
+    }
+  ]
+}
