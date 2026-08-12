@@ -1,5 +1,10 @@
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-initOpenNextCloudflareForDev();
+// KLA-263 edge-preview 9106 fix: initOpenNextCloudflareForDev krever
+// Workers Edge Preview-scope på API-token. Dette er kun nødvendig i dev.
+// Under build settes OPENNEXT_SKIP_REMOTE_DEV=true av package.json.
+if (!process.env.OPENNEXT_SKIP_REMOTE_DEV) {
+  initOpenNextCloudflareForDev();
+}
 
 import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin({
