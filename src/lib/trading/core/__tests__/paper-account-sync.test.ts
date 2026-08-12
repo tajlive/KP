@@ -1,7 +1,11 @@
 /**
- * Regresjonstest: syncPaperAccountBalance skal IKKE telle stoppede sesjoner.
- * Reproducerer INC-2026-08-12: stoppede sesjoner med arvet inflatert
- * current_capital_nok.
+ * Regresjonstest: syncPaperAccountBalance — INC-2026-08-12.
+ *
+ * Logikk (2026-08-12):
+ * - Kun aktive + pausede sesjoner telles med i kapitalsummering.
+ * - Stoppede/arkiverte sesjoner er historikk og SKAL IKKE summeres.
+ * - Sanity-cap: totalCapital > 1.5× totalInitial → avvist (inflasjon).
+ * - DB-constraint: paper_accounts.current_balance <= initial_balance * 1.5.
  */
 import { describe, it, expect } from "vitest";
 import { syncPaperAccountBalance } from "../paper-account-sync";
@@ -62,17 +66,16 @@ describe("syncPaperAccountBalance — INC-2026-08-12 regresjon", () => {
     const { calls, client } = mockSupabase(sessions);
     await syncPaperAccountBalance(client, "user-1");
 
-    // Skal kun telle active-sesjonen (100 000), ikke stoppede
+    // Filter: kun active + paused. Stoppede er historikk og skal IKKE summeres.
     expect(calls.length).toBeGreaterThanOrEqual(0); // kan være 0 hvis bare én aktiv
     if (calls.length > 0) {
       expect(calls[0].current_balance).toBe(100000);
     }
   });
 
-  it("sanity cap: sum > 1.5× initial → IKKE oppdater", async () => {
-    // Tre aktive sesjoner med 99999 hver → sum = 299 997, initial = 300 000
-    // 299 997 > 300 000 * 1.5? NEI (299 997 < 450 000). Ingen cap treffer.
-    // Endre til: sum = 500 000 > 300 000 * 1.5 → cap treffer
+  it("sanity cap 1.5× initial: sum > 1.5× initial → IKKE oppdatert (cap blokkerer)", async () => {
+    // To aktive sesjoner × 200k = 400k, initial = 200k
+    // 400k > 200k × 1.5 = 300k → cap treffer → IKKE oppdater
     const sessions = [
       {
         current_capital_nok: 200000,
@@ -117,11 +120,11 @@ describe("syncPaperAccountBalance — INC-2026-08-12 regresjon", () => {
     } as any;
 
     await syncPaperAccountBalance(client, "user-2");
-    // Sum = 600 000, initial = 300 000 → 600k > 450k → cap treffer → IKKE oppdater
+    // Sum = 600 000, initial = 300 000 → 600k > 450k (1.5×) → cap treffer
     expect(updated).toBe(false);
   });
 
-  it("sum under 1.5× initial → skal oppdatere", async () => {
+  it("sum under 1.5× initial (200k ≤ 300k cap) → skal oppdatere normalt", async () => {
     const sessions = [
       {
         current_capital_nok: 100000,
