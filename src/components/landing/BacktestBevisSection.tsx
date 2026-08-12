@@ -30,7 +30,13 @@ export default function BacktestBevisSection({ resultat, holdBelop }: Props) {
             {t("subtitle")}
           </p>
 
-          <p className="mt-8 text-5xl font-extrabold tracking-tight text-green-500 sm:text-6xl">
+          <p
+            className={`mt-8 text-5xl font-extrabold tracking-tight sm:text-6xl ${
+              resultat.startsWith("−") || resultat.startsWith("-")
+                ? "text-kp-danger"
+                : "text-green-500"
+            }`}
+          >
             {resultat}
           </p>
           <p className="mx-auto mt-2 max-w-md text-base text-kp-text-muted">
