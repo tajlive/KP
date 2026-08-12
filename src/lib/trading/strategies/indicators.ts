@@ -53,8 +53,10 @@ export function rsi(closes: number[], period: number = 14): number {
     .filter((c) => c < 0)
     .map(Math.abs);
 
-  const avgGain = gains.length > 0 ? gains.reduce((s, v) => s + v, 0) / period : 0;
-  const avgLoss = losses.length > 0 ? losses.reduce((s, v) => s + v, 0) / period : 0;
+  const avgGain =
+    gains.length > 0 ? gains.reduce((s, v) => s + v, 0) / period : 0;
+  const avgLoss =
+    losses.length > 0 ? losses.reduce((s, v) => s + v, 0) / period : 0;
 
   if (avgLoss === 0) return 100;
   const rs = avgGain / avgLoss;
@@ -64,7 +66,10 @@ export function rsi(closes: number[], period: number = 14): number {
 /**
  * RSI series (for chart overlay)
  */
-export function rsiSeries(closes: number[], period: number = 14): (number | null)[] {
+export function rsiSeries(
+  closes: number[],
+  period: number = 14,
+): (number | null)[] {
   const result: (number | null)[] = [];
   let gains = 0;
   let losses = 0;
@@ -121,7 +126,11 @@ export function macd(
 
 /** Compute True Range for a single bar (used by ATR and ADX).
  *  Eliminates 7-line tr1/tr2/tr3 duplication across indicator functions. */
-function computeTrueRange(high: number, low: number, prevClose: number): number {
+function computeTrueRange(
+  high: number,
+  low: number,
+  prevClose: number,
+): number {
   const tr1 = high - low;
   const tr2 = Math.abs(high - prevClose);
   const tr3 = Math.abs(low - prevClose);
@@ -189,7 +198,7 @@ export function adx(
   for (let i = 0; i < period; i++) {
     const plusDI = (smoothedPlusDM / smoothedTR) * 100;
     const minusDI = (smoothedMinusDM / smoothedTR) * 100;
-    dxSum += Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100;
+    dxSum += (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100;
   }
 
   let adx = dxSum / period;
@@ -201,7 +210,7 @@ export function adx(
 
     const plusDI = (smoothedPlusDM / smoothedTR) * 100;
     const minusDI = (smoothedMinusDM / smoothedTR) * 100;
-    const dx = Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100;
+    const dx = (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100;
     adx = (adx * (period - 1) + dx) / period;
   }
 
@@ -219,7 +228,8 @@ export function bollingerBands(
   const slice = closes.slice(-period);
   const middle = slice.reduce((a, b) => a + b, 0) / slice.length;
 
-  const variance = slice.reduce((sum, v) => sum + Math.pow(v - middle, 2), 0) / slice.length;
+  const variance =
+    slice.reduce((sum, v) => sum + Math.pow(v - middle, 2), 0) / slice.length;
   const std = Math.sqrt(variance);
 
   const upper = middle + stdDev * std;
@@ -261,4 +271,25 @@ export function detectMarketRegime(
     return "volatile";
   }
   return "mixed";
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// E5 Regimefilter — BB Width wrapper (2026-08-12)
+// ADX og Bollinger Bands finnes allerede i denne filen.
+// ══════════════════════════════════════════════════════════════════════
+
+/** Bollinger Bands Width i % av midten — bekvemmelighets-wrapper */
+export function bbw(
+  closes: number[],
+  period: number = 20,
+  stddev: number = 2,
+): number {
+  if (closes.length < period) return 0;
+  const slice = closes.slice(-period);
+  const mid = slice.reduce((a, b) => a + b, 0) / period;
+  const variance = slice.reduce((s, v) => s + (v - mid) ** 2, 0) / period;
+  const sigma = Math.sqrt(variance);
+  const upper = mid + stddev * sigma;
+  const lower = mid - stddev * sigma;
+  return ((upper - lower) / mid) * 100;
 }

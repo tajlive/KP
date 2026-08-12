@@ -29,7 +29,7 @@ import type {
   StrategyInput,
   StrategySignal,
 } from "./types";
-import { atr } from "./indicators";
+import { atr, adx, bbw } from "./indicators";
 
 export const SIMPLE_GRID_DEFAULTS = {
   /** Nivåavstand OG gevinstterskel (%) — «±1.5 %-regelen» */
@@ -77,12 +77,21 @@ export const SIMPLE_GRID_DEFAULTS = {
       høyrehalen (+380 %/+918 %-rallyene); runneren fanger den.
       «Fixed take profits destroy returns» — trading-agent-prinsipp #2. */
   partial_sell_pct: 0.15, // robust topp i sweep 2026-08-10 (kurve flater ut
-      // 0.25→0.05; 0.15 valgt i flat sone, ikke eksakt-maks-fellen)
+  // 0.25→0.05; 0.15 valgt i flat sone, ikke eksakt-maks-fellen)
+
+  /** E5 Regimefilter (2026-08-12): ADX/BBW-basert kjøpsblokkering.
+      Når true: blokker grid-kjøp og DCA i TREND/MELLOMREGIME.
+      Default false — ingen endring fra baseline. */
+  regime_filter_enabled: false,
+  adx_period: 14,
+  adx_range_max: 20,
+  adx_trend_min: 25,
+  bb_period: 20,
+  bb_stddev: 2,
+  bbw_min_pct: 2.0,
 } as const;
 
-type Lots = NonNullable<
-  NonNullable<MinimalSession["open_position"]>["lots"]
->;
+type Lots = NonNullable<NonNullable<MinimalSession["open_position"]>["lots"]>;
 
 function median(verdier: number[]): number {
   const s = [...verdier].sort((a, b) => a - b);
@@ -95,6 +104,57 @@ export class SimpleGridStrategy implements StrategyEngine {
     const { candles, session, config } = input;
     const cfg = { ...SIMPLE_GRID_DEFAULTS, ...config };
     const nå = input.currentTime ?? Date.now();
+
+    // ═══ E5 Regimefilter (2026-08-12) ═══
+    if (
+      cfg.regime_filter_enabled &&
+      candles.length >= Math.max(cfg.adx_period, cfg.bb_period) + 1
+    ) {
+      const adxVal = adx(
+        candles.map((c) => c.high),
+        candles.map((c) => c.low),
+        candles.map((c) => c.close),
+        cfg.adx_period,
+      );
+      const bbwVal = bbw(
+        candles.map((c) => c.close),
+        cfg.bb_period,
+        cfg.bb_stddev,
+      );
+
+      if (adxVal >= cfg.adx_trend_min) {
+        // TREND — blokker kjøp og DCA, salg tillates (fortsetter til regel 1)
+        return {
+          action: "hold",
+          reason:
+            "TREND — ADX for høyt for grid-handel. Piloten venter til trenden avtar.",
+          indicators: {
+            adx: Number(adxVal.toFixed(2)),
+            bbw: Number(bbwVal.toFixed(2)),
+            regime: "trend",
+          },
+        };
+      }
+
+      if (adxVal >= cfg.adx_range_max || bbwVal < cfg.bbw_min_pct) {
+        // MELLOMREGIME — ADX i gråsone eller for lav volatilitet
+        return {
+          action: "hold",
+          reason:
+            adxVal >= cfg.adx_range_max
+              ? "OVERGANGSREGIME — ADX i gråsone, Piloten avventer."
+              : "LAV_VOLATILITET — BB Width under minimum for grid-handel.",
+          indicators: {
+            adx: Number(adxVal.toFixed(2)),
+            bbw: Number(bbwVal.toFixed(2)),
+            regime: "mellomregime",
+          },
+        };
+      }
+
+      // RANGE — ADX < adx_range_max AND bbw >= bbw_min_pct
+      // Fortsett til normal simple_grid-logikk
+    }
 
     if (!candles || candles.length === 0) {
       return { action: "hold", reason: "Ingen prisdata ennå — venter." };
@@ -117,10 +177,7 @@ export class SimpleGridStrategy implements StrategyEngine {
       );
       const atrPct = (atrAbs / pris) * 100;
       steg =
-        Math.min(
-          Math.max(atrPct, cfg.step_min_pct),
-          cfg.step_max_pct,
-        ) / 100;
+        Math.min(Math.max(atrPct, cfg.step_min_pct), cfg.step_max_pct) / 100;
     }
     const toleranse = cfg.level_tolerance_pct / 100;
 
@@ -141,7 +198,8 @@ export class SimpleGridStrategy implements StrategyEngine {
               lot_id: lot.id,
               entry_price: lot.entryPrice,
             },
-            reason: "Prisen falt tilbake til kjøpsprisen — Piloten sikret resten. Ingen tap på denne.",
+            reason:
+              "Prisen falt tilbake til kjøpsprisen — Piloten sikret resten. Ingen tap på denne.",
           };
         }
         continue; // Runner løper videre og fanger høyrehalen
@@ -150,7 +208,10 @@ export class SimpleGridStrategy implements StrategyEngine {
       const terskel = lot.entryPrice * (1 + steg);
       if (pris >= terskel) {
         const gevinstPct = ((pris - lot.entryPrice) / lot.entryPrice) * 100;
-        const selges = Math.min(lot.originalQuantity * cfg.partial_sell_pct, lot.quantity);
+        const selges = Math.min(
+          lot.originalQuantity * cfg.partial_sell_pct,
+          lot.quantity,
+        );
         return {
           action: "sell",
           quantity: selges,
@@ -237,7 +298,9 @@ export class SimpleGridStrategy implements StrategyEngine {
         action: "hold",
         indicators: {
           blocked_by: "max_invested",
-          invested_pct: Number(((investertVerdi / egenkapital) * 100).toFixed(1)),
+          invested_pct: Number(
+            ((investertVerdi / egenkapital) * 100).toFixed(1),
+          ),
         },
         reason: `Piloten har investert maksimalt tillatt (${cfg.max_invested_pct * 100} %). Venter på salg før nye kjøp.`,
       };
@@ -284,7 +347,8 @@ export class SimpleGridStrategy implements StrategyEngine {
         positionSize: cfg.dca_amount_pct,
         confidence: 0.6,
         indicators: { dca: true, initial: true },
-        reason: "Første kjøp — Piloten starter forsiktig og bygger opp gradvis.",
+        reason:
+          "Første kjøp — Piloten starter forsiktig og bygger opp gradvis.",
       };
     }
 
@@ -323,7 +387,8 @@ export class SimpleGridStrategy implements StrategyEngine {
         current_price: pris,
         open_lots: lots.length,
       },
-      reason: "Venter — prisen er ikke ved et kjøpsnivå, og det er ikke lenge siden forrige kjøp.",
+      reason:
+        "Venter — prisen er ikke ved et kjøpsnivå, og det er ikke lenge siden forrige kjøp.",
     };
   }
 }
