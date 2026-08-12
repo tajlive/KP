@@ -228,7 +228,7 @@ async function sendAlertEmail(result: CheckResult, baseUrl: string): Promise<voi
       <p>Se full health-status: <a href="${baseUrl}/api/health" style="color: #60a5fa;">${baseUrl}/api/health</a></p>
     </div>
     <div class="footer">
-      <p><strong>Klarpakke</strong> / Blyt AS © 2026</p>
+      <p><strong>Klarpakke</strong> © 2026</p>
       <p>Dette er en automatisk monitoreringsvarsel fra cron-jobben.</p>
     </div>
   </div>

@@ -42,7 +42,7 @@ serve(async (req) => {
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6; color: #334155;">
         <h1 style="color: #0052FF;">Hi ${full_name || "there"}!</h1>
         <p>Welcome as a student at Klarpakke. We are incredibly excited to have you on board.</p>
-        <p>Klarpakke is developed by <strong>Blyt AS</strong>, a Norwegian company passionate about making crypto trading understandable and safe for everyone. Our goal is to give you the knowledge you need to navigate the market with confidence – risk-free in our simulator.</p>
+        <p>Klarpakke is a Norwegian company passionate about making crypto trading understandable and safe for everyone. Our goal is to give you the knowledge you need to navigate the market with confidence – risk-free in our simulator.</p>
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin: 25px 0; border: 1px solid #e2e8f0;">
           <h3 style="margin-top: 0;">Your first steps:</h3>
           <ol>
@@ -52,10 +52,10 @@ serve(async (req) => {
           </ol>
         </div>
         <p>Got questions? Just reply to this email, and I will help you personally.</p>
-        <p>Best regards,<br><strong>Tom</strong><br>Klarpakke / Blyt AS</p>
+        <p>Best regards,<br><strong>Tom</strong><br>Klarpakke</p>
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
         <p style="font-size: 12px; color: #94a3b8; text-align: center;">
-          &copy; 2026 Blyt AS. All rights reserved.<br>
+          &copy; 2026 Klarpakke. All rights reserved.<br>
           You receive this email because you signed up for Klarpakke.
         </p>
       </div>
@@ -64,7 +64,7 @@ serve(async (req) => {
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6; color: #334155;">
         <h1 style="color: #0052FF;">Hei ${full_name || "der"}!</h1>
         <p>Velkommen som student hos Klarpakke. Vi er utrolig glade for å ha deg med på laget.</p>
-        <p>Klarpakke er utviklet av <strong>Blyt AS</strong>, et helnorsk selskap som brenner for å gjøre kryptotrading forståelig og trygt for alle. Vårt mål er å gi deg kunnskapen du trenger for å navigere markedet med selvtillit – helt uten risiko i vår simulator.</p>
+        <p>Klarpakke er et helnorsk selskap som brenner for å gjøre kryptotrading forståelig og trygt for alle. Vårt mål er å gi deg kunnskapen du trenger for å navigere markedet med selvtillit – helt uten risiko i vår simulator.</p>
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin: 25px 0; border: 1px solid #e2e8f0;">
           <h3 style="margin-top: 0;">Her er dine første steg:</h3>
           <ol>
@@ -74,10 +74,10 @@ serve(async (req) => {
           </ol>
         </div>
         <p>Har du spørsmål? Bare svar på denne e-posten, så hjelper jeg deg personlig.</p>
-        <p>Hilsen,<br><strong>Tom</strong><br>Klarpakke / Blyt AS</p>
+        <p>Hilsen,<br><strong>Tom</strong><br>Klarpakke</p>
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
         <p style="font-size: 12px; color: #94a3b8; text-align: center;">
-          &copy; 2026 Blyt AS. Alle rettigheter reservert.<br>
+          &copy; 2026 Klarpakke. Alle rettigheter reservert.<br>
           Du mottar denne e-posten fordi du har registrert deg hos Klarpakke.
         </p>
       </div>

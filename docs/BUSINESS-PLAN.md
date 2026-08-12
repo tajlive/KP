@@ -2,7 +2,7 @@
 
 > **Versjon:** 1.0.0  
 > **Dato:** 2026-07-10  
-> **Selskap:** Blyt AS (org.nr 929003292)  
+> **Selskap:** Klarpakke  
 > **Nettside:** https://www.klarpakke.no  
 
 ---
@@ -151,11 +151,11 @@ Professor upsell (499 kr/mnd)
 
 ## 8. Finansiering
 
-Klarpakke er **selvfinansiert** gjennom Blyt AS (org.nr 929003292).
+Klarpakke er **selvfinansiert**.
 
 | Kilde | Beløp | Status |
 |-------|-------|--------|
-| Egenkapital (Blyt AS) | Startkapital | ✅ Tilgjengelig |
+| Egenkapital (Klarpakke) | Startkapital | ✅ Tilgjengelig |
 | Driftsinntekter | Løpende | 🟢 Aktiv |
 | Fremtidig såkorn | Vurderes Q2 2027 | 🔄 På vent |
 
@@ -219,7 +219,7 @@ Ekstremt lav burn rate — plattformen kan driftes lønnsomt med færre enn 10 b
 
 | Felt | Verdi |
 |------|-------|
-| **Selskapsnavn** | Blyt AS |
+| **Selskapsnavn** | Klarpakke |
 | **Org.nummer** | 929 003 292 |
 | **Nettsted** | https://www.klarpakke.no |
 | **GitHub** | https://github.com/tajlive/KP |

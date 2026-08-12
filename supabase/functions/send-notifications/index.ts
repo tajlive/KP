@@ -99,7 +99,7 @@ const wrapEmail = (content: string, preheader: string) => `
       </div>
     </div>
     <div class="footer">
-      <p><strong>Klarpakke</strong> / Blyt AS © 2026</p>
+      <p><strong>Klarpakke</strong> © 2026</p>
       <p>Stortingsgata 30, 0161 Oslo, Norge</p>
       <p style="margin-top: 16px;">
         <a href="https://www.klarpakke.no/no/innstillinger" style="color: #64748b;">Varslingsinnstillinger</a> • 

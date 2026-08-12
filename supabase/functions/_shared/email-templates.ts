@@ -43,7 +43,7 @@ export function wrapInBaseTemplate(content: string, preheader: string) {
       </div>
     </div>
     <div class="footer">
-      <p>Klarpakke / Blyt AS © 2026. Alle rettigheter reservert.</p>
+      <p>Klarpakke © 2026. Alle rettigheter reservert.</p>
     </div>
   </div>
 </body>

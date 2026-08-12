@@ -2,7 +2,7 @@
 
 > **Versjon:** 3.0.0  
 > **Dato:** 2026-07-10  
-> **Selskap:** Blyt AS (org.nr 929003292)  
+> **Selskap:** Klarpakke  
 
 ---
 

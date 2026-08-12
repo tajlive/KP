@@ -44,7 +44,7 @@ const wrapInBaseTemplate = (content: string, preheader: string) => `
       </div>
     </div>
     <div class="footer">
-      <p>Klarpakke / Blyt AS © 2026. Alle rettigheter reservert.</p>
+      <p>Klarpakke © 2026. Alle rettigheter reservert.</p>
       <p>Norge · Oslo</p>
       <p><a href="https://www.klarpakke.no/no/innstillinger" style="color: #94a3b8; text-decoration: underline;">Varslingsinnstillinger</a></p>
     </div>
