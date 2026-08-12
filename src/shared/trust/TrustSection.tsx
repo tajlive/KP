@@ -1,54 +1,67 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Shield, CreditCard, Lock, FileText, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { motion } from "framer-motion";
+import { Shield, CreditCard, Lock, FileText, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 const trustBadges = [
   {
     icon: Shield,
-    title: 'BankID-sikkerhet',
-    description: 'Innlogging med BankID for ekstra sikkerhet. Din konto er beskyttet med to-faktor-autentisering.',
+    title: "Sikker pålogging",
+    description:
+      "Innlogging via Apple eller e-post. Din konto er beskyttet med to-faktor-autentisering.",
   },
   {
     icon: CreditCard,
-    title: 'Trygg betaling med Stripe',
-    description: 'Alle betalinger håndteres av Stripe, en av verdens ledende betalingsleverandører. Kortinformasjonen din lagres aldri hos oss.',
+    title: "Trygg betaling med Stripe",
+    description:
+      "Alle betalinger håndteres av Stripe, en av verdens ledende betalingsleverandører. Kortinformasjonen din lagres aldri hos oss.",
   },
   {
     icon: Lock,
-    title: 'Kryptert data',
-    description: 'All kommunikasjon er kryptert med TLS 1.3. Dine personopplysninger behandles i henhold til GDPR.',
+    title: "Kryptert data",
+    description:
+      "All kommunikasjon er kryptert med TLS 1.3. Dine personopplysninger behandles i henhold til GDPR.",
   },
   {
     icon: FileText,
-    title: 'Norsk mva og kvittering',
-    description: 'Alle kjøp inkluderer norsk mva. Du får tilsendt kvittering på e-post umiddelbart etter kjøp.',
+    title: "Norsk mva og kvittering",
+    description:
+      "Alle kjøp inkluderer norsk mva. Du får tilsendt kvittering på e-post umiddelbart etter kjøp.",
   },
 ];
 
 const faqs = [
   {
-    question: 'Hva koster det?',
-    answer: 'Vi har flere prisnivåer: Student (gratis), Bachelor (199 kr/mnd), Master (399 kr/mnd) og PhD (999 kr/mnd). Alle abonnementer kan betales månedlig eller årlig med 20% rabatt.',
+    question: "Hva koster det?",
+    answer:
+      "Vi har flere prisnivåer: Student (gratis), Bachelor (199 kr/mnd), Master (399 kr/mnd) og PhD (999 kr/mnd). Alle abonnementer kan betales månedlig eller årlig med 20% rabatt.",
   },
   {
-    question: 'Kan jeg avslutte når som helst?',
-    answer: 'Ja, du kan kansellere abonnementet ditt når som helst fra kontoinnstillingene. Du beholder tilgangen ut perioden du har betalt for. Ingen skjulte gebyrer eller bindingstid.',
+    question: "Kan jeg avslutte når som helst?",
+    answer:
+      "Ja, du kan kansellere abonnementet ditt når som helst fra kontoinnstillingene. Du beholder tilgangen ut perioden du har betalt for. Ingen skjulte gebyrer eller bindingstid.",
   },
   {
-    question: 'Hva skjer etter betaling?',
-    answer: 'Umiddelbart etter betaling får du full tilgang til alle funksjoner i din valgte plan. Du mottar en kvittering på e-post, og abonnementet fornyes automatisk til du velger å avslutte.',
+    question: "Hva skjer etter betaling?",
+    answer:
+      "Umiddelbart etter betaling får du full tilgang til alle funksjoner i din valgte plan. Du mottar en kvittering på e-post, og abonnementet fornyes automatisk til du velger å avslutte.",
   },
   {
-    question: 'Er dette trygt?',
-    answer: 'Ja. Vi bruker BankID for innlogging, Stripe for betaling, og all data er kryptert. Vi er registrert i Norge og følger norske lover og regler for finanstjenester. Vi har ikke tilgang til dine betalingskort.',
+    question: "Er dette trygt?",
+    answer:
+      "Ja. Vi bruker sikker pålogging, Stripe for betaling, og all data er kryptert. Vi er registrert i Norge og følger norske lover og regler. Vi har ikke tilgang til dine betalingskort.",
   },
 ];
 
-function FAQItem({ question, answer, isOpen, onToggle }: { 
-  question: string; 
-  answer: string; 
+function FAQItem({
+  question,
+  answer,
+  isOpen,
+  onToggle,
+}: {
+  question: string;
+  answer: string;
   isOpen: boolean;
   onToggle: () => void;
 }) {
@@ -68,8 +81,8 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
       </button>
       <motion.div
         initial={false}
-        animate={{ 
-          height: isOpen ? 'auto' : 0,
+        animate={{
+          height: isOpen ? "auto" : 0,
           opacity: isOpen ? 1 : 0,
         }}
         transition={{ duration: 0.2 }}
@@ -86,7 +99,10 @@ interface TrustSectionProps {
   compact?: boolean;
 }
 
-export function TrustSection({ showFAQ = true, compact = false }: TrustSectionProps) {
+export function TrustSection({
+  showFAQ = true,
+  compact = false,
+}: TrustSectionProps) {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   if (compact) {
@@ -94,7 +110,7 @@ export function TrustSection({ showFAQ = true, compact = false }: TrustSectionPr
       <div className="flex flex-wrap justify-center gap-4 text-xs text-white/40">
         <div className="flex items-center gap-1.5">
           <Shield size={12} />
-          <span>BankID-sikkerhet</span>
+          <span>Sikker pålogging</span>
         </div>
         <div className="flex items-center gap-1.5">
           <CreditCard size={12} />
