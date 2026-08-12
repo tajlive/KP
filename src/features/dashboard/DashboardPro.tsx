@@ -8,6 +8,7 @@ import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw, Zap, Flame } from "
 import { useCurrency } from "@/hooks/useCurrency";
 import { DataFreshnessBadge } from "@/shared/ui/DataFreshnessBadge";
 import { BalanceAdjustmentBadge, usePreviousBalance } from "@/components/BalanceAdjustmentBadge";
+import { MoneyDataBadge } from "@/components/MoneyDataBadge";
 
 // Nye WOW-komponenter
 import { PortfolioChart } from "@/features/portfolio/PortfolioChart";
@@ -228,6 +229,15 @@ export function DashboardPro({
             updatedAt={effectiveStats.accountBalanceUpdatedAt ?? null}
             currentBalance={heroBalance ?? 0}
             previousBalance={previousBalance}
+          />
+          {/* P0-guardrail (2026-08-12): merker når saldo-data er stale/ukjent */}
+          <MoneyDataBadge
+            input={{
+              source: isPaperMode ? "paper_accounts" : "OKX live",
+              updatedAt: effectiveStats.accountBalanceUpdatedAt ?? null,
+              currency: isPaperMode ? "NOK" : "USDC",
+              value: heroBalance,
+            }}
           />
         </span>
       ),

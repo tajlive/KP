@@ -94,7 +94,7 @@ describe('buildKimiPayload', () => {
 });
 
 describe('selectBestProvider (OAuth-only for KIMI)', () => {
-  const ENV_KEYS = ['KIMI_OAUTH_TOKEN', 'NVIDIA_API_KEY', 'NVIDIA_NIM_API_KEY', 'MOONSHOT_API_KEY', 'KIMI_API_KEY'];
+  const ENV_KEYS = ['KIMI_OAUTH_TOKEN', 'NVIDIA_API_KEY', 'NVIDIA_NIM_API_KEY', 'MOONSHOT_API_KEY', 'KIMI_API_KEY', 'DEEPSEEK_API_KEY'];
   let saved: Record<string, string | undefined>;
 
   beforeEach(() => {

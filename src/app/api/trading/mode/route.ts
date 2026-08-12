@@ -7,6 +7,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { verifyLiveEntitlement } from "@/lib/auth/live-trading";
+import {
+  canUserAccessLiveTrading,
+  isLiveTradingDogfood,
+  liveTradingBlockReason,
+} from "@/lib/auth/live-trading-dogfood";
 import type { Json } from "@/types/database.types";
 import { z } from "zod";
 
@@ -86,6 +91,8 @@ export async function GET(request: NextRequest) {
       krakenConnected,
       okxConnected,
       paperTradesCount: 0,
+      liveTradingDogfood: isLiveTradingDogfood(),
+      liveTradingBlockedReason: liveTradingBlockReason(user.id),
     });
   } catch (error) {
     console.error("Error in GET /api/trading/mode:", error);
@@ -126,18 +133,39 @@ export async function POST(request: NextRequest) {
     }
     const { mode, rememberDefault } = parsed.data;
 
-    // Hvis bytte til live, sjekk at Kraken er koblet til (EU/EØS 2026)
+    // Hvis bytte til live, sjekk dogfood-gate først (2026-08-12, P0)
     if (mode === "live") {
-      const { data: krakenKeys } = await supabase
-        .from("user_kraken_keys")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (!krakenKeys) {
+      // Gate 0: Dogfood-whitelist
+      if (!canUserAccessLiveTrading(user.id)) {
         return NextResponse.json(
           {
-            error: "Kraken API ikke tilkoblet. Koble til Kraken først.",
-            code: "KRAKEN_NOT_CONNECTED",
+            error: liveTradingBlockReason(user.id) || "Live trading er ikke tilgjengelig",
+            code: "LIVE_TRADING_DOGFOOD",
+          },
+          { status: 403 },
+        );
+      }
+
+      // Gate 1: Exchange-nøkler — Kraken ELLER OKX (2026-08-12: OKX er primær)
+      const [{ data: krakenKeys }, { data: okxKeys }] = await Promise.all([
+        supabase
+          .from("user_kraken_keys")
+          .select("user_id")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .maybeSingle(),
+        supabase
+          .from("user_okx_keys")
+          .select("user_id")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .maybeSingle(),
+      ]);
+      if (!krakenKeys && !okxKeys) {
+        return NextResponse.json(
+          {
+            error: "Ingen exchange tilkoblet. Koble til OKX eller Kraken først.",
+            code: "EXCHANGE_NOT_CONNECTED",
           },
           { status: 400 },
         );

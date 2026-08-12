@@ -3,19 +3,25 @@ import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import type { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { canUserAccessLiveTrading } from "./live-trading-dogfood";
 
 /**
  * Fail-closed live trading entitlement check.
- * Returns true only when the user explicitly passes ALL gates:
- * - tier allows live auto-trading
- * - Kraken account is connected (user_kraken_keys — EU/EØS 2026:
- *   Kraken er eneste børs)
- * - entitlements RPC returns auto_trade_allow_live = true
+ * SJEKKEREKKEFØLGE (2026-08-12, P0 dogfood):
+ * 1. Dogfood-gate — kun whitelistede brukere (Tom) får tilgang
+ * 2. Tier — riktig abonnementsnivå
+ * 3. Exchange-nøkler — Kraken (user_kraken_keys) ELLER OKX (user_okx_keys)
+ * 4. Entitlements RPC — auto_trade_allow_live = true
+ *
+ * Returnerer true kun når ALLE gater passerer.
  */
 export async function verifyLiveEntitlement(
   supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<boolean> {
+  // ── Gate 0: Dogfood-whitelist (2026-08-12, P0) ──────────────────
+  if (!canUserAccessLiveTrading(userId)) return false;
+
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles")
     .select("tier, role")
@@ -34,15 +40,24 @@ export async function verifyLiveEntitlement(
   const tier = normalizeTier(profile.tier);
   if (!canAccessLiveAutoTrading(tier as TierSlug)) return false;
 
-  // Kraken-nøkler må være lagret (kryptert). Sjekk via ExecutorFactory
-  // (samme kilde som selve utførelsen) — da kan aldri entitlement og
-  // utførelse sprike.
-  const { data: krakenKeys } = await supabase
-    .from("user_kraken_keys")
-    .select("user_id")
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (!krakenKeys) return false;
+  // Kraken- eller OKX-nøkler må være lagret (kryptert).
+  // 2026-08-12: OKX er primær live-børs (Kraken-nøkkel død for Tom).
+  // Sjekk begge — brukeren trenger kun én aktiv exchange.
+  const [{ data: krakenKeys }, { data: okxKeys }] = await Promise.all([
+    supabase
+      .from("user_kraken_keys")
+      .select("user_id")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .maybeSingle(),
+    supabase
+      .from("user_okx_keys")
+      .select("user_id")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .maybeSingle(),
+  ]);
+  if (!krakenKeys && !okxKeys) return false;
 
   const { data: entitlements, error } = await supabase.rpc(
     "get_user_entitlements",
