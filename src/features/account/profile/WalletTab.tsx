@@ -60,9 +60,7 @@ const SUPPORTED_EXCHANGES: Array<{
   name: string;
   logo: string;
   color: string;
-}> = [
-  { id: "kraken", name: "Kraken", logo: "K", color: "bg-emerald-500" },
-];
+}> = [{ id: "kraken", name: "Kraken", logo: "K", color: "bg-emerald-500" }];
 
 export function WalletTab() {
   const t = useTranslations("wallet");
@@ -81,14 +79,18 @@ export function WalletTab() {
     Record<string, WalletBalance[]>
   >({});
   const [usdtNokRate, setUsdtNokRate] = useState<number | null>(null);
-  const [priceBySymbolUsdt, setPriceBySymbolUsdt] = useState<Record<string, number>>({});
+  const [priceBySymbolUsdt, setPriceBySymbolUsdt] = useState<
+    Record<string, number>
+  >({});
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isNo = locale === "no";
 
   async function loadConnections() {
-    const res = await fetch("/api/exchanges/connections", { cache: "no-store" });
+    const res = await fetch("/api/exchanges/connections", {
+      cache: "no-store",
+    });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error ?? "Failed to load connections");
     setConnections((json.connections ?? []) as Connection[]);
@@ -96,9 +98,15 @@ export function WalletTab() {
 
   async function loadUsdtNokRate() {
     const res = await fetch("/api/fx/usdt-nok", { cache: "no-store" });
-    const json = (await res.json()) as Partial<UsdtNokResponse> & { error?: string };
+    const json = (await res.json()) as Partial<UsdtNokResponse> & {
+      error?: string;
+    };
     if (!res.ok) throw new Error(json.error ?? "Failed to load USDT/NOK rate");
-    if (typeof json.rate !== "number" || !Number.isFinite(json.rate) || json.rate <= 0) {
+    if (
+      typeof json.rate !== "number" ||
+      !Number.isFinite(json.rate) ||
+      json.rate <= 0
+    ) {
       throw new Error("Invalid USDT/NOK rate");
     }
     setUsdtNokRate(json.rate);
@@ -108,19 +116,32 @@ export function WalletTab() {
     const unique = Array.from(new Set(symbols)).filter(Boolean);
     if (unique.length === 0) return;
 
-    const res = await fetch(`/api/market/binance-prices?symbols=${unique.join(",")}`, {
-      cache: "no-store",
-    });
-    const json = (await res.json()) as Partial<PricesResponse> & { error?: string };
+    const res = await fetch(
+      `/api/market/binance-prices?symbols=${unique.join(",")}`,
+      {
+        cache: "no-store",
+      },
+    );
+    const json = (await res.json()) as Partial<PricesResponse> & {
+      error?: string;
+    };
     if (!res.ok) throw new Error(json.error ?? "Failed to load prices");
 
     const map: { [key: string]: number } = {};
     for (const row of json.prices ?? []) {
       if (!row || typeof row.symbol !== "string") continue;
-      if (typeof row.price !== "number" || !Number.isFinite(row.price) || row.price <= 0) continue;
+      if (
+        typeof row.price !== "number" ||
+        !Number.isFinite(row.price) ||
+        row.price <= 0
+      )
+        continue;
       map[row.symbol] = row.price;
     }
-    setPriceBySymbolUsdt((prev: Record<string, number>) => ({ ...prev, ...map }));
+    setPriceBySymbolUsdt((prev: Record<string, number>) => ({
+      ...prev,
+      ...map,
+    }));
   }
 
   async function syncExchange(exchange: SupportedExchange) {
@@ -201,7 +222,10 @@ export function WalletTab() {
   }, [isNo]);
 
   const totalAssets = useMemo(() => {
-    return Object.values(balancesByExchange).reduce((sum, list) => sum + list.length, 0);
+    return Object.values(balancesByExchange).reduce(
+      (sum, list) => sum + list.length,
+      0,
+    );
   }, [balancesByExchange]);
 
   const totalUnits = useMemo(() => {
@@ -215,7 +239,10 @@ export function WalletTab() {
     let sum = 0;
     for (const list of Object.values(balancesByExchange)) {
       for (const row of list) {
-        const priceUsdt = row.currency === "USDT" ? 1 : priceBySymbolUsdt[`${row.currency}USDT`];
+        const priceUsdt =
+          row.currency === "USDT"
+            ? 1
+            : priceBySymbolUsdt[`${row.currency}USDT`];
         if (!priceUsdt) continue;
         sum += row.balance * priceUsdt * usdtNokRate;
       }
@@ -268,9 +295,12 @@ export function WalletTab() {
   async function handleDisconnect(exchange: SupportedExchange) {
     try {
       setError(null);
-      const res = await fetch(`/api/exchanges/connections?exchange=${exchange}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/exchanges/connections?exchange=${exchange}`,
+        {
+          method: "DELETE",
+        },
+      );
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Failed to disconnect");
       setMessage(isNo ? `${exchange} frakoblet` : `${exchange} disconnected`);
@@ -290,8 +320,12 @@ export function WalletTab() {
       <Card className="border-emerald-500/20 bg-linear-to-br from-emerald-950/40 to-teal-950/40">
         <CardContent className="p-6 flex items-center justify-between">
           <div>
-            <p className="text-slate-400 text-sm">{isNo ? "Tilkoblede børser" : "Connected exchanges"}</p>
-            <h2 className="text-3xl font-bold text-white mt-1">{connections.length}</h2>
+            <p className="text-slate-400 text-sm">
+              {isNo ? "Tilkoblede børser" : "Connected exchanges"}
+            </p>
+            <h2 className="text-3xl font-bold text-white mt-1">
+              {connections.length}
+            </h2>
             <p className="text-slate-300 text-sm mt-2 flex items-center gap-2">
               <Wallet className="w-4 h-4 text-emerald-300" />
               {isNo ? "Estimert totalverdi" : "Estimated total value"}:{" "}
@@ -300,10 +334,12 @@ export function WalletTab() {
               </span>
             </p>
             <p className="text-slate-400 text-sm mt-2">
-              {isNo ? "Assets synkronisert" : "Assets synchronized"}: {totalAssets}
+              {isNo ? "Assets synkronisert" : "Assets synchronized"}:{" "}
+              {totalAssets}
             </p>
             <p className="text-slate-500 text-xs mt-1">
-              {isNo ? "Totale enheter (råsum)" : "Total units (raw sum)"}: {totalUnits.toFixed(6)}
+              {isNo ? "Totale enheter (råsum)" : "Total units (raw sum)"}:{" "}
+              {totalUnits.toFixed(6)}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -313,7 +349,9 @@ export function WalletTab() {
               onClick={refreshAllBalances}
               disabled={isRefreshing || connections.length === 0}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
+              />
               {isNo ? "Oppdater saldo" : "Refresh balances"}
             </Button>
           </div>
@@ -348,10 +386,14 @@ export function WalletTab() {
                       : "border-slate-700 bg-slate-900/50 hover:border-slate-600"
                   }`}
                 >
-                  <div className={`w-10 h-10 ${exchange.color} rounded-lg flex items-center justify-center font-bold text-white`}>
+                  <div
+                    className={`w-10 h-10 ${exchange.color} rounded-lg flex items-center justify-center font-bold text-white`}
+                  >
                     {exchange.logo}
                   </div>
-                  <span className={`font-medium ${selectedExchange === exchange.id ? "text-emerald-400" : "text-white"}`}>
+                  <span
+                    className={`font-medium ${selectedExchange === exchange.id ? "text-emerald-400" : "text-white"}`}
+                  >
                     {exchange.name}
                   </span>
                 </button>
@@ -360,7 +402,10 @@ export function WalletTab() {
           </fieldset>
 
           <div>
-            <label htmlFor="wallet-api-key" className="block text-sm font-medium text-slate-300 mb-2">
+            <label
+              htmlFor="wallet-api-key"
+              className="block text-sm font-medium text-slate-300 mb-2"
+            >
               API Key
             </label>
             <Input
@@ -374,7 +419,10 @@ export function WalletTab() {
           </div>
 
           <div>
-            <label htmlFor="wallet-api-secret" className="block text-sm font-medium text-slate-300 mb-2">
+            <label
+              htmlFor="wallet-api-secret"
+              className="block text-sm font-medium text-slate-300 mb-2"
+            >
               API Secret
             </label>
             <div className="relative">
@@ -391,7 +439,11 @@ export function WalletTab() {
                 onClick={() => setShowSecret(!showSecret)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
               >
-                {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showSecret ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
@@ -400,8 +452,8 @@ export function WalletTab() {
             <Info className="h-4 w-4 text-blue-400" />
             <AlertDescription className="text-blue-300/80">
               {isNo
-                ? "Nøkler lagres kryptert server-side. Secret vises aldri igjen etter lagring."
-                : "Keys are encrypted server-side. Secret is never shown again after saving."}
+                ? "Nøkler lagres sikkert. Secret vises aldri igjen etter lagring."
+                : "Keys are stored securely. Secret is never shown again after saving."}
             </AlertDescription>
           </Alert>
 
@@ -409,15 +461,21 @@ export function WalletTab() {
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
               <div>
-                <p className="text-amber-400 font-medium text-sm">{t("security.title")}</p>
-                <p className="text-amber-300/80 text-sm mt-1">{t("security.warning")}</p>
+                <p className="text-amber-400 font-medium text-sm">
+                  {t("security.title")}
+                </p>
+                <p className="text-amber-300/80 text-sm mt-1">
+                  {t("security.warning")}
+                </p>
               </div>
             </div>
           </div>
 
           <Button
             onClick={handleConnect}
-            disabled={!selectedExchange || !apiKey || !apiSecret || isConnecting}
+            disabled={
+              !selectedExchange || !apiKey || !apiSecret || isConnecting
+            }
             className="w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 h-12 text-lg"
           >
             {isConnecting ? (
@@ -443,7 +501,9 @@ export function WalletTab() {
       {message && (
         <Alert className="bg-emerald-950/30 border-emerald-500/20">
           <CheckCircle className="h-4 w-4 text-emerald-400" />
-          <AlertDescription className="text-emerald-300">{message}</AlertDescription>
+          <AlertDescription className="text-emerald-300">
+            {message}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -457,7 +517,9 @@ export function WalletTab() {
                     K
                   </div>
                   <div>
-                    <CardTitle className="text-white capitalize">{conn.exchange}</CardTitle>
+                    <CardTitle className="text-white capitalize">
+                      {conn.exchange}
+                    </CardTitle>
                     <CardDescription className="text-slate-400">
                       {conn.lastValidatedAt
                         ? `${isNo ? "Sist validert" : "Last validated"}: ${new Date(conn.lastValidatedAt).toLocaleString()}`
@@ -494,43 +556,55 @@ export function WalletTab() {
             <CardContent>
               {(balancesByExchange[conn.exchange] ?? []).length === 0 ? (
                 <p className="text-slate-400 text-sm">
-                  {isNo ? "Ingen saldo synkronisert ennå." : "No balances synchronized yet."}
+                  {isNo
+                    ? "Ingen saldo synkronisert ennå."
+                    : "No balances synchronized yet."}
                 </p>
               ) : (
                 <div className="grid gap-2">
-                  {balancesByExchange[conn.exchange].map((row): EnrichedBalance => {
-                    const priceUsdt =
-                      row.currency === "USDT" ? 1 : priceBySymbolUsdt[`${row.currency}USDT`] ?? null;
-                    const valueUsdt =
-                      priceUsdt != null ? row.balance * priceUsdt : null;
-                    const valueNok =
-                      valueUsdt != null && usdtNokRate != null
-                        ? valueUsdt * usdtNokRate
-                        : null;
-                    return { ...row, priceUsdt, valueUsdt, valueNok };
-                  }).map((row) => (
-                    <div
-                      key={`${conn.exchange}-${row.currency}`}
-                      className="flex items-center justify-between p-3 rounded-lg bg-slate-900/50 border border-slate-700/50"
-                    >
-                      <div>
-                        <p className="text-white font-medium">{row.currency}</p>
-                        <p className="text-xs text-slate-500">
-                          {row.priceUsdt != null
-                            ? `${row.priceUsdt.toLocaleString()} USDT`
-                            : isNo
-                              ? "Pris utilgjengelig"
-                              : "Price unavailable"}
-                        </p>
+                  {balancesByExchange[conn.exchange]
+                    .map((row): EnrichedBalance => {
+                      const priceUsdt =
+                        row.currency === "USDT"
+                          ? 1
+                          : (priceBySymbolUsdt[`${row.currency}USDT`] ?? null);
+                      const valueUsdt =
+                        priceUsdt != null ? row.balance * priceUsdt : null;
+                      const valueNok =
+                        valueUsdt != null && usdtNokRate != null
+                          ? valueUsdt * usdtNokRate
+                          : null;
+                      return { ...row, priceUsdt, valueUsdt, valueNok };
+                    })
+                    .map((row) => (
+                      <div
+                        key={`${conn.exchange}-${row.currency}`}
+                        className="flex items-center justify-between p-3 rounded-lg bg-slate-900/50 border border-slate-700/50"
+                      >
+                        <div>
+                          <p className="text-white font-medium">
+                            {row.currency}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {row.priceUsdt != null
+                              ? `${row.priceUsdt.toLocaleString()} USDT`
+                              : isNo
+                                ? "Pris utilgjengelig"
+                                : "Price unavailable"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-slate-300">
+                            {row.balance.toFixed(8)}
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            {row.valueNok != null
+                              ? fmtNok.format(row.valueNok)
+                              : "—"}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-slate-300">{row.balance.toFixed(8)}</p>
-                        <p className="text-xs text-slate-400">
-                          {row.valueNok != null ? fmtNok.format(row.valueNok) : "—"}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
               {conn.lastError && (
@@ -546,7 +620,7 @@ export function WalletTab() {
         <div className="flex items-center justify-center gap-6 text-sm text-slate-500">
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4" />
-            <span>256-bit encryption</span>
+            <span>{isNo ? "Kryptert" : "Encrypted"}</span>
           </div>
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4" />

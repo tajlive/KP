@@ -1654,7 +1654,7 @@
       "notifications": "Notifications",
       "notificationsComingSoon": "Notification management coming in a later update.",
       "security": "Security",
-      "securityDesc": "Two-factor authentication and security settings."
+      "securityDesc": "Security settings and login history."
     },
     "orderHistory": {
       "loading": "Loading order history...",
@@ -4147,7 +4147,7 @@
     },
     "security": {
       "title": "Security",
-      "twoFactor": "Two-factor authentication",
+      "twoFactor": "Security settings",
       "enable2FA": "Enable 2FA",
       "disable2FA": "Disable 2FA",
       "sessions": "Active sessions",

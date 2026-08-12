@@ -1661,7 +1661,7 @@
       "notifications": "Varslinger",
       "notificationsComingSoon": "Administrasjon av varsler kommer i en senere oppdatering.",
       "security": "Sikkerhet",
-      "securityDesc": "To-faktor autentisering og sikkerhetsinnstillinger."
+      "securityDesc": "Sikkerhetsinnstillinger og påloggingshistorikk."
     },
     "orderHistory": {
       "loading": "Laster ordrehistorikk...",
@@ -4147,7 +4147,7 @@
     },
     "security": {
       "title": "Sikkerhet",
-      "twoFactor": "To-faktor autentisering",
+      "twoFactor": "Sikkerhetsinnstillinger",
       "enable2FA": "Aktiver 2FA",
       "disable2FA": "Deaktiver 2FA",
       "sessions": "Aktive økter",

@@ -9,7 +9,7 @@ const trustBadges = [
     icon: Shield,
     title: "Sikker pålogging",
     description:
-      "Innlogging via Apple eller e-post. Din konto er beskyttet med to-faktor-autentisering.",
+      "Innlogging via Apple eller e-post. Din konto er beskyttet med sikker autentisering.",
   },
   {
     icon: CreditCard,
@@ -21,7 +21,7 @@ const trustBadges = [
     icon: Lock,
     title: "Kryptert data",
     description:
-      "All kommunikasjon er kryptert med TLS 1.3. Dine personopplysninger behandles i henhold til GDPR.",
+      "All kommunikasjon er kryptert. Se personvernerklæringen for informasjon om databehandling.",
   },
   {
     icon: FileText,
@@ -118,7 +118,7 @@ export function TrustSection({
         </div>
         <div className="flex items-center gap-1.5">
           <Lock size={12} />
-          <span>GDPR-kompatibel</span>
+          <span>Kryptert kommunikasjon</span>
         </div>
       </div>
     );
