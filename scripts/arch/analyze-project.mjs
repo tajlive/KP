@@ -33,7 +33,8 @@ function detectType(n) {
   if (/(trad|fin|crypto|pay)/.test(s)) return "Trading / Fintech";
   if (/(ai|ml|llm|gpt)/.test(s)) return "SaaS / AI";
   if (/(api|sync|data)/.test(s)) return "API / Data";
-  if (/(portal|app|site|web|dash)/.test(s)) return "Web / Portal";
+  if (/^(arch-|internal|dash|admin|ops|control)/.test(s)) return "Internal Platform";
+  if (/(portal|app|site|web)/.test(s)) return "Web / Portal";
   return "SaaS / Web";
 }
 const type = detectType(name);

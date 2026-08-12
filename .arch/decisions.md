@@ -53,3 +53,13 @@ endrer Sentry-webhook-oppførsel ved push — LINEAR_API_KEY wrangler-secret må
 Ekstraherte tekniske beslutninger (D1–D8) er i `.arch/archive/trello-migration/decisions.md`.
 **Konsekvens:** Fase 4 bekrefter mønsteret «bevar historikk, hent ut verdi, arkiver støy» —
 malen gjenbrukes for fremtidige system-migrasjoner.
+
+## D-2026-08-12-08 — F3 Pilot: arch-dashboard som første Factory-prosjekt
+
+**Beslutning:** Arch sin første Factory-genererte prosjekt er `arch-dashboard` (Internal
+Platform) — ikke Klarpakke (for komplekst som testbed) og ikke et tilfeldig testprosjekt.
+`arch-dashboard` er et internt kontrollpanel (Arch Control Center) og blir samtidig en
+kommersiell referanse for Factory-livssyklusen.
+**Konsekvens:** Linear team `ARC` + prosjekt `arch-dashboard` opprettet via Factory.
+Knowledge inheritance bevist (4 lessons arvet, trading ekskludert). Arch Health Score
+introdusert. Referanse: `.hermes/plans/2026-08-12-arch-f3-reference-implementation.md`.

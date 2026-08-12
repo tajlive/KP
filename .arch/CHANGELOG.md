@@ -2,6 +2,18 @@
 
 Format: SemVer. Arch selv er versjonert fordi den etter hvert brukes på flere kunder.
 
+## v1.1.0 (2026-08-12) — F3 Pilot
+
+**Added:**
+
+- **F3 Pilot-prosjekt** — `arch-dashboard` (Internal Platform) = første prosjekt generert fra null av Project Factory. Team `ARC` + prosjekt `arch-dashboard` i Linear; 4 lessons arvet; 13 filer scaffoldet. Referanse: `.hermes/plans/2026-08-12-arch-f3-reference-implementation.md`.
+- **Arch Health Score** — `scripts/arch/health-score.mjs` (Governance/Secrets/CI-CD/Documentation/Testing → TOTAL). Klarpakke = 100 %, fersk scaffold = 55 %.
+
+**Fixed:**
+
+- `init-project.mjs` v2.1 — `projectCreate` GraphQL-typefeil (`ID!` → `String!`); idempotent team-lookup (gjenbruker eksisterende team-key); idempotent scaffold (hopper over ved eksisterende `.arch/`).
+- `analyze-project.mjs` — type-deteksjon for `arch-`/`internal`/`dash`/`admin`/`ops`/`control` → «Internal Platform».
+
 ## v1.0.0 (2026-08-12)
 
 **Added:**
