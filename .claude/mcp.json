@@ -111,6 +111,12 @@
         "CHROME_MCP_HEADLESS": "false"
       },
       "description": "Chrome Control via Playwright MCP proxy (chrome_* -> browser_* mapping)"
+    },
+    "linear-hermes": {
+      "command": "/Users/taj/.nvm/versions/node/v24.14.1/bin/node",
+      "args": [
+        "/Users/taj/klarpakke/scripts/run-linear-mcp.mjs"
+      ]
     }
   }
 }
