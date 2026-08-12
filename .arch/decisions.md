@@ -35,9 +35,21 @@ Cloudflare-account 80d5b1d56a3e907150ba7348b6182894.
 backup-strategy og --create-flagg; «direkte push til main er ikke standard» (§9);
 rapportformat §18.
 
-## D-2026-08-12-05 — Første issue-basert arbeidsflyt
+## D-2026-08-12-05 — Første issue-baserte arbeidsflyt
 
 **Beslutning:** Control Plane-arbeidet følger ny git-policy: Linear KLA-274 → branch
 arch-control-plane-v1 → gates → commit med KLA-ref → review (Tom) → main. Ingen push
 uten eksplisitt godkjenning (deploy-konsekvens: Task-2-committen 33ce84e26 på local main
 endrer Sentry-webhook-oppførsel ved push — LINEAR_API_KEY wrangler-secret må settes først).
+
+## D-2026-08-12-07 — Trello-arkivering: verdi > flytting (Fase 4)
+
+**Beslutning:** De 110 Trello-kortene arkiveres i tre grupper, ikke flyttes i bulk:
+
+- **Gruppe A (14 kort)** → Linear Archive Issues i Triage (KLA-280–293), aldri P0/InProgress/Approved — kun Tom avgjør videre.
+- **Gruppe B (18 kort)** → `.arch/history/trello/` (dokumentasjon: ferdige oppgaver, rapporter, deployer).
+- **Gruppe C (78 kort)** → `discarded.json` (kun metadata) — alert-støy fra auto-rollback/syntetisk-monitor/Max-Aggressive.
+
+Ekstraherte tekniske beslutninger (D1–D8) er i `.arch/archive/trello-migration/decisions.md`.
+**Konsekvens:** Fase 4 bekrefter mønsteret «bevar historikk, hent ut verdi, arkiver støy» —
+malen gjenbrukes for fremtidige system-migrasjoner.
