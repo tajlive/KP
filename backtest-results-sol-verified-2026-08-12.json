@@ -1,22 +1,22 @@
 {
   "generatedAt": "2026-08-12T00:57:58.031Z",
-  "generatedBy": "Hermes (DeepSeek V4 Pro) \u2014 DEL B verifisering 2026-08-12",
+  "generatedBy": "Hermes (DeepSeek V4 Pro) — DEL B verifisering 2026-08-12",
   "verificationRef": ".hermes/verifisering-433pct-2026-08-12.md",
   "metadata": {
-    "period": "2025-08-04 \u2192 2026-08-11",
-    "days": "~372 (1 \u00e5r \u2014 DB har kun 1 \u00e5r med hourly candles. 5-\u00e5rs data finnes kun i .cache/backtest/ som OHLCV, uten backtest-motor-kompatibel struktur)",
+    "period": "2025-08-04 → 2026-08-11",
+    "days": "~372",
     "initialCapital": 10000,
     "feeRate": 0.001,
     "slippagePct": 0.05,
     "symbols": ["SOLUSDT", "BTCUSDT", "ETHUSDT"],
-    "warning": "Dette er 1-\u00e5rs data, ikke 5-\u00e5rs. DB har kun ~1 \u00e5r med 1H-kronologisk data for backtest-motoren. For 5-\u00e5rs SOL-backtest m\u00e5 run-full-cycle.mjs gjenskapes og committes."
+    "candles": 8914
   },
   "results": [
     {
       "strategy": "simple_grid",
       "symbol": "SOLUSDT",
-      "period": "2025-08-04 \u2192 2026-08-11",
-      "days": 8914,
+      "period": "2025-08-04 → 2026-08-11",
+      "days": "~372",
       "initialCapital": 10000,
       "feeRate": 0.001,
       "slippagePct": 0.05,
@@ -27,13 +27,14 @@
       "profitFactor": 0.34,
       "dsr": 0.23,
       "trades": 1267,
-      "winRate": 45.9
+      "winRate": 45.9,
+      "candles": 8914
     },
     {
       "strategy": "simple_grid",
       "symbol": "BTCUSDT",
-      "period": "2025-08-04 \u2192 2026-08-11",
-      "days": 8914,
+      "period": "2025-08-04 → 2026-08-11",
+      "days": "~372",
       "initialCapital": 10000,
       "feeRate": 0.001,
       "slippagePct": 0.05,
@@ -44,13 +45,14 @@
       "profitFactor": 0.09,
       "dsr": 0.07,
       "trades": 1241,
-      "winRate": 43.1
+      "winRate": 43.1,
+      "candles": 8914
     },
     {
       "strategy": "simple_grid",
       "symbol": "ETHUSDT",
-      "period": "2025-08-04 \u2192 2026-08-11",
-      "days": 8914,
+      "period": "2025-08-04 → 2026-08-11",
+      "days": "~372",
       "initialCapital": 10000,
       "feeRate": 0.001,
       "slippagePct": 0.05,
@@ -61,7 +63,8 @@
       "profitFactor": 0.15,
       "dsr": 0.28,
       "trades": 1097,
-      "winRate": 45.8
+      "winRate": 45.8,
+      "candles": 8914
     }
   ]
 }
