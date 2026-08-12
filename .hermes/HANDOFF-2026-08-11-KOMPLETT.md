@@ -87,11 +87,13 @@ KIMI skrev NATTSTATUS-2026-08-11.md kl. 02:42. Hermes leste den, handlet, og com
 
 ```
 0.75 → +111%    0.50 → +280%    0.25 → +416%    0.10 → +464%
-0.67 → +160%    0.33 → +373%    0.15 → +433%    0.05 → +472%
+0.67 → +160%    0.33 → +373%    0.15 → ~~+433%~~ **ukjent**    0.05 → +472%
 ```
 
-**Valgt:** 0,15 (i den flate sonen, ikke eksakt-maks — unngår overfitting-fellen).
-**Resultat:** +433% vs buy-and-hold +116%, PF 1.47, Sharpe 1.00, 5 961 lukkede lots.
+**~~Valgt:~~** ~~0,15 (i den flate sonen, ikke eksakt-maks — unngår overfitting-fellen).~~
+**~~Resultat:~~** ~~+433% vs buy-and-hold +116%, PF 1.47, Sharpe 1.00, 5 961 lukkede lots.~~
+
+**⚠️ KORRIGERT 2026-08-12:** Disse tallene mangler primærkilde (backtest-output ble aldri lagret til disk, scriptet `scripts/backtest/run-full-cycle.mjs` er aldri committet). Se `.hermes/verifisering-433pct-2026-08-12.md` for full verifiseringsrapport. Bekreftede 4–5-års Grid Bot-resultater: −18.6% til −20.6% (BTC/ETH), PF 0.56–0.65.
 
 ### 2.4 E1 (adaptiv ATR-steg) og E2 (smart DCA)
 
@@ -99,14 +101,14 @@ Implementert bak config-flagg (`adaptive_step`, `smart_dca`, default AV). Begge 
 
 ### 2.5 Symbol-policy (kuratert, ikke «alt»)
 
-| Klasse      | Symbol                            | Pilot vs hold (full syklus)                   |
-| ----------- | --------------------------------- | --------------------------------------------- |
-| 🏆 Primær   | SOL                               | +433% vs +116% — høy volatilitet + fete haler |
-| ✅ Tier 2   | AVAX (+63/-46) · ETH (+44/-17)    | Kandidater — trenger egen walk-forward        |
-| ✅ Tier 3   | DOGE (+10/-72)                    | Slår hold                                     |
-| ❌ Ikke her | BTC (-8/+84)                      | Hold er bedre — «bare DCA og hold»            |
-| ⚠️ Unngå    | LINK (-31) · ADA (-47)            | Strukturelt svake aktiva                      |
-| ⛔ Aldri    | Stablecoins · illikvide microcaps | Slippage dreper matten                        |
+| Klasse        | Symbol                            | Pilot vs hold (full syklus)                                                                              |
+| ------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 🏆 ~~Primær~~ | ~~SOL~~                           | ~~+433% vs +116% — høy volatilitet + fete haler~~ **⚠️ KORRIGERT: Se verifisering-433pct-2026-08-12.md** |
+| ✅ Tier 2     | AVAX (+63/-46) · ETH (+44/-17)    | Kandidater — trenger egen walk-forward                                                                   |
+| ✅ Tier 3     | DOGE (+10/-72)                    | Slår hold                                                                                                |
+| ❌ Ikke her   | BTC (-8/+84)                      | Hold er bedre — «bare DCA og hold»                                                                       |
+| ⚠️ Unngå      | LINK (-31) · ADA (-47)            | Strukturelt svake aktiva                                                                                 |
+| ⛔ Aldri      | Stablecoins · illikvide microcaps | Slippage dreper matten                                                                                   |
 
 **Regel:** Pilot kjører på SOL. Den ukentlige bevis-cronen er kuratoren — den validerer hvilke symboler som kvalifiserer automatisk.
 
@@ -123,7 +125,9 @@ Implementert bak config-flagg (`adaptive_step`, `smart_dca`, default AV). Begge 
 | **MaxDD**                             | ❌                                             | 53,8% (2022-driver, over 15%-grensen)      |
 | **Dom**                               | **Paper nå. Live når forward-90d DSR ≥ 0,95.** |                                            |
 
-Disse tallene er verifisert på 44 807 OKX 1h-candles (SOL-USDC, 2021→2026). Backtest-scriptet er rekjørbart:
+**~~Disse tallene er verifisert på 44 807 OKX 1h-candles (SOL-USDC, 2021→2026). Backtest-scriptet er rekjørbart:~~** ⚠️ KORRIGERT: Scriptet `scripts/backtest/run-full-cycle.mjs` finnes ikke i repoet — aldri committet. SOL-backtest-resultater må gjenskapes og committes til en sporbar fil før de kan siteres.
+
+`~~node scripts/backtest/run-full-cycle.mjs SOL-USDC~~`
 
 ```
 node scripts/backtest/run-full-cycle.mjs SOL-USDC
