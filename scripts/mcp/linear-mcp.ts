@@ -120,7 +120,7 @@ const TOOLS = [
   },
   {
     name: "linear_workflows",
-    description: "List alle workflows og deres states.",
+    description: "List workflow-states (f.eks. Triage, In Progress, Done) for Klarpakke-teamet.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
@@ -287,8 +287,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "linear_workflows": {
-        const data = await gql("{ workflows { nodes { id name states { nodes { id name type } } } } }");
-        return { content: [{ type: "text", text: JSON.stringify(data.workflows.nodes) }] };
+        // Linear GraphQL har INGEN rot-felt «workflows» — korrekt felt er
+        // workflowStates (verifisert 2026-08-12: «Cannot query field workflows»).
+        // Scopes til Klarpakke-teamet for å unngå navnekollisjon på tvers av teams.
+        const teamId = await findTeamId();
+        if (!teamId) throw new Error("Klarpakke-team finnes ikke");
+        const data = await gql(
+          `query($t: ID!){ workflowStates(filter: { team: { id: { eq: $t } } }) { nodes { id name type } } }`,
+          { t: teamId },
+        );
+        return { content: [{ type: "text", text: JSON.stringify(data.workflowStates.nodes) }] };
       }
 
       case "linear_labels": {
@@ -447,8 +455,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { identifier, state } = args as { identifier: string; state: string };
         const issueId = await resolveIssueId(identifier);
 
-        const workflows = await gql("{ workflows { nodes { states { nodes { id name } } } } }");
-        const allStates = workflows.workflows.nodes.flatMap((w: any) => w.states.nodes);
+        const teamId = await findTeamId();
+        if (!teamId) throw new Error("Klarpakke-team finnes ikke");
+        const wfData = await gql(
+          `query($t: ID!){ workflowStates(filter: { team: { id: { eq: $t } } }) { nodes { id name } } }`,
+          { t: teamId },
+        );
+        const allStates = wfData.workflowStates.nodes;
         const stateMatch = allStates.find((s: any) => s.name.toLowerCase() === state.toLowerCase());
         if (!stateMatch) throw new Error(`State «${state}» finnes ikke i workspace-workflows`);
 
