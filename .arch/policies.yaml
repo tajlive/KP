@@ -91,3 +91,19 @@ secret_policy:
     required: true
   rotation:
     documented: true
+
+knowledge_governance:
+  # F1 — Arch Knowledge Graph (Tom-godkjent 2026-08-12)
+  prinsipp: "Arch lærer av systemet, men endrer aldri sikkerhetsgrenser automatisk"
+  agent_kan_foreslå:
+    - "dette bør bli standard"
+    - "dette mønsteret er generaliserbart (→ patterns/)"
+    - "denne feilen bør dokumenteres (→ failures/)"
+  agent_kan_aldri_automatisk:
+    - endre risk-regler
+    - aktivere trading
+    - endre secrets
+    - endre tilgangsnivå
+  beslutningsformat: "D-XXXX: Dato, Prosjekt, Beslutning, Hvorfor, Alternativer, Konsekvens, Godkjent av"
+  failureformat: "Symptom, Rotårsak, Fix, Permanent regel, Arvet av"
+  godkjenning: "kunnskapsforslag som endrer sikkerhetsgrense = Ready for Tom, aldri auto-Approved"

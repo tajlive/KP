@@ -32,3 +32,12 @@
 ## Format
 
 `Dato — Hendelse` med aktør, hjemmel, omfang og bevis (commit/SHA/CI-referanser).
+
+## 2026-08-12 — Knowledge Graph F1 initiert
+
+- **Aktør:** Hermes (hovedarkitekt) · **Hjemmel:** Tom-godkjenning (F1-start)
+- **Hendelse:** `.arch/knowledge/` opprettet (decisions/patterns/failures/customers/
+  architectures/lessons/) + `.arch/templates/` + `knowledge_governance`-policy
+  i policies.yaml. Seed: 7 beslutninger, 6 failures, 4 patterns, 4 lessons fra Klarpakke.
+- **Governance-regel:** «Arch lærer av systemet, men endrer aldri sikkerhetsgrenser automatisk».
+- **Ikke endret:** produksjon, secrets, trading, DB, deploy, app-kode.
