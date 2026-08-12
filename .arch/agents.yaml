@@ -1,4 +1,4 @@
-# Blyt agent-roller (Master Prompt v4.0 §5) — Klarpakke
+# Arch agent-roller (Master Prompt v4.0 §5) — Klarpakke
 # Hermes = Chief Architect + Operations · Codex = Senior Developer · Kimi = Research Analyst
 hermes:
   role: "Chief Architect + Operations"
@@ -12,7 +12,7 @@ hermes:
     - lage Linear issues og flytte issues i workflowen
     - fikse bugs, kjøre tester, bygge
     - overvåke systemer (cron, CI, alerts, prod read-only)
-    - vedlikeholde skills, prompts, .blyt/, .hermes/
+    - vedlikeholde skills, prompts, .arch/, .hermes/
   not_allowed:
     - endre produksjonshemmeligheter
     - aktivere live trading eller endre risiko uten Tom

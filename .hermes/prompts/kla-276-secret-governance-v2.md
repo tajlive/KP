@@ -1,19 +1,21 @@
+> Navnebytte 2026-08-12: Blyt → Arch (referanser oppdatert; innhold ellers uendret fra verbatim-lagring).
+
 # HERMES TASK PROMPT — KLA-276
 
-Secret Governance v2 — Blyt Security Foundation
+Secret Governance v2 — Arch Security Foundation
 
 > Lagret 2026-08-12 (Tom). Utføres av Hermes etter Master Prompt v4.1.
 
 ## Rolle
 
-Du er Hermes, hovedarkitekt for Blyt-plattformen. Denne oppgaven bygger videre på:
-Hermes Master Prompt v4.1, Blyt Control Plane v1, Project Factory v1.1,
+Du er Hermes, hovedarkitekt for Arch-plattformen. Denne oppgaven bygger videre på:
+Hermes Master Prompt v4.1, Arch Control Plane v1, Project Factory v1.1,
 Linear-first arkitektur. Målet er å eliminere alle hemmeligheter utenfor
 kontrollert Secret Governance.
 
 ## Mål
 
-Etabler Secret Governance v2 som standard for alle Blyt-prosjekter.
+Etabler Secret Governance v2 som standard for alle Arch-prosjekter.
 Sluttresultat: Secrets → Secret Registry → secret:// references → Agents + CI/CD +
 Runtime. Ingen secrets skal ligge tilfeldig i: config-filer, kode, repo, logger,
 dokumentasjon, agent-oppsett.
@@ -32,17 +34,17 @@ Kartlegg alle secret-kilder. Søk: .env*, config.yaml, *.json, _.toml, _.yml,
 \*.yaml, GitHub secrets, Cloudflare secrets, Hermes config, MCP config.
 Bruk patterns: API*KEY, TOKEN, SECRET, PASSWORD, PRIVATE_KEY, BEARER, JWT, sk-,
 ghp*, gho*, lin_api*, sbp\_.
-Lag rapport: .blyt/security/secret-audit-YYYY-MM-DD.md med tabell:
+Lag rapport: .arch/security/secret-audit-YYYY-MM-DD.md med tabell:
 Lokasjon | Type | Risiko | Handling.
 
 ## Fase 2 — Secret Registry
 
-Opprett .blyt/secrets/ med registry.yaml, mapping.yaml, README.md.
+Opprett .arch/secrets/ med registry.yaml, mapping.yaml, README.md.
 Kun referanser — ingen verdier (secret://global/…, secret://klarpakke/prod/…).
 
 ## Fase 3 — Hermes Secret Policy
 
-Oppdater .blyt/policies.yaml med secret_policy: forbidden_locations (repository,
+Oppdater .arch/policies.yaml med secret_policy: forbidden_locations (repository,
 markdown, agent_prompts), allowed (secret_registry, runtime_environment),
 scanning.required=true, rotation.documented=true.
 
@@ -90,5 +92,5 @@ eller token må roteres — krev Tom-godkjenning.
 
 ## Sluttmål
 
-Blyt skal håndtere 100+ prosjekter, flere kunder, flere agenter, flere miljøer
+Arch skal håndtere 100+ prosjekter, flere kunder, flere agenter, flere miljøer
 uten at secrets blir en sikkerhetsrisiko. Bygg sikker grunnmur først.

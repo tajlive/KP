@@ -6,7 +6,7 @@
 
 ## Metode
 
-- Scanner: `scripts/blyt/secret-audit.mjs` (10 mønstre: lin*api*, lin*vis*, ghp/gho/ghu/ghs/ghr,
+- Scanner: `scripts/arch/secret-audit.mjs` (10 mønstre: lin*api*, lin*vis*, ghp/gho/ghu/ghs/ghr,
   sk-, hch-(at|rt)-, Bearer, sbp\_, PRIVATE KEY, AKIA, xox) — read-only, aldri verdier.
 - Kilder: repo (7639 filer), ~/.hermes/config.yaml (--config), GitHub/Cloudflare
   secrets (navn-nivå), .env-filer (nøkkelnavn-nivå).

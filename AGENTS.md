@@ -10,7 +10,7 @@
 
 > Hermes-spesifikk kontekst (modellparametere, provider-konfig) ligger i `.hermes.md` (auto-loades). Denne filen er for alle agenter — Hermes, Claude Code, Codex, og manuelle utviklere.
 >
-> **Rollefordeling (vedtatt 2026-08-08):** Hermes er hovedarkitekt — se `ARCHITECT.md` for mandat, Trello-flyt og ansvarsgrenser. Trello-tavle: https://trello.com/b/urwAkqku/klarpakke-drift
+> **Rollefordeling (vedtatt 2026-08-08, oppdatert 2026-08-12):** Hermes er hovedarkitekt — se `ARCHITECT.md` for mandat og ansvarsgrenser. **Linear (team KLA) er eneste oppgave-SSoT:** https://linear.app/klarpakke — workflow Triage → Ready for Tom → Approved → In Progress → In Review → Done. Trello er historisk system (frosset, ikke i aktiv bruk).
 
 ---
 

@@ -1,4 +1,4 @@
-# Blyt miljøer — Klarpakke
+# Arch miljøer — Klarpakke
 environments:
   local:
     url: http://localhost:3000

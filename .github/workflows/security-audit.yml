@@ -14,5 +14,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Blyt Secret Audit (read-only, metadata-only)
+      - name: Arch Secret Audit (read-only, metadata-only)
         run: node scripts/security/secret-audit.mjs --check

@@ -1,8 +1,8 @@
-# Blyt Control Plane — prosjektregistrering (Master Prompt v4.0 §3)
+# Arch Control Plane — prosjektregistrering (Master Prompt v4.0 §3)
 # Fakta verifisert 2026-08-12 via gh/wrangler/supabase-config.
 project:
   name: klarpakke
-  owner: blyt # organisatorisk eier (Blyt AS)
+  owner: arch # organisatorisk eier (Arch)
   description: >
     Trading-plattform (paper + live dogfood) — Next.js 16 + Supabase +
     Cloudflare Workers (opennextjs-cloudflare).

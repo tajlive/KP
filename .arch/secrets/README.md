@@ -1,15 +1,15 @@
-# Blyt Secret Registry — README (KLA-276)
+# Arch Secret Registry — README (KLA-276)
 
 ## Hva dette er
 
-Referanse-lag for ALLE secrets i Blyt-prosjekter. **Ingen verdier her** —
+Referanse-lag for ALLE secrets i Arch-prosjekter. **Ingen verdier her** —
 kun `secret://prosjekt/miljø/tjeneste/nøkkel`-referanser + hvor verdien bor.
 
 ## Hvordan agenter bruker secrets (v4.1 §5)
 
-- **Oppslag:** `node scripts/blyt/secret-resolve.mjs secret://…` (hvor + hvordan)
+- **Oppslag:** `node scripts/arch/secret-resolve.mjs secret://…` (hvor + hvordan)
 - **Eksistenssjekk:** `… --check` (kun env.local-stores, exit-kode)
-- **Audit:** `node scripts/blyt/secret-audit.mjs` / `--json` (CI) — aldri verdier
+- **Audit:** `node scripts/arch/secret-audit.mjs` / `--json` (CI) — aldri verdier
 - **Bruk:** les fra riktig store (wrangler/bws/gh/~/.hermes/.env/.env.local) — aldri
   fra git/kode/markdown/chat/prompts
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Blyt Secret Governance v1 — lekkasje-scan (Master Prompt v4.0 §4)
+ * Arch Secret Governance v1 — lekkasje-scan (Master Prompt v4.0 §4)
  *
  * Bruk:
- *   node scripts/blyt/secret-audit.mjs [--config]
+ *   node scripts/arch/secret-audit.mjs [--config]
  *
  * Scanner repoet (ekskl. bygg/deps) og — med --config — ~/.hermes/config.yaml.
  * Skriver ALDRI matchede verdier, kun fil:linje + mønster-type.
@@ -36,9 +36,9 @@ const SKIP_DIRS = new Set([
   "playwright-report", "out", ".turbo", "build",
 ]);
 
-// Allowlist: .blyt/secret-audit.allow — én «fil:mønster» per linje (# = kommentar).
+// Allowlist: .arch/secret-audit.allow — én «fil:mønster» per linje (# = kommentar).
 // Brukes KUN for VERIFISERTE test-fixturer/dok-eksempler. Aldri for ekte verdier.
-const ALLOWLIST_PATH = join(REPO_ROOT, ".blyt", "secret-audit.allow");
+const ALLOWLIST_PATH = join(REPO_ROOT, ".arch", "secret-audit.allow");
 function readAllowlist() {
   try {
     const set = new Set();
@@ -109,7 +109,7 @@ function walk(dir, rel) {
   }
 }
 
-console.log("Blyt Secret Audit v1 — read-only (skriver aldri verdier)");
+console.log("Arch Secret Audit v1 — read-only (skriver aldri verdier)");
 walk(REPO_ROOT, "");
 
 // ~/.hermes/config.yaml (med --config) — line-basert, aldri verdier

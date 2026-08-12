@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * Blyt Secret Governance v1 — resolver (Master Prompt v4.0 §4)
+ * Arch Secret Governance v1 — resolver (Master Prompt v4.0 §4)
  *
  * Bruk:
- *   node scripts/blyt/secret-resolve.mjs <uri> [--check]
- *   node scripts/blyt/secret-resolve.mjs --list
+ *   node scripts/arch/secret-resolve.mjs <uri> [--check]
+ *   node scripts/arch/secret-resolve.mjs --list
  *
  * SIKKERHET: Skriver ALDRI secret-verdier. Default viser Hvor verdien bor
  * og hvordan man henter den. --check verifiserer kun EKSISTENS (v1: kun
  * env.local-stores sjekkes lokalt; eksterne stores = "ikke sjekket lokalt").
  *
- * Registry: .blyt/secrets.yaml — KUN flat struktur (se format-kontrakt der).
+ * Registry: .arch/secrets.yaml — KUN flat struktur (se format-kontrakt der).
  * Parser er minimal og håndterer kun dette subsettet (ingen yaml-lib i repoet).
  */
 import { readFileSync } from "node:fs";
@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..", "..");
-const REGISTRY_PATH = join(REPO_ROOT, ".blyt", "secrets", "registry.yaml");
+const REGISTRY_PATH = join(REPO_ROOT, ".arch", "secrets", "registry.yaml");
 const ENV_LOCAL_PATH = join(REPO_ROOT, ".env.local");
 
 /** Minimal YAML-subset-parser for secrets.yaml (flat entries-liste). */
@@ -77,7 +77,7 @@ const args = process.argv.slice(2);
 
 if (args.includes("--list")) {
   const entries = parseRegistry(readFileSync(REGISTRY_PATH, "utf8"));
-  console.log("Blyt Secret Registry (.blyt/secrets.yaml) — referanser, ingen verdier:");
+  console.log("Arch Secret Registry (.arch/secrets.yaml) — referanser, ingen verdier:");
   for (const e of entries) {
     console.log(`  ${e.uri.padEnd(52)} ${e.store.padEnd(10)} [${e.status}]`);
   }
@@ -86,7 +86,7 @@ if (args.includes("--list")) {
 
 const uri = args[0];
 if (!uri || !uri.startsWith("secret://")) {
-  console.error("Bruk: node scripts/blyt/secret-resolve.mjs <secret://…> [--check] | --list");
+  console.error("Bruk: node scripts/arch/secret-resolve.mjs <secret://…> [--check] | --list");
   process.exit(2);
 }
 

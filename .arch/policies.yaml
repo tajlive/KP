@@ -1,10 +1,10 @@
-# Blyt policies — Klarpakke (Master Prompt v4.0 §7-§13)
+# Arch policies — Klarpakke (Master Prompt v4.0 §7-§13)
 
 git:
   workflow:
     [Issue, Branch, Implementation, Tests, Commit, CI, Review, Main, Deploy]
   main_protection: "direkte push til main er IKKE standard — kun via review etter grønne gates + Linear-issue (v4.1 §9)"
-  branch_naming: "<KLA-nummer>-<kort-navn> (f.eks. blyt-control-plane-v1 → KLA-274)"
+  branch_naming: "<KLA-nummer>-<kort-navn> (f.eks. arch-control-plane-v1 → KLA-274)"
   commit_message: "KLA-nummer i body/header der det finnes — ingen commit uten grønn test + Linear issue + dokumentert endring (v4.1 §8)"
 
 linear:
@@ -66,7 +66,7 @@ selvforbedring:
     - .hermes/learning-log.md
     - .hermes/decisions.md
     - .hermes/architecture-history.md
-    - .blyt/audit-log.md
+    - .arch/audit-log.md
 
 release_policy:
   direct_main_push:
