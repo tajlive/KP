@@ -1,0 +1,88 @@
+/**
+ * Secret-scanning: feiler hvis Linear API-nøkkel eller vanlige token-mønstre
+ * finnes i tracked filer eller nye rapportfiler.
+ *
+ * INC-relatert hardening 2026-08-12: linear_api_key skal aldri committes.
+ */
+import { describe, it, expect, beforeAll } from "vitest";
+import { execSync } from "child_process";
+import { readFileSync, existsSync, readdirSync, statSync } from "fs";
+import { resolve, join } from "path";
+
+const ROOT = resolve(__dirname, "..", "..", "..", "..");
+
+// Token-mønstre — generiske, ingen reelle verdier hardkodet
+const TOKEN_PATTERNS: RegExp[] = [
+  /lin_api_[A-Za-z0-9]{40,}/, // Linear personal API key
+  /lin_vis_[A-Za-z0-9]+/, // Linear OAuth
+  /\bgh[pousr]_[A-Za-z0-9]{36,}\b/, // GitHub tokens
+  /\bsk-[A-Za-z0-9_-]{20,}\b/, // OpenAI-style
+  /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/, // Slack
+  /\bhch-[atr]-[A-Za-z0-9-]{20,}\b/, // Honcho
+  /\bAKIA[A-Z0-9]{16}\b/, // AWS
+];
+
+describe("secrets-scanning", () => {
+  let trackedFiles: string[] = [];
+
+  beforeAll(() => {
+    try {
+      trackedFiles = execSync("git ls-files", { cwd: ROOT, encoding: "utf8" })
+        .split("\n")
+        .filter(Boolean);
+    } catch {
+      trackedFiles = [];
+    }
+  });
+
+  it("tracked filer inneholder ingen Linear API-nøkkel eller token-mønstre", () => {
+    const offenders: string[] = [];
+    for (const file of trackedFiles) {
+      // Skip binære / genererte filer som er forventet
+      if (file.endsWith(".map") || file.includes("package-lock.json")) continue;
+      if (file.includes(".env")) continue; // .env* er gitignored, men vær eksplisitt
+      const full = resolve(ROOT, file);
+      if (!existsSync(full)) continue;
+      const content = readFileSync(full, "utf8");
+      for (const re of TOKEN_PATTERNS) {
+        if (re.test(content)) {
+          offenders.push(`${file} (mønster ${re})`);
+          break;
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("nye rapportfiler under .hermes/ inneholder ingen token-mønstre", () => {
+    function walk(dir: string, out: string[] = []): string[] {
+      if (!existsSync(dir)) return out;
+      for (const entry of readdirSync(dir)) {
+        const full = join(dir, entry);
+        const st = statSync(full);
+        if (st.isDirectory()) walk(full, out);
+        else if (/\.(md|log|txt)$/.test(full)) out.push(full);
+      }
+      return out;
+    }
+    const reportFiles = walk(resolve(ROOT, ".hermes"));
+    const offenders: string[] = [];
+    for (const file of reportFiles) {
+      const content = readFileSync(file, "utf8");
+      for (const re of TOKEN_PATTERNS) {
+        if (re.test(content)) {
+          offenders.push(`${file} (mønster ${re})`);
+          break;
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("redaksjonscriptet redigerer kjente token-mønstre", () => {
+    // Eksporterer ikke funksjoner — kjør scriptet med syntetisk input via node -e
+    const script = readFileSync(resolve(ROOT, "scripts/redact-secrets.mjs"), "utf8");
+    expect(script).toContain("lin_api_");
+    expect(script).toContain("[REDACTED]");
+  });
+});

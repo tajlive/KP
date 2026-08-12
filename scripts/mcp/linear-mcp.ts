@@ -20,6 +20,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { appendFileSync, mkdirSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import { redactForLog, parseIdentifier } from "./linear-helpers.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..", "..");
@@ -31,9 +32,12 @@ function writeAudit(entry: Record<string, unknown>) {
   try {
     const logDir = resolve(REPO_ROOT, "logs");
     mkdirSync(logDir, { recursive: true });
+    const safe = Object.fromEntries(
+      Object.entries(entry).map(([k, v]) => [k, typeof v === "string" ? redactForLog(v) : v]),
+    );
     appendFileSync(
       resolve(logDir, "linear-mcp-audit.log"),
-      JSON.stringify({ ts: new Date().toISOString(), ...entry }) + "\n",
+      JSON.stringify({ ts: new Date().toISOString(), ...safe }) + "\n",
     );
   } catch {
     // logging skal aldri knekke verktøykall
@@ -67,13 +71,11 @@ async function gql(query: string, variables: Record<string, unknown> = {}) {
 
 /** Resolver "KLA-261" → team-key + nummer → issue UUID */
 async function resolveIssueId(identifier: string): Promise<string> {
-  const m = identifier.match(/^([A-Z]+)-(\d+)$/i);
-  if (!m) throw new Error(`Ugyldig identifikator: ${identifier} (forventet f.eks. KLA-261)`);
-  const teamKey = m[1].toUpperCase();
-  const number = parseInt(m[2], 10);
+  const parsed = parseIdentifier(identifier);
+  if (!parsed) throw new Error(`Ugyldig identifikator: ${identifier} (forventet f.eks. KLA-261)`);
   const data = await gql(
     `query($k: String!, $n: Float!){ issues(filter: { team: { key: { eq: $k } }, number: { eq: $n } }) { nodes { id identifier } } }`,
-    { k: teamKey, n: number },
+    { k: parsed.teamKey, n: parsed.number },
   );
   const hit = data.issues.nodes[0];
   if (!hit) throw new Error(`Issue ${identifier} finnes ikke`);
@@ -369,6 +371,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
         const teamId = await findTeamId();
         if (!teamId) throw new Error("Klarpakke-team finnes ikke");
+
+        // Idempotens: hopp over hvis identisk åpen issue allerede finnes
+        const existing = await gql(
+          `query($t: String!, $ti: String!){ issues(filter: { team: { id: { eq: $t } }, title: { eq: $ti } }, first: 1) { nodes { id identifier title } } }`,
+          { t: teamId, ti: title },
+        );
+        if (existing.issues.nodes.length > 0) {
+          const dup = existing.issues.nodes[0];
+          writeAudit({ action: "create_issue_skipped_duplicate", title });
+          return { content: [{ type: "text", text: JSON.stringify({ success: true, reused: true, identifier: dup.identifier }) }] };
+        }
 
         const projectId = project ? await findProjectId(project) : null;
         if (project && !projectId) throw new Error(`Prosjekt «${project}» finnes ikke`);
