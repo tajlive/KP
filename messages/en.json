@@ -1422,7 +1422,7 @@
     "sectionSubtitle": "No prior knowledge needed. We guide you from the first moment.",
     "step1": {
       "title": "Register for free",
-      "description": "Create account with BankID. No credit card needed. Start in under 2 minutes."
+      "description": "Create account securely. No credit card needed. Start in under 2 minutes."
     },
     "step2": {
       "title": "Take your first course",
@@ -2370,7 +2370,7 @@
     "badge": "🇳🇴 Norway's leading crypto academy",
     "tagline": "From beginner to confident trader",
     "ctaPrimary": "Start free",
-    "trust": "No credit card · Norwegian guidance · BankID secured",
+    "trust": "No credit card · Norwegian guidance · Secure sign-in",
     "stats": {
       "weeks": "Live market data",
       "students": "Active students",
@@ -3277,7 +3277,7 @@
   },
   "onboarding": {
     "email": "Email",
-    "bankid": "BankID",
+    "bankid": "Identity",
     "video": "Welcome Video",
     "done": "Done",
     "startFree": "Start now – completely free",
@@ -3289,13 +3289,13 @@
     "and": "and",
     "privacyPolicy": "Privacy Policy",
     "bankidTitle": "Secure Identification",
-    "bankidSubtitle": "We use BankID to ensure all users on the platform are real people. This creates a safe community for everyone.",
-    "connecting": "Connecting to BankID...",
-    "loginWithBankid": "Identify with BankID",
+    "bankidSubtitle": "We use secure sign-in via Apple or email to verify that you are a real person. This creates a safe community.",
+    "connecting": "Setting up your account...",
+    "loginWithBankid": "Continue with email",
     "secureVerification": "Secure verification.",
     "secureVerificationDesc": "We only receive your name and age confirmation.",
     "noStorage": "No personal data stored.",
-    "noStorageDesc": "We never store sensitive data from BankID.",
+    "noStorageDesc": "We never store sensitive authentication data.",
     "oneTime": "One-time process.",
     "oneTimeDesc": "You only need to do this once.",
     "questions": "Security questions?",
@@ -3308,7 +3308,7 @@
     "founderTitle": "Founder & CEO",
     "continueToDashboard": "Continue to Dashboard",
     "accountCreated": "Account Created",
-    "identityConfirmed": "Identity verified via BankID",
+    "identityConfirmed": "Identity confirmed",
     "firstSignal": "Your First Signal",
     "firstSignalDesc": "We will send you a notification when the 300 tested algorithms find an opportunity",
     "setRiskProfile": "Set Risk Profile",
@@ -3516,7 +3516,7 @@
         "description": "Create an account and get NOK 100,000 in play money.",
         "badgesAriaLabel": "Badges Aria Label",
         "badges": {
-          "bankid": "Bankid",
+          "bankid": "Secure",
           "finanstilsynet": "Finanstilsynet",
           "noHiddenFees": "No Hidden Fees"
         },
