@@ -2254,9 +2254,9 @@
       "step2Title": "How does it know what to do?",
       "step2Desc": "We tested 32 different settings against 1 year of historical prices. The settings that gave the best results (without being overfitted) are now in use. Every week we test again with fresh data.",
       "step3Title": "Your money is safe",
-      "step3Desc": "This is practice money — you cannot lose real money. The bot also has an automatic safety stop if the market drops sharply. Max 5% loss per trade.",
+      "step3Desc": "This is practice money — you cannot lose real money. The bot also has an automatic safety stop if the market drops sharply.",
       "step4Title": "When does it happen?",
-      "step4Desc": "The bot checks prices every minute, around the clock. It buys when the price falls to one of our levels, and sells when it rises to the next level. You can see all trades in the history.",
+      "step4Desc": "The bot checks prices every 5 minutes, around the clock. It buys when the price falls to one of our levels, and sells when it rises to the next level. You can see all trades in the history.",
       "summary": "In short: The bot buys low and sells high, automatically, with settings tested against 1 year of data. You can follow the results — everything is practice money, zero risk."
     }
   },

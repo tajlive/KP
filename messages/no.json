@@ -2254,9 +2254,9 @@
       "step2Title": "Hvordan vet den hva den skal gjøre?",
       "step2Desc": "Vi har testet 32 ulike innstillinger mot 1 års historiske priser. De innstillingene som ga best resultat (uten å være tilpasset tilfeldigheter) brukes nå. Hver uke tester vi på nytt med ferske data.",
       "step3Title": "Pengene dine er trygge",
-      "step3Desc": "Dette er lekepenger — du kan ikke miste ekte penger. Boten har også en automatisk sikkerhetsstopp hvis markedet faller mye. Maks 5% tap per handel.",
+      "step3Desc": "Dette er lekepenger — du kan ikke miste ekte penger. Boten har også en automatisk sikkerhetsstopp hvis markedet faller mye.",
       "step4Title": "Når skjer det?",
-      "step4Desc": "Boten sjekker prisene hvert minutt, hele døgnet. Den kjøper når prisen faller til et av våre nivåer, og selger når den stiger til neste nivå. Du ser alle handler i historikken.",
+      "step4Desc": "Boten sjekker prisene hvert 5. minutt, hele døgnet. Den kjøper når prisen faller til et av våre nivåer, og selger når den stiger til neste nivå. Du ser alle handler i historikken.",
       "summary": "Kort sagt: Boten kjøper lavt og selger høyt, automatisk, med innstillinger som er testet mot 1 års data. Du kan følge med på resultatene — alt er lekepenger, null risiko."
     }
   },
