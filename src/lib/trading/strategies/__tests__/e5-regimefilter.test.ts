@@ -1,9 +1,28 @@
 /**
  * E5 Regimefilter — tester (2026-08-12)
+ *
+ * Determinisme (KLA-272, 2026-08-12): candles genereres med seedet PRNG
+ * (mulberry32, seed=1) i stedet for Math.random(). Uregulert Math.random ga
+ * ~8.4 % flaky-feilrate i full suite: random walk i "range"-modus kunne
+ * sporadisk gi ADX(14) ≥ 25 → regime="trend" → assert feilet. Seed=1 er
+ * verifisert mot ekte adx()/bbw(): rangeADX=17.82 (<25), trendADX=100 (≥25),
+ * low_volBBW=0.65 (<3.0), range20ADX=8.33.
  */
 import { describe, it, expect } from "vitest";
 import { SimpleGridStrategy } from "../simple-grid";
 import type { StrategyInput, Candle } from "../types";
+
+/** Mulberry32 — deterministisk PRNG (faste sekvenser per seed) */
+function mulberry32(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 function makeCandle(override: Partial<Candle> = {}): Candle {
   return {
@@ -17,7 +36,7 @@ function makeCandle(override: Partial<Candle> = {}): Candle {
   };
 }
 
-/** Generer candles som simulerer et bestemt regime */
+/** Generer candles som simulerer et bestemt regime (deterministisk, KLA-272) */
 function regimeCandles(
   regime: "range" | "trend" | "low_vol",
   count: number = 50,
@@ -25,20 +44,21 @@ function regimeCandles(
   const now = Date.now();
   const candles: Candle[] = [];
   let price = 100;
+  const rng = mulberry32(1); // Fast seed → identiske serier hver kjøring
 
   for (let i = 0; i < count; i++) {
     const time = now - (count - i) * 3600_000;
 
     if (regime === "range") {
       // Sidelengs med moderate svingninger — ADX bør være lav
-      const delta = (Math.random() - 0.5) * 4;
+      const delta = (rng() - 0.5) * 4;
       price = Math.max(90, Math.min(110, price + delta));
     } else if (regime === "trend") {
       // Sterk opptrend — ADX bør være høy
-      price += 2 + Math.random();
+      price += 2 + rng();
     } else {
       // Lav volatilitet — nesten flat, BBW bør være under minimum
-      price += (Math.random() - 0.5) * 0.3;
+      price += (rng() - 0.5) * 0.3;
     }
 
     candles.push({
