@@ -18,10 +18,10 @@ import { buildAuthRedirect } from "@/lib/auth/redirects";
 
 export async function signInWithEmail(formData: FormData) {
   const supabase = await createServerClient();
-  
+
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
-  
+
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -33,18 +33,25 @@ export async function signInWithEmail(formData: FormData) {
 
   const { getLocale } = await import("next-intl/server");
   const locale = await getLocale();
-  redirect(`/${locale}/dashboard`);
+
+  // KLA-263: Nye brukere må fullføre onboarding før dashboard
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const onboardingDone = user?.user_metadata?.onboarding_completed === true;
+
+  redirect(`/${locale}${onboardingDone ? "/dashboard" : "/onboarding"}`);
 }
 
 export async function signUpWithEmail(formData: FormData) {
   const supabase = await createServerClient();
-  
+
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
   const username = (formData.get("username") as string)?.trim();
   const { getLocale } = await import("next-intl/server");
   const locale = await getLocale();
-  
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -66,7 +73,10 @@ export async function signUpWithEmail(formData: FormData) {
       .upsert({ id: data.user.id, user_id: data.user.id, username });
 
     if (profileError) {
-      console.warn("[signUpWithEmail] Username save failed:", profileError.message);
+      console.warn(
+        "[signUpWithEmail] Username save failed:",
+        profileError.message,
+      );
     }
   }
 
@@ -94,9 +104,9 @@ export async function sendPasswordReset(formData: FormData) {
   const supabase = await createServerClient();
   const { getLocale } = await import("next-intl/server");
   const locale = await getLocale();
-  
+
   const email = (formData.get("email") as string)?.trim();
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: buildAuthRedirect({ type: "password-reset", locale }),
   });
@@ -110,9 +120,9 @@ export async function sendPasswordReset(formData: FormData) {
 
 export async function updatePassword(formData: FormData) {
   const supabase = await createServerClient();
-  
+
   const password = formData.get("password") as string;
-  
+
   const { error } = await supabase.auth.updateUser({
     password,
   });
@@ -132,7 +142,9 @@ export async function updatePassword(formData: FormData) {
 
 export async function getCurrentUser() {
   const supabase = await createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return user;
 }
 
