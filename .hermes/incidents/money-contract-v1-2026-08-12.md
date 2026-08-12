@@ -209,16 +209,16 @@ Korrekt: BØR bruke OKX sin daglige P&L mot OKX-initial-balance
 
 ## 6. BRUTTE KONTRAKTER (avvik fra denne spesifikasjonen)
 
-| #   | Hvor                       | Brudd                                                                                                                    | Alvor     |
-| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------- |
-| 1   | Leaderboard                | Bruker sessions-sum som PRIMÆR, paper_accounts som FALLBACK                                                              | 🟡 P1     |
-| 2   | /api/paper-trading/balance | Bruker session.current_capital_nok (én sesjon), ikke paper_accounts                                                      | 🟡 P1     |
-| 3   | Dashboard live             | ✅ FIXET (KLA-300): OKX-saldo persistet til okx_live_state; accountBalanceUpdatedAt koblet                               | ~~🔴~~ ✅ |
-| 4   | OKX DB-synk                | ✅ FIXET (KLA-300): okx_live_state-tabell + /api/cron/okx-balance-sync (hvert 5. min) + cache-lesing i getOkxLiveBalance | ~~🔴~~ ✅ |
-| 5   | KrakenMarketDataProvider   | 16+ ruter bruker Kraken for priser — Kraken-nøkkel er død                                                                | 🔴 P0     |
-| 6   | syncPaperAccountBalance    | 1.5× sanity cap kan blokkere synk stille                                                                                 | 🟡 P1     |
-| 7   | OKX ordre mangler          | okx_live_state har ikke åpne ordre ennå (open_orders=0 i sync)                                                           | 🟡 P1     |
-| 8   | Kill switch GET            | Teller kun Kraken-brukere, ikke OKX                                                                                      | 🟡 P1     |
+| #   | Hvor                         | Brudd                                                                                                                                                                                                                 | Alvor     |
+| --- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 1   | Leaderboard                  | Bruker sessions-sum som PRIMÆR, paper_accounts som FALLBACK                                                                                                                                                           | 🟡 P1     |
+| 2   | /api/paper-trading/balance   | Bruker session.current_capital_nok (én sesjon), ikke paper_accounts                                                                                                                                                   | 🟡 P1     |
+| 3   | Dashboard live               | ✅ FIXET (KLA-300): OKX-saldo persistet til okx_live_state; accountBalanceUpdatedAt koblet                                                                                                                            | ~~🔴~~ ✅ |
+| 4   | OKX DB-synk                  | ✅ FIXET (KLA-300): okx_live_state-tabell + /api/cron/okx-balance-sync (hvert 5. min) + cache-lesing i getOkxLiveBalance                                                                                              | ~~🔴~~ ✅ |
+| 5   | ~~KrakenMarketDataProvider~~ | ✅ AVKREFTET 2026-08-12: bruker KUN public REST (api.kraken.com/0/public, ingen nøkkel) — verifisert fungerer (SOLUSDC=76.77). Død = KrakenClient (private, nøkkel revokert). Failover til OKX lagt til for robusthet | ~~🔴~~ ✅ |
+| 6   | syncPaperAccountBalance      | 1.5× sanity cap kan blokkere synk stille                                                                                                                                                                              | 🟡 P1     |
+| 7   | OKX ordre mangler            | okx_live_state har ikke åpne ordre ennå (open_orders=0 i sync)                                                                                                                                                        | 🟡 P1     |
+| 8   | Kill switch GET              | Teller kun Kraken-brukere, ikke OKX                                                                                                                                                                                   | 🟡 P1     |
 
 ---
 

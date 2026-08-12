@@ -217,13 +217,18 @@ export async function GET(req: Request) {
       const initial = Number(acc.initial_balance ?? 0);
       const startBalance = initial > 0 ? initial : DEFAULT_START_BALANCE;
 
-      // Bruk sessions-sum som primær kilde (paper_accounts overskrives),
-      // men med sanity-cap: ved inflated sessions-sum (historisk oversell-bug)
-      // faller vi tilbake til paper_accounts. Max 3x start = plausibelt tak.
+      // Pengekontrakt v1.0 (2026-08-12): paper_accounts.current_balance er
+      // SSoT (syncPaperAccountBalance summerer kun active+paused siden
+      // 2026-08-10). Sessions-sum brukes kun som fallback når SSoT mangler
+      // eller er mistenkelig (inflasjon > 3x startkapital).
       const sessionsSum = sessionBalanceMap.get(uid) ?? 0;
       const maxPlausible = startBalance * 3;
       const effectiveBalance =
-        sessionsSum > 0 && sessionsSum <= maxPlausible ? sessionsSum : balance;
+        balance > 0 && balance <= maxPlausible
+          ? balance
+          : sessionsSum > 0 && sessionsSum <= maxPlausible
+            ? sessionsSum
+            : balance;
       const returnPct =
         ((effectiveBalance - startBalance) / startBalance) * 100;
 

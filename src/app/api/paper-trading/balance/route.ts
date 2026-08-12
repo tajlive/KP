@@ -48,6 +48,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Pengekontrakt v1.0 (2026-08-12): paper SSoT = paper_accounts.current_balance.
+    // session.current_capital_nok er per-sesjon og kan avvike (stoppede sesjoner,
+    // flersesjonskonti). Fallback til session kun hvis paper_accounts mangler rad.
+    const { data: paperAccount } = await supabase
+      .from("paper_accounts")
+      .select("current_balance, initial_balance, updated_at")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const balanceCurrent = Number(
+      paperAccount?.current_balance ?? session.current_capital_nok ?? 0,
+    );
+    const balanceStarting = Number(
+      paperAccount?.initial_balance ?? session.starting_capital_nok ?? 100000,
+    );
+    const balanceUpdatedAt = paperAccount?.updated_at ?? null;
+
     // Hent åpen posisjon direkte fra session
     const raw = session as unknown as Record<string, unknown>;
     const openPos = (raw.open_position ?? null) as {
@@ -79,10 +96,15 @@ export async function GET(request: NextRequest) {
         .eq("symbol", lookupSymbol)
         .maybeSingle();
 
-      const currentPrice = priceData?.price ? Number(priceData.price) : Number(openPos.entry_price ?? 0);
+      const currentPrice = priceData?.price
+        ? Number(priceData.price)
+        : Number(openPos.entry_price ?? 0);
       const entryPrice = Number(openPos.entry_price ?? 0);
       const qty = Number(openPos.quantity ?? 0);
-      const pnl = qty > 0 && entryPrice > 0 ? (currentPrice - entryPrice) * qty : undefined;
+      const pnl =
+        qty > 0 && entryPrice > 0
+          ? (currentPrice - entryPrice) * qty
+          : undefined;
 
       positions.push({
         symbol: session.trading_pair ?? "BTC",
@@ -97,7 +119,9 @@ export async function GET(request: NextRequest) {
 
     const { data: recentTrades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, trading_pair, side, quantity, price, total_value, fee, status, created_at, strategy_signal")
+      .select(
+        "id, trading_pair, side, quantity, price, total_value, fee, status, created_at, strategy_signal",
+      )
       .eq("session_id", session.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false })
@@ -113,8 +137,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       balance: {
-        current: session.current_capital_nok ?? 0,
-        starting: session.starting_capital_nok ?? 100000,
+        current: balanceCurrent,
+        starting: balanceStarting,
+        updatedAt: balanceUpdatedAt,
       },
       positions,
       recentTrades: (recentTrades ?? []).map((t) => ({
@@ -144,7 +169,10 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     console.error("[paper-trading/balance] Unexpected error:", err);
     return NextResponse.json(
-      { error: "Could not fetch paper trading balance", code: "BALANCE_FAILED" },
+      {
+        error: "Could not fetch paper trading balance",
+        code: "BALANCE_FAILED",
+      },
       { status: 500 },
     );
   }
