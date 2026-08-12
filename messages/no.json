@@ -378,7 +378,7 @@
       "syncSessions": "Sync økter",
       "resetBaseline": "Reset baseline",
       "savePaper": "Lagre lekepenger",
-      "reportModalTitle": "Report modal tittel",
+      "reportModalTitle": "Rapporter bruker",
       "reportModalHint": "Report modal tips",
       "reportStatus": "Report status",
       "reportPending": "Report pending",
@@ -408,7 +408,7 @@
     "impersonation": {
       "title": "Impersonering",
       "description": "Logg inn som en annen bruker for å se deres opplevelse.",
-      "warningTitle": "Warning tittel",
+      "warningTitle": "Advarsel — utgir seg for annen bruker",
       "warningText": "Warning text",
       "email": "E-post",
       "emailPlaceholder": "deg@eksempel.no",
@@ -1100,11 +1100,11 @@
       "timerPrefix": "Timer prefix",
       "step1": {
         "title": "Velkommen",
-        "subtitle": "Undertittel"
+        "subtitle": "Velg din strategi"
       },
       "step2": {
         "title": "Sett opp kontoen",
-        "subtitle": "Undertittel",
+        "subtitle": "Tilpass innstillinger",
         "startingCapital": "Starting kapital",
         "paperTradingZeroRisk": "Papir trading zero risiko",
         "starting": "Starting",
@@ -1127,7 +1127,7 @@
         "title1": "Velg strategi",
         "title2": "Justér risiko",
         "description": "Finn en strategi som passer din stil, og velg hvor mye risiko du vil ta.",
-        "howItWorksTitle": "How it works tittel",
+        "howItWorksTitle": "Slik fungerer det",
         "list1": "List",
         "list2": "List",
         "list3": "List",
@@ -1135,12 +1135,12 @@
       },
       "step2": {
         "title": "Følg med i sanntid",
-        "subtitle": "Undertittel",
+        "subtitle": "Steg 2",
         "preloaded": "Preloaded"
       },
       "step3": {
         "title": "Start med lekepenger",
-        "subtitle": "Undertittel",
+        "subtitle": "Steg 3",
         "goalStrategy": "Goal strategi",
         "playMoney": "Play money",
         "currencySuffix": "Valuta suffix",
@@ -1154,7 +1154,7 @@
       },
       "step4": {
         "title": "Gå live når du er klar",
-        "subtitle": "Undertittel",
+        "subtitle": "Steg 4",
         "redirecting": "Redirecting"
       }
     },
@@ -1162,7 +1162,7 @@
       "step2": {
         "backAriaLabel": "Tilbake aria etikett",
         "title": "Sett opp kontoen",
-        "subtitle": "Undertittel"
+        "subtitle": "Tilpass innstillinger"
       }
     },
     "toasts": {
@@ -3417,7 +3417,7 @@
           }
         },
         "title": "Hva du får",
-        "subtitle": "Undertittel"
+        "subtitle": "Alt du trenger for å lære"
       },
       "steps": {
         "items": {
@@ -3441,7 +3441,7 @@
       "hero": {
         "title": "Velkommen til Klarpakke",
         "highlight": "Highlight",
-        "subtitle": "Undertittel"
+        "subtitle": "Velkommen til Klarpakke"
       },
       "safety": {
         "title": "Dine penger er trygge",
@@ -3449,7 +3449,7 @@
       },
       "cta": {
         "title": "Start gratis",
-        "subtitle": "Undertittel",
+        "subtitle": "Kom i gang på 2 minutter",
         "button": "Button"
       },
       "footer": {
@@ -3460,7 +3460,7 @@
       "error": "Feil",
       "loading": "Laster...",
       "title": "Sett opp lekepenger",
-      "subtitle": "Undertittel",
+      "subtitle": "Velg lekapenge-beløp",
       "badge": "Lekepenger",
       "virtual": "Virtual",
       "balanceLabel": "Balanse etikett",
@@ -3472,7 +3472,7 @@
     "step4": {
       "error": "Feil",
       "title": "Koble til børsen",
-      "subtitle": "Undertittel",
+      "subtitle": "Klar, ferdig, trad!",
       "security": {
         "title": "Sikker tilkobling",
         "description": "Nøklene dine krypteres og brukes kun for å utføre dine handler."
@@ -3492,7 +3492,7 @@
     },
     "aiMapping": {
       "coachName": "Coach navn",
-      "subtitle": "Undertittel",
+      "subtitle": "Koble din strategi til markedet",
       "title": "AI-tilordning",
       "cta": "Start nå",
       "skip": "Hopp over"
@@ -3524,9 +3524,9 @@
         "skip": "Hopp over"
       },
       "step2": {
-        "subtitle": "Subtitle",
+        "subtitle": "Tilpass innstillinger",
         "backAriaLabel": "Back Aria Label",
-        "title": "Title",
+        "title": "Innstillinger",
         "riskLevels": {
           "safe": "Trygg",
           "balanced": "Balansert",
@@ -3543,7 +3543,7 @@
       "step1": {
         "title1": "Velkommen til Klarpakke",
         "title2": "La oss sette opp kontoen din",
-        "description": "Description",
+        "description": "Velg strategi for din handelsbot",
         "howItWorksTitle": "How It Works Title",
         "list1": "List 1",
         "list2": "List 2",
@@ -3551,13 +3551,13 @@
         "cta": "Kom i gang"
       },
       "step2": {
-        "title": "Title",
-        "subtitle": "Subtitle",
+        "title": "Kapital",
+        "subtitle": "Bestem startkapital",
         "preloaded": "Preloaded"
       },
       "step3": {
-        "title": "Title",
-        "subtitle": "Subtitle",
+        "title": "Bekreftelse",
+        "subtitle": "Gjennomgå og bekreft",
         "playMoney": "Play Money",
         "goalStrategy": "Goal Strategy",
         "tooltip": "Tooltip",
@@ -3570,8 +3570,8 @@
         "statusValue": "Status Value"
       },
       "step4": {
-        "title": "Title",
-        "subtitle": "Subtitle",
+        "title": "Start handel",
+        "subtitle": "Boten din er klar",
         "redirecting": "Redirecting"
       }
     },
@@ -4718,7 +4718,7 @@
     "diagnosticsCopyFailed": "Diagnostics copy failed",
     "diagnosticsCopied": "Diagnostics copied",
     "title": "Handel",
-    "subtitle": "Undertittel",
+    "subtitle": "Handelsoversikt",
     "copyDiagnostics": "Copy diagnostics",
     "exportCsv": "Export csv",
     "filterAll": "Filter alle",
@@ -4987,7 +4987,7 @@
       },
       "mySessions": "My økter",
       "workspaceHeader": {
-        "subtitle": "Undertittel",
+        "subtitle": "Se dine aktive strategier",
         "badge": "Lekepenger",
         "title": "Lekepenger"
       },
@@ -5285,7 +5285,7 @@
           "comparisonAggressive": "Comparison aggressiv"
         }
       },
-      "title": "Title",
+      "title": "Risikonivå",
       "sections": {
         "reactionTime": "Reaction Time",
         "confirmation": "Confirmation",
@@ -5330,7 +5330,7 @@
       "trialExpiringSoon": "Trial expiring soon",
       "specialOffer": "Special offer",
       "trialWarning": "Trial warning",
-      "subtitle": "Undertittel",
+      "subtitle": "Detaljer og historikk",
       "trialProgress": "Trial fremdrift",
       "upgradeNow": "Upgrade now",
       "seePlans": "See plans",
@@ -5523,7 +5523,7 @@
     "shares": "Shares",
     "avg": "Avg",
     "recentTradesPanel": {
-      "title": "Title",
+      "title": "Nylige handler",
       "empty": "Empty",
       "sideBuy": "Side Buy",
       "sideSell": "Side Sell",

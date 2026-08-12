@@ -1,10 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import {
-  LegalPageShell,
-  generateLegalMetadata,
-} from "@/shared/ui/marketing";
+import { LegalPageShell, generateLegalMetadata } from "@/shared/ui/marketing";
 
-const SUPPORT_EMAIL = "support@klarpakke.no";
+const SUPPORT_EMAIL = "post@klarpakke.no";
 
 export const runtime = "nodejs";
 
@@ -63,7 +60,9 @@ function TermsContent({ t }: { t: TermsTranslations }) {
           </h2>
           <p className="text-gray-600">
             {t("sections.2.content")}
-            <strong className="text-gray-900 ml-1">{t("sections.2.bold")}</strong>
+            <strong className="text-gray-900 ml-1">
+              {t("sections.2.bold")}
+            </strong>
           </p>
         </section>
 
