@@ -74,8 +74,8 @@ describe("syncPaperAccountBalance — INC-2026-08-12 regresjon", () => {
   });
 
   it("sanity cap 1.5× initial: sum > 1.5× initial → IKKE oppdatert (cap blokkerer)", async () => {
-    // To aktive sesjoner × 200k = 400k, initial = 200k
-    // 400k > 200k × 1.5 = 300k → cap treffer → IKKE oppdater
+    // Tre aktive sesjoner à 200 000 = 600 000, initial = 300 000
+    // 600k > 300k × 1.5 = 450k → cap treffer → IKKE oppdater
     const sessions = [
       {
         current_capital_nok: 200000,
