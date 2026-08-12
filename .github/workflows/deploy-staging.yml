@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 5
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: |
           echo "🏥 Pre-deploy smoke — sjekker prod helse før staging deploy..."
           HEALTH=$(curl -s -m 10 "https://www.klarpakke.no/api/health" | jq -r '.status')
@@ -27,8 +27,8 @@ jobs:
     runs-on: self-hosted
     environment: staging
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: 'npm'
@@ -42,7 +42,7 @@ jobs:
 
       # Deploy til staging  
       - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
