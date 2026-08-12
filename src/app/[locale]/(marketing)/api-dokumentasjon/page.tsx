@@ -398,7 +398,7 @@ export default function ApiDokumentasjonPage() {
             <a href="/no/kontakt" className="hover:text-[#9CA3AF] transition-colors">Kontakt</a>
           </div>
           <p className="mt-4 text-xs text-[#6B7280]">
-            © 2026 Klarpakke AS.
+            © 2026 Klarpakke Project.
           </p>
         </div>
       </footer>

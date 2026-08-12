@@ -57,7 +57,7 @@ function InlineFooter() {
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-white/50">
-          © {new Date().getFullYear()} Klarpakke AS.
+          © {new Date().getFullYear()} Klarpakke Project.
           <span className="mx-2">·</span>
           <span suppressHydrationWarning className="text-white/50" title="Sist oppdatert">
             {mounted

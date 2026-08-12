@@ -53,7 +53,7 @@ export const translations = {
     trustBadges: {
       trustedBy: "Betrodd av norske tradere",
       ssl: "256-bit SSL",
-      registered: "Klarpakke AS",
+      registered: "Klarpakke Project",
       gdpr: "GDPR-sikret",
     },
     nav: {
@@ -274,10 +274,10 @@ export const translations = {
       connectNow: "Koble til nå",
     },
     footer: {
-      companyInfo: "Klarpakke AS",
+      companyInfo: "Klarpakke Project",
       registeredWith: "Registrert hos Brønnøysundregistrene",
       disclaimer: "⚠️ Kun opplæring - ingen finansiell rådgivning",
-      copyright: "© 2026 Klarpakke AS. Alle rettigheter reservert.",
+      copyright: "© 2026 Klarpakke Project. Alle rettigheter reservert.",
       links: {
         privacy: "Personvern",
         terms: "Vilkår",
@@ -388,7 +388,7 @@ export const translations = {
     trustBadges: {
       trustedBy: "Trusted by Norwegian traders",
       ssl: "256-bit SSL",
-      registered: "Klarpakke AS",
+      registered: "Klarpakke Project",
       gdpr: "GDPR compliant",
     },
     nav: {
@@ -609,10 +609,10 @@ export const translations = {
       connectNow: "Connect now",
     },
     footer: {
-      companyInfo: "Klarpakke AS",
+      companyInfo: "Klarpakke Project",
       registeredWith: "Registered with Brønnøysundregistrene",
       disclaimer: "⚠️ Educational only - no financial advice",
-      copyright: "© 2026 Klarpakke AS. All rights reserved.",
+      copyright: "© 2026 Klarpakke Project. All rights reserved.",
       links: {
         privacy: "Privacy",
         terms: "Terms",

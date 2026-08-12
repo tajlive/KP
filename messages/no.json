@@ -75,7 +75,7 @@
       "emailValue": "post@klarpakke.no",
       "org": "Organisasjonsnummer",
       "orgNumber": "",
-      "orgName": "Klarpakke AS",
+      "orgName": "Klarpakke Project",
       "location": "Lokasjon",
       "locationValue": "Oslo, Norge"
     },
@@ -2275,7 +2275,7 @@
     "tagline": "Norsk krypto-utdanning. Lær uten risiko.",
     "paymentLabel": "Sikker betaling med:",
     "paymentSubtitle": "Vi bruker Stripe og Vipps for sikker betaling. Ingen kortdetaljer lagres hos oss.",
-    "copyright": "© {year} Klarpakke AS. Alle rettigheter reservert.",
+    "copyright": "© {year} Klarpakke Project. Alle rettigheter reservert.",
     "disclaimer": "Trading med kryptovaluta innebærer risiko. Klarpakke er en læringsplattform og gir ikke finansiell rådgivning. Alle investeringsbeslutninger er ditt eget ansvar. Tidligere resultater er ingen garanti for fremtidige avkastninger. Invester aldri mer enn du har råd til å tape.",
     "links": {
       "courses": "Kurs",

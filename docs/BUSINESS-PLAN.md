@@ -220,7 +220,6 @@ Ekstremt lav burn rate — plattformen kan driftes lønnsomt med færre enn 10 b
 | Felt | Verdi |
 |------|-------|
 | **Selskapsnavn** | Klarpakke |
-| **Org.nummer** | 929 003 292 |
 | **Nettsted** | https://www.klarpakke.no |
 | **GitHub** | https://github.com/tajlive/KP |
 | **Teknologi** | Next.js 16, React 19, Supabase, Cloudflare Workers, Binance API |
