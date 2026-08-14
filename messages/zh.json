@@ -2976,9 +2976,9 @@
       "title": "AI 映射"
     },
     "and": "和",
-    "bankid": "银行ID",
-    "bankidSubtitle": "我们使用BankID来确保平台上的所有用户都是真实的人。这为每个人创建了一个安全的社区。",
-    "bankidTitle": "安全识别",
+    "identity": "身份",
+    "secureIdentificationSubtitle": "我们使用安全的登录方式来确保平台上的所有用户都是真实的人。这为每个人创建了一个安全的社区。",
+    "secureIdentificationTitle": "安全识别",
     "canvas-confetti": "帆布五彩纸屑",
     "clickToPlay": "点击播放视频",
     "completelyFree": "测试阶段 100% 免费",
@@ -3032,11 +3032,11 @@
         "title": "标题"
       }
     },
-    "loginWithBankid": "通过 BankID 进行识别",
+    "continueSignIn": "继续使用电子邮件",
     "mobile": {
       "step1": {
         "badges": {
-          "bankid": "班克德",
+          "secure": "安全",
           "finanstilsynet": "金融网",
           "noHiddenFees": "无隐藏费用"
         },

@@ -114,7 +114,7 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
                   />
                 </svg>
               ),
-              label: t("mobile.step1.badges.bankid"),
+              label: t("mobile.step1.badges.secure"),
             },
             {
               icon: (

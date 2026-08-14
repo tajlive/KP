@@ -3285,7 +3285,7 @@
   },
   "onboarding": {
     "email": "E-post",
-    "bankid": "Identitet",
+    "identity": "Identitet",
     "video": "Velkomstvideo",
     "done": "Ferdig",
     "startFree": "Start nå – helt gratis",
@@ -3296,10 +3296,10 @@
     "terms": "Vilkår for bruk",
     "and": "og",
     "privacyPolicy": "Personvern",
-    "bankidTitle": "Sikker identifisering",
-    "bankidSubtitle": "Vi bruker sikker pålogging via Apple eller e-post for å verifisere at du er en ekte person. Dette skaper et trygt fellesskap.",
+    "secureIdentificationTitle": "Sikker identifisering",
+    "secureIdentificationSubtitle": "Vi bruker sikker pålogging via Apple eller e-post for å verifisere at du er en ekte person. Dette skaper et trygt fellesskap.",
     "connecting": "Verifiserer identitet...",
-    "loginWithBankid": "Fortsett med Apple",
+    "continueSignIn": "Fortsett med Apple",
     "secureVerification": "Sikker verifisering.",
     "secureVerificationDesc": "Vi mottar kun navnet ditt og bekreftelse på alder.",
     "noStorage": "Ingen personopplysninger lagres.",
@@ -3524,7 +3524,7 @@
         "description": "Opprett en konto og få 100 000 kr i lekepenger.",
         "badgesAriaLabel": "Badges aria etikett",
         "badges": {
-          "bankid": "Sikker",
+          "secure": "Sikker",
           "finanstilsynet": "Finanstilsynet",
           "noHiddenFees": "No hidden fees"
         },

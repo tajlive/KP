@@ -3285,7 +3285,7 @@
   },
   "onboarding": {
     "email": "Email",
-    "bankid": "Identity",
+    "identity": "Identity",
     "video": "Welcome Video",
     "done": "Done",
     "startFree": "Start now – completely free",
@@ -3296,10 +3296,10 @@
     "terms": "Terms of Use",
     "and": "and",
     "privacyPolicy": "Privacy Policy",
-    "bankidTitle": "Secure Identification",
-    "bankidSubtitle": "We use secure sign-in via Apple or email to verify that you are a real person. This creates a safe community.",
+    "secureIdentificationTitle": "Secure Identification",
+    "secureIdentificationSubtitle": "We use secure sign-in via Apple or email to verify that you are a real person. This creates a safe community.",
     "connecting": "Setting up your account...",
-    "loginWithBankid": "Continue with email",
+    "continueSignIn": "Continue with email",
     "secureVerification": "Secure verification.",
     "secureVerificationDesc": "We only receive your name and age confirmation.",
     "noStorage": "No personal data stored.",
@@ -3524,7 +3524,7 @@
         "description": "Create an account and get NOK 100,000 in play money.",
         "badgesAriaLabel": "Badges Aria Label",
         "badges": {
-          "bankid": "Secure",
+          "secure": "Secure",
           "finanstilsynet": "Finanstilsynet",
           "noHiddenFees": "No Hidden Fees"
         },
