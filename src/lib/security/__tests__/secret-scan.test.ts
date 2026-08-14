@@ -6,7 +6,15 @@
  */
 import { describe, it, expect, beforeAll } from "vitest";
 import { execSync } from "child_process";
-import { readFileSync, existsSync, readdirSync, statSync } from "fs";
+import {
+  readFileSync,
+  existsSync,
+  readdirSync,
+  statSync,
+  openSync,
+  readSync,
+  closeSync,
+} from "fs";
 import { resolve, join } from "path";
 
 const ROOT = resolve(__dirname, "..", "..", "..", "..");
@@ -35,24 +43,46 @@ describe("secrets-scanning", () => {
     }
   });
 
-  it("tracked filer inneholder ingen Linear API-nøkkel eller token-mønstre", () => {
-    const offenders: string[] = [];
-    for (const file of trackedFiles) {
-      // Skip binære / genererte filer som er forventet
-      if (file.endsWith(".map") || file.includes("package-lock.json")) continue;
-      if (file.includes(".env")) continue; // .env* er gitignored, men vær eksplisitt
-      const full = resolve(ROOT, file);
-      if (!existsSync(full)) continue;
-      const content = readFileSync(full, "utf8");
-      for (const re of TOKEN_PATTERNS) {
-        if (re.test(content)) {
-          offenders.push(`${file} (mønster ${re})`);
-          break;
+  // Sniff: binærfiler (null-byte i headeren) kan ikke inneholde token-mønstre,
+  // og utf8-lesing av store binære blobs (bilder, fonter, tarballs) er kostbar.
+  function isBinaryFile(full: string): boolean {
+    try {
+      const fd = openSync(full, "r");
+      const buf = Buffer.alloc(8192);
+      const n = readSync(fd, buf, 0, 8192, 0);
+      closeSync(fd);
+      return buf.subarray(0, n).includes(0);
+    } catch {
+      return true; // Uleselig → hopp over
+    }
+  }
+
+  // KLA-295: eksplisitt romslig timeout. Full repo-scan tar ~16-24s på M1;
+  // under CI-parallelisme (8 workers + retry) overskred den lett 30s-globalen.
+  it(
+    "tracked filer inneholder ingen Linear API-nøkkel eller token-mønstre",
+    { timeout: 120_000 },
+    () => {
+      const offenders: string[] = [];
+      for (const file of trackedFiles) {
+        // Skip binære / genererte filer som er forventet
+        if (file.endsWith(".map") || file.includes("package-lock.json")) continue;
+        if (file.includes(".env")) continue; // .env* er gitignored, men vær eksplisitt
+        if (file.startsWith(".npm/")) continue; // npm-_cacache: content-addressed cache, ikke repo-kilde
+        const full = resolve(ROOT, file);
+        if (!existsSync(full)) continue;
+        if (isBinaryFile(full)) continue; // binært innhold → ingen token-mønstre
+        const content = readFileSync(full, "utf8");
+        for (const re of TOKEN_PATTERNS) {
+          if (re.test(content)) {
+            offenders.push(`${file} (mønster ${re})`);
+            break;
+          }
         }
       }
+      expect(offenders).toEqual([]);
     }
-    expect(offenders).toEqual([]);
-  });
+  );
 
   it("nye rapportfiler under .hermes/ inneholder ingen token-mønstre", () => {
     function walk(dir: string, out: string[] = []): string[] {
