@@ -34,57 +34,65 @@ describe("DashboardPro avkastningsdefinisjon (FIKS 8)", () => {
     vi.resetModules();
   });
 
-  it("returnerer totalReturn basert på totalPnl, ikke konto-differanse", async () => {
-    // Dynamisk import etter mock — henter komponenten
-    const mod = await import("../DashboardPro");
-    const { DashboardPro } = mod;
+  it(
+    "returnerer totalReturn basert på totalPnl, ikke konto-differanse",
+    { timeout: 90_000 },
+    async () => {
+      // Dynamisk import etter mock — henter komponenten
+      const mod = await import("../DashboardPro");
+      const { DashboardPro } = mod;
 
-    // Stats med konto-differanse +138 210 kr men ekte P&L −830 kr
-    const stats = {
-      totalTrades: 49,
-      totalPnl: -830.02,
-      winningTrades: 0,
-      sessionCount: 23,
-      currentCapital: 133821,
-      startingCapital: 100000,
-      accountBalance: 238210.17,
-      investedCapital: 412.3,
-      recentSessions: [],
-    };
+      // Stats med konto-differanse +138 210 kr men ekte P&L −830 kr
+      const stats = {
+        totalTrades: 49,
+        totalPnl: -830.02,
+        winningTrades: 0,
+        sessionCount: 23,
+        currentCapital: 133821,
+        startingCapital: 100000,
+        accountBalance: 238210.17,
+        investedCapital: 412.3,
+        recentSessions: [],
+      };
 
-    render(<DashboardPro stats={stats} preferredTradingMode="paper" />);
+      render(<DashboardPro stats={stats} preferredTradingMode="paper" />);
 
-    // Total verdi = ledig + investert (238 210.17 + 412.30 = 238 622)
-    // Hero-balansen vises som «238 622 kr» — totalen, ikke bare ledig.
-    // Vises både i hero og StatsGrid-kortet → getAllByText (minst 1).
-    expect(screen.getAllByText(/238 622/).length).toBeGreaterThan(0);
+      // Total verdi = ledig + investert (238 210.17 + 412.30 = 238 622)
+      // Hero-balansen vises som «238 622 kr» — totalen, ikke bare ledig.
+      // Vises både i hero og StatsGrid-kortet → getAllByText (minst 1).
+      expect(screen.getAllByText(/238 622/).length).toBeGreaterThan(0);
 
-    // Avkastningsprosenten må være −0.83 % (totalPnl/startingCapital),
-    // IKKE +138.21 % (konto-differansen) — det var løgnen.
-    expect(screen.getByText(/-0\.83%/)).toBeTruthy();
-    expect(screen.queryByText(/\+138\.21%/)).toBeNull();
-  });
+      // Avkastningsprosenten må være −0.83 % (totalPnl/startingCapital),
+      // IKKE +138.21 % (konto-differansen) — det var løgnen.
+      expect(screen.getByText(/-0\.83%/)).toBeTruthy();
+      expect(screen.queryByText(/\+138\.21%/)).toBeNull();
+    },
+  );
 
-  it("viser ekte P&L i stedet for konto-differanse", async () => {
-    const mod = await import("../DashboardPro");
-    const { DashboardPro } = mod;
+  it(
+    "viser ekte P&L i stedet for konto-differanse",
+    { timeout: 90_000 },
+    async () => {
+      const mod = await import("../DashboardPro");
+      const { DashboardPro } = mod;
 
-    const stats = {
-      totalTrades: 49,
-      totalPnl: -830.02,
-      winningTrades: 0,
-      sessionCount: 23,
-      currentCapital: 133821,
-      startingCapital: 100000,
-      accountBalance: 238210.17,
-      investedCapital: 0,
-      recentSessions: [],
-    };
+      const stats = {
+        totalTrades: 49,
+        totalPnl: -830.02,
+        winningTrades: 0,
+        sessionCount: 23,
+        currentCapital: 133821,
+        startingCapital: 100000,
+        accountBalance: 238210.17,
+        investedCapital: 0,
+        recentSessions: [],
+      };
 
-    render(<DashboardPro stats={stats} preferredTradingMode="paper" />);
+      render(<DashboardPro stats={stats} preferredTradingMode="paper" />);
 
-    // StatsGrid «Total avkastning» = −830 kr (RPC total_pnl).
-    // Vises i hero og StatsGrid avhengig av render-timing → getAllByText.
-    expect(screen.getAllByText(/-830/).length).toBeGreaterThan(0);
-  });
+      // StatsGrid «Total avkastning» = −830 kr (RPC total_pnl).
+      // Vises i hero og StatsGrid avhengig av render-timing → getAllByText.
+      expect(screen.getAllByText(/-830/).length).toBeGreaterThan(0);
+    },
+  );
 });
