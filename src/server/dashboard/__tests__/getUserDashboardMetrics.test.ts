@@ -7,6 +7,21 @@ import { CONTAMINATION_CUTOFF } from "@/lib/trading/clean-trades";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
+// Mock getOkxLiveBalance → balanceNok=1050 (100 USDC × 10.5).
+// Toppnivå (ikke nøstet i it-blokk): vi.mock hoistes uansett til toppen av
+// modulen, og Vitest varsler/feiler på nøstede kall i fremtidige versjoner.
+vi.mock("@/lib/trading/okx-live", () => ({
+  getOkxLiveBalance: vi.fn().mockResolvedValue({
+    connected: true,
+    balanceUsdc: 100,
+    balanceNok: 1050,
+    quoteCcy: "USDC",
+    dailyPnl: 0,
+    dailyPnlPct: 0,
+    position: null,
+  }),
+}));
+
 type MockQueryBuilder = {
   select: ReturnType<typeof vi.fn>;
   eq: ReturnType<typeof vi.fn>;
@@ -450,19 +465,6 @@ describe("getUserDashboardMetrics", () => {
         total_capital: 0,
       },
     });
-
-    // Mock getOkxLiveBalance → balanceNok=1050 (100 USDC × 10.5)
-    vi.mock("@/lib/trading/okx-live", () => ({
-      getOkxLiveBalance: vi.fn().mockResolvedValue({
-        connected: true,
-        balanceUsdc: 100,
-        balanceNok: 1050,
-        quoteCcy: "USDC",
-        dailyPnl: 0,
-        dailyPnlPct: 0,
-        position: null,
-      }),
-    }));
 
     const result = await getUserDashboardMetrics({
       supabaseClient: supabase,
