@@ -2,6 +2,7 @@
 # DEPENDENCIES
 # =============================================================================
 node_modules/
+.npm/
 .pnp
 
 # MCP lokal config med API-nøkkel
