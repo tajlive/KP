@@ -24,9 +24,10 @@ vi.mock("framer-motion", () => ({
 // testene mocket en utdatert supabase-klient-sti (user_achievements med name/
 // description) som komponenten ikke lenger bruker — komponenten henter nå
 // achievements via fetch("/api/gamification/achievements") (KLA-auth:
-// browser-klienten er alltid anon). Mock-deadlocken i CI stammet fra den døde
-// @/lib/supabase/client-mocken mot et tungt modul-graph med isolate:false.
-// Mønsteret her (fetch-mock + framer-motion-stub) er det samme som
+// browser-klienten er alltid anon). Hang-årsaken (verifisert 2026-08-14):
+// useAuth-mocken returnerte nytt user-objekt per kall → useEffect([user])-
+// loop; fikset i topp-kommentaren. Den døde supabase-mocken er fjernet som
+// rydding. Mønsteret her (fetch-mock + framer-motion-stub) er det samme som
 // DailyChallenge.test.tsx i samme katalog, som kjører stabilt.
 const mockFetch = vi.fn();
 
