@@ -1,0 +1,18 @@
+-- 2026-08-15: Deaktiver den aggressive detect_crashed_sessions-jobben.
+--
+-- Bakgrunn: To konkurrerende crash-detektorer kjørte samtidig:
+--   * detect_crashed_sessions  (jobb 1170, hvert 5. min) — terskel 5 min, INGEN
+--     auto-trading-guard. Crashset system-eide paper-sesjoner for auto-trading-
+--     brukere så snart tick-motoren var > 5 min forsinket i en batch.
+--   * session_maintenance      (jobb 'session-maintenance-v2', hvert 10. min) —
+--     terskel 60 min + auto-trading-guard (NOT EXISTS auto_trading_configs).
+--     Healer også crashed-sesjoner med fersk heartbeat.
+--
+-- Prod-bevis: Pål Ivar Hjertholms DCA-sesjon (58e7e4a1) ble crashset 15.08 kl 15:55
+-- med crash_count=0 og error_message=NULL — et rent race mellom detect_crashed_sessions
+-- (5 min) og tick-motoren (5 min). session_maintenance() hadde korrekt ikke crashet den
+-- (brukeren har auto_trading_configs.is_enabled=true).
+--
+-- Fiks: unschedule detect_crashed_sessions. session_maintenance() er den eneste
+-- crash-detektoren og gjør jobben riktig.
+SELECT cron.unschedule('detect-crashed-sessions');

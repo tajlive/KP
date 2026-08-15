@@ -619,6 +619,29 @@ async function processSession(
       }
     }
 
+    // DCA-interval-fiks (2026-08-15): persister «sist kjøp» til strategy_config
+    // så DCA sin interval-gate måler fra faktisk kjøp, ikke fra heartbeat.
+    // (Kun DCA setter indicators.last_buy_at — andre strategier rører ikke dette.)
+    if (signal.action === "buy" && signal.indicators?.last_buy_at) {
+      const dcaCfg = (session.strategy_config ?? {}) as Record<string, unknown>;
+      const newDcaCfg = {
+        ...dcaCfg,
+        last_buy_at: signal.indicators.last_buy_at,
+      };
+      try {
+        await db
+          .from("trading_sessions")
+          .update({ strategy_config: newDcaCfg } as never)
+          .eq("id", session.id);
+      } catch (err) {
+        console.error(
+          `[Tick] Failed to persist DCA last_buy_at for ${session.id}`,
+          err,
+        );
+      }
+      session.strategy_config = newDcaCfg as TradingSession["strategy_config"];
+    }
+
     // Update heartbeat
     await writeHeartbeat();
 
@@ -1597,6 +1620,23 @@ async function processSession(
         };
       }
 
+      // Transient feil (429 rate limit, timeout, nettverk) → backoff for å
+      // unngå å spamme exchange-en hver tick. session-guard hopper over
+      // sesjonen til next_expected_action_at utløper.
+      const isRateLimit = /429|rate limit|lockout/i.test(liveResult.error);
+      if (isRateLimit) {
+        const backoffUntil = new Date(
+          Date.now() + 15 * 60 * 1000,
+        ).toISOString();
+        await db
+          .from("trading_sessions")
+          .update({
+            next_expected_action_at: backoffUntil,
+            last_status_message: liveResult.error,
+          })
+          .eq("id", session.id);
+      }
+
       return {
         session_id: session.id,
         action: "error",
@@ -1631,8 +1671,7 @@ async function processSession(
 
           if (valgtLot) {
             const solgtKvantum = Math.min(matchedQty, valgtLot.quantity);
-            realizedPnl =
-              (currentPrice - valgtLot.entryPrice) * solgtKvantum;
+            realizedPnl = (currentPrice - valgtLot.entryPrice) * solgtKvantum;
             updatedLedgerState = {
               ...ledger,
               lots: ledger.lots

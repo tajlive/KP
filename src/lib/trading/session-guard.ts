@@ -26,6 +26,7 @@ export interface TradeableSessionLike {
   status?: string | null;
   smart_trader_enabled?: boolean | null;
   error_message?: string | null;
+  next_expected_action_at?: string | null;
 }
 
 /** GUARD-prefiksen guard-funksjonen setter i error_message. */
@@ -48,6 +49,12 @@ export function isSessionTradeable(
   if (!session) return false;
   if (session.status !== "active") return false;
   if (isGuardError(session.error_message)) return false;
+  // Backoff: sesjoner som venter på neste handling (f.eks. OKX rate-limit
+  // 429) er midlertidig IKKE tradebare — de hoppes over til backoffen utløper.
+  if (session.next_expected_action_at) {
+    const nextAt = new Date(session.next_expected_action_at).getTime();
+    if (Number.isFinite(nextAt) && nextAt > Date.now()) return false;
+  }
   return true;
 }
 
@@ -64,6 +71,12 @@ export function sessionSkipReason(
   }
   if (isGuardError(session.error_message)) {
     return `error_message='${session.error_message}'`;
+  }
+  if (session.next_expected_action_at) {
+    const nextAt = new Date(session.next_expected_action_at).getTime();
+    if (Number.isFinite(nextAt) && nextAt > Date.now()) {
+      return `backoff til ${session.next_expected_action_at}`;
+    }
   }
   return null;
 }

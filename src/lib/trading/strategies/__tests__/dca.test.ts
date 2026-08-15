@@ -22,10 +22,7 @@ function buildCandles(closePrice: number, count = 30): Candle[] {
   return candles;
 }
 
-function buildInput(
-  closePrice: number,
-  highestPrice?: number,
-): StrategyInput {
+function buildInput(closePrice: number, highestPrice?: number): StrategyInput {
   const candles = buildCandles(closePrice);
   return {
     candles,
@@ -83,5 +80,61 @@ describe("DCA Strategy — trailing stop highest_price fallback", () => {
     const input = buildInput(104, 105);
     const signal = strategy.evaluate(input);
     expect(signal.action).toBe("hold");
+  });
+});
+
+// BUGFIX 2026-08-15: DCA interval-gaten målte «sist tick» (last_tick_at, som
+// tick-motorens heartbeat oppdaterer hvert 5. min) i stedet for «sist kjøp».
+// Resultat: DCA med interval_minutes > 5 ventet for alltid «235 min til».
+describe("DCA Strategy — interval gate bruker sist kjøp, ikke heartbeat", () => {
+  function buildNoPositionInput(opts: {
+    lastBuyAt?: string;
+    lastTickAt?: string;
+    interval?: number;
+  }): StrategyInput {
+    const candles = buildCandles(100);
+    return {
+      candles,
+      session: {
+        open_position: null,
+        last_tick_at: opts.lastTickAt ?? null,
+        strategy_config: {
+          interval_minutes: opts.interval ?? 240,
+          last_buy_at: opts.lastBuyAt,
+        },
+      },
+      config: {
+        interval_minutes: opts.interval ?? 240,
+      },
+      currentTime: Date.now(),
+    };
+  }
+
+  it("kjøper når sist kjøp er eldre enn interval (selv om heartbeat er fersk)", () => {
+    const input = buildNoPositionInput({
+      // last_buy_at er 5 timer gammelt → interval (4t) passert → skal kjøpe
+      lastBuyAt: new Date(Date.now() - 5 * 60 * 60_000).toISOString(),
+      // heartbeat er fersk (5 min siden) — denne må IGNORERES
+      lastTickAt: new Date(Date.now() - 5 * 60_000).toISOString(),
+    });
+    const signal = strategy.evaluate(input);
+    expect(signal.action).toBe("buy");
+  });
+
+  it("holder når sist kjøp er nyere enn interval", () => {
+    const input = buildNoPositionInput({
+      lastBuyAt: new Date(Date.now() - 1 * 60 * 60_000).toISOString(), // 1t siden
+      lastTickAt: new Date(Date.now() - 5 * 60_000).toISOString(),
+    });
+    const signal = strategy.evaluate(input);
+    expect(signal.action).toBe("hold");
+    expect(signal.reason).toContain("Waiting");
+  });
+
+  it("kjøper umiddelbart når det aldri har vært et kjøp (ingen last_buy_at)", () => {
+    const input = buildNoPositionInput({ lastBuyAt: undefined });
+    const signal = strategy.evaluate(input);
+    expect(signal.action).toBe("buy");
+    expect(signal.indicators?.last_buy_at).toBeTruthy();
   });
 });

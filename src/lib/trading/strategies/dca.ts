@@ -4,7 +4,13 @@
  * V2: Dynamisk parametere per config. ATR-basert trailing stop.
  */
 
-import type { Candle, MinimalSession, StrategyEngine, StrategyInput, StrategySignal } from "./types";
+import type {
+  Candle,
+  MinimalSession,
+  StrategyEngine,
+  StrategyInput,
+  StrategySignal,
+} from "./types";
 import { atr } from "./indicators";
 
 export interface DCAConfig {
@@ -31,24 +37,31 @@ export class DCAStrategy implements StrategyEngine {
     const maxDailyBuys = cfg.max_daily_buys ?? 3;
 
     const now = input.currentTime ?? Date.now();
-    const lastTick = session.last_tick_at
-      ? new Date(session.last_tick_at).getTime()
-      : 0;
-    const minutesSinceLast = (now - lastTick) / 60_000;
+
+    // BUGFIX 2026-08-15: interval-gaten målte "sist tick", ikke "sist kjøp".
+    // tick/route.ts sitt writeHeartbeat oppdaterer last_tick_at hvert 5. min,
+    // så DCA med interval_minutes > 5 så alltid «bare 5 min har gått» og
+    // returnerte «hold» for alltid. Bruk faktisk kjøpstidspunkt i stedet.
+    //  1. strategy_config.last_buy_at  (persistert ved kjøp i tick/route.ts)
+    //  2. open_position.entry_time     (posisjonen finnes)
+    //  3. session.last_tick_at         (backtest-fallback: forrige candle)
+    const stratCfg = (session.strategy_config ?? {}) as Record<string, unknown>;
+    const lastBuyAt =
+      (stratCfg.last_buy_at as string | undefined) ??
+      session.open_position?.entry_time ??
+      session.last_tick_at ??
+      null;
+    const lastBuyTime = lastBuyAt ? new Date(lastBuyAt).getTime() : 0;
+    const minutesSinceLastBuy =
+      lastBuyTime > 0 ? (now - lastBuyTime) / 60_000 : Number.POSITIVE_INFINITY;
 
     // Check max daily buys
     const today = new Date(now).toISOString().split("T")[0];
-    const sessionBuysToday = (session.strategy_config as Record<string, unknown>)?.daily_buys_today as string ?? "";
-    const dailyBuyCount = sessionBuysToday === today
-      ? ((session.strategy_config as Record<string, unknown>)?.daily_buy_count as number ?? 0)
-      : 0;
-
-    if (minutesSinceLast < intervalMinutes) {
-      return {
-        action: "hold",
-        reason: `Waiting ${Math.round(intervalMinutes - minutesSinceLast)} min`,
-      };
-    }
+    const sessionBuysToday = (stratCfg.daily_buys_today as string) ?? "";
+    const dailyBuyCount =
+      sessionBuysToday === today
+        ? ((stratCfg.daily_buy_count as number) ?? 0)
+        : 0;
 
     const closes = candles.map((c) => c.close);
     const highs = candles.map((c) => c.high);
@@ -57,12 +70,15 @@ export class DCAStrategy implements StrategyEngine {
 
     // Volatility-Harvesting: buy more in dips, less in FOMO
     // ATR-based dip boost: deeper dips relative to volatility = bigger buys
-    const useAtrDip = (session.strategy_config as Record<string, unknown>)?.use_atr_dip_boost !== false;
+    const useAtrDip =
+      (session.strategy_config as Record<string, unknown>)
+        ?.use_atr_dip_boost !== false;
     if (closes.length >= 24) {
       const price24hAgo = closes[closes.length - 24];
       const change24h = ((currentPrice - price24hAgo) / price24hAgo) * 100;
       if (change24h <= -5) positionSize *= dipMultiplier;
-      else if (change24h <= -3) positionSize *= Math.max(1.5, dipMultiplier * 0.7);
+      else if (change24h <= -3)
+        positionSize *= Math.max(1.5, dipMultiplier * 0.7);
       else if (change24h >= 5) positionSize *= fomoReduction;
 
       if (useAtrDip && candles.length >= 14) {
@@ -75,8 +91,15 @@ export class DCAStrategy implements StrategyEngine {
       }
     }
 
-    // If no position, buy (respecting daily limit)
+    // If no position, buy (respecting interval + daily limit)
     if (!session.open_position) {
+      // Interval-gate gjelder KUN kjøp — exits skal alltid kunne skje.
+      if (minutesSinceLastBuy < intervalMinutes) {
+        return {
+          action: "hold",
+          reason: `Waiting ${Math.round(intervalMinutes - minutesSinceLastBuy)} min`,
+        };
+      }
       if (dailyBuyCount >= maxDailyBuys) {
         return {
           action: "hold",
@@ -91,6 +114,7 @@ export class DCAStrategy implements StrategyEngine {
           interval: intervalMinutes,
           volatility_adjusted: true,
           daily_buy_count: dailyBuyCount + 1,
+          last_buy_at: new Date(now).toISOString(),
         },
       };
     }
@@ -107,11 +131,12 @@ export class DCAStrategy implements StrategyEngine {
       { target_pct: 25, sell_pct: 25 },
     ];
 
-    const executedLevels = (session.open_position as unknown as Record<string, unknown>)
-      ?.partial_exits_executed as number[] | undefined;
+    const executedLevels = (
+      session.open_position as unknown as Record<string, unknown>
+    )?.partial_exits_executed as number[] | undefined;
 
     const nextLevel = partialLevels.find(
-      (l) => pnlPct >= l.target_pct && !(executedLevels?.includes(l.target_pct)),
+      (l) => pnlPct >= l.target_pct && !executedLevels?.includes(l.target_pct),
     );
 
     if (nextLevel) {
@@ -132,8 +157,12 @@ export class DCAStrategy implements StrategyEngine {
     // Trailing stop (ATR-based)
     if (cfg.use_trailing_stop !== false && candles.length >= 14) {
       const atrValue = atr(highs, lows, closes, 14);
-      const trailingStopPct = (2 * atrValue / entryPrice) * 100;
-      const highestPrice = (session.open_position.highest_price && session.open_position.highest_price > 0) ? session.open_position.highest_price : entryPrice;
+      const trailingStopPct = ((2 * atrValue) / entryPrice) * 100;
+      const highestPrice =
+        session.open_position.highest_price &&
+        session.open_position.highest_price > 0
+          ? session.open_position.highest_price
+          : entryPrice;
       const dropFromPeak = ((highestPrice - currentPrice) / highestPrice) * 100;
 
       if (dropFromPeak >= trailingStopPct) {

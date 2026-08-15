@@ -18,7 +18,9 @@ import {
   type TradeableSessionLike,
 } from "../session-guard";
 
-function session(overrides: Partial<TradeableSessionLike>): TradeableSessionLike {
+function session(
+  overrides: Partial<TradeableSessionLike>,
+): TradeableSessionLike {
   return {
     status: "active",
     smart_trader_enabled: true,
@@ -70,12 +72,32 @@ describe("isSessionTradeable", () => {
   });
 
   it("error_message uten GUARD-prefiks → tradeable hvis ellers aktiv", () => {
-    expect(
-      isSessionTradeable(session({ error_message: "noe annet" })),
-    ).toBe(true);
+    expect(isSessionTradeable(session({ error_message: "noe annet" }))).toBe(
+      true,
+    );
   });
 
   it("error_message=null → tradeable", () => {
     expect(isSessionTradeable(session({ error_message: null }))).toBe(true);
+  });
+
+  it("next_expected_action_at i fremtiden → IKKE tradeable (backoff)", () => {
+    const future = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const s = session({ next_expected_action_at: future });
+    expect(isSessionTradeable(s)).toBe(false);
+    expect(sessionSkipReason(s)).toMatch(/backoff/);
+  });
+
+  it("next_expected_action_at i fortiden → tradeable (backoff utløpt)", () => {
+    const past = new Date(Date.now() - 60 * 1000).toISOString();
+    const s = session({ next_expected_action_at: past });
+    expect(isSessionTradeable(s)).toBe(true);
+    expect(sessionSkipReason(s)).toBeNull();
+  });
+
+  it("next_expected_action_at=null → tradeable", () => {
+    expect(isSessionTradeable(session({ next_expected_action_at: null }))).toBe(
+      true,
+    );
   });
 });
