@@ -11,8 +11,16 @@ import { validateCronSecret } from "@/lib/auth/cron";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const JOBS = ["ai-engine", "tick", "feature-loader", "ai-metrics"];
-const THRESHOLD_MINUTES = 70; // e.g. ai-engine runs hourly -> 70m is lenient
+// Per-jobb-terskler (2026-08-19): ai-metrics kjører hver 4. time (0 */4 * * *)
+// — felles 70-min-terskel ga falsk «down»-alarm hele tiden. Terskel må matche
+// jobbens faktiske schedule.
+const JOBS: { name: string; thresholdMinutes: number }[] = [
+  { name: "ai-engine", thresholdMinutes: 70 }, // kjører hver time
+  { name: "tick", thresholdMinutes: 70 }, // kjører hvert 5. min
+  { name: "feature-loader", thresholdMinutes: 70 }, // kjører hver time
+  { name: "ai-metrics", thresholdMinutes: 5 * 60 }, // kjører hver 4. time
+];
+const THRESHOLD_MINUTES = 70; // fallback for ukjente jobber
 
 export async function GET(req: NextRequest) {
   if (!validateCronSecret(req)) {
@@ -28,14 +36,14 @@ export async function GET(req: NextRequest) {
         const { data, error } = await db
           .from("cron_job_runs")
           .select("status, finished_at, error_summary")
-          .eq("job_name", job)
+          .eq("job_name", job.name)
           .order("finished_at", { ascending: false })
           .limit(1)
           .maybeSingle();
 
         if (error || !data) {
           return {
-            job,
+            job: job.name,
             healthy: false,
             lastFinishedAt: null,
             status: "unknown",
@@ -52,10 +60,10 @@ export async function GET(req: NextRequest) {
         const healthy =
           data.status === "success" &&
           typeof minutesAgo === "number" &&
-          minutesAgo < THRESHOLD_MINUTES;
+          minutesAgo < job.thresholdMinutes;
 
         return {
-          job,
+          job: job.name,
           healthy,
           lastFinishedAt: data.finished_at,
           status: data.status,
