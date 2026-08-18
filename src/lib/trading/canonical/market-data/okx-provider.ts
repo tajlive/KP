@@ -37,6 +37,9 @@ const INTERNAL_TO_OKX: Record<string, string> = {
   // kilder feilet) — OKX har XRP-USDT og UNI-USDT (verifisert live).
   XRPUSDT: "XRP-USDT",
   UNIUSDT: "UNI-USDT",
+  // 2026-08-19: BNBUSDT manglet (Kraken har ikke BNB) → bare stale DB-rad fra
+  // 9. aug. OKX har BNB-USDT (verifisert live) — lukker siste prisfeed-hull.
+  BNBUSDT: "BNB-USDT",
   // MATIC ble migrert til POL også på OKX (2024) — gamle konfigurasjoner
   // som fortsatt sier MATICUSDT må peke til POL-USDT.
   MATICUSDT: "POL-USDT",

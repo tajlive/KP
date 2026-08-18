@@ -87,6 +87,7 @@ describe("OkxMarketDataProvider", () => {
       ["MATICUSDT", "POL-USDT"],
       ["XRPUSDT", "XRP-USDT"],
       ["UNIUSDT", "UNI-USDT"],
+      ["BNBUSDT", "BNB-USDT"],
     ])("mapper %s → %s", async (internal, okx) => {
       const mockFetch = vi
         .fn()

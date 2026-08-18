@@ -22,6 +22,7 @@ const TRACKED_SYMBOLS = [
   "LINKUSDT",
   "UNIUSDT",
   "POLUSDT",
+  "BNBUSDT", // 2026-08-19: OKX-fallback (BNB finnes ikke på Kraken)
 ];
 
 interface PriceRow {

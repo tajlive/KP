@@ -4,7 +4,7 @@ import { createKrakenMarketDataProvider } from "../src/lib/trading/canonical/mar
 const provider = createKrakenMarketDataProvider();
 const SYMBOLS = [
   "BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT",
-  "AVAXUSDT", "DOTUSDT", "LINKUSDT", "UNIUSDT", "POLUSDT",
+  "AVAXUSDT", "DOTUSDT", "LINKUSDT", "UNIUSDT", "POLUSDT", "BNBUSDT",
 ];
 
 const snapshots = await Promise.all(
