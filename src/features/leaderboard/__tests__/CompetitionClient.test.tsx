@@ -9,36 +9,37 @@ const mockToastSuccess = vi.fn();
 
 // Mock next-intl
 vi.mock("next-intl", () => ({
-  useTranslations: (ns: string) => (key: string, _params?: Record<string, unknown>) => {
-    const messages: Record<string, string> = {
-      "title": "Trading Konkurranse",
-      "subtitle": "Konkurrer og vinn",
-      "yourPosition": "Din posisjon",
-      "notParticipating": "Du deltar ikke ennå",
-      "startFirstTrade": "Start din første trade",
-      "leaderboard": "Toppliste",
-      "weekly": "Ukentlig",
-      "monthly": "Månedlig",
-      "allTime": "Totalt",
-      "loading": "Laster...",
-      "risk": "risiko",
-      "trades": "handler",
-      "winRate": "Win rate",
-      "return": "Avkastning",
-      "copy": "Kopier",
-      "copyStrategy": "Kopier {name}s strategi?",
-      "copyStrategyDesc": "Risikonivå: {risk}",
-      "copyError": "Kunne ikke kopiere strategi",
-      "howToWin": "Hvordan vinne",
-      "howToWinDesc": "Beskrivelse",
-      "whatIsCopying": "Hva er kopiering?",
-      "whatIsCopyingDesc": "Beskrivelse",
-      "weeklyPrize": "Ukentlig premie",
-      "monthlyPrize": "Månedlig premie",
-      "noActive": "Ingen aktive tradere",
-    };
-    return messages[key] || key;
-  },
+  useTranslations:
+    (ns: string) => (key: string, _params?: Record<string, unknown>) => {
+      const messages: Record<string, string> = {
+        title: "Trading Konkurranse",
+        subtitle: "Konkurrer og vinn",
+        yourPosition: "Din posisjon",
+        notParticipating: "Du deltar ikke ennå",
+        startFirstTrade: "Start din første trade",
+        leaderboard: "Toppliste",
+        weekly: "Ukentlig",
+        monthly: "Månedlig",
+        allTime: "Totalt",
+        loading: "Laster...",
+        risk: "risiko",
+        trades: "handler",
+        winRate: "Win rate",
+        return: "Avkastning",
+        copy: "Kopier",
+        copyStrategy: "Kopier {name}s strategi?",
+        copyStrategyDesc: "Risikonivå: {risk}",
+        copyError: "Kunne ikke kopiere strategi",
+        howToWin: "Hvordan vinne",
+        howToWinDesc: "Beskrivelse",
+        whatIsCopying: "Hva er kopiering?",
+        whatIsCopyingDesc: "Beskrivelse",
+        weeklyPrize: "Ukentlig premie",
+        monthlyPrize: "Månedlig premie",
+        noActive: "Ingen aktive tradere",
+      };
+      return messages[key] || key;
+    },
   useLocale: () => "no",
 }));
 
@@ -51,12 +52,24 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/lib/utils", () => ({
   createClient: () => ({
     auth: {
-      getUser: () => Promise.resolve({
-        data: { user: { id: "user-123", email: "test@test.com" } },
-      }),
+      getUser: () =>
+        Promise.resolve({
+          data: { user: { id: "user-123", email: "test@test.com" } },
+        }),
     },
   }),
-  cn: (...classes: (string | boolean | undefined)[]) => classes.filter(Boolean).join(" "),
+  cn: (...classes: (string | boolean | undefined)[]) =>
+    classes.filter(Boolean).join(" "),
+}));
+
+// Mock konkurranse-datoer (2026-08-19): august-konkurransen er over
+// (COMPETITION_END=2026-08-15) — komponenten viser «ended»-state. Disse
+// testene forutsetter en AKTIV konkurranse (join-CTA) og må være
+// tidsuavhengige, ellers feiler de hver gang sesongen ruller over.
+vi.mock("@/lib/competition", () => ({
+  COMPETITION_ID: "2026-08",
+  COMPETITION_START: new Date("2026-08-01T00:00:00+02:00"),
+  COMPETITION_END: new Date("2099-01-01T00:00:00+02:00"),
 }));
 
 // Mock paper-trading supabase
@@ -157,7 +170,23 @@ describe("CompetitionClient", () => {
 
   it("switches timeframe on button click", async () => {
     vi.mocked(getLeaderboard).mockResolvedValue([
-      { id: "1", rank: 1, user_display_name: "Erik T.", return_pct: 15.5, win_rate: 70, total_trades: 20, risk_level: "high", sharpe_ratio: 1.2, period: "weekly", user_id: "u1", simulation_id: "s1", created_at: new Date().toISOString(), is_public: true, avatar_url: null, previous_rank: 2 },
+      {
+        id: "1",
+        rank: 1,
+        user_display_name: "Erik T.",
+        return_pct: 15.5,
+        win_rate: 70,
+        total_trades: 20,
+        risk_level: "high",
+        sharpe_ratio: 1.2,
+        period: "weekly",
+        user_id: "u1",
+        simulation_id: "s1",
+        created_at: new Date().toISOString(),
+        is_public: true,
+        avatar_url: null,
+        previous_rank: 2,
+      },
     ]);
     vi.mocked(getUserRank).mockResolvedValue(null);
 
@@ -180,7 +209,23 @@ describe("CompetitionClient", () => {
 
   it("calls startAutoTrade when copying a strategy", async () => {
     vi.mocked(getLeaderboard).mockResolvedValue([
-      { id: "1", rank: 1, user_display_name: "Erik T.", return_pct: 15.5, win_rate: 70, total_trades: 20, risk_level: "high", sharpe_ratio: 1.2, period: "weekly", user_id: "u1", simulation_id: "s1", created_at: new Date().toISOString(), is_public: true, avatar_url: null, previous_rank: 2 },
+      {
+        id: "1",
+        rank: 1,
+        user_display_name: "Erik T.",
+        return_pct: 15.5,
+        win_rate: 70,
+        total_trades: 20,
+        risk_level: "high",
+        sharpe_ratio: 1.2,
+        period: "weekly",
+        user_id: "u1",
+        simulation_id: "s1",
+        created_at: new Date().toISOString(),
+        is_public: true,
+        avatar_url: null,
+        previous_rank: 2,
+      },
     ]);
     vi.mocked(getUserRank).mockResolvedValue(null);
     window.confirm = vi.fn(() => true);
@@ -203,7 +248,23 @@ describe("CompetitionClient", () => {
 
   it("shows error toast when copy fails", async () => {
     vi.mocked(getLeaderboard).mockResolvedValue([
-      { id: "1", rank: 1, user_display_name: "Erik T.", return_pct: 15.5, win_rate: 70, total_trades: 20, risk_level: "high", sharpe_ratio: 1.2, period: "weekly", user_id: "u1", simulation_id: "s1", created_at: new Date().toISOString(), is_public: true, avatar_url: null, previous_rank: 2 },
+      {
+        id: "1",
+        rank: 1,
+        user_display_name: "Erik T.",
+        return_pct: 15.5,
+        win_rate: 70,
+        total_trades: 20,
+        risk_level: "high",
+        sharpe_ratio: 1.2,
+        period: "weekly",
+        user_id: "u1",
+        simulation_id: "s1",
+        created_at: new Date().toISOString(),
+        is_public: true,
+        avatar_url: null,
+        previous_rank: 2,
+      },
     ]);
     vi.mocked(getUserRank).mockResolvedValue(null);
     window.confirm = vi.fn(() => true);
@@ -219,7 +280,9 @@ describe("CompetitionClient", () => {
     fireEvent.click(copyButtons[0]);
 
     await waitFor(() => {
-      expect(mockToastError).toHaveBeenCalledWith("Kunne ikke kopiere strategi");
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Kunne ikke kopiere strategi",
+      );
     });
   });
 
@@ -239,16 +302,20 @@ describe("CompetitionClient", () => {
   it("shows join CTA when user has not joined", async () => {
     vi.mocked(getLeaderboard).mockResolvedValue([]);
     vi.mocked(getUserRank).mockResolvedValue(null);
-    vi.stubGlobal("fetch", vi.fn((url: string) =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(
-          String(url).includes("display-name")
-            ? { display_name: "RaskRev", suggestion: "" }
-            : { joined: false, participants: 10 }
-        ),
-      })
-    ));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string) =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve(
+              String(url).includes("display-name")
+                ? { display_name: "RaskRev", suggestion: "" }
+                : { joined: false, participants: 10 },
+            ),
+        }),
+      ),
+    );
 
     render(<CompetitionClient params={{ locale: "no" }} />);
 
@@ -261,19 +328,23 @@ describe("CompetitionClient", () => {
   it("shows joined badge after successful join", async () => {
     vi.mocked(getLeaderboard).mockResolvedValue([]);
     vi.mocked(getUserRank).mockResolvedValue(null);
-    vi.stubGlobal("fetch", vi.fn((url: string, init?: RequestInit) =>
-      Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve(
-          String(url).includes("display-name")
-            ? { display_name: "RaskRev", suggestion: "" }
-            : init?.method === "POST"
-              ? { joined: true, participants: 11 }
-              : { joined: false, participants: 10 }
-        ),
-      })
-    ));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string, init?: RequestInit) =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve(
+              String(url).includes("display-name")
+                ? { display_name: "RaskRev", suggestion: "" }
+                : init?.method === "POST"
+                  ? { joined: true, participants: 11 }
+                  : { joined: false, participants: 10 },
+            ),
+        }),
+      ),
+    );
 
     render(<CompetitionClient params={{ locale: "no" }} />);
 
