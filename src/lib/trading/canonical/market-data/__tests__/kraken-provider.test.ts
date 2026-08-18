@@ -398,11 +398,12 @@ describe("KrakenMarketDataProvider", () => {
       );
     });
 
-    it("clamper absurd change24hPct til 0 (Kraken o[1]-søppel, 2026-08-19)", async () => {
+    it("Kraken o[1]-søppel → beregner endring fra klines i stedet (2026-08-19)", async () => {
       // o[1] = 4,0 (søppel — observert for XBTUSDC i prod) → 1 613 950 %.
-      // Uten clamp feiler coin_prices-upserten numeric(10,4) → cache frosset.
+      // Uten guard feiler coin_prices-upserten numeric(10,4) → cache frosset.
+      // Fiks: fallback til get24hChange (24 stk 1h-lys) → EKTE endring.
       const pair = "XBTUSDC";
-      const body = {
+      const garbageTicker = {
         error: [],
         result: {
           [pair]: {
@@ -414,7 +415,75 @@ describe("KrakenMarketDataProvider", () => {
           },
         },
       };
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(okResponse(body)));
+      const mockFetch = vi.fn((url: string) => {
+        if (url.includes("/Ticker")) {
+          return Promise.resolve(okResponse(garbageTicker));
+        }
+        // OHLC-kall (get24hChange): close 100..123 → 23 %
+        return Promise.resolve(
+          okResponse(ohlcResult(pair, buildHourlyCandles(24))),
+        );
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const snap = await provider.get24hSnapshot("BTCUSDT");
+
+      expect(snap.change24hPct).toBeCloseTo(23, 5); // EKTE verdi, ikke 0
+      expect(snap.price).toBe(64562.78);
+    });
+
+    it("o[1] tom streng (NaN) → klines-fallback gir EKTE endring (2026-08-19)", async () => {
+      // Kraken returnerer o: ["0.172888", ""] for enkelte par (ADA/DOGE/LINK)
+      // — tom 24h-open → NaN. Må også fanges av fallback-betingelsen.
+      const pair = "ADAUSDC";
+      const nanTicker = {
+        error: [],
+        result: {
+          [pair]: {
+            c: ["0.172888", "0.5"],
+            h: ["0.174", "0.174"],
+            l: ["0.171", "0.171"],
+            o: ["0.172888", ""],
+            v: ["1000", "1000"],
+          },
+        },
+      };
+      const mockFetch = vi.fn((url: string) => {
+        if (url.includes("/Ticker")) {
+          return Promise.resolve(okResponse(nanTicker));
+        }
+        return Promise.resolve(
+          okResponse(ohlcResult(pair, buildHourlyCandles(24))),
+        );
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const snap = await provider.get24hSnapshot("ADAUSDT");
+
+      expect(snap.change24hPct).toBeCloseTo(23, 5); // fra klines, ikke 0/NaN
+    });
+
+    it("o[1]-søppel OG klines nede → 0 (siste forsvarslinje, aldri overflow)", async () => {
+      const pair = "XBTUSDC";
+      const garbageTicker = {
+        error: [],
+        result: {
+          [pair]: {
+            c: ["64562.78", "0.5"],
+            h: ["64990.11", "64990.11"],
+            l: ["64001.46", "64001.46"],
+            o: ["64471.70", "4.0"],
+            v: ["265.39", "265.39"],
+          },
+        },
+      };
+      const mockFetch = vi.fn((url: string) => {
+        if (url.includes("/Ticker")) {
+          return Promise.resolve(okResponse(garbageTicker));
+        }
+        return Promise.resolve(okResponse(ohlcResult(pair, []))); // ingen lys → throw
+      });
+      vi.stubGlobal("fetch", mockFetch);
 
       const snap = await provider.get24hSnapshot("BTCUSDT");
 

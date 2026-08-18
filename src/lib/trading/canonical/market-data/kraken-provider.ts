@@ -227,17 +227,27 @@ export class KrakenMarketDataProvider implements MarketDataProvider {
 
     const last = parseFloat(t.c[0]);
     const open24h = parseFloat(t.o[1]);
-    const change24hPct = open24h > 0 ? ((last - open24h) / open24h) * 100 : 0;
+    // o[1] er upålitelig: tom streng (NaN) ELLER absurd verdi (4,0 i stedet
+    // for ~64 000). Begge = datafeil → klines-basert beregning (2026-08-19).
+    const openPlausibel = Number.isFinite(open24h) && open24h > 0;
+    let change24hPct = openPlausibel
+      ? ((last - open24h) / open24h) * 100
+      : Number.NaN;
 
     // 2026-08-19 (prod-hendelse): Kraken o[1] (24h-open) er upålitelig for
     // enkelte par (observert 4,0 for XBTUSDC → 1 613 969 % «endring»).
     // Uten clamp feiler coin_prices-upserten (numeric(10,4)) → cache frosset
-    // siden 9. aug. |endring| > 1000 % er umulig for disse major-parene på 24h
-    // — behandle som datafeil (0) i stedet for å forurense cache/API.
-    const safeChange24hPct =
-      Number.isFinite(change24hPct) && Math.abs(change24hPct) <= 1000
-        ? change24hPct
-        : 0;
+    // siden 9. aug. |endring| > 1000 % er umulig for disse major-parene på 24h.
+    // I stedet for å returnere 0 (feil data i UI) beregnes endringen fra 24
+    // stk 1h-lys (get24hChange — pålitelig, ett ekstra kall kun ved datafeil).
+    if (!Number.isFinite(change24hPct) || Math.abs(change24hPct) > 1000) {
+      try {
+        change24hPct = await this.get24hChange(symbol);
+      } catch {
+        change24hPct = 0;
+      }
+    }
+    const safeChange24hPct = Number.isFinite(change24hPct) ? change24hPct : 0;
 
     return {
       price: last,
