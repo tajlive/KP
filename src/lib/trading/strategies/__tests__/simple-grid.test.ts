@@ -8,7 +8,12 @@
  */
 import { describe, it, expect } from "vitest";
 import { SimpleGridStrategy, SIMPLE_GRID_DEFAULTS } from "../simple-grid";
-import type { MinimalSession, StrategyInput, Candle, StrategyPosition } from "../types";
+import type {
+  MinimalSession,
+  StrategyInput,
+  Candle,
+  StrategyPosition,
+} from "../types";
 
 function candle(close: number, time = 0): Candle {
   return { time, open: close, high: close, low: close, close, volume: 1000 };
@@ -22,19 +27,21 @@ function sessionMed(opts: {
   lots?: StrategyPosition["lots"];
   capital?: number;
   config?: Record<string, unknown>;
+  strategyConfig?: Record<string, unknown>;
 }): MinimalSession {
   return {
-    open_position: opts.lots && opts.lots.length > 0
-      ? {
-          side: "long",
-          quantity: opts.lots.reduce((s, l) => s + l.quantity, 0),
-          entry_price: opts.lots[0].entryPrice,
-          entry_time: opts.lots[0].timestamp,
-          lots: opts.lots,
-        }
-      : null,
+    open_position:
+      opts.lots && opts.lots.length > 0
+        ? {
+            side: "long",
+            quantity: opts.lots.reduce((s, l) => s + l.quantity, 0),
+            entry_price: opts.lots[0].entryPrice,
+            entry_time: opts.lots[0].timestamp,
+            lots: opts.lots,
+          }
+        : null,
     last_tick_at: null,
-    strategy_config: {},
+    strategy_config: opts.strategyConfig ?? {},
     ...(opts.capital !== undefined
       ? ({ current_capital_nok: opts.capital } as object)
       : {}),
@@ -64,7 +71,10 @@ describe("SimpleGridStrategy — COMBO", () => {
       input(candlesAv(Array(50).fill(100)), sessionMed({ capital: 100000 })),
     );
     expect(sig.action).toBe("buy");
-    expect(sig.positionSize).toBeCloseTo(SIMPLE_GRID_DEFAULTS.dca_amount_pct, 5);
+    expect(sig.positionSize).toBeCloseTo(
+      SIMPLE_GRID_DEFAULTS.dca_amount_pct,
+      5,
+    );
     expect(sig.reason).toBeTruthy();
   });
 
@@ -73,7 +83,10 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(97)];
     const sig = strat.evaluate(input(candles, sessionMed({ capital: 100000 })));
     expect(sig.action).toBe("buy");
-    expect(sig.positionSize).toBeCloseTo(SIMPLE_GRID_DEFAULTS.grid_amount_pct, 5);
+    expect(sig.positionSize).toBeCloseTo(
+      SIMPLE_GRID_DEFAULTS.grid_amount_pct,
+      5,
+    );
     expect(sig.indicators?.grid_level).toBeGreaterThanOrEqual(1);
   });
 
@@ -81,11 +94,15 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(97)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 1, entryPrice: 97.1,
-        timestamp: new Date(NÅ - 3600_000).toISOString(), // 1t siden — for fersk for DCA
-        originalQuantity: 1,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 1,
+          entryPrice: 97.1,
+          timestamp: new Date(NÅ - 3600_000).toISOString(), // 1t siden — for fersk for DCA
+          originalQuantity: 1,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("hold");
@@ -95,11 +112,15 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(102)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 1.0, entryPrice: 100,
-        timestamp: new Date(NÅ - 7200_000).toISOString(),
-        originalQuantity: 1.0,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 1.0,
+          entryPrice: 100,
+          timestamp: new Date(NÅ - 7200_000).toISOString(),
+          originalQuantity: 1.0,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("sell");
@@ -112,11 +133,15 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(102)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 0.5, entryPrice: 100, // delvis solgt (0.5 < 1.0)
-        timestamp: new Date(NÅ - 7200_000).toISOString(),
-        originalQuantity: 1.0,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 0.5,
+          entryPrice: 100, // delvis solgt (0.5 < 1.0)
+          timestamp: new Date(NÅ - 7200_000).toISOString(),
+          originalQuantity: 1.0,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).not.toBe("sell");
@@ -126,11 +151,15 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(99)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 0.5, entryPrice: 100,
-        timestamp: new Date(NÅ - 7200_000).toISOString(),
-        originalQuantity: 1.0,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 0.5,
+          entryPrice: 100,
+          timestamp: new Date(NÅ - 7200_000).toISOString(),
+          originalQuantity: 1.0,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("sell");
@@ -143,11 +172,15 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(101)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 0.5, entryPrice: 100.4, // pris 101 < 100.4*1.015=101.9
-        timestamp: new Date(NÅ - 1800_000).toISOString(),
-        originalQuantity: 0.5,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 0.5,
+          entryPrice: 100.4, // pris 101 < 100.4*1.015=101.9
+          timestamp: new Date(NÅ - 1800_000).toISOString(),
+          originalQuantity: 0.5,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).not.toBe("sell");
@@ -157,15 +190,22 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(100)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 1, entryPrice: 100,
-        timestamp: new Date(NÅ - 5 * 3600_000).toISOString(), // 5t siden
-        originalQuantity: 1,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 1,
+          entryPrice: 100,
+          timestamp: new Date(NÅ - 5 * 3600_000).toISOString(), // 5t siden
+          originalQuantity: 1,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("buy");
-    expect(sig.positionSize).toBeCloseTo(SIMPLE_GRID_DEFAULTS.dca_amount_pct, 5);
+    expect(sig.positionSize).toBeCloseTo(
+      SIMPLE_GRID_DEFAULTS.dca_amount_pct,
+      5,
+    );
     expect(sig.indicators?.dca).toBe(true);
   });
 
@@ -173,11 +213,15 @@ describe("SimpleGridStrategy — COMBO", () => {
     const candles = [...candlesAv(Array(48).fill(100)), candle(100)];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 1, entryPrice: 100,
-        timestamp: new Date(NÅ - 3600_000).toISOString(),
-        originalQuantity: 1,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 1,
+          entryPrice: 100,
+          timestamp: new Date(NÅ - 3600_000).toISOString(),
+          originalQuantity: 1,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("hold");
@@ -185,17 +229,151 @@ describe("SimpleGridStrategy — COMBO", () => {
 
   it("salg har prioritet over kjøp i samme tick", () => {
     // Pris 102 (lot kan selges) men anker faller slik at et nivå også treffes
-    const candles = [...candlesAv(Array(47).fill(103)), candle(101.5), candle(102)];
+    const candles = [
+      ...candlesAv(Array(47).fill(103)),
+      candle(101.5),
+      candle(102),
+    ];
     const session = sessionMed({
       capital: 100000,
-      lots: [{
-        id: "l1", quantity: 0.3, entryPrice: 100.3,
-        timestamp: new Date(NÅ - 3600_000).toISOString(),
-        originalQuantity: 0.3,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 0.3,
+          entryPrice: 100.3,
+          timestamp: new Date(NÅ - 3600_000).toISOString(),
+          originalQuantity: 0.3,
+        },
+      ],
     });
     const sig = strat.evaluate(input(candles, session));
     expect(sig.action).toBe("sell");
+  });
+});
+
+describe("E6: kjøps-cooldown + maks kjøp/dag (2026-08-16/19)", () => {
+  const strat = new SimpleGridStrategy();
+
+  // Grid-kjøp-trigger: pris 97 (nivå 2), ingen lots → ellers buy
+  const gridCandles = [...candlesAv(Array(48).fill(100)), candle(97)];
+
+  it("cooldown aktiv (30 min siden siste kjøp, cooldown 120) → hold, selv om grid treffer", () => {
+    const sig = strat.evaluate(
+      input(
+        gridCandles,
+        sessionMed({
+          capital: 100000,
+          strategyConfig: {
+            last_buy_at: new Date(NÅ - 30 * 60_000).toISOString(),
+          },
+        }),
+        { buy_cooldown_minutes: 120 },
+      ),
+    );
+    expect(sig.action).toBe("hold");
+    expect(sig.indicators?.cooldown_min_igjen).toBe(90);
+  });
+
+  it("cooldown utløpt (3t siden, cooldown 120) → grid-kjøp gjennomføres", () => {
+    const sig = strat.evaluate(
+      input(
+        gridCandles,
+        sessionMed({
+          capital: 100000,
+          strategyConfig: {
+            last_buy_at: new Date(NÅ - 3 * 3600_000).toISOString(),
+          },
+        }),
+        { buy_cooldown_minutes: 120 },
+      ),
+    );
+    expect(sig.action).toBe("buy");
+  });
+
+  it("maks kjøp/dag nådd (2/2 i dag) → hold med daily_buys_used", () => {
+    const iDag = new Date(NÅ).toISOString().split("T")[0];
+    const sig = strat.evaluate(
+      input(
+        gridCandles,
+        sessionMed({
+          capital: 100000,
+          strategyConfig: { daily_buys_today: iDag, daily_buy_count: 2 },
+        }),
+        { max_buys_per_day: 2 },
+      ),
+    );
+    expect(sig.action).toBe("hold");
+    expect(sig.indicators?.daily_buys_used).toBe(2);
+    expect(sig.indicators?.daily_buys_max).toBe(2);
+  });
+
+  it("budsjett igjen (1/2 i dag) → kjøp gjennomføres", () => {
+    const iDag = new Date(NÅ).toISOString().split("T")[0];
+    const sig = strat.evaluate(
+      input(
+        gridCandles,
+        sessionMed({
+          capital: 100000,
+          strategyConfig: { daily_buys_today: iDag, daily_buy_count: 1 },
+        }),
+        { max_buys_per_day: 2 },
+      ),
+    );
+    expect(sig.action).toBe("buy");
+  });
+
+  it("gårsdagens teller nullstilles automatisk (daily_buys_today=gårsdagen)", () => {
+    const iGår = new Date(NÅ - 24 * 3600_000).toISOString().split("T")[0];
+    const sig = strat.evaluate(
+      input(
+        gridCandles,
+        sessionMed({
+          capital: 100000,
+          strategyConfig: { daily_buys_today: iGår, daily_buy_count: 5 },
+        }),
+        { max_buys_per_day: 2 },
+      ),
+    );
+    expect(sig.action).toBe("buy"); // 5 kjøp i går teller ikke i dag
+  });
+
+  it("cooldown blokkerer ALDRI salg (pris 102 → take-profit selv med aktiv cooldown)", () => {
+    const candles = [...candlesAv(Array(48).fill(100)), candle(102)];
+    const session = sessionMed({
+      capital: 100000,
+      strategyConfig: {
+        last_buy_at: new Date(NÅ - 5 * 60_000).toISOString(),
+      },
+      lots: [
+        {
+          id: "l1",
+          quantity: 1.0,
+          entryPrice: 100,
+          timestamp: new Date(NÅ - 7200_000).toISOString(),
+          originalQuantity: 1.0,
+        },
+      ],
+    });
+    const sig = strat.evaluate(
+      input(candles, session, { buy_cooldown_minutes: 120 }),
+    );
+    expect(sig.action).toBe("sell");
+    expect(sig.exitReason).toBe("take_profit_partial");
+  });
+
+  it("default (0 = av) → ingen endring fra baseline: kjøp gjennomføres", () => {
+    const sig = strat.evaluate(
+      input(
+        gridCandles,
+        sessionMed({
+          capital: 100000,
+          strategyConfig: {
+            last_buy_at: new Date(NÅ - 5 * 60_000).toISOString(),
+          },
+        }),
+      ),
+    );
+    expect(sig.action).toBe("buy");
   });
 });
 
@@ -209,11 +387,15 @@ describe("Grid-pause under hele rutenettet (kanonisk range-exit)", () => {
         quantity: 1,
         entry_price: 100,
         entry_time: new Date(NÅ - timerSiden * 3600_000).toISOString(),
-        lots: [{
-          id: "l1", quantity: 1, entryPrice: 100,
-          timestamp: new Date(NÅ - timerSiden * 3600_000).toISOString(),
-          originalQuantity: 1,
-        }],
+        lots: [
+          {
+            id: "l1",
+            quantity: 1,
+            entryPrice: 100,
+            timestamp: new Date(NÅ - timerSiden * 3600_000).toISOString(),
+            originalQuantity: 1,
+          },
+        ],
       },
       last_tick_at: null,
       strategy_config: {},
@@ -241,7 +423,10 @@ describe("Drawdown-gate (krasj-pause)", () => {
 
   it("pris >20 % under topp → «slipp posene»: selger ALT (range_exit)", () => {
     // 720 candles: topp 130, siste 48 faller til 95 (>20 % under topp)
-    const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(95))];
+    const candles = [
+      ...candlesAv(Array(672).fill(130)),
+      ...candlesAv(Array(48).fill(95)),
+    ];
     const sig = strat.evaluate(input(candles, lagSession({})));
     expect(sig.action).toBe("sell");
     expect(sig.exitReason).toBe("range_exit");
@@ -250,14 +435,22 @@ describe("Drawdown-gate (krasj-pause)", () => {
   });
 
   it("liquidate_on_range_exit: false → bare pause (aldri tvunget salg)", () => {
-    const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(95))];
-    const sig = strat.evaluate(input(candles, lagSession({}), { liquidate_on_range_exit: false }));
+    const candles = [
+      ...candlesAv(Array(672).fill(130)),
+      ...candlesAv(Array(48).fill(95)),
+    ];
+    const sig = strat.evaluate(
+      input(candles, lagSession({}), { liquidate_on_range_exit: false }),
+    );
     expect(sig.action).toBe("hold");
     expect(sig.indicators?.regime).toBe("drawdown_paused");
   });
 
   it("pris innen 20 % av toppen → gate åpen", () => {
-    const candles = [...candlesAv(Array(672).fill(130)), ...candlesAv(Array(48).fill(120))];
+    const candles = [
+      ...candlesAv(Array(672).fill(130)),
+      ...candlesAv(Array(48).fill(120)),
+    ];
     const sig = strat.evaluate(input(candles, lagSession({})));
     expect(sig.indicators?.regime).not.toBe("drawdown_paused");
   });
@@ -270,11 +463,15 @@ function lagSession({ timerSiden = 10 }: { timerSiden?: number }) {
       quantity: 1,
       entry_price: 100,
       entry_time: new Date(NÅ - timerSiden * 3600_000).toISOString(),
-      lots: [{
-        id: "l1", quantity: 1, entryPrice: 100,
-        timestamp: new Date(NÅ - timerSiden * 3600_000).toISOString(),
-        originalQuantity: 1,
-      }],
+      lots: [
+        {
+          id: "l1",
+          quantity: 1,
+          entryPrice: 100,
+          timestamp: new Date(NÅ - timerSiden * 3600_000).toISOString(),
+          originalQuantity: 1,
+        },
+      ],
     },
     last_tick_at: null,
     strategy_config: {},
@@ -289,13 +486,24 @@ describe("E1: adaptiv ATR-steg", () => {
     // Sinus med amplitude amp rundt 100 — kontrollert volatilitet
     return Array.from({ length: n }, (_, i) => {
       const p = 100 + amp * Math.sin((i * Math.PI) / 4);
-      return { time: i * 3600_000, open: p, high: p + amp / 2, low: p - amp / 2, close: p, volume: 1000 };
+      return {
+        time: i * 3600_000,
+        open: p,
+        high: p + amp / 2,
+        low: p - amp / 2,
+        close: p,
+        volume: 1000,
+      };
     });
   }
 
   it("høy volatilitet → større steg (cap 3 %), lav volatilitet → gulv 1 %", () => {
-    const høyVol = strat.evaluate(input(volCandles(8, 60), lagSession({}), { adaptive_step: true }));
-    const lavVol = strat.evaluate(input(volCandles(0.1, 60), lagSession({}), { adaptive_step: true }));
+    const høyVol = strat.evaluate(
+      input(volCandles(8, 60), lagSession({}), { adaptive_step: true }),
+    );
+    const lavVol = strat.evaluate(
+      input(volCandles(0.1, 60), lagSession({}), { adaptive_step: true }),
+    );
     // Begge gir et signal uansett — men indikatorer avslører steg via level-avstand
     expect(høyVol).toBeTruthy();
     expect(lavVol).toBeTruthy();

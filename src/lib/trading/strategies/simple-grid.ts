@@ -89,6 +89,18 @@ export const SIMPLE_GRID_DEFAULTS = {
   bb_period: 20,
   bb_stddev: 2,
   bbw_min_pct: 2.0,
+
+  /** E6 Kjøps-cooldown (2026-08-16, ukesforslag uke 33):
+      Minimum antall MINUTTER mellom to kjøp (grid ELLER DCA).
+      Default 0 = AV — ingen endring fra baseline uten config.
+      Fasit-bevis: SOL-sesjon ec00e202 kjøpte 19 ganger på 2,5 t
+      (100 000 → 88 909 NOK, −11 % på < 3 t). Block Research:
+      «blind DCA into a falling knife with no cap on safety orders». */
+  buy_cooldown_minutes: 0,
+
+  /** E6b Maks kjøp per dag (2026-08-16): hardt tak på antall kjøp
+      (grid + DCA) innenfor samme UTC-dag. Default 0 = AV. */
+  max_buys_per_day: 0,
 } as const;
 
 type Lots = NonNullable<NonNullable<MinimalSession["open_position"]>["lots"]>;
@@ -304,6 +316,50 @@ export class SimpleGridStrategy implements StrategyEngine {
         },
         reason: `Piloten har investert maksimalt tillatt (${cfg.max_invested_pct * 100} %). Venter på salg før nye kjøp.`,
       };
+    }
+
+    // ── E6 Kjøps-cooldown + max buys/dag (2026-08-16, ukesforslag uke 33) ─
+    // Blokkerer ALLE kjøp (grid + DCA) hvis:
+    //   a) det har gått mindre enn buy_cooldown_minutes siden siste kjøp, eller
+    //   b) dagens kjøpsbudsjett (max_buys_per_day) er brukt opp.
+    // Salg blokkeres ALDRI. State leses fra strategy_config — samme mønster
+    // som DCA: tick/route.ts persisterer last_buy_at ved kjøp.
+    const cooldownMin = cfg.buy_cooldown_minutes ?? 0;
+    const maxBuys = cfg.max_buys_per_day ?? 0;
+    if (cooldownMin > 0 || maxBuys > 0) {
+      const stratCfg = (session.strategy_config ?? {}) as Record<
+        string,
+        unknown
+      >;
+      const sistKjøpAt = (stratCfg.last_buy_at as string | undefined) ?? null;
+      const sistKjøpTid = sistKjøpAt ? new Date(sistKjøpAt).getTime() : 0;
+      const minutterSiden =
+        sistKjøpTid > 0
+          ? (nå - sistKjøpTid) / 60_000
+          : Number.POSITIVE_INFINITY;
+      const iCooldown = cooldownMin > 0 && minutterSiden < cooldownMin;
+
+      const iDag = new Date(nå).toISOString().split("T")[0];
+      const kjøpDag = (stratCfg.daily_buys_today as string) ?? "";
+      const kjøpAntall =
+        kjøpDag === iDag ? ((stratCfg.daily_buy_count as number) ?? 0) : 0;
+      const budsjettBrukt = maxBuys > 0 && kjøpAntall >= maxBuys;
+
+      if (iCooldown || budsjettBrukt) {
+        return {
+          action: "hold",
+          indicators: {
+            cooldown_min_igjen: iCooldown
+              ? Math.max(0, Math.round(cooldownMin - minutterSiden))
+              : 0,
+            daily_buys_used: kjøpAntall,
+            daily_buys_max: maxBuys,
+          },
+          reason: iCooldown
+            ? `Kjøps-cooldown aktiv — Piloten venter ${Math.max(0, Math.round(cooldownMin - minutterSiden))} min før neste kjøp.`
+            : `Dagens kjøpsbudsjett er brukt (${kjøpAntall}/${maxBuys}) — Piloten venter til i morgen.`,
+        };
+      }
     }
 
     // ── 2. GRID-KJØP: dypeste utløste, ikke-fylte nivå ───────────────────

@@ -1465,6 +1465,41 @@ async function processSession(
         }
       }
 
+      // ── E6 Kjøps-cooldown-state (2026-08-16/19): persister siste kjøp +
+      // daglig kjøpsteller for ALLE strategier (grid + DCA). simple-grid.ts
+      // leser disse fra strategy_config — uten denne persistensen virker
+      // buy_cooldown_minutes / max_buys_per_day aldri (state finnes ikke).
+      if (signal.action === "buy") {
+        try {
+          const stratCfg = (session.strategy_config ?? {}) as Record<
+            string,
+            unknown
+          >;
+          const iDag = new Date().toISOString().split("T")[0];
+          const forrigeDag = stratCfg.daily_buys_today;
+          const forrigeAntall =
+            forrigeDag === iDag
+              ? ((stratCfg.daily_buy_count as number) ?? 0)
+              : 0;
+          const e6Cfg = {
+            ...stratCfg,
+            last_buy_at: new Date().toISOString(),
+            daily_buys_today: iDag,
+            daily_buy_count: forrigeAntall + 1,
+          };
+          await db
+            .from("trading_sessions")
+            .update({ strategy_config: e6Cfg } as never)
+            .eq("id", session.id);
+          session.strategy_config = e6Cfg as TradingSession["strategy_config"];
+        } catch (e6Err) {
+          console.error(
+            `[Tick] Failed to persist E6 buy state for ${session.id}:`,
+            e6Err,
+          );
+        }
+      }
+
       // Log Dark Fleet / regime metadata for every trade
       if (signal.action === "buy" || signal.action === "sell") {
         try {
