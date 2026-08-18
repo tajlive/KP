@@ -57,13 +57,22 @@ export async function GET(request: NextRequest) {
         .select("symbol, price")
         .in("symbol", symbolList);
       if (dbPrices && dbPrices.length > 0) {
-        const prices = dbPrices.map((r) => ({
-          symbol: r.symbol,
-          price: Number(r.price ?? 0),
-        })).filter((p) => p.price > 0);
+        // coin_prices.price er NOK — del på rate for USDT-kontrakt (2026-08-19)
+        const { getUsdtToNokRateAsync } =
+          await import("@/lib/trading/currency");
+        const rate = await getUsdtToNokRateAsync(supabase).catch(() => 0);
+        const divisor = Number.isFinite(rate) && rate > 0 ? rate : 1;
+        const prices = dbPrices
+          .map((r) => ({
+            symbol: r.symbol,
+            price: Number(r.price ?? 0) / divisor,
+          }))
+          .filter((p) => p.price > 0);
         return NextResponse.json({ prices });
       }
-    } catch { /* fall through */ }
+    } catch {
+      /* fall through */
+    }
     return NextResponse.json(
       { error: "Price fetch failed", symbol, status: 502 },
       { status: 502 },

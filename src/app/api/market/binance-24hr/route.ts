@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createKrakenMarketDataProvider } from "@/lib/trading/canonical/market-data";
+import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 
 /**
  * Offentlig rute: 24h-ticker for flere symboler.
@@ -20,9 +21,14 @@ async function fetchFromDB(symbols: string[]) {
 
   if (!data || data.length === 0) return null;
 
+  // coin_prices.price er NOK (sync-prices konverterer USDT→NOK). Live-veien
+  // returnerer USDT — del på rate for konsistent kontrakt (2026-08-19).
+  const rate = await getUsdtToNokRateAsync(supabase).catch(() => 0);
+  const divisor = Number.isFinite(rate) && rate > 0 ? rate : 1;
+
   return data.map((row) => ({
     symbol: row.symbol,
-    price: Number(row.price ?? 0),
+    price: Number(row.price ?? 0) / divisor,
     change24h: Number(row.price_change_percent_24h ?? 0),
   }));
 }
@@ -58,12 +64,15 @@ export async function GET(request: NextRequest) {
     );
 
     const valid = prices.filter(
-      (p): p is { symbol: string; price: number; change24h: number } => p !== null,
+      (p): p is { symbol: string; price: number; change24h: number } =>
+        p !== null,
     );
     if (valid.length > 0) {
       return NextResponse.json({ prices: valid });
     }
-  } catch { /* fall through til DB */ }
+  } catch {
+    /* fall through til DB */
+  }
 
   // 2. DB fallback
   const dbPrices = await fetchFromDB(symbolList);
@@ -71,5 +80,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ prices: dbPrices, source: "db-cache" });
   }
 
-  return NextResponse.json({ error: "Failed to fetch tickers" }, { status: 502 });
+  return NextResponse.json(
+    { error: "Failed to fetch tickers" },
+    { status: 502 },
+  );
 }

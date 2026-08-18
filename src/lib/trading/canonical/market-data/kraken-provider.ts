@@ -227,12 +227,21 @@ export class KrakenMarketDataProvider implements MarketDataProvider {
 
     const last = parseFloat(t.c[0]);
     const open24h = parseFloat(t.o[1]);
-    const change24hPct =
-      open24h > 0 ? ((last - open24h) / open24h) * 100 : 0;
+    const change24hPct = open24h > 0 ? ((last - open24h) / open24h) * 100 : 0;
+
+    // 2026-08-19 (prod-hendelse): Kraken o[1] (24h-open) er upålitelig for
+    // enkelte par (observert 4,0 for XBTUSDC → 1 613 969 % «endring»).
+    // Uten clamp feiler coin_prices-upserten (numeric(10,4)) → cache frosset
+    // siden 9. aug. |endring| > 1000 % er umulig for disse major-parene på 24h
+    // — behandle som datafeil (0) i stedet for å forurense cache/API.
+    const safeChange24hPct =
+      Number.isFinite(change24hPct) && Math.abs(change24hPct) <= 1000
+        ? change24hPct
+        : 0;
 
     return {
       price: last,
-      change24hPct,
+      change24hPct: safeChange24hPct,
       high24h: parseFloat(t.h[1]),
       low24h: parseFloat(t.l[1]),
       volume24h: parseFloat(t.v[1]),

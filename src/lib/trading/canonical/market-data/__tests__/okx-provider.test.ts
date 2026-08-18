@@ -10,14 +10,7 @@
  *  - Books: data[0].bids/asks = [[price, qty, ...], ...]
  */
 
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-} from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { OkxMarketDataProvider, OkxApiError } from "../okx-provider";
 
 const API = "https://eea.okx.com/api/v5/market";
@@ -36,9 +29,9 @@ function tickerResult(instId: string, price: string) {
     {
       instId,
       last: price,
-      open24h: "100.0",
-      high24h: "110.0",
-      low24h: "90.0",
+      open24h: "2990.0", // realistisk 24h-nivå (≈ pris) — clamp-guarden krever ≤1000 %
+      high24h: "3010.0",
+      low24h: "2980.0",
       vol24h: "500.0",
     },
   ];
@@ -48,10 +41,7 @@ function candlesResult(candles: unknown[]) {
   return candles;
 }
 
-function depthResult(
-  bids: string[][],
-  asks: string[][],
-) {
+function depthResult(bids: string[][], asks: string[][]) {
   return [{ bids, asks }];
 }
 
@@ -95,6 +85,8 @@ describe("OkxMarketDataProvider", () => {
       ["DOTUSDT", "DOT-USDT"],
       ["POLUSDT", "POL-USDT"],
       ["MATICUSDT", "POL-USDT"],
+      ["XRPUSDT", "XRP-USDT"],
+      ["UNIUSDT", "UNI-USDT"],
     ])("mapper %s → %s", async (internal, okx) => {
       const mockFetch = vi
         .fn()
@@ -181,14 +173,10 @@ describe("OkxMarketDataProvider", () => {
     it("kaster ved OKX feilkode i respons", async () => {
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(
-          okResponse([], "51000"),
-        ),
+        vi.fn().mockResolvedValue(okResponse([], "51000")),
       );
 
-      await expect(provider.getPrice("BTCUSDT")).rejects.toThrow(
-        "51000",
-      );
+      await expect(provider.getPrice("BTCUSDT")).rejects.toThrow("51000");
     });
   });
 
@@ -262,7 +250,9 @@ describe("OkxMarketDataProvider", () => {
     ])("mapper intervall %s → %s", async (interval, okxBar) => {
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(okResponse(candlesResult(buildHourlyCandles(2)))),
+        vi
+          .fn()
+          .mockResolvedValue(okResponse(candlesResult(buildHourlyCandles(2)))),
       );
 
       await provider.getKlines("ETHUSDT", interval, 100);
@@ -328,29 +318,48 @@ describe("OkxMarketDataProvider", () => {
 
       expect(snap).toEqual({
         price: 3000.5,
-        change24hPct: ((3000.5 - 100) / 100) * 100,
-        high24h: 110,
-        low24h: 90,
+        change24hPct: ((3000.5 - 2990) / 2990) * 100,
+        high24h: 3010,
+        low24h: 2980,
         volume24h: 500,
       });
+    });
+
+    it("clamper absurd change24hPct til 0 (numeric-overflow-guard, 2026-08-19)", async () => {
+      // open24h = 4,0 (søppel) → 1 613 950 % — må ikke nå coin_prices
+      // numeric(10,4)-kolonnen og fryse hele upserten.
+      const body = [
+        {
+          instId: "BTC-USDT",
+          last: "64562.78",
+          open24h: "4.0",
+          high24h: "65000",
+          low24h: "64000",
+          vol24h: "500",
+        },
+      ];
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(okResponse(body)));
+
+      const snap = await provider.get24hSnapshot("BTCUSDT");
+
+      expect(snap.change24hPct).toBe(0);
+      expect(snap.price).toBe(64562.78);
     });
   });
 
   describe("getDepth", () => {
     it("returnerer OrderBookSnapshot med default limit 20", async () => {
-      const mockFetch = vi
-        .fn()
-        .mockResolvedValue(
-          okResponse(
-            depthResult(
-              [
-                ["3000.0", "0.5"],
-                ["2999.5", "1.0"],
-              ],
-              [["3001.0", "0.7"]],
-            ),
+      const mockFetch = vi.fn().mockResolvedValue(
+        okResponse(
+          depthResult(
+            [
+              ["3000.0", "0.5"],
+              ["2999.5", "1.0"],
+            ],
+            [["3001.0", "0.7"]],
           ),
-        );
+        ),
+      );
       vi.stubGlobal("fetch", mockFetch);
 
       const depth = await provider.getDepth("ETHUSDT");

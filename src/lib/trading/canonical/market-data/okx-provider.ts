@@ -33,6 +33,10 @@ const INTERNAL_TO_OKX: Record<string, string> = {
   ADAUSDT: "ADA-USDT",
   DOTUSDT: "DOT-USDT",
   POLUSDT: "POL-USDT",
+  // 2026-08-19: XRP/UNI manglet → sync-prices droppet dem stille (begge
+  // kilder feilet) — OKX har XRP-USDT og UNI-USDT (verifisert live).
+  XRPUSDT: "XRP-USDT",
+  UNIUSDT: "UNI-USDT",
   // MATIC ble migrert til POL også på OKX (2024) — gamle konfigurasjoner
   // som fortsatt sier MATICUSDT må peke til POL-USDT.
   MATICUSDT: "POL-USDT",
@@ -135,9 +139,9 @@ export class OkxMarketDataProvider implements MarketDataProvider {
       return cached.price;
     }
 
-    const data = await okxFetch<
-      Array<{ instId: string; last: string }>
-    >(`/ticker?instId=${instId}`);
+    const data = await okxFetch<Array<{ instId: string; last: string }>>(
+      `/ticker?instId=${instId}`,
+    );
     if (data.length === 0) {
       throw new OkxApiError(`OKX API error: no ticker for ${instId}`, "404");
     }
@@ -229,9 +233,16 @@ export class OkxMarketDataProvider implements MarketDataProvider {
     const open24h = parseFloat(t.open24h);
     const change24hPct = open24h > 0 ? ((last - open24h) / open24h) * 100 : 0;
 
+    // 2026-08-19 (samme klasse som Kraken): clamp |endring| ≤ 1000 % — absurd
+    // verdi = datafeil. Beskytter coin_prices numeric(10,4)-kolonnen.
+    const safeChange24hPct =
+      Number.isFinite(change24hPct) && Math.abs(change24hPct) <= 1000
+        ? change24hPct
+        : 0;
+
     return {
       price: last,
-      change24hPct,
+      change24hPct: safeChange24hPct,
       high24h: parseFloat(t.high24h),
       low24h: parseFloat(t.low24h),
       volume24h: parseFloat(t.vol24h),
@@ -240,9 +251,9 @@ export class OkxMarketDataProvider implements MarketDataProvider {
 
   async getDepth(symbol: string, limit = 20): Promise<OrderBookSnapshot> {
     const instId = this.toOkx(symbol);
-    const data = await okxFetch<
-      Array<{ bids: string[][]; asks: string[][] }>
-    >(`/books?instId=${instId}&sz=${limit}`);
+    const data = await okxFetch<Array<{ bids: string[][]; asks: string[][] }>>(
+      `/books?instId=${instId}&sz=${limit}`,
+    );
     if (data.length === 0) {
       throw new OkxApiError(`OKX API error: no book for ${instId}`, "404");
     }

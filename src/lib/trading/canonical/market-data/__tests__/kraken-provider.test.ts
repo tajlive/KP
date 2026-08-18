@@ -9,14 +9,7 @@
  *  - Depth: result[pair].bids/asks = [price, qty][]
  */
 
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-} from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { KrakenMarketDataProvider } from "../kraken-provider";
 
 const API = "https://api.kraken.com/0/public";
@@ -195,9 +188,11 @@ describe("KrakenMarketDataProvider", () => {
     it("kaster ved Kraken error-array i respons", async () => {
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(
-          okResponse({ error: ["EQuery:Unknown asset pair"], result: {} }),
-        ),
+        vi
+          .fn()
+          .mockResolvedValue(
+            okResponse({ error: ["EQuery:Unknown asset pair"], result: {} }),
+          ),
       );
 
       await expect(provider.getPrice("BTCUSDT")).rejects.toThrow(
@@ -209,7 +204,16 @@ describe("KrakenMarketDataProvider", () => {
   describe("getKlines", () => {
     it("mapper OHLC-array → Kline[] (ms-timestamp, filtrerer last)", async () => {
       const candles = [
-        [1722873600, "100.0", "110.0", "90.0", "105.0", "1000.0", "500.0", "42"],
+        [
+          1722873600,
+          "100.0",
+          "110.0",
+          "90.0",
+          "105.0",
+          "1000.0",
+          "500.0",
+          "42",
+        ],
       ];
       const mockFetch = vi
         .fn()
@@ -368,22 +372,71 @@ describe("KrakenMarketDataProvider", () => {
     });
   });
 
+  describe("get24hSnapshot", () => {
+    it("returnerer Market24hSnapshot fra ticker", async () => {
+      const pair = "XBTUSDC";
+      const body = {
+        error: [],
+        result: {
+          [pair]: {
+            c: ["64562.78", "0.5"],
+            h: ["64990.11", "64990.11"],
+            l: ["64001.46", "64001.46"],
+            o: ["64471.70", "64471.70"],
+            v: ["265.39", "265.39"],
+          },
+        },
+      };
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(okResponse(body)));
+
+      const snap = await provider.get24hSnapshot("BTCUSDT");
+
+      expect(snap.price).toBe(64562.78);
+      expect(snap.change24hPct).toBeCloseTo(
+        ((64562.78 - 64471.7) / 64471.7) * 100,
+        5,
+      );
+    });
+
+    it("clamper absurd change24hPct til 0 (Kraken o[1]-søppel, 2026-08-19)", async () => {
+      // o[1] = 4,0 (søppel — observert for XBTUSDC i prod) → 1 613 950 %.
+      // Uten clamp feiler coin_prices-upserten numeric(10,4) → cache frosset.
+      const pair = "XBTUSDC";
+      const body = {
+        error: [],
+        result: {
+          [pair]: {
+            c: ["64562.78", "0.5"],
+            h: ["64990.11", "64990.11"],
+            l: ["64001.46", "64001.46"],
+            o: ["64471.70", "4.0"],
+            v: ["265.39", "265.39"],
+          },
+        },
+      };
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(okResponse(body)));
+
+      const snap = await provider.get24hSnapshot("BTCUSDT");
+
+      expect(snap.change24hPct).toBe(0);
+      expect(snap.price).toBe(64562.78);
+    });
+  });
+
   describe("getDepth", () => {
     it("returnerer OrderBookSnapshot med default limit 20", async () => {
-      const mockFetch = vi
-        .fn()
-        .mockResolvedValue(
-          okResponse(
-            depthResult(
-              "ETHUSDC",
-              [
-                ["3000.0", "0.5"],
-                ["2999.5", "1.0"],
-              ],
-              [["3001.0", "0.7"]],
-            ),
+      const mockFetch = vi.fn().mockResolvedValue(
+        okResponse(
+          depthResult(
+            "ETHUSDC",
+            [
+              ["3000.0", "0.5"],
+              ["2999.5", "1.0"],
+            ],
+            [["3001.0", "0.7"]],
           ),
-        );
+        ),
+      );
       vi.stubGlobal("fetch", mockFetch);
 
       const depth = await provider.getDepth("ETHUSDT");

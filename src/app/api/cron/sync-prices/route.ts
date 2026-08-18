@@ -11,8 +11,17 @@ export const runtime = "nodejs";
 
 // Kraken-par (USDC-kvote — EU/EØS 2026; BNB finnes ikke på Kraken)
 const TRACKED_SYMBOLS = [
-  "BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT",
-  "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT", "UNIUSDT", "POLUSDT",
+  "BTCUSDT",
+  "ETHUSDT",
+  "SOLUSDT",
+  "XRPUSDT",
+  "ADAUSDT",
+  "DOGEUSDT",
+  "AVAXUSDT",
+  "DOTUSDT",
+  "LINKUSDT",
+  "UNIUSDT",
+  "POLUSDT",
 ];
 
 interface PriceRow {
@@ -21,7 +30,10 @@ interface PriceRow {
   price_change_percent_24h: number;
 }
 
-async function upsertPrices(supabase: SupabaseClient<Database>, prices: PriceRow[]) {
+async function upsertPrices(
+  supabase: SupabaseClient<Database>,
+  prices: PriceRow[],
+) {
   const updates = prices.map((t) => ({
     symbol: t.symbol,
     name: t.symbol.replace("USDT", ""),
@@ -37,7 +49,14 @@ async function upsertPrices(supabase: SupabaseClient<Database>, prices: PriceRow
     .from("coin_prices")
     .upsert(updates, { onConflict: "symbol" });
 
-  if (error) console.error("Supabase upsert error:", error);
+  // 2026-08-19 (prod-hendelse): upsert-feil ble kun console.error'ed og ruten
+  // svarte «success:true, updated:N» selv om 0 rader ble skrevet — cache lå
+  // frosset i 9 døgn uten at noen så det. Feil her er ALLTID kritisk.
+  if (error) {
+    throw new Error(
+      `coin_prices upsert feilet: ${error.message} (${error.code ?? "ukjent kode"})`,
+    );
+  }
 }
 
 /**
@@ -72,6 +91,21 @@ export async function GET(request: NextRequest) {
         price_change_percent_24h: snap.change24hPct,
       }))
       .filter((r) => r.price > 0);
+
+    // Ingen priser hentet (alle kilder nede) er IKKE «success» — gjør det
+    // synlig for cron-watchdog/health-monitor i stedet for stille grønt.
+    if (prices.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Ingen priser hentet — Kraken+OKX nede eller alle mappinger feilet",
+          updated: 0,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 502 },
+      );
+    }
 
     await upsertPrices(supabase, prices);
 

@@ -49,7 +49,10 @@ function ensureCleanup() {
   }, 60_000);
 }
 
-function checkRateLimit(userId: string): { allowed: boolean; retryAfterMs: number } {
+function checkRateLimit(userId: string): {
+  allowed: boolean;
+  retryAfterMs: number;
+} {
   const now = Date.now();
   let bucket = rateBuckets.get(userId);
   if (!bucket) {
@@ -163,14 +166,29 @@ export async function POST(request: NextRequest) {
       const { pair, amount_nok } = parsed.data;
       symbol = pair.toUpperCase().replace("/", "");
 
+      // Rate hentes FØR prisen — DB-fallbacken lagrer NOK-priser og må
+      // konverteres til USDT (2026-08-19: behandlet NOK som USDT → ~9,5× for
+      // liten quantity når live-kilden feilet).
+      const rate = await getUsdtToNokRateAsync(supabase);
+      if (!Number.isFinite(rate) || rate <= 0) {
+        return NextResponse.json(
+          { error: "Kunne ikke hente USDT/NOK kurs" },
+          { status: 502 },
+        );
+      }
+
       let fetchedPrice: number;
       try {
         // EU/EØS (2026): Kraken public API — eneste tallkilde
         const provider = createKrakenMarketDataProvider();
         fetchedPrice = await provider.getPrice(symbol);
       } catch (proxyErr) {
-        console.warn(`[paper-trading/execute] Kraken failed for ${symbol}:`, proxyErr);
-        // Fallback: DB-priser (cachet av cron-jobb)
+        console.warn(
+          `[paper-trading/execute] Kraken failed for ${symbol}:`,
+          proxyErr,
+        );
+        // Fallback: DB-priser (cachet av cron-jobb). coin_prices.price er NOK
+        // (sync-prices konverterer) — del på rate for å få USDT.
         try {
           const { data: dbPrice } = await supabase
             .from("coin_prices")
@@ -178,32 +196,28 @@ export async function POST(request: NextRequest) {
             .eq("symbol", symbol)
             .single();
           if (dbPrice?.price && Number(dbPrice.price) > 0) {
-            fetchedPrice = Number(dbPrice.price);
+            fetchedPrice = Number(dbPrice.price) / rate;
           } else {
             return NextResponse.json(
-              { error: `Kunne ikke hente pris for ${symbol} — prøv igjen om litt` },
+              {
+                error: `Kunne ikke hente pris for ${symbol} — prøv igjen om litt`,
+              },
               { status: 502 },
             );
           }
         } catch {
           return NextResponse.json(
-            { error: `Kunne ikke hente pris for ${symbol} — prøv igjen om litt` },
+            {
+              error: `Kunne ikke hente pris for ${symbol} — prøv igjen om litt`,
+            },
             { status: 502 },
           );
         }
       }
 
-      const rate = await getUsdtToNokRateAsync(supabase);
       if (!Number.isFinite(fetchedPrice) || fetchedPrice <= 0) {
         return NextResponse.json(
           { error: "Ugyldig pris for " + symbol },
-          { status: 502 },
-        );
-      }
-
-      if (!Number.isFinite(rate) || rate <= 0) {
-        return NextResponse.json(
-          { error: "Kunne ikke hente USDT/NOK kurs" },
           { status: 502 },
         );
       }
