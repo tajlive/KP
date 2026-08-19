@@ -123,3 +123,8 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// pg_cron (klarpakke_trigger_cron) kaller ALLE cron-ruter med net.http_post (POST).
+// Uten denne aliasen gir POST → 405 og prisfeeden fryser stille (observert
+// 2026-08-19: coin_prices uoppdatert 4,5t, cron_health_events 405-flom).
+export const POST = GET;

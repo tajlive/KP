@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
-import { reconcileLiveTrades, type ReconciliationTrade } from "@/lib/trading/reconciliation";
+import {
+  reconcileLiveTrades,
+  type ReconciliationTrade,
+} from "@/lib/trading/reconciliation";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import type { OrderExecutor } from "@/lib/trading/order-executor";
 import { validateCronSecret } from "@/lib/auth/cron";
@@ -66,3 +69,7 @@ export async function GET(request: Request) {
 
   return NextResponse.json(result);
 }
+
+// pg_cron (klarpakke_trigger_cron) kaller cron-ruter med net.http_post (POST).
+// Uten aliasen gir POST → 405 og reconciliering kjører aldri.
+export const POST = GET;
