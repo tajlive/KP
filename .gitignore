@@ -328,3 +328,10 @@ tmp/
 dogfood-output/
 scripts/__pycache__/
 .env.local.bak-*
+
+# Hermes intern arbeidsdata (planer, rapporter) — aldri committed
+.hermes/plans/
+.hermes/reports/
+
+# Next.js auto-generert
+next-env.d.ts
