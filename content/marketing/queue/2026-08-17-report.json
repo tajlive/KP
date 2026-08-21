@@ -1,0 +1,53 @@
+{
+  "week": 4,
+  "theme": "Urgency + kom i gang",
+  "stats": {
+    "totalUsers": 45,
+    "activePaperSessions": 4,
+    "enabledSmartTrader": 0,
+    "tradesLast7Days": 25,
+    "avgTradeValueNok": 796.4791999999999,
+    "totalPnlNok": -157.14,
+    "registrationsRemaining": 55,
+    "kltSlotsRemaining": 55,
+    "weekNumber": 4,
+    "generatedAt": "2026-08-17T07:05:09.739Z"
+  },
+  "linkedin": [
+    {
+      "platform": "linkedin",
+      "title": "100 plasser. 5000 gratis KLT per bruker. Når de er borte, er de borte.",
+      "body": "100 plasser. 5000 gratis KLT per bruker. Når de er borte, er de borte.\n\nSlik er beta-tilbudet i Klarpakke:\n\n→ Registrer deg gratis\n→ Få 100 000 kr i lekepenger\n→ Trade på ekte markedsdata, eller la AI-agentene gjøre det\n→ De 100 første får 5000 KLT — gratis\n\nIngen betaling. Ingen risiko. Ingen forpliktelser.\n\nSikre deg plassen: klarpakke.no",
+      "hashtags": "#klarpakke #krypto #trading #norsk #lekepenger",
+      "scheduledFor": "2026-08-17T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Urgency + kom i gang\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    },
+    {
+      "platform": "linkedin",
+      "title": "Fra null til din første trade — på under tre minutter, uten å risikere en krone.",
+      "body": "Fra null til din første trade — på under tre minutter, uten å risikere en krone.\n\nSlik kommer du i gang med Klarpakke:\n\n**Steg 1:** Gå til klarpakke.no og registrer deg.\n**Steg 2:** Kontoen din fylles automatisk med 100 000 kr i lekepenger.\n**Steg 3:** Velg selv: Trade manuelt på ekte markedsdata — eller slå på Pilot og se hva AI-agenten gjør.\n\nDet er det. Ingen kort. Ingen innskudd. Ingen risiko.\n\nOg husk: De 100 første får 5000 gratis KLT.\n\nklarpakke.no",
+      "hashtags": "#klarpakke #krypto #trading #norsk #lekepenger",
+      "scheduledFor": "2026-08-20T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Urgency + kom i gang\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    }
+  ],
+  "facebook": [
+    {
+      "platform": "facebook",
+      "title": "⏳ 100 plasser. 5000 gratis KLT per bruker. Deretter er tilbudet borte.",
+      "body": "⏳ 100 plasser. 5000 gratis KLT per bruker. Deretter er tilbudet borte.\n\n✅ Gratis registrering\n✅ 100 000 kr i lekepenger\n✅ Ekte markedsdata\n✅ AI-agenter som trader for deg — risikofritt\n\n45 av 100 plasser er tatt.\n\nSikre deg plassen: klarpakke.no\n\n#klarpakke #beta #krypto #gratis",
+      "hashtags": "#klarpakke #krypto #trading #norsk",
+      "scheduledFor": "2026-08-17T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Urgency + kom i gang\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    },
+    {
+      "platform": "facebook",
+      "title": "🚀 Kom i gang på under 3 minutter:",
+      "body": "🚀 Kom i gang på under 3 minutter:\n\n1️⃣ Registrer deg på klarpakke.no\n2️⃣ Få 100 000 kr i lekepenger\n3️⃣ Trade selv — eller la AI-agenten Pilot gjøre jobben\n\nIngen kort. Ingen innskudd. Ingen risiko. 5000 gratis KLT til de 100 første.\n\n#klarpakke #gratis #trading",
+      "hashtags": "#klarpakke #krypto #trading #norsk",
+      "scheduledFor": "2026-08-20T15:00:00.000Z",
+      "imagePrompt": "1200×630 LinkedIn/FB-bilde for Klarpakke. Tema: \"Urgency + kom i gang\". Mørk blå gradient (#0a64be → #0c2e60), svakt candlestick-mønster. Hvit Inter-tekst, 80px margin. Ingen tall som ikke er verifisert. DOMENE: klarpakke.no."
+    }
+  ],
+  "generatedAt": "2026-08-17T07:05:09.765Z"
+}
