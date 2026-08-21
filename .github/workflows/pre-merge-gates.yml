@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: '24', cache: npm }
       - run: npm ci
       - run: npx tsc --noEmit
 
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: '24', cache: npm }
       - run: npm ci
       - run: npx eslint . --max-warnings 0
 
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: '24', cache: npm }
       - run: npm ci
       - run: npx vitest run --reporter=verbose
 
@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: '24', cache: npm }
       - run: npm ci
       - run: SKIP_LINT_IN_BUILD=true npx next build
 
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: '24', cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: '24', cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
@@ -90,7 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22 }
+        with: { node-version: '24' }
       - run: npm install -g @lhci/cli
       - run: lhci autorun --config=.lighthouserc.json --url=https://staging.klarpakke.no
 
