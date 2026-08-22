@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
       console.error(
         `ErrorBoundary [${componentName}] caught error:`,
         error,
-        errorInfo
+        errorInfo,
       );
     }
 
@@ -52,10 +52,6 @@ export class ErrorBoundary extends Component<Props, State> {
     window.location.reload();
   };
 
-  handleGoHome = () => {
-    window.location.href = "/";
-  };
-
   render() {
     if (this.state.hasError) {
       // Allow custom fallback (e.g. for component-level boundaries)
@@ -67,13 +63,8 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
           <div className="text-center max-w-sm">
-            <AlertTriangle
-              size={48}
-              className="text-red-500 mx-auto mb-6"
-            />
-            <h1 className="text-lg font-bold text-white mb-3">
-              Noe gikk galt
-            </h1>
+            <AlertTriangle size={48} className="text-red-500 mx-auto mb-6" />
+            <h1 className="text-lg font-bold text-white mb-3">Noe gikk galt</h1>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
               Vi er varslet og jobber med det. Prøv å laste siden på nytt.
             </p>
@@ -84,12 +75,12 @@ export class ErrorBoundary extends Component<Props, State> {
               >
                 Last inn på nytt
               </button>
-              <button
-                onClick={this.handleGoHome}
+              <a
+                href="/"
                 className="px-6 py-3 bg-transparent text-gray-400 hover:text-white border border-white/20 hover:border-white/40 rounded-lg text-sm font-medium transition-all"
               >
                 Gå til forsiden
-              </button>
+              </a>
             </div>
           </div>
         </div>

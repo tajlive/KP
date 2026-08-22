@@ -4,6 +4,7 @@ import { Button } from "@/shared/ui/button";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { CurrencyCode } from "@/lib/pricing.config";
 
 interface StripeCheckoutButtonProps {
@@ -31,6 +32,7 @@ export function StripeCheckoutButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("payment");
+  const router = useRouter();
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -44,9 +46,13 @@ export function StripeCheckoutButton({
       });
 
       if (authRes.status === 401) {
-        // Redirect til innlogging med returnUrl og riktig locale
+        // Redirect til innlogging med returnUrl og riktig locale.
+        // Client-side navigasjon via router (Next.js-regel: ikke window.location
+        // for interne ruter).
         const currentLocale = window.location.pathname.split("/")[1] || "no";
-        window.location.href = `/${currentLocale}/innlogging?redirect=${encodeURIComponent(window.location.pathname)}`;
+        router.push(
+          `/${currentLocale}/innlogging?redirect=${encodeURIComponent(window.location.pathname)}`,
+        );
         return;
       }
 

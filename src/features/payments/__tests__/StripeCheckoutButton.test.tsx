@@ -6,12 +6,18 @@ import { StripeCheckoutButton } from "../StripeCheckoutButton";
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const messages: Record<string, string> = {
-      "loading": "Laster...",
+      loading: "Laster...",
       "errors.checkout_failed": "Kunne ikke starte betaling",
       "errors.unexpected": "Uventet feil",
     };
     return messages[key] || key;
   },
+}));
+
+// Mock next/navigation router (komponenten navigerer interne ruter via router.push)
+const pushMock = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: pushMock }),
 }));
 
 // Mock window.location
@@ -45,8 +51,7 @@ function mockAuth(authenticated: boolean) {
     return Promise.resolve({
       ok: true,
       status: 200,
-      json: () =>
-        Promise.resolve({ url: "https://checkout.stripe.com/test" }),
+      json: () => Promise.resolve({ url: "https://checkout.stripe.com/test" }),
     } as unknown as Response);
   });
 }
@@ -61,7 +66,7 @@ describe("StripeCheckoutButton", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    window.location.href = "";
+    window.location.href = "https://www.klarpakke.no/no/priser";
     window.location.pathname = "/no/priser";
   });
 
@@ -77,8 +82,11 @@ describe("StripeCheckoutButton", () => {
     fireEvent.click(screen.getByRole("button"));
 
     await waitFor(() => {
-      expect(window.location.href).toContain("/no/innlogging");
-      expect(window.location.href).toContain("redirect=");
+      expect(pushMock).toHaveBeenCalledTimes(1);
+      const [target] = pushMock.mock.calls[0];
+      expect(target).toContain("/no/innlogging");
+      expect(target).toContain("redirect=");
+      expect(target).toContain(encodeURIComponent("/no/priser"));
     });
   });
 
@@ -175,7 +183,9 @@ describe("StripeCheckoutButton", () => {
     fireEvent.click(screen.getByRole("button"));
 
     await waitFor(() => {
-      expect(screen.getByText("Ingen checkout URL mottatt")).toBeInTheDocument();
+      expect(
+        screen.getByText("Ingen checkout URL mottatt"),
+      ).toBeInTheDocument();
     });
   });
 });
