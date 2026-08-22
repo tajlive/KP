@@ -16,6 +16,7 @@ import {
   Circle,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { RiskDisclaimer } from "./RiskDisclaimer";
 import { startTrading } from "@/app/actions/trading";
 import { useCallback, useEffect, useState } from "react";
@@ -25,7 +26,14 @@ import { useCallback, useEffect, useState } from "react";
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface RiskProfile {
-  id: "low" | "medium" | "high" | "safe" | "balanced" | "offensive" | "aggressive";
+  id:
+    | "low"
+    | "medium"
+    | "high"
+    | "safe"
+    | "balanced"
+    | "offensive"
+    | "aggressive";
   name: string;
   color: string;
   bg: string;
@@ -116,9 +124,17 @@ export default function SpeedOnboarding({
   const locale = useLocale();
   const t = useTranslations("onboarding");
   const tCommon = useTranslations("common");
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [selectedRisk, setSelectedRisk] = useState<
-    "low" | "medium" | "high" | "safe" | "balanced" | "offensive" | "aggressive" | null
+    | "low"
+    | "medium"
+    | "high"
+    | "safe"
+    | "balanced"
+    | "offensive"
+    | "aggressive"
+    | null
   >(null);
   const [selectedCoins, setSelectedCoins] = useState<string[]>(["BTC"]);
   const [countdown, setCountdown] = useState(60);
@@ -293,7 +309,9 @@ export default function SpeedOnboarding({
                       />
                     )}
                     <div className="flex items-center gap-2 mb-2">
-                      <Circle className={`w-4 h-4 ${profile.fillColor} ${profile.color}`} />
+                      <Circle
+                        className={`w-4 h-4 ${profile.fillColor} ${profile.color}`}
+                      />
                       <Icon className={`w-4 h-4 ${profile.color}`} />
                     </div>
                     <div className="font-bold text-slate-900 dark:text-white text-sm">
@@ -410,7 +428,9 @@ export default function SpeedOnboarding({
                 className="flex-[2] h-12 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl font-bold text-base shadow-xl shadow-green-500/30"
               >
                 {isStarting ? (
-                  <span className="animate-pulse">{t("speedOnboarding.step2.starting")}</span>
+                  <span className="animate-pulse">
+                    {t("speedOnboarding.step2.starting")}
+                  </span>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5 mr-2" />
@@ -443,25 +463,22 @@ export default function SpeedOnboarding({
               {t("speedOnboarding.step3.title")}
             </h3>
             <p className="text-slate-500 mb-6">
-              {t("speedOnboarding.step3.line1")} <strong>100K NOK</strong> {t("speedOnboarding.step3.line2")}
+              {t("speedOnboarding.step3.line1")} <strong>100K NOK</strong>{" "}
+              {t("speedOnboarding.step3.line2")}
               <br />
               {t("speedOnboarding.step3.line3")}
             </p>
 
             <div className="flex flex-col gap-3">
               <Button
-                onClick={() =>
-                  (window.location.href = `/${locale}/handel?tab=auto`)
-                }
+                onClick={() => router.push(`/${locale}/handel?tab=auto`)}
                 className="h-14 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-lg font-bold shadow-xl shadow-blue-600/25"
               >
                 {t("speedOnboarding.step3.goToDashboard")}
               </Button>
               <Button
                 variant="ghost"
-                onClick={() =>
-                  (window.location.href = `/${locale}/handel?tab=auto`)
-                }
+                onClick={() => router.push(`/${locale}/handel?tab=auto`)}
                 className="text-slate-500 text-sm"
               >
                 {t("speedOnboarding.step3.viewActivity")}

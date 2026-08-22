@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { signUpWithEmail } from "@/lib/auth/new/auth-actions";
@@ -18,6 +19,7 @@ import { AuthShell, AuthCard, AuthFormField } from "@/shared/ui/auth";
 
 export default function RegisterPage() {
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("auth");
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState(false);
@@ -35,7 +37,7 @@ export default function RegisterPage() {
     } else if (result?.hasSession) {
       // KLA-263: Nye brukere må fullføre onboarding før dashboard
       // Omdiriger til onboarding, ikke dashboard (Finelo-mønsteret + guard)
-      window.location.href = `/${locale}/onboarding`;
+      router.push(`/${locale}/onboarding`);
     } else {
       setSuccess(true);
       setLoading(false);

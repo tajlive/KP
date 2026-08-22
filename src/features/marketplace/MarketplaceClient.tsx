@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -61,6 +61,7 @@ type RiskLevel = "all" | "low" | "medium" | "high";
 export default function MarketplaceClient() {
   const t = useTranslations("marketplace");
   const { locale } = useParams();
+  const router = useRouter();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortBy>("performance");
@@ -125,7 +126,7 @@ export default function MarketplaceClient() {
 
       // Redirect to dashboard after short delay
       setTimeout(() => {
-        window.location.href = `/${locale}/dashboard`;
+        router.push(`/${locale}/dashboard`);
       }, 1500);
     } catch (error) {
       console.error("Error subscribing:", error);

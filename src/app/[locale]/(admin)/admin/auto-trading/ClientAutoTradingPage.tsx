@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2, AlertCircle, Building2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-} from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import KrakenAPISettings from "@/features/account/settings/KrakenAPISettings";
 import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
@@ -18,6 +15,7 @@ interface User {
 
 export default function ClientAutoTradingPage() {
   const params = useParams();
+  const router = useRouter();
   const locale = (params?.locale as string) || "no";
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -66,7 +64,7 @@ export default function ClientAutoTradingPage() {
           <p className="text-slate-400 mb-4">
             Du må logge inn for å bruke auto-trading.
           </p>
-          <Button onClick={() => (window.location.href = `/${locale}/innlogging`)}>
+          <Button onClick={() => router.push(`/${locale}/innlogging`)}>
             Gå til innlogging
           </Button>
         </CardContent>
