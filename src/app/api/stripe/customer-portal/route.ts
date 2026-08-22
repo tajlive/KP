@@ -19,7 +19,7 @@ const BETA_PAYMENTS_ENABLED = false;
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error("STRIPE_SECRET_KEY ikke satt");
-  return new Stripe(key, { apiVersion: "2026-05-27.dahlia" });
+  return new Stripe(key, { apiVersion: "2026-07-29.dahlia" });
 }
 
 /**

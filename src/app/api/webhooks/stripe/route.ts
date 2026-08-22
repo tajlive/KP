@@ -19,20 +19,20 @@ const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 timer
 function isDuplicateEvent(eventId: string): boolean {
   const now = Date.now();
   const processedAt = processedEvents.get(eventId);
-  
-  if (processedAt && (now - processedAt) < IDEMPOTENCY_WINDOW_MS) {
+
+  if (processedAt && now - processedAt < IDEMPOTENCY_WINDOW_MS) {
     return true;
   }
-  
+
   // Cleanup gamle entries hvis map vokser for stor
   if (processedEvents.size > 10000) {
     for (const [key, time] of processedEvents) {
-      if ((now - time) > IDEMPOTENCY_WINDOW_MS) {
+      if (now - time > IDEMPOTENCY_WINDOW_MS) {
         processedEvents.delete(key);
       }
     }
   }
-  
+
   processedEvents.set(eventId, now);
   return false;
 }
@@ -43,7 +43,7 @@ const getStripe = () => {
     throw new Error("STRIPE_SECRET_KEY ikke satt");
   }
   return new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2026-05-27.dahlia",
+    apiVersion: "2026-07-29.dahlia",
   });
 };
 
@@ -210,7 +210,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         subscription_status: "active",
         stripe_customer_id: customerId,
         updated_at: new Date().toISOString(),
-      } as never).eq("id", userId);
+      } as never)
+      .eq("id", userId);
 
     if (profileError) {
       console.error(
@@ -243,7 +244,8 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
         status: "active",
         current_period_end: periodEnd,
         updated_at: new Date().toISOString(),
-      } as never).eq("stripe_subscription_id", subscriptionId);
+      } as never)
+      .eq("stripe_subscription_id", subscriptionId);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved payment succeeded:", error);
@@ -263,7 +265,8 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
         .update({
           subscription_status: "active",
           updated_at: new Date().toISOString(),
-        } as never).eq("id", sub.user_id);
+        } as never)
+        .eq("id", sub.user_id);
     }
   } catch (error) {
     console.error("[Stripe Webhook] Feil i handlePaymentSucceeded:", error);
@@ -284,7 +287,8 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       .update({
         status: "past_due",
         updated_at: new Date().toISOString(),
-      } as never).eq("stripe_subscription_id", subscriptionId);
+      } as never)
+      .eq("stripe_subscription_id", subscriptionId);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved payment failed:", error);
@@ -304,7 +308,8 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
         .update({
           subscription_status: "past_due",
           updated_at: new Date().toISOString(),
-        } as never).eq("id", sub.user_id);
+        } as never)
+        .eq("id", sub.user_id);
     }
 
     // Send påminnelse om betaling
@@ -328,7 +333,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     // Get customer ID and metadata
     const customerId = subscription.customer as string;
     const subscriptionId = subscription.id;
-    
+
     // Try to find existing user by customer ID
     const { data: existingSub } = await supabase
       .from("subscriptions")
@@ -338,7 +343,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
     // If no existing subscription record, try to get user from metadata
     let userId = existingSub?.user_id;
-    
+
     if (!userId) {
       // Check if metadata contains user_id from checkout session
       const metadataUserId = subscription.metadata?.supabase_user_id;
@@ -348,7 +353,9 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     }
 
     if (!userId) {
-      console.warn(`[Stripe Webhook] No user found for subscription ${subscriptionId}`);
+      console.warn(
+        `[Stripe Webhook] No user found for subscription ${subscriptionId}`,
+      );
       return;
     }
 
@@ -379,7 +386,10 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     );
 
     if (subError) {
-      console.error("[Stripe Webhook] Feil ved opprettelse av subscription:", subError);
+      console.error(
+        "[Stripe Webhook] Feil ved opprettelse av subscription:",
+        subError,
+      );
       return;
     }
 
@@ -388,13 +398,18 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       .from("user_profiles")
       .update({
         subscription_tier: planType,
-        subscription_status: subWithPeriod.status === "active" ? "active" : "pending",
+        subscription_status:
+          subWithPeriod.status === "active" ? "active" : "pending",
         stripe_customer_id: customerId,
         updated_at: new Date().toISOString(),
-      } as never).eq("id", userId);
+      } as never)
+      .eq("id", userId);
 
     if (profileError) {
-      console.error("[Stripe Webhook] Feil ved oppdatering av profil:", profileError);
+      console.error(
+        "[Stripe Webhook] Feil ved oppdatering av profil:",
+        profileError,
+      );
       return;
     }
   } catch (error) {
@@ -422,7 +437,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
           ? new Date(subWithPeriod.current_period_end * 1000).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),
-      }).eq("stripe_subscription_id", subscription.id);
+      })
+      .eq("stripe_subscription_id", subscription.id);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved subscription update:", error);
@@ -448,7 +464,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
               ? "active"
               : "canceled",
             updated_at: new Date().toISOString(),
-          } as never).eq("id", sub.user_id);
+          } as never)
+          .eq("id", sub.user_id);
       }
     }
   } catch (error) {
@@ -475,7 +492,8 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       .update({
         status: "cancelled" as string,
         updated_at: new Date().toISOString(),
-      }).eq("stripe_subscription_id", subscription.id);
+      })
+      .eq("stripe_subscription_id", subscription.id);
 
     // Nedgrader bruker til free
     if (sub?.user_id) {
@@ -485,7 +503,8 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
           subscription_tier: "student",
           subscription_status: "canceled",
           updated_at: new Date().toISOString(),
-        } as never).eq("id", sub.user_id);
+        } as never)
+        .eq("id", sub.user_id);
     }
   } catch (error) {
     console.error(
@@ -516,10 +535,10 @@ function mapTierToPlanType(tier: string): string {
 function mapPriceIdToTier(priceId: string | undefined): string | undefined {
   if (!priceId) return undefined;
   const priceMap: { [key: string]: string } = {
-    [process.env.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR || '']: 'bachelor',
-    [process.env.NEXT_PUBLIC_STRIPE_PRICE_MASTER || '']: 'master',
-    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PHD || '']: 'phd',
-    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR || '']: 'professor',
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR || ""]: "bachelor",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_MASTER || ""]: "master",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PHD || ""]: "phd",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR || ""]: "professor",
   };
   return priceMap[priceId];
 }
