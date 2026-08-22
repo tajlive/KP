@@ -27,6 +27,7 @@ function makeExecutor(overrides: Record<string, unknown> = {}) {
 describe("OkxExecutor", () => {
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   describe("symbol-mapping", () => {
@@ -173,9 +174,7 @@ describe("OkxExecutor", () => {
       const executor = makeExecutor();
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(
-          okResponse([], "51000"),
-        ),
+        vi.fn().mockResolvedValue(okResponse([], "51000")),
       );
 
       const result = await executor.executeOrder({
@@ -250,9 +249,11 @@ describe("OkxExecutor", () => {
       const executor = makeExecutor();
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(
-          okResponse([{ last: "64820.5", askPx: "64821", bidPx: "64820" }]),
-        ),
+        vi
+          .fn()
+          .mockResolvedValue(
+            okResponse([{ last: "64820.5", askPx: "64821", bidPx: "64820" }]),
+          ),
       );
 
       expect(await executor.getMarketPrice("BTCUSDT")).toBe(64820.5);
@@ -262,9 +263,11 @@ describe("OkxExecutor", () => {
       const executor = makeExecutor();
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(
-          okResponse([{ last: "3000", askPx: "3001", bidPx: "2999" }]),
-        ),
+        vi
+          .fn()
+          .mockResolvedValue(
+            okResponse([{ last: "3000", askPx: "3001", bidPx: "2999" }]),
+          ),
       );
 
       const book = await executor.fetchOrderBook("ETHUSDT");
@@ -287,9 +290,7 @@ describe("OkxExecutor", () => {
           ]),
         )
         .mockResolvedValueOnce(
-          okResponse([
-            { last: "64820.5", askPx: "64821", bidPx: "64820" },
-          ]),
+          okResponse([{ last: "64820.5", askPx: "64821", bidPx: "64820" }]),
         );
       vi.stubGlobal("fetch", mockFetch);
 
@@ -303,7 +304,11 @@ describe("OkxExecutor", () => {
       const executor = makeExecutor();
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(okResponse([{ details: [{ ccy: "USDT", eq: "100" }] }])),
+        vi
+          .fn()
+          .mockResolvedValue(
+            okResponse([{ details: [{ ccy: "USDT", eq: "100" }] }]),
+          ),
       );
 
       expect(await executor.getPosition("BTCUSDT")).toBeNull();

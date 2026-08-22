@@ -36,6 +36,7 @@ describe("KrakenMarketDataProvider", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("getPrice henter siste pris fra Ticker", async () => {

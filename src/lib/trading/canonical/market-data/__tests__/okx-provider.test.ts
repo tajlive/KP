@@ -70,6 +70,7 @@ describe("OkxMarketDataProvider", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
 

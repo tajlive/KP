@@ -1,13 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { trackOnboardingStep } from "../onboarding-events";
 
-const mockFetch = vi.fn().mockResolvedValue({ ok: true });
-
 describe("trackOnboardingStep", () => {
+  const mockFetch = vi.fn().mockResolvedValue({ ok: true });
+
   beforeEach(() => {
     mockFetch.mockClear();
     vi.stubGlobal("fetch", mockFetch);
     window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("poster event til /api/onboarding/events", () => {

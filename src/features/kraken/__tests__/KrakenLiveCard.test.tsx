@@ -1,10 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import KrakenLiveCard from "../KrakenLiveCard";
 
 // Mock fetch — komponenten henter /api/kraken/live-state
 const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
 
 function mockLiveState(overrides: Record<string, unknown> = {}) {
   return {
@@ -16,19 +15,123 @@ function mockLiveState(overrides: Record<string, unknown> = {}) {
     updated_at: "2026-08-07T12:05:00.000Z",
     snapshot: {
       orders: [
-        { txid: "a1", pair: "BTCUSDC", side: "buy", price: 60000, volume: 1, filled: 0, status: "open" },
-        { txid: "a2", pair: "BTCUSDC", side: "buy", price: 61000, volume: 1, filled: 0, status: "open" },
-        { txid: "a3", pair: "BTCUSDC", side: "buy", price: 62000, volume: 1, filled: 0, status: "open" },
-        { txid: "a4", pair: "BTCUSDC", side: "buy", price: 63000, volume: 1, filled: 0, status: "open" },
-        { txid: "a5", pair: "BTCUSDC", side: "buy", price: 64000, volume: 1, filled: 0, status: "open" },
-        { txid: "a6", pair: "BTCUSDC", side: "sell", price: 66000, volume: 1, filled: 0, status: "open" },
-        { txid: "b1", pair: "ETHUSDC", side: "buy", price: 1900, volume: 1, filled: 0, status: "open" },
-        { txid: "b2", pair: "ETHUSDC", side: "buy", price: 1950, volume: 1, filled: 0, status: "open" },
-        { txid: "b3", pair: "ETHUSDC", side: "buy", price: 2000, volume: 1, filled: 0, status: "open" },
-        { txid: "b4", pair: "ETHUSDC", side: "buy", price: 2050, volume: 1, filled: 0, status: "open" },
-        { txid: "c1", pair: "SOLUSDC", side: "buy", price: 70, volume: 1, filled: 0, status: "open" },
-        { txid: "c2", pair: "SOLUSDC", side: "buy", price: 72, volume: 1, filled: 0, status: "open" },
-        { txid: "c3", pair: "SOLUSDC", side: "buy", price: 74, volume: 1, filled: 0, status: "open" },
+        {
+          txid: "a1",
+          pair: "BTCUSDC",
+          side: "buy",
+          price: 60000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "a2",
+          pair: "BTCUSDC",
+          side: "buy",
+          price: 61000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "a3",
+          pair: "BTCUSDC",
+          side: "buy",
+          price: 62000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "a4",
+          pair: "BTCUSDC",
+          side: "buy",
+          price: 63000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "a5",
+          pair: "BTCUSDC",
+          side: "buy",
+          price: 64000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "a6",
+          pair: "BTCUSDC",
+          side: "sell",
+          price: 66000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "b1",
+          pair: "ETHUSDC",
+          side: "buy",
+          price: 1900,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "b2",
+          pair: "ETHUSDC",
+          side: "buy",
+          price: 1950,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "b3",
+          pair: "ETHUSDC",
+          side: "buy",
+          price: 2000,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "b4",
+          pair: "ETHUSDC",
+          side: "buy",
+          price: 2050,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "c1",
+          pair: "SOLUSDC",
+          side: "buy",
+          price: 70,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "c2",
+          pair: "SOLUSDC",
+          side: "buy",
+          price: 72,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
+        {
+          txid: "c3",
+          pair: "SOLUSDC",
+          side: "buy",
+          price: 74,
+          volume: 1,
+          filled: 0,
+          status: "open",
+        },
       ],
     },
     ...overrides,
@@ -37,6 +140,11 @@ function mockLiveState(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   mockFetch.mockReset();
+  vi.stubGlobal("fetch", mockFetch);
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 describe("KrakenLiveCard", () => {

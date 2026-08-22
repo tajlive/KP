@@ -62,6 +62,7 @@ describe("KrakenMarketDataProvider", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
 

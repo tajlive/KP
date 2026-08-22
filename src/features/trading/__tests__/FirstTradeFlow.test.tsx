@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) => {
@@ -30,13 +30,17 @@ vi.mock("@/hooks/usePrices", () => ({
 }));
 
 const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
 
 import { FirstTradeFlow } from "../FirstTradeFlow";
 
 describe("FirstTradeFlow", () => {
   beforeEach(() => {
     mockFetch.mockReset();
+    vi.stubGlobal("fetch", mockFetch);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("viser tre coin-valg i steg 1", () => {
@@ -68,7 +72,11 @@ describe("FirstTradeFlow", () => {
     const [url, opts] = mockFetch.mock.calls[0];
     expect(url).toBe("/api/paper-trading/execute");
     const body = JSON.parse(opts.body as string);
-    expect(body).toMatchObject({ pair: "ETH/USDT", side: "buy", amount_nok: 500 });
+    expect(body).toMatchObject({
+      pair: "ETH/USDT",
+      side: "buy",
+      amount_nok: 500,
+    });
   });
 
   it("kaller onComplete ved vellykket handel", async () => {
