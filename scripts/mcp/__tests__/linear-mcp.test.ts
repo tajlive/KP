@@ -7,7 +7,7 @@
  *  - feil ved manglende LINEAR_API_KEY
  *  - redaksjon i audit-logg (redactForLog)
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { redactForLog, parseIdentifier } from "../linear-helpers";
 
 describe("parseIdentifier (KLA → UUID-oppløsning)", () => {
@@ -34,7 +34,14 @@ describe("label-sett oppdatering", () => {
     // Regresjonstest for feil funnet 2026-08-12:
     // forrige sesjon la til labels én-om-gangen, som ERSTATTET settet hver gang.
     // Korrekt: ÉN update med HELE settet.
-    const onsketSett = ["p1", "incident", "paper-trading", "balance", "database", "regression-test-required"];
+    const onsketSett = [
+      "p1",
+      "incident",
+      "paper-trading",
+      "balance",
+      "database",
+      "regression-test-required",
+    ];
     const partialAdds = new Set<string>();
     for (const label of onsketSett) {
       // GAMMEL (feil) oppførsel: bare legg til én
@@ -51,7 +58,17 @@ describe("label-sett oppdatering", () => {
 
   it("verifiserer at update-input sender komplett labelIds-array", () => {
     // Simulerer linear_update_issue-label-grenen: labelIds = full liste
-    const labels = ["p1", "ux", "ui", "copy", "a11y", "routing", "api", "mobile", "needs-tom-approval"];
+    const labels = [
+      "p1",
+      "ux",
+      "ui",
+      "copy",
+      "a11y",
+      "routing",
+      "api",
+      "mobile",
+      "needs-tom-approval",
+    ];
     const labelIds = labels.map((l) => `mock-id-${l}`);
     expect(labelIds).toHaveLength(9);
     expect(labelIds).toContain("mock-id-p1");
@@ -76,9 +93,9 @@ describe("redactForLog (audit-logg redaksjon)", () => {
     const honcho = "hch-at-" + "D".repeat(24);
     expect(redactForLog(`honcho ${honcho}`)).not.toContain("hch-at-");
 
-    expect(redactForLog("Authorization: Bearer abcdefghijklmnopqrstuvwxyz123456")).toBe(
-      "Authorization: Bearer [REDACTED]",
-    );
+    expect(
+      redactForLog("Authorization: Bearer abcdefghijklmnopqrstuvwxyz123456"),
+    ).toBe("Authorization: Bearer [REDACTED]");
   });
 
   it("bevarer normal tekst uendret", () => {
@@ -93,9 +110,15 @@ describe("redactForLog (audit-logg redaksjon)", () => {
   it("audit-logg inneholder aldri nøkkel — skrivefunksjonen redigerer", () => {
     // writeAudit i linear-mcp.ts kaller redactForLog på alle string-verdier.
     // Dette assertet bekrefter at redaction skjer før serialisering.
-    const entry = { action: "create_issue", title: "lin_api_" + "E".repeat(40) };
+    const entry = {
+      action: "create_issue",
+      title: "lin_api_" + "E".repeat(40),
+    };
     const safe = Object.fromEntries(
-      Object.entries(entry).map(([k, v]) => [k, typeof v === "string" ? redactForLog(v) : v]),
+      Object.entries(entry).map(([k, v]) => [
+        k,
+        typeof v === "string" ? redactForLog(v) : v,
+      ]),
     );
     const logLine = JSON.stringify({ ts: "2026-08-12T00:00:00Z", ...safe });
     expect(logLine).not.toContain("lin_api_");
@@ -104,11 +127,17 @@ describe("redactForLog (audit-logg redaksjon)", () => {
 });
 
 describe("manglende LINEAR_API_KEY", () => {
+  // Hardening (KLA-314 oppfølging): testen må være deterministisk uansett
+  // vertsmiljø. Agenter/cron-jobber kan ha LINEAR_API_KEY eksportert i
+  // shell-miljøet, som arves av vitest og feilet dette assertet.
+  beforeEach(() => {
+    delete process.env.LINEAR_API_KEY;
+  });
+
   it("MCP-wrapper gir tydelig feil uten nøkkel", () => {
     // run-linear-mcp.mjs eksiterer til no-op MCP når LINEAR_API_KEY mangler.
     // Her testes feilmeldingen fra gql()-grenen i serveren (defensive):
     const missing = !process.env.LINEAR_API_KEY;
-    // Testen kjører uten nøkkel i vitest-miljøet (ikke .env.local-lastet)
     expect(missing).toBe(true);
   });
 });
