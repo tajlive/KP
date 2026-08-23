@@ -213,6 +213,8 @@ const eslintConfig = [
       "workers/**",
       "dist/**",
       "build/**",
+      "**/.hermes/**",
+      "**/.worktrees/**",
       "seed*.js",
       "seed*.mjs",
       "seed*.cjs",
