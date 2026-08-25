@@ -169,7 +169,9 @@ describe("Auth Configuration", () => {
 
 // Integration tests (requires actual Supabase connection)
 describe("Auth Integration Tests", () => {
-  const hasSupabaseEnv = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const hasSupabaseEnv =
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   it.runIf(hasSupabaseEnv)(
     "should verify all required environment variables exist",
     () => {

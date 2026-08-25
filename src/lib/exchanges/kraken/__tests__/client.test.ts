@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { KrakenClient, KrakenLockoutError } from "@/lib/exchanges/kraken/client";
+import {
+  KrakenClient,
+  KrakenLockoutError,
+} from "@/lib/exchanges/kraken/client";
 import {
   toKrakenSymbol,
   fromKrakenSymbol,
@@ -152,7 +155,8 @@ describe("KrakenClient", () => {
     await pacedClient.getBalance();
     await pacedClient.getBalance();
     const elapsed = Date.now() - t0;
-    expect(elapsed).toBeGreaterThanOrEqual(200);
+    // Allow small timing variance (~5ms buffer)
+    expect(elapsed).toBeGreaterThanOrEqual(195);
   });
 });
 

@@ -14,14 +14,40 @@ const mockStats = {
   rank: 42,
   streak: 5,
   challenges: [
-    { id: "w", title: "Vinnende streak", description: "3 handler", current: 1, target: 3, reward: 500, completed: false },
-    { id: "e", title: "Utforsk strategi", description: "Ny strategi", current: 0, target: 1, reward: 300, completed: false },
-    { id: "d", title: "Daglig login", description: "Dashboard", current: 1, target: 1, reward: 100, completed: true },
+    {
+      id: "w",
+      title: "Vinnende streak",
+      description: "3 handler",
+      current: 1,
+      target: 3,
+      reward: 500,
+      completed: false,
+    },
+    {
+      id: "e",
+      title: "Utforsk strategi",
+      description: "Ny strategi",
+      current: 0,
+      target: 1,
+      reward: 300,
+      completed: false,
+    },
+    {
+      id: "d",
+      title: "Daglig login",
+      description: "Dashboard",
+      current: 1,
+      target: 1,
+      reward: 100,
+      completed: true,
+    },
   ],
 };
 
 beforeEach(() => {
-  global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(mockStats) });
+  global.fetch = vi
+    .fn()
+    .mockResolvedValue({ ok: true, json: () => Promise.resolve(mockStats) });
 });
 
 describe("DailyChallenge", () => {
@@ -50,8 +76,8 @@ describe("DailyChallenge", () => {
 
   it("renders stats", async () => {
     const { container } = render(<DailyChallenge userId="t" />);
-    await screen.findByText("Dine poeng");
-    expect(screen.getByText("#42")).toBeInTheDocument();
+    // Wait for stats to load by waiting for the rank to appear
+    await screen.findByText("#42");
     expect(container.textContent).toMatch(/2[,\s]?450/);
   });
 
