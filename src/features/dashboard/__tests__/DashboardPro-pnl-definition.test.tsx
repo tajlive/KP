@@ -25,6 +25,45 @@ vi.mock("next/navigation", () => ({
   ),
 }));
 
+// Mock fetch for PortfolioChart /api/portfolio/chart calls
+function mockPortfolioFetch() {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockImplementation((input) => {
+      const url = typeof input === "string" ? input : String(input);
+      if (url.includes("/api/portfolio/chart")) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              sessions: [{ id: "session-1", starting_capital_nok: 100000 }],
+              trades: [],
+              accountStart: 100000,
+              accountBalance: 238210.17,
+              investedCapital: 412.3,
+              totalPnl: -830.02,
+            }),
+        } as unknown as Response);
+      }
+      // Mock other API calls that might be made
+      if (url.includes("/api/user/profile")) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({ profile: { dismissed_get_started_card: false } }),
+        } as unknown as Response);
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+      } as unknown as Response);
+    }),
+  );
+}
+
 // Fiks 8-regresjon: Avkastning må komme fra EKTE trading-P&L (totalPnl),
 // ikke konto-differansen (accountBalance − startingCapital) som inkluderer
 // manuelle justeringer og lyver som «avkastning».
@@ -32,6 +71,7 @@ vi.mock("next/navigation", () => ({
 describe("DashboardPro avkastningsdefinisjon (FIKS 8)", () => {
   beforeEach(() => {
     vi.resetModules();
+    mockPortfolioFetch();
   });
 
   it(
