@@ -1,7 +1,7 @@
 /**
  * Tests for AutoTrader and runNextGenAutoTrading
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { AutoTrader, runNextGenAutoTrading } from "../auto-trader";
 import type {
   AutoTradingConfig,
@@ -107,14 +107,27 @@ describe("AutoTrader", () => {
     });
 
     it("accepts signals exactly at 15-minute boundary (not older than 15 min)", async () => {
-      const trader = new AutoTrader(makeConfig());
-      const edgeSignal = makeSignal({
-        created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // exactly 15 min
-      });
-      // age = 15 * 60 * 1000, which is NOT > MAX_SIGNAL_AGE_MS (15 * 60 * 1000),
-      // so it should be accepted (if confidence is high enough)
-      expect(await trader.shouldExecute(edgeSignal)).toBe(true);
+      // Frys klokka så created_at og shouldExecute sin Date.now() er identiske.
+      // Uten dette får vi en 1ms+ race under full-suite load: age = 15 min + ε > MAX_SIGNAL_AGE_MS → rejects.
+      vi.useFakeTimers();
+      try {
+        const now = new Date("2026-08-28T12:00:00.000Z");
+        vi.setSystemTime(now);
+        const trader = new AutoTrader(makeConfig());
+        const edgeSignal = makeSignal({
+          created_at: new Date(now.getTime() - 15 * 60 * 1000).toISOString(), // exactly 15 min
+        });
+        // age = 15 * 60 * 1000, which is NOT > MAX_SIGNAL_AGE_MS (15 * 60 * 1000),
+        // so it should be accepted (if confidence is high enough)
+        expect(await trader.shouldExecute(edgeSignal)).toBe(true);
+      } finally {
+        vi.useRealTimers();
+      }
     });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("calculateTradeSize", () => {
