@@ -16,6 +16,7 @@ import { RegimeClassifier } from "./regime-classifier";
 import { extractFeaturesFromCandles } from "./tick-features";
 import { resolveStrategy } from "../strategies";
 import { generateSignal } from "../signal-generator";
+import { isMechanicalStrategy } from "../mechanical-strategy";
 
 // ============================================================================
 // Types
@@ -60,9 +61,11 @@ export const DEFAULT_DARK_FLEET_CONFIG: DarkFleetConfig = {
 // Regime-based weights (from ConfluentSignalEngine)
 // ============================================================================
 
-function getWeightsByRegime(
-  regime: MarketRegime,
-): { technical: number; narrative: number; regime: number } {
+function getWeightsByRegime(regime: MarketRegime): {
+  technical: number;
+  narrative: number;
+  regime: number;
+} {
   switch (regime) {
     case "bull":
     case "bear":
@@ -186,13 +189,16 @@ export function evaluateDarkFleetSignal(
 
   // No-trade guardrails
   // Klarpakke-fiks 2026-08-02: Grid-strategi er designet FOR volatilitet —
-  // high-vol er når grid tjener mest. Grid-signaler (baseSignal.reason inneholder
-  // "Grid buy"/"Grid sell"/"DCA") skal ALDRI blokkeres av regime-guardrails.
+  // high-vol er når grid tjener mest. Mekaniske signaler (grid/simple_grid/
+  // dca) skal ALDRI blokkeres av regime-guardrails.
   // De har egen katastrofe-SL (25%) og DCA-håndtering i grid-strategy.ts.
-  const isGridSignal =
-    (baseSignal.reason ?? "").includes("Grid buy") ||
-    (baseSignal.reason ?? "").includes("Grid sell") ||
-    (baseSignal.reason ?? "").includes("DCA buy");
+  // FIX 2026-09-03: engine-key-matching erstatter reason-streng-match som
+  // aldri slo inn for DCA (buy uten reason).
+  const strategyEngineKey =
+    (input.config?.engineKey as string) ||
+    (input.config?.strategyId as string) ||
+    "trend_follow";
+  const isGridSignal = isMechanicalStrategy(strategyEngineKey);
 
   if (!isGridSignal) {
     if (regime === "high-vol" && regimeConfidence > 0.7) {
@@ -219,11 +225,8 @@ export function evaluateDarkFleetSignal(
   // Klarpakke-fiks 2026-08-02: IKKE reduser grid-signaler — grid har allerede
   // egen sizing (amountPerGrid). Halvering i high-vol gjorde at grid-trades
   // falt under minOrderValue (54 NOK < 100 NOK) og aldri ble utført.
-  const isGridForSizing =
-    (baseSignal.reason ?? "").includes("Grid buy") ||
-    (baseSignal.reason ?? "").includes("Grid sell") ||
-    (baseSignal.reason ?? "").includes("DCA buy");
-  if (!isGridForSizing && (regime === "high-vol" || regime === "unknown")) {
+  // FIX 2026-09-03: engine-key-matching (samme isGridSignal over).
+  if (!isGridSignal && (regime === "high-vol" || regime === "unknown")) {
     positionSize *= 0.5;
   }
   // Cap at max

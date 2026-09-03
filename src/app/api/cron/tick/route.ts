@@ -32,6 +32,7 @@ import {
 } from "@/lib/trading/strategy-id-aliases";
 import { clampDCAConfig } from "@/lib/trading/dca-validation";
 import { evaluateSignalGuard } from "@/lib/trading/signal-guard";
+import { isMechanicalStrategy } from "@/lib/trading/mechanical-strategy";
 import { adoptOrphanPositions } from "@/lib/trading/orphan-positions";
 import {
   buildTradeReason,
@@ -923,10 +924,9 @@ async function processSession(
       // Grid-unntak (2026-08-02): grid har egen mekanisk sizing (amountPerGrid).
       // Dynamic/Kelly-sizing basert på historisk win-rate skal ikke overstyre grid —
       // det halverte Tom sin size til 0.54% (54 NOK < 100 NOK min) og blokkerte ALT.
-      const isGridForDynamicSize =
-        (signal.reason ?? "").includes("Grid buy") ||
-        (signal.reason ?? "").includes("Grid sell") ||
-        (signal.reason ?? "").includes("DCA buy");
+      // FIX 2026-09-03: match på engine-key (mekaniske strategier), ikke reason-tekst.
+      // Reason-matching var skjørt — DCA produserte buy uten reason og falt gjennom.
+      const isGridForDynamicSize = isMechanicalStrategy(resolvedEngine);
       if (isGridForDynamicSize) {
         logger.debug(
           `[PositionSize] Session ${session.id}: grid-size bevart (${(positionSize * 100).toFixed(2)}% — dynamic sizing hoppet over)`,
@@ -970,17 +970,19 @@ async function processSession(
     // irrelevant for grid — grid har egen gevinstlogikk (+2% per nivå).
     // Uten unntak ble brukere med tidligere tap (f.eks. fra DCA) permanent
     // utestengt fra grid, mens nye brukere slapp gjennom — urettferdig og feil.
-    const isGridSignalForGuard =
-      (signal.reason ?? "").includes("Grid buy") ||
-      (signal.reason ?? "").includes("Grid sell") ||
-      (signal.reason ?? "").includes("DCA buy");
+    //
+    // FIX 2026-09-03: matcher på engine-key via isMechanicalStrategy().
+    // Tidligere reason-streng-matching ("DCA buy") slo aldri inn for DCA —
+    // strategien produserte buy uten reason → alle mekaniske DCA-kjøp ble
+    // blokkert av Kelly-expectancy fra gamle tapende trades (692 i 7 dager).
+    const isMechanicalForGuard = isMechanicalStrategy(resolvedEngine);
     {
       const guard = evaluateSignalGuard({
         action: signal.action,
         exitReason: signal.exitReason ?? "auto",
         confidence:
           (signal.indicators?.confidence as number | null | undefined) ?? null,
-        expectancy: isGridSignalForGuard ? null : (dynamicExpectancy ?? null),
+        expectancy: isMechanicalForGuard ? null : (dynamicExpectancy ?? null),
       });
       if (!guard.allowed) {
         try {
@@ -1076,10 +1078,9 @@ async function processSession(
         // simple_grid-unntak (2026-08-11): har egen dd-gate (>20% fra 30d-topp),
         // posisjons-tak 60% og «slipp posene»-likvidering — sterkere bremser enn
         // Fase2-gaten. Uten unntak blokkeres ALLE Pilot-kjøp i trend_down.
-        const isGrid =
-          (signal.reason ?? "").includes("Grid buy") ||
-          (signal.reason ?? "").includes("DCA buy") ||
-          resolvedEngine === "simple_grid";
+        // FIX 2026-09-03: engine-key-matching (isMechanicalStrategy) erstatter
+        // skjør reason-tekst-match — DCA produserte buy uten reason og falt gjennom.
+        const isGrid = isMechanicalStrategy(resolvedEngine);
         if (!isGrid) {
           try {
             await db.from("trading_logs").insert({
