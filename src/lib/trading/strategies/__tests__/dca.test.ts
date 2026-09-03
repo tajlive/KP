@@ -138,3 +138,31 @@ describe("DCA Strategy — interval gate bruker sist kjøp, ikke heartbeat", () 
     expect(signal.indicators?.last_buy_at).toBeTruthy();
   });
 });
+
+// REGRESJON 2026-09-03: DCA-kjøp MÅ ha reason "DCA buy" så grid/DCA-unntaket
+// i signal-guard + tick-adapter slår inn. Uten reason faller mekanisk DCA
+// gjennom unntaket → Kelly-expectancy fra gamle tapende trades blokkerer
+// ALLE kjøp for alltid (død sesjon, verifisert i prod DB: 6 blokkeringer/48t).
+describe("DCA Strategy — buy-signal bærer 'DCA buy'-reason (guard-unntak)", () => {
+  it("produserer reason som matcher grid/DCA-unntaket", () => {
+    const candles = buildCandles(100);
+    const input: StrategyInput = {
+      candles,
+      session: {
+        open_position: null,
+        last_tick_at: new Date(Date.now() - 5 * 60_000).toISOString(),
+        strategy_config: {
+          interval_minutes: 240,
+          last_buy_at: new Date(Date.now() - 5 * 60 * 60_000).toISOString(),
+        },
+      },
+      config: {
+        interval_minutes: 240,
+      },
+      currentTime: Date.now(),
+    };
+    const signal = strategy.evaluate(input);
+    expect(signal.action).toBe("buy");
+    expect(signal.reason).toContain("DCA buy");
+  });
+});

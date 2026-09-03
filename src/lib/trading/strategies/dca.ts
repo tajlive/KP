@@ -109,6 +109,11 @@ export class DCAStrategy implements StrategyEngine {
       return {
         action: "buy",
         positionSize,
+        // reason påkrevd: grid/DCA-unntakene i signal-guard, tick-adapter og
+        // dynamic-sizing matcher på "DCA buy" (fiks 2026-08-02). Uten reason
+        // faller mekanisk DCA gjennom unntaket → Kelly-expectancy fra gamle
+        // tapende trades blokkerer ALLE fremtidige kjøp (død sesjon).
+        reason: "DCA buy (tidsbasert akkumulering)",
         indicators: {
           strategy: "dca",
           interval: intervalMinutes,
