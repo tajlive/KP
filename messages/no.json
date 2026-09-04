@@ -1911,15 +1911,7 @@
       "title": "Daglig P&L Heatmap",
       "loss": "Tap",
       "win": "Gevinst",
-      "dayLabels": [
-        "Man",
-        "Tir",
-        "Ons",
-        "Tor",
-        "Fre",
-        "Lør",
-        "Søn"
-      ],
+      "dayLabels": ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
       "subtitle": "{winningDays, plural, one {# grønn} other {# grønne}} · {losingDays, plural, one {# rød} other {# røde}} · {winRate} % vinnrate",
       "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
     },
@@ -2429,12 +2421,12 @@
       "auto": {
         "name": "Auto",
         "tagline": "Du + AI sammen",
-        "description": "Sett regler. AI-en utfører."
+        "description": "Test strategier mot ekte markedsdata."
       },
       "pilot": {
         "name": "Pilot",
-        "tagline": "AI styrer alt",
-        "description": "AI-en gjør alt. Trykk start, så ordner den resten."
+        "tagline": "AI-demo",
+        "description": "Øv deg med en AI-demo. Den handler i simulering, du lærer underveis."
       }
     },
     "socialProof": {

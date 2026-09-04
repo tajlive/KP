@@ -1,6 +1,6 @@
 /**
  * BESTEMOR PANEL — 60 år, lite teknisk kunnskap
- * 
+ *
  * Design basert på 20 spørsmål:
  * - Stor tekst (20px+)
  * - Trafikklys (grønn/rød/gul)
@@ -9,7 +9,7 @@
  * - «Hvorfor?» forklaring
  * - Stor rød STOPP-knapp
  * - Popup ved feil
- * 
+ *
  * @module features/dashboard
  * @version 1.0.0
  */
@@ -26,10 +26,10 @@ interface BestemorPanelProps {
 export function BestemorPanel({ sessionId }: BestemorPanelProps) {
   const [showInfo, setShowInfo] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   const { data, isLoading } = useQuery({
     queryKey: ["bestemor", sessionId],
-    queryFn: () => fetch(`/api/trading/max-aggressive`).then(r => r.json()),
+    queryFn: () => fetch(`/api/trading/max-aggressive`).then((r) => r.json()),
     refetchInterval: 1000, // Hvert sekund
   });
 
@@ -41,36 +41,44 @@ export function BestemorPanel({ sessionId }: BestemorPanelProps) {
     );
   }
 
-  const { 
+  const {
     status = "running",
     daily_pnl = 0,
     daily_pnl_kr = 0,
-    explanation = "Roboten venter på riktig pris",
+    explanation = "Simuleringen venter på neste steg",
     kill_switch = false,
     leverage = 5,
     symbol = "SOL",
   } = data || {};
 
   const isProfit = daily_pnl >= 0;
-  const statusColor = kill_switch ? "bg-red-500" : isProfit ? "bg-green-500" : "bg-yellow-500";
-  const statusText = kill_switch ? "🛑 STOPPET" : "🤖 ROBOTEN KJØRER";
+  const statusColor = kill_switch
+    ? "bg-red-500"
+    : isProfit
+      ? "bg-green-500"
+      : "bg-yellow-500";
+  const statusText = kill_switch ? "🛑 STOPPET" : "🤖 LÆRINGSSIMULERING AKTIV";
   const pnlColor = isProfit ? "text-green-600" : "text-red-600";
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       {/* Status øverst — viktigst (svar #1) */}
-      <div className={`${statusColor} text-white text-2xl font-bold text-center py-4 rounded-2xl`}>
+      <div
+        className={`${statusColor} text-white text-2xl font-bold text-center py-4 rounded-2xl`}
+      >
         {statusText}
       </div>
 
-      {/* Gevinst/tap — størst (svar #10) */}
+      {/* Resultat — størst (svar #10) */}
       <div className="text-center space-y-2">
-        <div className="text-xl text-gray-600">Du har {isProfit ? "tjent" : "tapt"}:</div>
+        <div className="text-xl text-gray-600">Resultat så langt:</div>
         <div className={`text-6xl font-bold ${pnlColor}`}>
-          {isProfit ? "+" : ""}{daily_pnl_kr.toFixed(2)} kr
+          {isProfit ? "+" : ""}
+          {daily_pnl_kr.toFixed(2)} kr
         </div>
         <div className={`text-3xl ${pnlColor}`}>
-          ({isProfit ? "+" : ""}{daily_pnl.toFixed(2)}%)
+          ({isProfit ? "+" : ""}
+          {daily_pnl.toFixed(2)}%)
         </div>
       </div>
 
@@ -83,11 +91,13 @@ export function BestemorPanel({ sessionId }: BestemorPanelProps) {
       {/* Info om strategi — enkel (svar #3, #4) */}
       <div className="bg-gray-50 rounded-xl p-4 text-center">
         <div className="text-lg text-gray-700">
-          Roboten bruker <strong>{leverage}x</strong> — du kan tjene {leverage} ganger mer,<br />
-          men også tape {leverage} ganger mer.
+          Dette er en simulering med <strong>{leverage}x</strong> — ment for å
+          lære,
+          <br />
+          ikke for å garantere gevinst.
         </div>
         <div className="text-lg text-gray-600 mt-2">
-          Den kjøper {symbol} billig og selger dyrt, igjen og igjen.
+          Den handler {symbol} automatisk som en demo på ekte markedsdata.
         </div>
       </div>
 
@@ -95,26 +105,34 @@ export function BestemorPanel({ sessionId }: BestemorPanelProps) {
       <div className="grid grid-cols-3 gap-4">
         {/* Stopp — stor, rød, midt (svar #16) */}
         <button
-          onClick={() => fetch(`/api/trading/max-aggressive/stop`, { method: "POST" })}
+          onClick={() =>
+            fetch(`/api/trading/max-aggressive/stop`, { method: "POST" })
+          }
           className="bg-red-600 hover:bg-red-700 text-white text-2xl font-bold py-6 rounded-2xl transition-colors"
         >
-          🛑<br />STOPP
+          🛑
+          <br />
+          STOPP
         </button>
-        
+
         {/* Info */}
         <button
           onClick={() => setShowInfo(true)}
           className="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-6 rounded-2xl transition-colors"
         >
-          ℹ️<br />INFO
+          ℹ️
+          <br />
+          INFO
         </button>
-        
+
         {/* Innstillinger — krever bekreftelse (svar #17) */}
         <button
           onClick={() => setShowSettings(true)}
           className="bg-gray-500 hover:bg-gray-600 text-white text-2xl font-bold py-6 rounded-2xl transition-colors"
         >
-          ⚙️<br />INNST.
+          ⚙️
+          <br />
+          INNST.
         </button>
       </div>
 
@@ -125,7 +143,8 @@ export function BestemorPanel({ sessionId }: BestemorPanelProps) {
             <div className="text-4xl">⚠️</div>
             <div className="text-2xl font-bold text-red-600">ADVARSEL</div>
             <div className="text-xl">
-              Roboten har tapt 3% i dag.<br />
+              Roboten har tapt 3% i dag.
+              <br />
               Den stopper automatisk.
             </div>
             <button
@@ -142,12 +161,26 @@ export function BestemorPanel({ sessionId }: BestemorPanelProps) {
       {showInfo && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-8 max-w-md mx-4 space-y-4">
-            <div className="text-2xl font-bold text-center">Hva gjør roboten?</div>
+            <div className="text-2xl font-bold text-center">
+              Hva gjør simuleringen?
+            </div>
             <div className="text-lg space-y-2">
-              <p>🤖 <strong>Roboten kjører:</strong> Den jobber for deg hele dagen.</p>
-              <p>💰 <strong>5x:</strong> Du kan tjene 5 ganger mer, men også tape 5 ganger mer.</p>
-              <p>🔄 <strong>Grid:</strong> Den kjøper billig og selger dyrt, igjen og igjen.</p>
-              <p>🛑 <strong>Stopp:</strong> Den stopper selv hvis den taper 3% i dag.</p>
+              <p>
+                🤖 <strong>Simulering aktiv:</strong> Den viser deg hvordan
+                automatisk trading fungerer.
+              </p>
+              <p>
+                💰 <strong>{leverage}x:</strong> Et læringsverktøy med{" "}
+                {leverage}x — viser både opp- og nedturer.
+              </p>
+              <p>
+                🔄 <strong>Grid:</strong> Den handler automatisk som en demo på
+                ekte markedsdata.
+              </p>
+              <p>
+                🛑 <strong>Stopp:</strong> Den stopper selv hvis den taper 3% i
+                dag.
+              </p>
             </div>
             <button
               onClick={() => setShowInfo(false)}

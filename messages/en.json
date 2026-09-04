@@ -1911,15 +1911,7 @@
       "title": "Daily P&L Heatmap",
       "loss": "Loss",
       "win": "Win",
-      "dayLabels": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-      ],
+      "dayLabels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       "subtitle": "{winningDays, plural, one {# green} other {# green}} · {losingDays, plural, one {# red} other {# red}} · {winRate}% win rate",
       "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
     },
@@ -2429,12 +2421,12 @@
       "auto": {
         "name": "Auto",
         "tagline": "You + AI together",
-        "description": "Set rules. AI executes."
+        "description": "Test strategies against real market data."
       },
       "pilot": {
         "name": "Pilot",
-        "tagline": "AI takes the wheel",
-        "description": "AI does everything. Press start and it handles the rest."
+        "tagline": "AI demo",
+        "description": "Practice with an AI demo. It trades in simulation while you learn."
       }
     },
     "socialProof": {
