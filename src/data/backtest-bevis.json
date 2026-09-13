@@ -1,14 +1,14 @@
 {
-  "resultat": "+3 173 kr",
-  "bevist": true,
-  "dsr": 0.972,
-  "lukkedeLots": 173,
-  "winRate": 59,
+  "resultat": "+2 142 kr",
+  "bevist": false,
+  "dsr": 0.917,
+  "lukkedeLots": 217,
+  "winRate": 57.1,
   "symbol": "SOL-USDT",
   "dager": 90,
   "kapital": "10 000 USDT (≈100 000 kr)",
-  "holdBelop": "+5 844 kr",
-  "holdPct": 58.4,
-  "beregnet": "2026-09-06T11:23:03.208Z",
+  "holdBelop": "+3 550 kr",
+  "holdPct": 35.5,
+  "beregnet": "2026-09-13T12:19:05.494Z",
   "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning."
 }
